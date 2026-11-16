@@ -12,7 +12,6 @@
     const N = pc.needs; if (N && typeof N === 'object') ctx.needs = { rest: N.rest, company: N.company, purpose: N.purpose, comfort: N.comfort };
     if (pc.flags && pc.flags.weary) ctx.weary = true;
     if (pc.happy != null && pc.happy < 15) ctx.despair = true;
-    if (SK.lifeCtx) SK.lifeCtx(pc, ctx);
     return ctx;
   };
   const pos = (Eng, s) => Eng.totalTo(s.lv) + s.xp + s.st;

@@ -183,6 +183,125 @@ export default {
     return { ok, detail: `a month at Beginner III buys ${r.ratio.toFixed(0)} times the share of a step it buys at Master III; steps a year while Intermediate ${r.int.toFixed(2)} (${r.n[0]} skill-years), while Expert ${r.exp.toFixed(2)} (${r.n[1]} skill-years)` };
   },
 
+  // two players, the same scripted training for twenty-five years: their levels differ by a word or more in at least
+  // half the pairs (order 59: no timetable)
+  async s1TwoLives(pg) {
+    const r = await pg.evaluate(() => {
+      const SK = A.SK, out = [];
+      const one = seed => {
+        T.enter({ seed, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 14 });
+        const pc = A.pc(); pc.sk = {}; pc.skills = {}; pc.tal = {}; pc.skr = []; pc.skl = null;
+        for (let m = 0; m < 25 * 12; m++) {
+          const lv = pc.sk.sword ? pc.sk.sword.lv : 0;
+          pc.skm = [{ skill: 'sword', eu: 1.2, q: 'drill', teacher: 23, who: 'the master', why: 'the master\'s drill' }, { skill: 'sword', eu: 0.5, q: 'practice', why: 'the yard' }];
+          if (m % 6 === 5) pc.skm.push({ skill: 'sword', eu: 1.5, q: 'stretch', d: lv + 1, failed: m % 12 === 5, why: m % 12 === 5 ? 'a bout lost' : 'a bout won', trigger: m % 12 === 5 ? 'defeat' : undefined });
+          const v = SK.view(pc); SK.E().month(v, 14 + m / 12, pc.skm, {}); pc.skm = [];
+        }
+        return pc.sk.sword.lv;
+      };
+      for (let i = 0; i < 6; i++) { const a = one(7100 + i * 2), b = one(7101 + i * 2); out.push([a, b]); }
+      return out.map(([a, b]) => [SK.levelName(a), SK.levelName(b), Math.abs(SK.wordOf(a) - SK.wordOf(b))]);
+    });
+    const apart = r.filter(x => x[2] >= 1).length;
+    return { ok: apart >= 3, detail: `${apart} of 6 pairs a word or more apart: ` + r.map(x => `${x[0]} / ${x[1]}`).join('; ') };
+  },
+
+  // the spread run of the design, in the page's engine: 400 people of ordinary talent, the same good training
+  async s1SpreadPage(pg) {
+    const r = await pg.evaluate(() => {
+      const E = A.SK.E(), rows = [];
+      for (let i = 0; i < 400; i++) {
+        const p = E.person({ id: 'p' + i, seed: 'spread', talent: { sword: 'C' } });
+        let mas = null;
+        for (let mi = 0; mi < 50 * 12 && mas == null; mi++) {
+          const s = E.sk(p, 'sword');
+          const acts = [{ skill: 'sword', eu: 1.2, q: 'drill', teacher: 23, who: 'm', why: 'drill' }, { skill: 'sword', eu: 0.5, q: 'practice', why: 'yard' }];
+          if (mi % 6 === 5) acts.push({ skill: 'sword', eu: 1.5, q: 'stretch', d: s.lv + 1, failed: mi % 12 === 5, why: 'bout', trigger: mi % 12 === 5 ? 'defeat' : undefined });
+          E.month(p, 14 + mi / 12, acts, {});
+          if (mi % 12 === 11) E.year(p, 15 + Math.floor(mi / 12));
+          if (s.lv >= 21) mas = mi / 12;
+        }
+        rows.push(mas);
+      }
+      const m = rows.filter(x => x != null).sort((a, b) => a - b), all = rows.map(x => (x == null ? Infinity : x)).sort((a, b) => a - b);
+      return { fastest: m[0], p90: all[Math.floor(0.9 * all.length)], never: rows.length - m.length };
+    });
+    const ok = r.fastest < 10 && r.p90 > 20 && r.never >= 32 && r.never <= 100;
+    return { ok, detail: `400 of talent C: fastest to Master ${r.fastest.toFixed(1)} years, nine in ten by ${isFinite(r.p90) ? r.p90.toFixed(1) : 'never'}, ${r.never} never` };
+  },
+
+  // no proficiency anywhere a player can read: every tab, the skills overlay, every skill's sheet, the activity sheet,
+  // the story log and the cards met, in three lives at 1366 and 375 wide
+  async s1NoProficiency(pg) {
+    const BAD = /proficien|\bJourneyman\b|\bAdept\b|\bNovice\b|\b\d[\d,]* hours\b/i;
+    const hits = [];
+    for (const [w, h] of [[1366, 768], [375, 667]]) {
+      await pg.setViewportSize({ width: w, height: h });
+      const r = await pg.evaluate((BADs) => {
+        const BAD = new RegExp(BADs, 'i'), out = [], rows = [];
+        const look = (where) => { const t = document.body.innerText || ''; const m = t.match(BAD); if (m) out.push(where + ': ' + t.slice(Math.max(0, m.index - 40), m.index + 40).replace(/\s+/g, ' ')); for (const el of document.querySelectorAll('.skrow')) { const s = el.innerText; if (/\d|%/.test(s)) rows.push(s.replace(/\s+/g, ' ').slice(0, 80)); } };
+        for (const [seed, status] of [[3301, 'noble'], [3302, 'artisan'], [3303, 'peasant']]) {
+          T.enter({ seed, race: 'human', realm: 'POL-01', status, sex: 'M', startAge: 14 });
+          T.play(12, { onEvent: v => { const s = [v.title, v.text, ...v.choices.map(c => c.t)].join(' '); const m = s.match(BAD); if (m) out.push('card ' + v.title + ': ' + m[0]); } });
+          if (!A.pc().alive) continue;
+          for (const t of T.tabs()) { UI.tab = t; UI.ov = null; UI.render(); look('tab ' + t); }
+          UI.ov = { type: 'profs' }; UI.renderModal(); look('the skills overlay');
+          UI.ov = { type: 'profile' }; UI.renderModal(); look('the profile sheet');
+          UI.ov = { type: 'actSheet', id: 'practice' }; UI.renderModal(); look('Work at a skill');
+          UI.ov = null; UI.renderModal();
+          for (const k in A.pc().sk) { const s = UI.skillSheet(A.pc(), k); const m = s.replace(/<[^>]+>/g, ' ').match(BAD); if (m) out.push('sheet ' + k + ': ' + m[0]); }
+          for (const e of A.S.log) for (const l of e.lines) { const t = Array.isArray(l) ? l[0] : l; if (typeof t === 'string' && BAD.test(t)) out.push('log: ' + t.slice(0, 100)); }
+        }
+        UI.tab = 'life'; UI.render();
+        return { out: out.slice(0, 6), rows: rows.slice(0, 6), n: out.length + rows.length };
+      }, BAD.source);
+      if (r.n) hits.push(`${w}: ` + [...r.out, ...r.rows.map(x => 'a row with a number: ' + x)].join(' | '));
+    }
+    await pg.setViewportSize({ width: 1366, height: 768 });
+    return { ok: !hits.length, detail: hits.length ? hits.join(' || ') : 'no proficiency, no retired tier word, no hours, no digits in a skill row, at 1366 and 375 wide' };
+  },
+
+  // the phone: the Skills panel and a skill's sheet at 375 x 667: no sideways scroll, every control 44 points or more
+  async s1Phone(pg) {
+    await pg.setViewportSize({ width: 375, height: 667 });
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 4401, race: 'human', realm: 'POL-01', status: 'noble', sex: 'F', startAge: 16 });
+      T.play(6);
+      const out = { wide: [], small: [] };
+      const check = where => {
+        const se = document.scrollingElement; if (se.scrollWidth > window.innerWidth + 1) out.wide.push(where + ' ' + se.scrollWidth);
+        for (const el of document.querySelectorAll('.skrow, .sk-c > summary, .skgroup > summary, .work-how, .work-pick select')) {
+          const b = el.getBoundingClientRect(); if (b.width && b.height && (b.height < 44 - 0.5 || b.width < 44 - 0.5)) out.small.push(where + ' ' + el.className + ' ' + Math.round(b.width) + 'x' + Math.round(b.height));
+        }
+      };
+      UI.tab = 'life'; UI.ov = null; UI.render(); check('life');
+      UI.ov = { type: 'profs' }; UI.renderModal(); check('skills');
+      const k = Object.keys(A.pc().sk)[0];
+      const box = document.createElement('div'); box.className = 'panel mbox'; box.innerHTML = UI.skillSheet(A.pc(), k); document.body.appendChild(box);
+      for (const d of box.querySelectorAll('details')) d.open = true;
+      check('sheet'); box.remove();
+      UI.ov = { type: 'actSheet', id: 'practice' }; UI.renderModal(); check('work');
+      UI.ov = null; UI.renderModal(); UI.render();
+      return out;
+    });
+    await pg.setViewportSize({ width: 1366, height: 768 });
+    return { ok: !r.wide.length && !r.small.length, detail: `${r.wide.length} pages scroll sideways${r.wide.length ? ' (' + r.wide.join(', ') + ')' : ''}; ${r.small.length} controls under 44 points${r.small.length ? ': ' + r.small.slice(0, 4).join(', ') : ''}` };
+  },
+
+  // the cost: a thousand months of a full sheet (28 skills) in under a millisecond each, main-thread CPU
+  async s1Cost(pg, errs, { cpu }) {
+    await pg.evaluate(() => {
+      T.enter({ seed: 5501, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 20 });
+      const pc = A.pc(), SK = A.SK;
+      for (const k of SK.IDS) SK.set(pc, k, 3 + (k.length * 7) % 25, 'test');
+      window.__s1m = () => { for (let i = 0; i < 1000; i++) { for (const k of SK.IDS.slice(0, 6)) A.gainXp(pc, k, 0.4, { q: 'practice', why: 'the test' }); SK.month(pc); } };
+    });
+    const c0 = await cpu(); await pg.evaluate(() => window.__s1m()); const c1 = await cpu();
+    const ms = (c1 - c0) / 1000;
+    const size = await pg.evaluate(() => { const pc = A.pc(); return JSON.stringify({ sk: pc.sk, skl: pc.skl, skr: pc.skr, tal: pc.tal, skm: pc.skm }).length; });
+    return { ok: ms < 1 && size < 16384, detail: `${ms.toFixed(3)} ms of CPU a month for a full sheet (budget 1); the player's skill state ${(size / 1024).toFixed(1)} KB after 1,000 months (cap 16)` };
+  },
+
   // the mirror: p.skills[k] is the value of the level, for everyone, after twenty bot years
   async s1Mirror(pg) {
     const r = await pg.evaluate(() => {
