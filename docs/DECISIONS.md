@@ -1579,8 +1579,8 @@ W1-3 summons already asked; po_muster's quiet (answer as last time) carries over
 2. **The roll fills toward one in a hundred** (`A.MEN.rollCap`, ×1.2 under the nation-in-arms doctrine); the law no
    longer multiplies it. The old pool was about one in twenty (49 per thousand in a seed-7 world against 10 now), so the
    roll refills at 0.3 of the gap a year where the pool took 0.2. **Measured** (seed 7, the bot's life, every realm):
-   standing men per thousand people 11.76 / 11.84 / 11.72 at years 0, 10 and 20 before; 11.76 / 11.88 / 11.37 after: the
-   same order and nearly the same size.
+   standing men per thousand people 11.76 / 11.84 / 11.72 at years 0, 10 and 20 before; 11.76 / 13.22 / 12.22 after
+   (11.83 at 30): the same order and nearly the same size.
 3. **Where the release weighed a realm by its army and a share of its pool** (its strength for the war council and the
    AI, a faction's share of the swords, the polity's power, a campaign's numbers, war weariness from losses), it reads
    `A.MEN.reserve(r)`: the roll plus the conscripts the crown's own law lets it call (3, 6 or 12 in 100 working men).
@@ -1588,7 +1588,9 @@ W1-3 summons already asked; po_muster's quiet (answer as last time) carries over
    would have made every realm weaker against its houses and factions without any reason in the world.
 4. **The AI trains regiments to its standing size, not counting conscripts,** and never trains or refills conscript foot
    from the roll (`trainDiv` refuses a call's template; `divRefill` fills a conscript division from its call's waiting
-   men); a disbanded conscript division goes home, not onto the roll.
+   men); a disbanded conscript division goes home, not onto the roll. **A regiment is raised from half its men on the
+   roll** (under strength, filled as the roll grows; the release asked for twice its men in the pool): without it small
+   realms could raise nothing (`riGoldGetsUsed`: army against normal p10 0 → 0.65).
 
 ### D-088 · W1-4: conscription by proclamation (2026-11-16; D-064 point 7; war.md §10.2)
 1. **The need is checked against the world each month for a realm at war** (`A.CALLS.need`): an enemy host of 1,000 or

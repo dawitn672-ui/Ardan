@@ -1359,3 +1359,58 @@ Each failure, its cause and the fix:
   coin 21, refuse 7, with a true reason under the excuse for 39 of 123 (the test asks a quarter: many excuses are true).
 - **Undo:** revert branch `w1-3`'s commits (base `7716f05`, merged with `bfb9082` and `eb3eac7`); the release's old lines are in
   `7716f05`'s copies of the six release files above.
+
+### H-076 · 2026-11-16 · W1-4: no levies
+Order 54, answer 5 ("remove levies: there is conscription when it is needed, but armies are built on honour and those who
+choose that path"); `docs/design/war.md` §10 and §16; D-064 points 7 and 8; decisions D-086 to D-090. Branch `w1-4`, on
+`w1-3`, merged with `origin/v2-integration` (guard-famine). New feature `src/war/9999952-men` (README).
+- **Retired** (`a81d8cc`, behaviour-neutral, identity-probe over 9 fixed-seed lives of 10 years: same random stream and
+  journal lengths, only names differ): the levy as a field, a law, a troop, an event id and a word, in 130 files (the
+  release's core and content, its lore, 40 features, the v2 engine and its tests). The release's emergency call-out
+  (`A.emergencyLevy`) and the levy law's multiplier went to `archive/w1-4-levies/` (`52fde2b`). `w4NoLevyLint` reads 604
+  files: none carries the word but the old-save converter.
+- **Built** (`52fde2b`, `eed74b8`): `A.MEN` (sworn, enlisted and the roll, conscripts; `A.MEN.reserve` where the release
+  weighed a realm by its pool), `A.CALLS` (the need, the crown's decision, three calls by lot, each lord's answer, conscript
+  foot in his contingent after drill, hands from the fields through 45-economy, the term's end, the grievance),
+  `A.LEDGER` (holds and pulls, desertion without dice, mutiny's three parts and the commander's answer), the player's
+  `mn_lot`, `mn_proclaim`, `mn_release` and the War tab's `UI.menCard`; small realms raise a regiment from half its men
+  on the roll. Decisions through `A.WHY`: `conscript`, `raise`, `release`, `mutiny` (new, none bare); the v2 kit's
+  muster call routed (lint-reasons 63 → 62).
+- **Army sizes** (seed 7, every realm, men under arms per thousand people at years 0, 10, 20): before 11.76 / 11.84 /
+  11.72; after (the final build) 11.76 / 13.22 / 12.22 (and 11.83 at 30). The roll 10 per thousand at the start (the pool
+  was 49) and 6.9 to 7.5 later. Sworn about 2.5 per thousand (D-064's 1 in 400). `riGoldGetsUsed` (3 worlds × 30 years): army against
+  normal p10/50/90 0.65 / 1.01 / 1.23 (it fell to 0 at p10 before small realms could raise a regiment from half its men).
+- **A test world** (seed 7, the bot's life, 30 years, the final build): 13 calls kept (the store keeps the open and the
+  last 12 ended), their needs `few` 8, `home` 5; degrees 9 first, 3 second, 1 last; 402,406 men taken, 140,644 did not
+  come back, 1 held past its term; ended at peace 8, with a bounty 3, released 2; the lords answered full 103, half 25,
+  late 1; grievances 0.9 to 9.6. Deserters over the 30 years: 95,947 conscripts and 372 enlisted men; 5 companies left
+  in a body and 48 were let go home when their captain gave way; every mutiny record names its three parts (e.g. "The
+  harvest at home; the voice of old Brandt; the harvest month") and every desertion record two pulls.
+- **Cost** (in-page wall time under a load of 9 to 15 on 4 cores): `A.CALLS.month` 0.63 ms and `A.LEDGER.tick` 0.40 ms a
+  month on average over 361 months; nothing loops over people or houses. State: `A.S.calls` 18 KB (13 calls with their provinces),
+  the desertion and mutiny logs about 5 KB each (forty entries).
+- **Old saves:** all 13 sample saves load (`w4OldSaves`): no old field left, the roll within its cap; 6 were at war with
+  levy hosts in the field (32 divisions kept as conscripts of a call for that war), 12 sent such men home at peace.
+- **Tests:** new `w4NoLevyLint`, `w4ThreeKinds`, `w4CallsAndFields`, `w4Desertion`, `w4MutinyThree`, `w4OldSaves`,
+  `w4Player`, `w4Deterministic`: all pass. The touched features' and the asked suites (war, `cm*`, `w1*`, `why*`, `v2w*`,
+  economy and markets, `posts*`, `po*`, `ri*`, 72's, 47's, 99993's, 59's, the next year's, 99999-v2-content's,
+  `savesStillLoad`, `renderRng`, `replayWithRender`; 223 tests of the quick tier, `--workers=2`): 217 pass. Found and
+  fixed on the way: `riGoldGetsUsed` (small realms could not raise a regiment from the smaller roll: army against
+  normal p10 0), `cmPlayerSummons`, `poMusterRung`, `poMusterAsBefore` (a lord's oath read the roll instead of his
+  rung's men), `savesStillLoad` (an old save's polity bill on the old law), `v2svOldCycle2` (a second load must change
+  nothing), `v2sNoBareNumbers` (its own regex for the worth's unit). The other 6 (`pfFits`, `v2svRoundTrip`,
+  `ttCov2War`, `v2sSheet`, `v2cWarRoomNumbers`, `ttMarkNoCell`) fail the same way on W1-3's build (`26e0068`): S1b's,
+  in flight on v2-integration. Long tests (`twoScalesMovesFront`, `twoScalesOtherLives`, `realLivesMeetCustoms`,
+  `w1NoMarshalWorld`, `worldArcsInBotLives`) are left to CI.
+- **Checks:** `node --test tests/v2/*.test.js` 108/108; lint-stages ok (349 names defined more than once, baseline lowered
+  from 351); lint-events (men) 0 errors, 0 warnings; lint-choices (men) 0 obviously best; lint-kin ok; lint-skills ok;
+  lint-reasons 62; `coherency --quick` (8 lives, 12 years): no contradiction; `long-life-audit --seed=7 --years=30`:
+  0 errors, the audit empty, 0 months with a broken post rule. Not run here: the long tier and the balance league (CI's).
+- **Release files edited:** `core/02-game-data-a.js`, `03-engine-base.js`, `04-realms-and-war-years-a.js`, `07-duels.js`, `09-missions-and-line-battles.js`,
+  `10-companies-and-war-staff-a.js`, `10-companies-and-war-staff-b.js`, `11-armies-divisions-and-council-a.js`,
+  `11-armies-divisions-and-council-b.js`, `12-nobility-and-politics.js`, `13-factions-and-decisions.js`,
+  `18-event-view-a.js`, `18-event-view-b.js`, `23-ui-a.js`, `23-ui-c.js`, `23-ui-d.js`, `23-ui-e.js`, `00-lore.json`; `content/` 03, 04, 05, 06,
+  08, 09, 10, 11, 12, 13, 14, 15, 19, 20, 22, 28, 29, 30; `lore/` 02 to 05. (`10-companies-*` and `11-armies-*` are also
+  d9-map's: a merge, not a conflict.)
+- **Undo:** revert `w1-4`'s commits (base `26e0068`, W1-3's rebuild); the levy's code is in `archive/w1-4-levies/` and in
+  `26e0068`.
