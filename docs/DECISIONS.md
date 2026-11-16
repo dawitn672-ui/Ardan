@@ -1103,3 +1103,37 @@ variety compounded, appearance matters in play where it fits (C8d); legendary na
 tracked item. **Permissions granted:** merge PR #2 (v2-integration) when CI is green; branch deletion is the owner's on
 GitHub (the session cannot delete refs), helped by a script.
 
+
+**Addendum (P3, the playtest fixes, 2026-11-16).** Five of the owner's playtest complaints are fixed in the game, each
+under the rule:
+- **(a) "Start a new life."** Cause: the confirm's yes set `UI._newLifeOk`, called `UI.startLife` and cleared the flag in a
+  `finally`; a pressed button's start is deferred two frames by 999999-one-redraw ("Making the world"), so the deferred
+  start found no pass and asked again, for ever. The menu's "Start a new life" also left the menu open over the creation
+  screen. Fix: the yes hands a one-use pass that `UI.startLife` spends; `UI.A.newLife` closes the box it came from. (X7's
+  worker and `UI.lifeSeed` were innocent: the seed is drawn ahead and taken once.)
+- **(b) Free will.** The ambitions (97 part 3, with What now's second-half pointers and the ruler's desk) and the chapters
+  (9993, with the dynasty legacies) are retired to `archive/p3-ambitions/` and `archive/p3-chapters/` (last built at
+  `c6fb716`). "The useless decisions" are read as the cards that handed the player an aim to pick (the ambition card, the
+  chapter's third aim, the legacy perks) and What now's suggestions. The goal stack (999998) keeps only what the player took
+  on: his debts (and his crown's), favours he owes, and promises made in the open and scheduled. `A.whatNow` stays as an
+  engine function (bots, hints) but is never shown as goals. The release's `pa_*` scenes, written for an ambition, now come
+  to a life that seeks the thing of its own will (`C.ambition` reads `A.SEEK`: the plan's aim, the training he chose, the
+  post he took; `src/people/9989-what-you-seek`). The Decisions page stays: it is what a player goes to, not what is
+  handed him. Old saves keep `p.amb` and `p.chap`; nothing reads them.
+- **(c) Crimes against a ruler** (`src/nobility/999993-crown-crimes`): an attempt needs reach (kin, a post, a noble of the
+  realm, a rank, his favour); its discovery is its own roll with a named reason (the guard, the spymaster, suspicion, the
+  doubled guard); it is recorded (`A.S.crown.rec`) and remembered (his opinion −100, the chronicle); the sentence follows the
+  realm's law and the judge's nature (death by default for treason; mercy, prison, a ransom, the hand, exile, or war for a
+  foreign prince, each with its reason); the block is real; forgiveness follows opinion, traits, gravity, gifts since and
+  repeated begging. A murdered king's death runs the succession (as before, through `A.kill`/`A.rulerDies`, the house
+  resolver and `A.POSTS`), and now the realm is shaken (stability, factions), an inquiry hunts an unknown hand for two years,
+  and once known his kin swear vengeance, a price is set, avengers come, and in his realm you are taken.
+- **(d) The first mission** (`src/war/99972-unit-work`): cause: missions came only at the year's turn (`A.milYear`), at peace
+  on a 55% coin. Now the unit's work comes month by month from its war, its post and its officer, each with its sender and
+  reason; a new man's first comes within his first months (certain by day 100).
+- **(f) A step completes after its cards.** A notable card, battle or duel stops the month or year midway; once the card or
+  chain is answered (or the battle's screen closed) the same step carries on to its end. A wound, an illness, a death or a
+  birth in the household and coming of age no longer end a year: they are written in its digest with their month. Only
+  Esc, death and being put on campaign end a step early. **Conflict recorded:** this replaces the standing rule's "only
+  notable things stop a year (... an illness or wound, a death or birth in the household, coming of age ...)": they stop
+  nothing now unless they bring a card; CLAUDE.md, V2_SPEC row 8 and the 999995 README are changed to match.

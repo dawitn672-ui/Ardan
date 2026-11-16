@@ -5,6 +5,21 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Start a new life works.** After a life was saved, "Start the new life" asked the same question again for ever, and the
+  menu stayed open over the creation screen. Both are fixed.
+- **Nothing is handed to you.** Ambitions, chapters and their aims are gone, and the top of Life no longer suggests what to
+  do: it keeps only what you have taken on (your debts, favours you owe, promises made). The scenes once written for an
+  ambition now come to a life that goes looking for the thing: set your plan's aim, choose your training, take a post.
+- **A king's life is not cheap.** You must be able to get near him; an attempt can be found out (the guard, his
+  spymaster, the servants who saw you before), and it is remembered. The sentence follows the realm's law and the king's
+  nature, death for treason more often than not, and the block is real. Begging his pardon depends on what he thinks of
+  you, his temper, what you did and what you have given since. A murdered king stays dead: his heir takes the crown, the
+  realm is shaken, the court hunts the hand, and once it is known his kin swear vengeance and a price is set on your head.
+- **Soldiers are sent out.** Your unit gets work month by month from its war, its post and its officer, and a new man is
+  tried within his first months. Each mission says who sent you and why.
+- **Next month and Next year finish what they start.** Something that matters stops the step midway; once you have answered
+  it (or the battle is over) the month or the year carries on to its end. A wound, an illness, a death or a birth in the
+  family is written in the year's summary instead of cutting the year short.
 - **Cards say what you are, and where.** No one calls you "my lord" or "your men" unless you are a lord or lead men, a home-town scene
   does not find you on campaign, a child under six is not asked a grown man's question, and counsel comes only from someone in
   the room. A card's price is the price: a physician's cut of your purse and a lost house are said before you choose.
