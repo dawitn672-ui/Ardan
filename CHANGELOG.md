@@ -17,6 +17,22 @@ What changed for the player, in plain words, one section per version (newest fir
 - **Old saves:** a Marshal becomes his realm's senior General, and a player who was Marshal is a General holding the
   first host and the army's place at council. Old rank words in names and styles read as the five ranks.
 
+- **Start a new life works.** After a life was saved, "Start the new life" asked the same question again for ever, and the
+  menu stayed open over the creation screen. Both are fixed.
+- **Nothing is handed to you.** Ambitions, chapters and their aims are gone, and the top of Life no longer suggests what to
+  do: it keeps only what you have taken on (your debts, favours you owe, promises made). The scenes once written for an
+  ambition now come to a life that goes looking for the thing: set your plan's aim, choose your training, take a post.
+- **A king's life is not cheap.** You must be able to get near him; an attempt can be found out (the guard, his
+  spymaster, the servants who saw you before), and it is remembered. The sentence follows the realm's law and the king's
+  nature, death for treason more often than not, and the block is real. Begging his pardon depends on what he thinks of
+  you, his temper, what you did and what you have given since. A murdered king stays dead: his heir takes the crown, the
+  realm is shaken, the court hunts the hand, and once it is known his kin swear vengeance and a price is set on your head.
+- **Soldiers are sent out.** Your unit gets work month by month from its war, its post and its officer, and a new man is
+  tried within his first months. Each mission says who sent you and why.
+- **Next month and Next year finish what they start.** Something that matters stops the step midway; once you have answered
+  it (or the battle is over) the month or the year carries on to its end. A wound, an illness, a death or a birth in the
+  family is written in the year's summary instead of cutting the year short.
+
 ## v2.1.0-alpha.9 (2026-11-15 21:24 ET) · Dress that tells who you are, and cards that tell the truth
 
 - **Cards say what you are, and where.** No one calls you "my lord" or "your men" unless you are a lord or lead men, a home-town scene

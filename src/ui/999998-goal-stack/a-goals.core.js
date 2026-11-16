@@ -1,71 +1,68 @@
-// 999998-goal-stack (B5 part 2, D-055, CRITIQUE U20): one ordered stack of goals, and the one card the Life page reads it from.
+// 999998-goal-stack (B5 part 2, D-055, CRITIQUE U20; P3, order 54, D-062): one ordered stack of what the player has taken
+// on, and the one card the Life page reads it from.
 //
-// A life had goals in five places that never agreed: What now (the release's three suggestions, with 97's more), an
-// ambition card (97), a chapter's aims (9993), "Coming up" with the promises made and the customs due (996) and the Path's
-// next step. They competed for the top of the Life page, said the same thing twice, and ordered themselves by nothing.
-// Each system keeps its own data and its own rules; this reads them all and puts them in one order:
+// P3 (order 54): "everything comes down to free will. Any of these things should be available to you but not a single
+// thing should be handed to you without you seeking it out." The stack used to read What now's suggestions (A.whatNow:
+// see a physician, find work, look for love, choose what to train ...), the ambition (97) and the chapter's aims (9993),
+// and the realm's customs and feast days. Those were goals handed to the player; the ambitions and chapters are retired
+// to archive/, and the stack now holds only what the player took on himself:
+//
+//   'debt'     what you owe: the moneylenders (pc.debt), and the crown's debt when the crown is yours
+//   'favour'   a favour you owe someone (pc.owes: a debt of honour you accepted)
+//   'promise'  a thing promised in the open and scheduled (Coming up's labelled returns: a loan due to you, a venture
+//              to come to account, a wedding agreed, the end of an apprenticeship you took)
 //
 //   UI.GOALS.stack(pc)  -> [{ kind, score, t, why, when, cls, act, go }], highest first, at most UI.GOALS.MAX
-//   UI.GOALS.card(pc)   -> the card ("What now"): the stack as rows; the chapter's own card, folded, follows it
+//   UI.GOALS.card(pc)   -> the card ("What you have taken on"); nothing when there is nothing
 //
-// kinds: 'now' (A.whatNow, which carries its own scores: health 100, the crown's debt 89, a career's choice 78 ...),
-// 'promise' (a thing promised in the open: a loan due, a wedding agreed), 'custom' (a custom of the realm due), 'holy' (a
-// holy day), 'ambition' (the life's ambition and its next step), 'chapter' (the open chapter's next aim), 'feast'.
-// New sources register with UI.GOALS.source(name, pc => [rows]). The order is the scores, nothing else, so it can be read
-// and changed in one place (UI.GOALS.SCORE). Pure: reads state, draws no dice, writes nothing.
+// A feature may still register a source (UI.GOALS.source(name, pc => rows)) for something the player chose; never a
+// suggestion. The order is the scores (UI.GOALS.SCORE). Pure: reads state, draws no dice, writes nothing.
 (function () {
   if (typeof UI === 'undefined' || typeof A === 'undefined') return;
   const G = UI.GOALS = UI.GOALS || {};
   G.on = true;
   G.MAX = 5;
   const esc = s => UI.esc(String(s == null ? '' : s));
-  const DAY = 365;
+  const coin = n => (A.coin ? A.coin(Math.round(n)) : Math.round(n) + ' suns');
+  const nameOf = id => { const t = id != null && A.P ? A.P(id) : null; return t && t.alive ? (A.fullName ? A.fullName(t, false) : t.given) : null; };
 
-  // how the other systems' goals rank against What now's own scores (A.whatNow: 10 to 100)
   G.SCORE = {
-    ambition: 61,                 // under a job offer (70) and a career's choice (78), over finding work (55)
-    chapter: 52,                  // the aim of the stage of life: over "Choose something to do" (48)
+    debt: 90,                     // money owed: the lenders do not wait
+    crown: 89,                    // the crown's debt, when the crown is yours
     promise: [72, 88],            // a promise made in the open: [later, within the month]
-    custom: [68, 80],             // a custom of the realm: [next month, this month]
-    holy: 60,
-    feast: 20,                    // a feast day is company, not a goal
+    favour: 66,                   // a favour you owe
   };
 
   const sources = {};
   G.source = (name, fn) => { sources[name] = fn; };
 
-  G.source('now', pc => (A.whatNow ? A.whatNow(pc) : []).map(x => ({ kind: 'now', score: x.score, t: x.t, why: x.why, cls: x.cls || '', go: x.go, act: x.act || null })));
-
-  G.source('ambition', pc => {
-    const LF = A.LF, a = LF && LF.ambOf && LF.ambOf(pc), D = a && LF.AMB && LF.AMB[a.k];
-    if (!D || a.done || !A.isAdult(pc)) return [];
-    let step = '';
-    try { step = D.step(pc); } catch (e) { return []; }
-    return step ? [{ kind: 'ambition', score: G.SCORE.ambition, t: `${D.name}: ${step}`, why: 'Your ambition', cls: '', go: 'life', act: null }] : [];
+  G.source('debt', pc => {
+    const out = [], d = Math.round(+pc.debt || 0);
+    if (d > 0) out.push({ kind: 'debt', score: G.SCORE.debt, t: `You owe ${coin(d)} to the moneylenders`, why: 'A debt you ran up', cls: 'bad', go: 'life', act: null });
+    const r = pc.ruler && A.realm ? A.realm(pc.ruler) : null;
+    if (r && (+r.debt || 0) > 0) out.push({ kind: 'debt', score: G.SCORE.crown, t: `The crown owes ${coin(r.debt)}`, why: 'Your realm\'s debt', cls: 'bad', go: 'realm', act: null });
+    return out;
   });
 
-  G.source('chapter', pc => {
-    const CH = A.CH, c = pc && pc.chap && pc.chap.cur;
-    if (!CH || CH.OFF || !c || !Array.isArray(c.aims)) return [];
-    const nx = c.aims.find(a => a.d == null);
-    if (!nx) return [];
-    const done = c.aims.filter(a => a.d != null).length;
-    return [{ kind: 'chapter', score: G.SCORE.chapter, t: nx.l, why: `Chapter ${(CH.ORD && CH.ORD[c.n - 1]) || c.n}, ${c.t}: ${done} of ${c.aims.length}`, cls: '', go: 'life', act: null }];
+  G.source('favour', pc => {
+    const out = [];
+    for (const id of Object.keys(pc.owes || {})) {
+      const n = +pc.owes[id] || 0, who = n > 0 ? nameOf(id) : null;
+      if (who) out.push({ kind: 'favour', score: G.SCORE.favour, t: `You owe ${who} ${n === 1 ? 'a favour' : n + ' favours'}`, why: 'A debt of honour', cls: '', go: 'people', act: null });
+    }
+    return out.slice(0, 2);
   });
 
-  // what is dated: Coming up's items (996), the four soonest (the stack keeps the five best of everything)
-  G.source('dated', pc => {
+  // what was promised in the open and is scheduled: Coming up's labelled returns (996), never its customs or feast days
+  G.source('promise', pc => {
     const CU = UI.COMING;
     if (!CU || !CU.items) return [];
-    const now = A.absDay(), S = G.SCORE;
-    const rows = [];
+    const now = A.absDay(), rows = [];
     for (const x of CU.items(pc)) {
-      if (x.kind === 'ambition' || !isFinite(x.at)) continue;
-      const soon = x.at - now <= 31;
-      const score = x.kind === 'promise' ? S.promise[soon ? 1 : 0] : x.kind === 'custom' ? S.custom[soon ? 1 : 0] : x.kind === 'holy' ? S.holy : x.kind === 'feast' ? S.feast : 30;
-      rows.push({ kind: x.kind, score, t: x.text, why: '', when: x.when, cls: '', go: 'life', act: null });
+      if (x.kind !== 'promise' || !isFinite(x.at)) continue;
+      rows.push({ kind: 'promise', score: G.SCORE.promise[x.at - now <= 31 ? 1 : 0], t: x.text, why: '', when: x.when, cls: '', go: 'life', act: null });
     }
-    return rows.slice(0, 4);
+    return rows.slice(0, 3);
   });
 
   G.stack = function (pc) {
@@ -75,10 +72,9 @@
     for (const name of Object.keys(sources)) {
       try { all = all.concat(sources[name](pc) || []); } catch (e) { console.error('goal source ' + name, e); }
     }
-    // the same thing said twice is said once; "Let time run" only when nothing else asks for the time
+    // the same thing said twice is said once
     const seen = new Set();
     all = all.filter(x => x && x.t && !seen.has(x.t) && seen.add(x.t));
-    if (all.some(x => x.score > 10 && x.kind !== 'feast')) all = all.filter(x => !(x.kind === 'now' && x.score <= 10));
     // a stable order: score, then the order the sources gave them in
     return all.map((x, i) => [x, i]).sort((a, b) => b[0].score - a[0].score || a[1] - b[1]).map(x => x[0]).slice(0, G.MAX);
   };
@@ -94,12 +90,11 @@
   G.card = function (pc) {
     const L = (UI.wnItems = G.stack(pc));
     if (!L.length) return '';
-    // (the chapter's own card, folded, follows this one: 9993's Life wrapper puts it after What now)
-    return `<section class="card whatnow goal-stack" aria-labelledby="wn-h"><h3 id="wn-h" class="wn-h">${UI.icon('target', 's')} What now</h3><ol class="wn-list">${L.map(row).join('')}</ol></section>`;
+    return `<section class="card whatnow goal-stack" aria-labelledby="wn-h"><h3 id="wn-h" class="wn-h">${UI.icon('target', 's')} What you have taken on</h3><ol class="wn-list">${L.map(row).join('')}</ol></section>`;
   };
   UI.whatNowCard = G.card;
 
-  // a stack row that is not a button (a thing dated, an ambition, an aim) is told, not offered
+  // a stack row that is not a button (a debt, a favour, a thing dated) is told, not offered
   const CSS = `:root .wn-item.wn-static{display:flex;align-items:center;cursor:default;color:var(--ink)}.wn-item.wn-static:hover{background:none}`;
   const put = () => { if (typeof document === 'undefined' || document.getElementById('gl-style')) return; const s = document.createElement('style'); s.id = 'gl-style'; s.textContent = CSS; document.head.appendChild(s); };
   if (typeof document !== 'undefined') { if (document.head) put(); else document.addEventListener('DOMContentLoaded', put); }

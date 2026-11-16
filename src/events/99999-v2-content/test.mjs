@@ -670,7 +670,7 @@ export default {
       T.enter({ seed: 9741, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 18 });
       const pc = A.pc(), out = {};
       out.hearth = V2CT.rows('rb_custom', { cid: 'ald_hearth' }).rows;
-      out.amb = V2CT.rows('lfx_amb_young').rows;
+      // ("What you want", the ambition card, was retired with the ambitions: P3, order 54, D-062)
       A.S.gath = (A.S.gath || []).concat([{ id: 'v2ct_g', kind: 'tournament', host: pc.realm, pc: { role: 'servant', aim: null, inf: 2 } }]);
       pc.job = pc.job || { c: 'labor', r: 0, y: 0, perf: 55 };
       out.close = V2CT.rows('ga_close', { gid: 'v2ct_g' }).rows;
@@ -678,8 +678,8 @@ export default {
       return out;
     });
     const vague = x => /It will be remembered|Nothing changes/.test(x);
-    const ok = r.hearth.length === 2 && /Costs 3 suns/.test(r.hearth[0]) && /Costs 6 suns/.test(r.hearth[1]) && r.amb.length >= 2 && r.amb.slice(0, -1).every(x => /Your aim: /.test(x)) &&
-      /No aim|Gives up your aim/.test(r.amb[r.amb.length - 1]) && r.close.length === 1 && /▲ renown/.test(r.close[0]) && ![...r.hearth, ...r.amb, ...r.close].some(vague);
-    return { ok, detail: `the hearth mark: ${r.hearth.map(x => '"' + x + '"').join(' / ')}; what you want: ${r.amb.map(x => '"' + x.slice(0, 70) + '"').join(' / ')}; the last night: ${r.close.map(x => '"' + x + '"').join(' / ')}` };
+    const ok = r.hearth.length === 2 && /Costs 3 suns/.test(r.hearth[0]) && /Costs 6 suns/.test(r.hearth[1]) &&
+      r.close.length === 1 && /▲ renown/.test(r.close[0]) && ![...r.hearth, ...r.close].some(vague);
+    return { ok, detail: `the hearth mark: ${r.hearth.map(x => '"' + x + '"').join(' / ')}; the last night: ${r.close.map(x => '"' + x + '"').join(' / ')}` };
   },
 };

@@ -170,6 +170,8 @@ Object.assign(tests, {
     await pg.evaluate(STEPS);
     const r = await pg.evaluate(async () => {
       UI.set.lfLives = 1; UI.set.hintsSeen = {}; UI.set.hintSteps = {}; UI.hintUsed = {}; T.enter({ seed: 8411, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 }); A.S.queue = []; UI.render();
+      // P3 (D-062): the card holds only what he took on, so he owes the moneylenders something for it to be drawn
+      A.pc().debt = 30;
       const all = () => [...document.querySelectorAll('.hint')];
       const words = () => all().map(h => h.textContent).join(' | ');
       const rect = el => el.getBoundingClientRect(), over = (a, b) => !(a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top);

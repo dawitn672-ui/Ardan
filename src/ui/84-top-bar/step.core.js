@@ -112,8 +112,9 @@
     if (!ST.run) return;
     if (busy()) { if (A.S && A.S.queue.length && A.headReady()) UI.refresh(); return; }
     // "until something happens" has found its something: it ends once that is settled
-    // a year (999995-next-year) ends the same way: the card that stopped it is settled, and the time is the player's
-    if ((ST.kind === 'until' || ST.kind === 'year') && ST.hit) { ST.empty = 0; return end(true); }
+    // (P3, order 54, D-062: a year no longer ends here. Once the card or the chain of cards that stopped it is answered,
+    // the year carries on to its end, as a month always has.)
+    if (ST.kind === 'until' && ST.hit) { ST.empty = 0; return end(true); }
     ST.wait = false; ST.note = ''; UI.clkPaint(); schedule();
   };
 

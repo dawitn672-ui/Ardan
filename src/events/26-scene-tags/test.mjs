@@ -10,7 +10,7 @@ const LABELS = {
   bd_runner_message: ['road'], bt_drunk_archivist: ['tavern'], cb_ao_portrait_sold: ['home'], cb_pl_doubleagent: ['court', 'home'], ch_fest_slaughter: ['field', 'home'], cm_explorer_pass: ['road', 'wild'],
   cm_land_purveyance: ['field', 'market', 'street'], court_poison: ['court', 'feast', 'home'], ct_tenants: ['field', 'home', 'court'], du_gd_masterpiece: ['workshop'], ec_copyist_job: ['school', 'workshop', 'home'],
   ec_hearth_saucer: ['grave', 'home'], ec_pay_home: ['war', 'home'], ec_teaching_child: ['home', 'workshop'], fm_dwarf_contract: ['home'], go_reckoning: ['war'], hs_h_foal: ['field'], hs_name_abroad: ['tavern'],
-  jr_border: ['road'], lf_friend_feud_pick: ['home', 'court', 'street'], lf_moral_lost_child: ['road'], lfx_amb_reign: ['court'], ln_d_crt_friend: ['court'], ln_min_lament: ['church', 'grave', 'home'],
+  jr_border: ['road'], lf_friend_feud_pick: ['home', 'court', 'street'], lf_moral_lost_child: ['road'], ln_d_crt_friend: ['court'], ln_min_lament: ['church', 'grave', 'home'],
   mat_heirsword_war: ['workshop'], mch_tally_reckoning: ['field', 'home', 'street'], mpe_gi_hraldr_words: ['court', 'wild', 'sea'], mra_ks_holes_sunk: ['sea', 'workshop'], mrb_fm_letters: ['feast', 'home', 'court'],
   mwf_affair_basket: ['home'], ni_gift: ['home'], oa_kin_alone: ['home', 'church'], pa_knight_quest: ['wild', 'road', 'field', 'fight'], pf_gamb_fixed: ['fight', 'tavern', 'street'], pf_stew_steward_post: ['court', 'field', 'home'],
   pl_overlord_garrison: ['street', 'tavern', 'war'], pp_dw_tally: ['workshop'], pp_gi_walrus: ['wild', 'sea'], rk_gar_paper_men: ['war'], rk_underage: ['war'], rl_lu_cup: ['feast', 'court', 'home'],

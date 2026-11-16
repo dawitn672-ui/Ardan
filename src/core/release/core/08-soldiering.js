@@ -230,19 +230,26 @@ const milYearNow = function (pc) {
     m.curWar = w.id;
     const enemy = A.pick(A.warSide(w, realm) === "att" ? w.def : w.att);
     A.wsAttachPC();
+    // [P3, order 54, D-062] the unit's work comes month by month (A.UNITWORK, src/war/99972-unit-work): the yearly
+    // mission waits when the unit has had work in the last three months
+    const busy = A.UNITWORK && A.UNITWORK.recent(pc);
     if (m.rank >= 7 && !m.merc) A.log(`${w.name} goes on. Your armies wait for your orders in the War Room.`, "war");
-    else
+    else if (!busy) {
+      m.lastMisD = A.absDay();
       A.queue({
         type: "mission",
         m: A.newMission(pc, enemy, w),
       });
+    }
   } else {
     m.curWar = null;
-    if (A.chance(0.55))
+    if (!(A.UNITWORK && A.UNITWORK.recent(pc)) && A.chance(0.55)) {
+      m.lastMisD = A.absDay();
       A.queue({
         type: "mission",
         m: A.newMission(pc, null, null),
       });
+    }
     if (A.chance(0.35))
       A.queue({
         type: "event",

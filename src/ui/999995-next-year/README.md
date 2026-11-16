@@ -12,10 +12,16 @@
   Neither ever becomes a stop control: the one that runs keeps its name, is disabled, and shows a thin progress bar.
   **Esc** ends a year at the end of its month. (On campaign the pair is Next day and Next week, as before.)
 - **A year runs month by month** under A1's one-redraw policy: one redraw and one digest at the end.
-- **A year stops early, and says why in one line** ("July: A matter that weighs: Fever."), for:
-  a card that needs a real answer; a battle, a duel or a call to arms; a call to war; an illness or a wound; a death
-  or a birth in the household (parents, brothers and sisters, spouse, children); coming of age; a deadline; Esc.
-- **A month** waits at a notable card and goes on, as before.
+- **A step stops midway only for what matters, then completes itself** (P3, order 54, D-062 addendum). A card that
+  needs a real answer, a battle, a duel or a call to arms stops the month or the year where it falls; the moment the
+  card, or the chain of cards it sets going, is answered (or the battle's screen is closed), the same step carries on
+  to its end by itself. The owner: "stop midway if the event is important enough but the moment the popup or chain of
+  popups are resolved continue in completing the sim".
+- **What a year went past is written in its digest, with its month** ("April: A wound.", "July: A matter that weighs:
+  Fever."): the cards it stopped for, and the happenings that bring no card of their own (a wound, an illness, a death
+  or a birth in the household, coming of age, a call to war). They no longer end the year.
+- **Only three things end a step early:** Esc (a year, at its month's end), your death, and a war that puts you on
+  campaign (time then goes by the day or the week, so the month or the year ends there and says so).
 - **Small matters wait.** A routine card never stops a month or a year: it is set aside while the step runs and comes,
   one at a time, when the step ends (a year hands back at most 6 of them and a month 3; the rest pass, and the digest
   says so). They are kept in the state (`S.v2t.parked`), so a save made meanwhile keeps them.
@@ -30,7 +36,7 @@
 
 Decided from the event's definition (never from the state of the world), cached per event id:
 
-| Notable (stops a year) | Routine (waits) |
+| Notable (stops the step midway, which then goes on) | Routine (waits) |
 | --- | --- |
 | a forced card, a consequence of your own choice (`chain`), a card you asked for, a gathering | talk in the tavern or the street, errands, play, a stranger on the road |
 | a duty, a council, a letter of state (`duty`, `council`, `flow`, `ga_`, `gs_`, `di_`) | a family quarrel, a first word, a first step (milestones that carry no weight) |
@@ -57,5 +63,5 @@ nothing stops the year (`nyYearSameWorld`). The monthly load uses `A.chance` for
 
 ## Tests (`test.mjs`)
 
-`nyButtons`, `nyClassify`, `nyYearSameWorld`, `nyEarlyStops`, `nySmallMattersWait`, `nyEsc`, `nyOneRedraw`, `nyChildhood`,
+`nyButtons`, `nyClassify`, `nyYearSameWorld`, `nyYearGoesOn` (was `nyEarlyStops`), `nySmallMattersWait`, `nyEsc`, `nyOneRedraw`, `nyChildhood`,
 `nyNoInitiative`, `nyOvertraining`.

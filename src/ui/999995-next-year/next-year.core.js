@@ -156,7 +156,9 @@
         const h = A.headReady();
         if (!h) return null;
         if (!parks() || Y.notable(h)) {
-          if (ST.kind === 'year' && !ST.why) ST.why = `${monthName()}: ${Y.reasonOf(h)}`;
+          // (P3: the step waits here and, once the card or its chain is answered, goes on to its end; the year's digest
+          // keeps what it stopped for)
+          if (ST.kind === 'year' && ST.yr) Y.met(`${monthName()}: ${Y.reasonOf(h)}`);
           return h;
         }
         // a routine card: set aside until the step ends (kept in the state, so a save made meanwhile keeps it)
@@ -164,17 +166,26 @@
       }
       return A.headReady();
     };
+    // what a year met on its way (the cards it stopped for, the happenings of the household), one line each, at most 6
+    Y.met = function (line) { const yr = ST.yr; if (!yr || !line) return; yr.met = yr.met || []; if (yr.met[yr.met.length - 1] !== line) yr.met.push(line); if (yr.met.length > Y.KEEP) yr.met.shift(); };
     UI.stepBegin = function (kind) {
       const pc = A.pc();   // (nothing is written to the world here: the step is a span of days, and only that)
-      ST.yr = { kind, snap: pc ? snapOf(pc) : null, quiet: 0, lastQ: A.absDay(), passed: 0, held: 0, y0: A.S.year, age0: pc ? A.age(pc) : 0, coin0: pc ? +pc.coin || 0 : 0, health0: pc ? +pc.health || 0 : 0, lines0: logLen() };
+      ST.yr = { kind, met: [], snap: pc ? snapOf(pc) : null, quiet: 0, lastQ: A.absDay(), passed: 0, held: 0, y0: A.S.year, age0: pc ? A.age(pc) : 0, coin0: pc ? +pc.coin || 0 : 0, health0: pc ? +pc.health || 0 : 0, lines0: logLen() };
     };
     UI.stepTick = function () {
       const yr = ST.yr; if (ST.kind !== 'year' || !yr) return '';
       const s = st(), q = s && s.quiet;
       if (q && q.d > yr.lastQ) { yr.lastQ = q.d; yr.quiet++; }
       const pc = A.pc(), wc = A.S.warClock || 0;
+      // P3 (order 54, D-062): a wound, an illness, a death or a birth in the household, coming of age or a call to war no
+      // longer ends the year. It is written into the year's digest with its month, and the year goes on; whatever card
+      // it brings stops the year as a card does and, once answered, the year carries on. Only Esc, and a war that puts
+      // you on campaign (time then goes by the day or the week), end a year early.
       const why = pc && pc.alive ? Y.changed(pc, yr.snap) : '';
-      if (why) return `${monthName()}: ${why}`;
+      if (why) {
+        yr.snap = snapOf(pc); Y.met(`${monthName()}: ${why}`);
+        if (V2T.campaign && V2T.campaign(pc)) return `${monthName()}: ${why} You are on campaign: time goes by the day or the week.`;
+      }
       if (ST.esc && MS().includes(wc - 1)) return `${monthName()}: you ended the year here.`;
       return '';
     };
@@ -210,7 +221,7 @@
   function digest(yr, pc, kept, passed) {
     const F = filler();
     const all = logLines().slice(yr.lines0).filter(l => Array.isArray(l) && l[1] !== 'lore').map(l => String(l[0] || '').replace(/<[^>]*>/g, '').trim()).filter(t => t && !F.has(t));
-    return { kind: 'year', year: yr.y0, age: A.age(pc), from: yr.y0, quiet: yr.quiet, why: ST.why || '', early: !!ST.why, kept, passed, lines: all.slice(-4), n: all.length,
+    return { kind: 'year', year: yr.y0, age: A.age(pc), from: yr.y0, quiet: yr.quiet, why: ST.why || '', early: !!ST.why, met: (yr.met || []).slice(), kept, passed, lines: all.slice(-4), n: all.length,
       coin: Math.round((+pc.coin || 0) - yr.coin0), health: Math.round((+pc.health || 0) - yr.health0), months: monthsRun(yr) };
   }
   const monthsRun = yr => Math.max(1, Math.round((A.absDay() - (ST.from || A.absDay())) / 30.4));
@@ -235,7 +246,8 @@
       const pass = m.passed ? `<div class="tiny muted">${m.passed} more passed without you.</div>` : '';
       return `<div class="card step-sum year-sum" role="status" aria-label="${esc(head)}"><div class="row"><b class="step-sum-h">${esc(head)}</b><span class="tiny muted">age ${m.age} · ${esc(bits.join(' · '))}</span><span class="grow"></span>` +
         `<button class="small ghost" data-a="stepSumX" aria-label="Dismiss this note">${UI.icon ? UI.icon('x', 's') : '×'}</button></div>` +
-        `<div class="small year-why">${esc(m.why || 'A year, and nothing in it that needed you.')}</div>${waits}${news}${pass}</div>`;
+        `<div class="small year-why">${esc(m.why || ((m.met || []).length ? 'The year went on past what needed you:' : 'A year, and nothing in it that needed you.'))}</div>` +
+        `${(m.met || []).length ? `<ul class="step-sum-news small year-met">${m.met.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}${waits}${news}${pass}</div>`;
     };
   }
 

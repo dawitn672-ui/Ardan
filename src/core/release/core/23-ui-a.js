@@ -1187,8 +1187,13 @@ UI.lifeSeed = function (c, take) {
 // [X1 baked patch core/05-saves-and-keyboard SAVE-NEW-LIFE-CONFIRM] Starting a new life (Begin or Random) gave no
 // warning, and three yearly autosaves later the previous life had rotated out of all backups. If the saved life is
 // still going, the game now asks first and says how to keep it.
+// [P3 order 54, D-062] "Start the new life" never started it: the yes set UI._newLifeOk, called UI.startLife and
+// cleared the flag in a finally; but a pressed button's start is deferred two frames (999999-one-redraw draws "Making the
+// world" first), so by the time this ran the flag was gone and the same question came back, for ever. The yes now hands
+// a one-use pass that this function spends when it runs.
 UI.startLife = function () {
-  if (!UI._newLifeOk) {
+  if (UI._newLifeOk) UI._newLifeOk = false;
+  else {
     const cur = (SAVES.listCache || []).find(x => x && x.slot === "cur"),
       m = cur && cur.meta;
     if (m && m.alive) {
@@ -1199,11 +1204,7 @@ UI.startLife = function () {
         danger: true,
         run: () => {
           UI._newLifeOk = true;
-          try {
-            UI.startLife();
-          } finally {
-            UI._newLifeOk = false;
-          }
+          UI.startLife();
         },
       });
       return;
@@ -1773,6 +1774,8 @@ UI.codexBasic = function (pc) {
 UI.A = {
   newLife() {
     UI.ensureWorld();
+    // [P3] from the menu or the death card: the box it was pressed in closes (it stayed over the creation screen)
+    UI.ov = null;
     UI.cr = UI.crDefaults();
     UI.step = 0;
     UI.screen = "create";
