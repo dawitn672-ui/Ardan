@@ -175,6 +175,14 @@ order is replaced, strike it through and say by what.
     mastery in five years of discipline and profound epiphanies, another is stuck his whole life behind one concept he
     never grasps. Growth turns on discipline, insight and the person, and the outcome is uncertain (chance allowed, but
     every turn has its reason, rule 18).
+60. **Visual design waits for the image model** · recorded 2026-11-15 23:14 ET. The owner's words, verbatim:
+
+    > i will work on getting you an api key image model so postpone that project aswell as other design projects
+
+    **Read as:** the owner is getting an image-model API key. Until it arrives, the profile cards (C8d) and the other
+    visual design projects are postponed: L2 (legendaries' look, the bow), C8d's hair and dress, and the visual Gaps
+    (mourning dress, jewellery, mounts, interiors, cut-in tone). Systems work goes on at full speed. The map (D9) stays,
+    because the war on it (D12b) stands on it; its look can be revisited with the image model.
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
