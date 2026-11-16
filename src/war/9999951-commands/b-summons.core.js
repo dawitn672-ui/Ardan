@@ -169,7 +169,8 @@
     const e = {
       h: h.id, p: F.hp && F.hp.alive ? F.hp.id : null, a: rec.chose, m: divs.reduce((a, d) => a + (d.men || 0), 0), n: CM.full(h),
       g: CM.given(rec, chosen), t: rec.chose === 'full' || (gx && top[0] === gx.label) ? '' : clean(top[0], 90), tp: top[4] ? 1 : 0, d: now(), s: 0,
-      why: rec.why.slice(0, 2).map(x => [clean(x[0], 70), x[1]]), drawn: rec.drawn ? 1 : 0,
+      // the heaviest reasons (one for a lord who came in full, two otherwise: the muster stays small, D-082)
+      why: rec.why.slice(0, rec.chose === 'full' ? 1 : 2).map(x => [clean(x[0], 70), Math.round(x[1] * 10) / 10]), drawn: rec.drawn ? 1 : 0,
     };
     return { rec, e, F, divs };
   };
