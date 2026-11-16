@@ -1078,3 +1078,50 @@ Branch `p3-playtest` from `v2-integration` at `2aaf1ba`; one commit a fix; not p
   chokepoint tables, realm secrets. Outdated: military templates, Marshal, levies (the war score is not in it).
 - **Game:** nothing. No code, data or test changed.
 - **Undo:** revert the branch `codex-review` commits.
+
+### H-064 · 2026-11-16 · W1-2: minds (R1's core)
+- **Asked:** `A.WHY.decide`, one way of deciding for every decider (D-064 point 9); the owner's two lab kings as tests;
+  the first structural decisions routed through it; a lint against bare dice with a baseline; reasons shown where the
+  player sees the outcome, by rank; under 1 ms a month; determinism kept.
+- **Engine:** `src/people/engine/why.js` (`A.V2.why`): `decide`, `weigh`, `odds`, `feel`, `cool`, `tell`, `hotness`,
+  the kinds and the feelings. Pure; `tests/v2/why.test.js` (8 tests).
+- **Game:** new `src/people/9999950-why` (`A.WHY`: minds from 20's persona plus ambition, feelings on people, the bounded
+  log `A.S.why`, `wrong` for the release's incidents and a lost war, `warReasons`, `warDecision`, `warOdds`,
+  `factionChoice`, `factionFormed`, `appointGeneral`, `tell`/`tellFor`). Routed: v2 diplomacy's `DV.tryWar` (the live war
+  path; its nerve gate and bare roll become the decision, v2's own stream draws), the release's `A.aiWarCheck` (a yearly
+  council per crown and a council called by a hot wrong), `A.factionsYear`'s join, stay and leave, 999990-posts'
+  `P.fillGenerals`. Shown: the war's news ("Because: ... Despite: ...", the council's count only to its ruler and
+  councillors), 20's rulers' log takes a war's record reasons, 9996's Factions card shows a faction's founding reasons.
+- **Found:** with v2 diplomacy on (the default) the release's `A.aiWarCheck` never runs in play (muted in the turn); every
+  AI war comes from `DV.tryWar`. Both paths are routed (D-069 point 5).
+- **Lint:** `tools/lint-reasons.mjs`, `tests/reasons-baseline.json`: 72 bare-dice decisions before, 66 after; run by
+  `tools/check.mjs`. `docs/design/r1-audit.md` lists the 66 with file, line and the reasons each should use.
+- **Calibration** (scratch `worldstats`, a noble life from 20, 40 years, AI wars started by a crown's decision; before ->
+  after): seed 1 12 -> 15, seed 2 21 -> 12 (one calibration earlier), seed 3 17 -> 24, so 50 -> 51; all wars 71 -> 70;
+  civil wars 14 -> 10; faction memberships begun 5,183 -> 5,044. Wars declared at under even strength (friends counted)
+  rose, 11 -> 31: above the ruler's nerve as before, and now also from feelings (a council a hot wrong calls) and
+  grudges; left for W1-5 and the balance stage (D12b-7) to judge, noted in D-069.
+- **Cost** (20 years, seed 7, in-page wall time): `A.WHY.decide` 0.36 ms a month on average (16.6 decisions a month,
+  most at the New Year's faction choices), feelings 0.2, the General's choice 0.04; all of W1-2's work with `DV.tryWar`'s
+  own previews about 0.9 ms a month against 146 ms of simulation. A choice costs 2 to 3 µs, a faction choice about
+  10 µs with its record. The record: about 450 bytes, at most 150 kept (about 70 KB of a save). `next-month-speed` on
+  `y50-noble` (24 presses, a loaded machine, worlds diverge): median 213 ms before, 255 after, quiet months 129 / 197,
+  noise-dominated (cards a month 0.71 / 0.92).
+- **Tests:** `node --test tests/v2/*.test.js` 97/97 (why 8/8); new browser tests `whyLabKings` (in a real realm: the proud king
+  10/10, the cold king 0/10, and 9/10 within four councils once the count turns), `whyRecordsKept`, `whyToldByRank`,
+  `whyFactionsAndGenerals`; with them 50 of the touched features' and the determinism tests on the merged build (renderRng,
+  replayWithRender, journalReplay, savesStillLoad, aiPersonality*, cs*, v2Dip*, bondsLedgerWeighs, bondsOldSave, posts*,
+  ri*, po*, w1*): 50 pass. `bondsFeudInherited` and `nbCourtWeighs` read the war's pull through `A.WHY.warOdds` now
+  (the roll they stubbed is gone) and pass; `v2DipWarPace` reads "reasons" where it read "chance". lint-stages,
+  lint-kin, lint-events (why), `build-v2 --check`, `--check-tiers` ok; lint-reasons 66 = baseline.
+  `coherency --quick` (8 lives, 12 years): no contradiction; `long-life-audit --seed=7 --years=30`: 0 errors, audit empty,
+  0 months with a broken post rule.
+  Long tier, touched: `aiPersonalityLongSim` (warlike to peaceful wars per trait-year 5.39), `csWorlds` (102 AI wars in 150
+  world-years, every one with a casus belli; in character 81.5%; 0.0197 wars a realm-year on, 0.0210 off),
+  `bondsFeudWorlds`, `w1NoMarshalWorld`, `csRevengeIsPatient`: all pass (csWorlds took 1,837 s with the machine at a load
+  of 13; 451 s on CI). Not run here: the full suite and the balance league (CI's long tier).
+- **Commits:** `113515b` (the engine and its tests), `fb259de` (A.WHY in the game, the routing), `577e6d6` (the lint),
+  `8c05e03` (merge of `v2-integration` be59d5c), `87c8f15` (odds, costs, caps), then the records and `index.html`.
+- **Undo:** revert the branch `w1-2`'s commits (base `2d7de66`, merged with `be59d5c`); the old war roll is
+  `git show 2d7de66:src/core/release/core/17-careers-and-event-engine-a.js` and the old `DV.tryWar` the same commit's
+  `src/diplomacy/99996-v2-diplomacy/diplomacy.core.js`.
