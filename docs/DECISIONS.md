@@ -1464,3 +1464,27 @@ The audit (`docs/IOS_ROADMAP.md` §7) found these conflicts between the rules an
    when I1-2 touches it, not before.
 6. **Text selection is turned off** everywhere but inputs; the chronicle's export keeps the text the player may want to copy.
 
+
+### D-074 · S1b: how the skills design was built, and where the build departs from the letter (2026-11-16; D-072, order 63)
+1. **The owner's open choices (skills.md §11) are taken as written,** each a named constant in one place so it can be
+   overruled: five steps a word (`STEPS`), the walls (`NEED`, `BLIND` in `src/people/engine/skills.js`), stored at half
+   (`STORE_RATE`), proof from Expert (`PROOF_FROM`), talent shown as a letter, the eight words for every calling, the
+   census a count (`S.top.n`, never a cap), languages unchanged, no new skill, the 114 perks kept as knacks.
+2. **Older code is made safe rather than rewritten all at once.** 329 `A.trainSkill` calls go through the shim (amt ×
+   0.2 effort, the cause read from what is running or passed as a fourth argument); 95 places that write `p.skills[k]`
+   (mostly people being made) are read as the level under the number at once and normalised by `A.SK` (the month's
+   sweep of new people, the year's pass, the player's adoption with the cause "set"); appointments and the ladder go
+   through `A.SK.raiseTo`/`A.SK.put`. `tools/lint-skills.mjs` holds the three counts in `tests/skills-baseline.json`;
+   they may only fall. *Why:* the content packs are read as text (event classes, the bot), and a mechanical rewrite of
+   190 effect functions there is a change of its own; the shim gives the same experience. `C.prof` and `C.apt` are
+   renamed everywhere (identity-probe before and after).
+3. **The proving key is `proof`, not `deed`:** `fx.deed` already records a deed in the release (`pc.deeds`).
+4. **v2's internal hours stay inside the fight resolver** (`body.js` `SKILL_TIERS`, `VS.hoursOf` for
+   `fightingWorth`): no view reads them; `VS.tierOf` names a level now. Removing them would move every fight.
+5. **Check readings:** an untagged check reads the level (s1Checks: none higher, at most 6.4 lower); a check on a
+   legacy key reads its skill with the specialism (two steps up), so a specialist's dagger check can read higher than
+   the old number. `GD.SKILL_SYN` (the release's kin readings for checks) is unchanged; the data's kin carry experience.
+6. **Other people grow by the closed form only where they have a post** (job, ranks, office): twelve months of the
+   post's work against its rank's demand, talent, age, concepts by hash. Before S1b nobody but the player grew.
+7. **Notable** (a breakthrough, a word from Expert up) is a line in the year's digest (`A.V2Y.met`), as a coming of
+   age is; it does not stop the year by itself (D-019, order 17).

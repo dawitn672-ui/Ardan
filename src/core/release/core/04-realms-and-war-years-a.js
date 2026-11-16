@@ -2011,7 +2011,7 @@ A.birthStory = function (pc, father, mother, dead, o) {
   }
   const gifts = Object.entries(pc.apt || {})
     .filter(([k, v]) => v >= 1.2)
-    .map(([k, v]) => `${GD.aptName(v).toLowerCase()} at ${GD.SKILLS[k].toLowerCase()}`);
+    .map(([k, v]) => `${A.SK ? A.SK.TALENT_WORD[A.SK.letterOfApt(v)] : "gifted"} at ${GD.SKILLS[k].toLowerCase()}`);
   if (gifts.length) A.log(`As you grow, people will notice it: you are ${gifts.join(", ")}.`, "good");
   if (pc.surMode === "deed")
     A.log(`An orc has no family name. You are "of Clan ${pc.flags.clan}" until you earn a deed-name.`, "lore");

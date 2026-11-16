@@ -372,7 +372,8 @@ A.pathMonth = function (pc) {
         (1.3 + j.r * 0.3) *
         (P.aim === "advance" ? 1.5 : 1) *
         (A.patronOf && A.patronOf(pc) ? 1.15 : 1);
-    if (C.skill) A.trainSkill(pc, C.skill, 0.3);
+    // S1b (D-072): the post's work is one effort a month against the rank's demand, in A.SK.queueMonth
+    if (C.skill && !A.SK) A.trainSkill(pc, C.skill, 0.3);
     const repT =
       12 +
       j.perf * 0.3 +

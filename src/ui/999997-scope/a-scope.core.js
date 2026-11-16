@@ -30,7 +30,7 @@
   // (s: the scope). A line or block a life never needs is not drawn, so it cannot be read as a refusal.
   SC.SEES = {
     looks: s => s.stage !== 'infant',                       // an infant is not told how he looks
-    skills: s => s.stage !== 'infant',                      // the lists of proficiencies and the training plan
+    skills: s => s.stage !== 'infant',                      // the lists of skills and the training plan
     plan: s => s.stage !== 'infant',                        // "Your days": training focus and free hours
     know: s => s.stage !== 'infant',                        // "Get to know" a stranger
     schools: s => s.a16 >= 10 && !s.post.ruler,             // 10, as the activity (a ruler commands masters)

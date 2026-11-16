@@ -4158,7 +4158,7 @@
       },
       {
         id: "hs_s_plague",
-        cond: p=>ADK("scholar")(p)&&(C.prof(p,"medicine",20)||C.job(p,"healer")),
+        cond: p=>ADK("scholar")(p)&&(C.lvl(p,"medicine",20)||C.job(p,"healer")),
         cool: 15,
         title: "The sick quarter",
         setup: (p,ctx)=>{fill(p,ctx)},
@@ -4744,7 +4744,7 @@
           },
           {
             t: "Show off your own skill",
-            req: p=>C.prof(p,"bow",40),
+            req: p=>C.lvl(p,"bow",40),
             r: "You drop a running hart at a hundred paces. The court gasps. The liege is not entirely pleased.",
             fx: {fame:3,favor:-2,skill:{bow:2}},
           },
@@ -5378,7 +5378,7 @@
           },
           {
             t: "Lead the raid",
-            req: p=>C.prof(p,"command",30),
+            req: p=>C.lvl(p,"command",30),
             check: {s:"command",s2:"tactics",d:50},
             win: {
               r: "Your plan works perfectly. A great haul, no blood. The elders take notice.",

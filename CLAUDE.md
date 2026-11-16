@@ -116,6 +116,7 @@ node --test tests/v2/*.test.js                            # the engine's unit te
 node tools/lint-events.mjs --feature=my-feature --html=/tmp/me.html
 node tools/lint-choices.mjs --feature=my-feature --html=/tmp/me.html   # no obviously best choice
 node tools/lint-kin.mjs                                   # no event mints kin or names one it did not take from the tree (C6)
+node tools/lint-skills.mjs                                # S1: no proficiency a player reads, the skills data whole, older code's skill writes only falling
 node tools/lint-reasons.mjs [--list]                      # no new bare-dice decision in AI code (R1, W1-2): the count may only fall
 node tests/run.mjs /tmp/me.html --features=my-feature     # core suites + that feature's tests
 node tests/run.mjs --only=testA,testB --workers=4         # some tests by name
@@ -258,21 +259,30 @@ A.defEvents([{
 }]);
 ```
 
-**Condition helpers.** `C.` age, adult, child, teen, young, old, ageAdj, noble, rich, poor, unfree, soldier, atWar, ruler, married, hasKids, job(p,k), race(p,...), realm(p,"POL-01",...), cult, faith, terr(p,"hills",...), coast, town, blood, trait(p,t), flag(p,f), prison, male, female, stat(p,s), skill(p,k), hasRel(p,"friend",...), parentsAlive, fame, literate, prof(p,k,min), apt, gear, family, famKind, famHead, atSchool, jobRank, rep, ownShop, myRealm, faction, allies, office, superior, favors, owes, sworn, letter, ambition (what the player seeks of his own will: his plan's aim, his chosen training, his post; `A.SEEK`, 9989-what-you-seek; nothing is handed, order 54).
+**Condition helpers.** `C.` age, adult, child, teen, young, old, ageAdj, noble, rich, poor, unfree, soldier, atWar, ruler, married, hasKids, job(p,k), race(p,...), realm(p,"POL-01",...), cult, faith, terr(p,"hills",...), coast, town, blood, trait(p,t), flag(p,f), prison, male, female, stat(p,s), skill(p,k), hasRel(p,"friend",...), parentsAlive, fame, literate, lvl(p,k,min), talent(p,k,letter), ready(p,k), stuck(p,k), gear, family, famKind, famHead, atSchool, jobRank, rep, ownShop, myRealm, faction, allies, office, superior, favors, owes, sworn, letter, ambition (what the player seeks of his own will: his plan's aim, his chosen training, his post; `A.SEEK`, 9989-what-you-seek; nothing is handed, order 54).
 
 Using these helpers matters, because `A.CX_RX` classifies events by matching them in the source (`C.ruler(`, `C.noble(`, `C.poor(`, `C.soldier(`, `C.child(`, `.job`). The text classifiers in `A.EV_RX` (tavern, street, master/overseer, favour asked by a lord) can hide an event from the wrong class.
 
-**Effect keys** (`fx`): str spd ins sta int wil health happy looks fame honor piety coin coinPct family skill rep masterwork promote style styleXp apt trait untrait wound flag unflag rel them newRel lover die prison punish free merit patronOp rulerOp realmStab realmGold armyXp secret epithet deed ach job perf lang literate gear asset duel beast event stability treasury legit realmRel favor mission cause why infamy authority houseOp factionDisc owed oweThem letter bossOp sworn claim pact ally warOn.
+**Effect keys** (`fx`): str spd ins sta int wil health happy looks fame honor piety coin coinPct family skill rep masterwork promote style styleXp apt trait untrait wound flag unflag rel them newRel lover die prison punish free merit patronOp rulerOp realmStab realmGold armyXp secret epithet deed ach job perf lang literate gear asset duel beast event stability treasury legit realmRel favor mission cause why infamy authority houseOp factionDisc owed oweThem letter bossOp sworn claim pact ally warOn proof grasp talent specialism.
 
 - `fx` may be a function `(p, ctx) => "extra result text"`.
-- `skill: { persuasion: 2 }` trains skills.
+- `skill: { persuasion: 2 }` is **experience** (S1, D-072): n × 0.2 of a month's effort, a stretch when the choice had a
+  check or stakes, else practice (so 2 is about four experience: a quarter of a Beginner's step, a hundredth of a
+  Master's). It never buys a word: a word also asks its concepts and, from Expert, a proof.
+- `proof: "sword"` (or `"ctx"` for `ctx.sk`) is a proving moment for the next word; `grasp: { k, sure }` a breakthrough's
+  moment (the engine's chance, or sure); `talent: { sword: "B" }` raises a talent letter (the old `apt` is read as a
+  letter); `specialism: { sword: "the-knife" }` takes one. `deed` stays the release's record of a deed.
+- Skills: `C.lvl(p, k, min)` (min a number, as a check reads it, or a word: `"expert"`; k `"any"` is the best skill),
+  `C.talent(p, k, letter)`, `C.ready(p, k?)` (at an edge, wanting a proof), `C.stuck(p, k?)` (at an edge, behind a
+  concept). `C.prof` and `C.apt` are gone. Experience moves only through `A.gainXp(p, k, effort, cause)` (`A.trainSkill`
+  is a shim for older code); a level only through `A.SK.set`. Never write `p.skills[k]`: it is the level's mirror.
 - `flag: "x"` sets `p.flags.x = year`.
 - `them: { op: 10 }` changes opinion with `ctx.pid`.
 - `event: "id"` queues another event right after this one.
 - `need: { rest, company, purpose, comfort }` meets the four needs of 35-moods.
 - A feature that adds an effect key declares it in its core code: `(A.FX_EXTRA = A.FX_EXTRA || []).push('key')`. The linter reads that declaration.
 
-**Checks.** `check: { s, s2, d }` takes a skill or stat (`GD.SKILLS` keys, or str spd ins sta int wil). `d` is the difficulty: 45 is typical, and each point is worth 1.6% of odds.
+**Checks.** `check: { s, s2, d }` takes a skill or stat (`GD.SKILLS` keys: the 28 skills and the 10 legacy keys, which read their skill with that specialism; or str spd ins sta int wil). `d` is a level's value: even odds for someone whose skill reads `d` (45 is Advanced III, 55 Expert I), and each point is worth 1.6% of odds. A check trains its skill as a stretch against `d`, and one at the next word's value or above, succeeded, proves a person standing at that edge.
 
 **Memory.**
 

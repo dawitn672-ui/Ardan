@@ -22,7 +22,7 @@ FOLD.DEFAULT_CLOSED = {
   // On the desktop rail they fold under one header, "Body and mind", to a line of their own words ("175 cm, 73 kg;
   // lifts 111 kg; a man-at-arms. Quick, retentive, ..."), which FOLD.SUMMARY writes whole, never cut ('body' covers
   // it). On a phone the profile is its own page and stays open. The Full profile shows every row.
-  profile: ['body', 'best proficiencies'],
+  profile: ['body', 'best skills'],
   // B5: the market (385 elements, 960 px) waits behind its header and its summary; so does the second list of people on the
   // People page (the same people as Kin of note, with a mood and a want each) and the elite orders of Arms
   holdings: ['the armorer', 'property', 'the trade roads', 'the market of'],

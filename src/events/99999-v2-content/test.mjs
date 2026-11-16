@@ -643,7 +643,7 @@ export default {
     const N = r.named, row = (id, i) => (N[id] || [])[i] || '';
     const named = (N.parent[0] || '').includes(`▲ ${N.parName}'s regard`) && /▲ your (parents'|family's|father's|mother's) regard/.test(row('wk_gen_windfall', 1)) &&
       /▲ your father's regard/.test(row('sc_ss_family', 0)) && /▲ the crown's regard/.test(row('pl_envoy_abroad', 0)) && /▲ the crown's regard/.test(row('pa_court_scandal', 0)) &&
-      /▲ your wife's regard/.test(row('ss_sc_saddle', 0)) && /If it works: ▲ Riding, ▲ your father's regard/.test(row('ch_inf_steps', 0)) &&
+      /▲ your wife's regard/.test(row('ss_sc_saddle', 0)) && /If it works: ▲ Riding( and the lance)?, ▲ your father's regard/.test(row('ch_inf_steps', 0)) &&
       /▲ your (father|mother)'s regard/.test(row('lf_teen_secret_practice', 1)) && (!r.dad || /If it fails: [^·]*▼ your father's regard/.test(row('ch_dare_orchard', 0))) &&
       /Side with .* ▲ [^,]+'s regard, ▼▼ [^,]+'s regard/.test(row('lf_friend_feud_pick', 1)) && /▲ or ▼ [^,]+'s regard/.test(row('lf_friend_quarrel', 1)) &&
       // (a word whose every number is nought is not shown: "Take the post" read "• standing in the ranks" from merit: 0)

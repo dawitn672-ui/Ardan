@@ -4,7 +4,6 @@
  "unmeasured": 30,
  "tests": [
   "temperMovesTheWar",
-  "growShareAB",
   "kinBotLives",
   "worldArcsInBotLives",
   "aoArcsEveryBranch",
@@ -57,6 +56,12 @@
   "v2nOneHolder",
   "nmTwins",
   "c6NoKinMinted",
-  "w1NoMarshalWorld"
+  "w1NoMarshalWorld",
+  "s1Reasons",
+  "s1NotLinear",
+  "s1Ledger",
+  "s1NoProficiency",
+  "s1Mirror",
+  "s1Census"
  ]
 }

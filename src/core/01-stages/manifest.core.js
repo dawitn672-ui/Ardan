@@ -8,7 +8,7 @@
 // fails on a stage that is not listed, and the page reports one with console.error.
 A.FN_STAGE_ORDER = {
   'A.applyFx': [
-    'moods', 'sieges', 'orders', 'schemes', 'friend-circles', 'life-arcs', 'realm-customs', 'body-mind.body',
+    'skills', 'moods', 'sieges', 'orders', 'schemes', 'friend-circles', 'life-arcs', 'realm-customs', 'body-mind.body',
     'body-mind.mind', 'arcs-kin', 'arcs-rivals', 'arcs-world', 'arcs-things', 'bonds', 'court-and-treasury',
     'npc-beliefs', 'every-number-counts', 'one-battle-two-scales', 'old-age', 'first-life-fixes', 'journeys',
     'identity.name', 'identity.ripe', 'identity.thought',
@@ -19,15 +19,15 @@ A.FN_STAGE_ORDER = {
     'advisors', 'v2-stats', 'v2-family', 'v2-content.lines', 'v2-content.cards', 'households', 'x3-honest-cards', 'journal'
   ],
   'A.eventChoose': [
-    'variety-guard', 'belief-versus-truth', 'learn-by-doing', 'moods', 'body-mind', 'bonds', 'npc-beliefs',
+    'variety-guard', 'belief-versus-truth', 'skills', 'moods', 'body-mind', 'bonds', 'npc-beliefs',
     'choice-memories', 'every-number-counts', 'echo-scenes', 'first-life-fixes.origin', 'first-life-fixes', 'wilds',
     'confidants', 'identity', 'choice-stakes', 'advisors', 'v2-stats', 'v2-content', 'households', 'journal'
   ],
   'A.newGame': [
-    'starting-stories', 'varied-worlds', 'body-mind', 'event-cut', 'mods', 'markets', 'fresh-realms-and-tensions',
+    'starting-stories', 'varied-worlds', 'event-cut', 'mods', 'markets', 'fresh-realms-and-tensions',
     'top-bar', 'visual-style', 'big-moments', 'first-life-fixes.hints', 'first-life-fixes.acts',
     'first-life-fixes.shield', 'hall-of-lives', 'identity.mark', 'companies', 'v2-stats', 'v2-family',
-    'v2-nobility', 'households', 'households.guard', 'names-and-cultures', 'v2-saves', 'one-redraw.fresh', 'journal'
+    'v2-nobility', 'households', 'households.guard', 'names-and-cultures', 'v2-saves', 'skills', 'one-redraw.fresh', 'journal'
   ],
   'UI.render': [
     'npc-initiative', 'accessibility', 'descriptions.relink', 'illuminated-chronicle', 'phone',

@@ -414,15 +414,17 @@ A.duelConsequences = function (D) {
       const n = A.addWound(pc, w);
       if (n) out.push(`Lasting wound: ${n}.`);
     }
-  const sk = a.skillK !== "beast" ? a.skillK : "survival";
-  A.trainSkill(pc, sk, D.kind === "spar" ? 3 : 5);
-  A.trainSkill(pc, "melee", D.kind === "spar" ? 1.5 : 2.5);
-  if (a.dual) A.trainSkill(pc, "dualwield", 3);
-  if (a.shield && pc.gear.shield && !GD.GEAR[pc.gear.shield].offhand) A.trainSkill(pc, "shield", 1.5);
-  if (a.rangedSkill && D.kind !== "spar") A.trainSkill(pc, a.rKind, 1.5);
+  const sk = a.skillK !== "beast" ? a.skillK : "survival",
+    // S1b (D-072): a fight is a stretch against the foe's level, its outcome known; its moments may break a concept
+    cz = A.SK && A.SK.fightCause ? A.SK.fightCause(D, foe, sk) : undefined;
+  A.trainSkill(pc, sk, D.kind === "spar" ? 3 : 5, cz);
+  A.trainSkill(pc, "melee", D.kind === "spar" ? 1.5 : 2.5, cz);
+  if (a.dual) A.trainSkill(pc, "dualwield", 3, cz);
+  if (a.shield && pc.gear.shield && !GD.GEAR[pc.gear.shield].offhand) A.trainSkill(pc, "shield", 1.5, cz);
+  if (a.rangedSkill && D.kind !== "spar") A.trainSkill(pc, a.rKind, 1.5, cz);
   if (a.mounted) {
-    A.trainSkill(pc, "mounted", 2.5);
-    A.trainSkill(pc, "riding", 1);
+    A.trainSkill(pc, "mounted", 2.5, cz);
+    A.trainSkill(pc, "riding", 1, cz);
   }
   A.train(pc, "ins", D.kind === "spar" ? 0.5 : 1);
   A.train(pc, "sta", 0.4);

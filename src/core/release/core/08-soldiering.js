@@ -212,10 +212,12 @@ const milYearNow = function (pc) {
     A.log("Pay is months late. The men grumble.", "warn");
   }
   pc.coin += Math.round(pay);
-  const sk = GD.TROOP_SKILL[m.troop] || "spear";
+  const sk = GD.TROOP_SKILL[m.troop] || "spear",
+    // S1b (D-072): the ranks' year is drill under the sergeants (a teacher a word above a recruit, none for a veteran)
+    cz = A.SK && A.SK.ranksCause ? A.SK.ranksCause(pc, sk) : undefined;
   if (
-    (A.trainSkill(pc, sk, 5),
-    A.trainSkill(pc, "shield", 2),
+    (A.trainSkill(pc, sk, 5, cz),
+    A.trainSkill(pc, "shield", 2, cz),
     A.train(pc, "sta", 1),
     A.train(pc, "str", 0.6),
     m.rank >= 1 && A.trainSkill(pc, "command", 2 + m.rank * 0.6),

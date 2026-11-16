@@ -67,7 +67,13 @@ or a finding changes what stands on what.
 - [ ] **R1** · Nothing without reason (rule 18): every AI, noble, faction, commander and NPC decision carries a nameable reason from post, circumstance, personality and emotion; a lint and a run audit · **core built (W1-2):** `A.WHY`, the lint and its baseline (66 bare-dice decisions left, each listed with the reasons it needs in `docs/design/r1-audit.md`; crown crimes (P3) are the next natural users); W1-3 to W1-6 route the rest
 - [ ] **S1** · Proficiencies retired; skills with levels and experience, dynamic growth (order 63, D-072): design (S1a), then build (S1b) on the growth standard with concepts and breakthroughs; old saves convert; before D11+
   - [x] **S1a** · the design, 2026-11-16: `docs/design/skills.md` (28 skills with 99 specialisms; 35 levels, the eight words in five steps; experience by the standard's curve; 252 named concepts, proof and breakthroughs at the word edges; discipline, rivals, a new land, needs, kin, hours and specialisms move it; migration; six build stages) and the runnable model `docs/design/skills/` (`lives.svg`: nine lives and a 400-person spread). D-072, H-067. For the owner: ten choices in its §11
-  - [ ] **S1b** · the build, six stages (`docs/design/skills.md` §12.7)
+  - [x] **S1b** · the build, six stages (`docs/design/skills.md` §12.7), 2026-11-16, branch `s1b` (D-074, H-069); CI's both tiers and the balance league still to run
+    - [x] 1 the engine (`src/people/engine/skills.js`, `growth.js`, `tests/v2/skills.test.js`; the nine lives reproduce)
+    - [x] 2 the store and the mirror (`src/people/36-skills`, save version 15, every save loads)
+    - [x] 3 sources and the ledger (the drip and the old rust gone)
+    - [x] 4 concepts, proof, breakthroughs, the life, twelve moment cards
+    - [x] 5 the page and the words (no proficiency a player can read; 375 × 667)
+    - [x] 6 other people and the census, `C.lvl`/`C.talent`, `tools/lint-skills.mjs`, docs
 - [ ] **R2** · Every relationship needs a base (rule 19, order 55): access to a person by the gap in standing, their pride and personality, need and circumstance; knighthood, renown, mastery, fame, wealth and introductions shift it; NPC bonds alike
 - [x] **G0** · (amended by order 59, D-070: no timetable; concepts, grasp and breakthroughs, §3.16) Growth non-linear: research and a standard (before G): `docs/design/growth-standard.md` (today measured over nine bot lives; the practice curve, quality, teachers, age, trials, disuse, the body by age, a reason for every change; worked lives; tests and budget for G1/G2 and D11+), scripts and chart in `docs/design/growth/` (H-062) · branch `g0` · 2026-11-16
 - [ ] **D11** · Military branches (feudal armies, D-012). Stages (war.md §16, with D11+): **D11-1** the muster · **D11-2** units that differ, tailored training, duties · **D11-3** careers

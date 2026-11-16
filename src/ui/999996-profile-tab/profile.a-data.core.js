@@ -151,15 +151,13 @@ PF.sync = function (p) {
 
 // ---- skills: named tiers, best first ----------------------------------------------------------------------------------
 PF.skills = function (p, all) {
-  if (UI.scope && !UI.scope(p).sees('skills')) return [];   // B5 part 2 (D-055): a babe has no proficiencies to list
-  const rows = Object.keys(GD.SKILLS || {}).map(k => [k, A.skill(p, k)]).filter(([k, v]) => v >= 1 || (p.apt && p.apt[k] && p.apt[k] !== 1)).sort((a, b) => b[1] - a[1]);
-  return rows.slice(0, all ? rows.length : 8).map(([k, v]) => {
-    const t = VS && VS.tierOf ? VS.tierOf(v) : { name: GD.profTier ? GD.profTier(v) : '', frac: 0, next: null };
-    const apt = p.apt && p.apt[k];
-    return { k, name: GD.SKILLS[k], tier: t.name, frac: t.frac || 0, next: t.next, apt: apt && apt !== 1 ? (apt > 1 ? 'apt' : 'slow') : '', n: rows.length };
-  });
+  if (UI.scope && !UI.scope(p).sees('skills')) return [];   // B5 part 2 (D-055): a babe has learned nothing to list
+  // S1b (D-072): a skill is its level in words; the bar is the way to the next step (the player's), never a number
+  const SK = A.SK; if (!SK) return [];
+  const ks = SK.ranked(p);
+  return ks.slice(0, all ? ks.length : 8).map(k => ({ k, name: SK.name(k), tier: SK.levelLabel(p, k), frac: SK.bar(p, k).f, next: null, apt: '', n: ks.length }));
 };
-PF.skillCount = p => Object.keys(GD.SKILLS || {}).filter(k => A.skill(p, k) >= 1).length;
+PF.skillCount = p => (A.SK ? A.SK.ranked(p).length : 0);
 PF.styles = function (p) {
   const out = [];
   for (const sid of Object.keys(p.styles || {})) {

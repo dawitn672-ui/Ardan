@@ -5,6 +5,26 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Skills with levels and experience; the proficiencies are gone.** Every skill now has a level in words, Beginner to
+  Legend, each in five steps ("Swordsmanship: Expert II"), and a bar toward the next step. You earn experience by doing
+  things: a month of training with or without a teacher, the work of your post, a card's test, a fight, a lesson. A
+  beginner climbs quickly; a master's step takes years. Twenty-eight skills in eleven groups; the old crossbow, lance,
+  knife and the rest are specialisms of their skill now.
+- **A new word is not bought with practice.** Each word asks one or two named ideas you must grasp ("the measure", "the
+  temper"). Some come at once, some take years, and a few never come. Until one does, the bar stays full and the row
+  says why: "held: the bind". What you keep working is saved, and lands all at once when the idea comes. From Expert up
+  you must also prove it: a fight won against someone of that word, a work judged, a battle commanded.
+- **Breakthroughs.** Sometimes an idea comes all at once: beaten by a better hand, a near death, a rival, a new land, a
+  master's word, a quiet winter after long work. Each goes into the skill's story.
+- **Growth moves with your life:** unbroken months of work, a rival, a teacher who has the idea himself, a new place,
+  rest, purpose, too many things at once, a specialism, pride. A skill's sheet (tap its row) says what is in force this
+  season, how fast it is coming and why, its ideas and how near each is, its talent letter, knacks and story.
+- **Work at a skill** replaces "Practice a proficiency": practise alone, take a lesson, seek a harder test, or think
+  it over. Twelve new moments: the master's word, the chance to be judged, the rival, the quiet winter, a specialism,
+  "some never see it", and more.
+- **The season's line** now says in words what rose and chiefly why, and what held and why.
+- **Old saves:** every skill becomes the level under its old number (no word is lost; the rest goes on the bar), the
+  folded skills become specialisms, and gifts become talent letters.
 - **Kings and lords decide for reasons you can read.** A crown goes to war, a great house joins or leaves a faction, and
   the king names his first host's General by weighing named reasons (an insult, bad blood, a cause, his Generals' count
   of the enemy's spears, an old wrong, a debt, his temper), never by a roll of the dice alone. The news of a war now ends

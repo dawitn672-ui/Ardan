@@ -36,7 +36,7 @@ A.defEvents([
     ] },
 
   { id: 'oa_hand_tools', title: 'The tools of the trade',
-    cond: (p, C) => C.old(p) && (C.job(p) || C.prof(p, 'craft', 35) || C.prof(p, 'husbandry', 35)) && !C.flag(p, 'oa_tools'),
+    cond: (p, C) => C.old(p) && (C.job(p) || C.lvl(p, 'craft', 35) || C.lvl(p, 'husbandry', 35)) && !C.flag(p, 'oa_tools'),
     w: 2, cool: 10,
     setup: (p, ctx) => {
       const pu = p.bmPupil && A.P(p.bmPupil.id);

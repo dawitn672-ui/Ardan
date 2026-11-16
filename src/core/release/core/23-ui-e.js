@@ -173,7 +173,8 @@ UI.planCard = function (pc) {
   const P = A.plan(pc),
     tt = A.trainTargets(pc),
     cur = P.train,
-    val = k => (GD.TRAIN_STATS[k] ? Math.round(A.stat(pc, k)) : A.skill(pc, k)),
+    // S1b (D-072): a skill shows its level in words, a stat its number as before
+    val = k => (GD.TRAIN_STATS[k] ? Math.round(A.stat(pc, k)) : A.SK ? A.SK.levelName(A.SK.lvOf(pc, k)) : A.skill(pc, k)),
     grp = {};
   for (const x of tt) {
     const g = x.kind === "stat" ? "Body and mind" : x.cat;
@@ -184,7 +185,7 @@ UI.planCard = function (pc) {
     )
       .map(
         ([g, L]) =>
-          `<optgroup label="${UI.esc(g)}">${L.map(x => `<option value="${x.k}" ${cur === x.k ? "selected" : ""}>${UI.esc(x.name)} — ${val(x.k)}${pc.apt && pc.apt[x.k] >= 1.2 ? " ★" : ""}</option>`).join("")}</optgroup>`,
+          `<optgroup label="${UI.esc(g)}">${L.map(x => `<option value="${x.k}" ${cur === x.k ? "selected" : ""}>${UI.esc(x.name)} — ${UI.esc(val(x.k))}</option>`).join("")}</optgroup>`,
       )
       .join("")}</select>`,
     ints = Object.entries(GD.INTENSITY)
@@ -965,7 +966,7 @@ UI.TAB.legacy = function (pc) {
         : kids.slice().sort((a, b) => a.born - b.born)[0].id;
     for (const c of kids.sort((a, b) => a.born - b.born)) {
       const taught = (pc.flags.taught || {})[c.id] || 0;
-      h += `<div class="card person ${c.id === cur ? "sel" : ""}"><div class="pp click" data-a="ov" data-v="person:${c.id}">${PORTRAIT.svg(c, 46)}</div><div><div class="nm">${UI.esc(A.fullName(c, false))}</div><div class="sub">${A.age(c)} · ${UI.esc(UI.titleLine(c) || "")}${taught ? ` · taught by you ${taught}×` : ""}</div></div><div class="row" style="gap:4px"><button class="small" data-a="teach" data-v="${c.id}" ${A.S.time >= 1 ? "" : "disabled"} title="Spend days teaching them your two best proficiencies. What you teach is what they inherit.">Teach</button><button class="small ${c.id === cur ? "on" : ""}" data-a="dynHeir" data-v="${c.id}" aria-pressed="${c.id === cur}">If heir…</button></div></div>`;
+      h += `<div class="card person ${c.id === cur ? "sel" : ""}"><div class="pp click" data-a="ov" data-v="person:${c.id}">${PORTRAIT.svg(c, 46)}</div><div><div class="nm">${UI.esc(A.fullName(c, false))}</div><div class="sub">${A.age(c)} · ${UI.esc(UI.titleLine(c) || "")}${taught ? ` · taught by you ${taught}×` : ""}</div></div><div class="row" style="gap:4px"><button class="small" data-a="teach" data-v="${c.id}" ${A.S.time >= 1 ? "" : "disabled"} title="Spend days teaching them your two best skills. What you teach is what they inherit.">Teach</button><button class="small ${c.id === cur ? "on" : ""}" data-a="dynHeir" data-v="${c.id}" aria-pressed="${c.id === cur}">If heir…</button></div></div>`;
     }
     const heir = A.P(cur),
       inh = A.inheritance(pc, heir);

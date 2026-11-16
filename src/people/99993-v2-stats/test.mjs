@@ -239,7 +239,8 @@ export default {
       let attrsRead = 0, skillAria = '';
       const checkAttrs = (where, root) => {
         for (const el of root.querySelectorAll('[title],[aria-label]')) for (const k of ['title', 'aria-label']) { const v = el.getAttribute(k); if (v) { attrsRead++; check(`${where} [${k}]`, attrPlain(v, el)); } }
-        for (const el of root.querySelectorAll('.prow[aria-label]')) if (!/ & /.test(skillAria) && /^(?!.*&amp;)[^:]+: [A-Z][a-z]+$/.test(el.getAttribute('aria-label'))) skillAria = el.getAttribute('aria-label');
+        // S1b (D-072): a skill row is its name and level in words ("Riding and the lance, Expert II, about half way to Expert III")
+        for (const el of root.querySelectorAll('.skrow[aria-label]')) if (!skillAria && /^[^\d&]+, (Rusty · )?[A-Z][a-z]+ [IV]+/.test(el.getAttribute('aria-label'))) skillAria = el.getAttribute('aria-label');
       };
       T.enter({ seed: 9611, race: 'human', realm: 'POL-02', status: 'peasant', sex: 'F', startAge: 16 });
       const pc = A.pc(); A.plan(pc).train = 'survival';
@@ -270,7 +271,7 @@ export default {
       // the training pickers and the season's log
       check('training picker', [...document.querySelectorAll('select[data-c="planTrain"] option')].map(o => o.textContent).join('\n'));
       // (B5: from 1100 px the story is a drawer, so read its lines as well as the page's)
-      const log = [...document.getElementById('app').innerText.split('\n'), ...[...document.querySelectorAll('#logwrap .ll, #log .ll')].map(e => e.textContent)].filter(l => /got better at/.test(l));
+      const log = [...document.getElementById('app').innerText.split('\n'), ...[...document.querySelectorAll('#logwrap .ll, #log .ll')].map(e => e.textContent)].filter(l => /got better at|This season/.test(l));
       check('training log', log.join('\n'));
       UI.tab = 'goals'; UI.render(); await tick();
       check('mentor picker', [...document.querySelectorAll('select[data-c="decArg"] option')].map(o => o.textContent).join('\n'));
@@ -286,7 +287,7 @@ export default {
       UI.A.ov('profs'); UI.render(); await tick();
       check('proficiencies', (document.getElementById('modal') || document.body).innerText.split('\n').filter(l => /Perks/.test(l)).join('\n'));
       UI.ov = null;
-      check('wound line', VS.deNum('In a fight: Bad leg: worth 46 to 43 (speed -9). Legs Bad leg −9 speed, −3 stamina, Athletics & climbing −12'));
+      check('wound line', VS.deNum('In a fight: Bad leg: worth 46 to 43 (speed -9). Legs Bad leg −9 speed, −3 stamina, ' + GD.SKILLS.athletics + ' −12'));
       // the sweep's other finds: the yard, a door's skill, an ambition's fighting worth, a staff candidate, a sparkline
       for (const t of ['The yard master sends you home: health worn, come back at 50', 'Too hurt for that: health worn, rest to 50 first', 'Needs Crossbow 30 (you have 2), or a bow',
         'Fighting worth 62 of 118: masters to learn from', 'Enzo Montessi — fit 70 · Master', 'They would not take you yet: your chance is under 2 in 100.']) check('phrase', VS.deNum(t));
@@ -418,7 +419,7 @@ export default {
         peace === 'Aldmark is tiring. What they will accept depends on the war score.', /Legitimacy accepted\.$/.test(ttl)], rulerWords = rw.every(Boolean);
       return { bad: [...new Set(bad)], wordsShown, infamyWords, rulerWords, rw: rw.map(Number).join('') + ' bars: ' + bars.slice(0, 160), letter: letter.split('\n').filter(l => /infam|feared/.test(l)).join(' ').slice(0, 200), coal: coal.replace(/\n/g, " ").slice(0, 160), gridWords, foe: !!foe, log: log.length, logged, pure, attrsRead, skillAria, cfTip };
     });
-    const ok = r.bad.length === 0 && r.wordsShown && r.infamyWords && r.rulerWords && r.gridWords && r.foe && r.log > 0 && r.pure && r.attrsRead > 100 && / & /.test(r.skillAria) && /^[^\d]*rank 1 of 5: .*Next rank: [^\d]*$/.test(r.cfTip);
+    const ok = r.bad.length === 0 && r.wordsShown && r.infamyWords && r.rulerWords && r.gridWords && r.foe && r.log > 0 && r.pure && r.attrsRead > 100 && /^[^\d]+, (Rusty · )?[A-Z][a-z]+ [IV]+/.test(r.skillAria) && /^[^\d]*rank 1 of 5: .*Next rank: [^\d]*$/.test(r.cfTip);
     return { ok, detail: `${r.bad.length ? r.bad.length + ' bare numbers, e.g. ' + r.bad.slice(0, 6).join(' | ') : 'no bare 0-100 number'}; needs in words ${r.wordsShown}; infamy in words ${r.infamyWords} ("${r.coal}"), for a ruler ${r.rulerWords} (${r.rw}: "${r.letter}"); War Room grid compared ${r.gridWords}; ${r.attrsRead} titles and aria-labels read (a skill row: "${r.skillAria}"; a confidant's pips: "${r.cfTip}"); ${r.log} training log lines, e.g. "${r.logged}"; no draw ${r.pure}` };
   },
 
