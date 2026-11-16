@@ -5,6 +5,8 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+## v2.1.0-alpha.9 (2026-11-15 21:24 ET) · Dress that tells who you are, and cards that tell the truth
+
 - **Cards say what you are, and where.** No one calls you "my lord" or "your men" unless you are a lord or lead men, a home-town scene
   does not find you on campaign, a child under six is not asked a grown man's question, and counsel comes only from someone in
   the room. A card's price is the price: a physician's cut of your purse and a lost house are said before you choose.

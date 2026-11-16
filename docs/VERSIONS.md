@@ -50,6 +50,7 @@ Tag a commit whose CI is green, or the end of a step the owner asked for. Say in
 | v2.1.0-alpha.6 | 2026-11-15 | `f87617d` | A2 stage 2 (the optional Marshal, every command one holder), X7 part 1 (phone start about twice as fast), B5 part 2 (screens fit the life: UI.scope, one goal list), X2 (named stages); CI 118 green |
 | v2.1.0-alpha.7 | 2026-11-15 | `0e0996a` | C6: households at birth, how you met, no kin minted, one house resolver, parish faces, nine-month births; CI 121 green |
 | v2.1.0-alpha.8 | 2026-11-15 | `d5abc55` | C7: names and cultures (plain English names with each realm's lean, far peoples' own pools, names mixed along borders and trade, no twins, fiefs in their own tongue, four realms named for their governments); CI 124 green |
+| v2.1.0-alpha.9 | 2026-11-16 | `2aaf1ba` | C8c dress, class and regalia; X3 part 2 honest cards (station words, place, counsel by letter, children, pronouns, previews, a fatal illness arc); CI 129 green on 7aee21c |
 <!-- versions:end -->
 
 v1.0.0 is the release file as uploaded; from v1.1.0 on, every version's `index.html` is built from that commit's

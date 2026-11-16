@@ -97,6 +97,7 @@ branch on GitHub, and a sample save in `tests/saves/`.
 | v2.1.0-alpha.6 | 2026-11-15 04:20 ET | A2 stage 2, X7 part 1, B5 part 2, X2; CI 118 green on `f87617d` |
 | v2.1.0-alpha.7 | 2026-11-15 10:33 ET | C6 households and its fixes; CI 121 green on `0e0996a` |
 | v2.1.0-alpha.8 | 2026-11-15 15:36 ET | C7 names and cultures and its fixes; CI 124 green on `d5abc55` |
+| v2.1.0-alpha.9 | 2026-11-15 21:24 ET | C8c dress, X3 part 2 honest cards, counsel by letter; CI 129 green on `7aee21c` |
 
 ## Milestones
 - [ ] `release/v2.1-foundations` (after A1, A3a, B6, A2)
