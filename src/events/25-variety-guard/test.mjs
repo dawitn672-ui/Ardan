@@ -3,7 +3,7 @@ const RUN = () => {
   window.VAR_RUN = (on, seeds, years) => {
     const keep = { cool: A.EV_COOL, v: A.evVariety, r: A.evRecency };
     if (!on) { A.EV_COOL = 6; A.evVariety = null; A.evRecency = null; }
-    let views = 0, rep = 0, pairs = 0, same = 0, triples = 0, shaped = 0, npc = 0, npcRep = 0;
+    let views = 0, rep = 0, pairs = 0, same = 0, triples = 0, shaped = 0, npc = 0, npcRep = 0; const tri = [];
     for (const seed of seeds) {
       A.newGame({ seed, race: 'human', realm: ['POL-01', 'POL-03', 'POL-13'][seed % 3], status: ['peasant', 'artisan', 'noble'][seed % 3], sex: seed % 2 ? 'M' : 'F', startAge: 16 });
       const last = {}, shapes = [], all = [], done = new WeakSet();
@@ -11,7 +11,7 @@ const RUN = () => {
         const q = A.S.queue[0], id = q && q.ev, e = A.EV[id];
         if (!e || done.has(q)) return;   // an event with a result screen is viewed twice
         done.add(q);
-        all.push({ s: A.evShape(e), trig: !!e.trigger, from: !!q.lfFrom });   // everything the player sees, duties and NPC moves too
+        all.push({ s: A.evShape(e), trig: !!e.trigger, from: !!q.lfFrom, id, y: A.S.year, how: q.lfFrom || (q.forced ? 'forced' : '') });   // everything the player sees, duties and NPC moves too
         if (e.trigger) { if (e.npc) { npc++; if (last[id] != null && A.S.year - last[id] < 10) npcRep++; last[id] = A.S.year; } return; }
         views++;
         const cool = e.cool || 10;
@@ -24,14 +24,14 @@ const RUN = () => {
       // a duty scene between two road scenes breaks the run, and two queued scenes after a rolled one are not its doing
       for (let i = 1; i < all.length; i++) {
         const x = all[i]; if (x.trig || !x.s) continue;
-        pairs++; if (x.s === all[i - 1].s) { same++; if (i > 1 && x.s === all[i - 2].s && !(all[i - 1].from && all[i - 2].from)) triples++; }
+        pairs++; if (x.s === all[i - 1].s) { same++; if (i > 1 && x.s === all[i - 2].s && !(all[i - 1].from && all[i - 2].from)) { triples++; tri.push(seed + ' ' + x.s + ': ' + [all[i - 2], all[i - 1], x].map(z => z.id + '@' + z.y + (z.trig ? '(trig)' : '') + (z.how ? '(' + z.how + ')' : '')).join(' > ')); } }
         // (CI 110: a gathering put two court scenes, gs_spy and gs_whisper, ahead of a court scene the month had already
         // rolled; the guard could not see them when it rolled, so a run made by scenes another system set in front of a
         // rolled one is not a triple of the guard's)
       }
     }
     A.EV_COOL = keep.cool; A.evVariety = keep.v; A.evRecency = keep.r;
-    return { views, npc, npcRepeatPct: Math.round(1000 * npcRep / Math.max(1, npc)) / 10, repeatPct: Math.round(1000 * rep / Math.max(1, views)) / 10, samePct: Math.round(1000 * same / Math.max(1, pairs)) / 10, triples, shapedPct: Math.round(100 * shaped / Math.max(1, views)) };
+    return { views, npc, npcRepeatPct: Math.round(1000 * npcRep / Math.max(1, npc)) / 10, repeatPct: Math.round(1000 * rep / Math.max(1, views)) / 10, samePct: Math.round(1000 * same / Math.max(1, pairs)) / 10, triples, tri, shapedPct: Math.round(100 * shaped / Math.max(1, views)) };
   };
 };
 

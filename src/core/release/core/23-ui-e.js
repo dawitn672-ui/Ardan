@@ -886,6 +886,9 @@ UI.titleLine = function (p) {
   );
 };
 
+// [P3 CI, b5Budget] A met cooldown or "Not at war" tells the player nothing to act on: shown only while it is unmet,
+// so a ruler at peace with five great decisions open stays within the page's word budget (costs and thresholds stay).
+UI.DEC_QUIET = /^(Once every \d+ years?|Once per life|Not at war)$/;
 UI.TAB.goals = function (pc) {
   let h =
     '<p class="small muted" style="margin-top:0">There are no quest lists in Ardan. What you aim for is set on the <span class="click u" data-a="tab" data-v="life">Life</span> tab (your days and free hours) and climbed on the <span class="click u" data-a="tab" data-v="path">Path</span> tab. These are the big moves you can make when the time is right.</p>';
@@ -907,7 +910,7 @@ UI.TAB.goals = function (pc) {
         const cur = (UI.decArg || {})[d.k];
         pick = `<select data-c="decArg" data-k="${d.k}" aria-label="Choose"><option value="">Choose…</option>${opts.map(([v, n]) => `<option value="${UI.esc(v)}" ${String(cur) === String(v) ? "selected" : ""}>${UI.esc(n)}</option>`).join("")}</select>`;
       }
-      h += `<div class="card dec ${st.ok ? "ok" : ""}"><span class="tag">${UI.esc(d.cat)}</span><div><b>${UI.esc(d.name)}</b></div><div class="small ink2">${UI.esc(d.desc)}</div><div class="reqs">${st.rs.map(([l, ok]) => `<span class="req ${ok ? "ok" : "no"}">${ok ? "✓" : "✗"} ${UI.esc(l)}</span>`).join("")}</div>${pick}<button class="small ${st.ok ? "primary" : ""}" data-a="decide" data-v="${d.k}" ${st.ok ? "" : "disabled"}>Decide</button></div>`;
+      h += `<div class="card dec ${st.ok ? "ok" : ""}"><span class="tag">${UI.esc(d.cat)}</span><div><b>${UI.esc(d.name)}</b></div><div class="small ink2">${UI.esc(d.desc)}</div><div class="reqs">${st.rs.filter(([l, ok]) => !ok || !UI.DEC_QUIET.test(l)).map(([l, ok]) => `<span class="req ${ok ? "ok" : "no"}">${ok ? "✓" : "✗"} ${UI.esc(l)}</span>`).join("")}</div>${pick}<button class="small ${st.ok ? "primary" : ""}" data-a="decide" data-v="${d.k}" ${st.ok ? "" : "disabled"}>Decide</button></div>`;
     }
     h += "</div>";
   } else

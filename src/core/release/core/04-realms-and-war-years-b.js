@@ -339,6 +339,9 @@ A.breakthrough = function (p, gap, ctx) {
 };
 
 A.mortalCheck = function (pc, cause, pen) {
+  // [P3 CI, x3IllnessArc] a body brought to nothing while a fatal sickness has not yet had its crisis is held at the edge
+  // for the sickness's crisis scene (99999-x3-honest-cards, A.X3.illEdge), whatever blow took the last of it
+  if (A.X3 && A.X3.illEdge && A.X3.illEdge(pc, cause)) return false;
   // [X1 baked patch core/03-engine-fixes ENG-DEATH-CAUSE] A death right after a hurt was put down to a natural
   // cause. mortalCheck calls a death from health long gone "natural" when the last hurt is over 40 days old, but the
   // day of the last hurt is stamped only by the daily tick (onDay). A duel, a beast, a battle or an event that drops

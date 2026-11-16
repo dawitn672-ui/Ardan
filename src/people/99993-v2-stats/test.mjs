@@ -23,7 +23,9 @@ export default {
       // re-rolled by later steps took seed 32's boy at six)
       A.S.settings.diff = 'story';
       const pc = A.pc(), byAge = [];
-      for (let y = 0; y < 30; y++) { T.play(1); if (!pc.alive) break; if ([5, 12, 18, 25].includes(A.age(pc))) byAge.push([A.age(pc), Math.round(A.stat(pc, 'str')), Math.round(A.V2S.stats(pc).lift)]); }
+      // (P3 CI: the body's own strength, pc.st.str, not A.stat's, which a wound lowers: the re-rolled world gave seed 32's
+      // sailor a strained back at 20, str 34 at 18 and 33 at 25 though his body went on growing, 31.9 -> 35.7)
+      for (let y = 0; y < 30; y++) { T.play(1); if (!pc.alive) break; if ([5, 12, 18, 25].includes(A.age(pc))) byAge.push([A.age(pc), Math.round(pc.st.str), Math.round(A.V2S.stats(pc).lift)]); }
       // headroom under the old engine's cap (1.02 x potential), which fx and training both stop at
       if (pc.st.str >= pc.pot.str * 1.02 - 3) { pc.st.str -= 8; A.V2S.sync(pc); }
       const before = { c: pc.v2.c.lift, st: pc.st.str, cstat: A.C.stat(pc, 'str') };
@@ -406,7 +408,10 @@ export default {
       const hd = A.headReady(); UI.ov = null; UI.render(); await tick();
       const letter = hd && hd.ev === 'pl_coalition_letter' ? nodes(document.getElementById('modal') || document.body).join('\n') : 'no letter 0';
       scanR('coalition letter event', letter.split('\n'));
-      const rw = [/Infamy\s*\n?\s*feared/.test(shown.realm), /Infamy: feared/.test(shown.life), /Infamy feared/.test(tipInf), /infamy: hated/.test(shown.card),
+      // (P3 CI, order 54: the Life tab's "Infamy: feared" came from What now's "Mind your infamy", a suggestion handed to
+      // the player, retired with fix 2; a ruler's infamy is shown in words where he governs, the Realm tab's bar (the first
+      // check), its popover and the realm card. The Life tab is held to carrying no suggestion of it.)
+      const rw = [/Infamy\s*\n?\s*feared/.test(shown.realm), !/Mind your infamy/.test(shown.life), /Infamy feared/.test(tipInf), /infamy: hated/.test(shown.card),
         /infamy up /.test(shown.war), /feared abroad/.test(letter), !/near collapse/.test(shown.war),
         // round 4: the three bars, the war weariness popover, the golden age step, the peace table, the Decide title
         barWords, /War weariness tiring/.test(tipWeary), /Stability shaky \(it must be rock steady\) and/.test(golden),
