@@ -1,0 +1,24 @@
+{
+ "cards": 32,
+ "svgBytes": {
+  "mean": 74519,
+  "min": 53904,
+  "max": 103188
+ },
+ "svgGzip": {
+  "mean": 21204
+ },
+ "withoutScene": {
+  "mean": 63463,
+  "gzipMean": 17929
+ },
+ "makeMsNode": 4.41,
+ "librarySource": {
+  "bytes": 244789,
+  "gzip": 72215
+ },
+ "draw1xMsPerCard": 9.5,
+ "draw4xMsPerCard": 36.7,
+ "draw4xNoSceneMsPerCard": 34.6,
+ "draw4xNoRimNoBlurMsPerCard": 35.1
+}

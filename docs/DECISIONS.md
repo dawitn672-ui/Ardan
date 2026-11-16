@@ -1249,3 +1249,24 @@ R14); hosts of contingents (D12b-1).
    spans and ×5 return (§2.7), with one change: rust stops at one word down **and** 15 points below the best.
 5. **The doc is a new file beside `growth.md`**, not a rewrite of it: growth.md is the owner-settled G design (D-046); the
    standard governs its rates and says where it adds to it.
+
+### D-068 · C8d gate 1: the manhwa card is a second render layer drawn by code; no raster art; dress is a family, an accent and a person (2026-11-16; orders 56, 57, 58; D-024, D-029, D-060)
+**Chosen** (code `src/ui/engine/figure/manhwa/`, sheets `docs/design/demo-2d/c8d/`, the owner's note `docs/design/c8d-gate1.md`):
+1. **A new layer beside `compose()`, not a restyle of it.** The reference's look (large eyes, flat two-step shading, a
+   rim light, locks, a waist-up crop) needs its own head, hair and pen; the old layer's full-figure rig and soft tones
+   stay as they are for the game until the owner passes this gate. Both share the dice and the palettes.
+2. **Drawn, never painted, and no raster backgrounds.** A card must come from a person's data (thousands of people) and
+   the phone's first load matters (X7): a card is 21 KB gzipped with its scene; one painted scene of that size is 40 to
+   80 KB. The limit is stated to the owner: this is cel drawing; a painted look needs outside art (order 56's image
+   model, when there is a key).
+3. **Dress is three layers of reason.** A *family* is a people's grammar (north, desert, steppe, south); a *realm accent*
+   bends it across a border (Sabra against Qadir, Aldmark against Northreach); the *person* varies it by wealth and by
+   their own dice. A border town takes named pieces from the neighbouring family. Each garment's reason (climate, trade,
+   faith, law, wealth) is written beside it in `peoples.js`.
+4. **Order 58's rules are the kit's rules:** no two peoples share a crown or a helm; one of four soldiers wears no helm;
+   a serf carries his lord's mark and his lord's tools, a peasant his own; no folded arms; no pair of poses repeats in a station.
+5. **Proposed, for the owner to change:** banner colours and crests (the lore has map colours only), the keywords and
+   mottos, the name and age on the card, the ruler's title in place of "Royal".
+**Conflict recorded:** D-029 chose a tone-led finish (soft painted shading); the reference of order 57 is brighter and
+flatter. This layer follows order 57 (the later order); D-029's layer is kept, not removed.
+**Cost:** see H-063. **Not decided here:** whether it goes into the game (the gate), and how the remaining peoples map to families.

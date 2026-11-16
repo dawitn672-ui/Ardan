@@ -1019,3 +1019,26 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Game:** nothing. No code, data or test changed.
 - **Left open:** the owner's choices in §5 (trials at Expert and Master above all); building it is G1/G2 and D11+.
 - **Undo:** revert branch `g0`'s commits.
+
+### H-063 · 2026-11-16 · C8d gate 1: profile cards in the owner's manhwa reference style (a style frame; nothing in the game)
+- **Asked** (orders 56, 57, 58): the reference's card (navy, gold edge, realm banner and crest, a waist-up figure before
+  a scene, station with icon, three keywords, a motto), drawn by code, with dress, arms and headwear differing by people,
+  border and wealth, and the reference's weak spots fixed.
+- **Code (new, used only by the demo):** `src/ui/engine/figure/manhwa/` (`ink.js` the pen: flat cel forms, tapered
+  lines, trims with motifs, tiles; `head.js`, `locks.js`, `body.js`, `wear.js`, `hats.js`, `props.js`, `scenes.js`,
+  `peoples.js` the kits and their reasons, `card.js`, `index.js`). Not exported by `figure/index.js`, not in the engine
+  bundle, no game file, build or test changed. Same dice (`g.js stream`) and palettes as the library; no `Math.random`.
+- **Sheets:** `node docs/design/demo-2d/c8d/sheet.mjs` writes `docs/design/demo-2d/c8d/sheet.png` (8 stations × Northreach,
+  Qadir, Ulun, Zanara, at 2x), `details.png` (Qadir and Sabra, Northreach and Aldmark across a border; a Qadir and Zanara
+  border town; wealth in one craft; eight herders of Ulun), `one.png` (cards at 420 px), `compare.png` (beside the
+  reference); `--measure` writes `measure.json`.
+- **Measured:** a card is 75 KB of SVG (21 KB gzipped), about 3 ms to make, about 10 to 14 ms to draw here and 35 to 42 ms
+  with the CPU slowed four times; the layer is 245 KB of source (72 KB gzipped, unminified); no raster image (a painted
+  background would cost more than the card).
+- **Not reached, said to the owner in `docs/design/c8d-gate1.md`:** it is clean cel drawing, not painting; near front
+  views; simple arms and hands; flat scenes. The repo gains about 13 MB of PNG for the owner's eye.
+- **Checked:** the same person gives the same string twice; `sheet.png` is byte-identical across two runs;
+  `node --test tests/v2/figure*.test.js` 20 of 20 (the old library is untouched).
+- **Left open:** the owner's verdict and the seven choices in the gate note; the other twenty peoples; children, the old,
+  wounds; the face code feeding the new head; tests for the layer; building it into 93-figures and the Profile tab.
+- **Undo:** remove `src/ui/engine/figure/manhwa/`, `docs/design/demo-2d/c8d/`, `docs/design/c8d-gate1.md` (branch `c8d-gate1`).
