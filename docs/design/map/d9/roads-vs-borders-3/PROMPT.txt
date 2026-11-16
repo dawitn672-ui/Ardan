@@ -1,0 +1,16 @@
+D9 done-when 2: roads read as roads, not borders. For a playtester agent (Sonnet, default effort) that has not seen the
+code, the key or this folder's key.json. Give it the ten crop-NN.jpg images and this prompt; score its answers against
+key.json (target: at least 9 of 10 right on each crop, or 90 of 100).
+
+---
+These are ten crops of a game's map. On each, ten places are marked with a yellow ring and a number. Every ring sits on
+one line of the map, and that line is either a ROAD or a BORDER (between two realms or two provinces). Rivers and coasts
+are never marked. For each crop, list the ten numbers and say ROAD or BORDER for each, from what you see alone. Then say
+in one sentence what told you which was which.
+
+Answer as:
+crop-01: 1 ROAD, 2 BORDER, ...
+---
+
+Made by: node tools/d9/road-crops.mjs <built.html> docs/design/map/d9/roads-vs-borders-3 --seed=7331 (zoom 5, 1366 px wide,
+five roads and five borders a crop in a shuffled order, each mark on a drawn line (road polylines, 62's traced borders), at least 40 km from a line of the other kind, 70 km from a town, clear of every name and of running water, and in each crop one ring on a realm border on brown ground where there is one). The crops were then saved as JPEG.

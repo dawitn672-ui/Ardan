@@ -1,8 +1,8 @@
 // 999911-d9-ground on the map: the ways and the names of the land, laid by the one map component (MAP.paint, under 62's
 // ink), and realm colours that neighbours never share.
 //   - MAP.ways: woods (small trees) and marsh (reeds) from the cover, close in; roads in two ranks (a high road is a
-//     red line in a pale casing, a track a warm brown line with a faint dark edge: warm, solid and continuous, from town to
-//     town, where a realm border is dashed dark ink and a province bound cool grey dots, 62); a ford (a pale blue diamond) or a bridge (two flared lines) at each crossing; a pass mark (two arcs across
+//     red line in a pale casing, a track a dark brown line in a pale casing (it reads on brown ground too): solid, cased and continuous, from town to
+//     town, where a realm border is dashed dark ink and a province bound pale dots with a dark edge, 62); a ford (a pale blue diamond) or a bridge (two flared lines) at each crossing; a pass mark (two arcs across
 //     the road) on each pass.
 //   - VM.landNames (called by 99991's labels, by the same placing rule): seas and ranges, then rivers along their course,
 //     forests and passes.
@@ -17,7 +17,7 @@
   const KW = 7000, KH = 4500;
   D9.LOOK = {
     high: { core: 'rgba(138,40,18,.96)', casing: 'rgba(250,238,210,.9)', w: 1.9 },
-    track: { core: 'rgba(150,86,32,.97)', casing: 'rgba(36,22,10,.4)', w: 1.7 },
+    track: { core: 'rgba(84,44,16,.97)', casing: 'rgba(250,240,214,.9)', w: 1.4 },
     wood: 'rgba(26,58,30,.5)', marsh: 'rgba(40,72,70,.62)', ink: 'rgba(28,22,16,.92)', paper: 'rgba(250,240,214,.9)', ford: 'rgba(196,226,242,.95)',
     zoom: { track: 1.6, cover: 2.6, cross: 2.6, pass: 1.8 },
   };
@@ -85,8 +85,11 @@
         else { reed.moveTo(px - r * 1.2, py + r); reed.lineTo(px + r * 1.2, py + r); for (const dx of REED) { reed.moveTo(px + dx * r, py + r); reed.lineTo(px + dx * r * 1.3, py - r * (dx ? 0.6 : 1)); } }
         marks++;
       }
+      // far out the trees are a light stipple, so they are not read as a line's dots (round 2 of the roads-or-borders read)
+      ctx.globalAlpha = zoom >= 6 ? 1 : 0.6;
       ctx.fillStyle = L.wood; ctx.strokeStyle = L.wood; ctx.lineWidth = Math.max(0.8, r * 0.35); ctx.fill(tree); ctx.stroke(tree);
       ctx.strokeStyle = L.marsh; ctx.lineWidth = Math.max(0.7, r * 0.3); ctx.stroke(reed);
+      ctx.globalAlpha = 1;
     }
     // roads: tracks first, high roads over them; one path and two strokes a rank
     let n = 0;
@@ -98,7 +101,7 @@
         const p = o.pts; path.moveTo(X(p[0]), Y(p[1])); for (let i = 2; i < p.length; i += 2) path.lineTo(X(p[i]), Y(p[i + 1])); n++;
       }
       const w = look.w * k * (zoom < 1.5 ? 0.8 : zoom >= 4 ? 1.25 : 1);
-      ctx.strokeStyle = look.casing; ctx.lineWidth = w + (rank === 1 ? 2 : 1) * k; ctx.stroke(path);
+      ctx.strokeStyle = look.casing; ctx.lineWidth = w + (rank === 1 ? 2 : 1.8) * k; ctx.stroke(path);
       ctx.strokeStyle = look.core; ctx.lineWidth = w; ctx.stroke(path);
     }
     // fords and bridges
