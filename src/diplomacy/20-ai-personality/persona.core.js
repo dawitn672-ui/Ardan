@@ -200,10 +200,13 @@ A.aiWhyWar = function (a, b, P, rel, cb) {
   if (inf < .95) out.push(['Infamy gives pause', ln(inf)]);
   return out;
 };
-A.aiNoteWar = function (a, b, P, rel, cb, res) {
+// W1-2: a war decided through A.WHY (rec, its record) is logged with the record's own reasons: for, then against
+// (the third element marks the ruler's temper and feelings, so the log can say how in character it was)
+const recWhy = rec => (rec.why || []).map(x => [x[0], x[1], x[2] === 'temper' || x[2] === 'feeling' ? 1 : 0]).concat((rec.not || []).map(x => [x[0], x[1], 0]));
+A.aiNoteWar = function (a, b, P, rel, cb, res, rec) {
   if (res && res.ok === false) return res;
   started(a);
-  A.aiLogAdd('war', a, b, `declares war on ${short(b)}.`, A.aiWhyWar(a, b, P, rel, cb));
+  A.aiLogAdd('war', a, b, `declares war on ${short(b)}.`, rec ? recWhy(rec) : A.aiWhyWar(a, b, P, rel, cb));
   return res;
 };
 
