@@ -1033,7 +1033,7 @@ UI.rosterCard = function (pc) {
       h += `<div class="ro-h">${UI.esc(g)}</div>`;
       for (const { p, role } of groups[g].slice(0, 12)) {
         const known = !!pc.rel[p.id];
-        h += `<div class="ro-row"><span class="click" data-a="ov" data-v="person:${p.id}">${PORTRAIT.svg(p, 34)}</span><div class="grow"><div class="small"><b class="click" data-a="ov" data-v="person:${p.id}">${UI.esc(A.fullName(p, false))}</b> <span class="muted">— ${UI.esc(role)}</span></div><div class="tiny muted">${UI.esc(UI.titleLine(p) || p.occ || "")}</div></div>${UI.tierChip(p, true)}${known ? UI.bondChip(pc, p) : `<button class="small" data-a="know" data-v="${p.id}" ${A.S.time >= (A.knowCost || 1) ? "" : "disabled"}>Get to know</button>`}</div>`;
+        h += `<div class="ro-row"><span class="click" data-a="ov" data-v="person:${p.id}">${PORTRAIT.svg(p, 34)}</span><div class="grow"><div class="small"><b class="click" data-a="ov" data-v="person:${p.id}">${UI.esc(A.fullName(p, false))}</b> <span class="muted">— ${UI.esc(role)}</span></div><div class="tiny muted">${UI.esc(UI.titleLine(p) || p.occ || "")}</div></div>${UI.tierChip(p, true)}${known ? UI.bondChip(pc, p) : A.REACH ? A.REACH.knowBtn(pc, p, "small", "Get to know") : `<button class="small" data-a="know" data-v="${p.id}" ${A.S.time >= (A.knowCost || 1) ? "" : "disabled"}>Get to know</button>`}</div>`;
       }
     }
   return h + "</div>";
@@ -1157,6 +1157,8 @@ UI.personModal = function (t, close) {
       ) {
         const opts = A.interactOptions(pc, t);
         h += `<div class="row" style="margin-top:6px">${opts.map(k => (k === "gift" ? `<span class="row" style="gap:3px"><input id="giftAmt" type="number" min="1" value="${Math.max(1, Math.round(Math.min(pc.coin, Math.max(2, pc.coin * 0.05))))}" style="width:80px" aria-label="Gift amount"><button class="small" data-a="int" data-v="${t.id}|gift">Give gift</button></span>` : k === "name_child" ? `<span class="row" style="gap:3px"><input id="childName" value="${UI.esc(t.given)}" style="width:120px" aria-label="Name"><button class="small" data-a="int" data-v="${t.id}|name_child">Rename</button></span>` : `<button class="small ${["murder", "duel", "insult", "divorce", "breakup"].includes(k) ? "danger" : ""}" data-a="int" data-v="${t.id}|${k}">${UI.esc(A.INTERACT[k].name)}</button>`)).join("")}</div>`;
+        // [R2, D-080] what is out of reach with this person, and why (a click-to-open note)
+        if (A.REACH) h += A.REACH.closedLine(pc, t);
         const fo = A.favorOptions(pc, t);
         if (A.favorsOf(pc, t.id) && fo.length)
           h += `<div class="small" style="margin-top:6px"><b>Call in a favor:</b></div><div class="row" style="margin-top:4px">${fo.map(k => `<button class="small" data-a="favor" data-v="${t.id}|${k}" title="${UI.esc(A.FAVORS[k].desc)}">${UI.esc(A.FAVORS[k].name)}</button>`).join("")}</div>`;
@@ -1164,7 +1166,7 @@ UI.personModal = function (t, close) {
           h += `<div class="small" style="margin-top:8px"><b>Your superior.</b> ${UI.bossButtons()}</div>`;
       }
     } else if (t.alive && pc.alive && (!UI.scope || UI.scope(pc).sees("know")))
-      h += `<div class="row"><span class="small ink2 grow">You know who ${A.he(t)} is, but you do not know ${A.him(t)}. Whether you ever will is up to you.</span><button class="primary small" data-a="know" data-v="${t.id}" ${A.S.time >= (A.knowCost || 1) ? "" : "disabled"}>Get to know ${UI.esc(A.him(t))}</button></div>`;
+      h += `<div class="row"><span class="small ink2 grow">You know who ${A.he(t)} is, but you do not know ${A.him(t)}. Whether you ever will is up to you.</span>${A.REACH ? A.REACH.knowBtn(pc, t, "primary small", "Get to know " + A.him(t)) : `<button class="primary small" data-a="know" data-v="${t.id}" ${A.S.time >= (A.knowCost || 1) ? "" : "disabled"}>Get to know ${UI.esc(A.him(t))}</button>`}</div>`;
   return h + "</div>";
 };
 

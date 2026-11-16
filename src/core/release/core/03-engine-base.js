@@ -1892,6 +1892,8 @@ A.makeRuler = function (p, rid, silent) {
     p.job = null;
   }
   if (A.S.pc === p.id && p.mil && !p.mil.merc) p.mil.rank = Math.max(p.mil.rank, 9);
+  // [R2, D-080] his birth station is kept before a crown makes him royal (a king risen from below sympathises)
+  if (A.REACH && p.status !== "royal") A.REACH.stamp(p);
   if (p.status !== "royal" && r.gov === "hereditary") p.status = "royal";
   p.fame = Math.max(p.fame, 55);
   if (!silent) r.history.push([A.S.year, A.fullName(p)]);
