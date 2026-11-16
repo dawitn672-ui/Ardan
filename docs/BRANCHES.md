@@ -56,3 +56,6 @@ version also gets a `release/<version>` branch (the git proxy refuses tag pushes
 **Order 54 (2026-11-16):** the owner asked for help deleting the old branches. All 44 working branches can go: 35 are inside
 `v2-integration`; the other 9 are kept by `archive/v2-lanes`. The session's git proxy refuses ref deletion, so the owner runs
 `docs/tools/delete-old-branches.sh` (or deletes them on GitHub: Code → Branches → the bin icon).
+
+**Done (2026-11-16):** the owner deleted the 44 old branches. GitHub now holds 15: `main`, `claude/dreamy-sagan-anwszt`,
+`v2-integration`, `archive/v2-lanes` and the 11 `release/*` branches.
