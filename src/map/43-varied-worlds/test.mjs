@@ -68,6 +68,10 @@ export default {
   async menuStartsVaried(pg) {
     const r = await pg.evaluate(() => {
       const def = UI.crDefaults().world;
+      // enter the creation screen the way the game does (UI.A.newLife: the world first). The title's world is made a
+      // tick after the content is ready (UI.renderTitle's 'ardan-content' timer), so a test that came in faster drew the
+      // creation screen's portraits with no world at all (CI on bfb9082: A.S null, 8 portrait errors) where a player never can
+      UI.ensureWorld();
       UI.screen = 'create'; UI.cr = UI.crDefaults(); UI.step = 0;
       let screen = ''; for (let s = 0; s < 8; s++) { UI.step = s; try { screen += UI.renderCreate ? UI.renderCreate() : ''; } catch (e) {} }
       UI.cr = UI.crDefaults(); UI.cr.seed = 'menu-test';
