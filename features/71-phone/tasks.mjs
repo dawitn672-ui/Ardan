@@ -8,6 +8,8 @@ import { LIFE, SETTLE, openPage, DEVICES } from './screens.mjs';
 const RESET = `UI.lastSub = {}; UI.worldView = 'map'; UI.ov = null; A.S.queue = []; try { UI.TT && UI.TT.closeAll(); } catch (e) {}`;
 const ON = (tab) => `(() => { ${RESET} UI.tab = ${JSON.stringify(tab)}; UI.render(); window.scrollTo(0, 0); })()`;
 
+// v2 (99992-v2-time): five places (Life, You, Family, World, War at war): People is under Family, Holdings under You,
+// the Realm, the World and the Book under World, and on a phone the You page is the You place's first page
 export const TASKS = [
   { name: 'start a life', setup: `(() => { ${RESET} SAVES.listCache = []; UI.screen = 'title'; UI.render(); window.scrollTo(0, 0); })()`,
     steps: [{ tap: '[data-a=newLife]' }, { tap: '[data-a=randomizeCr]' }, { tap: '[data-a=crStep][data-v="3"]' }, { tap: '[data-a=startLife]' }],
@@ -18,26 +20,26 @@ export const TASKS = [
       { see: '#modal .mtext', whole: true, optional: true }, { tap: '#modal [data-a=evClose]', optional: true }],
     done: `!document.querySelector('#modal [data-a=evClose]')` },
   { name: 'find your health\'s breakdown', setup: ON('life'),
-    steps: [{ tap: '#sub-you', only: 'phone', unless: '.ph-you' }, { tap: '#profile [data-tt=health], .ph-you [data-tt=health], .phone-profile [data-tt=health]' }],
+    steps: [{ tap: '[data-a=group][data-v=you]', only: 'phone', unless: '.ph-you' }, { tap: '#sub-you', only: 'phone', unless: '.ph-you' }, { tap: '#profile [data-tt=health], .ph-you [data-tt=health], .phone-profile [data-tt=health]' }],
     done: `!!(UI.TT && UI.TT.stack.length && /Health/.test(UI.TT.stack[0].el.textContent))` },
   { name: 'open a person and talk', setup: ON('life'),
-    steps: [{ tap: '[data-a=group][data-v=people]' }, { tap: '#tabbody .card[data-a=ov][data-v^="person:"]' }, { tap: '#modal [data-a=int][data-v$="|talk"]' }],
+    steps: [{ tap: '[data-a=group][data-v=family]' }, { tap: '#tabbody .card[data-a=ov][data-v^="person:"]' }, { tap: '#modal [data-a=int][data-v$="|talk"]' }],
     done: `true` },
   { name: 'train a skill', setup: ON('life'),
     steps: [{ select: '#tabbody select[aria-label="Training focus"]', index: 2 }],
     done: `true` },
   { name: 'save', setup: ON('life'), steps: [{ tap: '[data-a=save]' }], done: `true` },
   { name: 'check the market', setup: ON('life'),
-    steps: [{ tap: '[data-a=group][data-v=holdings]' }, { tap: '.ph-jump [data-a=phJump]', text: 'Market', only: 'phone', optional: true }, { see: '#tabbody .mkt-t' }],
+    steps: [{ tap: '[data-a=group][data-v=you]' }, { tap: '#sub-holdings' }, { tap: '.ph-jump [data-a=phJump]', text: 'Market', only: 'phone', optional: true }, { see: '#tabbody .mkt-t' }],
     done: `!!document.querySelector('.mkt-t')` },
   { name: 'find your realm\'s ruler', setup: ON('life'),
-    steps: [{ tap: '[data-a=group][data-v=realm]' }, { see: '#tabbody .card.person' }],
+    steps: [{ tap: '[data-a=group][data-v=world]' }, { see: '#tabbody .card.person' }],
     done: `!!document.querySelector('#tabbody .card.person')` },
   { name: 'open the map and find your home', setup: ON('life'),
-    steps: [{ tap: '[data-a=group][data-v=chronicle]' }, { tap: '#sub-world' }, { tap: '[data-a=ov][data-v=bigmap]' }, { tap: '[data-a=gmZoom][data-v=home]' }],
+    steps: [{ tap: '[data-a=group][data-v=world]' }, { tap: '#sub-world' }, { tap: '[data-a=ov][data-v=bigmap]' }, { tap: '[data-a=gmZoom][data-v=home]' }],
     done: `!!document.querySelector('#gmap')` },
   { name: 'read the chronicle', setup: ON('life'),
-    steps: [{ tap: '[data-a=group][data-v=chronicle]' }, { tap: '#sub-book' }, { see: 'section.chron-life' }],
+    steps: [{ tap: '[data-a=group][data-v=world]' }, { tap: '#sub-book' }, { see: 'section.chron-life' }],
     done: `!!document.querySelector('section.chron-life')` },
 ];
 

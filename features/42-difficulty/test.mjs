@@ -35,10 +35,12 @@ export default {
         out[diff + (odds ? '+' : '-')] = /\d+% · /.test(h);
       }
       UI.set.odds = false;
-      return { ev: ev.id, out };
+      return { ev: ev.id, out, v2: !!A.V2S };
     });
     const o = r.out;
-    const ok = o['story-'] && o['story+'] && !o['realism-'] && !o['realism+'] && !o['hard-'] && o['hard+'];
+    // v2 (99993-v2-stats, the owner's Nov 1 decision "no percentages for the player"): no setting shows digits any more,
+    // so with v2 every cell must be false; without it, the release's rule as before
+    const ok = r.v2 ? Object.values(o).every(x => !x) : o['story-'] && o['story+'] && !o['realism-'] && !o['realism+'] && !o['hard-'] && o['hard+'];
     return { ok, detail: `numbers on the choices of ${r.ev} (player's odds setting off / on): story ${o['story-']}/${o['story+']}, hard ${o['hard-']}/${o['hard+']}, realism ${o['realism-']}/${o['realism+']}` };
   },
 };

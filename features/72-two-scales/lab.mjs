@@ -33,7 +33,8 @@ export const TS_LAB = () => {
       const won = pol !== 'worst';
       A.RANKFX.apply(f.key, 'part', won ? 1 : -1);
       if (pol !== 'none') A.TS.officerAfter({ pcSide: 'A', winner: won ? 'A' : 'B' }, f.key);
-    } else if (pol !== 'none') A.CHOICE_FN.wsLine({ key: f.key, war: F.war, enemy: A.hostile(F.a, pc.mil.realm) ? F.a : F.b, pid });
+    // 99997-v2-war starts v2's battle for the soldier's line; this lab measures 72's scene, kept at A.V2W.classic
+    } else if (pol !== 'none') ((A.V2W && A.V2W.classic && A.V2W.classic.wsLine) || A.CHOICE_FN.wsLine)({ key: f.key, war: F.war, enemy: A.hostile(F.a, pc.mil.realm) ? F.a : F.b, pid });
     let won = null, m0 = null, choices = 0;
     const fe = A.fightEnd;
     A.fightEnd = function (p, w) { if (p === pid && won == null) won = (w === 'att') === f.weAtt; return fe.apply(this, arguments); };

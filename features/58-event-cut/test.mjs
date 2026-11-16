@@ -138,6 +138,9 @@ export default {
     const r = await pg.evaluate(() => {
       const tabsFor = () => { UI.warRoomOpen(); const t = [...document.querySelectorAll('[data-a="wrTab"]')].map(b => b.dataset.v); return t; };
       T.enter({ seed: 61, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
+      // 99997-v2-war: a peasant who neither serves nor rules has no War Room (no view of a war you are not in): his
+      // view is the enlisted man's, so he enlists first
+      if (A.V2W && !A.V2W.canRoom()) A.enlist(A.pc());
       const peasant = tabsFor();
       UI.A.wrTab('ind'); const forced = UI.wr.tab;
       UI.ov = null; UI.tab = 'war'; UI.render();

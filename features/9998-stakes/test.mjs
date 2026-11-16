@@ -129,7 +129,8 @@ export default {
       STT.choose(vi, false);
       const rec = pc.retry && pc.retry['stx_test:1'];
       const R1 = STT.show('stx_test'); A.S.queue = [];
-      const lockedAfterFail = !R1.rows.some(x => x.label === 'Argue him down') && R1.locked.some(t => /Argue him down.*Not yet: you failed this in \d+\. Grow 5 more in Persuasion and Willpower/.test(t));
+      const lockedAfterFail = !R1.rows.some(x => x.label === 'Argue him down') && R1.locked.some(t => (A.V2S ? /Argue him down.*Not yet: you failed this in \d+\. Grow in Persuasion and Willpower/ : /Argue him down.*Not yet: you failed this in \d+\. Grow 5 more in Persuasion and Willpower/).test(t));
+      // v2 (99993-v2-stats): no digits for the player, so the lock and the chip say it in words
       // +3: still held back
       const v0 = A.checkVal(pc, ck);
       for (let i = 0; i < 60 && A.checkVal(pc, ck) < v0 + 3; i++) A.trainSkill(pc, 'persuasion', 1);
@@ -138,7 +139,7 @@ export default {
       for (let i = 0; i < 80 && A.checkVal(pc, ck) < v0 + 5.5; i++) A.trainSkill(pc, 'persuasion', 1);
       const R3 = STT.show('stx_test');
       const back = R3.rows.find(x => x.label === 'Argue him down');
-      const again = !!back && back.again && back.chips.some(c => /^Again: you are better at this now \(\+\d+ since \d+\)$/.test(c));
+      const again = !!back && back.again && back.chips.some(c => (A.V2S ? /^Again: you are better at this now than in \d+$/ : /^Again: you are better at this now \(\+\d+ since \d+\)$/).test(c));
       const vi3 = R3.rows.findIndex(x => x.label === 'Argue him down');
       STT.choose(vi3, true);
       const cleared = !(pc.retry && pc.retry['stx_test:1']);

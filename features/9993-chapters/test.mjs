@@ -7,12 +7,16 @@ export default {
       const pc = A.pc();
       A.S.queue = [];
       A.CH.month(pc);
+      // v2 (99992-v2-time, complaint 1): no chapter card. The chapter opens with a line in the story and stands on the
+      // Life tab, where the third aim is chosen (A.chpPick). The old card's checks become these.
       const c = pc.chap && pc.chap.cur, q = A.S.queue.find(x => x.ev === 'chp_card');
-      const v = q && A.eventView(q);
-      const words = v ? String(v.text).split(/\s+/).length : 0;
+      const L = A.S.log[A.S.log.length - 1].lines, line = L[L.length - 1][0];
+      const v = { title: c ? A.CH.heading(c) : '', text: line, choices: [] };
+      const words = String(line).split(/\s+/).length;
       const third = c && c.aims[2] && c.aims[2].l, alt = c && c.alt && c.alt.l;
-      // the second choice takes the other third aim
-      if (q) { A.S.queue.splice(A.S.queue.indexOf(q), 1); A.S.queue.unshift(q); A.eventChoose(v.choices[1].i); A.eventClose(); }
+      UI.tab = 'life'; UI.render();
+      const picks = document.querySelectorAll('#tabbody [data-a="chpPick"]').length;
+      A.chpPick(1);
       const swapped = pc.chap.cur.aims[2] && pc.chap.cur.aims[2].l;
       // drawing the Life tab and the Book changes nothing
       const h0 = T.hash(A.S), r0 = A.rngState;
@@ -20,9 +24,9 @@ export default {
       const lt = life ? life.textContent : '';
       UI.tab = 'book'; UI.render();
       const pure = T.hash(A.S) === h0 && A.rngState === r0;
-      return { st: c && c.st, title: v && v.title, text: v && v.text, words, n: c && c.aims.length, third, alt, swapped, life: !!life, lt, pure, raw: v && T.raw.test(v.text + v.title + v.choices.map(x => x.t).join(' ')) };
+      return { queued: !!q, picks, st: c && c.st, title: v && v.title, text: v && v.text, words, n: c && c.aims.length, third, alt, swapped, life: !!life, lt, pure, raw: v && T.raw.test(v.text + v.title + v.choices.map(x => x.t).join(' ')) };
     });
-    const ok = r.st === 'youth' && /^Chapter One: /.test(r.title) && r.words <= 80 && r.n === 3 && r.alt && r.swapped === r.alt && r.life && r.lt.includes(r.swapped) && r.pure && !r.raw;
+    const ok = !r.queued && r.picks === 2 && r.st === 'youth' && /^Chapter One: /.test(r.title) && /Chapter One: .* begins/.test(r.text) && r.words <= 80 && r.n === 3 && r.alt && r.swapped === r.alt && r.life && r.lt.includes(r.swapped) && r.pure && !r.raw;
     return { ok, detail: `${r.title}: "${r.text}" (${r.words} words); third aim ${r.third} -> ${r.swapped}; Life card ${r.life}; pure ${r.pure}` };
   },
 
@@ -41,8 +45,9 @@ export default {
       const all = c.aims.every(a => a.d != null);
       // eight years on, the next chapter of the prime: the last one closes with every aim met, set down as a deed
       c.y0 -= 8; A.S.queue = []; const deeds0 = pc.deeds.length; CH.month(pc);
-      const past = pc.chap.past[pc.chap.past.length - 1], next = pc.chap.cur, q = A.S.queue.find(x => x.ev === 'chp_card');
-      const v = q && A.eventView(q);
+      // v2: the recap opens the next chapter's line in the story (no card)
+      const past = pc.chap.past[pc.chap.past.length - 1], next = pc.chap.cur, L = A.S.log[A.S.log.length - 1].lines;
+      const v = { text: L[L.length - 1][0] };
       return { met0, said, all, full: past && past.full, deed: pc.deeds.length > deeds0 && /every aim met/.test(pc.deeds[pc.deeds.length - 1].t), n: next && next.n, recap: v && v.text.split('.')[0] };
     });
     const ok = r.met0 && r.said && r.all && r.full && r.deed && r.n === 2 && /is closed: every aim met/.test(r.recap);
@@ -53,13 +58,15 @@ export default {
     const r = await pg.evaluate(() => {
       T.enter({ seed: 303, race: 'human', realm: 'POL-01', status: 'gentry', sex: 'M', startAge: 6 });
       const seen = [];
-      T.play(14, { onEvent: v => { if (/^Chapter /.test(v.title)) seen.push(v.title); } });
+      // v2: each chapter's opening is a line in the story, not a card
+      T.play(14);
       const pc = A.pc();
+      for (const e of A.S.log) for (const l of e.lines || []) { const m = /(Chapter \w+: .*?) begins/.exec(l[0]); if (m) seen.push(m[1]); }
       return { seen, past: (pc.chap.past || []).map(c => c.st + ':' + c.t), cur: pc.chap.cur && pc.chap.cur.st, alive: pc.alive };
     });
     const sts = r.past.map(x => x.split(':')[0]);
     const ok = sts[0] === 'child' && sts.includes('youth') && r.cur && r.seen.length >= 3 && r.seen[0].startsWith('Chapter One');
-    return { ok, detail: `cards ${r.seen.join(' / ')}; now ${r.cur}` };
+    return { ok, detail: `story lines ${r.seen.join(' / ')}; now ${r.cur}` };
   },
 
   async chpTitleCard(pg) {
@@ -67,8 +74,9 @@ export default {
     // the title, the aims as a list, keys 1 and 2 choose, Enter begins; nothing lands in the Book for it
     await pg.evaluate(() => {
       T.enter({ seed: 311, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 6 });
+      // v2: the month no longer queues the card; an old save may still hold one, which this renderer draws
       const pc = A.pc(); A.S.queue = []; A.CH.month(pc);
-      const q = A.S.queue.find(x => x.ev === 'chp_card'); A.S.queue = [q];
+      const q = { type: 'event', ev: 'chp_card', ctx: { chN: pc.chap.n, chLast: 0 } }; A.S.queue = [q];
       UI.render(); UI.renderModal();
     });
     const a = await pg.evaluate(() => { const m = document.querySelector('#modal .chp-title'); return m && { st: m.dataset.chp, sky: !!m.querySelector('.chp-sky svg'), h: (m.querySelector('.chp-h') || {}).textContent, aims: m.querySelectorAll('.chp-aimlist li').length, picks: m.querySelectorAll('button[data-a="evChoose"]').length, scene: !!document.querySelector('#modal .sc-card'), shape: A.CH.SHAPE.child }; });
@@ -103,7 +111,8 @@ export default {
         A.advance(400); let h, k = 0;
         while ((h = A.headReady()) && k++ < 50) { if (h.type === 'event') { order.push([A.absDay() - d0, h.ev]); A.eventAuto(); } else A.S.queue.shift(); }
       }
-      const card = order.find(x => x[1] === 'chp_card'), amb = order.find(x => /^lfx_amb/.test(x[1])), pup = order.find(x => x[1] === 'ix_pup');
+      // v2: no card; the chapter opens on its own in the first months
+      const card = order.find(x => x[1] === 'chp_card') ? null : (A.pc().chap && A.pc().chap.cur ? [999, 'chapter'] : null), amb = order.find(x => /^lfx_amb/.test(x[1])), pup = order.find(x => x[1] === 'ix_pup');
       return { nice, rich, ca: ca.l, repeat, early, card, amb, pup, order: order.slice(0, 6).map(x => x.join(' ')) };
     });
     const ok = r.nice.join() === '140,1300000,7000000,20' && !r.rich.some(l => /^Put by/.test(l)) && /Put by 1,900 suns|Put by 1900/.test(r.ca) && !r.repeat && r.early &&

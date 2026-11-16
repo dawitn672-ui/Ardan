@@ -16,7 +16,8 @@ export default {
       const book = A.chronicleBook(), life = book[0] || { chapters: [] };
       return { pure: A.rngState === before && T.hash(A.S) === h0, chapters: life.chapters.length, lines: life.chapters.reduce((a, c) => a + c.lines.length, 0),
         named: html.includes(UI.esc(life.name || '???')), raw: /\{[A-Za-z0-9_.]+\}/.test(text), sample: (life.chapters[1] || life.chapters[0] || { lines: [''] }).lines.slice(0, 2).join(' / ').slice(0, 220),
-        seed, sig: !!(A.SIGNATURE && A.SIGNATURE.chronicle), tab: UI.GROUPS.find(g => g.k === 'chronicle').subs[0][0] };
+        seed, sig: !!(A.SIGNATURE && A.SIGNATURE.chronicle), // v2 (99992-v2-time): the Chronicle group is merged into World; the Book is one of its pages
+        tab: (UI.GROUPS.find(g => g.k === 'chronicle') || UI.groupOf('book')).subs.some(x => x[0] === 'book') ? 'book' : null };
     });
     return { ok: r.pure && r.chapters >= 2 && r.named && !r.raw && r.sig && r.tab === 'book',
       detail: `seed ${r.seed}: ${r.chapters} chapters, ${r.lines} entries; names the life ${r.named}; pure ${r.pure}; raw tokens ${r.raw}; e.g. "${r.sample}"` };

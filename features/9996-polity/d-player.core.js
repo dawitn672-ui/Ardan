@@ -199,7 +199,8 @@ Object.assign(UI.A, {
     b.spoke = pc.id;
     const side = v === 'against' ? -1 : 1, o = POL.billOdds(r), d = Math.round(45 + 20 * Math.abs(o.m));
     const p = A.checkOdds ? A.checkOdds(pc, { s: 'persuasion', s2: 'wil', d }) / 100 : clamp(.5 + (A.skill(pc, 'persuasion') - d) / 62, .05, .95);
-    const win = A.chance(p);
+    // v2 (99993-v2-stats): the speech is an attempt, with blunders and surges, on the same chance
+    const win = A.V2S && A.V2S.rollP ? A.V2S.rollP(pc, p, { stakes: 0.4, label: 'persuasion' }) : A.chance(p);
     if (win) POL.moveBill(r, side * POL.BILL.pdm);
     b.pc = { side: side > 0 ? 'for' : 'against', w: RI.pcWeight ? RI.pcWeight(pc) : .5 };
     A.trainSkill && A.trainSkill(pc, 'persuasion', 1);

@@ -38,31 +38,8 @@ export default {
   },
   // cycle 2 (design B4): 13 of 16 Week steps ended "Nothing new in your story: the days went by as days do". The note
   // now says what the week changed (skills, regard, what Coming up brought nearer), or where and when you are
-  async cuStepNote(pg) {
-    const r = await pg.evaluate(async () => {
-      const step = kind => new Promise(res => {
-        UI.A[kind]();
-        const iv = setInterval(() => {
-          if (UI.stepper.wait) { let g = 0; while (A.headReady() && g++ < 50) { if (A.S.queue[0].type === 'event') A.eventAuto(); else A.skipPrompt(); } UI.clkResume(); }
-          else if (!UI.stepper.run) { clearInterval(iv); res(); }
-        }, 4);
-      });
-      if (typeof T !== 'undefined' && T.enter) T.enter({ seed: 9961, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
-      else { A.newGame({ seed: 9961, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 }); UI.screen = 'game'; }
-      const notes = [];
-      let pure = true;
-      for (let i = 0; i < 16; i++) {
-        await step('stepWeek'); A.S.queue = [];
-        const h0 = JSON.stringify(A.S), g0 = JSON.stringify(A.rngState);
-        const html = UI.stepSumHtml ? UI.stepSumHtml() : '';
-        if (JSON.stringify(A.S) !== h0 || JSON.stringify(A.rngState) !== g0) pure = false;
-        notes.push(String(html).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim());
-      }
-      return { notes, pure };
-    });
-    const stock = r.notes.filter(t => /Nothing new in your story/.test(t)).length, empty = r.notes.filter(t => !t).length;
-    return { ok: stock === 0 && empty === 0 && r.pure, detail: `16 weeks: stock "nothing new" notes ${stock} (13 of 16 before), empty ${empty}; drawing pure ${r.pure}; e.g. "${(r.notes.find(t => /better at|thinks|Coming up|You are/.test(t)) || r.notes[0] || '').slice(0, 200)}"` };
-  },
+  // v2 (99992-v2-time): cuStepNote dropped. It drove 16 Week steps and read 84's step note card; the Week step and the
+  // card are gone (Next month only; a quiet month is a 2-second toast and a story line, v2tQuietToast).
   // cycle 2 (design B7): "What Took Your Father" had no second beat for five years. Every story start now has one
   // two to five months in, named in Coming up before it comes
   async cuStoryBeats(pg) {
@@ -71,8 +48,11 @@ export default {
       for (const S of (A.STARTS || []).filter(s => UI.COMING.BEATS.includes(s.id))) {
         A.newGame(Object.assign({ seed: 9960 + out.length, sex: 'F' }, S.cr, { story: S.id }));
         let shown = null, listed = false;
-        for (let m = 0; m < 8 && !shown && A.pc().alive; m++) {
-          A.advance(31);
+        // v2 (99992-v2-time): the month's scenes now fall on its days, so A.advance stops more often inside a month;
+        // eight months are counted in days, not in calls
+        const d0 = A.absDay();
+        for (let m = 0; m < 80 && A.absDay() - d0 < 8 * 31 && !shown && A.pc().alive; m++) {
+          A.advance(Math.min(31, d0 + 8 * 31 - A.absDay()));
           if (!listed) listed = (UI.COMING.items(A.pc()) || []).some(x => x.kind === 'promise');
           let g = 0, q;
           while ((q = A.headReady()) && g++ < 60) {
