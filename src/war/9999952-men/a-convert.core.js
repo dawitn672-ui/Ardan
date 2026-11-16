@@ -38,6 +38,15 @@
         for (const d of r.forces.divs || []) if (d && typeof d.name === 'string') d.name = WORD(d.name);
       }
       for (const k of ['riPri', 'riAgenda']) if (r[k] && VAL[r[k].k]) r[k].k = VAL[r[k].k];
+      // the polity (9996): its law group, a bill in progress, its log of bills and offices
+      const pol = r.pol;
+      if (pol) {
+        for (const k of ['laws2', 'law0']) if (pol[k]) ren(pol[k], OLD, 'conscript');
+        const fixB = b => { if (!b || typeof b !== 'object') return; if (VAL[b.k]) b.k = VAL[b.k]; if (b.g === OLD) b.g = 'conscript'; };
+        fixB(pol.bill); fixB(pol.last);
+        for (const e of pol.log || []) fixB(e);
+      }
+      for (const e of Array.isArray(r.riCourt) ? r.riCourt : []) if (e && VAL[e.k]) e.k = VAL[e.k];
     }
     for (const id of Object.keys(S.houses || {})) {
       const h = S.houses[id];

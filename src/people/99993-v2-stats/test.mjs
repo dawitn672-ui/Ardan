@@ -454,7 +454,7 @@ export default {
             const k = el.getAttribute('data-tt'), v = el.getAttribute('data-v') || '';
             if (!(KEYS.has(k) || (k === 'board' && BOARD.test(v))) || el.children.length) continue;
             // a worth is said in conscripts, a real unit ("about 25 conscripts")
-            if (/\d/.test(el.textContent) && !(k === 'worth' && /\blev(?:y|ies)$/.test(el.textContent.trim()))) found.push(`${where} [${k}]: ${el.textContent.trim().slice(0, 40)}`);
+            if (/\d/.test(el.textContent) && !(k === 'worth' && /\bconscripts?$/.test(el.textContent.trim()))) found.push(`${where} [${k}]: ${el.textContent.trim().slice(0, 40)}`);
           }
           for (const el of R.querySelectorAll('.barrow > .val')) {
             const l = ((el.parentNode.querySelector('.lbl') || {}).textContent || '').trim();
