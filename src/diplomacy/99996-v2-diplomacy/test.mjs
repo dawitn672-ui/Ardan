@@ -234,7 +234,7 @@ export default {
     }, 2024);
     const o = r.out || {};
     const ok = !!r.pair && o.rest.wait === 'rest' && !o.rest.war && o.weary.wait === 'weary' && !o.weary.war && o.nerve.wait === 'nerve' && !o.nerve.war &&
-      o.chance.wait === 'chance' && !o.chance.war && o.go.war === 1 && !o.go.wait && !!o.go.casus && !!o.want.text;
+      o.chance.wait === 'reasons' && !o.chance.war && o.go.war === 1 && !o.go.wait && !!o.go.casus && !!o.want.text;
     const W = o.want || {};
     return { ok, detail: `want ${W.pair}: "${W.text}"; ` + (r.pair ? `${r.pair.join(' on ')}: ` + Object.entries(o).filter(([k]) => k !== 'want').map(([k, v]) => `${k}: ${v.war ? 'war' + (v.casus ? ` ("${v.casus}")` : ' without a casus belli') : 'waits (' + (v.wait || 'nothing counted') + ')'}`).join('; ') : 'no free bordering pair') };
   },
