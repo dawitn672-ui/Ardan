@@ -7,7 +7,7 @@ import { pt, P, PZ, blob, curve, sliver, elli, circ, tube, cel, rect } from './i
 
 export function makeFrame(Hd, o = {}) {
   const male = Hd.male, b = clamp(o.build ?? 0, -1, 1), cx = o.bx ?? Hd.cx - Hd.yaw * 2.5;
-  const yS = Hd.chinY + (male ? 17 : 15.5), sw = (male ? 73 : 55) + b * 6, cw = sw - (male ? 11 : 8), ww = (male ? 49 : 35) + b * 7, yW = yS + (male ? 116 : 106), neckW = (male ? 13.5 : 10.4) + b * 1.2;
+  const yS = Hd.chinY + (male ? 17 : 15.5), sw = (male ? 68 : 54) + b * 6, cw = sw - (male ? 11 : 8), ww = (male ? 49 : 35) + b * 7, yW = yS + (male ? 116 : 106), neckW = (male ? 13.5 : 10.4) + b * 1.2;
   return { cx, yS, sw, cw, ww, yW, neckW, male, b, arm: male ? [15.5, 13, 9.5] : [11.5, 9.6, 7.2], hand: male ? 1 : .82 };
 }
 // the trunk's outline, let out by g (a coat is wider than a shirt)

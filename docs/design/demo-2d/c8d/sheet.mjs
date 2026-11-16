@@ -9,6 +9,7 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import { quantize, recompress } from '../pngq.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url)), root = path.resolve(here, '../../../..');
 const M = await import(path.join(root, 'src/ui/engine/figure/manhwa/index.js'));
@@ -49,7 +50,7 @@ export function person(realmKey, station, sex, o = {}) {
 }
 const SEX = { Northreach: 'FFMMFMFM', Qadir: 'FMMMMMMM', Ulun: 'MMMFMMMM', Zanara: 'FFMFMMMM' };
 const MAIN = ['Northreach', 'Qadir', 'Ulun', 'Zanara'];
-export const cast = () => MAIN.flatMap(rk => M.STATIONS.map((st, i) => person(rk, st, SEX[rk][i])));
+export const cast = () => MAIN.flatMap(rk => M.STATIONS.map((st, i) => person(rk, st, SEX[rk][i], rk === 'Ulun' && st === 'peasant' ? { k: 'a' } : {})));
 
 const fontCss = () => [['Cinzel', 'cinzel-normal-600-700-latin.woff2', 'normal', '600 700'], ['Literata', 'literata-normal-400-700-latin.woff2', 'normal', '400 700'], ['Literata', 'literata-italic-400-600-latin.woff2', 'italic', '400 600']]
   .map(([f, file, st, w]) => `@font-face{font-family:"${f}";font-style:${st};font-weight:${w};src:url("file://${path.join(root, 'assets/fonts', file)}") format("woff2")}`).join('');
@@ -112,14 +113,16 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const require = createRequire(process.env.PLAYWRIGHT_PATH || '/opt/node-tools/node_modules/');
   const { chromium } = require('playwright');
   const browser = await chromium.launch();
-  const jobs = [['sheet', 2], ['details', 2], ['one', 2], ['compare', 1]].filter(j => !only.length || only.includes(j[0]));
+  const jobs = [['sheet', 2], ['details', 1.5], ['one', 1], ['compare', .75]].filter(j => !only.length || only.includes(j[0]));
   for (const [name, dpr] of MEASURE && !only.length ? [] : jobs) {
     const html = path.join(here, name + '.html'); fs.writeFileSync(html, out[name]());
     const pg = await browser.newPage({ viewport: { width: 1000, height: 800 }, deviceScaleFactor: dpr });
     const errs = []; pg.on('console', m => m.type() === 'error' && errs.push(m.text())); pg.on('pageerror', e => errs.push(String(e)));
     await pg.goto('file://' + html); await pg.evaluate(() => document.fonts.ready); await pg.waitForTimeout(300);
     const w = await pg.evaluate(() => document.body.scrollWidth); await pg.setViewportSize({ width: w, height: 800 });
-    await pg.screenshot({ path: path.join(here, name + '.png'), fullPage: true }); await pg.close();
+    const shot = await pg.screenshot({ fullPage: true }); await pg.close();
+    // lossless, at zlib's best (a palette of 256 bands the skies)
+    fs.writeFileSync(path.join(here, name + '.png'), recompress(shot));
     if (!KEEP) fs.unlinkSync(html);
     console.log('wrote', name + '.png', errs.length ? 'ERRORS ' + errs.slice(0, 3).join(' | ') : '');
   }
@@ -131,16 +134,16 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     const lib = fs.readdirSync(path.join(root, 'src/ui/engine/figure/manhwa')).filter(f => f.endsWith('.js')).map(f => fs.readFileSync(path.join(root, 'src/ui/engine/figure/manhwa', f), 'utf8')).join('\n');
     const res = { cards: c.length, svgBytes: { mean: Math.round(svgs.reduce((a, s) => a + s.length, 0) / c.length), min: Math.min(...svgs.map(s => s.length)), max: Math.max(...svgs.map(s => s.length)) }, svgGzip: { mean: Math.round(svgs.reduce((a, s) => a + gz(s), 0) / c.length) },
       withoutScene: { mean: Math.round(bare.reduce((a, s) => a + s.length, 0) / c.length), gzipMean: Math.round(bare.reduce((a, s) => a + gz(s), 0) / c.length) }, makeMsNode: +make.toFixed(2), librarySource: { bytes: lib.length, gzip: gz(lib) } };
-    for (const [label, rate, list] of [['paint1x', 1, svgs], ['paint4x', 4, svgs], ['paint4xNoScene', 4, bare], ['paint4xNoBlur', 4, c.map(p => M.card(p, { width: 360, blur: false }).svg)]]) {
-      const pg = await browser.newPage({ viewport: { width: 412, height: 915 }, deviceScaleFactor: 2.6 }); const cdp = await pg.context().newCDPSession(pg); await cdp.send('Emulation.setCPUThrottlingRate', { rate });
+    // draw time: all 32 cards are set on a page at phone width and the browser's own task clock (CDP Performance.getMetrics:
+    // TaskDuration, the main thread's work: parse, style, layout, paint record) is read before and half a second after;
+    // the median of five runs, over 32. At full speed and with the CPU slowed four times (a mid phone, as tools/bench does).
+    for (const [label, rate, list] of [['draw1x', 1, svgs], ['draw4x', 4, svgs], ['draw4xNoScene', 4, bare], ['draw4xNoRimNoBlur', 4, c.map(p => M.card(p, { width: 360, blur: false, rim: false }).svg)]]) {
+      const pg = await browser.newPage({ viewport: { width: 412, height: 915 }, deviceScaleFactor: 2.6 }); const cdp = await pg.context().newCDPSession(pg); await cdp.send('Performance.enable'); await cdp.send('Emulation.setCPUThrottlingRate', { rate });
       await pg.setContent('<body style="margin:0;background:#111"><div id="h" style="display:flex;flex-wrap:wrap;width:412px"></div>');
-      // eight cards set at once, all in view (4 x 2 at 100 px): the time from setting them to the second frame after,
-      // less the same wait with nothing set, over eight. Main thread: parse, style, layout, paint record.
-      const runs = [];
-      for (let k = 0; k < 4; k++) runs.push(await pg.evaluate(async list2 => { const h = document.getElementById('h'), two = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); h.innerHTML = ''; await two(); const b0 = performance.now(); await two(); const base = performance.now() - b0;
-        const t = performance.now(); h.innerHTML = list2.slice(0, 8).join(''); h.getBoundingClientRect(); const sync = performance.now() - t; await two(); return [(performance.now() - t - base) / 8, sync / 8]; }, list.map(s => s.replace(/ width="\d+" height="\d+"/, ' width="100" height="160"'))));
-      runs.sort((x, y) => x[0] - y[0]); res[label + 'ParseLayoutMsPerCard'] = +runs[0][1].toFixed(1);
-      res[label + 'MsPerCard'] = +Math.max(runs[0][0], runs[0][1]).toFixed(1); await pg.close();
+      const task = async () => (await cdp.send('Performance.getMetrics')).metrics.find(m => m.name === 'TaskDuration').value * 1000, runs = [];
+      for (let k = 0; k < 5; k++) { await pg.evaluate(() => { document.getElementById('h').innerHTML = ''; }); await pg.waitForTimeout(300); const t0 = await task(); await pg.waitForTimeout(500); const idle = await task() - t0;
+        const t1 = await task(); await pg.evaluate(l => { document.getElementById('h').innerHTML = l.join(''); }, list.map(s => s.replace(/ width="\d+" height="\d+"/, ' width="103" height="165"'))); await pg.waitForTimeout(500); runs.push((await task() - t1 - idle) / list.length); }
+      runs.sort((x, y) => x - y); res[label + 'MsPerCard'] = +runs[2].toFixed(1); await pg.close();
     }
     fs.writeFileSync(path.join(here, 'measure.json'), JSON.stringify(res, null, 1) + '\n'); console.log(JSON.stringify(res, null, 1));
   }

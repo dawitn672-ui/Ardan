@@ -39,6 +39,7 @@ A name that is no longer here was renamed in the naming pass: look it up in [NAM
 | [design/brief.md](design/brief.md) | The design system brief, "Woodblock & Light" |
 | [design/brief-audit.md](design/brief-audit.md) | The brief checked against the built game |
 | [design/characters.md](design/characters.md) | Character design: faces, bodies and dress (C8a) |
+| [design/c8d-gate1.md](design/c8d-gate1.md) | C8d gate 1, for the owner: profile cards in his manhwa reference style (orders 56 to 58, D-068): what is shown, the choices, order 58 checked against the sheet, the cost, how it would go in. Sheets and their generator: `design/demo-2d/c8d/` |
 | [design/war.md](design/war.md) | D12a, revised as D12a-2: war as a visual simulation (theatre, field, press); command without a Marshal, the lords' own armies, conscription, why wars start and end, reports, upheavals, the military path, the sixteen build stages (D-064) |
 | [design/growth.md](design/growth.md) | G design: 17 stats, thousands of skills, hundreds of fighting styles, legendary arts |
 | [design/economy-and-items.md](design/economy-and-items.md) | E1 and E2 design: markets that run themselves, hundreds of weapons, unique items |

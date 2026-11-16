@@ -81,7 +81,7 @@ const north = {
     belt: { kind: 'leather', c: 'dark', buckle: 'iron', hang: [{ k: 'knife', x: 30, m: 'iron', cap: 1 }] },
     hat: { kind: 'spangen', m: 'iron', frame: 'bronze' }, shield: { kind: 'round', c: realm.field || 'woad', c2: realm.field2 || 'cream', parts: 'quarter', rim: 'iron', side: 1, device: realm.charge },
     bands: w ? { L: { m: metalOf('silver'), n: w } } : null,                                        // a ring for each season served: the north's rank and its pay
-    pole: { hand: -1, kind: 'axe', top: 40 } }),
+    pole: { hand: -1, kind: 'axe', top: 84 } }),
   noble: ({ male, w, realm, pick }) => ({ hair: male ? 'plaits' : 'braids', beard: 'braided', mood: male ? 'stern' : 'proud', poseL: 'pommel', poseR: male ? 'hip' : 'heart', place: 'hall',
     // a jarl: fine mail, a wolf's pelt on the sword shoulder, the cloak pinned with a ring brooch, silver rings to give away
     garment: { c: 'navy', neck: 'round', trim: T('grey', 'knots', 5, '#e4e3e2') }, over: male ? { kind: 'mail', metal: 'steel', collar: 'navy' } : null, sleeves: { trim: T('grey', 'knots', 5, '#e4e3e2') },
@@ -158,12 +158,12 @@ const desert = {
 const steppe = {
   motif: 'scroll', land: 'steppe',
   hairM: ['plaits', 'tail', 'knot'], hairF: ['braids', 'braid'], beards: ['long-moustache', 'goatee', 'moustache', 'none'],
-  serf: ({ male, pick }) => ({ hair: male ? 'crop' : 'braid', beard: 'none', mood: 'meek', poseL: 'down', poseR: 'hold',
+  serf: ({ male, pick }) => ({ hair: male ? 'crop' : 'braid', beard: 'none', mood: 'meek', poseL: 'mid', poseR: 'down',
     // a bondsman herds another man's animals: a patched coat of undyed felt closed with wooden toggles, a rope girdle, a felt
     // cap with no fur to it (fur is a free rider's), and his owner's brand burned on a leather tag
     garment: { c: 'hemp', neck: 'crossR', toggles: '#6a4a2a', patches: [[-34, 70]], patchC: '#b3a58d', under: 'undyed' }, sleeves: { patch: '#b3a58d', patchSide: 1 },
     belt: { kind: 'rope' }, hat: male ? { kind: 'cone', c: 'undyed', fur: false, brim: 'hemp' } : { kind: 'kerchief', c: 'undyed' },
-    neck: [{ kind: 'cord', d: 26, pend: { k: 'amulet', m: 'iron', c: '#5a3a22' } }], heldR: { kind: 'lasso' } }),
+    neck: [{ kind: 'cord', d: 26, pend: { k: 'amulet', m: 'iron', c: '#5a3a22' } }], pole: { hand: -1, kind: 'crook', top: 74, wood: '#6a5238' } }),                       // his owner's herding pole
   peasant: ({ male, w, pick, r }) => { const pose = pick([['belt', 'hip'], ['hip', 'hold'], ['down', 'belt'], ['hold', 'down'], ['heart', 'hip']]), hatM = pick([{ kind: 'cone', c: pick(['russet', 'walnut', 'teal']), fur: pick(['fox', 'hare', 'wolf']), tip: '#c9a24a' }, { kind: 'furhat', c: pick(['madder', 'ochre']), fur: 'wolf', up: 9 }, { kind: 'band', c: 'crimson', motif: 'dots', w: 5, c2: '#e8d9a8' }]), vest = r() < .65;
     return { hair: male ? pick(['plaits', 'tail', 'knot']) : pick(['braids', 'braid']), beard: pick(['long-moustache', 'none', 'goatee']), mood: pick(['warm', 'calm', 'proud']), poseL: pose[0], poseR: pose[1],
     // a free herder: a dyed coat with a scrolled edge, a sheepskin vest against the wind, a fur-brimmed hat, and on the belt
@@ -177,7 +177,7 @@ const steppe = {
   artisan: ({ male, w, pick }) => ({ hair: 'tail', beard: 'goatee', mood: 'calm', poseL: 'hold', poseR: 'down', place: 'workshop',
     // a bowyer: the coat's right sleeve slipped off and tied at the waist to free the working arm (a steppe habit), a horn
     // thumb-ring on a cord, a bow in the making
-    garment: { c: 'ochre', neck: 'crossR', toggles: '#3a2a1c', trim: T('walnut', 'scroll', 4.4, '#c7a03a'), under: 'cream' }, sleeves: { kind: 'rolled' },
+    garment: { c: 'woad', neck: 'crossR', toggles: '#3a2a1c', trim: T('cream', 'scroll', 4.4, '#46648a'), under: 'cream' }, sleeves: { kind: 'rolled' },
     over: { kind: 'harness', c: 'brown', one: 1, w: 6 }, belt: { kind: 'leather', c: 'dark', buckle: 'bronze', hang: [{ k: 'knife', x: 28, m: 'iron' }] },
     hat: { kind: 'cap', c: 'walnut', up: 7, seams: 1, button: '#b8322a', brim: 'brown' }, heldL: { kind: 'awl' }, back: [{ k: 'bow', kind: 'recurve', side: 1 }],
     neck: [{ kind: 'cord', d: 22, pend: { k: 'disc', m: 'bronze', r: 3.4 } }] }),

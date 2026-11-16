@@ -22,7 +22,7 @@ export function makeHead(o) {
   const fx = cx + yaw * 5.4;                                           // the face's own centre line
   const eyeX = sg => fx + sg * (15.4 - (sg * yaw > 0 ? 1.5 * Math.abs(yaw) : -.3 * Math.abs(yaw)));
   const eyeW = sg => ((male ? 8.3 : 9) + f.eye * .5) * (sg * yaw > 0 ? 1 - .14 * Math.abs(yaw) : 1);
-  const eyeH = (male ? 4.6 - Math.min(1, Math.max(0, (age - 24) / 30)) * .7 : 7.4 - Math.min(1, Math.max(0, (age - 26) / 30)) * 1.2) + f.open * (male ? .7 : .9) - old * .7;
+  const eyeH = (male ? 5.3 - Math.min(1, Math.max(0, (age - 24) / 30)) * .7 : 7.4 - Math.min(1, Math.max(0, (age - 26) / 30)) * 1.2) + f.open * (male ? .7 : .9) - old * .7;
   return { ...o, yaw, old, w, chin, jawX, jawY, chinW, hp, fx, eyeX, eyeW, eyeH, outline: blob(ring, tight), ring, crown: y0 - 47.5, chinY: y0 + chin, far };
 }
 
@@ -56,6 +56,12 @@ export function drawHead(S, Hd, sk, o = {}) {
     s.fill(blob([[-5.5, Hd.chin - 9.2], [0, Hd.chin - 10.2], [6, Hd.chin - 9.4], [3, Hd.chin - 7.6], [-2.5, Hd.chin - 7.6]].map(p => [fx + p[0], y0 + p[1]])), sk.s, .7);
     // what the hair or the hat throws on the brow
     if (o.browShade !== false) { const y = o.browShade ?? -21; s.fill(blob([[-w - 4, -50], [w + 4, -50], [w + 3, y + 1], [w * .45, y + 4.4], [0, y + 2.8], [-w * .5, y + 4.6], [-w - 3, y - 2]].map(p => hp(p[0], p[1])), .8), sk.s, .92); }
+    // the planes of the face: the socket's shade beside the nose, the hollow under the cheekbone (deeper on a man, on the old)
+    for (const sg of [-1, 1]) {
+      const ex = Hd.eyeX(sg), k = sg * yaw > 0 ? .8 : 1;
+      s.fill(blob([[ex - sg * 9.5, y0 - 7], [ex - sg * 4, y0 - 9.5], [ex - sg * 6.4, y0 + 1], [ex - sg * 9.6, y0 + 6]], .9), sk.s, Hd.male ? .5 : .28);
+      if (Hd.male || Hd.old > .3) s.fill(blob([[ex + sg * 12 * k, y0 + 9], [ex + sg * 4, y0 + 17], [ex + sg * 1, y0 + 27], [ex + sg * 7 * k, y0 + 25], [ex + sg * 13 * k, y0 + 17]], .9), sk.s, .32 + Hd.old * .3);
+    }
     // a flush on the cheeks
     const bl = S.rad(0, 0, 1, [[0, sk.blush, .5], [1, sk.blush, 0]]);
     for (const sg of [-1, 1]) s.put(`<ellipse cx="0" cy="0" rx="1" ry="1" transform="translate(${n1(Hd.eyeX(sg) + sg * 3.5)} ${n1(y0 + 14.5)}) scale(${n1(9.5)} ${n1(5.6)})" fill="${bl}"${Hd.male ? ' opacity=".55"' : ''}/>`);

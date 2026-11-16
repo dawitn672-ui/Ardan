@@ -16,7 +16,7 @@ import { drawScene } from './scenes.js';
 import { kitFor, STATION_TEXT } from './peoples.js';
 
 export const CARD = { w: 300, h: 480 };
-const ZOOM = 1.13;                                              // the figure's size on the card (the reference crops close)
+const ZOOM = 1.2;                                              // the figure's size on the card (the reference crops close)
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const HAIR_OF = ['black', 'darkbrown', 'chestnut', 'tawny', 'darkblond', 'blond', 'flaxen', 'auburn', 'copper', 'silver', 'white', 'soot', 'ginger', 'ash'];
 const EYES_OF = ['darkbrown', 'brown', 'hazel', 'blue', 'greyblue', 'grey', 'amber', 'black', 'green', 'sea', 'ice'];
@@ -113,7 +113,7 @@ export function card(p, o = {}) {
   const rimId = S.uid();
   // the light behind the sitter: a thin warm edge down the far side of the whole figure (one cheap filter: no blur)
   if (o.rim !== false) S.defs.push(`<filter id="${rimId}" x="0" y="0" width="${W}" height="${Hh}" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feOffset in="SourceAlpha" dx="-2.4" dy=".8" result="o"/><feComposite in="SourceAlpha" in2="o" operator="out" result="e"/><feFlood flood-color="${o.rimColor || '#fff2cf'}" flood-opacity=".85"/><feComposite in2="e" operator="in" result="r"/><feOffset in="SourceAlpha" dx="2.6" dy="1.4" result="o2"/><feComposite in="SourceAlpha" in2="o2" operator="out" result="e2"/><feFlood flood-color="#ffffff" flood-opacity=".28"/><feComposite in2="e2" operator="in" result="r2"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="r2"/><feMergeNode in="r"/></feMerge></filter>`);
-  const fig = `<g${o.rim !== false ? ` filter="url(#${rimId})"` : ''} transform="translate(${n1(150 - 150 * ZOOM)} ${n1(128 - 128 * ZOOM)}) scale(${ZOOM})">` + S.sub(s => drawPerson(s, p, kit, o)) + '</g>';
+  const fig = `<g${o.rim !== false ? ` filter="url(#${rimId})"` : ''} transform="translate(${n1(150 - 150 * ZOOM)} ${n1(118 - 118 * ZOOM)}) scale(${ZOOM})">` + S.sub(s => drawPerson(s, p, kit, o)) + '</g>';
   S.put(`<g clip-path="url(#${clip})">` + (scene ? `<g${o.blur === false ? '' : ` filter="${S.blur(o.blur || .9)}"`}>${scene}</g>` : `<rect width="${W}" height="${Hh}" fill="${S.lin(0, 0, 0, Hh, [[0, '#4a5a80'], [1, '#1a2440']])}"/>`)
     + `<rect width="${W}" height="${Hh}" fill="${S.lin(0, 0, 0, 150, [[0, NAVY, .55], [1, NAVY, 0]])}"/>` + fig
     + `<rect y="300" width="${W}" height="${Hh - 300}" fill="${S.lin(0, 322, 0, 398, [[0, NAVY, 0], [.55, NAVY, .82], [1, NAVY, .97]])}"/></g>`);
