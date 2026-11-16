@@ -88,7 +88,8 @@
   // the level a person holds in a skill (the mirror, read through the level under it)
   SK.lvOf = function (p, k) {
     const c = SK.LEG[k] ? SK.LEG[k][0] : k;
-    if (full(p) && p.sk[c]) return p.sk[c].lv;
+    // the player's table; a number older code wrote since the month's pass is read at once (adopted at the month)
+    if (full(p) && p.sk[c]) { const m = p.skills && p.skills[c]; return m == null || m === VALUES[p.sk[c].lv] ? p.sk[c].lv : lvOfValue(m); }
     const sk = p && p.skills; if (!sk) return 0;
     let lv = lvOfValue(sk[c] || 0);
     // older code may still write a legacy key on someone new: it is read through its skill, the higher of the two

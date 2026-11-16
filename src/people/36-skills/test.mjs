@@ -20,7 +20,7 @@ const LOAD = async (b) => {
   return { raw, ok, ver: d.S.ver };
 };
 
-export const limits = { s1Mirror: 2400, s1Reasons: 2400, s1Ledger: 2400, s1NotLinear: 3600, s1NoProficiency: 3600 };
+export const limits = { s1Mirror: 2400, s1Reasons: 2400, s1Ledger: 2400, s1NotLinear: 3600, s1NoProficiency: 3600, s1Census: 7200 };
 export default {
   // §9 row by row, on every save in tests/saves/ (and press/)
   async s1Migrate(pg) {
@@ -251,7 +251,7 @@ export default {
           UI.ov = { type: 'profile' }; UI.renderModal(); look('the profile sheet');
           UI.ov = { type: 'actSheet', id: 'practice' }; UI.renderModal(); look('Work at a skill');
           UI.ov = null; UI.renderModal();
-          for (const k in A.pc().sk) { const s = UI.skillSheet(A.pc(), k); const m = s.replace(/<[^>]+>/g, ' ').match(/proficien|Journeyman|Adept|Novice|Untrained| hours/i); if (m) out.push('sheet ' + k + ': ' + m[0]); }
+          for (const k in A.pc().sk) { const s = UI.skillSheet(A.pc(), k); const m = s.replace(/<[^>]+>/g, ' ').match(/proficien|\d[\d,]* hours/i); if (m) out.push('sheet ' + k + ': ' + m[0]); }
           for (const e of A.S.log) for (const l of e.lines) { const t = Array.isArray(l) ? l[0] : l; if (typeof t === 'string' && BAD.test(t)) out.push('log: ' + t.slice(0, 100)); }
         }
         UI.tab = 'life'; UI.render();
@@ -302,6 +302,24 @@ export default {
     const ms = (c1 - c0) / 1000;
     const size = await pg.evaluate(() => { const pc = A.pc(); return JSON.stringify({ sk: pc.sk, skl: pc.skl, skr: pc.skr, tal: pc.tal, skm: pc.skm }).length; });
     return { ok: ms < 1 && size < 16384, detail: `${ms.toFixed(3)} ms of CPU a month for a full sheet (budget 1); the player's skill state ${(size / 1024).toFixed(1)} KB after 1,000 months (cap 16)` };
+  },
+
+  // the census of the top: a count, never a cap (order 36, D-043, D-072). The design asks 5 seeds x 200 years (long tier);
+  // a life is played as far as it goes, the world's census read each year: 1 to 12 Grandmasters, 0 to 2 Legends
+  async s1Census(pg) {
+    const r = await pg.evaluate(() => {
+      const out = [];
+      for (const seed of [8181, 8282, 8383, 8484, 8585]) {
+        T.enter({ seed, race: 'human', realm: 'POL-01', status: 'noble', sex: seed % 2 ? 'M' : 'F', startAge: 16 });
+        A.SK.census();
+        const ns = [A.S.top.n.slice()];
+        for (let y = 0; y < 40; y++) { if (T.play(1) !== 'ok') break; if (A.S.top) ns.push(A.S.top.n.slice()); }
+        out.push({ seed, years: ns.length - 1, gm: [Math.min(...ns.map(n => n[0])), Math.max(...ns.map(n => n[0]))], legend: [Math.min(...ns.map(n => n[1])), Math.max(...ns.map(n => n[1]))] });
+      }
+      return out;
+    });
+    const ok = r.every(x => x.gm[0] >= 1 && x.gm[1] <= 12 && x.legend[1] <= 2);
+    return { ok, detail: r.map(x => `seed ${x.seed}, ${x.years} years: Grandmasters ${x.gm[0]} to ${x.gm[1]}, Legends ${x.legend[0]} to ${x.legend[1]}`).join('; ') };
   },
 
   // the mirror: p.skills[k] is the value of the level, for everyone, after twenty bot years

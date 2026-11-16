@@ -142,7 +142,7 @@
       },
       {
         id: "pl_tributary_plot",
-        cond: (p,C)=>C.ruler(p)&&C.overlord(p)&&C.prof(p,"intrigue",0),
+        cond: (p,C)=>C.ruler(p)&&C.overlord(p)&&C.lvl(p,"intrigue",0),
         w: .8,
         cool: 7,
         title: "Whispers from a tributary",
@@ -1024,7 +1024,7 @@
       },
       {
         id: "pl_envoy_abroad",
-        cond: (p,C)=>lordly(p,C)&&(C.prof(p,"diplomacy",25)||C.job(p,"envoy")||C.office(p)),
+        cond: (p,C)=>lordly(p,C)&&(C.lvl(p,"diplomacy",25)||C.job(p,"envoy")||C.office(p)),
         w: .9,
         cool: 6,
         title: "An embassy abroad",
@@ -1368,7 +1368,7 @@
           },
           {
             t: "Work the crowd's purses",
-            req: (p,C)=>C.prof(p,"stealth",25)||C.job(p,"thief"),
+            req: (p,C)=>C.lvl(p,"stealth",25)||C.job(p,"thief"),
             check: {s:"stealth",s2:"spd",d:40},
             win: {r:"Fat purses, happy people, nobody notices.",fx:{coin:45,skill:{stealth:2}}},
             lose: {r:"A guard catches your wrist.",fx:{punish:"theft"}},

@@ -272,7 +272,7 @@
       {
         id: "pp_elf_edge_watch",
         title: "Axes at the stones",
-        cond: (p,C)=>C.realm(p,"POL-06")&&C.race(p,"elf","halfelf")&&C.adult(p)&&(C.flag(p,"pp_ranger")||C.prof(p,"bow",45)),
+        cond: (p,C)=>C.realm(p,"POL-06")&&C.race(p,"elf","halfelf")&&C.adult(p)&&(C.flag(p,"pp_ranger")||C.lvl(p,"bow",45)),
         w: 1.2,
         cool: 10,
         setup: (p,ctx)=>{ctx.n=A.ri(8,14),ctx.stones=A.pick(["the Foxhurst stones","the stones below Aeravel","the old boundary stones at Oakreach"])},
@@ -325,7 +325,7 @@
       {
         id: "pp_elf_starlight",
         title: "The Starlight Range",
-        cond: (p,C)=>C.realm(p,"POL-06")&&C.race(p,"elf","halfelf")&&C.adult(p)&&(C.prof(p,"bow",30)||C.flag(p,"pp_ranger")),
+        cond: (p,C)=>C.realm(p,"POL-06")&&C.race(p,"elf","halfelf")&&C.adult(p)&&(C.lvl(p,"bow",30)||C.flag(p,"pp_ranger")),
         w: 1,
         once: !0,
         text: "A moonless night on the Starlight Range of Lirith. The mark is a pale disc a hundred and fifty paces off between the trunks, and you can barely see it. Aelar the Silent stands behind you and says nothing, as he has said nothing in the Moot for sixty-eight years. Three arrows.",
@@ -655,7 +655,7 @@
           },
           {
             t: "Shoot from the grove-house balcony",
-            req: (p,C)=>C.prof(p,"bow",35),
+            req: (p,C)=>C.lvl(p,"bow",35),
             check: {s:"bow",s2:"ins",d:50},
             win: {
               r: "Two arrows behind the shoulder, and it goes down in the hazels. The whole grove eats well, and they carve the horns for you.",
@@ -1130,7 +1130,7 @@
       {
         id: "pp_elf_deckarcher",
         title: "The Sea-Archers' Yard",
-        cond: (p,C)=>C.realm(p,"POL-07")&&C.race(p,"elf","halfelf")&&C.adult(p)&&!C.old(p)&&(C.prof(p,"bow",25)||C.prof(p,"sea",25)),
+        cond: (p,C)=>C.realm(p,"POL-07")&&C.race(p,"elf","halfelf")&&C.adult(p)&&!C.old(p)&&(C.lvl(p,"bow",25)||C.lvl(p,"sea",25)),
         w: 1,
         once: !0,
         text: `The Sea-Archers' Yard at Nimthil teaches what no forest archer knows: shooting from a pitching deck in a sea wind. The old archer Taeron Windward stands on the rolling practice-deck, reads the gulls and the spray, and says, "Not where the mark is. Where it will be."`,
@@ -1768,7 +1768,7 @@
       {
         id: "pp_dw_quench",
         title: "The second quench",
-        cond: (p,C)=>C.race(p,"dwarf")&&C.adult(p)&&(C.job(p,"smith")||C.prof(p,"craft",35)),
+        cond: (p,C)=>C.race(p,"dwarf")&&C.adult(p)&&(C.job(p,"smith")||C.lvl(p,"craft",35)),
         w: 1.1,
         cool: 12,
         setup: (p,ctx)=>{ctx.buyer=A.pick(["a Varennan duke","an Aldmark marcher lord","a Sabran emir's steward","a Tessarian general"]),ctx.Buyer=A.cap(ctx.buyer)},
@@ -1801,7 +1801,7 @@
       {
         id: "pp_dw_mastery",
         title: "Before the Council of Masters",
-        cond: (p,C)=>C.race(p,"dwarf")&&C.age(p)>=60&&!C.flag(p,"pp_dw_master")&&(C.prof(p,"craft",40)||jobIn(p,"smith","miner","mason")),
+        cond: (p,C)=>C.race(p,"dwarf")&&C.age(p)>=60&&!C.flag(p,"pp_dw_master")&&(C.lvl(p,"craft",40)||jobIn(p,"smith","miner","mason")),
         w: 1.2,
         once: !0,
         setup: (p,ctx)=>{ctx.trade=p.job&&p.job.c==="miner"?"the mines":p.job&&p.job.c==="mason"?"stone":"the forge",ctx.council=p.realm==="POL-29"?"the Guild of the Breath Forges":p.realm==="POL-28"?"the Guild of Crucible Smiths":"the Council of Master-Smiths"},
@@ -2231,7 +2231,7 @@
       {
         id: "pp_dw_countermine",
         title: "Digging under the wall",
-        cond: (p,C)=>dwHold(p)&&C.adult(p)&&!C.old(p)&&(C.atWar(p)||C.prof(p,"siegecraft",30)||C.soldier(p)),
+        cond: (p,C)=>dwHold(p)&&C.adult(p)&&!C.old(p)&&(C.atWar(p)||C.lvl(p,"siegecraft",30)||C.soldier(p)),
         w: 1,
         cool: 12,
         text: "In the lowest gallery under the outer wall, a bowl of water on the floor shivers. Tap. Tap. Scrape. Someone is digging toward the hold from outside, or the mountain is moving, and both are bad. Dwarves mine under walls better than anyone; it is a strange thing to be on the other end of it.",

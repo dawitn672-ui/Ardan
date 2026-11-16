@@ -303,8 +303,10 @@ export function year(p, age) {
     if (s.rust === 0) rec(p, age, k, 'rust', `Rusty: ${SKILL[k].name}, unused ${Math.round(idle)} years`);
     s.rust += loss * (1 - PERMANENT);
     let lost = loss * PERMANENT * XP_UNIT / (CURVE.A * Math.exp(-value(s.lv) / CURVE.S));
-    led(p, age, k, -lost, `unused ${Math.round(idle)} years`, ['rust']);
+    const want = lost;
     while (lost > 0 && s.lv > 1) { if (s.xp >= lost) { s.xp -= lost; lost = 0; } else { lost -= s.xp; s.lv--; s.xp = cost(s.lv); } }
+    // the ledger says what was taken (at Beginner I nothing is left to take)
+    led(p, age, k, -(want - lost), `unused ${Math.round(idle)} years`, ['rust']);
     s.streak = 0;
   }
 }

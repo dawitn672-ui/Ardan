@@ -6,7 +6,7 @@
     const nm = (p,sex)=>{try{return A.givenName(p.cult,sex||(A.chance(.5)?"M":"F"))||"Tam"}catch{return"Tam"}},
       inR = (p,...ids)=>ids.includes(p.realm),
       kid = (p,C)=>C.young(p)&&C.ageAdj(p)>=6,
-      pro = (p,C,k,n)=>C.adult(p)&&C.prof(p,k,n);
+      pro = (p,C,k,n)=>C.adult(p)&&C.lvl(p,k,n);
     function who(p,ctx,kind){const q=A.makeAcquaintance(p,kind||"friend");return ctx.pid=q.id,ctx.They=A.cap(A.he(q)),ctx.Their=A.cap(A.his(q)),q}
     function school(p,ctx,re,fb){const all=(LORE.schools||[]).filter(s2=>s2&&re.test(s2.teaches+" "+s2.name)),own=all.filter(s2=>s2.realm===p.realm),s=own.length?A.pick(own):all.length?A.pick(all):null;return ctx.school=s?s.name:fb||"the old fighting school",ctx.splace=s?s.place:"the capital",ctx.smaster=s?s.master:"an old master",ctx.sown=own.length?"here at home":"far from "+A.realmShort(p.realm),s}
     const rs = p=>A.realmShort(p.realm),
@@ -57,7 +57,7 @@
       },
       {
         id: "pf_melee_pell_yard",
-        cond: (p,C)=>C.adult(p)&&!C.old(p)&&(C.soldier(p)||C.prof(p,"melee",10)||C.trait(p,"brave")),
+        cond: (p,C)=>C.adult(p)&&!C.old(p)&&(C.soldier(p)||C.lvl(p,"melee",10)||C.trait(p,"brave")),
         w: .7,
         cool: 10,
         setup: (p,ctx)=>{who(p,ctx,"mentor"),ctx.vet=A.pick(["lost an eye at the ford","served twenty years in the levies","fought in three wars and won one","once guarded a count"])},
@@ -168,7 +168,7 @@
       },
       {
         id: "pf_melee_old_knees",
-        cond: (p,C)=>C.old(p)&&C.prof(p,"melee",40),
+        cond: (p,C)=>C.old(p)&&C.lvl(p,"melee",40),
         once: !0,
         w: 1,
         title: "The knees go first",
@@ -232,7 +232,7 @@
       },
       {
         id: "pf_sword_school",
-        cond: (p,C)=>C.adult(p)&&C.ageAdj(p)<32&&(C.prof(p,"sword",15)||p.coin>=40||C.noble(p)),
+        cond: (p,C)=>C.adult(p)&&C.ageAdj(p)<32&&(C.lvl(p,"sword",15)||p.coin>=40||C.noble(p)),
         w: .6,
         once: !0,
         setup: (p,ctx)=>{school(p,ctx,/sword|blade|buckler|Lion/i,"the sword school"),ctx.inst=nm(p)},
@@ -446,7 +446,7 @@
       },
       {
         id: "pf_axe_hall_trial",
-        cond: (p,C)=>C.adult(p)&&C.ageAdj(p)<32&&(C.prof(p,"axe",20)||C.stat(p,"str")>=45),
+        cond: (p,C)=>C.adult(p)&&C.ageAdj(p)<32&&(C.lvl(p,"axe",20)||C.stat(p,"str")>=45),
         w: .6,
         once: !0,
         setup: (p,ctx)=>{school(p,ctx,/axe|hammer|maul|hird/i,"the axe hall"),ctx.inst=nm(p)},
@@ -495,7 +495,7 @@
           },
           {
             t: "Loosen {theirHis} axe head the night before",
-            req: (p,C)=>C.prof(p,"stealth",25)||C.trait(p,"deceitful"),
+            req: (p,C)=>C.lvl(p,"stealth",25)||C.trait(p,"deceitful"),
             check: {s:"stealth",s2:"deception",d:45},
             win: {
               r: "{Their} axe head flies off on the third swing. You win. It tastes like ash.",
@@ -650,7 +650,7 @@
       },
       {
         id: "pf_spear_pike_drill",
-        cond: (p,C)=>C.adult(p)&&!C.old(p)&&!C.soldier(p)&&(C.prof(p,"spear",25)||C.town(p)),
+        cond: (p,C)=>C.adult(p)&&!C.old(p)&&!C.soldier(p)&&(C.lvl(p,"spear",25)||C.town(p)),
         w: .6,
         cool: 10,
         setup: (p,ctx)=>{ctx.sarge=nm(p,"M")},
@@ -817,7 +817,7 @@
       },
       {
         id: "pf_dagger_still_hall",
-        cond: (p,C)=>C.adult(p)&&C.ageAdj(p)<35&&(C.prof(p,"dagger",35)||C.prof(p,"stealth",40)),
+        cond: (p,C)=>C.adult(p)&&C.ageAdj(p)<35&&(C.lvl(p,"dagger",35)||C.lvl(p,"stealth",40)),
         w: .6,
         once: !0,
         setup: (p,ctx)=>{school(p,ctx,/knife|silen|night/i,"the night school"),ctx.rec=nm(p)},
@@ -937,7 +937,7 @@
       },
       {
         id: "pf_dual_buckler_hall",
-        cond: (p,C)=>C.adult(p)&&!C.old(p)&&(C.prof(p,"dualwield",25)||C.prof(p,"sword",40)||C.prof(p,"dagger",40)),
+        cond: (p,C)=>C.adult(p)&&!C.old(p)&&(C.lvl(p,"dualwield",25)||C.lvl(p,"sword",40)||C.lvl(p,"dagger",40)),
         w: .6,
         once: !0,
         setup: (p,ctx)=>{school(p,ctx,/buckler|dagger|sword/i,"Buckler Hall"),ctx.duel=nm(p,"M")},
@@ -1096,7 +1096,7 @@
       },
       {
         id: "pf_shield_muster",
-        cond: (p,C)=>C.adult(p)&&!C.old(p)&&!C.soldier(p)&&(C.prof(p,"shield",25)||C.stat(p,"sta")>=45),
+        cond: (p,C)=>C.adult(p)&&!C.old(p)&&!C.soldier(p)&&(C.lvl(p,"shield",25)||C.stat(p,"sta")>=45),
         w: .6,
         cool: 10,
         title: "The front rank",
@@ -1118,7 +1118,7 @@
           },
           {
             t: "Teach your neighbors to lock rims",
-            req: (p,C)=>C.prof(p,"shield",40),
+            req: (p,C)=>C.lvl(p,"shield",40),
             r: "You show them how the rims overlap. By evening your half of the line is the only half still standing.",
             fx: {skill:{shield:2,command:2},fame:1},
           },
@@ -1161,7 +1161,7 @@
       },
       {
         id: "pf_shield_yard",
-        cond: (p,C)=>C.adult(p)&&C.ageAdj(p)<35&&(C.prof(p,"shield",30)||C.soldier(p)),
+        cond: (p,C)=>C.adult(p)&&C.ageAdj(p)<35&&(C.lvl(p,"shield",30)||C.soldier(p)),
         w: .5,
         once: !0,
         setup: (p,ctx)=>{school(p,ctx,/shield|wall/i,"the shield yard"),ctx.inst=nm(p)},
@@ -1279,7 +1279,7 @@
           },
           {
             t: "Bet on yourself and lose on purpose",
-            req: (p,C)=>C.prof(p,"gambling",25)||C.trait(p,"greedy"),
+            req: (p,C)=>C.lvl(p,"gambling",25)||C.trait(p,"greedy"),
             r: "You bet heavy on {themHim} and go down in the first exchange. It pays. Nobody who watched believes it.",
             fx: {coin:25,honor:-6,fame:-1},
           },
@@ -1327,7 +1327,7 @@
       },
       {
         id: "pf_unarmed_still_hands",
-        cond: (p,C)=>C.adult(p)&&!C.old(p)&&(C.prof(p,"unarmed",35)||C.realm(p,"POL-27")&&C.prof(p,"faith",20)),
+        cond: (p,C)=>C.adult(p)&&!C.old(p)&&(C.lvl(p,"unarmed",35)||C.realm(p,"POL-27")&&C.lvl(p,"faith",20)),
         w: .6,
         once: !0,
         setup: (p,ctx)=>{school(p,ctx,/hold|throw|wrestl|staff/i,"the Hall of Still Hands"),ctx.monk=nm(p)},
@@ -1602,7 +1602,7 @@
       },
       {
         id: "pf_mounted_stakes",
-        cond: (p,C)=>C.adult(p)&&!C.old(p)&&(C.prof(p,"mounted",20)||C.prof(p,"riding",40)),
+        cond: (p,C)=>C.adult(p)&&!C.old(p)&&(C.lvl(p,"mounted",20)||C.lvl(p,"riding",40)),
         w: .6,
         cool: 10,
         setup: (p,ctx)=>{ctx.inst=nm(p),ctx.yard=school(p,ctx,/horse|riding|camel|gallop|saddle/i,"the riding yard")?ctx.school:"the riding yard"},
@@ -1673,7 +1673,7 @@
       },
       {
         id: "pf_mounted_backward_shot",
-        cond: (p,C)=>pro(p,C,"mounted",45)&&C.prof(p,"bow",30),
+        cond: (p,C)=>pro(p,C,"mounted",45)&&C.lvl(p,"bow",30),
         w: .7,
         once: !0,
         title: "The backward shot",
@@ -1728,7 +1728,7 @@
           },
           {
             t: "Ask an old horse-wise herder",
-            req: (p,C)=>C.prof(p,"husbandry",25)||C.terr(p,"steppe"),
+            req: (p,C)=>C.lvl(p,"husbandry",25)||C.terr(p,"steppe"),
             r: "She blows into the horse's nose, says a word you do not catch, and tells you to stop being afraid yourself. It works.",
             fx: {skill:{riding:2,husbandry:1}},
           },
@@ -1801,7 +1801,7 @@
           },
           {
             t: "Nick {theirHis} bowstring when nobody is looking",
-            req: (p,C)=>C.prof(p,"stealth",30)||C.trait(p,"deceitful"),
+            req: (p,C)=>C.lvl(p,"stealth",30)||C.trait(p,"deceitful"),
             check: {s:"stealth",s2:"deception",d:50},
             win: {
               r: "{Their} string snaps on the draw. You win. You do not enjoy the silver as much as you thought you would.",
@@ -1908,7 +1908,7 @@
       },
       {
         id: "pf_xbow_popinjay",
-        cond: (p,C)=>C.adult(p)&&!C.old(p)&&(C.prof(p,"xbow",20)||C.realm(p,"POL-26","POL-13","POL-02","POL-01","POL-29")),
+        cond: (p,C)=>C.adult(p)&&!C.old(p)&&(C.lvl(p,"xbow",20)||C.realm(p,"POL-26","POL-13","POL-02","POL-01","POL-29")),
         w: .6,
         cool: 6,
         setup: (p,ctx)=>{who(p,ctx,"rival")},
@@ -2114,7 +2114,7 @@
       },
       {
         id: "pf_throw_stone",
-        cond: (p,C)=>C.adult(p)&&!C.old(p)&&(C.prof(p,"throwing",35)||C.race(p,"giant")),
+        cond: (p,C)=>C.adult(p)&&!C.old(p)&&(C.lvl(p,"throwing",35)||C.race(p,"giant")),
         w: .8,
         cool: 5,
         setup: (p,ctx)=>{who(p,ctx,"rival"),ctx.where=inR(p,"POL-09","POL-23")?"the stone-throw at the Thing, where Vermund threw 32 meters in 1099":"the stone-throw at the fair, a river stone the weight of a sheep"},
@@ -2171,7 +2171,7 @@
           },
           {
             t: "Make it harder: an apple on the innkeeper's head",
-            req: (p,C)=>C.prof(p,"throwing",60),
+            req: (p,C)=>C.lvl(p,"throwing",60),
             check: {s:"throwing",s2:"wil",d:55},
             win: {
               r: "The innkeeper, purple with rage, holds still because he is too scared to move. The knife takes the apple. You are a legend in that alehouse forever.",
@@ -2315,7 +2315,7 @@
           },
           {
             t: "Crowd {theirHis} horse into the brook",
-            req: (p,C)=>C.prof(p,"riding",50)||C.trait(p,"cruel")||C.trait(p,"reckless"),
+            req: (p,C)=>C.lvl(p,"riding",50)||C.trait(p,"cruel")||C.trait(p,"reckless"),
             check: {s:"riding",s2:"deception",d:48},
             win: {
               r: "The bay stumbles in the water. Nobody can say for sure you meant it. You win.",
@@ -2403,7 +2403,7 @@
       },
       {
         id: "pf_ride_horse_thief",
-        cond: (p,C)=>C.adult(p)&&C.mounted(p)&&(C.prof(p,"riding",25)||C.prof(p,"tracking",30)),
+        cond: (p,C)=>C.adult(p)&&C.mounted(p)&&(C.lvl(p,"riding",25)||C.lvl(p,"tracking",30)),
         w: .6,
         cool: 10,
         title: "An empty stall",
@@ -2420,7 +2420,7 @@
           },
           {
             t: "Steal one of the thieves' horses in return",
-            req: (p,C)=>C.prof(p,"stealth",35)||inR(p,"POL-11","POL-34","POL-12","POL-19"),
+            req: (p,C)=>C.lvl(p,"stealth",35)||inR(p,"POL-11","POL-34","POL-12","POL-19"),
             check: {s:"stealth",s2:"riding",d:50},
             win: {
               r: "Their camp sleeps. You ride out on their best mare. That is how this game is played.",
@@ -2951,7 +2951,7 @@
       },
       {
         id: "pf_surv_mushrooms",
-        cond: (p,C)=>pro(p,C,"survival",30)||C.adult(p)&&C.prof(p,"medicine",30),
+        cond: (p,C)=>pro(p,C,"survival",30)||C.adult(p)&&C.lvl(p,"medicine",30),
         w: .7,
         cool: 10,
         setup: (p,ctx)=>{ctx.nb=nm(p,"F")},
@@ -3245,7 +3245,7 @@
       },
       {
         id: "pf_sea_galley_race",
-        cond: (p,C)=>C.adult(p)&&C.coast(p)&&!C.old(p)&&(C.prof(p,"sea",30)||C.job(p,"sailor")||C.job(p,"fish")),
+        cond: (p,C)=>C.adult(p)&&C.coast(p)&&!C.old(p)&&(C.lvl(p,"sea",30)||C.job(p,"sailor")||C.job(p,"fish")),
         w: .7,
         cool: 5,
         setup: (p,ctx)=>{ctx.prize=p.realm==="POL-04"?"The Lucerna lagoon crew that wins drinks free until Sea Closing.":"The winning crew splits a purse of fifty suns and drinks free all night."},
@@ -3312,7 +3312,7 @@
       },
       {
         id: "pf_sea_overboard",
-        cond: (p,C)=>C.adult(p)&&C.coast(p)&&(C.prof(p,"sea",30)||C.prof(p,"athletics",40)),
+        cond: (p,C)=>C.adult(p)&&C.coast(p)&&(C.lvl(p,"sea",30)||C.lvl(p,"athletics",40)),
         w: .7,
         cool: 8,
         setup: (p,ctx)=>{who(p,ctx,"friend")},
@@ -3407,7 +3407,7 @@
           },
           {
             t: "Point them at the real culprit",
-            req: (p,C)=>C.prof(p,"deception",30)||C.prof(p,"intrigue",30),
+            req: (p,C)=>C.lvl(p,"deception",30)||C.lvl(p,"intrigue",30),
             check: {s:"persuasion",s2:"intrigue",d:48},
             win: {
               r: "You remind them that the dead rat in the well came from the tanner's yard upstream. The mob goes to shout at the tanner. The stranger slips away.",
@@ -3500,7 +3500,7 @@
       },
       {
         id: "pf_pers_bad_cloth",
-        cond: (p,C)=>pro(p,C,"persuasion",40)||C.adult(p)&&C.prof(p,"trade",45),
+        cond: (p,C)=>pro(p,C,"persuasion",40)||C.adult(p)&&C.lvl(p,"trade",45),
         w: .7,
         cool: 8,
         setup: (p,ctx)=>{ctx.mer=nm(p,"M")},
@@ -3619,7 +3619,7 @@
           },
           {
             t: "Offer a marriage to end the raiding for good",
-            req: (p,C)=>C.prof(p,"diplomacy",65),
+            req: (p,C)=>C.lvl(p,"diplomacy",65),
             check: {s:"diplomacy",s2:"etiquette",d:55},
             win: {
               r: "A daughter of one valley for a son of the other. Raiding your in-laws is bad manners. It works for a generation.",
@@ -3809,7 +3809,7 @@
           },
           {
             t: "Teach her, and use her to get into court yourself",
-            req: (p,C)=>C.prof(p,"intrigue",30),
+            req: (p,C)=>C.lvl(p,"intrigue",30),
             r: "Where she goes, her teacher goes. You meet people you would never have met.",
             fx: {coin:30,skill:{intrigue:2},flag:"pf_court_door"},
           },
@@ -3822,7 +3822,7 @@
       },
       {
         id: "pf_etiq_slip",
-        cond: (p,C)=>C.adult(p)&&(C.noble(p)||C.job(p,"courtier"))&&!C.prof(p,"etiquette",45),
+        cond: (p,C)=>C.adult(p)&&(C.noble(p)||C.job(p,"courtier"))&&!C.lvl(p,"etiquette",45),
         w: .7,
         cool: 6,
         setup: (p,ctx)=>{ctx.lady=nm(p,"F")},
@@ -3949,7 +3949,7 @@
       },
       {
         id: "pf_dec_unraveled",
-        cond: (p,C)=>pro(p,C,"deception",35)&&(C.trait(p,"deceitful")||C.prof(p,"deception",55)),
+        cond: (p,C)=>pro(p,C,"deception",35)&&(C.trait(p,"deceitful")||C.lvl(p,"deception",55)),
         w: .7,
         cool: 10,
         setup: (p,ctx)=>{who(p,ctx,"friend")},
@@ -3982,7 +3982,7 @@
       },
       {
         id: "pf_dec_card_sharp",
-        cond: (p,C)=>pro(p,C,"deception",45)&&(C.prof(p,"gambling",25)||C.town(p)),
+        cond: (p,C)=>pro(p,C,"deception",45)&&(C.lvl(p,"gambling",25)||C.town(p)),
         w: .7,
         cool: 8,
         setup: (p,ctx)=>{ctx.mark=nm(p,"M")},
@@ -4558,7 +4558,7 @@
           },
           {
             t: "Set an ambush at the ford",
-            req: (p,C)=>C.prof(p,"tactics",35),
+            req: (p,C)=>C.lvl(p,"tactics",35),
             check: {s:"tactics",s2:"command",d:50},
             win: {
               r: "They come across the ford in a bunch and meet thirty villagers rising out of the reeds. Not one gets across.",
@@ -5005,7 +5005,7 @@
       },
       {
         id: "pf_siege_engineer",
-        cond: (p,C)=>C.adult(p)&&!C.old(p)&&(C.prof(p,"siegecraft",35)||C.prof(p,"craft",50)&&C.prof(p,"learning",30)),
+        cond: (p,C)=>C.adult(p)&&!C.old(p)&&(C.lvl(p,"siegecraft",35)||C.lvl(p,"craft",50)&&C.lvl(p,"learning",30)),
         w: .6,
         once: !0,
         setup: (p,ctx)=>{school(p,ctx,/engine|min|sapper|counter/i,"the engine yard"),ctx.eng=nm(p,"M")},
@@ -5622,7 +5622,7 @@
       },
       {
         id: "pf_med_unicorn",
-        cond: (p,C)=>pro(p,C,"medicine",40)||C.adult(p)&&C.prof(p,"learning",55),
+        cond: (p,C)=>pro(p,C,"medicine",40)||C.adult(p)&&C.lvl(p,"learning",55),
         w: .6,
         cool: 15,
         setup: (p,ctx)=>{ctx.rich=nm(p,"M")},
@@ -5641,7 +5641,7 @@
           {t:"Admire it and say nothing",r:"He is happy. You are fed. The whale does not mind.",fx:{coin:2}},
           {
             t: "Offer to sell him a second one",
-            req: (p,C)=>C.prof(p,"deception",35),
+            req: (p,C)=>C.lvl(p,"deception",35),
             r: "You know a man on the docks with whale tusks. You split two hundred suns with him.",
             fx: {coin:100,honor:-6,skill:{deception:2}},
           },
@@ -6025,7 +6025,7 @@
       },
       {
         id: "pf_craft_masterpiece",
-        cond: (p,C)=>C.adult(p)&&(pro(p,C,"craft",55)||C.prof(p,"craft",40)&&["smith","carpenter","mason","weaver","bowyer","brewer"].includes(p.job&&p.job.c)),
+        cond: (p,C)=>C.adult(p)&&(pro(p,C,"craft",55)||C.lvl(p,"craft",40)&&["smith","carpenter","mason","weaver","bowyer","brewer"].includes(p.job&&p.job.c)),
         w: .8,
         once: !0,
         setup: (p,ctx)=>{ctx.fee=A.pick([20,30,40])},
@@ -6288,7 +6288,7 @@
       },
       {
         id: "pf_farm_hiring",
-        cond: (p,C)=>C.adult(p)&&!C.job(p)&&(C.poor(p)||C.unfree(p))&&(C.prof(p,"husbandry",25)||C.terr(p,"plains","hills")),
+        cond: (p,C)=>C.adult(p)&&!C.job(p)&&(C.poor(p)||C.unfree(p))&&(C.lvl(p,"husbandry",25)||C.terr(p,"plains","hills")),
         w: .7,
         cool: 6,
         setup: (p,ctx)=>{ctx.f1=nm(p,"M"),ctx.f2=nm(p,"F")},
@@ -6381,7 +6381,7 @@
           },
           {
             t: "Tell {themHim} quietly you know, and want a share",
-            req: (p,C)=>C.prof(p,"deception",30)||C.trait(p,"greedy"),
+            req: (p,C)=>C.lvl(p,"deception",30)||C.trait(p,"greedy"),
             r: "{They} grins and slides you a third of the night's take. You have a partner now, of sorts.",
             fx: {coin:15,honor:-4,them:{type:"friend",op:15},flag:"pf_cheat_partner"},
           },
@@ -6394,7 +6394,7 @@
       },
       {
         id: "pf_gamb_debt",
-        cond: (p,C)=>C.adult(p)&&(C.prof(p,"gambling",30)||C.flag(p,"pf_cheat_partner"))&&p.coin<60,
+        cond: (p,C)=>C.adult(p)&&(C.lvl(p,"gambling",30)||C.flag(p,"pf_cheat_partner"))&&p.coin<60,
         w: .8,
         cool: 8,
         setup: (p,ctx)=>{ctx.lender=nm(p,"M"),ctx.owe=A.pick([40,60,80])},

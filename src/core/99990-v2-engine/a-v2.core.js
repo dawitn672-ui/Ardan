@@ -1584,7 +1584,7 @@ var __ARDAN_V2_MAKE = (() => {
       if (s.rust === 0) rec(p, age, k, "rust", `Rusty: ${SKILL[k].name}, unused ${Math.round(idle)} years`);
       s.rust += loss * (1 - PERMANENT);
       let lost = loss * PERMANENT * XP_UNIT / (CURVE.A * Math.exp(-value(s.lv) / CURVE.S));
-      led(p, age, k, -lost, `unused ${Math.round(idle)} years`, ["rust"]);
+      const want = lost;
       while (lost > 0 && s.lv > 1) {
         if (s.xp >= lost) {
           s.xp -= lost;
@@ -1595,6 +1595,7 @@ var __ARDAN_V2_MAKE = (() => {
           s.xp = cost(s.lv);
         }
       }
+      led(p, age, k, -(want - lost), `unused ${Math.round(idle)} years`, ["rust"]);
       s.streak = 0;
     }
   }

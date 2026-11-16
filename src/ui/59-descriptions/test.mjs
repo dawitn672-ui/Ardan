@@ -159,7 +159,8 @@ export default {
     // explains itself even without the wiring; all of them must still be covered
     const v2 = await pg.evaluate(() => !!A.V2S);
     // C9 (D-040): the body sheet lost its kg, m/s, km and ms, so the v2 profile has fewer numbers left to cover (7, was 8+)
-    const ok = all(a.profile) && all(a.top) && (v2 ? a.profile.n >= 6 : a.profile.n >= 15 && b.profile.covered < a.profile.covered);
+    // S1b (D-072): the skills are levels in words now, so the profile holds fewer numbers still (one or more)
+    const ok = all(a.profile) && all(a.top) && (v2 ? a.profile.n >= 1 : a.profile.n >= 15 && b.profile.covered < a.profile.covered);
     return { ok, detail: `profile numbers with a tooltip: before ${b.profile.covered} of ${b.profile.n}, after ${a.profile.covered} of ${a.profile.n}; top bar: before ${b.top.covered} of ${b.top.n}, after ${a.top.covered} of ${a.top.n}${a.profile.miss.length || a.top.miss.length ? '; missing: ' + a.profile.miss.concat(a.top.miss).join(' | ') : ''}`, data: r };
   },
 
@@ -313,7 +314,7 @@ export default {
         for (const id in A.S.realms) { const x = A.S.realms[id]; if (x.alive && x.ind) A.indCount(x); }
         const s0 = JSON.stringify(A.S), g0 = JSON.stringify(A.rngState);
         const args = { stat: GD.STATS, potential: GD.STATS, worth: [pc.id], worthBody: [pc.id], worthSkill: [pc.id], worthGear: [pc.id], tier: GD.TIERS.map(t => t.k),
-          skill: Object.keys(GD.SKILLS), profTier: GD.PROF_TIERS.map(x => x[1]), trait: Object.keys(GD.TRAITS), quirk: Object.keys(GD.QUIRKS || {}), race: Object.keys(GD.RACES), stage: Object.keys(GD.RACES),
+          skill: Object.keys(GD.SKILLS), skillWord: A.SK ? A.SK.WORDS.map(w => w + ' I') : [], trait: Object.keys(GD.TRAITS), quirk: Object.keys(GD.QUIRKS || {}), race: Object.keys(GD.RACES), stage: Object.keys(GD.RACES),
           opinion: Object.keys(pc.rel || {}).slice(0, 10), realmStab: [pc.realm, pc.ruler, 'POL-02'], realmLegit: [pc.realm], realmGold: [pc.realm, 'POL-03'], realmWeary: [pc.realm], infamy: [pc.realm],
           need: ['rest', 'company', 'purpose', 'comfort'], mood: ['rest', 'company', 'purpose', 'comfort', 'content'], age: [pc.id], faith: [pc.faith], wound: Object.keys(GD.WOUNDS) };
         let n = 0, empty = [];
@@ -568,7 +569,7 @@ export default {
     await pg.evaluate(() => { TT2.life(5965, { status: 'merchant', realm: 'POL-03', startAge: 30, years: 2 }); UI.tab = 'holdings'; UI.render(); });
     await pg.click('#tabbody table.mkt-t td[data-tt="mktPrice"]'); out.h1 = await depth();
     await pg.click('#tt-pop-1 [data-tt="skill"]'); out.h2 = await depth();
-    await pg.click('#tt-pop-2 [data-tt="profTier"]'); out.h3 = await depth();
+    await pg.click('#tt-pop-2 [data-tt="skillWord"]'); out.h3 = await depth();
     await pg.click('#tabbody .card.purse', { position: { x: 4, y: 4 } }); out.h0 = await depth();
     await pg.evaluate(() => { TT2.soldier(5966); TT2.fieldCaptain(); UI.warRoomOpen(); UI.wr.tab = 'cmd'; UI.wr.sel = { k: 'divs', ids: [A.pc().mil.div] }; UI.render(); });
     await pg.click('#modal .wr-div .barrow [data-tt="divOrg"]'); out.w1 = await depth();

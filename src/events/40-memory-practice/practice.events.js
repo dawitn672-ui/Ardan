@@ -91,7 +91,7 @@
     const ev = p.flags.ev || {}, y = p.flags.pf_threw_bout;
     if (ev.pf_unarmed_paid_to_lose === y && ev.pf_sword_stumble !== y) return "hold";
     if (ev.pf_sword_stumble === y) return "pass";
-    return C.prof(p, "unarmed", 50) && !C.prof(p, "sword", 45) ? "hold" : "pass";
+    return C.lvl(p, "unarmed", 50) && !C.lvl(p, "sword", 45) ? "hold" : "pass";
   };
   const crewName = p => p.realm === "POL-21" ? "the climbing thieves of Kesh" : p.realm === "POL-16" ? "the pickpockets of the Exchange"
     : p.realm === "POL-17" ? "one of the rag gangs of Qadira" : "the crew that owns the fish market";
@@ -113,7 +113,7 @@
     {
       id: "mpf_bout_rematch",
       title: "The same draw",
-      cond: (p, C) => C.adult(p) && !C.old(p) && C.flag(p, "pf_threw_bout") && A.S.year - p.flags.pf_threw_bout >= 3 && (C.prof(p, "sword", 40) || C.prof(p, "unarmed", 45)),
+      cond: (p, C) => C.adult(p) && !C.old(p) && C.flag(p, "pf_threw_bout") && A.S.year - p.flags.pf_threw_bout >= 3 && (C.lvl(p, "sword", 40) || C.lvl(p, "unarmed", 45)),
       w: 3, once: true,
       setup: (p, ctx) => {
         yrs(p, ctx, "pf_threw_bout"); ctx.kind = boutKind(p);
@@ -295,7 +295,7 @@
     {
       id: "mpf_rim_ashby",
       title: "Inside the rim, again",
-      cond: (p, C) => C.adult(p) && !C.old(p) && C.flag(p, "pf_rim_trick") && A.S.year - p.flags.pf_rim_trick >= 2 && C.prof(p, "lance", 50),
+      cond: (p, C) => C.adult(p) && !C.old(p) && C.flag(p, "pf_rim_trick") && A.S.year - p.flags.pf_rim_trick >= 2 && C.lvl(p, "lance", 50),
       w: 3, once: true,
       setup: (p, ctx) => { yrs(p, ctx, "pf_rim_trick"); ctx.pid = mk(p, { status: "gentry", ageAdj: 19 + A.ri(0, 4), occ: "a young knight of Kingsmere" }).id; },
       text: "Two shields have split in the lists this week, and only you know why: the point laid just inside the rim, along the grain, as on your forty-first day at the quintain. Tomorrow you ride against {them}, a young knight of Kingsmere who carries a linden shield and rides the way Roland Ashby taught. The quintain was only sawdust.",

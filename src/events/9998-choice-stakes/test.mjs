@@ -35,7 +35,7 @@ const SETUP = () => {
         { t: 'Wade the ford', check: { s: 'sta', s2: 'str', d: 50 }, win: { r: 'Across.', fx: { honor: 2 } }, lose: { r: 'Taken.', fx: { wound: 'leg', health: -15 } } },
         { t: 'Ask nicely', check: { s: 'persuasion', d: 40 }, win: { r: 'Fine.', fx: { happy: 2 } }, lose: { r: 'He shrugs.' } },
         { t: 'Hire the whole boat', req: p => p.coin >= 400, r: 'Hired.', fx: { coin: -400 } },
-        { t: 'Read the sign', req: (p, C) => C.literate(p) || C.prof(p, 'stewardship', 60), r: 'Read.', fx: { int: 1 } },
+        { t: 'Read the sign', req: (p, C) => C.literate(p) || C.lvl(p, 'stewardship', 60), r: 'Read.', fx: { int: 1 } },
         { t: 'The secret way', req: p => !!p.flags.stx_secret, r: 'Through.', fx: { flag: 'stx_used' } },
         { t: 'Mark the stone', r: 'Marked.', fx: { flag: 'stx_marked', trait: 'brave', event: 'stx_none' } },
         { t: 'Say a word for him', r: 'Said.', fx: p => { p.honor += 2; A.addOp(p, p, 0); } },
@@ -205,7 +205,7 @@ export default {
       const R1 = STT.show('stx_test'); A.S.queue = [];
       // the reader on the release's own reqs: thresholds read, story gates not
       const ST = A.STAKES;
-      const reads = [p => p.coin >= 40, (p, C, ctx) => p.coin >= (ctx.fee || 30), p => p.literate, (p, C) => C.prof(p, 'bow', 35), (p, C) => C.prof(p, 'stealth', 30) || C.trait(p, 'deceitful'), p => (A.realm(p.ruler) || {}).treasury > 3e3];
+      const reads = [p => p.coin >= 40, (p, C, ctx) => p.coin >= (ctx.fee || 30), p => p.literate, (p, C) => C.lvl(p, 'bow', 35), (p, C) => C.lvl(p, 'stealth', 30) || C.trait(p, 'deceitful'), p => (A.realm(p.ruler) || {}).treasury > 3e3];
       const hides = [p => !!p.flags.x, (p, C, ctx) => !!ctx.owned, (p, C) => C.married(p), p => p.coin >= 40 && !!p.flags.y, (p, C, ctx) => !!offer(ctx, 1)];
       return { R0, R1, read: reads.map(f => !!ST.parseReq(f)), hide: hides.map(f => !ST.parseReq(f)) };
     });
@@ -213,7 +213,8 @@ export default {
     const L = r.R0.locked;
     const fails = [];
     if (!L.some(t => /Hire the whole boat.*Needs 400 suns \(you have 12 suns\)/.test(t))) fails.push('coin');
-    if (!L.some(t => /Read the sign.*Needs reading and writing, or Stewardship 60 \(you have \d+\)/.test(t))) fails.push('letters or a skill');
+    // S1b (D-072): a skill wanted is a level in words
+    if (!L.some(t => /Read the sign.*Needs reading and writing, or Stewardship and supply at Expert III \(you are (untried|[A-Z][a-z]+ [IV]+)\)/.test(t))) fails.push('letters or a skill');
     if (L.some(t => /secret way/.test(t)) || r.R0.rows.some(x => /secret way/.test(x.label))) fails.push('a story gate showed');
     if (r.R1.locked.length || !r.R1.rows.some(x => x.label === 'Hire the whole boat') || !r.R1.rows.some(x => x.label === 'Read the sign')) fails.push('not open once you have it');
     if (r.read.includes(false)) fails.push('reader missed a threshold ' + r.read);

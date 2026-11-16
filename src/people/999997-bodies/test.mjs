@@ -84,17 +84,20 @@ export default {
       // the player: a feeble swordsman with sword 80 fights as an Expert at most; training does not raise it
       A.newGame({ seed: 7, sex: 'M', race: 'human', realm: 'POL-01', status: 'peasant', startAge: 25 });
       const pc = A.pc(); pc.traits = []; pc.wounds = []; pc.flags.weary = false;
-      pc.skills.sword = 80; pc.st.ins = 42 * 0.78 * 0.8; pc.st.spd = 42 * 0.78 * 1.3;
+      // S1b (D-072): a skill is a level (Master III reads 78) and experience lands at the month's pass
+      const SK = A.SK, pos = k => pc.sk[k].lv * 10000 + pc.sk[k].xp + pc.sk[k].st;
+      SK.set(pc, 'sword', SK.lvOfValue(80), 'test'); out.v80 = Math.round(SK.VALUES[SK.lvOfValue(80)]);
+      pc.st.ins = 42 * 0.78 * 0.8; pc.st.spd = 42 * 0.78 * 1.3;
       out.capWeak = A.skill(pc, 'sword');
-      const before = pc.skills.sword; A.trainSkill(pc, 'sword', 5); out.stall = pc.skills.sword - before;
+      const before = pos('sword'); A.trainSkill(pc, 'sword', 5); SK.month(pc); out.stall = pos('sword') - before;
       pc.st.ins = 42 * 0.78 * 1.05; out.capStrong = A.skill(pc, 'sword');
       // a plain skill below its cap still rises, and trains its first stat a little
-      pc.skills.trade = 20; const i0 = pc.st.int; A.trainSkill(pc, 'trade', 5); out.tradeUp = pc.skills.trade - 20; out.intUp = pc.st.int - i0;
+      SK.set(pc, 'trade', SK.lvOfValue(20), 'test'); const t0 = pos('trade'), i0 = pc.st.int; A.trainSkill(pc, 'trade', 5); SK.month(pc); out.tradeUp = pos('trade') - t0; out.intUp = pc.st.int - i0;
       // the player is never lifted by a floor
       out.pcFloor = A.statFloor(pc, 'ins');
       return out;
     });
-    const ok = r.masters > 50 && r.fail.length === 0 && r.capWeak < 75 && r.capWeak >= 59 && r.stall === 0 && r.capStrong === 80 && r.tradeUp > 0 && r.intUp > 0 && r.intUp < r.tradeUp && r.pcFloor === 0;
+    const ok = r.masters > 50 && r.fail.length === 0 && r.capWeak < 75 && r.capWeak >= 59 && r.stall === 0 && r.capStrong === r.v80 && r.tradeUp > 0 && r.intUp > 0 && r.intUp < r.tradeUp && r.pcFloor === 0;
     return { ok, detail: JSON.stringify(r).slice(0, 900) };
   },
 

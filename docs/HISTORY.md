@@ -1127,3 +1127,38 @@ Branch `p3-playtest` from `v2-integration` at `2aaf1ba`; one commit a fix; not p
 - **Left open:** every stage after I1-0; the [U] items (audio session and blob worker inside WKWebView under
   `capacitor://`, CSS bounce control, the first automated upload without a Mac) wait for the first TestFlight build.
 - **Undo:** revert branch `ios-route`'s commit.
+
+### H-069 · 2026-11-16 · S1b: skills with levels and experience, built (order 63; D-072, D-074)
+- **Asked** (order 63, the S1b brief): retire the proficiencies and build `docs/design/skills.md` §12 in six stages.
+- **Stage 1, the engine** (`1f029d3`): `src/people/engine/skills.js` (a port of `docs/design/skills/model.mjs`, data
+  injected with `setData`) and `growth.js` (the standard's pieces), bundled as `A.V2.skills`; `data/skills.json`;
+  `tests/v2/skills.test.js`: the cost table, the value round-trip, `need` pure, the nine sample lives reproduce
+  `lives.json` exactly, s1Spread, s1Prodigy, s1BlindSpot, s1Rust, s1Dynamic, s1NotLinear (unit).
+- **Stage 2, the store and the mirror** (`2b89ec6`): `src/people/36-skills` (`A.SK`, `A.gainXp`, the month's pass, the
+  migration); save version 15 with the step `skills`; `A.skill` reads `A.SK.reads`, `A.trainSkill` is the shim;
+  appointments raise a level through `A.SK.raiseTo`; 49-body-mind's merge, 69's Hafts and 999997-bodies' wrapper
+  retired to `archive/s1-proficiencies/`. Every save loads (s1Migrate on all 15), s1Checks none higher and at most
+  6.4 lower, s1Mirror 0 off over 4,298 numbers; boot, saveRoundTrip, savesStillLoad, uiSmoke, renderRng and
+  replayWithRender green.
+- **Stage 3, sources and the ledger** (`82ebcf0`): the plan once a month, posts against their rank's demand, school as
+  drill, checks and fights as stretches, the ranks' year, activities named; the daily drip, the 0.3 a month and the
+  two-year rust removed; the season's line in words; 31-learn-by-doing retired. s1Ledger and s1Reasons green.
+- **Stage 4, concepts and the life** (`41fce3a`): rival, a new place, a quiet season, overtraining, wounds, a near
+  death, pride, memory, hours shared; the keys `proof`, `grasp`, `talent`, `specialism`; `C.lvl`, `C.talent`, `C.ready`,
+  `C.stuck`; twelve moment cards (lint-events clean, lint-choices none obviously best); the 252 concepts' words and
+  `jobSpec` (`tools/s1/concept-words.mjs`). s1TwoLives: 4 of 6 pairs a word or more apart.
+- **Stage 5, the page and the words** (`f16a408`): `UI.skillRows`, `UI.skillsBlock`, `UI.skillSheet` (the skill's
+  popover), "Work at a skill"; every string of §1.3; the old views and the ladders of words retired. s1Phone (no sideways
+  scroll, nothing under 44 points at 375 × 667), clickLint, uiSmoke, renderRng green.
+- **Stage 6, other people, lints, docs** (`STAGE6`): the closed form once a year for people with a post, the 24 who
+  matter month by month, the census `S.top` (a count); `C.prof`/`C.apt` renamed to `C.lvl`/`C.talent` in 200 places
+  (identity-probe before and after: IDENTICAL on 9 lives and every event class); `tools/lint-skills.mjs` in
+  `tools/check.mjs` with `tests/skills-baseline.json`; CLAUDE.md, the life-sim-systems skill, CHANGELOG, PROGRESS.
+- **Measured:** a month for a full sheet of 28 skills costs 0.15 ms of CPU (s1Cost; budget 1); the player's skill
+  state is 11.7 KB after 1,000 months (cap 16); the yearly closed form over 1,550 people costs about 2 ms; the census
+  held 5 to 6 Grandmasters and no Legend over 25 years of one world.
+- **Left open:** the 329 `A.trainSkill` calls and 95 raw writes to `p.skills` (counted, only falling; D-074); the
+  balance league and the long tier on CI (this machine ran at a load of 15 to 18 on 4 cores); the census over 200
+  years; G1's talent discovery.
+- **Undo:** revert the S1b commits on `s1b` (`1f029d3`..`STAGE6`); old saves of version 15 then refuse to load in an
+  older build, as any newer save does.

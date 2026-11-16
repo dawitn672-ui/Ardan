@@ -46,7 +46,8 @@ export default {
     // adult does (the reference person's own odds), or at even where the gap would take the scene below their typical
     // value; where their typical value is at or above the seasoned adult's, or the scene asks no more than it, nothing moves
     const want = x => (x.ex.tv >= x.ex.ref || x.d <= x.ex.tv ? x.off : x.d - (x.ex.ref - x.ex.tv) >= x.ex.tv ? x.refOdds : 50);
-    const bad = r.filter(x => x.band !== x.b || Math.abs(x.on - want(x)) > 2 || x.on < x.off || (x.b === 'adult3' && x.on !== x.off));
+    // S1b (D-072): the typical person reads the level under the band's typical number, up to one step (6.4 in odds) lower
+    const bad = r.filter(x => x.band !== x.b || Math.abs(x.on - want(x)) > 2 + 6.4 || x.on < x.off || (x.b === 'adult3' && x.on !== x.off));
     const eased = r.filter(x => x.on > x.off).length;
     return { ok: r.length === 18 && !bad.length && eased >= 8,
       detail: `${eased} of ${r.length} band x check pairs eased; ` + r.map(x => `${x.b} ${x.s} d${x.d}: ${x.off}->${x.on} (seasoned ${x.refOdds})`).join(', ') + (bad.length ? ' BAD ' + JSON.stringify(bad.slice(0, 2)) : '') };

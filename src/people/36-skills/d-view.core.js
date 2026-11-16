@@ -110,8 +110,8 @@
     const S = SK.BY[k], name = S.name, lv = SK.lvOf(p, k), s = p.sk && p.sk[k];
     const P = (h, t) => `<div class="sk-sec"><div class="sk-h">${esc(h)}</div>${t}</div>`;
     const line = t => `<div class="sk-l">${t}</div>`;
-    let h = `<div class="sk-sheet"><div class="sk-title"><b>${esc(name)}</b><span>${esc(lv > 0 ? `${SK.wordName(lv)}, the ${ROMAN_WORD[SK.stepOf(lv) - 1]} step of five` : 'untried')}</span></div>`;
-    const desc = (GD.SKILL_DESC && GD.SKILL_DESC[k]) || '';
+    let h = `<div class="sk-sheet"><div class="sk-title"><b>${esc(name)}</b><span class="sk-word"${UI.ttAttrs ? UI.ttAttrs("skillWord", SK.levelName(lv)) : ""}>${esc(lv > 0 ? `${SK.wordName(lv)}, the ${ROMAN_WORD[SK.stepOf(lv) - 1]} step of five` : 'untried')}</span></div>`;
+    const desc = S.desc || (GD.SKILL_DESC && GD.SKILL_DESC[k]) || '';
     if (desc) h += `<div class="sk-desc">${esc(desc)}</div>`;
     if (!s) {   // someone else: the level, and what he is known for
       return h + (lv > 0 ? line(esc(`${SK.levelLabel(p, k)}.`)) : '') + '</div>';
@@ -227,7 +227,7 @@
   .skrow .sks{grid-area:s;font-size:13px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46vw}
   .skgroup>summary{min-height:44px;display:flex;align-items:center;gap:8px;cursor:pointer;font-family:var(--fh,inherit);letter-spacing:.04em}
   .sk-sheet{display:flex;flex-direction:column;gap:8px;max-width:34em}
-  .sk-title{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}.sk-title b{font-size:1.15em}
+  .sk-title{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}.sk-title b{font-size:1.15em}.sk-word{min-height:44px;display:inline-flex;align-items:center;cursor:pointer;text-decoration:underline dotted}
   .sk-desc{opacity:.85}
   .sk-sec{display:flex;flex-direction:column;gap:3px}
   .sk-h{font-family:var(--fh,inherit);font-weight:600;letter-spacing:.03em;margin-top:4px}

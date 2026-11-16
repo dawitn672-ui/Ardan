@@ -11,7 +11,7 @@ Use this when building or reviewing character, family, politics or war systems f
 - Players hated both bare numbers and real-unit readouts ("66 kg, lifts 120 kg", "reactions 170 ms"). Show each stat as a word for its **measured centile among the whole grown population of the person's own people** (Ardan, D-040: under 2, 2-10, 10-30, 30-70 average, 70-90, 90-98, 98-99.9, beyond: off the chart). Measure the table from generated worlds, not from fixed thresholds, and say on click what it is read against.
 - A child is held to bodies of its own age and says so ("strong for a child of nine"). Another people is also read against the yardstick people (a giant's strength off the chart against men, its speed off the other end).
 - Keep real units inside the engine and tests only; the page and every person's description use words.
-- **Skill baselines, not matching stats:** each skill word from Journeyman asks a modest baseline of its two governing stats (a Master about an average body or mind for that skill). Below it the skill stalls and works as the lower word ("for show"); past it, any build is fair. Generate NPC masters to clear their baselines; never force the player's stats up.
+- **Skill baselines, not matching stats:** each skill word from Advanced asks a modest baseline of its two governing stats (a Master about an average body or mind for that skill). Below it the skill stalls and works as the lower word ("for show"); past it, any build is fair. Generate NPC masters to clear their baselines; never force the player's stats up.
 - **Lifespans:** a healthy, fed, peaceful adult should die of age mostly between 50 and 75; let estate tilt it a little and let violence, plague and war still kill. Test it on the death-odds function alone.
 - Minds: score like IQ (mean 100, sd 15), shown as words plus rarity: "sharp: better than all but 1 in 40". Cap the rarity text at "ten thousand". Show "too young to tell" under age 6.
 - Current value = race base × sex factor × genes × **maturity(age)** × conditioning × wounds.
@@ -20,9 +20,21 @@ Use this when building or reviewing character, family, politics or war systems f
   - Stretch the curves per race with `ageScale` (orc 0.78, dwarf 1.65, elf 2.1, giant 1.9).
 - Conditioning moves toward a **natural ceiling** (lift ×3.8 for an untrained adult; Earth's record is about ×3.8 too). Gains shrink near the top, and idle months lose a little.
 - **Breakthroughs** are the only way past a ceiling: winning a real-stakes attempt by a surge of will against long odds raises the ceiling by about 12% for each unit of magnitude. This is how a human climbs to giant-class.
-- Learn by doing: skills are hours practised × talent × age factor (children fast, elders slow) × wits. Tiers are Untrained 0, Novice 30, Apprentice 200, Journeyman 800, Adept 2,500, Expert 6,000, Master 12,000, Grandmaster 25,000 and Legend 50,000 hours.
+- **Skills are levels and experience, not a number** (Ardan S1, owner order 63, D-072, built in `src/people/36-skills` on
+  the engine `src/people/engine/skills.js`). Seven words of five steps (Beginner I to Legend V; Myth for the dead); a
+  level is exactly what a check reads, and experience fills a bar toward the next step at the growth standard's price
+  (ten a month of plain drill; a Master's step years). **A new word is not bought with experience:** its named concepts
+  (nine a skill) must be grasped. A person's need for each is a hash (some come at once, some take ten years, a few never:
+  a blind spot); each month of real work is a chance of insight; at the edge experience is stored at half and lands as
+  a leap when the concept comes. From Expert up the word must also be **proved** (a stretch at the next word, succeeded).
+  **Breakthroughs** are sudden grasps at named moments (a defeat by a better hand, a near death, a rival, a new land, a
+  master's word, a quiet season). Discipline (unbroken months), a rival, a new place, needs, kin skills, hours shared,
+  specialisms (two steps up inside, one down in a sibling, ×0.85 outside) and pride move what a month is worth, and every
+  one is written in the ledger beside the gain it changed. Other people keep one number (the value of their level) and
+  grow by the same rules in closed form once a year. No percentages, no bare numbers: the page says "Expert II", "about
+  half way", "held: the measure".
 - **Growth must not be linear, and every change needs a cause** (Ardan's G0 standard, `docs/design/growth-standard.md`, D-067;
-  a design, not yet built). Gain = effort × quality (routine work stops teaching once you can do it; a task above you
+  S1 builds it for skills; stats follow in G1/G2). Gain = effort × quality (routine work stops teaching once you can do it; a task above you
   under stakes teaches most) × teacher (by the gap in words, never past one word under him) × talent × age by kind
   (movement young, tongues before 17, judgement from 30) × condition × a steep practice curve (a beginner's month worth
   about thirty of a master's). Plateaus carry a named reason; crossing a high word takes a deed, and stored effort lands
