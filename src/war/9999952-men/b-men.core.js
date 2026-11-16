@@ -107,6 +107,8 @@
       A.forcesSync(r);
     }
     M.lastConvert = { home, kept };
+    // the posts registry was built from the hosts as they were; read it again so that a second load finds it settled
+    if ((home || kept) && A.POSTS && A.POSTS.sync) { try { A.POSTS.sync('load'); } catch (e) { console.error('[men] posts', e); } }
   };
   const des = A.deserialize;
   if (des) A.deserialize = function () {

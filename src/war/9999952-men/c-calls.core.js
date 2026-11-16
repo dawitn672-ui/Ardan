@@ -232,8 +232,7 @@
     // the tenants-in-chief's opinion of a call: a lord whose men go is a little prouder of the crown in a defence and
     // sorer in a war of the king's will; the grievance itself is reckoned when the call ends
     if (call.will) for (const [hid] of call.cmds) { const h = hid && S.houses[hid]; if (h) h.op = clamp((h.op != null ? h.op : 50) - 3, 0, 100); }
-    CA.tell(call, 'proclaim');
-    if (A.emit) A.emit('callProclaimed', call, r);
+    if (!o.quiet) { CA.tell(call, 'proclaim'); if (A.emit) A.emit('callProclaimed', call, r); }
     return call;
   };
 
@@ -489,7 +488,8 @@
   // a call adopted from an old save's host of conscript foot in the field (A.MEN.convert): the war's need as it stands, or the will
   CA.adopt = function (r, w, divs) {
     const need = CA.need(r) || { t: 'few', deg: 1, label: 'The war already being fought', w: .5, pub: 1 };
-    const call = CA.proclaim(r, Math.min(need.deg, 2), need, null, { quiet: 1 });
+    // (a conversion on load draws no die and tells nobody: loading the same save twice gives the same world)
+    const call = CA.proclaim(r, Math.min(need.deg, 2), need, null, { quiet: 1, rand: () => .5 });
     if (!call) return null;
     for (const c of call.cmds) c[5] = 1;
     call.stage = 'out';
