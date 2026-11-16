@@ -32,7 +32,7 @@ POL.pcOath = function (pc) {
   const h = POL.pcHouse(pc), c = h ? POL.contractOf(h, r) : (pc.pol && pc.pol.contract) || { tax: POL.pos(r, 'obl'), men: POL.pos(r, 'obl'), rights: [] };
   // GD.NOBLE_RUNGS runs from the franklin (rung 0) to the duke (rung 8): a knight owes 5 men, a count 4,000
   const R = GD.NOBLE_RUNGS[Math.max(0, Math.min(GD.NOBLE_RUNGS.length - 1, pc.noble.rung || 0))] || {};
-  return { r, h, c, men: Math.round((R.roll || 0) * POL.OBL_MEN[c.tax != null ? c.men : 1]), share: POL.OBL_TAX[c.tax] };
+  return { r, h, c, men: Math.round((R.men || 0) * POL.OBL_MEN[c.tax != null ? c.men : 1]), share: POL.OBL_TAX[c.tax] };
 };
 const oathOf = pc => { const o = POL.pcOath(pc); if (!o) return null; if (o.h) { o.h.contract = o.c; return o.c; } POL.pcPol(pc).contract = o.c; return o.c; };
 // PO-OBL: the crown's share of a lord's rents follows the oath (56's tenth on rents is the Medium oath)
