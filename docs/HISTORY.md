@@ -1004,6 +1004,24 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   --years=30` clean (0 errors, audit empty, 0 broken post months).
 - **Commits:** `35b2f9e` (the stage), `1f69eed` (test bars, long tier).
 - **Undo:** revert branch `w1-1`'s commits (base `6dbabd3`); D-066 records the choices.
+- **Addendum (CI 133, branch `w1-1-ci`, on top of P3 and W1-2):** the merge `c648fca` failed 11 tests that passed before it.
+  - *Game fix:* `v2svOldCycle2` ("stream kept false"): `A.POSTS.seatMarshals` asked `A.wsGeneralFor` for a deputy when an
+    old Marshal left an army on load, drawing on the stream. A load now draws nothing; the month's `P.fillGenerals` gives
+    every army in the field without a general its deputy (`1667268`).
+  - *Tests that hinged on the old ranks or the world* (`8fb53be`, reasons in each): `v2wRankCounts` and
+    `v2cWarRoomNumbers` loaded grade 8 (High General, gone): the two TypeErrors (`title`, `leads`); grade 7 now, with the
+    king's commission, and `v2wRankCounts`' commander scene takes the first fight against a real host (a guard of 200
+    reads "about 200" either way). `carMissionSize`: a General leads 12,000 (the host's most), read from `GD.MIL`; the
+    bandit hunt was already 300. `econHolds` ('cloth' of undefined): a realm born in the tenth year had no month's
+    market yet; only markets that ran are read. `wcTokens`: `{since_event}` may cite a war too, so the result's war must
+    be one the text named, not the first war cited.
+  - `phoneEventSheet` passed on the P3 build unchanged (which card shows is the world's; at CI 133 it had three choices).
+  - Re-run on the merged build (`15d9e1d`, P3 and W1-2 in): those 7 pass.
+  - *Not run here (the machine timed them out at 1,800 s):* the four world-statistics tests missed narrowly at CI 133:
+    `temperMovesTheWar` (cunning took 40.8 provinces per 100k men down against cautious's 40.9), `growShareAB` (skill
+    points a year +20.6% against a 20% bar), `varietyGuard` (one triple against none), `rankMovesTheFight` (8 and 7
+    points of fights changing hands against 10). The world shifts with W1-1 (the crown names senior Generals; army
+    generals are no longer the Marshal), P3 and W1-2; CI's long tier judges them on this merge.
 
 ### H-062 · 2026-11-16 · G0: the growth standard (research and design only)
 *Numbered H-062, not H-061: another agent may take H-061 in parallel.*
