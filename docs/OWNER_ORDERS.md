@@ -228,6 +228,16 @@ order is replaced, strike it through and say by what.
     `.claude/skills/ios-capacitor-release`, a CLAUDE.md section with the build rules, and the choices in DECISIONS. The
     build rules bind all work from today; anything that would make the iPhone version harder is said and a route-keeping
     version proposed.
+63. **Proficiencies retired; skills with levels and experience** (D-072) · recorded 2026-11-15 23:21 ET. The owner's words, verbatim:
+
+    > im no longer a fan of the proficiencies system its very bland. systematically remove it and refine a system of skills with levels and expierience. dynamic growth mechanics
+
+    **Read as:** the proficiencies (today's 0-100 numbers in `GD.SKILLS`, "Practice a proficiency", the sheet's
+    Proficiencies list) are removed systematically, everywhere (engine, events, checks, effects, UI, saves, tests, docs),
+    and replaced by **skills with levels and experience** that grow dynamically: experience earned by doing, levels that
+    are crossed by grasping concepts and by breakthroughs (orders 32, 59, 61; growth.md, growth-standard.md §3.16), each
+    change with its reason (rule 18). Old saves convert. This brings G forward: it now follows R1's core in the build
+    order, before D11+, which stands on it.
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
