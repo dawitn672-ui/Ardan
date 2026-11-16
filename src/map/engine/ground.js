@@ -28,8 +28,8 @@ export const DEFAULTS = {
   RANGE_M: 1800,     // mountains to name: land this high (m), in pieces of at least RANGE_MIN cells (a long range by stretches)
   RANGE_MIN: 60,
   WOOD_MIN: 160,     // forests to name: woods of at least this many cells
-  RIVER_NAME: 500,   // rivers to name: this much flow at the mouth, and at least RIVER_KM long
-  RIVER_KM: 250,
+  RIVER_NAME: 300,   // rivers to name: this much flow at the mouth, and at least RIVER_KM long
+  RIVER_KM: 200,
   CLEAR_R: 2,        // fields round a town: woods cleared within this many cells of its site
 };
 
@@ -162,8 +162,8 @@ export function buildGround(w, o = {}) {
   const crossings = [], crossAt = new Map();
   const isSite = new Uint8Array(N); for (const s of sites) isSite[s] = 1;
   edges.forEach((e, ei) => {
-    if (!e.rank) return;
     const p = e.path;
+    if (!e.rank) { for (let i = 1; i < p.length - 1; i++) if (riv[p[i]] > e.wet) e.wet = Math.round(riv[p[i]]); return; }   // no road: the water between, unbridged
     for (let i = 0; i < p.length; i++) {
       if (riv[p[i]] < C.STREAM_T) continue;
       let j = i, best = p[i], town = false; while (j + 1 < p.length && riv[p[j + 1]] >= C.STREAM_T) j++;
@@ -226,19 +226,20 @@ export function buildGround(w, o = {}) {
   // pieces of the grid where ok(k), 4-connected, at least min cells: centre, size, the long axis's angle
   // A piece bigger than a block (BxB cells) is named block by block: a great forest or a long range has names along it
   const pieces = (ok, min, B) => {
-    const lab = new Int32Array(N).fill(-1), groups = [];
+    const lab = new Int32Array(N).fill(-1), groups = []; let comp = 0;
     for (let s = 0; s < N; s++) {
       if (lab[s] >= 0 || !ok(s)) continue;
       const st = [s], all = []; lab[s] = 1;
       while (st.length) { const k = st.pop(); all.push(k); const x = k % gw; for (const j of [x > 0 ? k - 1 : -1, x < gw - 1 ? k + 1 : -1, k - gw, k + gw]) if (j >= 0 && j < N && lab[j] < 0 && ok(j)) { lab[j] = 1; st.push(j); } }
       if (all.length < min) continue;
-      if (all.length <= B * B * 0.6) { groups.push(all); continue; }
+      const g = comp++;
+      if (all.length <= B * B * 0.6) { groups.push({ cells: all, g, all: all.length }); continue; }
       const blk = new Map();
-      for (const k of all) { const b = Math.floor((k % gw) / B) * 1000 + Math.floor(((k / gw) | 0) / B); let g = blk.get(b); if (!g) blk.set(b, g = []); g.push(k); }
-      for (const b of [...blk.keys()].sort((x, y) => x - y)) if (blk.get(b).length >= min) groups.push(blk.get(b));
+      for (const k of all) { const b = Math.floor((k % gw) / B) * 1000 + Math.floor(((k / gw) | 0) / B); let gg = blk.get(b); if (!gg) blk.set(b, gg = []); gg.push(k); }
+      for (const b of [...blk.keys()].sort((x, y) => x - y)) if (blk.get(b).length >= min) groups.push({ cells: blk.get(b), g, all: all.length });
     }
     const out = [];
-    for (const cells of groups) {
+    for (const { cells, g, all } of groups) {
       let sx = 0, sy = 0; for (const k of cells) { sx += k % gw; sy += (k / gw) | 0; }
       const cx = sx / cells.length, cy = sy / cells.length; let xx = 0, yy = 0, xy = 0, peak = 0;
       for (const k of cells) { const dx = k % gw - cx, dy = ((k / gw) | 0) - cy; xx += dx * dx; yy += dy * dy; xy += dx * dy; if (hm[k] > peak) peak = hm[k]; }
@@ -246,12 +247,13 @@ export function buildGround(w, o = {}) {
       // the label stands on the piece: its cell nearest the centre
       let lk = cells[0], ld = Infinity; for (const k of cells) { const d = (k % gw - cx) ** 2 + (((k / gw) | 0) - cy) ** 2; if (d < ld) { ld = d; lk = k; } }
       const span = Math.sqrt(Math.max(xx, yy) / cells.length) * 2;
-      out.push({ n: cells.length, x: (lk % gw) * 10 + 5, y: ((lk / gw) | 0) * 10 + 5, ang: Math.round(ang * 100) / 100, span: Math.round(span * 10), peak: Math.round(peak), prov: nearProv(lk % gw, (lk / gw) | 0) });
+      out.push({ n: cells.length, g, whole: all, x: (lk % gw) * 10 + 5, y: ((lk / gw) | 0) * 10 + 5, ang: Math.round(ang * 100) / 100, span: Math.round(span * 10), peak: Math.round(peak), prov: nearProv(lk % gw, (lk / gw) | 0) });
     }
-    return out.sort((p, q) => q.n - p.n || p.x - q.x || p.y - q.y);
+    // the biggest pieces first; the stretches of one piece share its name (g), named by its biggest stretch
+    return out.sort((p, q) => q.whole - p.whole || p.g - q.g || q.n - p.n || p.x - q.x || p.y - q.y);
   };
-  const ranges = pieces(k => grid[k] >= 0 && hm[k] >= C.RANGE_M, C.RANGE_MIN, 45).slice(0, 24);
-  const forests = pieces(k => grid[k] >= 0 && cover[k] === COVER.WOOD, C.WOOD_MIN, 40).slice(0, 30);
+  const ranges = pieces(k => grid[k] >= 0 && hm[k] >= C.RANGE_M, C.RANGE_MIN, 45).slice(0, 32);
+  const forests = pieces(k => grid[k] >= 0 && cover[k] === COVER.WOOD, C.WOOD_MIN, 40).slice(0, 40);
   // seas: the water round the coast in eight sectors about the land's middle, each named at its sea off the coast
   let lx = 0, ly = 0, ln = 0; for (let k = 0; k < N; k++) if (grid[k] >= 0) { lx += k % gw; ly += (k / gw) | 0; ln++; }
   lx /= Math.max(1, ln); ly /= Math.max(1, ln);

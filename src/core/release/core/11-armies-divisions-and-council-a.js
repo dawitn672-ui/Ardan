@@ -719,6 +719,8 @@ A.divMove = function (d) {
       (winter ? 0.6 : 1) *
       (d.org < A.divMaxOrg(d) * 0.3 ? 0.7 : 1) *
       (P.road ? 1.25 : 1) *
+      // D9 (999911-d9-ground): a high road or a track between the two provinces, or none (open country)
+      (A.D9 ? A.D9.marchF(d.loc, next) : 1) *
       (d.sr != null && d.sr < 0.5 ? 0.8 : 1);
   if (((d.prog += km / A.wsDist(d.loc, next)), d.prog < 1)) return;
   d.from = d.loc;
@@ -1286,10 +1288,15 @@ A.fightDay = function (pid) {
     acD = avg(fd.out, "ac"),
     fort = (A.friendly(A.ctrl(P), dR) && P.fort) || 0,
     winter = A.wsWinter(P),
+    // D9 (999911-d9-ground): divisions that attack over a river (by its ford or bridge, or where there is none) or
+    // through a pass strike for less (A.D9.attack); the after-action report names the place (F.mods.crossN)
+    across = A.D9 ? A.D9.across(fa.out, pid) : null,
     mods = (F.mods = {
       terr: A.ATK_TERR[P.terr] || 1,
       fort,
       winter: winter ? 0.85 : 1,
+      cross: across ? across.f : 1,
+      crossN: across ? across.name : null,
     }),
     shoot = (list, isAtt, enemyHd, enemyArm) => {
       let tot = 0;
@@ -1301,6 +1308,7 @@ A.fightDay = function (pid) {
         x *= 0.5 + 0.5 * (d.sr != null ? d.sr : 1);
         if (isAtt) {
           x *= mods.terr * mods.winter * (1 + (d.plan || 0)) * T.aDmg;
+          if (across && across.by.has(d)) x *= across.by.get(d);
           if (fort) x *= 1 - 0.08 * fort * (1 - Math.min(0.7, s.fx.fortPen || 0)) * (1 - T.fortIgnore);
           if (s.main === "horse") x *= 1 - Math.min(0.3, acD / 30);
           if (!S.prov[d.loc].adj.includes(pid)) x *= 0.65;

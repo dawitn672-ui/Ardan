@@ -65,6 +65,10 @@
         }
       }
     }
+    // D9 (999911-d9-ground): the names of the land (seas and ranges here, rivers, forests and passes after the provinces),
+    // placed by the same rule: a name that would touch one already written waits for a closer zoom
+    const api = { ctx, W, H, vx, vy, sx, sy, zoom, k, whole, placed, out, hit };
+    if (VM.landNames && opts.labels !== false) { try { VM.landNames(api, 'big'); } catch (e) { console.error('D9 names', e); } }
     if (!whole && zoom >= 1.8) {
       const px = Math.max(VM.PROV_MIN * k, (9 + Math.min(5, zoom)) * Math.min(k, 1.4)), f = `italic ${Math.round(px)}px Georgia, serif`;
       const ps = S.prov.filter(p => { const x = (p.sx - vx) * sx, y = (p.sy - vy) * sy; return x >= 0 && y >= 0 && x <= W && y <= H; })
@@ -74,6 +78,7 @@
         write(p.name, (p.sx - vx) * sx, (p.sy - vy) * sy + px * 1.3, px, f, p.occ ? '#ffab8a' : '#efe6cf', false, 'prov');
       }
     }
+    if (VM.landNames && opts.labels !== false) { try { VM.landNames(api, 'small'); } catch (e) { console.error('D9 names', e); } }
     ctx.restore();
     VM.labelsPlaced = out;
     return true;

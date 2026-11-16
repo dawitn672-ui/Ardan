@@ -505,7 +505,9 @@
       const K = iconK(ctx, W, !v || !!v.whole), tk = K.toFixed(2) + ':' + Object.values(A.S.realms).map(r => r.alive ? r.capitalProv : '').join(',');
       // (X1 baked patch map/9991-atlas-of-known-places AT-VEIL) after the towns, MAP.veil lays the fog of the unknown over the
       // kept picture, under the names; MAP.veilKey(canvas) joins the key so it is laid again when what the player knows changes
-      drawTiles(ctx, W, H, wholeView(W, H, v), 'b', (c, d) => { IM.towns(c, d.W, d.H, d.vx, d.vy, d.sx, d.sy, d.zoom, K); if (MAP.veil) MAP.veil(c, d.W, d.H, { x0: d.vx, y0: d.vy, w: d.W / d.sx, h: d.H / d.sy }, ctx.canvas); }, tk + (MAP.veilKey ? MAP.veilKey(ctx.canvas) : ''));
+      // (D9, 999911-d9-ground) IM.under lays the ways (woods and marsh, roads, crossings, passes) into the same kept picture,
+      // over the borders and under the towns, so a still or panning map costs one copy for both; IM.underKey joins the key
+      drawTiles(ctx, W, H, wholeView(W, H, v), 'b', (c, d) => { if (IM.under) { try { IM.under(c, d, ctx.canvas); } catch (e) { console.error('ways', e); } } IM.towns(c, d.W, d.H, d.vx, d.vy, d.sx, d.sy, d.zoom, K); if (MAP.veil) MAP.veil(c, d.W, d.H, { x0: d.vx, y0: d.vy, w: d.W / d.sx, h: d.H / d.sy }, ctx.canvas); }, tk + (IM.underKey ? IM.underKey(ctx.canvas) : '') + (MAP.veilKey ? MAP.veilKey(ctx.canvas) : ''));
       try { IM.selGlow(ctx, W, H, wholeView(W, H, v)); } catch (e) {}
       try { IM.moveArrows(ctx, W, H, wholeView(W, H, v)); } catch (e) {}
       return true;

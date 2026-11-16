@@ -136,7 +136,8 @@ A.supplyNeighbours = function () {
   for (const P of S.prov) {
     const nb = P.adj.concat(P.sea || []);
     w.push(Int32Array.from(nb));
-    s.push(Float64Array.from(nb.map(x => ((P.sea || []).includes(x) && !P.adj.includes(x) ? 0.85 : 1))));
+    // D9 (999911-d9-ground): by land, supply follows the roads and the navigable rivers (A.D9.supplyF)
+    s.push(Float64Array.from(nb.map(x => ((P.sea || []).includes(x) && !P.adj.includes(x) ? 0.85 : A.D9 ? A.D9.supplyF(P.id, x) : 1))));
   }
   A._nbs = {
     prov: S.prov,
@@ -1001,7 +1002,8 @@ A.wsPath = function (from, to, rid) {
           foe = _r[1],
           d =
             (A.wsDist(u, v) / (A.WS.moveTerr[Q.terr] || 1)) *
-            (sea ? 2.5 : 1) *
+            // D9: the road between the two (999911-d9-ground), as A.divMove marches it
+            (sea ? 2.5 : A.D9 ? 1 / A.D9.marchF(u, v) : 1) *
             (own ? (Q.road ? 0.8 : 1) : foe ? 1.2 : v === to ? 1.5 : 3.5);
         if (du + d < dist[v]) {
           dist[v] = du + d;

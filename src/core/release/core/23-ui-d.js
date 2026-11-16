@@ -646,29 +646,9 @@ UI.drawWarBasic = function (cv) {
     pc = A.pc(),
     R2 = A.cmdRole(pc),
     myR = UI.wrMyR(pc);
-  // [X1 baked patch map/62-inked-map IM-GROUND-VIEW] The zoomable maps (the full map UI.gmDraw and the war room
-  // UI.drawWarBasic) ask MAP.ground for the inked ground of their view rectangle v before falling back to the relief
-  // picture.
-  if (
-    !(MAP.ground && MAP.ground(ctx, W, H, v)) &&
-    ((ctx.fillStyle = "#1d3b57"), ctx.fillRect(0, 0, W, H), MAP.img && MAP.img.complete && MAP.img.naturalWidth)
-  ) {
-    const iw = MAP.img.naturalWidth,
-      ih = MAP.img.naturalHeight;
-    ctx.drawImage(MAP.img, (v.x0 / 7e3) * iw, (v.y0 / 4500) * ih, (v.w / 7e3) * iw, (v.h / 4500) * ih, 0, 0, W, H);
-  }
-  const sx = (v.x0 / 7e3) * MAP.gw,
-    sy = (v.y0 / 4500) * MAP.gh,
-    sw = (v.w / 7e3) * MAP.gw,
-    sh = (v.h / 4500) * MAP.gh,
-    zoom = 7e3 / v.w;
-  ctx.imageSmoothingEnabled = zoom > 1.4;
-  ctx.drawImage(UI.wrOverlay(UI.wr.mode || "sides", myR), sx, sy, sw, sh, 0, 0, W, H);
-  if (A.atWar(myR).length) ctx.drawImage(MAP.front(myR), sx, sy, sw, sh, 0, 0, W, H);
-  // [X1 baked patch map/62-inked-map IM-LINES] Right after each map lays its realm colours (MAP.draw, the full map,
-  // the war room), MAP.inkLines inks the borders, towns and keeps over them, so the wash never greys the line work.
-  ctx.imageSmoothingEnabled = true;
-  if (MAP.inkLines) MAP.inkLines(ctx, W, H, v);
+  const zoom = 7e3 / v.w;
+  // [D9] the map's layers, as every map lays them (MAP.paint, 21-map.js)
+  MAP.paint(ctx, W, H, v, UI.wrOverlay(UI.wr.mode || "sides", myR), A.atWar(myR).length ? MAP.front(myR) : null);
   const disp = (cv.getBoundingClientRect && cv.getBoundingClientRect().width) || W,
     K = A.clamp((W / Math.max(1, disp)) * 0.95, 0.9, 2.4) * A.clamp(0.75 + zoom * 0.08, 0.8, 1.15),
     P = (kx, ky) => [((kx - v.x0) / v.w) * W, ((ky - v.y0) / v.h) * H],

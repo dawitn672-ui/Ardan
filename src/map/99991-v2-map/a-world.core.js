@@ -34,7 +34,7 @@ VM.TERR_SHARE = { mountains: 0.065, hills: 0.41 };   // the release's mix: 20 an
 // claim take their next best word (read from the same ground).
 VM.TERR_CAP = 0.31;
 VM.HILL = { relief: 250, elev: 800 };            // a province is hilly when its heights spread this much (sd, metres) or it stands this high
-VM.SITE_R = 14;                                 // a town moves at most this many cells (140 km) from its seed to stand on water
+VM.SITE_R = 18;                                 // a town moves at most this many cells (180 km) from its seed to stand on water
 VM.DRY_PAY = 2.5; VM.GREEN_PAY = 1.5;           // what a dry realm pays for a green cell, and a green realm for a dry one
 VM.ARID_REALM = 0.5;                            // a realm whose release land was this share dry (desert, steppe, savanna) is seated on dry land
 VM.ISLE_RX = /\b(isles?|islands?|archipelago)\b/i;            // a realm named for islands: a peninsula on the shore

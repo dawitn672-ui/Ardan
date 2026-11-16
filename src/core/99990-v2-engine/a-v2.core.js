@@ -3492,9 +3492,9 @@ var __ARDAN_V2_MAKE = (() => {
     RANGE_MIN: 60,
     WOOD_MIN: 160,
     // forests to name: woods of at least this many cells
-    RIVER_NAME: 500,
+    RIVER_NAME: 300,
     // rivers to name: this much flow at the mouth, and at least RIVER_KM long
-    RIVER_KM: 250,
+    RIVER_KM: 200,
     CLEAR_R: 2
     // fields round a town: woods cleared within this many cells of its site
   };
@@ -3712,8 +3712,11 @@ var __ARDAN_V2_MAKE = (() => {
     const isSite = new Uint8Array(N);
     for (const s of sites) isSite[s] = 1;
     edges.forEach((e, ei) => {
-      if (!e.rank) return;
       const p = e.path;
+      if (!e.rank) {
+        for (let i = 1; i < p.length - 1; i++) if (riv[p[i]] > e.wet) e.wet = Math.round(riv[p[i]]);
+        return;
+      }
       for (let i = 0; i < p.length; i++) {
         if (riv[p[i]] < C.STREAM_T) continue;
         let j = i, best = p[i], town = false;
@@ -3811,6 +3814,7 @@ var __ARDAN_V2_MAKE = (() => {
     const riverNames = named.slice(0, 28);
     const pieces = (ok, min, B) => {
       const lab = new Int32Array(N).fill(-1), groups = [];
+      let comp = 0;
       for (let s = 0; s < N; s++) {
         if (lab[s] >= 0 || !ok(s)) continue;
         const st = [s], all = [];
@@ -3825,21 +3829,22 @@ var __ARDAN_V2_MAKE = (() => {
           }
         }
         if (all.length < min) continue;
+        const g2 = comp++;
         if (all.length <= B * B * 0.6) {
-          groups.push(all);
+          groups.push({ cells: all, g: g2, all: all.length });
           continue;
         }
         const blk = /* @__PURE__ */ new Map();
         for (const k of all) {
           const b = Math.floor(k % gw / B) * 1e3 + Math.floor((k / gw | 0) / B);
-          let g2 = blk.get(b);
-          if (!g2) blk.set(b, g2 = []);
-          g2.push(k);
+          let gg = blk.get(b);
+          if (!gg) blk.set(b, gg = []);
+          gg.push(k);
         }
-        for (const b of [...blk.keys()].sort((x, y) => x - y)) if (blk.get(b).length >= min) groups.push(blk.get(b));
+        for (const b of [...blk.keys()].sort((x, y) => x - y)) if (blk.get(b).length >= min) groups.push({ cells: blk.get(b), g: g2, all: all.length });
       }
       const out = [];
-      for (const cells of groups) {
+      for (const { cells, g: g2, all } of groups) {
         let sx = 0, sy = 0;
         for (const k of cells) {
           sx += k % gw;
@@ -3866,12 +3871,12 @@ var __ARDAN_V2_MAKE = (() => {
           }
         }
         const span = Math.sqrt(Math.max(xx, yy) / cells.length) * 2;
-        out.push({ n: cells.length, x: lk % gw * 10 + 5, y: (lk / gw | 0) * 10 + 5, ang: Math.round(ang * 100) / 100, span: Math.round(span * 10), peak: Math.round(peak), prov: nearProv(lk % gw, lk / gw | 0) });
+        out.push({ n: cells.length, g: g2, whole: all, x: lk % gw * 10 + 5, y: (lk / gw | 0) * 10 + 5, ang: Math.round(ang * 100) / 100, span: Math.round(span * 10), peak: Math.round(peak), prov: nearProv(lk % gw, lk / gw | 0) });
       }
-      return out.sort((p, q2) => q2.n - p.n || p.x - q2.x || p.y - q2.y);
+      return out.sort((p, q2) => q2.whole - p.whole || p.g - q2.g || q2.n - p.n || p.x - q2.x || p.y - q2.y);
     };
-    const ranges = pieces((k) => grid[k] >= 0 && hm[k] >= C.RANGE_M, C.RANGE_MIN, 45).slice(0, 24);
-    const forests = pieces((k) => grid[k] >= 0 && cover[k] === COVER.WOOD, C.WOOD_MIN, 40).slice(0, 30);
+    const ranges = pieces((k) => grid[k] >= 0 && hm[k] >= C.RANGE_M, C.RANGE_MIN, 45).slice(0, 32);
+    const forests = pieces((k) => grid[k] >= 0 && cover[k] === COVER.WOOD, C.WOOD_MIN, 40).slice(0, 40);
     let lx = 0, ly = 0, ln = 0;
     for (let k = 0; k < N; k++) if (grid[k] >= 0) {
       lx += k % gw;
