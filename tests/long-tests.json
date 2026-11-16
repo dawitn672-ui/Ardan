@@ -44,6 +44,7 @@
   "flLives",
   "v2DipAlive",
   "nbDeterminism",
-  "twoScalesOtherLives"
+  "twoScalesOtherLives",
+  "w1NoMarshalWorld"
  ]
 }
