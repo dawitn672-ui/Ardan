@@ -132,7 +132,9 @@
       try {
         if (!h || h.v2c || h.type === 'warroom') return h;
         const st = V2T.st(); if (!st) return h;
-        if (st.mn >= V2T.MAX && V2T.holdable(h) && A.S.queue[0] === h) {
+        // (the variety guard's second look, 25-variety-guard: a rolled scene that surfaces as the third of one shape in a
+        // row waits too; the roll could not see what the month's spread and the holds would put in front of it)
+        if (V2T.holdable(h) && A.S.queue[0] === h && ((st.mn >= V2T.MAX) || (A.evSurfaceHold && A.evSurfaceHold(h)))) {
           A.S.queue.shift(); delete h.seen; const lf = h.lfFrom;
           // not shown after all: the 240-day memory of it goes back to what it was
           if (A.S.evShown) { if (seen0[h.ev] == null) delete A.S.evShown[h.ev]; else A.S.evShown[h.ev] = seen0[h.ev]; }

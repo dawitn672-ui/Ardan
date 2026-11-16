@@ -47,6 +47,23 @@
     if (n >= 2 && last[n - 1] === s && last[n - 2] === s) return 0;
     return last[n - 1] === s ? 0.15 : 1;
   };
+  // The second look (CI 133-134, seed 6, 1118: wc_bread_since > bd_friend_debt > ww_ald_oakline, three money scenes in a
+  // row). The roll weighs a scene against the shapes already seen and the queue, but v2-time spreads a month's rolled
+  // scenes over its days and holds a fourth to the next month (A.schedule), so what surfaces in front of a scene is not
+  // what the roll saw. When a rolled scene comes to the head of the queue as the third of one shape in a row, it waits
+  // (v2-time's hold: to the next month), at most twice; a forced scene, a consequence, a gathering's or a dated promise
+  // never waits. Called from v2-time's A.headReady; draws nothing itself.
+  A.EV_SURFACE_HOLDS = 2;
+  A.evSurfaceHold = function (q) {
+    if (!A.evVariety || !q || q.type !== 'event' || q.result || typeof q.label === 'string') return false;
+    const e = A.EV[q.ev]; if (!e || e.trigger) return false;
+    const s = A.evShape(e); if (!s) return false;
+    const last = (A.S.evShapes || []).slice(-2);
+    if (last.length < 2 || last[0] !== s || last[1] !== s) return false;
+    if ((q.vgH || 0) >= A.EV_SURFACE_HOLDS) return false;
+    q.vgH = (q.vgH || 0) + 1;
+    return true;
+  };
   // Events picked from small pools (job duties, path flows) and NPC moves skip the roll and its cooldown, and come back
   // every 2 to 4 years. A hard 10-year ban would empty those pools, so they get a preference instead: an event seen in
   // the last 10 years weighs a quarter, times the shape guard.
