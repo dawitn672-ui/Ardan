@@ -25,6 +25,12 @@ built on top of it: **features** that add code and events, the **v2 engine** (pl
 > rebellions and factions follow a kingdom's stability, the king's relations with each noble, and their own ambitions,
 > desires and circumstances. Everything is intertwined. (The owner, order 54, for the rest of this game's making; D-062.)
 
+- **Decide through `A.WHY`** (W1-2, D-069). Any choice a king, lord, General, captain or NPC makes (war, a faction, an
+  appointment, a betrayal, a plot) goes through `A.WHY.decide(who, kind, options, ctx)`: each option with reasons
+  `{ kind, weight, source, label, pub }` (log-odds weights; the source names the record), bent by the decider's temper and
+  feelings, with a bounded record. No bare `A.chance(p)` for a structural choice: `tools/lint-reasons.mjs` counts them
+  and `tests/reasons-baseline.json` may only fall. See `src/people/9999950-why/README.md` and `docs/design/r1-audit.md`.
+
 - **Descriptions open on click, never on hover.** A button or an info icon opens a description; nothing pops up on
   hover. (Round 2 order B4, done: `src/ui/59-descriptions` opens on click, tap and Enter only, a `title=` of more than
   three words is lifted into a click-to-open note, an activity opens a sheet first, and `src/ui/99998-click-open/test.mjs`
@@ -110,6 +116,7 @@ node --test tests/v2/*.test.js                            # the engine's unit te
 node tools/lint-events.mjs --feature=my-feature --html=/tmp/me.html
 node tools/lint-choices.mjs --feature=my-feature --html=/tmp/me.html   # no obviously best choice
 node tools/lint-kin.mjs                                   # no event mints kin or names one it did not take from the tree (C6)
+node tools/lint-reasons.mjs [--list]                      # no new bare-dice decision in AI code (R1, W1-2): the count may only fall
 node tests/run.mjs /tmp/me.html --features=my-feature     # core suites + that feature's tests
 node tests/run.mjs --only=testA,testB --workers=4         # some tests by name
 node tests/run.mjs --tier=quick --shard=0/8 --plan        # T1: the tier split and each shard's estimated time, runs nothing

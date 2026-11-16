@@ -270,6 +270,8 @@
   A.on('warStart', (w, opts) => {
     try {
       if (!w || w.casus) return;
+      // W1-2: a war a council decided carries its record (A.WHY): kept with the war, told in the news below
+      if (opts && opts.why && !w.why) w.why = opts.why;
       const c = CS.compose(w);
       if (!c) return;
       w.casus = c;
@@ -278,7 +280,9 @@
       const ra = A.realm(w.leadA);
       // a realm's record of why it went to war (the Realm tab and the diplomacy card read it after the war is over)
       if (ra) { ra.csHist = (Array.isArray(ra.csHist) ? ra.csHist : []).concat([{ y: A.S.year, w: clean(w.name), o: w.leadD, t: c.t }]).slice(-6); }
-      if (!(opts && opts.silent)) A.news(`War declared by ${short(w.leadA)}. ${c.t}`, 'war');
+      // the record's reasons, as far as the player could know them (the council's count of spears only for its own)
+      const told = w.why && A.WHY ? clean(A.WHY.tellFor(w.why, w.leadA)) : '';
+      if (!(opts && opts.silent)) A.news(`War declared by ${short(w.leadA)}. ${c.t}${told ? ' ' + told : ''}`, 'war');
       const pl = ra && ra.csPlan;
       if (pl && pl.t === w.leadD && CS.ON) {
         CS.stats.struck++;
