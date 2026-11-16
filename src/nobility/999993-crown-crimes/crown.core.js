@@ -260,6 +260,8 @@
     const o = CC.forgiveOdds(pc, t, r), ok = A.chance(o.p);
     const sr = pc.flags.ccSorry = pc.flags.ccSorry || {}, cur = sr[t.id];
     sr[t.id] = { n: cur && S().year - cur.y <= 3 ? cur.n + 1 : 1, y: S().year };
+    // (bounded, order 62: only the last three years of pleas are kept)
+    for (const id of Object.keys(sr)) if (S().year - sr[id].y > 3) delete sr[id];
     if (ok) {
       A.addOp(pc, t, o.g ? A.ri(4, 10) : A.ri(8, 20));
       const tr = relOf(t, pc); if (tr) tr.op = A.clamp(tr.op + (o.g ? A.ri(10, 25) : A.ri(8, 20)), -100, 100);
