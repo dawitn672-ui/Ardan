@@ -5,6 +5,14 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Made ready for the iPhone.** The page now fills a notched screen edge to edge and keeps clear of the notch and the home bar;
+  text on the buttons and panels can no longer be selected by a long press, and the page no longer bounces or zooms when
+  you tap twice (pinching still zooms). Heights follow the screen as the phone's bars come and go. The score and the
+  sounds share one audio channel that pauses when you leave the game. Every word that opens a description, every chip and
+  every stat row on the You, Profile, Path and Holdings pages is now at least a thumb wide and tall to tap, with the lines
+  looking the same (the skills rows wait for the new skills page). Saving a game to a file keeps working in the browser;
+  the phone's own file hand-off comes with the phone app.
+
 - **Kings and lords decide for reasons you can read.** A crown goes to war, a great house joins or leaves a faction, and
   the king names his first host's General by weighing named reasons (an insult, bad blood, a cause, his Generals' count
   of the enemy's spears, an old wrong, a debt, his temper), never by a roll of the dice alone. The news of a war now ends

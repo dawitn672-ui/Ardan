@@ -1192,3 +1192,54 @@ Branch `p3-playtest` from `v2-integration` at `2aaf1ba`; one commit a fix; not p
 - **Undo:** revert the branch `w1-2`'s commits (base `2d7de66`, merged with `be59d5c`); the old war roll is
   `git show 2d7de66:src/core/release/core/17-careers-and-event-engine-a.js` and the old `DV.tryWar` the same commit's
   `src/diplomacy/99996-v2-diplomacy/diplomacy.core.js`.
+
+### H-074 · 2026-11-16 · I1-2: iPhone readiness (order 62; the audit's fixes 1, 2, 5, 6, 7, 8 partly, 10)
+- **Asked:** fix the build-rule gaps the I1-0 audit found (`docs/IOS_ROADMAP.md` §7, §8), each measured before and after;
+  leave the maps' drags (D9), the skills page (S1b) and the person view's "out of reach" line (R2) alone.
+- **Done** (branch `i1-2`, base `018631d`; one fix a commit):
+  - `1226ba0` **`vh` to `dvh`:** 49 CSS uses in 12 files, each as `prop:...vh;prop:...dvh` (the `vh` line first is the fallback);
+    the 50th was a comment (`c-draw.core.js`). Before: 50 `vh`, 0 `dvh`.
+  - `80e15e3` **Storage:** the profile tab's 4 `localStorage` calls go through `UI.store` (which already existed, `23-ui-a.js`).
+  - `9f1fee6` **Viewport, selection, zoom, bounce** (`page.html`): `viewport-fit=cover`; `html, body{overscroll-behavior:none;
+    touch-action:manipulation; -webkit-tap-highlight-color:transparent}`; `body{user-select:none; -webkit-touch-callout:none}`;
+    selection back on `input, textarea, select, [contenteditable], .selectable`; `touch-action:manipulation` on controls. No
+    `maximum-scale` (pinch zoom stays for accessibility; `touch-action:manipulation` is what stops the double-tap zoom).
+    Probe before: `select auto, touch auto, overscroll auto`; after, on all 15 pages in Chromium and WebKit: `none, manipulation, none`.
+  - `ec9a7b5` **Export:** `UI.download` calls `UI.nativeDownload(bytes, name, type)` when `window.Capacitor` and that function
+    exist (a marked hook for I1-4: Filesystem write, then Share) and falls back to the blob download if it returns false.
+  - `5c6fc04` **Audio:** new feature `src/ui/60-audio-context` (`UI.AUDIO`): one context (`latencyHint: 'playback'`) for the
+    effects (61) and the score (73); the score no longer makes a new one each time it is turned on, nor closes it when turned
+    off (it cuts its graph and drops its buffers); a first `pointerdown` makes and resumes it when sound or music is on; suspended
+    220 ms after `visibilitychange` to hidden and resumed when shown; `navigator.audioSession.type = 'playback'` guarded. Before: 2
+    live contexts and a new one per music switch-on; after: 1 (test `oneSharedContext`; `scoreSilentUntilAsked` now checks that
+    turning music on again makes none and that the context stays open; `scoreMenu` accepts "running" after music off).
+  - `4b417b7` **Animations:** the `.bar>i` width transition is removed (96-big-moments tweens a bar with `transform` already);
+    the steel glint's `left` sweep is a `translateX` (434% of its own width = the old 165% of the parent). Not converted, with
+    the reasons in roadmap §7.6: colour/border/box-shadow fades on controls (paint-only, 100 to 150 ms, on a press), the
+    `fold-flash` box-shadow, `lkPulse` filter, `clip-path` reveals and `stroke-dashoffset` (each once, a few hundred ms),
+    `visibility` beside a transform.
+  - `cebc1e1`, `7530d29`, `feba331` **Tap targets:** new feature `src/ui/9990-tap-targets` (CSS for a touch screen or a window
+    under 761 px): a description word (`.tt`, `.tt-n`, `b[data-tt]`, `span[data-tt]`) is a 44-point tall inline box with margins
+    that cancel it, its underline drawn as `text-decoration`; a chip (`[data-tt]`, `[data-tip]`, `.tipt`) gets a transparent
+    `::after` hit box 44 tall; a stat row (`.v2-row.tt`, the profile's `.pf-row`) is 44 tall. A glyph inside a button is left
+    alone (the button is the target). `docs/research/ios/tap-probe.mjs` now counts an absolutely positioned `::before/::after`
+    in a control's hit area and prints each small control's markup under `--verbose`. New test `tapTargets44` (all pages at 375
+    x 667, skills rows excepted). **Before 58 of 382 under 44 points; after 10 of 385** (Chromium, and WebKit: 10): the 10 are the
+    skills rows (`div.prow` 5, `li.tt.pf-sk` 5), left for S1b. By page, before to after: You 29 to 5, Profile 12 to 5, Path 6 to
+    0, Holdings 6 to 0, Dynasty 3 to 0, Life 1 to 0, Realm 1 to 0. Page heights at 375 x 667 differ by under 70 px (Profile +64
+    px, Life -10), no page scrolls sideways at 375 x 667 or 393 x 852.
+- **Test changes, with reasons:** `pfFits` allows the phone profile 2.1 screens (was 2) because the stat rows are 44 points tall
+  now (it read 2.04 at 360 px); the two music tests no longer expect the context to be closed after music is turned off.
+- **Records:** `docs/IOS_ROADMAP.md` §7 and §8 updated with the new counts and what is left; `CHANGELOG.md`; `docs/PROGRESS.md` I1-2.
+- **Left, and for whom:** `pointercancel` on the four map drags (`23-ui-c.js:1273`, `23-ui-d.js:1130`, `atlas.core.js:374`,
+  `m-field.core.js:122`) and the maps' pixel ratio: D9; the 10 skills rows (`.prow`, `li.pf-sk`) at 44 points and a hit area
+  for any new row S1b adds: S1b (drop the exception in `tapTargets44`); the person view's "out of reach" line: R2 (not
+  touched, not measured); `SAVES.backend`, `UI.store`'s native switch, `UI.nativeDownload` and Capacitor's pause/resume calling
+  `UI.AUDIO.suspend()/resume()`: I1-4; the 57 `:hover` rules into `@media (hover:hover)`: Gaps; the real safe-area insets:
+  look in TestFlight (Playwright cannot fake them).
+- **Checks:** build 138 features; `boot, saveRoundTrip, savesStillLoad, uiSmoke, renderRng, replayWithRender, phoneDesktopSame,
+  phoneNoOverflow, phoneEventSheet, clickLint` 10 of 10; 33 feature tests (illuminated chronicle, music score, profile tab,
+  title, folds, endings, scene card, share, mods, the two new) all pass after the three fixes above; `lint-stages`, `--check-tiers`,
+  `lint-reasons` (66 = baseline) ok; WebKit boot probe: boots, no errors, a save lands (idb). `press-gate`: the same
+  budgets are over as on the unchanged base (y0 quiet month, redraws a press, layouts; noise between runs), nothing new.
+- **Undo:** revert the branch's commits (base `018631d`); the old audio code is in `git show 018631d:src/ui/73-music-score/music.core.js`.
