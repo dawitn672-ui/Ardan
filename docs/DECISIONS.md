@@ -1464,3 +1464,82 @@ The audit (`docs/IOS_ROADMAP.md` §7) found these conflicts between the rules an
    when I1-2 touches it, not before.
 6. **Text selection is turned off** everywhere but inputs; the chronicle's export keeps the text the player may want to copy.
 
+
+### D-081 · W1-3: a command is a reading of the houses; the one field written is the division's (2026-11-16; order 54 answer 10; D-064 point 4, D-066)
+*Numbered from D-081: D-077 to D-080 may be taken by work in flight.*
+1. **Commands are worked out, not stored.** The crown's command, plus one for each living tenant-in-chief (a duke; a
+   marquis or count with no duke over him, `A.CMD.isTic`), read from `A.S.houses` through a `Map` per realm. The owner is
+   the house's head (the existing `house:<id>` post) or the ruler. *Why:* §9.5 asks for about ten full records a realm
+   with owners, posts and rolls; every one of those fields already exists on the house, the realm or the division, and a
+   second copy would have to be kept true through deaths, successions and conquests that A2's registry already handles.
+2. **The one field written is `d.own`** (the house whose command a division is in; absent for the crown). An old save
+   therefore maps every army into the crown's command, and the first time a realm is read its standing hosts are dealt
+   (`A.CMD.deal`, `r.cmdDeal`): the crown keeps its first host, its orders and **half** the rest (`CM.T.crownShare`); each
+   tenant-in-chief takes hosts by its `GD.NOBLE_RUNGS` full strength, largest remainder first, the order fixed by hashed
+   ids. *Why:* "a great house's levies into its command" with no dice and no new divisions; a count with no host of his own
+   is honest on the old engine (his men are called, W1-4's).
+3. **A lord's first host is his by right; the rest are led by his officers** (seed names, as 9997's captains). No post
+   `cmd:<id>:host:<n>` is created: a host's General is still its `div:` post when a person holds it, else the reading
+   (`A.HOSTS.leader`: the lord, the General he names, or the seed). The lord is General by right only while he holds no
+   other field post or seat and is of fighting age; otherwise he names one. *Why:* one holder per post holds without a new
+   class of post in the registry; making a person for each named General would cost the save (D-066 point 2's reason).
+4. **A contingent is kept whole** when a war's hosts are raised (`A.CMD.keepWhole`): a house's hosts move to the army
+   that holds most of them (an army is still at most 24 divisions).
+**Conflict recorded:** war.md §9.5 sketches command records and `cmd:` posts; the code reads them (point 1, 3). W1-4 or
+D12b-1 may store a roll when hosts of contingents exist.
+
+### D-082 · W1-3: the summons, its six answers, the excuse and the truth; the season's clock (2026-11-16; D-064 point 5; war.md §9.3)
+1. **One `A.WHY.decide` per tenant-in-chief, at the war's start**, for every realm on both sides not already in the
+   field (a crown joining a raised war brings its host as it stands). Reasons and weights (log-odds) are in
+   `b-summons.core.js` `CM.summonsOptions`: his oath (by the contract's levy and his honour), his grievance (the house's
+   opinion of the crown), the crown's fear and right, the enemy at his own border, a hostile neighbour, unrest, the
+   season, his purse, a faction, glory, what the others did, whether he can lead. *Calibrated by the lab of §9.5:* a
+   grievance and a hostile neighbour bring part or nothing 80 in 100; neither brings him in full 93 in 100; a lord who
+   hates the king refuses or pays coin 95 times in 240, one who loves him never.
+2. **The excuse and the truth are two fields.** The excuse is the heaviest reason of the chosen answer that a lord could
+   say aloud (the harvest, his border, his years, the roads, an empty chest), else a courtesy; the truth is the heaviest
+   reason for it, left empty when the excuse is the truth. Who may read the truth: the crown with a spymaster of 50 or
+   more, or anyone who knows the man.
+3. **A contingent that stays home holds its hosts back** (`d.hold = { w, u }`), read by the war map's mobilising
+   (`wsMobilizeNow`) so the old engine's armies form without them; a late one's `u` is its day (30 to 90 days on).
+4. **The season's clock** is 182 days. The first is at the lord's cost; then each season the crown decides to pay
+   (4 a man) or not, and if not the lord decides to stay or take his men home (kinds `pay`, `season`). *Why:* answer 5
+   removed the forty days; the clock is a person's decision, as D-064 point 5 says.
+5. **Records:** the summons, seasons, border and the lords' answers live in the muster (`A.S.musters`, at most 12 to 24,
+   a live war's first; each entry about 150 bytes), not in `A.S.why`, whose 150 records would be pushed out by twenty
+   lords a war. The king's command, his sentences, the crown's choice of a General and a league joining are in `A.S.why`.
+6. **The player's summons card has six choices**, against the events' rule of two to four (lint-events warns): the six
+   answers are the design (D-064 point 5), and a lord who cannot pay the shield money does not see that one.
+
+### D-083 · W1-3: the king's three ways of command are a field on the army, not a new post (2026-11-16; D-064 point 2, D-066 point 3)
+1. **`a.cmdBy`** is `king` (with `a.king`), `commission` (the existing `army:<id>` post, a.gen) or `council`, decided
+   through `A.WHY` (kind `command`) when an army of two hosts or more forms, and again under a new king.
+   `A.HOSTS.army(a).as` reads it. *Why:* §9.5's `campaign:<war>:<side>` post would have to be held by a ruler, whom the
+   registry refuses any post (`A.POSTS.can`: a ruler holds no field post), and the old engine forms armies per realm, so
+   the army is the campaign's unit. `a.gen` stays filled in a council (the General who keeps the army's books), because
+   `A.wsDay` fills an empty one at once; he does not command it.
+2. **The price of each way:** in person the king's temper moves the army (38-orders' dials) and the men see his banner
+   (+4 morale once); a council has no one temper (steady) and takes a day longer to agree each order (`A.GENERALS.every`
+   + 1, war.md §9.1's "a day longer"); a commission over great lords of higher birth leaves a grievance in their houses.
+
+### D-084 · W1-3: the refused summons' ladder; the other three disputes are hooks for W1-6 (2026-11-16; D-064 point 6; war.md §9.4)
+1. **The crown's ladder** (kind `sentence`): accept, fine, hostages, strip a host into the crown's command, forsworn,
+   attaint. The law (refusals in 12 years), the king's anger at the refusal (a feeling lit when the lord refuses), his
+   pride, a true excuse, and **the crown's standing men against the lord's full strength and hosts and his faction's**:
+   a rung beyond that ratio (1, 1.5, 3 for strip, forsworn, attaint) weighs heavily against, and if chosen anyway is
+   not enforced and costs the crown 2 stability. *Why:* "the king can climb only as far as his strength reaches" (§9.4).
+2. **The lord's side** (kind `answer`): submit, sulk, or a league (he joins a liberty or independence faction when there
+   is one; founding a league and rising are W1-6's). Every sentence but acceptance is a grievance on the house (`h.cmGr`).
+3. **The other disputes:** `w.kind` is written on every war (realm, rebellion, civil now; private and border kept for
+   W1-6); a quarrel inside the army leaves its grievance (`t: passed`); a march lord rises for his border unsummoned
+   (kind `border`). **The ladders of the private war, the army's quarrel and the border lord's own war are W1-6's.**
+4. **The player** is judged by the same ladder (`A.CMD.pcJudge`, also for the release's yearly summons, where a rung was
+   lost in 1 of 4 before) and answers on a card (cm_sentence).
+
+### D-085 · W1-3: a lord who rides to the muster is in the war (2026-11-16; D10, D-052, owner order 5)
+**Conflict recorded:** v2's gate (99997) put a landed lord outside every war (`W.side` knew soldiers, rulers, companies
+and generals), so the release's levy battle for a lord who answered the summons was silently dropped. **Chosen:** a lord
+who answered in full or with part, or came late and is there, is in his crown's war until it ends or he takes his men
+home (`A.CMD.ridesWith`, read by `W.side`). *Why:* he is deployed at his rank, which order 5 allows; a lord who sent a
+deputy, coin or nothing stays outside it. The release's yearly summons and the polity's po_muster no longer ask a lord the
+W1-3 summons already asked; po_muster's quiet (answer as last time) carries over to cm_summons.

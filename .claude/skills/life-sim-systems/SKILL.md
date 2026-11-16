@@ -111,9 +111,13 @@ Each realm has: king > dukes (at most 3; ≥24 counties → 3, ≥14 → 2, ≥7
   - The test requires the high-value choice to beat the low one at every rank by 4 points or more at sergeant and above.
 - **After-action report:** the three biggest signed contributions in words (the ground, tactics, numbers, quality, elites, your part).
 - **Not your war?** Then the player gets no view of it, only rumour.
+- **Commands and the summons (built, W1-3, D-081 to D-085; `src/war/9999951-commands`):**
+  - Every armed man (a division of the war map) is in exactly one command: the crown's (first host, orders, regiments, its share), or a tenant-in-chief's (a duke; a marquis or count with no duke over him), whose first host he leads by right or gives to a General he names. Commands are a reading of the houses; the one field written is `d.own`. Old saves deal the hosts once by `GD.NOBLE_RUNGS`' full strength (largest remainder, ids, no dice). A contingent is kept in one army.
+  - The king commands an army of two hosts or more in person (his temper moves it), by a commission (`army:<id>`, for that war), or through a council of war (a day slower, no one temper), chosen through `A.WHY` from his skill, trust, kin, fear of a famous man, the great lords' pride.
+  - The summons: six answers (full, part, late, deputy, coin, refusal), each from named reasons (opinion of the crown, its fear and right, feelings, a faction, the enemy or a hostile neighbour at his border, the harvest, his purse, his oath by his honour, what the others did). The muster keeps the excuse given and the true reason. First season at the lord's cost; then the crown pays or he weighs going home each season.
+  - A refusal is a grievance; the king's sentence (accept, fine, hostages, strip, forsworn, attaint) reaches only as far as his strength, and an unenforced one costs stability; the lord submits, sulks or seeks a league. A march lord rises for his border unsummoned. `w.kind` on every war; private, army and border disputes have hooks and are W1-6's.
+  - The player lord gets the six answers as a card (riding with his men puts him in the war); a General in a great lord's host answers to that lord; the muster's news and the War tab's roll are cut to what his place lets him know.
 - **Where the design is going (D-064, `docs/design/war.md` part two; not built yet, so the lines above still describe the code):**
-  - (W1-1 built the five ranks, above.) The king in person, or a council of war when nobody is named, with reasons for the choice (W1-3).
-  - Every armed man is in one command (the crown's, or a great lord's own under officers he names); the king summons and each lord answers from named reasons; contingents are kept whole. Private wars, refused summonses and border lords' wars follow from it.
   - No levies: sworn men, enlisted men and the roll; conscription by proclamation in real need, with a cost in fields and a remembered grievance.
   - (W1-2 built the minds, section 9a below.) A war ends only by surrender or defeat (W1-5).
   - You see from where you stand; everything else is a report with a sender, a road, a day and a slant.

@@ -5,6 +5,30 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **The great lords have their own armies.** Every soldier of a realm now serves in one command: the crown's (the
+  king's own regiments, his knights, the orders, hired men, led by Generals he commissions) or a great lord's (a duke,
+  or a marquis or count who holds straight of the crown), whose first host the lord leads himself or gives to a General
+  of his own. A lord's hosts march together in one army; nobody breaks them up.
+- **The summons.** When the crown goes to war, each great lord answers for his own reasons: he comes in full, comes with
+  part of his men, comes late, sends a son or a captain, sends shield money, or refuses. The muster roll keeps what
+  each said and, underneath, why he really did it: the harvest, a hostile neighbour on his border, his years, an old
+  grievance, a faction that wants the king weaker. A lord's men serve the first season at his own cost; after that the
+  crown pays them, or he may take them home.
+- **A refusal has consequences.** The king decides how far he dares punish a lord who would not come: he may let it
+  pass, fine him, take a son to court, take a host from him, call him forsworn before the court, or attaint him. A
+  sentence the crown is not strong enough to enforce costs it, and every lord watches. The lord submits, keeps
+  silent, or writes to the others who stayed home. A march lord who stayed home still rises when the enemy reaches
+  his own lands.
+- **How the king commands.** An army of two hosts or more is led by the king in person, by one General given it by the
+  king's written word for that war, or, when the king will name nobody, by a council of its Generals, which is slower
+  to agree and has no one will. The king chooses for reasons you can read (his skill, his trust in the man, his kin, his
+  fear of a General the soldiers love, the great lords' pride).
+- **If you are a landed lord,** you are summoned too, with all six answers and what each costs; riding with your men
+  takes you into the war, and refusing brings the crown's judgment, which you answer. A General serving in a great
+  lord's host answers to that lord. The War tab's muster roll and the news of the muster tell you what your place lets
+  you know: the crown hears the whole roll, a lord who stayed home and why, a soldier his own lord's answer and the
+  count of banners.
+
 - **Kings and lords decide for reasons you can read.** A crown goes to war, a great house joins or leaves a faction, and
   the king names his first host's General by weighing named reasons (an insult, bad blood, a cause, his Generals' count
   of the enemy's spears, an old wrong, a debt, his temper), never by a roll of the dice alone. The news of a war now ends
