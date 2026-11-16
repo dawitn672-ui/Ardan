@@ -1109,8 +1109,10 @@ Each failure, its cause and the fix:
   faithless player (d-faith) the piety became pull before the job made him a priest. A choice that takes holy orders takes
   the faith first (`VS.takeFaith`). Not caused by P3 (the same on the build before it); the re-rolled world sampled it. `9215bf3`.
 - **varietyGuard** (unresolved): one triple with the guard on against a bar of 0, on CI 133 (before P3) and 134. The test
-  now names the triple (seed, shape, the three scenes and how each came) `2db4eb7`; a local run (over 800 s) did not finish
-  under the shared machine's load.
+  now names the triple (seed, shape, the three scenes and how each came) `2db4eb7`. A local run found it: seed 6, 1118,
+  money: `wc_bread_since` > `bd_friend_debt` > `ww_ald_oakline`, all rolled scenes, none a chain or forced. The guard
+  (25) reads the shapes answered and the queue at the roll; a scene held to a later month (v2-time's month cap) or
+  scheduled comes back unseen by it. Left for the guard's owner; not P3's (CI 133 had it before P3).
 - **Not P3's:** `famineTriplesGrain` (shard 5, which did not run on CI 134: the runner's font install failed) fails on
   `018631d` (failed harvest 1.11 against an ordinary 1.15, a bar of -0.03) but passes on P3 alone (`0669e29`: 1.14 against
   1.11) and before it: a W1-1/W1-2 re-roll, left to its owner. The rest of shard 5 passes locally.
