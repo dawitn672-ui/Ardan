@@ -959,6 +959,11 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   measured here: no log has it). 167 tests had no CI time in the logs (planned at 30 s): the first long and quick runs' time artifacts fix that.
 - Undo: `git revert` the commit; the old runner split was `i % n` over the test list, and `check.yml` ran all tests.
 
+- **First run (CI 131, both tiers green, 2026-11-16):** long tier 26 minutes; quick shards 9 to 19 minutes of tests, but the
+  balance job took 37 and held the run to 38. Balance moved to `long.yml`; all 16 shards' times merged into
+  `tests/test-times.json`; 12 tests over 200 s joined the long list (54). New plan: quick about 11 minutes a shard, long about 22.
+  Undo the move: put the `balance` job back in `check.yml` from `long.yml`.
+
 ### H-060 · 2026-11-15 21:35 ET · D12a-2: the war design revised with the owner's ten answers (design only)
 - **Docs:** `docs/design/war.md` revised (part one kept, changes marked *(D12a-2)*; part two new, §9 to §16: command
   without a Marshal, manpower without levies, why wars start and end, your place in it, stability and upheavals, the

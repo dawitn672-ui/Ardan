@@ -46,6 +46,23 @@ jobs:
           path: times-${{ matrix.shard }}.json
           if-no-files-found: ignore
           retention-days: 30
+  # The balance league, moved here from check.yml (D-063 addendum, 2026-11-16): each starting path held to the bands in
+  # tools/bench/targets.mjs. It took 37 minutes on CI 131, twice the slowest quick shard.
+  balance:
+    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[full ci]') || startsWith(github.ref, 'refs/heads/release/')
+    runs-on: ubuntu-24.04   # Playwright 1.56 has no Chromium for ubuntu-latest (26.04) yet
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: node tools/build.mjs
+      - run: git diff --exit-code index.html
+      - run: node tools/bench/balance.mjs index.html --workers=4
   times:
     needs: long
     if: always() && needs.long.result != 'skipped'

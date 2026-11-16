@@ -1113,6 +1113,13 @@ that a regression only the long tier sees is found up to a day later (or at once
 saves should say `[full ci]`. **Rejected:** dropping or shortening the long tests (they are the only whole-life guard); a
 count split (what was there). **Left open:** moving `balance` to the long tier (not measured); the long run commits no times itself (an artifact).
 
+**Addendum (2026-11-16 03:40 ET, CI 131, the first run of both tiers, both green).** Measured: the quick shards took 9 to 19
+minutes of tests, the long tier 26 minutes, but the `balance` job took 37 minutes and held every push's answer to 38. It
+moves to `long.yml` (nightly, `[full ci]`, `release/*`, before a version), which D-063 had left open. Every shard's measured
+time was merged into `tests/test-times.json` (852 timed, none planned blind); 12 tests had crossed 200 s and joined the long
+list (54 now). Plan: quick 798 tests, about 11 minutes a shard; long 54, about 22. The wait for runners on CI 131 (12 to 20
+minutes) came from both tiers starting at once on a `[full ci]` push; a plain push starts 11 jobs and should not queue.
+
 ### D-064 · D12a-2: the war design revised with the owner's ten answers; the gaps filled (2026-11-15 21:35 ET; order 54, D-062; revises D12a; steers W1, D11, D12b)
 `docs/design/war.md` keeps D12a's theatre, field, press and one engine (part one) and adds part two (§9 to §16). The
 owner's answers are followed as given (§7 sets each beside its question). Where they left room, these were chosen, as

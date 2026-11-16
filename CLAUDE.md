@@ -108,9 +108,9 @@ node tools/version.mjs get v2.0.0-beta.1                  # any version, playabl
 git gc --prune=now                                        # after every integration round (see below)
 ```
 
-**Two test tiers (T1, D-063).** `tests/long-tests.json` lists the long tests (bot lives and replays of 200 to 1,800 s: 42 of
+**Two test tiers (T1, D-063).** `tests/long-tests.json` lists the long tests (bot lives and replays of 200 to 1,800 s: 54 of
 852, over half of the suite's CPU time); `tests/test-times.json` holds each test's seconds on CI. **Quick** (everything not
-listed) runs on every push and pull request (`check.yml`, `--tier=quick --shard=k/8`, about 12 minutes of tests a shard);
+listed) runs on every push and pull request (`check.yml`, `--tier=quick --shard=k/8`, about 11 minutes of tests a shard);
 **long** runs in `long.yml`: every night, by hand (workflow_dispatch), on a push whose commit message has `[full ci]`, on
 `release/*`, and from other workflows. **A version needs both tiers green on the commit** (`check.yml` and `long.yml`) before
 `tools/version.mjs new`. Shards are split by measured time, longest first, not by count. A new test with no time is planned at
@@ -267,7 +267,7 @@ when the tree has none), name one with `A.KIN.nameOf`, and write a story's secre
 - `tools/lint-events.mjs` must pass.
 - `tools/lint-choices.mjs --feature=<name>` must find no obviously best choice. It flags a choice that beats the others on every count and is no riskier, so give the other side a reason or the favourite a cost.
 - `tests/run.mjs` must pass for your feature.
-- CI also runs `tools/bench/balance.mjs`, which holds each starting path to the bands in `tools/bench/targets.mjs`. Widen a band only with a reason in the file.
+- CI (the long tier, `long.yml`) also runs `tools/bench/balance.mjs`, which holds each starting path to the bands in `tools/bench/targets.mjs`. Widen a band only with a reason in the file.
 
 ## Measurement conventions (`tools/bench/`)
 

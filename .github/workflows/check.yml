@@ -58,20 +58,8 @@ jobs:
           path: times-${{ matrix.shard }}.json
           if-no-files-found: ignore
           retention-days: 14
-  balance:
-    runs-on: ubuntu-24.04   # Playwright 1.56 has no Chromium for ubuntu-latest (26.04) yet
-    timeout-minutes: 120
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - run: node tools/build.mjs
-      - run: git diff --exit-code index.html
-      - run: node tools/bench/balance.mjs index.html --workers=4
+  # The balance league (tools/bench/balance.mjs, 37 minutes on CI 131, the slowest job by far) moved to long.yml on
+  # 2026-11-16 (D-063 addendum): it held every push's answer to 38 minutes while the test shards took 9 to 19.
   # Round 2 A1 (CRITIQUE Q2): the press gate. Real Next month presses on the committed saves of year 0 and year 50
   # (tests/saves/press/), on a fresh page and after a death, at 1366 px and at four-times CPU throttle, held to the
   # budgets in tools/bench/press-gate.mjs (CPU time, full redraws and layouts a press).
