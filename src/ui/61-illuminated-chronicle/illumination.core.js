@@ -41,7 +41,7 @@
   @keyframes ilTurn{from{opacity:0;transform:perspective(900px) rotateY(-28deg);filter:brightness(1.15)}to{opacity:1;transform:none;filter:none}}
   .il-steel{position:absolute;inset:0;pointer-events:none;border-radius:inherit;overflow:hidden;z-index:3}
   .il-steel::before{content:"";position:absolute;top:-20%;bottom:-20%;width:38%;left:-45%;transform:skewX(-22deg);background:linear-gradient(90deg,rgba(255,250,235,0) 0%,rgba(255,248,225,.55) 45%,rgba(185,138,42,.35) 55%,rgba(255,250,235,0) 100%);animation:ilSteel .75s cubic-bezier(.2,.7,.2,1) .05s both}
-  @keyframes ilSteel{from{left:-45%}to{left:120%}}
+  @keyframes ilSteel{from{transform:skewX(-22deg) translateX(0)}to{transform:skewX(-22deg) translateX(434%)}}   /* I1-2: was left -45% to 120% (165% of the parent = 434% of the 38% glint); now a transform */
   .mbox.il-fight{position:relative}
   @media (prefers-reduced-motion: reduce){.ink-in,.il-new,.il-turn,.il-steel::before{animation:none}.il-steel{display:none}}
   `;
