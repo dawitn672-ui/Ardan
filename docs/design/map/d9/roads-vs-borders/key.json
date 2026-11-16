@@ -1,0 +1,566 @@
+{
+ "seed": 4242,
+ "zoom": 5,
+ "key": [
+  {
+   "crop": "crop-01.jpg",
+   "centre": "Kraina",
+   "marks": [
+    {
+     "n": 1,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 2,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 3,
+     "is": "road",
+     "kind": "high road"
+    },
+    {
+     "n": 4,
+     "is": "road",
+     "kind": "high road"
+    },
+    {
+     "n": 5,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 6,
+     "is": "border",
+     "kind": "realm border"
+    },
+    {
+     "n": 7,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 8,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 9,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 10,
+     "is": "border",
+     "kind": "realm border"
+    }
+   ]
+  },
+  {
+   "crop": "crop-02.jpg",
+   "centre": "Qarifa",
+   "marks": [
+    {
+     "n": 1,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 2,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 3,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 4,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 5,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 6,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 7,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 8,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 9,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 10,
+     "is": "road",
+     "kind": "track"
+    }
+   ]
+  },
+  {
+   "crop": "crop-03.jpg",
+   "centre": "The Dobava Wilds",
+   "marks": [
+    {
+     "n": 1,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 2,
+     "is": "border",
+     "kind": "realm border"
+    },
+    {
+     "n": 3,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 4,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 5,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 6,
+     "is": "border",
+     "kind": "realm border"
+    },
+    {
+     "n": 7,
+     "is": "border",
+     "kind": "realm border"
+    },
+    {
+     "n": 8,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 9,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 10,
+     "is": "road",
+     "kind": "track"
+    }
+   ]
+  },
+  {
+   "crop": "crop-04.jpg",
+   "centre": "Novice",
+   "marks": [
+    {
+     "n": 1,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 2,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 3,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 4,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 5,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 6,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 7,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 8,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 9,
+     "is": "border",
+     "kind": "realm border"
+    },
+    {
+     "n": 10,
+     "is": "road",
+     "kind": "track"
+    }
+   ]
+  },
+  {
+   "crop": "crop-05.jpg",
+   "centre": "The Tverko Woods",
+   "marks": [
+    {
+     "n": 1,
+     "is": "border",
+     "kind": "realm border"
+    },
+    {
+     "n": 2,
+     "is": "border",
+     "kind": "realm border"
+    },
+    {
+     "n": 3,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 4,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 5,
+     "is": "border",
+     "kind": "realm border"
+    },
+    {
+     "n": 6,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 7,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 8,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 9,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 10,
+     "is": "road",
+     "kind": "track"
+    }
+   ]
+  },
+  {
+   "crop": "crop-06.jpg",
+   "centre": "Bayalo",
+   "marks": [
+    {
+     "n": 1,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 2,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 3,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 4,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 5,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 6,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 7,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 8,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 9,
+     "is": "border",
+     "kind": "realm border"
+    },
+    {
+     "n": 10,
+     "is": "border",
+     "kind": "realm border"
+    }
+   ]
+  },
+  {
+   "crop": "crop-07.jpg",
+   "centre": "Chasethwaite Tower",
+   "marks": [
+    {
+     "n": 1,
+     "is": "border",
+     "kind": "realm border"
+    },
+    {
+     "n": 2,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 3,
+     "is": "road",
+     "kind": "high road"
+    },
+    {
+     "n": 4,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 5,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 6,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 7,
+     "is": "road",
+     "kind": "high road"
+    },
+    {
+     "n": 8,
+     "is": "road",
+     "kind": "high road"
+    },
+    {
+     "n": 9,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 10,
+     "is": "border",
+     "kind": "realm border"
+    }
+   ]
+  },
+  {
+   "crop": "crop-08.jpg",
+   "centre": "Tarona",
+   "marks": [
+    {
+     "n": 1,
+     "is": "road",
+     "kind": "high road"
+    },
+    {
+     "n": 2,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 3,
+     "is": "border",
+     "kind": "realm border"
+    },
+    {
+     "n": 4,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 5,
+     "is": "road",
+     "kind": "high road"
+    },
+    {
+     "n": 6,
+     "is": "road",
+     "kind": "high road"
+    },
+    {
+     "n": 7,
+     "is": "border",
+     "kind": "realm border"
+    },
+    {
+     "n": 8,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 9,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 10,
+     "is": "border",
+     "kind": "realm border"
+    }
+   ]
+  },
+  {
+   "crop": "crop-09.jpg",
+   "centre": "Dobin",
+   "marks": [
+    {
+     "n": 1,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 2,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 3,
+     "is": "border",
+     "kind": "realm border"
+    },
+    {
+     "n": 4,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 5,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 6,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 7,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 8,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 9,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 10,
+     "is": "border",
+     "kind": "realm border"
+    }
+   ]
+  },
+  {
+   "crop": "crop-10.jpg",
+   "centre": "Januma Caravanserai",
+   "marks": [
+    {
+     "n": 1,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 2,
+     "is": "border",
+     "kind": "realm border"
+    },
+    {
+     "n": 3,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 4,
+     "is": "border",
+     "kind": "realm border"
+    },
+    {
+     "n": 5,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 6,
+     "is": "border",
+     "kind": "province border"
+    },
+    {
+     "n": 7,
+     "is": "road",
+     "kind": "high road"
+    },
+    {
+     "n": 8,
+     "is": "road",
+     "kind": "high road"
+    },
+    {
+     "n": 9,
+     "is": "road",
+     "kind": "track"
+    },
+    {
+     "n": 10,
+     "is": "border",
+     "kind": "realm border"
+    }
+   ]
+  }
+ ]
+}
