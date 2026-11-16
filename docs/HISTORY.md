@@ -1186,6 +1186,11 @@ Branch `p3-playtest` from `v2-integration` at `2aaf1ba`; one commit a fix; not p
   (version 3, the ground on the world, `VM.landNames`).
 - **Tools:** `tools/d9/road-crops.mjs` (the roads-or-borders crops and their key, `docs/design/map/d9/roads-vs-borders/`),
   `tools/d9/sheet.mjs` (the owner's sheet, `docs/design/map/d9/sheet.png`).
+- **Second round:** the first stranger's read of roads or borders was 69/100 (province bounds taken for roads 20 times,
+  tracks for borders 10); province bounds became faint cool grey dots (62), tracks solid warm brown, and roads share their
+  corridors (`SHARE`). New crops on an unseen seed: `docs/design/map/d9/roads-vs-borders-2/` (seed 5150), unscored. Merged
+  `origin/v2-integration` twice (to `3d33c43`, W1-1, P3, T1, W1-2): only the records conflicted. Quick-tier war, map and core
+  tests: 138 of 139 pass; `v2wRankCounts` fails the same way on `3d33c43` without D9.
 - **Undo:** revert the branch's commits, newest first. Saves keep only the map's seed and version. An older build reads a
   version 3 save's map as version 2 (its towns' sites would not match), so undo before version 3 saves are kept; version 2
   saves are unaffected either way.
