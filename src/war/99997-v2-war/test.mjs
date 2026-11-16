@@ -419,9 +419,16 @@ export default {
         break;
       }
       // the commander
-      const f = fs[0]; const { arg } = VWX.load(f, 8);
-      A.CHOICE_FN.wsLead(arg.key);
-      const q = A.S.queue[0];
+      // W1-1: General (grade 7) is the highest rank; there is no grade 8 (High General) to load. The first of the fights
+      // whose enemy is a real host: against a guard of 200 an estimate and the exact count read the same ("about 200"),
+      // which is what the world after W1-1 and P3 drew first
+      let q = null;
+      for (const f of fs) {
+        const { arg } = VWX.load(f, GD.MIL.length - 1);
+        A.CHOICE_FN.wsLead(arg.key);
+        q = A.S.queue[0];
+        if (q && q.type === 'battle' && q.b.sides[q.b.pcSide === 'A' ? 'B' : 'A'].men0 >= 1000) break;
+      }
       if (q && q.type === 'battle') {
         const B = q.b, en = B.sides[B.pcSide === 'A' ? 'B' : 'A'], me = B.sides[B.pcSide];
         UI.screen = 'game'; UI.ov = null; UI.render();
