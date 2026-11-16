@@ -2253,107 +2253,85 @@ A.aiWarCheck = function () {
   // [X1 baked patch core/09-engine-at-scale WORLD-WAR-CAP] A.aiWarCheck stopped every realm from starting a war
   // while four wars were under way anywhere. Written for 35 realms; on the Great Continent the four were shared by
   // 153 realms and ten lands, and the cap was full on a fifth to a third of days. A.warCapFull gives each land its
-  // share of the four (at least one), and is null on the Known World. A realm whose land is full makes no new war
-  // (its neighbours are passed over; the shuffles draw as before).
+  // share of the four (at least one), and is null on the Known World. A realm whose land is full makes no new war.
   const capFull = A.warCapFull && A.warCapFull();
   if (!capFull && S.wars.filter(w => w.cb !== "throne").length >= 4) return;
-  const live = A.dLive();
-  // [X1 baked patch core/09-engine-at-scale WORLD-WAR-CAP] A.aiWarCheck stopped every realm from starting a war
-  // while four wars were under way anywhere. Written for 35 realms; on the Great Continent the four were shared by
-  // 153 realms and ten lands, and the cap was full on a fifth to a third of days. A.warCapFull gives each land its
-  // share of the four (at least one), and is null on the Known World. A realm whose land is full makes no new war
-  // (its neighbours are passed over; the shuffles draw as before).
+  // [W1-2, D-069] A war is declared by a decision, never by a bare roll (rule 18). Each AI crown sits in council once a
+  // year (its month fixed by its id), and at once when a hot wrong calls it (A.WHY.wrong). It weighs every neighbour war
+  // is thinkable against, and peace, through A.WHY.decide: each option with its reasons (the release's factors, now
+  // named and sourced: temper, the Generals' count, bad blood, cause, rivals, the feud ledger, 68's plan and moment,
+  // infamy, unsettled lands, a sworn pact) and the ruler's feelings. The record goes with the war (w.why), into the
+  // news and the rulers' log. A war is thinkable only with bad blood under the ruler's bar, or a hot feeling at them.
+  // (Before W1-2: a monthly A.chance(p) over the same factors, and a sworn pact skipped by A.chance(0.9).)
+  if (!A.WHY) return;
+  const W = A.WHY,
+    tick = W.tick(),
+    asks = W.takeAsks().map(x => x[0]);
   // [X1 baked patch diplomacy/20-ai-personality AIP-WAR-CHECK] A.aiWarCheck: the opinion bar (-25), the
   // war-weariness limit (30), the strength edge wanted (.7), the no-cause penalty (.6) and A.AGGRO now come from the
   // ruler persona; a declared war is logged with its top 3 reasons.
-  for (const r of A.shuffle(live))
+  for (const r of A.dLive()) {
+    if (!(asks.includes(r.id) || W.councilMonth(r.id) === tick)) continue;
     if (
-      !(
-        r.playerRun ||
-        A.atWar(r.id).length >= 1 ||
-        r.exhaustion > A.aiWeary(r.id) ||
-        r.stability < 30 ||
-        A.aiResting(r)
-      )
+      r.playerRun ||
+      A.atWar(r.id).length >= 1 ||
+      r.exhaustion > A.aiWeary(r.id) ||
+      r.stability < 30 ||
+      A.aiResting(r) ||
+      (capFull && capFull(r))
     )
-      for (const oid of A.shuffle(A.neighbors(r.id))) {
-        // [X1 baked patch core/09-engine-at-scale WORLD-REACH] Neighbours (land or sea lane) could declare war, a
-        // coalition took in the neighbours of neighbours, and an ally or tributary (or a partner in a defensive pact, a
-        // guarantee or a league) answered a call to arms from anywhere. On the Great Continent that made coalitions of 25
-        // realms from six lands and allies marching 3,000 km to a war with no front. A.outOfReach (false on the Known
-        // World) keeps all three to realms whose land comes within 1,500 km of the other side.
-        const o = A.realm(oid);
-        if (
-          !o ||
-          !o.alive ||
-          o.isRebel ||
-          (capFull && capFull(r)) ||
-          (A.outOfReach && A.outOfReach(r.id, oid)) ||
-          (r.truce[o.id] && r.truce[o.id] > S.year) ||
-          r.allies.includes(o.id) ||
-          A.hasTr(r.id, o.id, "def") ||
-          (A.hasNap(r.id, o.id) && A.chance(0.9)) ||
-          r.overlord === o.id ||
-          o.overlord === r.id
-        )
-          continue;
-        // [X1 baked patch diplomacy/68-reasons-for-war CB-WAR-ODDS] A.aiWarCheck: a crown that plans revenge for a line of
-        // its feud ledger, or a war for its realm's want, waits for its moment and then strikes (casus.core.js). Three
-        // hooks: the war preview of a planned target counts that target at 60% while its host is away at another war
-        // (A.cbPreview, in place of A.warPreview); a want presses on the opinion bar the way a claim does (A.cbPress,
-        // beside the claims term); and one more factor in the odds product (A.cbWarMul): up to x9 on the planned target
-        // when the moment is good, x0.5 while it is not, x0.5 on any other neighbour while a plan stands, x1 to x4 (by
-        // temper) on a neighbour remembered for an old wrong or wanted by a crown with no plan, and 0 on a realm the crown
-        // owes an honoured debt. In the source: the same three terms in the war-chance calculation.
-        const cb = A.cbOn(r.id, o.id),
-          rel =
-            A.relBetween(r.id, o.id) -
-            A.claimsOn(r.id, o.id).length * 12 -
-            (cb ? 10 : 0) -
-            (A.cbPress ? A.cbPress(r.id, o.id) : 0);
-        // [X1 baked patch diplomacy/20-ai-personality AIP-WAR-CHECK] A.aiWarCheck: the opinion bar (-25), the
-        // war-weariness limit (30), the strength edge wanted (.7), the no-cause penalty (.6) and A.AGGRO now come from the
-        // ruler persona; a declared war is logged with its top 3 reasons.
-        // [X1 baked patch diplomacy/68-reasons-for-war CB-WAR-ODDS] A.aiWarCheck: a crown that plans revenge for a line of
-        // its feud ledger, or a war for its realm's want, waits for its moment and then strikes (casus.core.js). Three
-        // hooks: the war preview of a planned target counts that target at 60% while its host is away at another war
-        // (A.cbPreview, in place of A.warPreview); a want presses on the opinion bar the way a claim does (A.cbPress,
-        // beside the claims term); and one more factor in the odds product (A.cbWarMul): up to x9 on the planned target
-        // when the moment is good, x0.5 while it is not, x0.5 on any other neighbour while a plan stands, x1 to x4 (by
-        // temper) on a neighbour remembered for an old wrong or wanted by a crown with no plan, and 0 on a realm the crown
-        // owes an honoured debt. In the source: the same three terms in the war-chance calculation.
-        if (rel > A.aiWarBar(r.id) || A.hostile(r.id, o.id)) continue;
-        const P = A.cbPreview ? A.cbPreview(r.id, o.id) : A.warPreview(r.id, o.id);
-        let p = (0.11 / 12) * A.aiWarHaz(r.id) * A.clamp(P.ratio - A.aiNerve(r.id), 0, 2.5) * (1 + (-rel - 25) / 60);
-        // [X1 baked patch diplomacy/20-ai-personality AIP-WAR-CHECK] A.aiWarCheck: the opinion bar (-25), the
-        // war-weariness limit (30), the strength edge wanted (.7), the no-cause penalty (.6) and A.AGGRO now come from the
-        // ruler persona; a declared war is logged with its top 3 reasons.
-        // [X1 baked patch people/55-bonds BONDS-FEUD-WAR] A.aiWarCheck: after the rivalry factor, multiply the odds of
-        // declaring war on a neighbour by A.feudWarMul(attacker, target): up to x1.6 (x2.1 for a wrathful ruler) against a
-        // realm the attacker holds a generational grudge against (a capital taken, a heartland lost, a betrayal), down to
-        // x0.4 toward one it owes a debt. In the source: one more factor in the war-chance product.
-        // [X1 baked patch diplomacy/68-reasons-for-war CB-WAR-ODDS] A.aiWarCheck: a crown that plans revenge for a line of
-        // its feud ledger, or a war for its realm's want, waits for its moment and then strikes (casus.core.js). Three
-        // hooks: the war preview of a planned target counts that target at 60% while its host is away at another war
-        // (A.cbPreview, in place of A.warPreview); a want presses on the opinion bar the way a claim does (A.cbPress,
-        // beside the claims term); and one more factor in the odds product (A.cbWarMul): up to x9 on the planned target
-        // when the moment is good, x0.5 while it is not, x0.5 on any other neighbour while a plan stands, x1 to x4 (by
-        // temper) on a neighbour remembered for an old wrong or wanted by a crown with no plan, and 0 on a realm the crown
-        // owes an honoured debt. In the source: the same three terms in the war-chance calculation.
-        if (
-          ((p *= cb ? (cb === "justified" || cb === "reconquest" ? 2.2 : 1.5) : A.aiNoCause(r.id)),
-          r.rivals.includes(o.id) && (p *= 1.5),
-          (p *= A.feudWarMul ? A.feudWarMul(r.id, o.id) : 1),
-          (p *= A.cbWarMul ? A.cbWarMul(r.id, o.id, P) : 1),
-          o.playerRun && (p *= 0.8),
-          (p *= A.clamp(1 - (r.infamy || 0) / 90, 0.15, 1)),
-          (p *= A.clamp(1.2 - A.overext(r) * 1.5, 0.3, 1.2)),
-          A.chance(p))
-        ) {
-          A.aiNoteWar(r.id, o.id, P, rel, cb, A.declareWar(r.id, o.id));
-          return;
-        }
-      }
+      continue;
+    const opts = [];
+    for (const oid of A.neighbors(r.id)) {
+      // [X1 baked patch core/09-engine-at-scale WORLD-REACH] Neighbours (land or sea lane) could declare war, a
+      // coalition took in the neighbours of neighbours, and an ally or tributary (or a partner in a defensive pact, a
+      // guarantee or a league) answered a call to arms from anywhere. On the Great Continent that made coalitions of 25
+      // realms from six lands and allies marching 3,000 km to a war with no front. A.outOfReach (false on the Known
+      // World) keeps all three to realms whose land comes within 1,500 km of the other side.
+      const o = A.realm(oid);
+      if (
+        !o ||
+        !o.alive ||
+        o.isRebel ||
+        (A.outOfReach && A.outOfReach(r.id, oid)) ||
+        (r.truce[o.id] && r.truce[o.id] > S.year) ||
+        r.allies.includes(o.id) ||
+        A.hasTr(r.id, o.id, "def") ||
+        r.overlord === o.id ||
+        o.overlord === r.id ||
+        A.hostile(r.id, o.id)
+      )
+        continue;
+      // [X1 baked patch diplomacy/68-reasons-for-war CB-WAR-ODDS] A.aiWarCheck: a crown that plans revenge for a line of
+      // its feud ledger, or a war for its realm's want, waits for its moment and then strikes (casus.core.js). Three
+      // hooks: the war preview of a planned target counts that target at 60% while its host is away at another war
+      // (A.cbPreview, in place of A.warPreview); a want presses on the opinion bar the way a claim does (A.cbPress,
+      // beside the claims term); and one more reason (A.cbWarMul): up to x9 on the planned target when the moment is
+      // good, x0.5 while it is not, x0.5 on any other neighbour while a plan stands, x1 to x4 (by temper) on a neighbour
+      // remembered for an old wrong or wanted by a crown with no plan, and none at all on a realm the crown owes an
+      // honoured debt.
+      const cb = A.cbOn(r.id, o.id),
+        rel =
+          A.relBetween(r.id, o.id) -
+          A.claimsOn(r.id, o.id).length * 12 -
+          (cb ? 10 : 0) -
+          (A.cbPress ? A.cbPress(r.id, o.id) : 0);
+      if (rel > A.aiWarBar(r.id) && !W.hot(r.id, o.id)) continue;
+      // [X1 baked patch people/55-bonds BONDS-FEUD-WAR] the feud ledger's A.feudWarMul is one of the reasons: up to
+      // x1.6 (x2.1 for a wrathful ruler) against a realm held in a generational grudge, down to x0.4 toward a creditor.
+      const P = A.cbPreview ? A.cbPreview(r.id, o.id) : A.warPreview(r.id, o.id),
+        reasons = W.warReasons(r, o, P, rel, cb);
+      if (reasons) opts.push({ id: "war:" + o.id, at: o.id, feeds: W.WAR_FEEDS, reasons, P, rel, cb });
+    }
+    if (!opts.length) continue;
+    opts.push({ id: "wait", reasons: W.peaceReasons(r) });
+    const rec = W.decide(r.id, "war", opts, { band: W.T.warBand, r: r.id, logIf: x => x.chose !== "wait" });
+    if (!rec || rec.chose === "wait") continue;
+    const c = opts.find(x => x.id === rec.chose);
+    A.aiNoteWar(r.id, c.at, c.P, c.rel, c.cb, A.declareWar(r.id, c.at, { war: { why: rec } }), rec);
+    // the other crowns of this month still sit (a council missed would wait a year), under the same cap
+    if (!capFull && S.wars.filter(w => w.cb !== "throne").length >= 4) return;
+  }
 };
 
 A.INCIDENTS = [

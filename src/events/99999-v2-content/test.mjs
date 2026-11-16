@@ -419,7 +419,9 @@ export default {
       const pc = A.pc(), me = pc.realm, en = A.neighbors(me)[0];
       A.startWar(me, en, null, 'conquest');
       if (!pc.mil) A.enlist(pc);
-      pc.mil.rank = Math.max(pc.mil.rank || 0, 8);
+      // W1-1: General (grade 7) is the highest rank (the old grade 8, High General, is gone); at war the king's
+      // commission gives him an army, as the High General's group did
+      pc.mil.rank = GD.MIL.length - 1; A.wsAttachPC();
       for (let i = 0; i < 4; i++) { A.advance(5); let h, g = 0; while ((h = A.headReady()) && g++ < 50) { if (h.type === 'event') A.eventAuto(); else A.skipPrompt(); } }
       const R2 = A.cmdRole(pc), myR = UI.wrMyR(pc), divs = A.allDivs();
       const foe = divs.filter(d => A.hostile(myR, d.r)), mine = divs.filter(d => d.r === myR);

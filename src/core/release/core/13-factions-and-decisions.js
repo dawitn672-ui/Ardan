@@ -127,20 +127,24 @@ A.factionsYear = function (r) {
               : !atWar &&
                   (h.military || tr.includes("ambitious") || tr.includes("wrathful") || tr.includes("brave")) &&
                   op > 30 &&
-                  (A.AGGRO[r.id] || 1) >= 1 &&
-                  A.chance(0.5)
+                  (A.AGGRO[r.id] || 1) >= 1
                 ? "war"
                 : null;
     };
+  // [W1-2, D-069] Joining, staying in and leaving a faction are a house head's decisions (A.WHY.factionChoice): his
+  // grievance with the crown, the faction's own want, the houses already sworn, the throne's firmness and old
+  // loyalties, bent by his temper, with a record of why. (Before W1-2: A.chance(0.5) for the war party's want,
+  // A.chance(0.4) to leave, A.chance(0.35) to join.) A house content where it stands decides nothing.
   for (const h of houses) {
     const cur = S.factions.find(f2 => f2.realm === r.id && f2.members.includes(h.id)),
       w = want(h);
-    if (
-      (cur && cur.kind !== w && A.chance(0.4) && (cur.members = cur.members.filter(x => x !== h.id)),
-      !w || (cur && cur.kind === w) || (cur && cur.members.includes(h.id)) || !A.chance(0.35))
-    )
-      continue;
-    let f = S.factions.find(x => x.realm === r.id && x.kind === w);
+    if ((!w && !cur) || (cur && cur.kind === w) || !A.WHY) continue;
+    const fw = w ? S.factions.find(x => x.realm === r.id && x.kind === w) : null,
+      rec = A.WHY.factionChoice(r, h, cur, w, fw ? fw.members.length : 0);
+    if (!rec || rec.chose === "stay") continue;
+    if (cur) cur.members = cur.members.filter(x => x !== h.id);
+    if (rec.chose !== "join") continue;
+    let f = fw;
     if (!f) {
       f = {
         id: "F" + (S.nextFaction = (S.nextFaction || 0) + 1),
@@ -152,6 +156,7 @@ A.factionsYear = function (r) {
         discontent: 0,
       };
       S.factions.push(f);
+      if (A.WHY && A.WHY.factionFormed) A.WHY.factionFormed(r, f, h, rec);
     }
     f.members.push(h.id);
   }

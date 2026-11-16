@@ -1306,6 +1306,56 @@ R14); hosts of contingents (D12b-1).
 flatter. This layer follows order 57 (the later order); D-029's layer is kept, not removed.
 **Cost:** see H-063. **Not decided here:** whether it goes into the game (the gate), and how the remaining peoples map to families.
 
+### D-069 · W1-2: minds; one way of deciding, where it lives, how the dice became decisions (2026-11-16; order 54, D-062; D-064 point 9)
+D-064 point 9 set the shape (`A.WHY.decide`, reasons with kind, weight and source, the temper, feelings with a cause and a
+heat, a seeded draw only between close options, a record). Chosen in building it:
+1. **The logic is a v2 engine module** (`src/people/engine/why.js`, `A.V2.why`), pure and unit-tested under `node --test`
+   (the owner's two lab kings are tests there); **the wiring is a readable feature** (`src/people/9999950-why`, `A.WHY`):
+   the persona, the person's feelings, `A.rand`, the log in `A.S.why`. *Why:* the lab tests need no browser and no world;
+   the game's state and dice stay in the game's layer; the engine module can serve the v2 kit too.
+2. **Weights are log-odds.** +1 makes an option e times likelier in a draw; a reason's weight is the log of the factor
+   the release's odds already used (its temper, the Generals' count, bad blood, a cause, rivals, the feud ledger, 68's plan
+   and moment, infamy, unsettled lands, a sworn pact). So a decision that hears the same reasons goes about as the old
+   roll went, and the reasons shown are the reasons used. *Why:* "calibrate, then add": the world's war count is held by
+   tests and the balance league.
+3. **The band is a parameter of the decision** (in log units): 1.5 by default, 3 for war (a crown's question of war is
+   the most uncertain; an option within a factor of about 20 of the best stays possible), 1.5 for faction choices, 0.3
+   for naming a General (merit nearly settles it). An option outside the band is never chosen; inside it, the draw is
+   weighted by e^score. *Why:* the owner's "chance among reasons, never instead of them" with the old pace kept.
+4. **The temper bends kinds of reason, not outcomes** (insult by pride, grudge by wrath and pride, reckoning and fear by
+   caution, coin by greed, duty, debt and loyalty by honour, kin by warmth, faith by zeal, ambition, want and claim by
+   ambition); its axes are 20's persona plus ambition from the traits. **Hotness** (wrath and pride against patience and
+   caution) sets how far a feeling's heat discounts the reckoning, at most 85%; a cold man's not at all.
+5. **The live war decision is v2 diplomacy's `DV.tryWar`.** Found in building: with v2 diplomacy on (the default), the
+   release's `A.aiWarCheck` is muted inside the monthly turn, and every war a crown starts comes from `DV.tryWar` after
+   v2's `monthTick` names a hostile month. Both now decide through `A.WHY`: `DV.tryWar` past its rest and weariness gates
+   (its nerve gate is now the reckoning: short of the edge his temper wants, the count weighs so heavily that only heat
+   carries a war), with v2's own seeded stream for the draw (`A.rand` untouched, as v2 diplomacy promised);
+   `A.aiWarCheck` as a yearly council for each crown (its month fixed by its id) and at once when a hot wrong calls it.
+   v2's `monthTick` naming a hostile month stays a roll (the occasion, not the decision): listed in the audit for W1-6.
+   The peace weight in `DV.tryWar` is `DV.WAR.p`'s old pace plus `A.WHY.T.peaceOcc` (0.2), set so wars per world held
+   within the seeds' spread (H-064).
+6. **Feelings are lit by the release's incidents** (an envoy shamed, a border fight, a raid, ships seized, a spy, a
+   murder, a defector, an elopement, preachers stoned) and by a lost war; one at heat 0.8 or more calls the wronged
+   crown's council at once (through `DV.tryWar` with him as the one who would declare). At most four a person; only
+   the people who carry them are cooled each month (`A.S.whyHot`, at most 400).
+7. **The record is bounded per kind** (150 in all; war 60, faction 50, appoint 20, other 20; rule 21; about 70 KB of a save at most) and kept on the
+   war (`w.why`) for as long as the war; a "wait" or "stay" is not recorded (nothing happened).
+8. **The player is told what his place lets him know:** a reason is public (an insult, bad blood, a cause, a rivalry, a
+   pact) or the council's (the count of spears, the ruler's temper, the cost); the news gives the public reasons to all
+   and the rest to the realm's ruler and councillors. No numbers.
+9. **A lint, a heuristic, with a baseline that may only fall** (`tools/lint-reasons.mjs`, `tests/reasons-baseline.json`):
+   a roll that decides a war, peace, faction, revolt, appointment, alliance, claim or succession, read from the names
+   of the functions around it and from what it guards. 72 before W1-2, 66 after. A reviewed exception is marked
+   `lint-reasons: ok (why)`.
+**Conflict recorded:** none with an order. With `docs/design/war.md` §11.4: it names the log "20's `S.aiLog`, widened";
+the records are their own bounded `A.S.why` instead (20's log is shown as before and receives a war's record reasons),
+because §15 and order 62 (rule 21) want nothing that grows without bound and `S.aiLog` entries have another shape.
+**Not decided here:** the seeded streams `seed:politics` / `seed:war` of D-064 (the war uses v2 diplomacy's stream;
+the rest `A.rand`); the remaining 66 (W1-3 to W1-6, `docs/design/r1-audit.md`). Whether more wars declared at under even
+strength (11 to 31 in three 40-year test worlds, H-064; above the ruler's nerve or for a feeling) is right: W1-5 and the
+balance stage (D12b-7) judge it.
+
 ### D-070 · Order 59: growth has no timetable; concepts, grasp, discipline and breakthroughs (2026-11-15 23:12 ET; amends D-067)
 The growth standard's fixed timetable (an ordinary talent at Master in about 27 years of full-time drill) is dropped.
 Passing a word needs its named **concepts grasped**; each person has a seeded, hidden **grasp** per concept (some come at

@@ -10,6 +10,7 @@ export * as succession from '../../family/engine/succession.js';
 export * as renown from '../../people/engine/renown.js';
 export * as growth from '../../people/engine/growth.js';
 export * as skills from '../../people/engine/skills.js';
+export * as why from '../../people/engine/why.js';
 export * as nobility from '../../nobility/engine/nobility.js';
 export * as diplomacy from '../../diplomacy/engine/diplomacy.js';
 export * as orders from '../../war/engine/orders.js';

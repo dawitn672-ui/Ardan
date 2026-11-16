@@ -3,6 +3,7 @@
 //   2. lint and play-test every feature's event packs
 //   3. check that no feature event has an obviously best choice (tools/lint-choices.mjs), the named stages (tools/lint-stages.mjs),
 //      the skills (tools/lint-skills.mjs)
+//      that no new decision in AI code is a bare roll of the dice (tools/lint-reasons.mjs)
 //      and that no event names kin who are not in the tree (tools/lint-kin.mjs)
 //   4. run every browser test
 //   5. play the balance league and hold each path's numbers to their bands (tools/bench/balance.mjs, tools/bench/targets.mjs)
@@ -44,6 +45,9 @@ catch (e) { lintFailed++; console.error(`kin FAIL\n${String(e.stdout || '').slic
 // skills (S1b, D-072): no proficiency a player can read, the data whole, older code's writes and calls only falling
 try { execFileSync(process.execPath, ['tools/lint-skills.mjs'], { cwd: root, stdio: 'pipe' }); console.log('skills ok (tools/lint-skills.mjs)'); }
 catch (e) { lintFailed++; console.error(`skills FAIL\n${String(e.stdout || '').slice(0, 2000)}${String(e.stderr || '').slice(0, 4000)}`); }
+// nothing without reason (R1, rule 18, D-069): no more bare-dice decisions in AI code than tests/reasons-baseline.json
+try { execFileSync(process.execPath, ['tools/lint-reasons.mjs'], { cwd: root, stdio: 'pipe' }); console.log('reasons ok (tools/lint-reasons.mjs)'); }
+catch (e) { lintFailed++; console.error(`reasons FAIL\n${String(e.stdout || '').slice(0, 2000)}${String(e.stderr || '').slice(0, 4000)}`); }
 // the long list is honest: a test over the threshold on CI is in tests/long-tests.json (T1, D-063)
 try { execFileSync(process.execPath, ['tests/run.mjs', '--check-tiers'], { cwd: root, stdio: 'pipe' }); console.log('tiers ok (tests/long-tests.json)'); }
 catch (e) { lintFailed++; console.error(`tiers FAIL\n${String(e.stderr || '').slice(0, 4000)}`); }

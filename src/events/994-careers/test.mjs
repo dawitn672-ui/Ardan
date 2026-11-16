@@ -77,8 +77,8 @@ export default {
   },
   // B7: "Bandit hunt: Enemy dead 5,141. Your losses 0" for a General
   async carMissionSize(pg) {
-    const r = await pg.evaluate(() => ({ bandits: A.missionSize('bandits', 7, null), banditsLow: A.missionSize('bandits', 0, null), patrolPeace: A.missionSize('patrol', 7, null), patrolWar: A.missionSize('patrol', 7, { id: 'w' }) }));
-    return { ok: r.bandits <= 300 && r.banditsLow >= 10 && r.patrolPeace <= 400 && r.patrolWar === 12800, detail: `a General's bandit hunt ${r.bandits} men (12,800 before), a soldier's ${r.banditsLow}; a patrol in peace ${r.patrolPeace}, in war ${r.patrolWar}` };
+    const r = await pg.evaluate(() => ({ bandits: A.missionSize('bandits', 7, null), banditsLow: A.missionSize('bandits', 0, null), patrolPeace: A.missionSize('patrol', 7, null), patrolWar: A.missionSize('patrol', 7, { id: 'w' }), generalLeads: GD.MIL[7].leads }));
+    return { ok: r.bandits <= 300 && r.banditsLow >= 10 && r.patrolPeace <= 400 && r.patrolWar === r.generalLeads, detail: `a General's bandit hunt ${r.bandits} men (12,800 before), a soldier's ${r.banditsLow}; a patrol in peace ${r.patrolPeace}, in war ${r.patrolWar}` };
   },
   // I5: a life reached Knife fighting 100 and stayed at renown 24; the PC was never a Legend
   async carLegend(pg) {

@@ -127,9 +127,17 @@ Each realm has: king > dukes (at most 3; ≥24 counties → 3, ≥14 → 2, ≥7
   - (W1-1 built the five ranks, above.) The king in person, or a council of war when nobody is named, with reasons for the choice (W1-3).
   - Every armed man is in one command (the crown's, or a great lord's own under officers he names); the king summons and each lord answers from named reasons; contingents are kept whole. Private wars, refused summonses and border lords' wars follow from it.
   - No levies: sworn men, enlisted men and the roll; conscription by proclamation in real need, with a cost in fields and a remembered grievance.
-  - Every decider weighs named reasons, bent by temper and by feelings that have a cause and cool; dice only choose between close options. A war ends only by surrender or defeat.
+  - (W1-2 built the minds, section 9a below.) A war ends only by surrender or defeat (W1-5).
   - You see from where you stand; everything else is a report with a sender, a road, a day and a slant.
   - Stability is the sum of named pressures; a faction needs a shared grievance, a tie and a leader; a coup needs a motive, access and an opening.
+
+## 9a. Minds: one way of deciding (built, W1-2, D-069)
+- **Every decider decides the same way** (`A.WHY.decide(who, kind, options, ctx)`, engine `src/people/engine/why.js`): options, each with **reasons** `{ kind, weight, source }`. Weights are log-odds (+1 = e times likelier); the source names the record that made the reason (an insult of a year, a relation, a count of spears, a debt). Never a bare `A.chance(p)` for a structural choice: `tools/lint-reasons.mjs` counts them and its baseline may only fall.
+- **The temper bends kinds of reason**, not the outcome: pride doubles an insult, caution raises the count of spears, greed coin, honour a duty or a pact, warmth kin, zeal faith, ambition wants and claims.
+- **Feelings are states with a cause and a heat** (wounded pride, anger, grief, fear, greed, shame, loyalty, zeal; at most four a person), lit by real events (an envoy shamed, a raid, a defeat), cooling monthly (slowly in a vengeful man). They add reasons to the options that feed on them, and **heat discounts a hot-headed man's reckoning** (up to 85%); a cold man's never. So the proud king insulted before his court declares the war his Generals said he would lose; the cold one waits, keeps the wrong, and strikes when the count turns.
+- **The best option wins.** A seeded draw chooses only among options within a band of the best, weighted by e^score: chance among reasons, never instead of them. A clear choice draws nothing.
+- **Every decision leaves a record**: the three heaviest reasons for, the two heaviest against, the rejected options, drawn or not, true to form or against his nature. Keep the log bounded (per kind). Tell the player in words, and only what his place lets him know (a council's count is for its king and councillors).
+- **Calibrate against the old pace.** When dice become a decision, put the old odds' factors in as reasons (their logs) and set the weight of "do nothing" so the world's counts hold (W1-2 kept wars per 40 years within the seeds' spread); feelings are the new thing.
 
 ## Checklist before shipping a system
 - [ ] Does every number come with words or a real unit?
@@ -137,4 +145,5 @@ Each realm has: king > dukes (at most 3; ≥24 counties → 3, ≥14 → 2, ≥7
 - [ ] Can a careless favourite lose, and can a determined underdog win?
 - [ ] Do the labels contradict each other anywhere (relation, status, rank phrases)?
 - [ ] Is there one source of truth (title holders, heirs)?
+- [ ] Does every structural choice go through `A.WHY.decide` with sourced reasons, and leave a bounded record?
 - [ ] Is there a test with calibration targets that fails the build if the numbers drift?
