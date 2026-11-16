@@ -29,7 +29,9 @@ export default {
       const made = {}, used = {};
       for (let mo = 0; mo < 12; mo++) {
         ECT.months(1);
-        for (const R of ECT.live()) { const M = A.mkt(R.id); for (const k of ['cloth', 'steel', 'arms']) { made[k] = (made[k] || 0) + ((M.why[k] || {}).made || 0) / 12; used[k] = (used[k] || 0) + (M.d[k] || 0) / 12; } }
+        // a realm born this month has no month's market yet (W1-1's world raised one in the tenth year): read only the
+        // markets that ran (A.mkt would make one, drawing on the stream)
+        for (const R of ECT.live()) { const M = R.mkt; if (!M || !M.d || !M.why) continue; for (const k of ['cloth', 'steel', 'arms']) { made[k] = (made[k] || 0) + ((M.why[k] || {}).made || 0) / 12; used[k] = (used[k] || 0) + (M.d[k] || 0) / 12; } }
       }
       let n = 0, ok = 0; const bad = {};
       for (const R of ECT.live()) { const M = A.mkt(R.id); for (const k in GD.GOODS) { if (!(M.d[k] > 0.5)) continue; n++; const x = ECT.ratio(R.id, k); if (x >= 0.3 && x <= 5) ok++; else bad[k] = (bad[k] || 0) + 1; } }
