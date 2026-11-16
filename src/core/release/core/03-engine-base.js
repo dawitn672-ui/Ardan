@@ -1830,7 +1830,10 @@ A.initWorld = function () {
         intro:
           "The northern half of the Kingdom of Tessaria, held from Coreria by Prince Andros Tessaran, backed by the Dawn Church and Velgrad's money.",
       };
-      const north = tp.sort((a, b) => a.y - b.y).slice(0, Math.max(1, Math.round(tp.length * 0.4)));
+      // [D9] the north as written (the release's map), not as a generated continent lays it, so the split is the same in
+      // every world (43-varied-worlds' worldAsWritten); the release's own map gives the same order as before
+      const wy = q => (LORE.map && LORE.map.provinces[q.id] ? LORE.map.provinces[q.id].y : q.y);
+      const north = tp.sort((a, b) => wy(a) - wy(b) || a.id - b.id).slice(0, Math.max(1, Math.round(tp.length * 0.4)));
       // [X1 baked patch core/09-engine-at-scale SCALE-LAND-WRITES] A.realmProvs and A.neighbors scanned every province
       // on every call (A.politicsYear asks them for every pair of realms, so a year cost realms² × provinces).
       // 09-engine-at-scale answers them from an index of provinces by owner, which must be dropped the moment a province

@@ -88,8 +88,9 @@
       for (let t = 0; t < 40; t++) {
         let x = list[h32(c.w.key + '|' + kind + '|' + i + '|' + t) % list.length];
         if (stem) { const s = x.replace(STEM, ''); if (s.length >= 3 && s !== x) x = cap(s); }
-        const name = D9.FORM[kind](x);
-        if (!taken.has(x) && !taken.has(name)) { taken.add(x); taken.add(name); return name; }
+        const name = D9.FORM[kind](x), pre = kind + ':' + x.slice(0, 5).toLowerCase();
+        // not a town's name, not a name given already, and not one too like it ("Eaglefield", "Eaglehill")
+        if (!taken.has(x) && !taken.has(name) && (t > 30 || !taken.has(pre))) { taken.add(x); taken.add(name); taken.add(pre); return name; }
       }
       return D9.FORM[kind](list[i % list.length]);
     };

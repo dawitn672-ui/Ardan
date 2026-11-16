@@ -201,7 +201,7 @@ export default {
     const r = await pg.evaluate(async () => {
       T.enter({ seed: 3131, realm: 'POL-06', status: 'peasant' }); T.play(1);
       const sig = () => { const G = A.D9.ground(); return G.edges.length + ':' + G.edges.reduce((a, e) => a + e.rank * 7 + e.km, 0) + ':' + G.crossings.length + ':' + A.D9.names().rivers.join(','); };
-      const s0 = sig(), saved = JSON.stringify(A.S).includes('"ground"');
+      const s0 = sig(), saved = /"(crossings|riverLinks|rivId)"/.test(JSON.stringify(A.S));   // the ground's own fields (a fight's report has a 'ground' cause of its own)
       const enc = await SAVES.encode(A.S, A.J), d = await SAVES.decode(enc.bytes);
       A.newGame({ seed: 12, realm: 'POL-01', status: 'peasant' }); const other = sig();
       A.V2MAP.cache.clear(); UI.enterSave(d);
