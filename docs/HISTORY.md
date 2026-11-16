@@ -937,3 +937,10 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   that a few hard checks remain); `v2wChoicesMove` order edge allows 3 points' fall (222 -> 220).
 - `f1be556`, `b4aabf3`.
 
+### H-057 · 2026-11-15 19:42 ET · CI 127: counsel by letter
+- CI 127 (`242517b`) failed only `advLives`: a peasant conscripted at 17 stood with his division far from home, so his
+  household was absent and the advisors ring was empty (peasant 0 advisors). `A.X3.reaches(pc, t)` now answers 'here' for
+  someone present and 'letter' for the household he left (parents, spouse, children, siblings; alive and free); the ring
+  seats both and an absent one speaks as "A letter from home: ...". advLives at its 60% bar: 74% of big choices counselled,
+  3.3 advisors a life, peasant 2 (`16b21ca`; an addendum to D-059).
+
