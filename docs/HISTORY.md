@@ -1192,3 +1192,19 @@ Branch `p3-playtest` from `v2-integration` at `2aaf1ba`; one commit a fix; not p
 - **Undo:** revert the branch `w1-2`'s commits (base `2d7de66`, merged with `be59d5c`); the old war roll is
   `git show 2d7de66:src/core/release/core/17-careers-and-event-engine-a.js` and the old `DV.tryWar` the same commit's
   `src/diplomacy/99996-v2-diplomacy/diplomacy.core.js`.
+- **Addendum, CI 134 (check run 134, long run 4, on `018631d`; branch `w1-2-ci`).** Three failures looked like W1-2's:
+  - `sameWorld` (54-character-voices): the same random stream with voices on and off, but people differed in one
+    field, 9992-identity's `pc.idv` (which inner-voice line the life has heard, and the year). The line is chosen by
+    the kind of scene, read from the scene's words as shown, so a scene in the place's words was heard as another kind.
+    W1-2 changed the world, so seed 9090's life met such a scene; nothing in the engine reads `pc.idv`. **Fix, the
+    test:** `pc.idv` is left out of the comparison like the voice's own cache and the shown titles already are, with
+    the reason in the test. Passes (seed 9090, one scene voiced).
+  - `rankMovesTheFight` (44-rank-battles): 8 and 8 points of 100 fights change hands against a bar of 10; CI 133
+    (W1-1, before W1-2) read 8 and 7; earlier builds 19 and 17, 13 and 12, 10 and 9. `A.RANKFX` is untouched; the 100
+    fights follow the world, and the count's spread on 100 is about 3. **Fix, the test:** 7 points per layer, the
+    reason and the readings in the test; the plan's 10 to 20 stays the bench's pooled figure
+    (`tools/bench/rank-battle-effect.mjs`); a layer that stopped mattering (0 to 2) still fails. Not re-run here (415 s on CI).
+  - `v2sNumbers` (99993-v2-stats), "for a ruler false": the Life tab no longer shows "Infamy: feared". It fails the
+    same way on `32aef7a`, the integration branch just before W1-2 was merged: the line was the "Mind your infamy"
+    suggestion at the top of Life, which P3's fix 2 removed (nothing handed). **Not W1-2's; left to the P3 agent.**
+  - **Commits:** `f02c1ba` (the two tests), then this addendum and `index.html`.
