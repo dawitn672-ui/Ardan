@@ -18,6 +18,14 @@
 // The runner outlives the browser (CRITIQUE Q5): a test that crashes the browser fails with "the browser crashed", a
 // new browser is launched, and the run goes on to its summary. Each test has a time limit (--limit=seconds, default
 // 1800, half an hour, well inside a CI shard's two hours; a test file may give some of its tests their own: `export const limits = { testName: seconds }`).
+//
+// Two tiers (T1, D-063). tests/long-tests.json lists the long tests (bot lives of 200 to 1800 s); tests/test-times.json holds
+// each test's measured seconds on CI (four workers). --tier=quick runs the rest (every push), --tier=long the listed ones
+// (nightly, [full ci], release branches), --tier=all (the default, and what a local run does) both. --shard=k/n splits the
+// chosen tier by measured time (longest first onto the lightest shard), not by count, and a shard runs its longest tests first.
+//   node tests/run.mjs --tier=quick --shard=2/8 --plan      print the tier split and each shard's estimate, run nothing
+//   node tests/run.mjs --check-tiers                        fail if a test over the threshold is not in the long list
+//   node tests/run.mjs --times-out=t.json                   write this run's seconds (tools/test-times.mjs merges them)
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
@@ -53,7 +61,42 @@ for (const d of featureDirs().sort()) {
 }
 const seen = new Set();
 for (const t of tests) { if (seen.has(t.name)) throw new Error(`duplicate test name ${t.name} (${t.owner})`); seen.add(t.name); }
-if (args.includes('--list')) { for (const t of tests) console.log(t.name.padEnd(22), t.owner); process.exit(0); }
+const readJson = (p, d) => { try { return JSON.parse(fs.readFileSync(path.join(root, p), 'utf8')); } catch { return d; } };
+const LONG = readJson('tests/long-tests.json', { threshold: 200, tests: [] });
+const TIMES = readJson('tests/test-times.json', {});
+const LONGSET = new Set(LONG.tests), UNMEASURED = +(LONG.unmeasured || 30); // an unmeasured test is planned at 30 s
+const est = t => TIMES[t.name] != null ? TIMES[t.name] : UNMEASURED;
+const tierOf = t => LONGSET.has(t.name) ? 'long' : 'quick';
+if (args.includes('--check-tiers')) {
+  const names = new Set(tests.map(t => t.name)), bad = [];
+  for (const n of LONG.tests) if (!names.has(n)) bad.push(`${n} is in tests/long-tests.json but is not a test`);
+  for (const t of tests) if ((TIMES[t.name] || 0) >= LONG.threshold && !LONGSET.has(t.name)) bad.push(`${t.name} took ${TIMES[t.name]} s on CI (threshold ${LONG.threshold}) and is not in tests/long-tests.json`);
+  for (const n of Object.keys(TIMES)) if (!names.has(n)) bad.push(`${n} is in tests/test-times.json but is not a test (remove it)`);
+  if (bad.length) { console.error('tiers FAIL\n  ' + bad.join('\n  ')); process.exit(1); }
+  console.log(`tiers ok (${LONG.tests.length} long of ${tests.length}; threshold ${LONG.threshold} s)`); process.exit(0);
+}
+const TIER = opt('tier') || 'all';
+if (!['all', 'quick', 'long'].includes(TIER)) throw new Error(`--tier must be quick, long or all, not ${TIER}`);
+if (args.includes('--list')) { for (const t of tests) console.log(t.name.padEnd(22), tierOf(t).padEnd(6), String(est(t)).padStart(5) + 's', t.owner); process.exit(0); }
+// --shard=k/n: longest-first onto the lightest shard (deterministic: ties by name), over the chosen tier
+const [SK, SN] = (opt('shard') || '0/1').split('/').map(Number);
+const inTier = tests.filter(t => TIER === 'all' || tierOf(t) === TIER);
+function plan(list, n) {
+  const shards = Array.from({ length: n }, () => ({ secs: 0, tests: [] }));
+  for (const t of [...list].sort((a, b) => est(b) - est(a) || (a.name < b.name ? -1 : 1))) {
+    const s = shards.reduce((m, x) => x.secs < m.secs ? x : m);
+    s.tests.push(t); s.secs += est(t);
+  }
+  return shards;
+}
+if (args.includes('--plan')) {
+  const W = Math.max(1, +(opt('workers') || 4)), shards = plan(inTier.filter(t => !only || only.includes(t.name)), SN);
+  const longest = shards.map(s => Math.max(0, ...s.tests.map(est)));
+  shards.forEach((s, k) => console.log(`shard ${k}/${SN}: ${String(s.tests.length).padStart(3)} tests, ${String(s.secs).padStart(5)} s of work, about ${Math.round(Math.max(s.secs / W, longest[k]) / 60)} min on ${W} workers (longest ${longest[k]} s)${k === SK && SN > 1 ? '  <- this shard' : ''}`));
+  const total = shards.reduce((a, s) => a + s.secs, 0);
+  console.log(`tier ${TIER}: ${inTier.length} tests, ${total} s of work in all; slowest shard about ${Math.round(Math.max(...shards.map((s, k) => Math.max(s.secs / W, longest[k]))) / 60)} min`);
+  process.exit(0);
+}
 
 // one browser, relaunched when it dies (a crash ends every context at once; the tests running then fail, the rest go on)
 let browser = null, launching = null;
@@ -68,9 +111,8 @@ let failed = 0, skipped = 0, crashes = 0;
 const WORKERS = Math.max(1, +(opt('workers') || 1));
 const LIMIT = +(opt('limit') || 1800);
 console.log('testing', path.relative(root, file) || file, WORKERS > 1 ? `(${WORKERS} at a time)` : '');
-// --shard=k/n runs every n-th test from the k-th (CI splits the suite over parallel jobs)
-const [SK, SN] = (opt('shard') || '0/1').split('/').map(Number);
-const queue = tests.filter(t => !only || only.includes(t.name)).filter((t, i) => i % SN === SK);
+// the queue: this shard's tests of the chosen tier, longest first (so no worker starts a 30-minute test last)
+const queue = plan(inTier.filter(t => !only || only.includes(t.name)), SN)[SK].tests;
 const crashed = e => /Target page, context or browser has been closed|Browser has been closed|browser has disconnected|Target crashed|Page crashed/i.test(String(e && e.message || e));
 async function runOne({ name, fn, owner, limit: own }) {
   const t0 = Date.now(), limit = +(own || LIMIT);
@@ -116,6 +158,12 @@ await Promise.all(Array.from({ length: Math.min(WORKERS, queue.length) }, async 
 if (browser) await browser.close().catch(() => {});
 const passed = results.length - failed - skipped;
 console.log(`${passed} passed, ${failed} failed, ${skipped} skipped of ${results.length}${crashes ? `; ${crashes} lost to a browser crash or hang (a new browser took over)` : ''}`);
+if (opt('times-out')) {
+  const out = {};
+  for (const r of results) if (r.state === 'PASS') out[r.name] = Math.round(r.secs);
+  fs.mkdirSync(path.dirname(path.resolve(root, opt('times-out'))), { recursive: true });
+  fs.writeFileSync(path.resolve(root, opt('times-out')), JSON.stringify(out, null, 1));
+}
 if (opt('json')) {
   fs.mkdirSync(path.dirname(path.resolve(root, opt('json'))), { recursive: true });
   fs.writeFileSync(path.resolve(root, opt('json')), JSON.stringify({ file: path.relative(root, file), build: null, passed, failed, skipped, crashes, results }, null, 1));

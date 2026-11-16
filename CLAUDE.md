@@ -90,7 +90,9 @@ node tools/lint-choices.mjs --feature=my-feature --html=/tmp/me.html   # no obvi
 node tools/lint-kin.mjs                                   # no event mints kin or names one it did not take from the tree (C6)
 node tests/run.mjs /tmp/me.html --features=my-feature     # core suites + that feature's tests
 node tests/run.mjs --only=testA,testB --workers=4         # some tests by name
-node tests/run.mjs                                        # everything against index.html (766 tests; CI shards it 8 ways)
+node tests/run.mjs --tier=quick --shard=0/8 --plan        # T1: the tier split and each shard's estimated time, runs nothing
+node tests/run.mjs --check-tiers                          # a test over the threshold on CI must be in tests/long-tests.json
+node tests/run.mjs                                        # everything (both tiers) against index.html (852 tests)
 node tools/bench/balance.mjs /tmp/me.html                 # each path's numbers within tools/bench/targets.mjs
 node tools/bench/next-month-speed.mjs /tmp/me.html --save=tests/saves/press/y50-noble.ardan [--death] [--throttle=4]   # real Next month presses, in CPU time
 node tools/bench/press-gate.mjs /tmp/me.html [--report]   # the A1 gate (CI): year 0 and 50, fresh and after a death, held to budgets
@@ -105,6 +107,16 @@ node tools/coherency.mjs --baseline=quick                 # the same run CI hold
 node tools/version.mjs get v2.0.0-beta.1                  # any version, playable: versions/ardan-<v>.html
 git gc --prune=now                                        # after every integration round (see below)
 ```
+
+**Two test tiers (T1, D-063).** `tests/long-tests.json` lists the long tests (bot lives and replays of 200 to 1,800 s: 42 of
+852, over half of the suite's CPU time); `tests/test-times.json` holds each test's seconds on CI. **Quick** (everything not
+listed) runs on every push and pull request (`check.yml`, `--tier=quick --shard=k/8`, about 12 minutes of tests a shard);
+**long** runs in `long.yml`: every night, by hand (workflow_dispatch), on a push whose commit message has `[full ci]`, on
+`release/*`, and from other workflows. **A version needs both tiers green on the commit** (`check.yml` and `long.yml`) before
+`tools/version.mjs new`. Shards are split by measured time, longest first, not by count. A new test with no time is planned at
+30 s; if a test takes over the threshold (200 s) add it to `tests/long-tests.json` (`--check-tiers`, run by `tools/check.mjs`,
+fails until you do). The long run's `test-times` artifact (`tools/test-times.mjs` merges the shards' `--times-out=` files)
+is committed back now and then so the plan stays true. A local `node tests/run.mjs` still runs both tiers; `[skip ci]` skips both workflows.
 
 **The net (round 2 A3a).** A test, bench, soak or coherency run fails on any uncaught error *and any `console.error`*
 (the few messages that are not the game's faults are listed with reasons in `tools/lib/page-errors.mjs`; a test that
@@ -127,7 +139,7 @@ Every foundational or significant change is a version (`docs/VERSIONS.md`, `tool
   complaint list; v3 = `docs/V3_SPEC.md`, the living world: economy, armoury, growth in depth, D-037).
 - **Minor:** a round, cycle or step that adds or replaces a system. **Patch:** fixes only.
 - **Pre-release** (`-alpha.N`, `-beta.N`, `-rc.N`) while a major is being built.
-- Tag a clean commit whose CI is green, or the end of a step the owner asked for: `node tools/version.mjs new vX.Y.Z "what changed"`, commit `docs/VERSIONS.md`, push.
+- Tag a clean commit whose CI is green (quick tier and `long.yml`, T1), or the end of a step the owner asked for: `node tools/version.mjs new vX.Y.Z "what changed"`, commit `docs/VERSIONS.md`, push.
 - **Milestones** also get a release branch, `release/<name>` (for example `release/v2.1-foundations`): this
   session's git proxy refuses tag pushes, so the branch is the restorable record on GitHub. Save a sample game of the
   milestone in `tests/saves/`.

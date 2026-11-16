@@ -1103,3 +1103,13 @@ variety compounded, appearance matters in play where it fits (C8d); legendary na
 tracked item. **Permissions granted:** merge PR #2 (v2-integration) when CI is green; branch deletion is the owner's on
 GitHub (the session cannot delete refs), helped by a script.
 
+### D-063 · T1: the push check is the quick tier; the long bot-life tier is nightly and before a version (2026-11-16)
+**Decision.** Tests are split in two by a list, `tests/long-tests.json` (threshold 200 s on CI, kept honest by
+`tests/run.mjs --check-tiers` in `tools/check.mjs`). Every push and pull request runs the quick tier over 8 shards balanced by measured
+time; the long tier runs in `long.yml` nightly, on demand, on `[full ci]` commits, on `release/*`, and a version is not cut
+until both are green. **Why.** 42 tests are over half the CPU time and made a run 35 to 45 minutes; a push now gets its answer in
+about 15 minutes with setup. **Nothing loses coverage:** every test still runs at least nightly, on the same index.html; the cost is
+that a regression only the long tier sees is found up to a day later (or at once with `[full ci]`), so a change to bots, arcs, war or
+saves should say `[full ci]`. **Rejected:** dropping or shortening the long tests (they are the only whole-life guard); a
+count split (what was there). **Left open:** moving `balance` to the long tier (not measured); the long run commits no times itself (an artifact).
+

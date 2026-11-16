@@ -1,0 +1,73 @@
+name: long
+# T1 (D-063): the LONG tier of the browser tests, the ones listed in tests/long-tests.json (bot lives and replays of 200 to
+# 1,800 s each, about 42 tests and 8 of the 14 CPU-hours of the suite). check.yml runs everything else on every push. This
+# runs them
+#   - every night,
+#   - on demand (Actions > long > Run workflow),
+#   - on a push to any branch whose head commit message contains [full ci],
+#   - on a push to release/* (a milestone branch), and
+#   - from another workflow (workflow_call), and before a version is cut: a version (tools/version.mjs new) needs the quick
+#     tier (check.yml) AND this one green on the commit.
+# [skip ci] in the message skips it like any other workflow. The eight shards are balanced by measured time
+# (tests/test-times.json); the `times` job merges what they measured, to commit back so the plan stays honest.
+on:
+  schedule:
+    - cron: '47 2 * * *'
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: ['release/**', '**']
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  long:
+    # a plain push runs only for [full ci] or a release branch; schedule, dispatch and call always run
+    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[full ci]') || startsWith(github.ref, 'refs/heads/release/')
+    runs-on: ubuntu-24.04   # Playwright 1.56 has no Chromium for ubuntu-latest (26.04) yet
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: node tests/run.mjs index.html --workers=4 --tier=long --shard=${{ matrix.shard }}/8 --times-out=times-${{ matrix.shard }}.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: times-${{ matrix.shard }}
+          path: times-${{ matrix.shard }}.json
+          if-no-files-found: ignore
+          retention-days: 30
+  times:
+    needs: long
+    if: always() && needs.long.result != 'skipped'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: times-*
+          path: measured
+          merge-multiple: true
+      - run: node tools/test-times.mjs measured/*.json
+      - run: node tests/run.mjs --check-tiers
+        continue-on-error: true   # a test that crossed the threshold is a note to list it, not a red long run
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-times
+          path: tests/test-times.json
+          retention-days: 30

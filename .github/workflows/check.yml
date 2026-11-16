@@ -1,14 +1,19 @@
 name: check
-# `push` is limited to main because a branch with an open pull request is already covered by the `pull_request` run:
-# unfiltered, every push to such a branch ran the whole check twice (runs 48 and 49 of Oct 17, same commit, 85 minutes each).
+# `push` is limited to main and the integration branches (v2-integration, v3-integration: PR #2 was merged, so they have no
+# open pull request and the `pull_request` run no longer covers them). A feature branch with an open pull request is
+# covered by the `pull_request` run: unfiltered, every push to such a branch ran the whole check twice (runs 48 and 49 of
+# Oct 17, same commit, 85 minutes each).
 on:
   push:
-    branches: [main]
+    branches: [main, v2-integration, v3-integration]
   pull_request:
 # Only the newest commit on a ref is worth checking; a push that supersedes a running check cancels it.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+# T1 (D-063): this is the QUICK tier, every test not listed in tests/long-tests.json, split over the eight shards by measured
+# time (tests/test-times.json), about 12 minutes of tests a shard. The long tier (bot lives of 200 to 1,800 s) is long.yml:
+# nightly, on demand, on a commit whose message has [full ci], on release/* and before a version is cut. [skip ci] skips both.
 # Nine jobs side by side: eight test shards and the balance league (v2: 8 shards instead of 3, so a full run takes
 # about 25 minutes, not an hour; the Great Continent league left with the Far Lands in v2 step 2): the build, linters and a third of the browser tests in each of three (tools/check.mjs
 # --skip-balance --shard=k/3), the balance league in the fourth, and the Great Continent's league in the fifth (every path
@@ -45,7 +50,14 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: node tests/run.mjs index.html --workers=4 --shard=${{ matrix.shard }}/8
+      - run: node tests/run.mjs index.html --workers=4 --tier=quick --shard=${{ matrix.shard }}/8 --times-out=times-${{ matrix.shard }}.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: times-quick-${{ matrix.shard }}
+          path: times-${{ matrix.shard }}.json
+          if-no-files-found: ignore
+          retention-days: 14
   balance:
     runs-on: ubuntu-24.04   # Playwright 1.56 has no Chromium for ubuntu-latest (26.04) yet
     timeout-minutes: 120

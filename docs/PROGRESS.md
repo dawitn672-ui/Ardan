@@ -53,7 +53,7 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [ ] **R1** · Nothing without reason (rule 18): every AI, noble, faction, commander and NPC decision carries a nameable reason from post, circumstance, personality and emotion; a lint and a run audit
 - [ ] **W1** · No Marshal: General the highest rank, several Generals by army size, nobles' own commands under the king; old saves map the Marshal; conscription instead of levies (with D11)
 - [ ] **D12a-2** · War design revised with the owner's ten answers (order 54)
-- [ ] **T1** · Faster testing: a quick tier on every push, the long bot-life tier nightly and before versions
+- [x] **T1** · Faster testing: a quick tier on every push, the long bot-life tier nightly and before versions
 - [ ] **L2** · Legendaries: mythical names, character and aura; the bow redrawn to be truly legendary
 - [ ] **C8d** · Hair in depth; dress and appearance variety compounded (serf / peasant / merchant read right); looks matter in play where it fits
 - [ ] **D11+** · Military path by weapon, way of fighting and every useful aptitude; training tailored to each unit's make-up
