@@ -5,7 +5,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { makeRng } from '../../src/core/engine/rng.js';
-import { decide, feel, cool, tell, hotness, weigh, heatAt, T } from '../../src/people/engine/why.js';
+import { decide, feel, cool, tell, hotness, weigh, heatAt, odds, T } from '../../src/people/engine/why.js';
 
 const INSULT = { t: 'insult', at: 'VAR', y: 1112, label: "the insult of Varenna's envoy at the Midsummer feast", pub: 1 };
 const PROUD = { pride: .8, wrath: .5, patience: -.3, caution: -.2, ambition: .3 };
@@ -115,4 +115,10 @@ test('record shape; what anyone could know', () => {
   const pub = tell(r, true);
   assert.match(pub, /insult of Varenna/); assert.doesNotMatch(pub, /Generals' count/, 'the count of spears is the council\'s secret');
   assert.equal(decide(m, 'x', []), null);
+});
+
+test('odds: the pull of the reasons, without a draw', () => {
+  const o = odds({ id: 1 }, [{ id: 'a', reasons: [{ kind: 'merit', weight: Math.log(3) }] }, { id: 'b', reasons: [] }], { band: 0.5 });
+  assert.ok(Math.abs(o.a - .75) < 1e-9 && Math.abs(o.b - .25) < 1e-9);
+  assert.deepEqual(o.inBand, ['a']);
 });

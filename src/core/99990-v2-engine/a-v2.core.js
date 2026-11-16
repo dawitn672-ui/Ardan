@@ -1031,6 +1031,7 @@ var __ARDAN_V2_MAKE = (() => {
     feel: () => feel,
     heatAt: () => heatAt,
     hotness: () => hotness,
+    odds: () => odds,
     tell: () => tell,
     weigh: () => weigh
   });
@@ -1163,8 +1164,8 @@ var __ARDAN_V2_MAKE = (() => {
     const others = scored.filter((s) => s !== chosen).sort((a, b) => b.score - a.score);
     const runner = others[0] || null;
     const pro = chosen.reasons.filter((r) => r.w > 0).sort((a, b) => b.w - a.w).slice(0, T.keepWhy);
-    const con = chosen.reasons.filter((r) => r.w < 0).map((r) => ({ ...r })).sort((a, b) => a.w - b.w);
-    if (runner) for (const r of runner.reasons.filter((r3) => r3.w > 0).sort((a, b) => b.w - a.w)) con.push({ ...r, w: -r.w });
+    const con = chosen.reasons.filter((r) => r.w < 0).sort((a, b) => a.w - b.w).slice(0, T.keepNot);
+    if (runner && con.length < T.keepNot) for (const r of runner.reasons.filter((r3) => r3.w > 0).sort((a, b) => b.w - a.w).slice(0, T.keepNot - con.length)) con.push({ kind: r.kind, label: r.label, source: r.source, pub: r.pub, w: -r.w });
     const lean2 = chosen.score - chosen.raw - (runner ? runner.score - runner.raw : 0);
     return {
       y: opts.year != null ? opts.year : null,
@@ -1174,11 +1175,22 @@ var __ARDAN_V2_MAKE = (() => {
       chose: chosen.id,
       s: r2(chosen.score),
       why: pro.map(reasonOut),
-      not: con.slice(0, T.keepNot).map(reasonOut),
+      not: con.map(reasonOut),
       rej: others.slice(0, T.keepRej).map((s) => [s.id, r2(s.score)]),
       drawn,
       form: lean2 > 0.1 ? 1 : lean2 < -0.1 ? -1 : 0
     };
+  }
+  function odds(mind, options, opts = {}) {
+    const scored = (options || []).filter((o) => o && o.id != null).map((o) => weigh(mind, o, opts));
+    if (!scored.length) return null;
+    const best = Math.max(...scored.map((s) => s.score)), band = opts.band != null ? opts.band : T.band;
+    const ws = scored.map((s) => Math.exp(s.score - best)), tot = ws.reduce((a, b) => a + b, 0), out = { inBand: [] };
+    scored.forEach((s, i) => {
+      out[s.id] = ws[i] / tot;
+      if (best - s.score <= band) out.inBand.push(s.id);
+    });
+    return out;
   }
   function feel(mind, k, cause, heat = 1, opts = {}) {
     const F = FEELINGS[k];
@@ -1925,7 +1937,7 @@ var __ARDAN_V2_MAKE = (() => {
     const c = CHOICES[rank].find((x) => x.id === choice) ?? CHOICES[rank][0];
     const { capability, difficulty, foe } = playerOdds(camp, rank, person, c);
     const res = attempt(rng, { capability, difficulty, judgment: person.judgment, will: person.will, fatigue: person.fatigue ?? 0, stakes: 0.6 + c.risk * 0.3, label: c.name });
-    const odds = oddsWords(capability, difficulty);
+    const odds2 = oddsWords(capability, difficulty);
     let wound = null;
     if (!res.success && rng.chance(0.15 * c.risk + (res.tier === "disaster" ? 0.35 : 0))) wound = rng.pick(["arm", "leg", "hand", "knee", "face", "side"]);
     const kills = res.success ? Math.max(0, Math.round(c.reward * (res.tier === "triumph" ? 3 : 1) * rng.next() * 2)) : 0;
@@ -1936,7 +1948,7 @@ var __ARDAN_V2_MAKE = (() => {
     return {
       choice: c,
       res,
-      odds,
+      odds: odds2,
       wound,
       kills,
       capturedBanner,
@@ -3098,12 +3110,12 @@ var __ARDAN_V2_MAKE = (() => {
   function cardFor(ctx, ev) {
     const text = ev.text(ctx);
     return { id: ev.id, text, choices: ev.choices.map((ch, i) => {
-      let odds = null;
+      let odds2 = null;
       if (ch.check) {
         const k = ch.check(ctx);
-        odds = oddsWords(k.capability, k.difficulty);
+        odds2 = oddsWords(k.capability, k.difficulty);
       }
-      return { i, label: ch.label, odds: odds ? odds.words : null, oddsLine: odds?.line ?? null, tilt: odds?.tilt ?? null };
+      return { i, label: ch.label, odds: odds2 ? odds2.words : null, oddsLine: odds2?.line ?? null, tilt: odds2?.tilt ?? null };
     }) };
   }
   function resolveChoice(ctx, ev, i) {

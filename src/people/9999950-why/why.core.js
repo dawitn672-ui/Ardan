@@ -28,8 +28,8 @@
   const W = A.WHY = {
     E,
     T: Object.assign({
-      logCap: 250,     // records kept in A.S.why (rule 21: nothing grows forever)
-      kindCap: { war: 100, faction: 80, appoint: 40, other: 40 },   // and of each kind
+      logCap: 150,     // records kept in A.S.why (rule 21: nothing grows forever; about 450 bytes each)
+      kindCap: { war: 60, faction: 50, appoint: 20, other: 20 },   // and of each kind
       hotCap: 400,     // people who may carry feelings at once
       askCap: 24,      // councils called at once by a wrong
       warBand: 3,      // the war council: options within this of the best go to the draw (log-odds; see D-069)
@@ -90,10 +90,11 @@
     // the draw: A.rand, or a stream the caller keeps apart (v2 diplomacy's own seeded stream)
     const rec = E.decide(mind, kind, options, { rand: ctx.rand || (() => A.rand()), year: A.S.year, band: ctx.band, at: ctx.at });
     if (!rec) return null;
-    rec.d = A.today ? A.today() : 0;
     if (ctx.r != null) rec.r = ctx.r;
-    for (const list of [rec.why, rec.not]) for (const x of list) { x[0] = clean(x[0]); if (x[3] && typeof x[3] === 'object') x[3] = srcOut(x[3]); }
+    // only a record that is kept is cleaned for the save (most choices are "wait" or "stay", and kept nowhere)
     if (ctx.log !== false && (!ctx.logIf || ctx.logIf(rec))) {
+      rec.d = A.today ? A.today() : 0;
+      for (const list of [rec.why, rec.not]) for (const x of list) { x[0] = clean(x[0]); if (x[3] && typeof x[3] === 'object') x[3] = srcOut(x[3]); }
       const L = log(), capK = W.T.kindCap[kind] || W.T.kindCap.other;
       L.unshift(rec);
       // each kind keeps its own share, so the crowns' many appointments never push the wars out of the record
@@ -227,8 +228,10 @@
     const a = r.id, b = o.id, out = [], his = female(a) ? 'Her' : 'His';
     const add = (kind, weight, label, source, pub) => { if (isFinite(weight) && Math.abs(weight) >= .02) out.push({ kind, weight: r2(weight), label, source, pub: !!pub }); };
     add('temper', ln(A.aiWarHaz(a)), temperLabel(a), { t: 'temper', id: r.ruler }, 0);
+    // short of the edge his temper wants (20's nerve), the count weighs so heavily that only heat (a hot king's count
+    // discounted) carries a war: the old nerve gate, made a reason (D-069)
     const nerve = A.aiNerve(a), f = clamp(P.ratio - nerve, 0, 2.5);
-    add('reckoning', ln(Math.max(f, .05)) - (f <= 0 ? 4 * (nerve - P.ratio) : 0), `${his} Generals count ${strengthWord(P.ratio)} the strength of ${short(b)}`, { t: 'count', at: b, r: P.ratio }, 0);
+    add('reckoning', ln(Math.max(f, .05)) - (f <= 0 ? 2 + 8 * (nerve - P.ratio) : 0), `${his} Generals count ${strengthWord(P.ratio)} the strength of ${short(b)}`, { t: 'count', at: b, r: P.ratio }, 0);
     add('grudge', ln(Math.max(.05, 1 + (-rel - 25) / 60)), `Bad blood with ${short(b)}`, { t: 'opinion', at: b, r: Math.round(rel) }, 1);
     if (cb) add('claim', ln(cb === 'justified' || cb === 'reconquest' ? 2.2 : 1.5), `A cause the crowns accept: ${CBN[cb] || cb}`, { t: 'cause', at: b, id: cb }, 1);
     else add('duty', ln(A.aiNoCause(a)), 'No cause the crowns would accept', { t: 'cause', at: b }, 1);
@@ -264,6 +267,18 @@
     const peace = [{ kind: 'cost', weight: o.pace != null ? o.pace : W.T.peace, label: 'The cost of a war in men, coin and the harvest', source: { t: 'peace', r: RA.id }, pub: 0 }];
     return W.decide(RA.id, 'war', [{ id: 'war', at: RT.id, feeds: W.WAR_FEEDS, reasons }, { id: 'wait', at: RT.id, reasons: peace }],
       { band: W.T.warBand, r: RA.id, at: RT.id, rand: o.rand, log: o.log, logIf: x => x.chose !== 'wait' });
+  };
+  // the pull toward war on b at a's yearly council, as odds (no draw, no record): what A.aiWarCheck would weigh for this
+  // pair now, or null when war is not thinkable (a gate, the opinion bar, a debt). Tests read it in place of the old roll.
+  W.warOdds = function (a, b) {
+    const r = A.realm(a), o = A.realm(b), S = A.S;
+    if (!r || !o || !o.alive || A.hostile(a, b) || (r.truce && r.truce[b] > S.year) || (r.allies || []).includes(b) || A.hasTr(a, b, 'def')) return null;
+    const cb = A.cbOn(a, b), rel = A.relBetween(a, b) - A.claimsOn(a, b).length * 12 - (cb ? 10 : 0) - (A.cbPress ? A.cbPress(a, b) : 0);
+    if (rel > A.aiWarBar(a) && !W.hot(a, b)) return null;
+    const P = A.cbPreview ? A.cbPreview(a, b) : A.warPreview(a, b), reasons = W.warReasons(r, o, P, rel, cb);
+    if (!reasons) return null;
+    const x = E.odds(W.mind(a), [{ id: 'war', at: b, feeds: W.WAR_FEEDS, reasons }, { id: 'wait', at: b, reasons: W.peaceReasons(r) }], { year: S.year, band: W.T.warBand, at: b });
+    return x ? x.war : null;
   };
   W.peaceReasons = r => [{ kind: 'cost', weight: W.T.peace, label: 'The cost of a war in men, coin and the harvest', source: { t: 'peace', r: r.id }, pub: 0 }];
   W.WAR_FEEDS = ['pride', 'anger', 'shame', 'zeal', 'grief'];

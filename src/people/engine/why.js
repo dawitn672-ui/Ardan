@@ -146,8 +146,8 @@ export function decide(mind, kind, options, opts = {}) {
   const others = scored.filter(s => s !== chosen).sort((a, b) => b.score - a.score);
   const runner = others[0] || null;
   const pro = chosen.reasons.filter(r => r.w > 0).sort((a, b) => b.w - a.w).slice(0, T.keepWhy);
-  const con = chosen.reasons.filter(r => r.w < 0).map(r => ({ ...r })).sort((a, b) => a.w - b.w);
-  if (runner) for (const r of runner.reasons.filter(r => r.w > 0).sort((a, b) => b.w - a.w)) con.push({ ...r, w: -r.w });
+  const con = chosen.reasons.filter(r => r.w < 0).sort((a, b) => a.w - b.w).slice(0, T.keepNot);
+  if (runner && con.length < T.keepNot) for (const r of runner.reasons.filter(r => r.w > 0).sort((a, b) => b.w - a.w).slice(0, T.keepNot - con.length)) con.push({ kind: r.kind, label: r.label, source: r.source, pub: r.pub, w: -r.w });
   // the temper's push: how much the bending moved the chosen option against its runner-up
   const lean = (chosen.score - chosen.raw) - (runner ? runner.score - runner.raw : 0);
   return {
@@ -158,11 +158,22 @@ export function decide(mind, kind, options, opts = {}) {
     chose: chosen.id,
     s: r2(chosen.score),
     why: pro.map(reasonOut),
-    not: con.slice(0, T.keepNot).map(reasonOut),
+    not: con.map(reasonOut),
     rej: others.slice(0, T.keepRej).map(s => [s.id, r2(s.score)]),
     drawn,
     form: lean > .1 ? 1 : lean < -.1 ? -1 : 0,
   };
+}
+
+// the pull of the reasons as odds, without a draw or a record: { id: share } by e^score over every option (the band is
+// not applied: this is how strongly the reasons lean, for tests and tooltips), and inBand: the ids the draw could choose
+export function odds(mind, options, opts = {}) {
+  const scored = (options || []).filter(o => o && o.id != null).map(o => weigh(mind, o, opts));
+  if (!scored.length) return null;
+  const best = Math.max(...scored.map(s => s.score)), band = opts.band != null ? opts.band : T.band;
+  const ws = scored.map(s => Math.exp(s.score - best)), tot = ws.reduce((a, b) => a + b, 0), out = { inBand: [] };
+  scored.forEach((s, i) => { out[s.id] = ws[i] / tot; if (best - s.score <= band) out.inBand.push(s.id); });
+  return out;
 }
 
 // light a feeling: { k, at, heat, cause, since }. The heat lit follows the temper (a hot man burns hotter); the same

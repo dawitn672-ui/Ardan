@@ -23,7 +23,7 @@ core file over the v2 engine's `src/people/engine/why.js`; small edits in the re
 - it returns a **record** `{ y, d, who, k, at, r, chose, s, why, not, rej, drawn, form }`: the three heaviest reasons
   for, the two heaviest against (its own, then the runner-up's), the options rejected, whether a draw chose, and
   whether the temper pushed toward the choice (true to form, +1) or away (against his nature, -1). Records go into
-  `A.S.why`, newest first, **bounded**: 250 in all, war 100, faction 80, appoint 40, any other kind 40 (rule 21).
+  `A.S.why`, newest first, **bounded**: 150 in all, war 60, faction 50, appoint 20, any other kind 20 (rule 21; about 450 bytes a record, so at most about 70 KB of the save).
 
 `A.WHY.feel(who, k, cause, heat)` lights a feeling; `A.WHY.tell(rec, pubOnly)` and `A.WHY.tellFor(rec, rid)` say
 "Because: ...; Despite: ..." in plain words, keeping to what the player could know (a realm's council's count of

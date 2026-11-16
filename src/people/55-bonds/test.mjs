@@ -455,7 +455,8 @@ export default {
         A.shuffle = L => L.slice().sort((x, y) => (x === a.id || x === b.id || (x && x.id === a.id) ? -1 : 0) - (y === a.id || y === b.id || (y && y.id === a.id) ? -1 : 0));
         A.warPreview = function (x, y) { pair = x + '>' + y; return keep.preview.apply(this, arguments); };
         A.chance = q => { if (pair === a.id + '>' + b.id && p == null) p = q; return false; };
-        try { A.aiWarCheck(); } finally { S.wars = keep.wars; A.chance = keep.chance; A.warPreview = keep.preview; A.shuffle = keep.shuffle; a.aiLastWar = keep.rest; a.exhaustion = keep.ex; a.stability = keep.st; a.truce = keep.tr; FE.ON = true; }
+        // W1-2 (D-069): the war is a council's decision now; its pull toward war is A.WHY.warOdds (the old roll before it)
+        try { if (A.WHY && A.WHY.warOdds) p = A.WHY.warOdds(a.id, b.id); else A.aiWarCheck(); } finally { S.wars = keep.wars; A.chance = keep.chance; A.warPreview = keep.preview; A.shuffle = keep.shuffle; a.aiLastWar = keep.rest; a.exhaustion = keep.ex; a.stability = keep.st; a.truce = keep.tr; FE.ON = true; }
         return p;
       };
       const pOn = odds(true), pOff = odds(false), mul = A.feudWarMul(a.id, b.id);
