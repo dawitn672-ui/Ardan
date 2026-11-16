@@ -31,7 +31,9 @@
         else if (e && e.cond && A.age(pc) < 6 && !(q.ctx && q.ctx.arc) && !(function () { try { return !!e.cond(pc, A.C); } catch (err) { return true; } })()) { v.skip = true; X3.stats.child++; v.x3Why = 'a scene for older lives, dealt to a child'; }
         if (v.skip) q.ctx = Object.assign(q.ctx || {}, { skip: 1 });
         else if (Array.isArray(v.adv) && v.adv.length) {
-          const here = v.adv.filter(x => X3.present(pc, A.P(x.id)));
+          const here = v.adv.filter(x => X3.reaches(pc, A.P(x.id)));
+          // one who is not in the room writes: the line is a letter's
+          for (const x of here) if (!x.far && X3.reaches(pc, A.P(x.id)) === 'letter') { x.far = 1; x.l = 'A letter from home: ' + String(x.l).replace(/^./, c => c.toLowerCase()).slice(0, 130); }
           if (here.length !== v.adv.length) { X3.stats.counsel += v.adv.length - here.length; if (here.length) v.adv = here; else { delete v.adv; delete v.big; } }
         }
       }

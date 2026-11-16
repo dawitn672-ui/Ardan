@@ -78,4 +78,15 @@
       return X3.whereIs(t) === X3.whereIs(pc);
     } catch (e) { return true; }
   };
+
+  // who can speak to him, in the room or from afar: the room (present), or the household he left (parents, wife, children, brothers and
+  // sisters, alive and free) who answer by letter: a soldier's father is not at his side, but he is not a stranger to his troubles
+  X3.reaches = function (pc, t) {
+    try {
+      if (X3.present(pc, t)) return 'here';
+      if (!pc || !t || !t.alive || t.prison || pc.prison) return false;
+      const kin = (pc.parents || []).includes(t.id) || pc.spouse === t.id || (pc.children || []).includes(t.id) || (pc.rel && pc.rel[t.id] && pc.rel[t.id].type === 'sibling');
+      return kin ? 'letter' : false;
+    } catch (e) { return false; }
+  };
 })();

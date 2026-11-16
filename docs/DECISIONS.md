@@ -1069,3 +1069,9 @@ mourning is not put on by the game after a death.
 text a feature builds at run time are caught only by the last look; counsel written into a scene's own text ("your steward
 advises"); the E9 line of filler beyond part 1's quiet lines.
 
+**D-059 addendum (CI 127, `advLives`):** present-only counsel starved a conscripted peasant (his parents stay at home while his division stands
+elsewhere: 0 advisors). Now `A.X3.reaches` seats, and the card keeps, people who are there (`present`) and the household he left (parents,
+wife, children, brothers and sisters, alive and free), who answer by letter ("A letter from home: ..."). A brother in prison and a friend across
+the realm still advise no one. `advLives` measures 74% and 3.3 advisors a life (peasant 2) against its 60% and 2.5 bars; the illness scene's
+family at the bed still needs `present`.
+
