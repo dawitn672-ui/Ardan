@@ -948,8 +948,187 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - CI 128 (`f28a996`) failed only `lfRepeats` (with the first-life fixes 10.1 prompts a year against 13.5 without, 0.748
   against a bar of 0.75; it read 0.77 before X3 part 2's gates). 97 cuts repeats by design; the bar is 0.7 of off's.
 
+### H-059 · 2026-11-16 · T1: two test tiers, shards by time
+- The owner asked to cut the long testing. Measured from 14 CI shard logs (`/tmp/ardan/ci*.txt`, four workers a job): 852
+  tests, about 14 CPU-hours; 42 tests of 200 to 1,800 s (kinBotLives, temperMovesTheWar, worldArcsInBotLives, rivalsBotLives, pcLives,
+  aoArcsEveryBranch, ...) are 28,400 s of it, and the old `i % 8` split put several of them in one shard (35 to 45 minutes a run).
+- `tests/run.mjs`: `--tier=quick|long|all`, shards balanced by `tests/test-times.json` (longest first onto the lightest shard,
+  and run longest first within a shard), `--plan`, `--check-tiers`, `--times-out=`; `tests/long-tests.json`; `tools/test-times.mjs`;
+  `tools/check.mjs` runs `--check-tiers`. `check.yml` runs the quick tier (estimate: 810 tests, 12 minutes a shard); new `long.yml`
+  runs the long tier nightly, on demand, on `[full ci]` and `release/*`. Build, balance and press jobs unchanged (balance not
+  measured here: no log has it). 167 tests had no CI time in the logs (planned at 30 s): the first long and quick runs' time artifacts fix that.
+- Undo: `git revert` the commit; the old runner split was `i % n` over the test list, and `check.yml` ran all tests.
 
-### H-059 · 2026-11-16 ET · D9: the map's ground, read by the game and drawn (D-061)
+- **First run (CI 131, both tiers green, 2026-11-16):** long tier 26 minutes; quick shards 9 to 19 minutes of tests, but the
+  balance job took 37 and held the run to 38. Balance moved to `long.yml`; all 16 shards' times merged into
+  `tests/test-times.json`; 12 tests over 200 s joined the long list (54). New plan: quick about 11 minutes a shard, long about 22.
+  Undo the move: put the `balance` job back in `check.yml` from `long.yml`.
+- **Measured after the move (CI 132, push 540b1cc, green):** the whole quick check took 14 minutes 21 seconds, start to finish (was 38).
+
+### H-060 · 2026-11-15 21:35 ET · D12a-2: the war design revised with the owner's ten answers (design only)
+- **Docs:** `docs/design/war.md` revised (part one kept, changes marked *(D12a-2)*; part two new, §9 to §16: command
+  without a Marshal, manpower without levies, why wars start and end, your place in it, stability and upheavals, the
+  military path and training, records and old saves, the build order in sixteen stages); a one-page summary for the
+  owner at its top; two diagrams, `docs/design/war/5-command.svg` and `6-reports.svg`, drawn by
+  `docs/design/war/build-command.mjs`. D-064 records the choices made where the answers left room.
+- **Game:** nothing. No code, data or test changed.
+- **Left open:** every stage of §16; CRITIQUE §2's "done when" for D11 and D12b still read the first plan; the
+  `life-sim-systems` skill carries a note of the direction, not yet the built rules.
+- **Undo:** revert branch `d12a-2`'s commits; the first design is `0378b9e`.
+
+### H-061 · 2026-11-16 · W1-1: no Marshal, five ranks
+- **Game:** five ranks (soldier, sergeant, captain, commander, General); `GD.MIL` keeps eight grades as steps (0-7; High
+  General and Marshal gone; `A.rankLabel` adds "(second step)"). A war-map division of 3,000+ men is a host led by a
+  General, under 3,000 a column under a Commander (`A.HOSTS`, new feature `src/war/9999905-five-ranks`; seed Generals by
+  `A.oobLeader`, no persons made); an army of two hosts or more is led by its commanding General by the king's written
+  word (the `army:<id>` post); `a.sub` army groups retired. The council's `marshal` seat is now `general`, read from the
+  crown's first host (`A.POSTS.firstHost`, `r.firstHost`; `seat:<r>:general` redirects to `div:<first host>`); the crown
+  fills it monthly (`A.POSTS.fillGenerals`); a General's superior is the crown. Old saves: `A.POSTS.migrateMarshal` /
+  `seatMarshals` (Marshal -> senior General; player grade 9 -> 7 with the first host; old words in styles, the
+  achievement `marshal` -> `senior_general`, the advisors' ring and 9996's council task renamed). Rank-8/9 events
+  (`rk_gen_treaty`, `rk_gen_hang_officer`, `rk_mar_*`) re-gated to rank 7 or the senior General. Words swept in the
+  release source, content, lore, `data/names.json` (trade surname "Marshal" -> "Marcher"), the v2 engine and features;
+  orders' "Marshal of the ..." -> "Seneschal of the ...", Sunrise's Spear-Marshal -> Spear-Lord.
+- **Tests:** new `w1NoMarshalLint`, `w1NoMarshalWorld`, `w1GeneralsFollowHosts`, `w1SeniorGeneral`, `w1OldSaveMarshal`
+  and the sample save `tests/saves/v2.1.0-alpha.9-marshal.ardan` (made from 6dbabd3's build); `postsMarshalRepro` and
+  `postsMarshalOptional` replaced by `postsSeniorGeneralCourt` and `postsSeniorGeneralFill`; other tests' rank words and
+  Marshal setups updated (99992, 97, 994, 56, 38, 9997, 99997, 96, 999996, 999997, 99993). Bars moved, with reasons
+  in the tests: `postsDeathVacates` counts posts other than a court title (the army's general is now a great house's
+  head, whose title passes at the law's own pass); `pfNumbers` asks two numbers a life, not three (seed 4104's orc girl
+  reads two now that the crown names senior Generals with the game's dice).
+- **Left for W1-3:** the reasons for the king's choice of a commanding General, the king leading in person, the council
+  of war's cost; unit words ("division", "battalion") outside the order of battle (D11-1).
+- **Checks:** new tests 5/5 pass; posts 8/8; savesStillLoad 13 saves; 99992, 97, 994, 56, 9996, 9997, 9999, 99997,
+  999996, 999997 tests touched pass; `node --test tests/v2` 89/89; lint-stages, lint-kin, lint-events (the four changed
+  packs), `build-v2 --check`, `--check-tiers` ok; `coherency --quick` no contradiction; `long-life-audit --seed=7
+  --years=30` clean (0 errors, audit empty, 0 broken post months).
+- **Commits:** `35b2f9e` (the stage), `1f69eed` (test bars, long tier).
+- **Undo:** revert branch `w1-1`'s commits (base `6dbabd3`); D-066 records the choices.
+
+### H-062 · 2026-11-16 · G0: the growth standard (research and design only)
+*Numbered H-062, not H-061: another agent may take H-061 in parallel.*
+- **Docs:** `docs/design/growth-standard.md`: a one-page summary for the owner; §1 today's growth measured over nine
+  fixed-seed bot lives from birth; §2 the research put plainly, with sources, and six games compared; §3 the standard
+  (a cause for every change, the formula family, the practice curve, quality of effort and the routine ceiling, teachers
+  and their ceiling, the learner's age by kind, condition, named plateaus, trials at Expert and Master with stored effort,
+  disuse by kind, each stat's curve over a life, detraining and setbacks, how every source feeds in, words for the
+  player, three worked lives, NPC kits); §4 for the builders (files and functions, saves and migration, thirteen tests
+  that prove "not linear", a cost budget); §5 choices for the owner. Scripts in `docs/design/growth/`: `measure.mjs`
+  (bot lives, year by year), `analyze.mjs`, `model.mjs` (the standard, runnable), `lives.mjs` (the worked lives),
+  `chart.mjs` → `curves.svg`; the measured data `today.json`. D-067 records it. `growth.md` points to it; PROGRESS ticks G0.
+- **Game:** nothing. No code, data or test changed.
+- **Left open:** the owner's choices in §5 (trials at Expert and Master above all); building it is G1/G2 and D11+.
+- **Undo:** revert branch `g0`'s commits.
+
+### H-063 · 2026-11-16 · C8d gate 1: profile cards in the owner's manhwa reference style (a style frame; nothing in the game)
+- **Asked** (orders 56, 57, 58): the reference's card (navy, gold edge, realm banner and crest, a waist-up figure before
+  a scene, station with icon, three keywords, a motto), drawn by code, with dress, arms and headwear differing by people,
+  border and wealth, and the reference's weak spots fixed.
+- **Code (new, used only by the demo):** `src/ui/engine/figure/manhwa/` (`ink.js` the pen: flat cel forms, tapered
+  lines, trims with motifs, tiles; `head.js`, `locks.js`, `body.js`, `wear.js`, `hats.js`, `props.js`, `scenes.js`,
+  `peoples.js` the kits and their reasons, `card.js`, `index.js`). Not exported by `figure/index.js`, not in the engine
+  bundle, no game file, build or test changed. Same dice (`g.js stream`) and palettes as the library; no `Math.random`.
+- **Sheets:** `node docs/design/demo-2d/c8d/sheet.mjs` writes `docs/design/demo-2d/c8d/sheet.png` (8 stations × Northreach,
+  Qadir, Ulun, Zanara, at 2x), `details.png` (Qadir and Sabra, Northreach and Aldmark across a border; a Qadir and Zanara
+  border town; wealth in one craft; eight herders of Ulun), `one.png` (cards at 420 px), `compare.png` (beside the
+  reference); `--measure` writes `measure.json`.
+- **Measured:** a card is 75 KB of SVG (21 KB gzipped), about 3 ms to make, about 10 to 14 ms to draw here and 35 to 42 ms
+  with the CPU slowed four times; the layer is 245 KB of source (72 KB gzipped, unminified); no raster image (a painted
+  background would cost more than the card).
+- **Not reached, said to the owner in `docs/design/c8d-gate1.md`:** it is clean cel drawing, not painting; near front
+  views; simple arms and hands; flat scenes. The repo gains about 13 MB of PNG for the owner's eye.
+- **Checked:** the same person gives the same string twice; `sheet.png` is byte-identical across two runs;
+  `node --test tests/v2/figure*.test.js` 20 of 20 (the old library is untouched).
+- **Left open:** the owner's verdict and the seven choices in the gate note; the other twenty peoples; children, the old,
+  wounds; the face code feeding the new head; tests for the layer; building it into 93-figures and the Profile tab.
+- **Undo:** remove `src/ui/engine/figure/manhwa/`, `docs/design/demo-2d/c8d/`, `docs/design/c8d-gate1.md` (branch `c8d-gate1`).
+
+### H-068 · 2026-11-16 04:00 ET · P3: the owner's playtest fixes (order 54, D-062 addendum)
+Branch `p3-playtest` from `v2-integration` at `2aaf1ba`; one commit a fix; not pushed.
+- **Fix 1, "Start a new life" (`e54b20f`).** The confirm's yes cleared its pass in a `finally` before 999999's deferred start
+  ran, so "Start the new life" asked again for ever; the menu also stayed open over the creation screen. The yes hands a
+  one-use pass `UI.startLife` spends; `UI.A.newLife` closes its box. Test `newLifeAfterSave` (real clicks; fails on the
+  build before).
+- **Fix 5, a step completes after its cards (`c6fb716`).** 84's `UI.stepGo` no longer ends a year once its card is
+  settled; 99992's battle/duel stop ends a step only when it put you on campaign; 999995's happenings (wound, illness,
+  death or birth in the household, coming of age, a call to war) go into the digest (`sum.met`) instead of ending the year.
+  Test `nyYearGoesOn` replaces `nyEarlyStops`.
+- **Fix 2, free will (`82bd806`).** Retired to `archive/p3-ambitions/` (97's `c-ambition.core.js`, `ambition.events.js`;
+  tests `lfAmbition`, `lfAfterTheTop`, `lfWhatNowSystems`) and `archive/p3-chapters/` (9993-life-chapters whole; v2-time's
+  `v2tChapterPanel`, `v2tChapters`). **Last commit that built them: `c6fb716`.** Goal stack rewritten (debts, favours owed,
+  promises only); `C.ambition` reads `A.SEEK` (new `src/people/9989-what-you-seek`); hint and help texts.
+- **Fix 3, crimes against a ruler (`d1eb73d`).** New `src/nobility/999993-crown-crimes` (reach, discovery with reasons, the
+  record, the sentence by law and nature, the block, forgiveness, regicide's aftermath: the realm, the inquiry, kin
+  vengeance, the price, avengers); 39-schemes routes a king's murder through it. Tests `ccReach`, `ccAttempts`,
+  `ccRegicide`, `ccForgive`.
+- **Fix 4, the first mission (`ea699f4`).** New `src/war/99972-unit-work` (monthly unit work by war, post and officer; a
+  recruit's first within ~100 days); `A.milYear`'s yearly mission waits when the unit had work in 90 days. Test
+  `uwFirstMission`. `tests/stages-baseline.json` 356 -> 355.
+- **Checks:** lint-events and lint-choices clean for the touched features, lint-kin clean, lint-stages ok, coherency quick:
+  no contradiction, no check rose.
+- **Undo:** revert the five commits, newest first; to bring the ambitions or chapters back, move their folders from
+  `archive/` into `src/events/` and restore their manifest stages.
+
+### H-066 · 2026-11-16 · The old Ardan Codex reviewed (research only)
+- **Asked:** the owner uploaded an old, outdated Codex (the Far Lands, 1105) and asked what in it is useful.
+- **Docs:** `docs/research/codex-review.md` (what it is, what matches, contradicts or is gone, 12 useful items by work item,
+  recommendations); `docs/research/codex/reasons-and-cracks.md` and `docs/research/codex/martial-concepts.md` (plain lifts, no
+  code); the file itself as `docs/research/ardan-codex-old.html`. `docs/README.md` indexes them.
+- **Found:** its data is already in `archive/` (99-far-lands, 990 to 993, retired in H-001); it adds prose, quarrels, money and
+  chokepoint tables, realm secrets. Outdated: military templates, Marshal, levies (the war score is not in it).
+- **Game:** nothing. No code, data or test changed.
+- **Undo:** revert the branch `codex-review` commits.
+
+### H-067 · 2026-11-16 · S1a: the design for skills with levels and experience (order 63; nothing in the game)
+- **Asked** (order 63): retire the proficiencies everywhere; skills with levels and experience; growth that moves with
+  the life. Design only.
+- **Written:** `docs/design/skills.md`: the owner's page; §1 what is removed (data, engine, every place the player reads
+  it, tests), counted with `git grep` at `962791e` (5,695 checks, 4,989 skill grants in effects, 337 `A.trainSkill`
+  calls, 349 `A.skill` reads, 252 `C.prof`, 110 direct writes to `.skills`, 51 "proficien"); §2 the model (28 skills,
+  99 specialisms, 35 levels, the experience table, 252 concepts, grasp, proof, breakthroughs, talent, rust); §3 sources
+  and the fourteen things that move growth; §4-§5 checks and effects; §6 kept and cut; §7 the ledger; §8 the page at
+  375 × 667; §9 migration; §10 other people and the census; §11 ten choices for the owner; §12 for S1b (the engine
+  module, twelve file steps, data bounds, cost, eighteen tests, lints, six stages with done-when).
+- **Scripts** (`docs/design/skills/`, not game code): `gen-data.mjs` → `skills.json`; `model.mjs` (imports the growth
+  standard's `../growth/model.mjs`); `lives.mjs` → `lives.json` and the tables; `chart.mjs` → `lives.svg` (rendered in
+  Chromium, light and dark, and looked at). Twelve concept names come from `docs/research/codex/martial-concepts.md`.
+- **Measured in the model:** a prodigy (talent S, easy needs, a grandmaster's drill) is Master in 4 years; an ordinary
+  plodder in 27; a gifted, well-taught man with one blind concept ends at Expert V; of 400 people of talent C given
+  the same best training 343 reach Master in 8 to 49 years (middle 11) and 57 never.
+- **Game:** nothing. No code, data or test changed.
+- **Left open:** the owner's choices (§11; two are conflicts between earlier orders, recorded in D-072); S1b.
+- **Undo:** revert branch `s1a`'s commits (`docs/design/skills.md`, `docs/design/skills/`, and the lines added to
+  DECISIONS, HISTORY, PROGRESS and `docs/README.md`).
+
+### H-065 · 2026-11-16 03:30 ET · I1-0: the route to the iPhone App Store, researched and written (order 62; nothing in the game)
+*Numbered H-065: H-064 is another agent's.*
+- **Asked** (order 62, rule 21): re-check the owner's six facts from today's official docs; map the route (performance,
+  iPhone readiness, a `www/` build, Capacitor, Codemagic and TestFlight, the listing, review) with commands, config, the
+  owner's own steps and pitfalls; write the roadmap, a skill, a CLAUDE.md section with the build rules, and the decisions.
+- **Written:** `docs/IOS_ROADMAP.md` (verdicts on the six facts, what else is true now, seven stages with a sample
+  `capacitor.config.ts`, Info.plist keys, a privacy manifest and a `codemagic.yaml` for a Capacitor 8 SPM project; the
+  one-file page in WKWebView; the owner's steps and when; the audit against each build rule with file:line; 13 fixes,
+  sized and placed); `.claude/skills/ios-capacitor-release/SKILL.md`; CLAUDE.md "End goal: iPhone App Store" and the
+  skill in the Layout table; D-071 (the route), D-075 (eight choices: `app/`, one file first, Filesystem and Preferences,
+  iPhone and portrait only, iOS 17, the audio session, plugins without a bundler, builds by hand), D-076 (six readings of
+  the rules against the code); PROGRESS I1 with seven stages, and the audit's fixes folded into X5, X7 part 2, D9 and Gaps;
+  `docs/README.md`.
+- **Probes** (`docs/research/ios/`): `tap-probe.mjs` (Chromium and WebKit, 375×667: 58 of 382 controls under 44 points, none
+  on the title, the event card and seven pages; no sideways scroll) and `webkit-boot.mjs` (the one-file page booted in
+  Playwright's WebKit with its CSP, `'strict-dynamic'` and a blob worker; a save landed in IndexedDB, 345 KB). WebKit was
+  installed into the session's scratch folder with `playwright install webkit` and `install-deps webkit`.
+- **Run, not kept:** `npx cap add ios` with `@capacitor/cli` 8.6.2 in a scratch folder on Linux, which confirmed the SPM
+  layout (`ios/App/App.xcodeproj`, `CapApp-SPM/Package.swift`, no Podfile) and the template's defaults (iOS 15, iPhone and
+  iPad, landscape, a SceneDelegate).
+- **Sources:** capacitorjs.com, ionic.io, developer.apple.com, docs.codemagic.io and Codemagic's CLI docs, WebKit Bugzilla,
+  MDN, docs.expo.dev, the npm registry; listed in the roadmap §11. Three Apple pages would not render (privacy manifest,
+  encryption export, the HIG on audio): what rests on them is marked unverified.
+- **Game:** nothing. No game code, data, test or tool changed.
+- **Left open:** every stage after I1-0; the [U] items (audio session and blob worker inside WKWebView under
+  `capacitor://`, CSS bounce control, the first automated upload without a Mac) wait for the first TestFlight build.
+- **Undo:** revert branch `ios-route`'s commit.
+
+### H-069 · 2026-11-16 ET · D9: the map's ground, read by the game and drawn (D-061)
 - **Branch** `d9-map` from `v2-integration` (`7aee21c`), not pushed. Steps: `aec5924` the ground engine
   (`src/map/engine/ground.js`, `tests/v2/ground.test.js`), `e1c7f63` map version 3 (towns on water, oases on dry land, terrain
   from the ground), `1e1d84d` the ground in play and on the map, one map component (`src/map/999911-d9-ground`), then the look,

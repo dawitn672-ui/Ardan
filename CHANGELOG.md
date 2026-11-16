@@ -11,6 +11,36 @@ What changed for the player, in plain words, one section per version (newest fir
 - **The ground matters.** You travel and armies march faster on the roads, supply runs along roads and rivers, and an attack
   across a river or through a pass costs the attacker, as the battle report says. Oases lie in dry country, and hills no longer
   cover half the land.
+- **No Marshal; five ranks.** The army has five ranks on every screen: soldier, sergeant, captain, commander and General.
+  General is the highest; there is no Marshal and no High General. A sergeant leads a section of about twelve, a captain
+  a company of about two hundred, a commander a wing of several companies, and a General a host (a division on the war
+  map). A rank with two steps says so: "Captain (second step)".
+- **One General to each host.** A realm has as many Generals as it fields hosts; a division worn below three thousand
+  men is a column under a commander. An army of several hosts is led by one General given it by the king's written word
+  for that war, and the order of battle names him the commanding General.
+- **The senior General.** The General of the crown's first host speaks for the army at the king's council, does the
+  council's yearly work for the army, and commands no other General. A General may be named to it; a captain may not.
+- **Old saves:** a Marshal becomes his realm's senior General, and a player who was Marshal is a General holding the
+  first host and the army's place at council. Old rank words in names and styles read as the five ranks.
+
+- **Start a new life works.** After a life was saved, "Start the new life" asked the same question again for ever, and the
+  menu stayed open over the creation screen. Both are fixed.
+- **Nothing is handed to you.** Ambitions, chapters and their aims are gone, and the top of Life no longer suggests what to
+  do: it keeps only what you have taken on (your debts, favours you owe, promises made). The scenes once written for an
+  ambition now come to a life that goes looking for the thing: set your plan's aim, choose your training, take a post.
+- **A king's life is not cheap.** You must be able to get near him; an attempt can be found out (the guard, his
+  spymaster, the servants who saw you before), and it is remembered. The sentence follows the realm's law and the king's
+  nature, death for treason more often than not, and the block is real. Begging his pardon depends on what he thinks of
+  you, his temper, what you did and what you have given since. A murdered king stays dead: his heir takes the crown, the
+  realm is shaken, the court hunts the hand, and once it is known his kin swear vengeance and a price is set on your head.
+- **Soldiers are sent out.** Your unit gets work month by month from its war, its post and its officer, and a new man is
+  tried within his first months. Each mission says who sent you and why.
+- **Next month and Next year finish what they start.** Something that matters stops the step midway; once you have answered
+  it (or the battle is over) the month or the year carries on to its end. A wound, an illness, a death or a birth in the
+  family is written in the year's summary instead of cutting the year short.
+
+## v2.1.0-alpha.9 (2026-11-15 21:24 ET) · Dress that tells who you are, and cards that tell the truth
+
 - **Cards say what you are, and where.** No one calls you "my lord" or "your men" unless you are a lord or lead men, a home-town scene
   does not find you on campaign, a child under six is not asked a grown man's question, and counsel comes only from someone in
   the room. A card's price is the price: a physician's cut of your purse and a lost house are said before you choose.

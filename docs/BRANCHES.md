@@ -9,6 +9,7 @@ version also gets a `release/<version>` branch (the git proxy refuses tag pushes
 | `claude/dreamy-sagan-anwszt` | The session's base branch; PR #2 merges `v2-integration` into it | Yes |
 | `v2-integration` | Where all v2 work is merged and CI runs (PR #2) | Yes |
 | `v3-integration` | Created when v3 building starts (from v2's last version) | Later |
+| `archive/v2-lanes` | One commit whose 9 parents are the tips of the 8 v2 lanes and `v2-wf-repeats` (their unmerged commits kept reachable, order 54) | Yes |
 | `release/v2.0.0-beta.1`, `release/v2.1.0-alpha.1` … | One per version: the restorable record | Yes, always |
 | `v2-lane-*` (8: diplomacy, family, map, nobility, saves, stats, time, war) | The v2 lanes of Nov 1-4; each holds 4-45 commits not in `v2-integration` (READMEs, tests and small fixes that were superseded during integration) | Kept until looked through |
 | `v2-wf-repeats` | One commit not in `v2-integration` (a README line, Nov 6) | Kept until looked through |
@@ -50,3 +51,11 @@ version also gets a `release/<version>` branch (the git proxy refuses tag pushes
 - `v2-wf-warbattles` · `555e4dd`
 - `v2-wf-warleaks` · `c81e4f4`
 - `v2-wf-world` · `a42b0a6`
+
+
+**Order 54 (2026-11-16):** the owner asked for help deleting the old branches. All 44 working branches can go: 35 are inside
+`v2-integration`; the other 9 are kept by `archive/v2-lanes`. The session's git proxy refuses ref deletion, so the owner runs
+`docs/tools/delete-old-branches.sh` (or deletes them on GitHub: Code → Branches → the bin icon).
+
+**Done (2026-11-16):** the owner deleted the 44 old branches. GitHub now holds 15: `main`, `claude/dreamy-sagan-anwszt`,
+`v2-integration`, `archive/v2-lanes` and the 11 `release/*` branches.

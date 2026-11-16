@@ -4128,7 +4128,7 @@
         minRep: 55,
         cool: 5,
         title: "Master of the hunt",
-        text: "The old Master of the hunt has been gored, and the {rulerTitle}'s court needs another before the winter hunting. The post is yours if you can show the marshal a hunt worth the name: thirty hounds, a hundred beaters, and the court in velvet watching.",
+        text: "The old Master of the hunt has been gored, and the {rulerTitle}'s court needs another before the winter hunting. The post is yours if you can show the master of the hunt a hunt worth the name: thirty hounds, a hundred beaters, and the court in velvet watching.",
         choices: [
           {
             t: "Run a great ring hunt",
@@ -4146,7 +4146,7 @@
             t: "Run a small, perfect hunt for the {rulerTitle} alone",
             check: {s:"tracking",s2:"etiquette",d:55},
             win: {
-              r: "One stag, one shot, one royal smile. The marshal hands you the silver horn.",
+              r: "One stag, one shot, one royal smile. The master of the hunt hands you the silver horn.",
               fx: {promote:!0,rep:8,favor:8},
             },
             lose: {r:"The stag does not come. The royal smile does not either.",fx:{rep:-3}},
@@ -4612,13 +4612,13 @@
         cool: 4,
         title: "Remounts for the cavalry",
         setup: (p,ctx)=>{ctx.cav=cavalry(p),ctx.Cav=A.cap(ctx.cav),ctx.mart=inR(p,"POL-12","POL-11","POL-34")?"your own herds and your neighbours'":inR(p,"POL-15","POL-14")?"the channel-shore fairs of Ulun":"every fair from here to the steppe"},
-        text: "{Cav} need three hundred remounts by May Fair, when the grass comes up for war horses. The marshal's clerk will pay 50 suns a head for sound horses. You can find them at {mart}, if you start now and nobody else has bought them first.",
+        text: "{Cav} need three hundred remounts by May Fair, when the grass comes up for war horses. The master of horse's clerk will pay 50 suns a head for sound horses. You can find them at {mart}, if you start now and nobody else has bought them first.",
         choices: [
           {
             t: "Buy carefully, horse by horse",
             check: {s:"husbandry",s2:"logistics",d:55},
             win: {
-              r: "Three hundred sound horses in a line half a league long. The marshal's clerk pays, and asks if you would do it again next year.",
+              r: "Three hundred sound horses in a line half a league long. The master of horse's clerk pays, and asks if you would do it again next year.",
               fx: {coin:300,rep:10,skill:{logistics:3}},
             },
             lose: {
@@ -4631,7 +4631,7 @@
             check: {s:"deception",s2:"trade",d:55},
             win: {r:"Bad horses in good company. The clerk counts heads, not hooves.",fx:{coin:600,honor:-6,rep:2}},
             lose: {
-              r: "The marshal rides down the line himself. He knows a broken horse when he sees one.",
+              r: "The master of horse rides down the line himself. He knows a broken horse when he sees one.",
               fx: {coin:-100,rep:-10,favor:-10},
             },
           },
@@ -4647,13 +4647,13 @@
         minRank: 1,
         cool: 5,
         cond: (p,C)=>C.atWar(p),
-        title: "The marshal's men",
+        title: "The master of horse's men",
         setup: (p,ctx)=>{ctx.stud=studOf(p)},
-        text: "War. A destrier that cost 800 suns in peace fetches 1,500 this summer. The marshal's men have come to {stud} with a list: every horse fit to carry a man in mail, at the crown's price, which is the peace price. Your best brood mares are on the list.",
+        text: "War. A destrier that cost 800 suns in peace fetches 1,500 this summer. The master of horse's men have come to {stud} with a list: every horse fit to carry a man in mail, at the crown's price, which is the peace price. Your best brood mares are on the list.",
         choices: [
           {
             t: "Hand over the horses, mares too",
-            r: "The stud is empty by evening. You will be ten years building it back. The marshal writes your name in his good book.",
+            r: "The stud is empty by evening. You will be ten years building it back. The master of horse writes your name in his good book.",
             fx: {coin:200,favor:10,rep:2,wil:1},
           },
           {
@@ -4664,7 +4664,7 @@
               fx: {coin:150,rep:6},
             },
             lose: {
-              r: "A groom talks. The marshal takes the mares and fines you for the trouble.",
+              r: "A groom talks. The master of horse takes the mares and fines you for the trouble.",
               fx: {coin:-50,favor:-10,rep:-4},
             },
           },
@@ -4672,10 +4672,10 @@
             t: "Sell privately to a captain at the war price",
             check: {s:"trade",s2:"intrigue",d:55},
             win: {
-              r: "A captain who wants a good horse more than he fears the marshal pays 1,200 for your best.",
+              r: "A captain who wants a good horse more than he fears the master of horse pays 1,200 for your best.",
               fx: {coin:1200,honor:-3,rep:3},
             },
-            lose: {r:"The captain is the marshal's cousin.",fx:{coin:-100,favor:-15}},
+            lose: {r:"The captain is the master of horse's cousin.",fx:{coin:-100,favor:-15}},
           },
         ],
       }),
@@ -4724,7 +4724,7 @@
         cool: 8,
         title: "The king's destrier",
         setup: (p,ctx)=>{ctx.horse=A.pick(["Thunder","the Black Bishop","Grief","Iron Mary","Old Night","the Widowmaker"]),ctx.stud=studOf(p),ctx.Horse=A.cap(ctx.horse)},
-        text: "{Horse} is the finest destrier in {stud}, bred for the {rulerTitle}'s own saddle: eight hundred suns of horse, and he has killed a groom. No one has sat him in a year. The marshal wants him ready for the spring muster.",
+        text: "{Horse} is the finest destrier in {stud}, bred for the {rulerTitle}'s own saddle: eight hundred suns of horse, and he has killed a groom. No one has sat him in a year. The master of horse wants him ready for the spring muster.",
         choices: [
           {
             t: "Win him slowly, by trust",
@@ -4751,8 +4751,8 @@
             },
           },
           {
-            t: "Advise the marshal to geld him",
-            r: "Sensible, and unforgivable. The marshal does it, and never quite trusts your judgement again.",
+            t: "Advise the master of horse to geld him",
+            r: "Sensible, and unforgivable. The master of horse does it, and never quite trusts your judgement again.",
             fx: {rep:-2,favor:-2},
           },
         ],
@@ -4765,19 +4765,19 @@
         cool: 6,
         title: "The royal stud",
         setup: (p,ctx)=>{ctx.stud=studOf(p)},
-        text: "The Master of {stud} is old and half blind. The {rulerTitle}'s marshal is choosing a successor, and has asked three horse-masters to show him three horses each. One of them is you.",
+        text: "The Master of {stud} is old and half blind. The {rulerTitle}'s master of horse is choosing a successor, and has asked three horse-masters to show him three horses each. One of them is you.",
         choices: [
           {
             t: "Show him your three best, honestly",
             check: {s:"husbandry",s2:"riding",d:60},
             win: {
-              r: "The marshal walks round your three horses for an hour without speaking. Then he gives you the keys.",
+              r: "The master of horse walks round your three horses for an hour without speaking. Then he gives you the keys.",
               fx: {promote:!0,rep:10,fame:3,favor:6},
             },
             lose: {r:"Another master's horses are better this year. You know it, and so does he.",fx:{rep:-2}},
           },
           {
-            t: "Find out what the marshal likes",
+            t: "Find out what the master of horse likes",
             check: {s:"intrigue",s2:"etiquette",d:55},
             win: {
               r: "Greys. He likes greys, tall and quiet. You show him three. He gives you the keys.",

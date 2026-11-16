@@ -2536,14 +2536,14 @@
             lose: {r:"They send you back with the white banner torn. The war goes on.",fx:{rep:-5,favor:-3,wil:1}},
           },
           {
-            t: "Peace, bought with a bribe to their marshal",
+            t: "Peace, bought with a bribe to their General",
             check: {s:"intrigue",s2:"trade",d:55},
             win: {
-              r: "Their marshal discovers that his men are tired and his treasury empty. Peace by Midsummer.",
+              r: "Their General discovers that his men are tired and his treasury empty. Peace by Midsummer.",
               fx: earn(1,both((p,ctx)=>{const w=leadWar(p);return w&&A.endWar(w,"white",`${w.name} ends in a sudden peace, and nobody asks too loudly why.`),""},{rep:10,favor:12,honor:-3},deed("Bought the peace that ended {war}"))),
             },
             lose: {
-              r: "The marshal takes the gold and tells his sovereign everything.",
+              r: "The General takes the gold and tells his sovereign everything.",
               fx: both(rel(-10),{rep:-8,favor:-8}),
             },
           },
@@ -2551,7 +2551,7 @@
             t: "Spin the talks out while your army regroups",
             check: {s:"deception",s2:"diplomacy",d:50},
             win: {
-              r: "Six weeks of courteous nothing. Your marshal gets his reinforcements.",
+              r: "Six weeks of courteous nothing. Your General gets his reinforcements.",
               fx: {favor:10,rep:4,honor:-2},
             },
             lose: {

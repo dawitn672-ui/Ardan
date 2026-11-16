@@ -1234,7 +1234,10 @@ A.C = {
   owes: p => Object.values(p.owes || {}).reduce((a, b) => a + b, 0) > 0,
   sworn: p => A.relsOf(p).some(x => x.r.sworn && x.p.alive),
   letter: p => (p.letters || []).length > 0,
-  ambition: (p, k) => !!p.amb && (!k || p.amb.k === k),
+  // [P3, order 54, D-062] No ambition is handed to the player any more (97's ambitions are retired to archive/). The
+  // scenes written for one (the pa_* pack) meet the life that seeks the thing of its own will: the plan's aim, the
+  // training chosen, a post taken (9989-what-you-seek). A build without it offers them to nobody.
+  ambition: (p, k) => !!(A.SEEK && A.SEEK.is(p, k)),
 };
 
 A.rollEvents = function (pc) {

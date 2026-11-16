@@ -6,7 +6,8 @@
 //   4. run every browser test
 //   5. play the balance league and hold each path's numbers to their bands (tools/bench/balance.mjs, tools/bench/targets.mjs)
 //   6. (retired in v2 step 2 with the Far Lands: the Great Continent league)
-//   node tools/check.mjs [--skip-tests] [--skip-balance] [--skip-great] [--shard=k/n]
+//   node tools/check.mjs [--skip-tests] [--skip-balance] [--skip-great] [--shard=k/n] [--tier=quick|long|all]
+//   (T1, D-063: tests/long-tests.json lists the long tier; --tier=quick is the push check, long.yml runs the rest; this file also holds the list honest)
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -39,8 +40,11 @@ catch (e) { lintFailed++; console.error(`stages FAIL\n${String(e.stdout || '').s
 // no event names kin who are not in the tree (C6, D-057)
 try { execFileSync(process.execPath, ['tools/lint-kin.mjs'], { cwd: root, stdio: 'pipe' }); console.log('kin ok (tools/lint-kin.mjs)'); }
 catch (e) { lintFailed++; console.error(`kin FAIL\n${String(e.stdout || '').slice(0, 4000)}`); }
+// the long list is honest: a test over the threshold on CI is in tests/long-tests.json (T1, D-063)
+try { execFileSync(process.execPath, ['tests/run.mjs', '--check-tiers'], { cwd: root, stdio: 'pipe' }); console.log('tiers ok (tests/long-tests.json)'); }
+catch (e) { lintFailed++; console.error(`tiers FAIL\n${String(e.stderr || '').slice(0, 4000)}`); }
 if (lintFailed) process.exitCode = 1;
-if (!process.argv.includes('--skip-tests')) { try { run(['tests/run.mjs', `--workers=${process.env.CI ? 4 : 1}`].concat(process.argv.filter(a => a.startsWith('--shard=')))); } catch { process.exitCode = 1; } }
+if (!process.argv.includes('--skip-tests')) { try { run(['tests/run.mjs', `--workers=${process.env.CI ? 4 : 1}`].concat(process.argv.filter(a => a.startsWith('--shard=') || a.startsWith('--tier=')))); } catch { process.exitCode = 1; } }
 // balance: target numbers per path, held by a fixed-seed league (tools/bench/targets.mjs)
 if (!process.argv.includes('--skip-balance')) { try { run(['tools/bench/balance.mjs', 'index.html']); } catch { process.exitCode = 1; } }
 // the Great Continent league (tools/bench/targets.mjs GREAT): about four times the Known World's cost a life-year

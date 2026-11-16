@@ -19,6 +19,12 @@ built on top of it: **features** that add code and events, the **v2 engine** (pl
 
 ## Standing rules (the owner's)
 
+> ### ⚑ NOT A SINGLE THING IN THIS WORLD HAPPENS OUTSIDE OF REASON.
+> Things may come down to chance, luck, reasoned or calculated action, even petty and emotional reasons, but **never to
+> no reason at all.** Every figure acts from a thought process that fits his post, circumstances and personality. Coups,
+> rebellions and factions follow a kingdom's stability, the king's relations with each noble, and their own ambitions,
+> desires and circumstances. Everything is intertwined. (The owner, order 54, for the rest of this game's making; D-062.)
+
 - **Descriptions open on click, never on hover.** A button or an info icon opens a description; nothing pops up on
   hover. (Round 2 order B4, done: `src/ui/59-descriptions` opens on click, tap and Enter only, a `title=` of more than
   three words is lifted into a click-to-open note, an activity opens a sheet first, and `src/ui/99998-click-open/test.mjs`
@@ -29,14 +35,36 @@ built on top of it: **features** that add code and events, the **v2 engine** (pl
 - **One holder per post.** Every title, office and command has exactly one holder at a time. A promotion hands over
   the real command, men and powers and takes the old post away; leaving a post has consequences.
 - **Time moves by Next month or Next year** (D-008, D-019, D-026), two buttons in fixed places that never become a stop
-  control. Only notable things stop a year (a card that needs a real answer, a battle or call to war, an illness or wound, a
-  death or birth in the household, coming of age, a deadline); talk and the day's small happenings wait for the step's end.
+  control. Only notable things stop a step midway (a card that needs a real answer, a battle, a duel, a call to arms, a
+  deadline), and once the card or chain of cards is answered **the same step carries on to its end** (order 54, D-062
+  addendum); a wound, an illness, a death or birth in the household and coming of age go into the year's digest. Only Esc,
+  death or being put on campaign end a step early. Talk and the day's small happenings wait for the step's end.
   No initiative pool: overtraining has its own consequences. See `src/ui/999995-next-year/README.md`.
 - **Deterministic from the seed.** The same seed and the same choices give the same world, always.
 - **No war screens unless you are in the war,** at your rank, on a mission or deployed.
 - **Never throw work away.** Retired code goes to `archive/` with a note (and the last commit that had it is recorded
   in `docs/HISTORY.md`), never deleted.
 - If an order conflicts with how the code works, record the conflict and the fix chosen in `docs/DECISIONS.md`.
+
+## End goal: iPhone App Store
+
+Ardan ships as an iPhone app: the one-file page inside **Capacitor 8** (Swift Package Manager), built and signed on
+**Codemagic**'s cloud Mac from this repo, through **TestFlight** to App Review (order 62, rule 21, D-071, D-075, D-076). The
+route, the owner's facts re-checked, what only the owner can do and today's audit: `docs/IOS_ROADMAP.md`. The how-to for
+when the stage comes: `.claude/skills/ios-capacitor-release`. **The build rules bind all work from today:**
+
+- **Input:** Pointer Events only (`pointerdown/move/up/cancel`), never mouse-only events; nothing depends on hover,
+  right-click, double-click or the keyboard; tap targets at least 44×44 points.
+- **Layout:** from 375×667 to a Pro Max; room for `env(safe-area-inset-*)`; `dvh`, not `vh`.
+- **Assets:** relative paths only; no CDN, no web font from the net, no network call; everything works offline.
+- **Rendering:** HTML for menus and panels, updating only what changed; one canvas for the map and the war map, culled,
+  redrawn only on a change; animate only `transform` and `opacity`.
+- **Performance:** no data that grows forever, no new objects in a per-frame loop, look up by id with a `Map`; test with
+  the CPU slowed 4 to 6 times.
+- **Saves:** only through `SAVES` (small keys through `UI.store`), so the storage under it can become Capacitor's.
+- **Audio:** one `AudioContext`, unlocked on the first tap, paused in the background.
+- Source stays in `src/`, `data/`, `assets/`; no path assumes a folder layout (a later build writes `www/`).
+- When a change would make the iPhone version harder, say so and offer the version that keeps the route open.
 
 ## Layout
 
@@ -55,7 +83,7 @@ built on top of it: **features** that add code and events, the **v2 engine** (pl
 | `docs/` | `README.md` (an index of every doc), `NAMES.md` (old name -> new name), `HISTORY.md`, `DECISIONS.md`, `IDEAS.md`, `CRITIQUE.md`, `V2_SPEC.md`, `VERSIONS.md`; `v2/` (v2 status, lanes, playtests), `plan/`, `reviews/`, `benchmarks/`, `research/`, `design/`, `north-star/`, `art/` |
 | `archive/` | Retired features and code (`x1-patch-layer/`: the old patches.mjs files), each with a note on what it was and why it was replaced. Never built. |
 | `CHANGELOG.md` | Player-facing changes in plain words, one section per version |
-| `.claude/skills/` | `life-sim-systems`, `realistic-continent-maps`, `game-ux-playtest-loop` (keep them true to the code) |
+| `.claude/skills/` | `life-sim-systems`, `realistic-continent-maps`, `game-ux-playtest-loop`, `ios-capacitor-release` (keep them true to the code) |
 
 **Systems** (`src/<system>/`): `core` (engine fixes, saves, time, scale, replay, mods, pacing), `map` (the continent,
 terrain, journeys, the map view), `world` (realms, cultures, names, lore, the world record, beliefs), `people` (the
@@ -84,7 +112,9 @@ node tools/lint-choices.mjs --feature=my-feature --html=/tmp/me.html   # no obvi
 node tools/lint-kin.mjs                                   # no event mints kin or names one it did not take from the tree (C6)
 node tests/run.mjs /tmp/me.html --features=my-feature     # core suites + that feature's tests
 node tests/run.mjs --only=testA,testB --workers=4         # some tests by name
-node tests/run.mjs                                        # everything against index.html (766 tests; CI shards it 8 ways)
+node tests/run.mjs --tier=quick --shard=0/8 --plan        # T1: the tier split and each shard's estimated time, runs nothing
+node tests/run.mjs --check-tiers                          # a test over the threshold on CI must be in tests/long-tests.json
+node tests/run.mjs                                        # everything (both tiers) against index.html (852 tests)
 node tools/bench/balance.mjs /tmp/me.html                 # each path's numbers within tools/bench/targets.mjs
 node tools/bench/next-month-speed.mjs /tmp/me.html --save=tests/saves/press/y50-noble.ardan [--death] [--throttle=4]   # real Next month presses, in CPU time
 node tools/bench/press-gate.mjs /tmp/me.html [--report]   # the A1 gate (CI): year 0 and 50, fresh and after a death, held to budgets
@@ -99,6 +129,16 @@ node tools/coherency.mjs --baseline=quick                 # the same run CI hold
 node tools/version.mjs get v2.0.0-beta.1                  # any version, playable: versions/ardan-<v>.html
 git gc --prune=now                                        # after every integration round (see below)
 ```
+
+**Two test tiers (T1, D-063).** `tests/long-tests.json` lists the long tests (bot lives and replays of 200 to 1,800 s: 54 of
+852, over half of the suite's CPU time); `tests/test-times.json` holds each test's seconds on CI. **Quick** (everything not
+listed) runs on every push and pull request (`check.yml`, `--tier=quick --shard=k/8`, about 11 minutes of tests a shard);
+**long** runs in `long.yml`: every night, by hand (workflow_dispatch), on a push whose commit message has `[full ci]`, on
+`release/*`, and from other workflows. **A version needs both tiers green on the commit** (`check.yml` and `long.yml`) before
+`tools/version.mjs new`. Shards are split by measured time, longest first, not by count. A new test with no time is planned at
+30 s; if a test takes over the threshold (200 s) add it to `tests/long-tests.json` (`--check-tiers`, run by `tools/check.mjs`,
+fails until you do). The long run's `test-times` artifact (`tools/test-times.mjs` merges the shards' `--times-out=` files)
+is committed back now and then so the plan stays true. A local `node tests/run.mjs` still runs both tiers; `[skip ci]` skips both workflows.
 
 **The net (round 2 A3a).** A test, bench, soak or coherency run fails on any uncaught error *and any `console.error`*
 (the few messages that are not the game's faults are listed with reasons in `tools/lib/page-errors.mjs`; a test that
@@ -121,7 +161,7 @@ Every foundational or significant change is a version (`docs/VERSIONS.md`, `tool
   complaint list; v3 = `docs/V3_SPEC.md`, the living world: economy, armoury, growth in depth, D-037).
 - **Minor:** a round, cycle or step that adds or replaces a system. **Patch:** fixes only.
 - **Pre-release** (`-alpha.N`, `-beta.N`, `-rc.N`) while a major is being built.
-- Tag a clean commit whose CI is green, or the end of a step the owner asked for: `node tools/version.mjs new vX.Y.Z "what changed"`, commit `docs/VERSIONS.md`, push.
+- Tag a clean commit whose CI is green (quick tier and `long.yml`, T1), or the end of a step the owner asked for: `node tools/version.mjs new vX.Y.Z "what changed"`, commit `docs/VERSIONS.md`, push.
 - **Milestones** also get a release branch, `release/<name>` (for example `release/v2.1-foundations`): this
   session's git proxy refuses tag pushes, so the branch is the restorable record on GitHub. Save a sample game of the
   milestone in `tests/saves/`.
@@ -211,7 +251,7 @@ A.defEvents([{
 }]);
 ```
 
-**Condition helpers.** `C.` age, adult, child, teen, young, old, ageAdj, noble, rich, poor, unfree, soldier, atWar, ruler, married, hasKids, job(p,k), race(p,...), realm(p,"POL-01",...), cult, faith, terr(p,"hills",...), coast, town, blood, trait(p,t), flag(p,f), prison, male, female, stat(p,s), skill(p,k), hasRel(p,"friend",...), parentsAlive, fame, literate, prof(p,k,min), apt, gear, family, famKind, famHead, atSchool, jobRank, rep, ownShop, myRealm, faction, allies, office, superior, favors, owes, sworn, letter, ambition.
+**Condition helpers.** `C.` age, adult, child, teen, young, old, ageAdj, noble, rich, poor, unfree, soldier, atWar, ruler, married, hasKids, job(p,k), race(p,...), realm(p,"POL-01",...), cult, faith, terr(p,"hills",...), coast, town, blood, trait(p,t), flag(p,f), prison, male, female, stat(p,s), skill(p,k), hasRel(p,"friend",...), parentsAlive, fame, literate, prof(p,k,min), apt, gear, family, famKind, famHead, atSchool, jobRank, rep, ownShop, myRealm, faction, allies, office, superior, favors, owes, sworn, letter, ambition (what the player seeks of his own will: his plan's aim, his chosen training, his post; `A.SEEK`, 9989-what-you-seek; nothing is handed, order 54).
 
 Using these helpers matters, because `A.CX_RX` classifies events by matching them in the source (`C.ruler(`, `C.noble(`, `C.poor(`, `C.soldier(`, `C.child(`, `.job`). The text classifiers in `A.EV_RX` (tavern, street, master/overseer, favour asked by a lord) can hide an event from the wrong class.
 
@@ -249,7 +289,7 @@ when the tree has none), name one with `A.KIN.nameOf`, and write a story's secre
 - `tools/lint-events.mjs` must pass.
 - `tools/lint-choices.mjs --feature=<name>` must find no obviously best choice. It flags a choice that beats the others on every count and is no riskier, so give the other side a reason or the favourite a cost.
 - `tests/run.mjs` must pass for your feature.
-- CI also runs `tools/bench/balance.mjs`, which holds each starting path to the bands in `tools/bench/targets.mjs`. Widen a band only with a reason in the file.
+- CI (the long tier, `long.yml`) also runs `tools/bench/balance.mjs`, which holds each starting path to the bands in `tools/bench/targets.mjs`. Widen a band only with a reason in the file.
 
 ## Measurement conventions (`tools/bench/`)
 

@@ -13,11 +13,11 @@ him and the last three holders; the old fields are its mirrors.
 
 | Key | Post | Class | Mirror |
 | --- | --- | --- | --- |
-| `seat:<realm>:<seat>` | the five council seats | SEAT | `r.council[seat]`, `pc.office` |
+| `seat:<realm>:<seat>` | the four council seats (W1-1: the army's place, `seat:<realm>:general`, is read as the first host's `div:` post and never stored) | SEAT | `r.council[seat]`, `pc.office` |
 | `office:<realm>:<office id>` | 9996's shire offices | OFFICE | `o.pid` |
 | `army:<army id>` | an army's general | FIELD | `a.gen` |
-| `div:<division id>` | a division's commander (not an elite order's) | FIELD | `d.cmd` |
-| `bn:<division>:<i>` | a battalion's senior captain, when a person (9997's slot 4) | FIELD | `d.bs[i].p[4]` |
+| `div:<division id>` | a division's commander, a host's General (not an elite order's); the first host's is the senior General | FIELD | `d.cmd`, `r.council.general` |
+| `bn:<division>:<i>` | a battalion's head, a wing's Commander, when a person (9997's slot 4) | FIELD | `d.bs[i].p[4]` |
 | `coy:<division>:<i>:<j>` | a company's captain, when a person (9997's slots 0-3) | FIELD | `d.bs[i].p[j]` |
 | `order:<realm>:<order>` | an elite order's Grand Master, who leads its division | FIELD | `r.orders[oid]`, the order division's `d.cmd` |
 | `free:<player>` | the captain of the player's free company | FIELD | `pc.company` |
@@ -30,11 +30,9 @@ go with any other post, are never left by `leaveAll` (a death hands them to the 
 realm's law, which writes through the registry), and a child may hold them.
 
 - `A.POSTS.can(key, pid)` says why someone may not hold a post (dead, under age for his people, in prison, foreign,
-  a ruler; the Marshal's seat outside a war that needs one unless the ruler's own choice, and only for a General or a
-  proven commander; a councillor, a ruler or a prisoner on the staff).
+  a ruler; the first host only for a General or a proven commander; a councillor, a ruler or a prisoner on the staff).
 - `A.POSTS.appoint(key, pid, { why, by })` hands over what the appointee must give up (one seat a person, no seat with a
-  shire office or a field command except the Marshal's with one army, one field command but a division's commander's
-  own battalion, one place on the staff and none for a councillor), moves the man replaced (a field command swaps into
+  shire office or a field command, one field command but a division's commander's own battalion, one place on the staff and none for a councillor), moves the man replaced (a field command swaps into
   the nearest one the appointee freed: army, order, division, battalion, company; a seat holder is dismissed with a
   grudge and loses his style; a captain loses his "Captain of the ..." for "once Captain of the ..."), then writes the
   record and the mirror. `A.POSTS.place` is the same, but refuses (writes nothing) when the appointee holds a post of a
@@ -51,19 +49,19 @@ realm's law, which writes through the registry), and a child may hold them.
   next day), unless it is the player's own command.
 - `A.POSTS.sync(mode)` runs at the end of every month and after the New Year: it adopts any mirror written by code not
   yet routed through the registry (counted in `A.POSTS.stats.adopted`), applies the rules (a dead, under-age, crowned,
-  imprisoned or departed holder leaves; two clashing posts: the higher class, else the newer, is kept), keeps the
-  player's grade and the Marshal's seat together, and runs the Marshal rule below. On load (`mode 'load'`) it builds
+  imprisoned or departed holder leaves; two clashing posts: the higher class, else the newer, is kept), and keeps each
+  realm's first host and the council's place for the army together (below). On load (`mode 'load'`) it builds
   the registry of an older save and repairs it the same way, with a line in the log for each repair. No dice.
-- **The Marshal (D-017, D-049, D-053).** The seat is optional: nothing forces it filled or empty. When a realm's war
-  needs one (two armies in the field or two enemies at once) the crown names its best General (command, renown, the
-  size of his host); he takes the main host in person and its general takes his old army, and at peace he stands down
-  (the player returns to his General's grade). A ruler may also name a Marshal by his own choice, in peace or war, but
-  only a General or a proven commander (`A.POSTS.marshalFit`; `appoint(..., { why: 'ruler' })` marks the record
-  `own`), and that Marshal stays in peace. The lore's sitting Marshals (Aldmark's Leofric Stane and four more) start in
-  their seats so (56's first filling, on a stream of its own). A General does not take the army a sitting Marshal leads
-  in person. The court, the council's offer, the ruler and the promotion board all go through `appoint`, so the player can
-  be named Marshal only as a General, only for such a war, and then holds the seat, grade 9, every army and the main
-  host. Resigning the commission gives up the seat.
+- **No Marshal; the senior General (W1-1, D-064, D-066; replaces D-017, D-049 and D-053's Marshal rule).** A division
+  of the war map is a host and its commander a General. The General of the crown's first host (`A.POSTS.firstHost`: the
+  realm's oldest standing host, kept in `r.firstHost` while it stands) is the realm's senior General: he sits at the
+  council in the old seat's place (`r.council.general` mirrors the post; `seat:<realm>:general` is read as
+  `div:<first host>` by `can`, `appoint`, `place`, `vacate` and `holder`), does its yearly task and nothing else (no
+  army, no other General under him). The crown names one when the place is empty (`A.POSTS.fillGenerals`, the month's
+  engine pass); a ruler may name a General or a proven commander (`A.POSTS.generalFit`); the court and the council's
+  offer give it only to a General. The lore's sitting army chiefs (Aldmark's Leofric Stane and four more) start in it
+  (56's first filling, on a stream of its own). Resigning the commission gives it up. An old save's Marshal becomes his
+  realm's senior General on load (`A.POSTS.migrateMarshal` before the registry is built, `A.POSTS.seatMarshals` after).
 - **Titles follow posts.** `A.mainRole` of anyone but the player is the post he holds (`A.POSTS.title`). A style that
   names a council seat its owner does not hold becomes a past one ("once Chancellor of Varenna"): at once when a seat
   changes hands, and for the whole world on load and at the New Year (`A.POSTS.restyle`).
@@ -96,7 +94,7 @@ war (`army:<realm>:<n>`); the posts of jobs (R12, R17).
 
 ## Measured by
 
-`test.mjs`: `postsMarshalRepro` (the owner's report, posts-map.md 2.1), `postsMarshalOptional` (D-049),
+`test.mjs`: `postsSeniorGeneralCourt` (the owner's report, posts-map.md 2.1, under W1-1), `postsSeniorGeneralFill`,
 `postsStage2Kinds` (every new kind handed over and left, nothing adopted), `postsHandover`, `postsDeathVacates`,
 `postsSaveMigration` (a real alpha.2 save and a state with every old fault), `postsPure`. The coherency checks
 `one holder per post` (`A.POSTS.audit()`; `audit({ strict: true })` also holds every mirror equal to its record, no

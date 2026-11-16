@@ -1187,8 +1187,13 @@ UI.lifeSeed = function (c, take) {
 // [X1 baked patch core/05-saves-and-keyboard SAVE-NEW-LIFE-CONFIRM] Starting a new life (Begin or Random) gave no
 // warning, and three yearly autosaves later the previous life had rotated out of all backups. If the saved life is
 // still going, the game now asks first and says how to keep it.
+// [P3 order 54, D-062] "Start the new life" never started it: the yes set UI._newLifeOk, called UI.startLife and
+// cleared the flag in a finally; but a pressed button's start is deferred two frames (999999-one-redraw draws "Making the
+// world" first), so by the time this ran the flag was gone and the same question came back, for ever. The yes now hands
+// a one-use pass that this function spends when it runs.
 UI.startLife = function () {
-  if (!UI._newLifeOk) {
+  if (UI._newLifeOk) UI._newLifeOk = false;
+  else {
     const cur = (SAVES.listCache || []).find(x => x && x.slot === "cur"),
       m = cur && cur.meta;
     if (m && m.alive) {
@@ -1199,11 +1204,7 @@ UI.startLife = function () {
         danger: true,
         run: () => {
           UI._newLifeOk = true;
-          try {
-            UI.startLife();
-          } finally {
-            UI._newLifeOk = false;
-          }
+          UI.startLife();
         },
       });
       return;
@@ -1569,7 +1570,7 @@ UI.courtTabBasic = function (pc) {
   h += `<div class="acts" style="margin-top:8px">
     <button class="act" data-a="nAct" data-v="court"><div class="an">Attend court</div><div class="ad">Be seen. Make friends and enemies.</div></button>
     <button class="act" data-a="nAct" data-v="petition"><div class="an">Petition for advancement</div><div class="ad">Ask the crown to raise your rung.</div></button>
-    <button class="act" data-a="nAct" data-v="office"><div class="an">Seek a council seat</div><div class="ad">Chancellor, Marshal, Treasurer, Spymaster or Chaplain.</div></button>
+    <button class="act" data-a="nAct" data-v="office"><div class="an">Seek a council seat</div><div class="ad">Chancellor, Treasurer, Spymaster or Chaplain; a General may be named the senior General.</div></button>
     <button class="act" data-a="nAct" data-v="estate"><div class="an">Manage your estate</div><div class="ad">Reeves, mills and rents.</div></button>
     <button class="act" data-a="act" data-v="plot_throne" ${A.canAct("plot_throne")[0] ? "" : "disabled"}><div class="an">Plot for the throne</div><div class="ad">Treason, if it fails.</div></button></div>`;
   h += `<div class="group-h">The ladder (Part 12)</div><table class="t small"><tr><th>Rung</th><th>Holds</th></tr>${GD.NOBLE_RUNGS.slice()
@@ -1773,6 +1774,8 @@ UI.codexBasic = function (pc) {
 UI.A = {
   newLife() {
     UI.ensureWorld();
+    // [P3] from the menu or the death card: the box it was pressed in closes (it stayed over the creation screen)
+    UI.ov = null;
     UI.cr = UI.crDefaults();
     UI.step = 0;
     UI.screen = "create";

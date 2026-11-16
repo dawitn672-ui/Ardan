@@ -39,7 +39,7 @@
   W.inWar = function (pc) { return W.myWars(pc).length > 0 || W.inLevy(); };
   // the War Room by post (D10, D-052; owner order 5, "war screens only when deployed, on a mission, or the situation
   // allows"). It was the room of anyone who served (a private in garrison, in peace, read the whole theatre). Now:
-  //  - the crown, and the Marshal who raises the host, keep it in peace and war: the host is theirs to run;
+  //  - the crown keeps it in peace and war: the host is its to run (W1-1: there is no Marshal);
   //  - in a war of yours, a commander (rank 7 and up, an army's general) sees the theatre;
   //  - a captain (ranks 4-6, a sell-sword captain) only while deployed (his division with an army in the field, his
   //    company under contract), and then only his division's front (W.scope);

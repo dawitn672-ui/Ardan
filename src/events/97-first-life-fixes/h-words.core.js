@@ -26,7 +26,7 @@
 })();
 // the top of the ladder, for scenes written for the bottom (patch LF-TIER-GATES): a reigning ruler, a commander or a
 // general, a council seat, a lord of a barony or more, or one who once held a commander's rank (p.veteran, kept when
-// the army is left). Cycle 2 (lives F3): a Marshal of the council who had left the army was asked to drill the town
+// the army is left). Cycle 2 (lives F3): the army's councillor who had left the army was asked to drill the town
 // muster, and a Chancellor kept the scribe's love-letter duty, because only rulers and serving generals counted.
 A.lfRank = p => (p && p.mil && typeof p.mil.rank === 'number' ? p.mil.rank : -1);
 A.lfTop = p => !!(p && (p.ruler || A.lfRank(p) >= 6 || p.office || (p.noble && p.noble.rung >= 4) || (p.veteran && p.veteran.rank >= 6)));

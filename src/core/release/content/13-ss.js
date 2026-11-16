@@ -2731,7 +2731,7 @@
         cond: (p,C)=>C.realm(p,"POL-20")&&C.adult(p)&&C.male(p)&&!C.old(p)&&!C.noble(p)&&free(p),
         w: 1,
         cool: 6,
-        text: p=>`The governor's quota has come: your village must send spearmen and archers to the field army. The talking drums carry news from ${early()?"Atani, where the Marshal's spearmen are gathering against Abara":"the border"}. You are of age, and the village hundred is mustering under the baobab.`,
+        text: p=>`The governor's quota has come: your village must send spearmen and archers to the field army. The talking drums carry news from ${early()?"Atani, where the General's spearmen are gathering against Abara":"the border"}. You are of age, and the village hundred is mustering under the baobab.`,
         choices: [
           {
             t: "Take a spear and march",
@@ -2948,7 +2948,7 @@
         cond: (p,C)=>early()&&C.realm(p,"POL-20")&&C.adult(p)&&!C.old(p),
         w: .8,
         once: !0,
-        text: "A merchant of the Well Quarter, which follows the Path of the Well while still honoring the ancestors, asks you to carry a sealed letter to Atani, where the Marshal's army waits facing Abara. He wants it carried by someone who is not a runner, so the Old Voices' runners cannot read it on the way.",
+        text: "A merchant of the Well Quarter, which follows the Path of the Well while still honoring the ancestors, asks you to carry a sealed letter to Atani, where the General's army waits facing Abara. He wants it carried by someone who is not a runner, so the Old Voices' runners cannot read it on the way.",
         choices: [
           {
             t: "Carry it, fast and quiet",
@@ -2967,7 +2967,7 @@
             req: (p,C)=>C.literate(p),
             check: {s:"intrigue",s2:"craft",d:46},
             win: {
-              r: "It is about gold and the east road, and about which side the merchants will back if the Marshal and the heir ever quarrel. You reseal it perfectly.",
+              r: "It is about gold and the east road, and about which side the merchants will back if the General and the heir ever quarrel. You reseal it perfectly.",
               fx: {coin:25,skill:{intrigue:3},flag:"ss_zn_letter"},
             },
             lose: {
@@ -3861,7 +3861,7 @@
             t: "Ask him who pays him",
             check: {s:"ins",s2:"persuasion",d:46},
             win: {
-              r: `He laughs, and for a moment drops the pedlar's face. "The Marshal of the North pays well," he says, "and so do others." You have learned something dangerous.`,
+              r: `He laughs, and for a moment drops the pedlar's face. "The General of the North pays well," he says, "and so do others." You have learned something dangerous.`,
               fx: {int:.5,flag:"ss_ab_desta",skill:{intrigue:1}},
             },
             lose: {r:'"My mother pays me, in scolding," he says, and that is that.',fx:{}},
@@ -3874,7 +3874,7 @@
         cond: (p,C)=>C.realm(p,"POL-22")&&C.adult(p)&&(C.job(p,"merchant","labor","herd")||C.town(p)),
         w: .8,
         cool: 9,
-        text: "In Tanners' Lane, where the hide-buyers ask no questions about brands, you are offered forty hides cheap. They carry the brand of House Tsega, whose lord is the Marshal of the Northern Host. Meron the Red Cow's people steal Tsega cattle, everyone says, and pass the skins through here.",
+        text: "In Tanners' Lane, where the hide-buyers ask no questions about brands, you are offered forty hides cheap. They carry the brand of House Tsega, whose lord is the General of the Northern Host. Meron the Red Cow's people steal Tsega cattle, everyone says, and pass the skins through here.",
         choices: [
           {
             t: "Buy them and scrape the brands",

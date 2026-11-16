@@ -85,6 +85,159 @@ order is replaced, strike it through and say by what.
 51. **The Marshal's seat is optional, not empty by law:** on the lore's sitting Marshal of Aldmark (Leofric Stane): "It doesn't matter, maybe Aldmark just appointed one. I'm just saying it's not a seat that needs filling." (D-049) · recorded 2026-11-13 21:19 ET
 52. **Better names; finer ordinary arms; a new bow** (D-050): "Rename all the legendary items and their moves, and whilst you're at it do the same for other arts and weapons. They shouldn't have some horrible naming. Winter Wheat could be called Winter Storm and its art be Snowfall. Redesign the non-legendary class weapons to be more intricate and designed, and significantly improve and redesign the bow legendary. Naming and design for the legendary weapon arts and the weapons should be well thought out." (A direct order: this task runs despite the pause.) · recorded 2026-11-14 00:13 ET
 53. **The pause is lifted:** "OK, I'm done checking. Continue running the project at full speed." · recorded 2026-11-14 00:23 ET
+54. **Nothing without reason; the war answers; the Marshal removed; the playtest** (D-062) · recorded 2026-11-15 21:12 ET. The owner's words, verbatim:
+
+    > not necessarily every figure listed including the marshal should have a complete thought process behind their desires that perfectly matc h up with their position circumstances and personalities.1. depends on who you are. as realistic of a situation as possible.2. yes 3. yes anything that involves you whether it comes from higher up below you or iin your surroundings. 4. you choose based on your rank your role in the army and your delegations made by those above you. you can make requests but everything comes down to tactics. their is cause and a ffect aswell as reasoning behind every happenstance. 5. remove levies their is conscription that is mandatory service when its needed but armies are built on honour and those who choose to follow that path. 6. they end when one side surrenders or is defeated. properly simulate the pathways this can go and keep a standing logic. things can also be affected by ones emotions. think about peoples personalities. one king may declare a losing war simply because somebody insulted a high ego of their whilst another might be more calm and calci=ulated within their actions plots and retaliations. 7. yes a complete report system with information and timing based on how somebody of your rank would be informed and treated within realistic scenarios and based on relationships and importance. 8. Keep it situation based. you may not know every person within your command but you know those you choose to get to know, find yourself in situations with or need to know in your place like those who serve your directly or guard you aswell as the people you report to whether it be the marshal in the most extreme situations or the person dircetly above you for a regualr report. 9. Everything is propely accounted for in world history and saved in the same way. 10. Remove marshal now. properly calibrate against any prior changes. general is the highest rank in an army and keep the naming scheme regualr. their can be multiple generals based on how large your army is. nobles can have their own command systems and armies under them but theirs still a hierarchy where they serve the king. this system absolutely needs to be complex where regional disputes have the potential to occur within reason. Write and highlight this next sentence in the repo for the rest of the creation of this game. not a single thing in this world should happen outside of reason. things can come down to chance luck, reasonability calculated actions and even petty and emotional reasons. but not for avsoluetly no reason. their can be coups, rebelllions factions all falling under the test of a kingdoms stability a kings relations with each noble. their own ambitions desires and curcumstances. everything needs to be intertwined for this project to a success. any and every tool at your disposal needs to be used and you can research any tool within reach that i can help you get and just let me know. the names need to sound mythical for the legendary blades. heavy focus on the characteristics and aura given off by each one aswell as what they represent. From my playtest- One a save is started you can never start a differnt life as their is a bug once you press start new life. remove the ambitions feature. the useless desciosns and chapters. everything comes down to fcree will. any of these things should be available to you but not a single thing should be handed to you without you seeking it out. i attempted murder on a monarch 100s of times. and was never once executed. if i asked fore= forgiveness they forgave me no matter how much they hated me prior. i murdered countless monarchs with zero consequence as it never happened. when in an army it took a year and months to be given my first mission. the army training system is too bland. why should one unit need aptitude in every single aspect of war. the training sytem should be dynamic tailored to ecah units composition abilities and tendencies. when choosing what path you want to go in the military pay more ayttention to the weapon under use the method of combat they prefer aswell as their aptitude across any skill that  could be made use of in context even outside of combat. such as command logistics, seamanship. all of these things add value. etc i hate having my months and years cut short every time their is a minor event. stop middway if the event is important enough but the moment the popup or chain of popups are resolved continuw in completeing the sim. growth is far to linear. study improvise compound and find a perfect standard for this. hair needs a lot more work. the legendary weapons sheet was good for the most part i just thought the bow could be significantly more visually appealing to really exemplifie legendary. yes i noticed the dress sheet and outfits got mixed up . compund the variety of outfits and apperances. yes apperance and looks can matters in applicable situatiosn. no it isnt ok. theres no such thing as low on the list everything needs to be fixed eventually. you can merge v2 integration. help me delte the unecessary branches. fill in all the gaps at your own discretion trying to best apply what you think i would do based on my prior desciosn making. is their anyway to cut back on the long testing
+
+    **Read as:**
+    - **THE RULE (written into CLAUDE.md, highlighted, for the rest of the game): not a single thing in this world happens
+      outside of reason.** Chance, luck, calculation, even petty and emotional reasons, but never for no reason at all.
+      Coups, rebellions and factions follow a kingdom's stability, a king's relations with each noble, and their own
+      ambitions, desires and circumstances. Everything intertwined. Every figure (the Marshal included) has a thought
+      process behind his wants that matches his post, circumstances and personality; not a blanket rule.
+    - **The ten war decisions (docs/design/war.md):** (1) where you watch from depends on who you are, as realistic as
+      possible; (2) yes, your rank's sight; (3) yes, it stops for anything that involves you, from above, below or around;
+      (4) where you stand follows your rank, role and the delegations from above; you may make requests, everything comes
+      down to tactics, with cause, effect and reasons behind every happening; (5) **no levies**: conscription is mandatory
+      service when needed, armies are built on honour and those who choose that path; (6) a war ends when one side
+      surrenders or is defeated; simulate the pathways with standing logic; emotions and personality move rulers (an
+      insulted proud king may declare a losing war; another plots coldly); (7) a complete report system, information and
+      timing by rank, relationships and importance; (8) situation-based: you know those you choose to know, those you are
+      thrown together with, those who serve or guard you, and those you report to; (9) everything accounted in world
+      history and saved; (10) **remove the Marshal now** and recalibrate: **General is the highest rank in an army**, plain
+      naming, several Generals by the army's size; **nobles have their own command systems and armies under them**, in a
+      hierarchy serving the king; complex enough for regional disputes within reason.
+    - **Legendaries:** names that sound mythical; heavy focus on each one's character, aura and what it represents; the bow
+      significantly more visually striking.
+    - **Playtest:** (a) once a save is started, "Start a new life" is broken; (b) remove ambitions, the "useless" decisions
+      and chapters: free will, nothing handed to you that you did not seek; (c) hundreds of attempts on a monarch and never
+      executed; forgiveness always granted however hated; monarchs murdered with no consequence, "as if it never happened";
+      (d) a year and more in the army before a first mission; (e) army training is bland: training tailored to each
+      unit's make-up, abilities and tendencies; choosing a military path weighs the weapon, the way of fighting and every
+      useful aptitude (command, logistics, seamanship...); (f) months and years are cut short by minor events: stop only for
+      what matters, and once the popup or chain is answered, **carry on and complete the step**; (g) growth is far too
+      linear: study, improvise, compound, find the right standard; (h) hair needs much more work; (i) the dress sheet's
+      outfits were mixed up: compound the variety of outfits and appearances; **appearance and looks matter where it fits**.
+    - **Nothing is "low on the list":** everything gets fixed eventually.
+    - **Permissions:** merge v2-integration (PR #2); help delete the unneeded branches; fill the gaps at my own discretion as
+      the owner would decide. Asked: can the long testing be cut back?
+55. **Every relationship needs a base** (D-065) · recorded 2026-11-15 21:34 ET. The owner's words, verbatim:
+
+    > add this to the list - every relationship needs a base. if im a peasant why would the king allow me to get to know him. most nobles wouldnt even look at me let alone talk to me and those who would either need me for something or just have a type of personality that allows them to do that. for a example a baron who used to be a commoner might sympathize more than a duke born with a goldne spoon. its about staus, pride and personality. becoming a honourable knight is  a way to shift the scales abit. same with becoming a well renowned master of anything or increasng your fame wealth or connections. (JUST LIKE IN REAL LIFE)
+
+    **Read as:** who will know you follows status, pride and personality, as in real life. A peasant cannot simply get to
+    know a king; most nobles will not look at him, let alone talk; those who do either need something from him or have the
+    temper for it (a baron risen from commoners may sympathise where a duke born to gold will not). The scales shift with
+    knighthood and honour, renown as a master of anything, fame, wealth and connections. Rule 18 (nothing without reason)
+    applied to every acquaintance.
+56. **Detail between peoples; image generation for visual work** · recorded 2026-11-15 22:12 ET. The owner's words, verbatim:
+
+    > i want attention to detail in the way each Character design weapon clothing and all differ from small to drastic differnces between nations borders and cultures. i want you to use chatgpt image generation whenver you need visual work and design completed if it hits its limit then wait for it to be done and work around it until then
+
+    **Read as:** every character's design, weapons and clothing differ by nation, by border and by culture, from small
+    differences (neighbours across a border: a cut, a colour, a fastening, a hilt) to drastic ones (far peoples), with
+    attention to detail; folded into C8d (and L2, E2 for arms). Image generation (OpenAI's) is to be used for visual design
+    work whenever needed, waiting out limits and working around them meanwhile. **Status:** the session cannot use a
+    ChatGPT subscription, only OpenAI's API with a key; the owner declined the key form at 2026-11-15 22:12 ET and asked where to find
+    it and what a free plan allows. Until a key exists: the figure library draws, and images the owner makes in ChatGPT and
+    shares are used as references.
+57. **Profiles in this style** · recorded 2026-11-15 22:20 ET. The owner shared a ChatGPT image (`docs/design/reference/owner-manhwa-cards.webp`:
+    4 peoples x 8 stations as manhwa and anime profile cards) and wrote, verbatim:
+
+    > this is what i got when i said-make it 10x more visually appealing like manwha and anime and pay close attention and detail to their roles and differences in their nations and cultures. mold this style into charcter profiles.
+
+    **Read as:** the character profiles (the Profile tab's card, people's cards, the portraits in scenes) take this look:
+    bright painted manhwa and anime figures, a scene behind that fits station and land, a dark card with a gold edge, the
+    nation's banner and crest, the station with its icon, three keywords and a motto. Detail in role and in the difference
+    between nations and cultures (order 56). Built as C8d's first gate: a style frame shown to the owner before it goes
+    into the game (as with C8's gates).
+58. **Design corrections for the next iteration of the profiles** (C8d) · recorded 2026-11-15 22:27 ET. The owner's words, verbatim:
+
+    > These are the design corrections that should govern the next iteration:
+    >
+    > * Royalty: Distinct political and cultural identities, not interchangeable crowns and fur capes. Northern monarchs use heavy furs and dark metals; Qadiri rulers use desert silks, layered turbans, and geometric goldwork; Wind Rider rulers use steppe regalia, leather, and clan insignia; Zanari rulers use elaborate woven textiles, distinctive jewelry, and ceremonial armor.
+    > * Military: Different equipment, rank insignia, shields, weapons, and helmet traditions. Not every soldier needs a helmet.
+    > * Social class: Serfs should visibly communicate dependency and labor obligations. Peasants should look like independent rural households, with more personal possessions and regional clothing.
+    > * Body language: Varied poses, gestures, expressions, and equipment. Avoid repeating folded arms.
+    > * Cultural overlap: Border settlements should show mixed fabrics, borrowed armor, shared hairstyles, hybrid architecture, and neighboring cultural influences.
+    >
+    > One important distinction: national identity should be recognizable without making every citizen look identical. Regional variation, wealth, occupation, and personal taste should all influence appearance. just mark this down in its order and keep going full speed
+
+    **Read as:** the rules for C8d's gate 1 and everything after it. The four peoples named are the reference image's
+    (`owner-manhwa-cards.webp`); in Ardan each is the archetype for its nearest real people (a northern, a desert, a steppe
+    and a southern forest people of `src/ui/engine/figure/cultures.js`), and the same care goes to every other people.
+    Recognisable nations, never uniform citizens: region, wealth, occupation and personal taste vary every look.
+59. **Growth is not a timetable** (G0, D-070) · recorded 2026-11-15 23:12 ET. The owner's words, verbatim:
+
+    > i dont like the idea of results being so predictable that anyone can become a master with that much training. theres too many variables like in real life one might get it in 5 years of discipline and profound epiphanies whilst one might be stuck behind his entire life due to not grasping one concept
+
+    **Read as:** no fixed number of years makes a master. The same training gives very different lives: one reaches
+    mastery in five years of discipline and profound breakthroughs, another is stuck his whole life behind one concept he
+    never grasps. Growth turns on discipline, insight and the person, and the outcome is uncertain (chance allowed, but
+    every turn has its reason, rule 18).
+60. **Visual design waits for the image model** · recorded 2026-11-15 23:14 ET. The owner's words, verbatim:
+
+    > i will work on getting you an api key image model so postpone that project aswell as other design projects
+
+    **Read as:** the owner is getting an image-model API key. Until it arrives, the profile cards (C8d) and the other
+    visual design projects are postponed: L2 (legendaries' look, the bow), C8d's hair and dress, and the visual Gaps
+    (mourning dress, jewellery, mounts, interiors, cut-in tone). Systems work goes on at full speed. The map (D9) stays,
+    because the war on it (D12b) stands on it; its look can be revisited with the image model.
+61. **"Breakthroughs", not "epiphanies"** · recorded 2026-11-15 23:14 ET. The owner's words, verbatim:
+
+    > dont call them epipanies call them breakthoughs
+
+    **Read as:** order 59's sudden grasps are named **breakthroughs** everywhere (docs, code, the player's words). The
+    owner's own word in order 59 ("profound epiphanies") is kept as he wrote it.
+62. **The end goal: Ardan on the iPhone App Store** (D-071) · recorded 2026-11-15 23:17 ET. The owner's words, verbatim:
+
+    > This is not a task to start now. Keep going with your current work. This is about the end goal, so you build toward it from today.
+    >
+    > THE END GOAL
+    > Ardan will ship on the Apple App Store as an iPhone app. The web game gets wrapped in Capacitor (a native iOS shell around a WebView). I'm on Windows with no Mac, so iOS builds will run on a cloud Mac (Codemagic) connected to the GitHub repo, then go to TestFlight, then to App Review.
+    >
+    > WHAT TO DO NOW (learning only)
+    > 1. Research the route from today's official docs, not memory (capacitorjs.com, developer.apple.com, docs.codemagic.io). Facts I've checked so far; re-verify them:
+    >    - Capacitor 8 is current. It needs Node 22+ and uses Swift Package Manager by default, so the iOS project is ios/App/App.xcodeproj (no Podfile, no .xcworkspace).
+    >    - Since 28 April 2026, Apple only accepts uploads built with Xcode 26+ and the iOS 26 SDK.
+    >    - Ionic Appflow is closed to new customers and shuts down at the end of 2027, so don't plan around it. Expo EAS Build is for React Native, so it doesn't apply either.
+    >    - Web Audio on iOS is muted by the silent switch unless navigator.audioSession.type = 'playback'. Sound only unlocks after the first tap.
+    >    - iOS can clear WebView localStorage, so real saves should go through @capacitor/preferences or @capacitor/filesystem.
+    >    - Apple rejects apps that feel like a website (Guideline 4.2). The app must work fully offline and must not allow text selection, zoom or page bounce.
+    > 2. Map the whole route as stages: performance → iPhone readiness (touch, screen sizes, safe areas, audio, saves) → build into a self-contained www/ folder → Capacitor setup → Codemagic signing and TestFlight → App Store listing, privacy and age rating → review. For each stage, list the steps, the exact commands and config, what only I can do (Apple Developer account at $99/yr, App Store Connect app record, API key), and the known pitfalls.
+    > 3. Write it down:
+    >    - docs/IOS_ROADMAP.md: the full route, dated, with source links. Mark anything not yet verified.
+    >    - .claude/skills/ios-capacitor-release: the how-to version you'll follow when we reach that stage.
+    >    - Add a short "End goal: iPhone App Store" section to CLAUDE.md that points to both, plus the build rules below.
+    >    - Record each choice in docs/DECISIONS.md.
+    >
+    > BUILD RULES FROM NOW ON (so nothing has to be redone later)
+    > - Input: mouse or tap only. Use Pointer Events (pointerdown/move/up/cancel), never mouse-only events. Nothing may depend on hover, right-click, double-click or the keyboard. Tap targets must be at least 44×44 points.
+    > - Layout: must work from a small iPhone (about 375×667 points) up to a Pro Max. Keep room for env(safe-area-inset-*) padding. Use dvh units, not vh.
+    > - Assets: relative paths only (./). No CDNs, no web fonts from the internet, no network calls. Everything must work offline.
+    > - Rendering: HTML for menus and panels, updating only what changed. One canvas for the map and the war map, with culling, and only redrawing when something changes. Animate only transform and opacity.
+    > - Performance: no data that grows forever, no new objects inside per-frame loops, look things up by id with a Map. Test with the CPU slowed 4–6× to act like a phone.
+    > - Saves: go through one save module, so the storage underneath can be switched to Capacitor storage later without touching the game code.
+    > - Audio: one AudioContext, unlocked on the first tap, and paused when the app goes to the background.
+    > - Keep the source in src/, data/ and assets/. Later a build script will output www/ for Capacitor, so don't hard-code paths that assume a particular folder layout.
+    >
+    > When something you build would make the iPhone version harder, say so and suggest the version that keeps the route open. Update the roadmap and the skill whenever you learn something new.
+
+    **Read as:** the end goal is a Capacitor-wrapped iOS app, built on Codemagic's cloud Mac from GitHub, through
+    TestFlight to App Review. Now: research the route from official docs and write `docs/IOS_ROADMAP.md`, the skill
+    `.claude/skills/ios-capacitor-release`, a CLAUDE.md section with the build rules, and the choices in DECISIONS. The
+    build rules bind all work from today; anything that would make the iPhone version harder is said and a route-keeping
+    version proposed.
+63. **Proficiencies retired; skills with levels and experience** (D-072) · recorded 2026-11-15 23:21 ET. The owner's words, verbatim:
+
+    > im no longer a fan of the proficiencies system its very bland. systematically remove it and refine a system of skills with levels and expierience. dynamic growth mechanics
+
+    **Read as:** the proficiencies (today's 0-100 numbers in `GD.SKILLS`, "Practice a proficiency", the sheet's
+    Proficiencies list) are removed systematically, everywhere (engine, events, checks, effects, UI, saves, tests, docs),
+    and replaced by **skills with levels and experience** that grow dynamically: experience earned by doing, levels that
+    are crossed by grasping concepts and by breakthroughs (orders 32, 59, 61; growth.md, growth-standard.md §3.16), each
+    change with its reason (rule 18). Old saves convert. This brings G forward: it now follows R1's core in the build
+    order, before D11+, which stands on it.
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
@@ -132,8 +285,12 @@ the newest stamp wins when two entries disagree, unless the older one is an owne
 13. **Feudal armies** (the Marshal part superseded by rule 16). Armies are feudal: nobles hold troops in proportion to their rank; the crown has royal knights; the elite orders serve the crown but draw their men from the whole kingdom by prowess; a duchy's knights march with the kingdom in war but, forced to choose, stay loyal to their duchy. · recorded 2026-11-12 06:49 ET
 14. **Characters as realistic as possible** (anime optional): accurate growth and ageing, lasting scars that change face and body, armour and clothing in full detail (D-015). Refined 2026-11-12 10:52 ET (D-020): full hand customisation of the face first, genes second; scars mostly looks with small debuffs where fitting; clothing changeable; **show the owner demo sheets before building**. · recorded 2026-11-12 10:46 ET
 15. **An inked, detailed map** (rivers, valleys, mountains, trade routes, terrains, habitats); **war territory spreads like a burn**, never hex tiles, so momentum shows (D-016). · recorded 2026-11-12 10:46 ET
-16. **The Marshal's seat stays vacant until truly needed,** then goes to a General or someone proved more capable than the generals; **General is the army's highest everyday rank** (D-017). · recorded 2026-11-12 10:46 ET
+16. ~~**The Marshal's seat stays vacant until truly needed,** then goes to a General or someone proved more capable than the generals; **General is the army's highest everyday rank** (D-017).~~ **Superseded by order 54 (D-062): no Marshal; General is the highest rank; several Generals by army size; nobles' own commands under the king.** · recorded 2026-11-12 10:46 ET
 17. **No initiative cap;** overtraining has its own consequences. **Only notable events or problems stop a month or a year,** never ordinary conversations or happenings (D-019). · recorded 2026-11-12 10:46 ET
+18. **NOTHING HAPPENS WITHOUT REASON.** Chance, luck, calculation, petty or emotional reasons, but never for no reason. Every figure acts from a thought process that fits post, circumstances and personality; coups, rebellions and factions follow stability, relations, ambitions and circumstance; everything intertwined. (order 54, D-062) · recorded 2026-11-15 21:12 ET
+19. **Every relationship needs a base:** whether someone will know you, talk to you or befriend you follows the gap in status, their pride and personality, and what they need; knighthood, honour, renown, mastery, fame, wealth and connections shift it. (order 55, D-065) · recorded 2026-11-15 21:34 ET
+20. **Growth is not a timetable:** no amount of training guarantees mastery; discipline, grasp and breakthroughs make one man a master in five years and leave another stuck for life behind one concept. (order 59, D-070) · recorded 2026-11-15 23:12 ET
+21. **Built for the iPhone App Store from today** (order 62, D-071): pointer events only, nothing on hover, right-click, double-click or keys; 44-point tap targets; 375x667 to Pro Max with safe areas and dvh; relative paths, offline, no network; one canvas for maps with culling; transform and opacity only; no unbounded data; one save module; one AudioContext unlocked on first tap. · recorded 2026-11-15 23:17 ET
 
 ## Round 2 work list (Nov 12)
 Step 0 restructure (done) · Step 1 harsh critique (in progress) · A1 lag · A2 one holder per post · A3 coherency

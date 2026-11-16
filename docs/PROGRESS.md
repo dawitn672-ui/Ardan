@@ -4,7 +4,7 @@ The checklist of every work item, in the order they are being done, split by maj
 moment it is merged and CI is green, with the stamp and the commit; never delete a line. Details live in
 `docs/HISTORY.md`; the plans and reasons in `docs/CRITIQUE.md` §2, `docs/V3_SPEC.md` and `docs/DECISIONS.md`.
 
-*Last updated 2026-11-13 07:21 ET*
+*Last updated 2026-11-16 03:30 ET*
 
 ## v2 · Round 2: the owner's complaint list (`docs/V2_SPEC.md`, `docs/CRITIQUE.md`)
 
@@ -39,7 +39,6 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [x] **C9** · Bodies that make sense: measured stat words, no body units, skill baselines, longer lives, honest odds, Swordsmanship · `cd2e54d` · 2026-11-13 21:17 ET
 - [x] **P2** · A clean Profile page (card, sheet, four tabs); the past in Records (D-041) · `c56f9d4` · 2026-11-13 19:21 ET
 - [x] **X7 part 1** · Phone speed, the first load: title world without the continent, the new life's continent built ahead in a worker, cheaper event-pack setup; `tools/bench/phone-load.mjs` (D-054, H-042)
-- [ ] **X7 part 2** · Phone speed, each press: the engine's month (A.wsDay and the war sim are half a press at year 0), with D12b/X5 (D-023)
 - [x] **W0** · Remove the war score and the army templates (order 34) (H-036)
 - [x] **X2** · Named stages: seven hot functions run named stages from a manifest (`src/core/01-stages`), `tools/lint-stages.mjs` holds them and the count of names defined twice (364 → 357), the muted diplomacy path held by `v2DipMutedPath` (D-056)
 - [x] **D10** · War screens only when deployed (H-036)
@@ -49,12 +48,47 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [x] **C7** · Names and cultures in the game: one common English pool, a lean per realm, people from the neighbour and trade partners, no twins, fiefs in their own people's language, four realm names fit their governments, the renaming hack deleted (D-058, `docs/design/names-and-cultures.md`)
 - [x] **Order 52** · Legendaries and arts renamed; ordinary arms as made things (45 forms); Sickle Moon (D-050) · `334f81e` · 2026-11-14 11:22 ET
 - [x] **C8c** · Dress, class and regalia: dress by station, people (four cuts), occasion and place; only a livery is shared; a soldier's bust; hoods for the road; a scene tag on every event and the print that follows it; outfits the player changes (D-060, `docs/design/demo-2d/c8c/`). **Blind reading 83 in 100 over six readings, 81 on the final sheet: the bar of 85 is not held (serf, peasant, merchant)**
-- [x] **D9** · The map's ground: roads in two ranks, fords and bridges, named passes, tributaries, woods and marsh, named seas, ranges, rivers and forests; towns on water; oases on dry land; terrain read from the ground; 36 realm colours; one map component (`MAP.paint`); roads, supply and attacks read the same ground (D-061, H-059, branch `d9-map`). **Left:** the burn (D12b), seasons on roads, sea lanes, `fieldAt`, one canvas for the map and the war room (owner order 62), the independent roads-or-borders read
+- [x] **D9** · The map's ground: roads in two ranks, fords and bridges, named passes, tributaries, woods and marsh, named seas, ranges, rivers and forests; towns on water; oases on dry land; terrain read from the ground; 36 realm colours; one map component (`MAP.paint`); roads, supply and attacks read the same ground (D-061, H-069, branch `d9-map`). **Left:** the burn (D12b), seasons on roads, sea lanes, `fieldAt`, one canvas for the map and the war room (owner order 62), the independent roads-or-borders read
+- [x] **D12a-2** · War design revised with the owner's ten answers (order 54): part two of `docs/design/war.md` (§9 to §16), two diagrams, sixteen stages (D-064, H-059) · branch `d12a-2` · 2026-11-15 21:35 ET
+- [x] **T1** · Faster testing: a quick tier on every push, the long bot-life tier nightly and before versions
+- [x] **P3** · Order 54 playtest round: new life after a save; ambitions, chapters and handed goals retired (free will); reasoned consequences for crimes against rulers (no automatic forgiveness); first mission within months; a step completes after its cards are answered (branch `p3-playtest`, H-059, D-062 addendum; to merge into v2-integration)
 - [x] **D12a** · War design: theatre, field, press; sight by rank; one engine with a cause ledger; nine stages (`docs/design/war.md`) · `0378b9e` · 2026-11-14 05:43 ET · **10 owner decisions pending**
-- [ ] **D11** · Military branches (feudal armies, D-012)
-- [ ] **D12b** · War and command depth
+
+### Open, in build order (re-sorted 2026-11-16 by what the rest stands on; owner: "start with the more important or more
+structurally necessary things")
+Why this order: first the game must work (P3); then the removals the rest is built on (W1-1: the
+Marshal; levies and the war score follow in W1); then the one way of deciding every figure uses (R1 core = W1-2), and access built
+on it (R2); the growth standard (G0) before training is built on it (D11, D11+); the map (D9) before war on it (D12b, which also
+brings X7 part 2's speed). Looks (C8d, L2) block nothing and run beside the rest when an agent is free; Gaps ride along with the
+item that touches them; balance (X4) and the state diet (X5) last, once the systems hold still. Re-sorted again whenever an order
+or a finding changes what stands on what.
+- [ ] **W1** · No Marshal: General the highest rank, several Generals by army size, nobles' own commands under the king; old saves map the Marshal; conscription instead of levies (with D11). Stages (war.md §16): **W1-1** no Marshal, five ranks · **W1-2** minds (reasons and feelings; R1's core) · **W1-3** commands and the summons · **W1-4** no levies · **W1-5** surrender or defeat · **W1-6** the realm's peace (stability, factions, private wars, risings, coups)
+  - [x] **W1-1** · No Marshal, five ranks: soldier, sergeant, captain, commander, General; one General to each host (a war-map division of 3,000 men or more), a column under a Commander; the senior General (the crown's first host) at council; an army's commander by the king's commission; old saves map the Marshal (D-066, H-061) · branch `w1-1` · 2026-11-16
+- [ ] **R1** · Nothing without reason (rule 18): every AI, noble, faction, commander and NPC decision carries a nameable reason from post, circumstance, personality and emotion; a lint and a run audit
+- [ ] **S1** · Proficiencies retired; skills with levels and experience, dynamic growth (order 63, D-072): design (S1a), then build (S1b) on the growth standard with concepts and breakthroughs; old saves convert; before D11+
+  - [x] **S1a** · the design, 2026-11-16: `docs/design/skills.md` (28 skills with 99 specialisms; 35 levels, the eight words in five steps; experience by the standard's curve; 252 named concepts, proof and breakthroughs at the word edges; discipline, rivals, a new land, needs, kin, hours and specialisms move it; migration; six build stages) and the runnable model `docs/design/skills/` (`lives.svg`: nine lives and a 400-person spread). D-072, H-067. For the owner: ten choices in its §11
+  - [ ] **S1b** · the build, six stages (`docs/design/skills.md` §12.7)
+- [ ] **R2** · Every relationship needs a base (rule 19, order 55): access to a person by the gap in standing, their pride and personality, need and circumstance; knighthood, renown, mastery, fame, wealth and introductions shift it; NPC bonds alike
+- [x] **G0** · (amended by order 59, D-070: no timetable; concepts, grasp and breakthroughs, §3.16) Growth non-linear: research and a standard (before G): `docs/design/growth-standard.md` (today measured over nine bot lives; the practice curve, quality, teachers, age, trials, disuse, the body by age, a reason for every change; worked lives; tests and budget for G1/G2 and D11+), scripts and chart in `docs/design/growth/` (H-062) · branch `g0` · 2026-11-16
+- [ ] **D11** · Military branches (feudal armies, D-012). Stages (war.md §16, with D11+): **D11-1** the muster · **D11-2** units that differ, tailored training, duties · **D11-3** careers
+- [ ] **D11+** · Military path by weapon, way of fighting and every useful aptitude; training tailored to each unit's make-up
+- [ ] **D9** · The inked, detailed map; war fronts that spread like a burn (D-016). *iPhone audit (I1, D-076 point 1): one tile cache for both map layers (today 150 + 140 tiles), one kept view per canvas on screen, freed when it closes; decide the map's pixel ratio*
+- [ ] **D12b** · War and command depth. Stages (war.md §16): **D12b-1** hosts on roads (X7 part 2's gate) · **D12b-2** one engine, the field by your eye · **D12b-3** reports and the people you know · **D12b-4** the theatre and the burn · **D12b-5** the press · **D12b-6** sieges and the verbs · **D12b-7** balance, retire, records
+- [ ] **X7 part 2** · Phone speed, each press: the engine's month (A.wsDay and the war sim are half a press at year 0), with D12b/X5 (D-023). *iPhone audit (I1, roadmap §7.7, §8 item 9): the map pan draws once per pointer move (`23-ui-c.js:1302`, `23-ui-d.js:1146`), not once a frame; `UI.gmDraw` allocates arrays, objects and closures per draw; load and Next month to the I1-1 budget*
+- [ ] **C8d** · ⏸ *Postponed until the owner's image-model key (order 60).* **Gate 1 first (order 57): manhwa profile cards in the owner's reference style, shown before building in;** *(gate 1 drawn and waiting for the owner, H-063, D-068: `docs/design/c8d-gate1.md`, `docs/design/demo-2d/c8d/sheet.png`; not in the game)* (order 56: every design, weapon and garment differs by nation, border and culture, small differences between neighbours to drastic ones between far peoples) Hair in depth; dress and appearance variety compounded (serf / peasant / merchant read right); looks matter in play where it fits
+- [ ] **L2** · ⏸ *Postponed until the owner's image-model key (order 60).* Legendaries: mythical names, character and aura; the bow redrawn to be truly legendary
+- [ ] **Gaps** · (the visual ones wait for the image-model key, order 60) Every known leftover: "the" before realm forms, lore people's names, tablets' phone shell, missions abroad for cards, U6/U10/U12/U17/U21, 200% text, mourning dress, NPC dress by occasion, jewellery, mounts, interiors (V19), cut-in tone (V11-12). *iPhone audit (I1, roadmap §7.2, §7.6): 58 of 382 controls under 44 points at 375×667 (You 29, Profile 12, Path 6, Holdings 6: description words, chips, stat rows), with a test that holds it at 0; the 57 `:hover` rules inside `@media (hover:hover)`; the bar `width` and the `left` sweep as `transform`*
 - [ ] **X4** · Balance pass
-- [ ] **X5** · State diet; stop committing index.html every round (D-018)
+- [ ] **X5** · State diet; stop committing index.html every round (D-018). *iPhone audit (I1, `docs/IOS_ROADMAP.md` §7.7): the state is 1.78 MB at year 0 and 4.01 MB at year 50 (people ×2, realms ×2.7, `wrec` 135 KB, `aiLog` 88 KB): cap or compact what grows with years and hold the save size by a test (rule 21: no data that grows forever)*
+- [ ] **I1** · iPhone App Store route (order 62, rule 21, D-071, D-075, D-076; `docs/IOS_ROADMAP.md`, `.claude/skills/ios-capacitor-release`). Built toward from today; the stages run when the game is ready for it
+  - [x] **I1-0** · The route researched from today's docs and written: the six facts re-checked, seven stages, the audit against the build rules, the skill (H-065) · branch `ios-route` · 2026-11-16
+  - [ ] **I1-1** · Performance: load and Next month inside the iPhone budget at 4 to 6x (title < 3 s, first Life < 6 s, Next month < 1 s); with X7 part 2, X5, D12b-1
+  - [ ] **I1-2** · iPhone readiness: `viewport-fit=cover`; no selection, callout or bounce; `pointercancel` on the four drags; 50 `vh` to `dvh`; one audio module (one AudioContext, first tap, suspended in the background, `audioSession`); `SAVES.backend` and `UI.store` switches, profile tab's 4 direct `localStorage` calls through `UI.store`, `UI.download`'s native branch (roadmap §8 items 1-3, 6-8)
+  - [ ] **I1-3** · `www/` build: the one-file page to `app/www/index.html`; the split build only if the iPhone misses the budget (D-075)
+  - [ ] **I1-4** · Capacitor shell in `app/` (made on Linux): `capacitor.config.ts`, SPM iOS project, iPhone only, portrait, iOS 17, Info.plist keys, privacy manifest, native audio session, plugins wired (owner: bundle id, name)
+  - [ ] **I1-5** · Codemagic signing and TestFlight: `codemagic.yaml`, first green upload, the first-build checklist on a real iPhone (owner: developer account, API key, app record, Codemagic account)
+  - [ ] **I1-6** · App Store listing, privacy ("Data Not Collected", a privacy policy page), age rating, screenshots, export compliance (owner answers; agents draft)
+  - [ ] **I1-7** · App Review
 
 ## v3 · The living world: economy, armoury, growth in depth (`docs/V3_SPEC.md`, owner orders 28-33)
 
@@ -87,6 +121,7 @@ branch on GitHub, and a sample save in `tests/saves/`.
 | v2.1.0-alpha.6 | 2026-11-15 04:20 ET | A2 stage 2, X7 part 1, B5 part 2, X2; CI 118 green on `f87617d` |
 | v2.1.0-alpha.7 | 2026-11-15 10:33 ET | C6 households and its fixes; CI 121 green on `0e0996a` |
 | v2.1.0-alpha.8 | 2026-11-15 15:36 ET | C7 names and cultures and its fixes; CI 124 green on `d5abc55` |
+| v2.1.0-alpha.9 | 2026-11-15 21:24 ET | C8c dress, X3 part 2 honest cards, counsel by letter; CI 129 green on `7aee21c` |
 
 ## Milestones
 - [ ] `release/v2.1-foundations` (after A1, A3a, B6, A2)

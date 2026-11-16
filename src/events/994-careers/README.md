@@ -27,7 +27,7 @@ Bot lives on the Great Continent showed careers that topped out by 30 and then w
   - A knight of 33 or more, with renown 55 and a high command, a council seat or renown 65, is then offered a fief (`cr_fief`, rung 4, Baron). You can take it with its levies, ask for a pension instead (a check), or decline.
 - **Something above the top.**
   - At the top of a ladder (General or above, or the last rank of a trade), an honour comes every seven years or so (`cr_honour`): the wardenship of the march, the guild's chain, a see. Each can be accepted, bargained for or declined.
-  - `A.seatEligible` lets a General of renown 35 and command 50 be named Marshal. The release asked rank 8 (High General, one a realm), so no General ever sat on the council. A merchant prince with 50,000 suns can be named Treasurer.
+  - `A.seatEligible` lets a General of renown 35 and command 50 be named the senior General (W1-1; the army's place at council). The release asked a grade above General, so no General ever sat on the council. A merchant prince with 50,000 suns can be named Treasurer.
 - **A Legend.** A fighter past the Legend line (worth 118, 48's t6) is named one while the world has room (`GD.LEGEND_CAP`): renown +15, a deed, and the challengers start coming (`cr_legend`: fight one in the yard, take him as a pupil, or send them all away). A life reached Knife fighting 100 and stayed at renown 24 before.
 - **Promotion is slower above Senior Captain.** Merit bars are ×1.5 for ranks 5 and 6 and ×2 from General up, so General is 2,000 merit (1,000 before).
 - **Numbers that fit.** A bandit hunt is 20 to 300 men, and a mission away from any war is at most 400 (`A.missionSize`, patch `CAR-MISSION-SIZE`). A mission in a war keeps the rank's numbers.
@@ -41,7 +41,7 @@ Other folders carry the rest of the late-game work: 97-first-life-fixes (ambitio
 
 - `carCoupCrushed`: a General claimant whose war ends "crushes the claimant" loses his commission, gets the fate scene (three ways, two checks) and no "Usurper". `plot_throne` no longer awards it for a half-success. A bargain brings the terms.
 - `carNotTakenByOwnCause`: 200 lost battles against the player's own faction never take him captive (before: about one in seven).
-- `carRaised`: a peasant captain of renown 40 is asked, knighted (rung 2) and then passes the Iron Wolf's birth line. A fief follows, a General of renown qualifies for Marshal, and General's merit bar is 2,000.
+- `carRaised`: a peasant captain of renown 40 is asked, knighted (rung 2) and then passes the Iron Wolf's birth line. A fief follows, a General of renown qualifies for the senior General's place, and General's merit bar is 2,000.
 - `carMissionSize`: a General's bandit hunt is 300 men (12,800 before).
 
 ## Limits

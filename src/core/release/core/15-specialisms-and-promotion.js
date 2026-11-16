@@ -1193,14 +1193,14 @@ A.recapMake = function (pc, b) {
       `Reputation ${Math.round(b.job.rep)}→${Math.round(pc.job.rep || 0)}`,
       (pc.job.rep || 0) > b.job.rep ? "good" : "bad",
     );
-  if (pc.mil && b.mil && pc.mil.rank > b.mil.rank) add(`Promoted: ${GD.MIL[pc.mil.rank].title}`, "big");
+  if (pc.mil && b.mil && pc.mil.rank > b.mil.rank) add(`Promoted: ${A.rankLabel(pc.mil.rank)}`, "big");
   // [X1 baked patch people/99999-v2-renown RN-WORDS] Merit was shown as a counter ("Merit 112 / 30") in the year's
   // summary and explained as a bar to meet; it no longer decides promotion. In the source: say where you stand for
   // the next rank in words, and say how the board decides.
   if (pc.mil && b.mil && pc.mil.rank === b.mil.rank && GD.MIL[pc.mil.rank + 1])
     add(
       A.RN && A.RN.on
-        ? `For ${GD.MIL[pc.mil.rank + 1].title}: ${A.RN.standWords(pc, "mil", pc.mil.rank)}`
+        ? `For ${A.rankLabel(pc.mil.rank + 1)}: ${A.RN.standWords(pc, "mil", pc.mil.rank)}`
         : `Merit ${Math.round(pc.mil.merit)}/${GD.MIL[pc.mil.rank + 1].merit}`,
       "",
     );
@@ -1630,22 +1630,7 @@ A.PROMO_REQ = {
     lit: true,
     slots: "armies",
   },
-  8: {
-    cmd: 62,
-    battles: 10,
-    wins: "armyWins",
-    winsN: 2,
-    lit: true,
-    slots: "groups",
-  },
-  9: {
-    cmd: 70,
-    battles: 12,
-    wins: "armyWins",
-    winsN: 3,
-    lit: true,
-    slots: "marshal",
-  },
+  // [W1-1] no grades above General (High General and Marshal are gone, D-064)
 };
 
 A.promoBoard = function (pc) {
@@ -1683,29 +1668,10 @@ A.promoBoard = function (pc) {
       ? `${weak.length} army without a better general`
       : `every army has a general at least as good (best ${gens.length ? Math.max(...gens.map(g => A.skill(g, "command"))) : "-"})`;
   }
-  if (nr === 8) {
-    const better = gens.filter(g => A.skill(g, "command") >= mine).length;
-    ok = better < 2 && gens.length >= 2;
-    txt = ok ? "you are among the realm's best generals" : `${better} generals outrank you in skill`;
-  }
-  if (nr === 9) {
-    const ms = r.council && r.council.marshal,
-      holder = ms ? A.P(ms) : null;
-    ok = !holder || !holder.alive || holder.id === pc.id || A.skill(holder, "command") < mine - 5;
-    txt =
-      holder && holder.alive && holder.id !== pc.id
-        ? `Marshal ${A.fullName(holder, false)} holds the seat (command ${A.skill(holder, "command")})`
-        : "the seat is open";
-    // [A2 posts] D-017: the seat is filled only when a war needs a Marshal (two armies in the field, or two enemies)
-    if (A.POSTS && !A.POSTS.marshalNeeded(r, holder && holder.id === pc.id)) {
-      ok = false;
-      txt = "the realm needs no Marshal now: in peace, and in a war one general can hold, a General leads";
-    }
-  }
   const i = b.findIndex(x => x.k === "slot"),
     row = {
       k: "slot",
-      label: nr === 7 ? "An army to command" : nr === 8 ? "A place among the high generals" : "The marshal's seat",
+      label: "An army the king could give you by his written word",
       have: txt,
       need: "",
       ok,
@@ -1764,7 +1730,7 @@ const promoBoardNow = function (pc) {
     (R2.wins &&
       out.push({
         k: "wins",
-        label: R2.wins === "divWins" ? "Battles won leading a division" : "Battles won leading an army",
+        label: R2.wins === "divWins" ? "Battles won leading a host" : "Battles won leading an army",
         have: m[R2.wins] || 0,
         need: R2.winsN,
         ok: (m[R2.wins] || 0) >= R2.winsN || (m.exercises || 0) >= R2.winsN * 2,
@@ -1785,25 +1751,9 @@ const promoBoardNow = function (pc) {
       nd = F ? F.divs.length : 0;
     let open = true,
       txt = "";
-    if (
-      (R2.slots === "divs" && ((open = nd >= 2), (txt = `${nd} divisions in the host`)),
-      R2.slots === "armies" && ((open = nd >= 6), (txt = `${nd} divisions (an army needs ~6+)`)),
-      R2.slots === "groups" && ((open = nd >= 14), (txt = `${nd} divisions (an army group needs ~14+)`)),
-      R2.slots === "marshal")
-    ) {
-      const ms = r && r.council && r.council.marshal,
-        holder = ms ? A.P(ms) : null;
-      open = !holder || !holder.alive || holder.id === pc.id || A.skill(holder, "command") < A.skill(pc, "command");
-      txt =
-        holder && holder.alive && holder.id !== pc.id
-          ? `Marshal ${A.fullName(holder, false)} holds the seat (command ${A.skill(holder, "command")})`
-          : "The seat is open";
-      // [A2 posts] D-017: no Marshal unless a war needs one
-      if (A.POSTS && r && !A.POSTS.marshalNeeded(r, holder && holder.id === pc.id)) {
-        open = false;
-        txt = "The realm needs no Marshal now";
-      }
-    }
+    // [W1-1] a division of the war map is a host, one General to each
+    R2.slots === "divs" && ((open = nd >= 2), (txt = `${nd} hosts in the realm`));
+    R2.slots === "armies" && ((open = nd >= 6), (txt = `${nd} hosts (an army of several needs about 6)`));
     out.push({
       k: "slot",
       label: "A command open",
@@ -1842,15 +1792,9 @@ const promoCheckNow = function (pc) {
     const fr = A.famMilBonus ? A.famMilBonus(pc) : 0;
     if (fr && !m.merc) chance *= m.rank + 1 <= fr ? 1.45 : 1.1;
   }
-  if (
-    (m.rank + 1 >= 7 &&
-      (chance *= 0.45 + pc.fame / 100 + (pc.noble ? pc.noble.rung * 0.05 : 0) + (pc.status === "royal" ? 0.4 : 0)),
-    m.rank + 1 >= 9 && !m.merc)
-  ) {
-    const r = A.realm(m.realm),
-      ru = r ? A.P(r.ruler) : null;
-    if (ru && ru.id !== pc.id) chance *= 0.3 + Math.max(0, A.opinion(ru, pc)) / 100;
-  }
+  // [W1-1] the ruler's own weighing of a Marshal (grade 9) went with the grade
+  if (m.rank + 1 >= 7)
+    chance *= 0.45 + pc.fame / 100 + (pc.noble ? pc.noble.rung * 0.05 : 0) + (pc.status === "royal" ? 0.4 : 0);
   // [X1 baked patch people/99999-v2-renown RN-MIL] The army's promotion board barred the way until the merit counter
   // reached the next rank's number, then rolled about an even chance each quarter: a counter that fills is linear
   // promotion (V2_SPEC complaint 15). V2 rolls promotionCheck(): a monthly hazard from the vacancy, the standout
@@ -1867,29 +1811,15 @@ const promoCheckNow = function (pc) {
     m.rank++;
     A.fame(pc, 2 + m.rank);
     const t = GD.MIL[m.rank];
-    if (
-      (A.log(
-        `PROMOTED: ${t.title}. You now lead ${A.fmt(t.leads)}${m.rank >= 4 ? " — men who will live or die by your orders" : ""}.`,
-        "big",
-      ),
-      m.rank === 2 && A.ach("sergeant"),
-      m.rank === 4 && A.ach("captain"),
-      m.rank === 7 && A.ach("general"),
-      m.rank === 9 && A.ach("marshal"),
-      m.rank >= 3 && (m.squad = m.squad.slice(0, 6)),
-      m.rank === 9 && !m.merc)
-    ) {
-      const r = A.realm(m.realm);
-      // [A2 posts] the board's Marshal takes the seat through the registry (before, he had the grade without the
-      // seat's business, the old Marshal lost it without a word, and a second seat could follow)
-      if (r && A.POSTS) {
-        m.preMarshal = 8;
-        A.POSTS.appoint(A.POSTS.seatKey(r.id, "marshal"), pc.id, { why: "board", by: r.ruler, force: true });
-      } else if (r) {
-        r.council = r.council || {};
-        r.council.marshal = pc.id;
-      }
-    }
+    // [W1-1] the five ranks' words; a second step of a rank says so (A.rankLabel). No grade above General.
+    A.log(
+      `PROMOTED: ${A.rankLabel(m.rank)}. You now lead ${A.fmt(t.leads)}${m.rank >= 4 ? " — men who will live or die by your orders" : ""}.`,
+      "big",
+    );
+    m.rank === 1 && A.ach("sergeant");
+    m.rank === 3 && A.ach("captain");
+    m.rank === 6 && A.ach("general");
+    m.rank >= 3 && (m.squad = m.squad.slice(0, 6));
     if (A.wsAttachPC) A.wsAttachPC();
   } else if (hard.length && m.merit >= next.merit && A.chance(0.35))
     A.log(

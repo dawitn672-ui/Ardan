@@ -126,9 +126,9 @@ A.rulerAction = function (key, arg) {
     case "appoint": {
       const { seat, pid } = arg,
         p = A.P(pid);
-      // [A2 posts] the ruler appoints through the registry: no child, no foreigner; the Marshal's seat is his to fill
-      // in peace or war, with a General or a proven commander (D-017, D-049); the appointee gives up his other seat or
-      // office, the one replaced is moved with a grudge
+      // [A2 posts] the ruler appoints through the registry: no child, no foreigner; the senior General (W1-1: the General
+      // of the crown's first host) is his to name, a General or a proven commander; the appointee gives up his other
+      // seat or office, the one replaced is moved with a grudge
       const no = A.POSTS && p && A.COUNCIL[seat] ? A.POSTS.can(A.POSTS.seatKey(r.id, seat), pid, { by: pc.id, ruler: true }) : "";
       if (no)
         return {

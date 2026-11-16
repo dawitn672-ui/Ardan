@@ -21,6 +21,14 @@ Use this when building or reviewing character, family, politics or war systems f
 - Conditioning moves toward a **natural ceiling** (lift ×3.8 for an untrained adult; Earth's record is about ×3.8 too). Gains shrink near the top, and idle months lose a little.
 - **Breakthroughs** are the only way past a ceiling: winning a real-stakes attempt by a surge of will against long odds raises the ceiling by about 12% for each unit of magnitude. This is how a human climbs to giant-class.
 - Learn by doing: skills are hours practised × talent × age factor (children fast, elders slow) × wits. Tiers are Untrained 0, Novice 30, Apprentice 200, Journeyman 800, Adept 2,500, Expert 6,000, Master 12,000, Grandmaster 25,000 and Legend 50,000 hours.
+- **Growth must not be linear, and every change needs a cause** (Ardan's G0 standard, `docs/design/growth-standard.md`, D-067;
+  a design, not yet built). Gain = effort × quality (routine work stops teaching once you can do it; a task above you
+  under stakes teaches most) × teacher (by the gap in words, never past one word under him) × talent × age by kind
+  (movement young, tongues before 17, judgement from 30) × condition × a steep practice curve (a beginner's month worth
+  about thirty of a master's). Plateaus carry a named reason; crossing a high word takes a deed, and stored effort lands
+  as a leap. Each stat has its own age curve (speed peaks first, decline quickens after 60); bodies detrain (endurance
+  first) and retrain fast; skills rust only after years and return ×5. Measure it with bot lives: R² of a straight line
+  through the climbing years, gains by word, flat years (`docs/design/growth/analyze.mjs`).
 
 ## 2. Races are different bodies
 Humans are the yardstick. Square-cube law: a 5.6 m giant has about 10× human strength, is slow to react (420 ms) and is very tough (×14). Orcs carry about 2.2× human lift and ×1.9 toughness, and mature by 16. Dwarves are dense and tough with long lives; elves are fast and fragile.
@@ -69,7 +77,7 @@ Show odds as words plus a tipped balance icon. The words, from best to worst: a 
 - Players never pick heir, bastard or younger child. Birth order comes from the simulation.
 - **One resolver gives a house its head and heir** (`A.HOUSE.resolve`: the living head, the heir as the first living person of the head's line under the law; a house whose head died gets its court lord or the dead head's successor). Every reader and the one mover at a death ask it; nothing else picks an "eldest son".
 - **There is one holder per title.** When a holder dies, move the titles (`dead.titles = []`). Pass titles of people who start the game dead before play begins. Read the same holder for both the inheritance box and the tree. A test runs 30 seeds × 10 years to check this.
-- **Posts are a registry, not loose fields.** Ardan keeps seats, offices and commands in `A.POSTS` (`src/nobility/999990-posts`): appoint, vacate and leaveAll are the only writers, a promotion hands over the old post and moves the man replaced, every exit (death, prison, desertion, resignation, a crown) leaves every post, and titles are read from the posts held. Separate the grade (what you are qualified for) from the post (what you command). A seat needed only in war (the Marshal) stays empty in peace.
+- **Posts are a registry, not loose fields.** Ardan keeps seats, offices and commands in `A.POSTS` (`src/nobility/999990-posts`): appoint, vacate and leaveAll are the only writers, a promotion hands over the old post and moves the man replaced, every exit (death, prison, desertion, resignation, a crown) leaves every post, and titles are read from the posts held. Separate the grade (what you are qualified for) from the post (what you command). A council place that belongs to a post (the senior General's is the crown's first host) is read from that post, never stored as a seat of its own.
 
 ## 6. Nobility pyramid
 Each realm has: king > dukes (at most 3; ≥24 counties → 3, ≥14 → 2, ≥7 → 1) > marquises (at most 6, 2–3 per duke, placed on **border** counties and created before the duchies) > one count per county > 2–3 viscounts per count > 2–4 barons per viscount > 3–6 landed lords per baron. Create only dukes, marquises and counts as full records. Generate lower nobles on demand from a deterministic seed. A 30-county realm has about 1,000+ nobles and costs almost nothing to save.
@@ -97,12 +105,19 @@ Each realm has: king > dukes (at most 3; ≥24 counties → 3, ≥14 → 2, ≥7
   - Losses scale with incoming power ÷ worth^0.75 ÷ the tactic's defence.
   - Morale falls with casualties (×3.2), enemy terror, flanking and shock. A unit routs at 0.18 morale or 25% strength. When the line collapses, shaken units also break.
   - Each side gets random fortune: power × e^N(0, 0.18).
-- **Ranks:** soldier (your place in the line), sergeant (your squad), captain (your company's tactic), commander (army tactic and reserves).
+- **Ranks (built, W1-1):** five on every screen: soldier (your place in the line), sergeant (a section of about 12), captain (a company of about 200; its tactic), commander (a wing of 600 to 3,000), General (a host of 3,000 to 12,000: a division of the war map). General is the highest rank; there is no Marshal or High General. One General to each host, so Generals follow army size; under 3,000 is a column under a Commander. An army of two hosts or more is led by its commanding General by the king's written word for that war (a commission, not a rank). The senior General (the crown's first host) sits at council and commands no other General. Old grades keep their eight steps of pay and merit; a second step says so ("Captain (second step)").
   - Soldiers and sergeants are rated against the unit across from them; reaching for the standard is rated against the best troops. Officers are rated on command (tactics skill + judgment) against the enemy commander.
   - Soldiers see enemy numbers only as rough estimates.
   - The test requires the high-value choice to beat the low one at every rank by 4 points or more at sergeant and above.
 - **After-action report:** the three biggest signed contributions in words (the ground, tactics, numbers, quality, elites, your part).
 - **Not your war?** Then the player gets no view of it, only rumour.
+- **Where the design is going (D-064, `docs/design/war.md` part two; not built yet, so the lines above still describe the code):**
+  - (W1-1 built the five ranks, above.) The king in person, or a council of war when nobody is named, with reasons for the choice (W1-3).
+  - Every armed man is in one command (the crown's, or a great lord's own under officers he names); the king summons and each lord answers from named reasons; contingents are kept whole. Private wars, refused summonses and border lords' wars follow from it.
+  - No levies: sworn men, enlisted men and the roll; conscription by proclamation in real need, with a cost in fields and a remembered grievance.
+  - Every decider weighs named reasons, bent by temper and by feelings that have a cause and cool; dice only choose between close options. A war ends only by surrender or defeat.
+  - You see from where you stand; everything else is a report with a sender, a road, a day and a slant.
+  - Stability is the sum of named pressures; a faction needs a shared grievance, a tie and a leader; a coup needs a motive, access and an opening.
 
 ## Checklist before shipping a system
 - [ ] Does every number come with words or a real unit?

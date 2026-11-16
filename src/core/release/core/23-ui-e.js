@@ -427,10 +427,10 @@ UI.armyPathCard = function (pc) {
   // [X1 baked patch people/99999-v2-renown RN-WORDS] Merit was shown as a counter ("Merit 112 / 30") in the year's
   // summary and explained as a bar to meet; it no longer decides promotion. In the source: say where you stand for
   // the next rank in words, and say how the board decides.
-  return `<div class="card"><div class="row"><h3 style="margin:0">${UI.esc(G.title)}</h3><span class="right tag">The Army · ${UI.esc(A.realmShort(m.realm))}</span></div>
+  return `<div class="card"><div class="row"><h3 style="margin:0">${UI.esc(A.rankLabel(m.rank))}</h3><span class="right tag">The Army · ${UI.esc(A.realmShort(m.realm))}</span></div>
     <div class="small muted">${UI.esc(m.unit || "")} · leads ${A.fmt(G.leads)} · ${m.years} years · ${m.battles} battles · ${m.kills} enemy dead${A.RN && A.RN.on ? "" : ` · merit ${Math.round(m.merit)}`}</div>
     ${UI.ladderHtml(
-      GD.MIL.map(x => [x.title, 0, 0]),
+      GD.MIL.map((x, i) => [A.rankLabel(i), 0, 0]),
       m.rank,
     )}
     ${UI.promoBoardHtml ? UI.promoBoardHtml(pc) : ""}
@@ -685,11 +685,11 @@ UI.helpModalBasic = function () {
   // press.
   return `<div class="panel mbox wide">${close}<h2>How to play ARDAN</h2><div class="lore-text" style="font-size:calc(16px * var(--tx, 1))">
     ${P(UI.helpPlaces())}
-    ${P("<b>What now.</b> The top of Life lists the three things most worth doing, one click each. <b>Underlined words</b> explain themselves: tap, click or press Enter on them (your fighting worth opens into body, skill and gear). The Menu has text size, map colors for color-blind players, hints for new players, Export, and Report a problem.")}
+    ${P("<b>Free will.</b> Nothing is handed to you: the top of Life keeps only what you have taken on (debts, promises). <b>Underlined words</b> explain themselves: tap, click or press Enter on them (your fighting worth opens into body, skill and gear). The Menu has text size, map colors for color-blind players, hints for new players, Export, and Report a problem.")}
     ${P("<b>Time runs.</b> Press <i>Next month</i> or <i>Next year</i>. Anything that needs you — an event, a battle, a letter, a gathering — stops a year early.")}
     ${P("<b>Your days.</b> On the Life page, set a <i>training</i> focus, how <i>hard</i> you train, and what your <i>free hours</i> go to (advancement, a patron, coin, renown, faith, love, study, scheming, freedom…). Every day moves them. When a pursuit has built up, something opens — what depends on who you are. Every action takes some days; do a great deal in a short while and you grow weary, then take harm.")}
     ${P("<b>Your path.</b> Every post is a ladder with plain requirements: merit earned month by month, skill, reputation, time — sometimes letters, birth or a patron. Duties throw up problems and chances. Ladders connect through <i>doors</i>: the clerk can become an envoy, the envoy a chancellor; a sergeant can become a thief-taker. The top of the government ladders is a seat on the council, and the council steers the realm.")}
-    ${P("<b>Who you are decides what happens.</b> A king is not mugged in a tavern; a peasant is not asked favors by dukes until something puts them in a great one's sight. Your position also decides what you may do: a ruler does not enlist, a marshal does not dig ditches.")}
+    ${P("<b>Who you are decides what happens.</b> A king is not mugged in a tavern; a peasant is not asked favors by dukes until something puts them in a great one's sight. Your position also decides what you may do: a ruler does not enlist, a General does not dig ditches.")}
     ${P("<b>War.</b> Divisions march across the map day by day. Each day of a battle, each commander picks a tactic — charge, flank, feign a retreat, ambush, dig in, hold a reserve — and some beat others. Scouts, ground, walls, supply, experience and the general matter as much as numbers: a smaller army on good ground with the right tactic can break a bigger one. Supply flows along roads from your capital and depots; enemy armies choke it and raiders cut it. Open the War Room from the War page (Arms, in peace).")}
     ${P("<b>Crowns remember.</b> Opinions between realms are built from memories — gifts, insults, broken pacts, shared battles, stolen land — and each crown weighs alliances by its interests. Treaties: alliance, defensive pact, guarantee, military access, non-aggression, trade, subsidy, embargo, royal marriage, tribute, rivalry. Incidents at the border give reasons for war; a war without a reason costs dearly. Crowns meet at summits, weddings, coronations, congresses and tournaments — and if you are there, you live it.")}
     ${P("<b>Rule.</b> Inherit a crown, marry into one, seize one, or found one. The Realm page (under World) holds the state, the chancery, the court and building. When you die, go on as your heir — if they can hold the throne.")}

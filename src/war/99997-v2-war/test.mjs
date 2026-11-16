@@ -529,9 +529,9 @@ export default {
     return { ok, detail: `${r.asked} asks (${JSON.stringify(r.ranks)}): the fight still there ${r.live}, not yet fought ${r.held}, a scene played ${r.played}; asked twice ${r.twice}; a gone fight opened a v2 scene ${r.staleV2}` };
   },
 
-  // playtest 2, new 16: rank words that contradict. A noble enlisted as "Squad Captain" was told "You are a sergeant
-  // now"; a Commander (rank 6, his division's commander) read "Commander · leads 3,200" under "2nd Aldmark Line 7,530",
-  // and fought "as a Commander" with only "Your company" to order
+  // playtest 2, new 16: rank words that contradict. A noble enlisted as a captain (rank 3) was told "You are a sergeant
+  // now"; a division's commander (rank 6) read "leads 3,200" under "2nd Aldmark Line 7,530", and fought with only "Your
+  // company" to order. (W1-1: rank 3 is a Captain's first step, and a division's commander is a General.)
   async v2wRankWordsAgree(pg) {
     await pg.evaluate(RANKFX_LAB); await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
@@ -566,8 +566,8 @@ export default {
       A.S.queue = [];
       return out;
     });
-    const ok = /^You are a squad captain now/.test(r.arm || '') && r.chainLeads && r.chainLeads === r.divMen && r.share === 1 && r.unit === 'your division' && r.coy === r.divMen3 &&
-      /^Your division/.test(r.tacLabel) && /Commander with your division/.test(r.fightAs) && r.capUnit === 'your company' && r.capCoy > 0 && r.capCoy <= 200;
+    const ok = /^You are a captain now/.test(r.arm || '') && r.chainLeads && r.chainLeads === r.divMen && r.share === 1 && r.unit === 'your division' && r.coy === r.divMen3 &&
+      /^Your division/.test(r.tacLabel) && /General with your division/.test(r.fightAs) && r.capUnit === 'your company' && r.capCoy > 0 && r.capCoy <= 200;
     return { ok, detail: `arm of service: "${r.arm}"; chain: leads ${r.chainLeads} of a division of ${r.divMen}, drill share ${r.share}; the Commander's scene: ${r.unit} of ${r.coy} (division ${r.divMen3}), tactic row "${r.tacLabel}", "${r.fightAs}"; a Captain: ${r.capUnit} of ${r.capCoy}` };
   },
 

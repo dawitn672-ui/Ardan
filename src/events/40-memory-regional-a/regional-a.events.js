@@ -791,7 +791,7 @@
       cond: (p, C) => C.realm(p, "POL-19") && C.adult(p) && C.flag(p, "ss_sc_blackveil") && A.S.year - p.flags.ss_sc_blackveil >= 2,
       w: 3, once: true,
       setup: (p, ctx) => { cast(p, ctx, "CHR-0518"); },
-      text: "Zanara's marshal has sent riders into the camps, asking who burned the well-camps on the new gold road. You rode with Zayd Blackveil that night, for Harith Sayf's gold. The Zanari know Zayd winters in the hills near Qasan, but not which valley. You do. They offer gold for the valley, and a rope for anyone who rode with him.",
+      text: "Zanara's senior General has sent riders into the camps, asking who burned the well-camps on the new gold road. You rode with Zayd Blackveil that night, for Harith Sayf's gold. The Zanari know Zayd winters in the hills near Qasan, but not which valley. You do. They offer gold for the valley, and a rope for anyone who rode with him.",
       choices: [
         { t: "Ride to Qasan and warn Zayd", check: { s: "riding", s2: "survival", d: 46 },
           win: { r: "You find his camp on the second night. Zayd hears you out in silence and moves his sixty riders before dawn. A month later a curved knife arrives, wrapped in black cloth.",
@@ -905,19 +905,19 @@
       setup: (p, ctx) => {
         const r = A.realm("POL-20"), ru = r ? A.P(r.ruler) : null;
         ctx.gone = ru && ru.alive && /^Mosi III\b/.test(ru.given) ? "" : "1";
-        make(p, ctx, { sex: "M", age: 40, occ: "a captain of the Marshal's army" });
+        make(p, ctx, { sex: "M", age: 40, occ: "a captain of the General's army" });
       },
       text: (p, ctx) => "On the Ancestor Hill you watched Mosi III's left hand lie still in his lap, and knew it had gone numb. "
         + (ctx.gone ? "Mosi is gone now, as you knew he would be. " : "Now, they say, his speech slurs too. ")
-        + "The Marshal's people and the heir's people are counting friends at court. {them}, a captain of the Marshal's, asks you over palm wine what you noticed about the emperor's health.",
+        + "The General's people and the heir's people are counting friends at court. {them}, a captain of the General's, asks you over palm wine what you noticed about the emperor's health.",
       choices: [
         { t: "Tell the captain everything you saw",
-          r: "{them} listens, thanks you and writes down a name. Yours. When the Marshal moves, you will be counted among his friends, whether you like it or not.",
+          r: "{them} listens, thanks you and writes down a name. Yours. When the General moves, you will be counted among his friends, whether you like it or not.",
           fx: { them: { type: "friend", op: 25 }, owed: 1, secret: 1, favor: -2 } },
         { t: "Take it to the heir's household instead", check: { s: "etiquette", s2: "intrigue", d: 46 },
           win: { r: "A Rememberer of the heir's household hears you out behind a screen. The heir's people do not thank you. They give you a seat at the next feast, which is better.",
             fx: { favor: 5, fame: 1, them: { type: "enemy", op: -20 } } },
-          lose: { r: "The heir's people take your story and your name, and use neither. The Marshal's captain hears where you went.",
+          lose: { r: "The heir's people take your story and your name, and use neither. The General's captain hears where you went.",
             fx: { them: { type: "enemy", op: -30 }, happy: -3 } } },
         { t: "Say the emperor looks well to you",
           r: "\"Well,\" {them} repeats, and smiles. You are on no one's list. That is safe, and lonely at court.",
@@ -979,7 +979,7 @@
       cond: (p, C) => C.realm(p, "POL-20") && C.adult(p) && !C.old(p) && C.flag(p, "ss_zn_runner") && A.S.year - p.flags.ss_zn_runner >= 2,
       w: 3, once: true,
       setup: (p, ctx) => { if (!cast(p, ctx, "CHR-0535")) ctx.skip = 1; },
-      text: "{themFull}, who watched you touch the post as the noon drums sounded, has a message for the Marshal's camp at Atani. The relay posts are watched by the Old Voices, who read what passes through them. This one must pass through no one. It is three days to Atani for a horse. {them} wants it there in two, by one runner, and he names you.",
+      text: "{themFull}, who watched you touch the post as the noon drums sounded, has a message for the General's camp at Atani. The relay posts are watched by the Old Voices, who read what passes through them. This one must pass through no one. It is three days to Atani for a horse. {them} wants it there in two, by one runner, and he names you.",
       choices: [
         { t: "Run it straight through, alone", check: { s: "sta", s2: "athletics", d: 54 },
           win: { r: "Two days and a night, the river road and the hill road. You hand it over at Atani on your knees. {them} hears of it before you are home.",
@@ -1024,7 +1024,7 @@
       cond: (p, C) => C.realm(p, "POL-20") && C.adult(p) && C.flag(p, "ss_zn_letter") && A.S.year - p.flags.ss_zn_letter >= 2,
       w: 3, once: true,
       setup: (p, ctx) => { make(p, ctx, { age: 50, status: "merchant", occ: "a merchant of the Well Quarter" }); },
-      text: "You read the letter {them} of the Well Quarter gave you for Atani, and resealed it so well the wax showed nothing. It named the side the merchants would back if the Marshal and the heir ever quarrelled. Now a man of the Old Voices is asking at every door who took Well Quarter letters to Atani that year. He pays for names. He pays more for what was written.",
+      text: "You read the letter {them} of the Well Quarter gave you for Atani, and resealed it so well the wax showed nothing. It named the side the merchants would back if the General and the heir ever quarrelled. Now a man of the Old Voices is asking at every door who took Well Quarter letters to Atani that year. He pays for names. He pays more for what was written.",
       choices: [
         { t: "Tell him what the letter said",
           r: "He listens without writing anything down, which frightens you more than ink. The Well Quarter's merchants are questioned that month. {them} leaves Zanara by night.",
@@ -1229,14 +1229,14 @@
 
     // ------------------------------------------------------------------ Abara (POL-22)
 
-    // ss_ab_desta: learned that Desta the Pedlar is paid by the Marshal of the North
+    // ss_ab_desta: learned that Desta the Pedlar is paid by the General of the North
     {
       id: "mra_ab_desta_back",
       title: "Needles and blue thread",
       cond: (p, C) => C.realm(p, "POL-22") && C.adult(p) && C.flag(p, "ss_ab_desta") && A.S.year - p.flags.ss_ab_desta >= 2,
       w: 3, once: true,
       setup: (p, ctx) => { if (!cast(p, ctx, "CHR-0588")) ctx.skip = 1; },
-      text: "{themFull} is back in the valley with his needles and blue thread, as friendly as ever. You once asked him who paid him, and he dropped the pedlar's face and told you: the Marshal of the North. He knows you remember. Today he offers you a share of the pay, if you will listen in your valley for letters going south to Prince Tekle.",
+      text: "{themFull} is back in the valley with his needles and blue thread, as friendly as ever. You once asked him who paid him, and he dropped the pedlar's face and told you: the General of the North. He knows you remember. Today he offers you a share of the pay, if you will listen in your valley for letters going south to Prince Tekle.",
       choices: [
         { t: "Take his silver and listen",
           r: "A salt bar a month, for names. Your neighbors begin to sound different to you, and you to them, though they cannot say why.",
@@ -1258,7 +1258,7 @@
       cond: (p, C) => C.realm(p, "POL-22") && C.adult(p) && C.flag(p, "mra_ab_destaman") && A.S.year - p.flags.mra_ab_destaman >= 2,
       w: 3, once: true,
       setup: (p, ctx) => { if (!fresh(p, "mra_ab_desta_hive") || !cast(p, ctx, "CHR-0588")) ctx.skip = 1; },
-      text: p => `For ${count(yrs(p, "mra_ab_destaman"), "year")} you have listened for {them}: a name here, a rider there. Now he wants something bigger. Copies of the Mandari letters to Prince Tekle are hidden in a hive in the Yandi orchards, he says. They name every lord who has promised to ride. The Marshal of the North will make a rich man of whoever brings them.`,
+      text: p => `For ${count(yrs(p, "mra_ab_destaman"), "year")} you have listened for {them}: a name here, a rider there. Now he wants something bigger. Copies of the Mandari letters to Prince Tekle are hidden in a hive in the Yandi orchards, he says. They name every lord who has promised to ride. The General of the North will make a rich man of whoever brings them.`,
       choices: [
         { t: "Rob the hive", check: { s: "stealth", s2: "husbandry", d: 52 },
           win: { r: "Smoke, a sting on the eyelid, and a bundle of letters in waxed cloth. {them} pays in gold. Within the year three southern lords are in chains.",
@@ -1290,10 +1290,10 @@
         { t: "Send the horse back with the rider",
           r: "You lead the horse out yourself and hand him the reins. Your place among the Horsemen goes back to Mandi with it.",
           fx: (p, ctx) => { if (p.gear && p.gear.mount === "horse") p.gear.mount = null; return more(p, ctx, { unflag: "ss_ab_monundi", honor: -2, trait: "cautious" }); } },
-        { t: "Ride to the king's marshal instead", check: { s: "riding", s2: "intrigue", d: 46 },
+        { t: "Ride to the king's General instead", check: { s: "riding", s2: "intrigue", d: 46 },
           win: { r: "The king's men count the names you give them and pay in salt bars. The Mandari will learn of it in time. Southern lords keep long accounts.",
             fx: (p, ctx) => say(more(p, ctx, { favor: 6, coin: 20, honor: -6 }), bond(p, "CHR-0575", "enemy", -40)) },
-          lose: { r: "The marshal already knows about the muster. He writes your name on both lists, to be safe.",
+          lose: { r: "The General already knows about the muster. He writes your name on both lists, to be safe.",
             fx: { favor: 1, happy: -3, trait: "paranoid" } } },
       ],
     },

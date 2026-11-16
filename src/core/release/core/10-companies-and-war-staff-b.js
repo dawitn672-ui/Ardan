@@ -586,48 +586,49 @@ A.cmdRole = function (pc) {
   }
   const rank = pc.mil.rank,
     mine = A.armiesOf(rid);
-  if (rank >= 9) {
-    out.key = "marshal";
-    out.title = "Marshal";
-    for (const a of mine) out.armies.add(a.id);
-    for (const d of A.divsOf(rid)) out.divs.add(d.id);
-    out.templates = true;
-    out.recruit = true;
-    out.desc =
-      "As Marshal you command every army and ask the crown for new divisions. Only the ruler runs the forges and makes peace.";
-    out.next = "Next: only a crown is higher.";
-  } else if (rank >= 7) {
-    out.key = rank >= 8 ? "highgeneral" : "general";
-    out.title = GD.MIL[rank].title;
-    for (const a of mine) if (a.gen === pc.id || (rank >= 8 && a.sub === pc.id)) out.armies.add(a.id);
+  // [W1-1, D-064, D-066] five ranks. A General leads a host (a division on the war map); a General who holds the king's
+  // written commission commands an army of several hosts for this war (a commission, not a rank). General is the
+  // highest rank: there is no High General and no Marshal. The senior General (the crown's first host) speaks for the
+  // army at council and commands no other General.
+  const senior = A.POSTS && A.POSTS.isSeniorGeneral && A.POSTS.isSeniorGeneral(pc.id),
+    commission = rank >= 7 && !senior && mine.some(a => a.gen === pc.id);
+  if (commission) {
+    out.key = "general";
+    out.title = "General";
+    for (const a of mine) if (a.gen === pc.id) out.armies.add(a.id);
     for (const a of mine) if (out.armies.has(a.id)) for (const id of a.divs) out.divs.add(id);
     out.desc =
-      rank >= 8
-        ? "As High General you lead an army group: your own army and up to two more. Give them fronts and battle plans, or move single divisions."
-        : "As General you lead one army (up to 24 divisions). Give it a front and a battle plan, or move its divisions by hand.";
-    out.next =
-      rank >= 8
-        ? "Next: Marshal — all armies."
-        : "Next: High General — an army group of three armies.";
+      "As General, by the king's written word, you command an army for this war: every host in it. Give it a front and a battle plan, or move its hosts by hand. The commission ends with the war.";
+    out.next = "General is the highest rank. Only the crown stands above you.";
+  } else if (rank >= 7 && !senior && !(pc.mil.div && (A.divById(pc.mil.div) || {}).cmd === pc.id)) {
+    out.key = "general";
+    out.title = "General";
+    out.desc =
+      "You hold a General's rank and no host of your own. In war the king may give you an army by his written word.";
+    out.next = "General is the highest rank. Only the crown stands above you.";
   } else if (rank >= 6) {
     out.key = "commander";
-    out.title = "Commander";
+    out.title = "General";
     if (pc.mil.div) out.divs.add(pc.mil.div);
-    out.desc =
-      "As Commander you lead one division. Move it, attack with it, dig it in. The army's plan still pulls on you; break from it and you answer for the result.";
-    out.next = "Next: General — a whole army with its own front.";
+    out.desc = senior
+      ? "As the senior General you lead the crown's first host and speak for the army at council. You command no other General. Move your host, attack with it, dig it in."
+      : "As General you lead one host. Move it, attack with it, dig it in. The army's plan still pulls on you; break from it and you answer for the result.";
+    out.next =
+      rank >= 7
+        ? "General is the highest rank. In war the king may give you an army by his written word."
+        : "Next: the second step of General, when the king may give you an army by his written word.";
   } else {
     if (rank >= 4) {
       out.key = "officer";
       out.title = GD.MIL[rank].title;
-      out.desc = `As ${GD.MIL[rank].title} you lead a ${rank >= 5 ? "battalion" : "company"} inside your division. In battle you choose how hard your men push: it changes the division's attack, your losses and your merit.`;
-      out.next = "Next: Commander — your own division on the map.";
+      out.desc = `As ${GD.MIL[rank].title} you lead a ${rank >= 5 ? "wing" : "company"} inside your host. In battle you choose how hard your men push: it changes the host's attack, your losses and your merit.`;
+      out.next = rank >= 5 ? "Next: General, with a host of your own on the map." : "Next: Commander, with a wing of several companies.";
     } else {
       out.key = "soldier";
       out.title = GD.MIL[rank].title;
       out.desc =
-        "You fight where your division goes. Watch its front, its battles, its supply. Survive, win merit, get noticed.";
-      out.next = "Next ranks lead squads and companies; Captains choose how their men fight.";
+        "You fight where your host goes. Watch its front, its battles, its supply. Survive, win merit, get noticed.";
+      out.next = "Sergeants lead sections and Captains companies; Captains choose how their men fight.";
     }
   }
   return out;
@@ -715,9 +716,9 @@ A.fxAct = function (key, arg) {
       ok: false,
       msg:
         need === "templates"
-          ? "Only the Marshal or the ruler designs divisions."
+          ? "Only the ruler designs divisions."
           : need === "recruit"
-            ? "Only the Marshal or the ruler raises divisions."
+            ? "Only the ruler raises divisions."
             : "Only the ruler runs the forges and the treasury.",
     };
   switch (key) {
@@ -1108,30 +1109,23 @@ A.wsNewArmy = function (rid, divIds, gen, name) {
 A.wsGeneralFor = function (rid) {
   const r = A.realm(rid),
     busy = new Set((A.S.armies || []).map(a => a.gen));
-  if (
-    r &&
-    r.council &&
-    r.council.marshal &&
-    A.P(r.council.marshal) &&
-    A.P(r.council.marshal).alive &&
-    !busy.has(r.council.marshal) &&
-    r.council.marshal !== A.S.pc
-  )
-    return r.council.marshal;
+  // [W1-1] no Marshal to take the field: the crown commissions a General from its great houses, else raises one
+  void r;
   const hs = Object.values(A.S.houses).filter(
     h => h.realm === rid && !h.extinct && (h.military || ["N01", "N02", "N03", "N04", "N05"].includes(h.rung)),
   );
   if (hs.length && A.chance(0.7)) {
     const h = A.pick(hs),
       p2 = A.houseHead(h.id);
-    // [A2 posts] a councillor (other than the Marshal) or a child leads no army: one post a person, of age
+    // [A2 posts] a councillor or a child leads no army: one post a person, of age (W1-1: nor the senior General, whose
+    // place is his own host)
     if (
       p2 &&
       p2.alive &&
       p2.id !== A.S.pc &&
       !busy.has(p2.id) &&
       A.isAdult(p2) &&
-      !(A.POSTS && A.POSTS.holds(p2.id, "seat").some(k => !k.endsWith(":marshal")))
+      !(A.POSTS && (A.POSTS.holds(p2.id, "seat").length || (A.POSTS.isSeniorGeneral && A.POSTS.isSeniorGeneral(p2.id))))
     ) {
       p2.skills.command = Math.max(p2.skills.command || 0, A.ri(25, 65));
       p2.skills.tactics = Math.max(p2.skills.tactics || 0, A.ri(20, 60));

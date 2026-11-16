@@ -11,11 +11,14 @@
 //
 // The rules (A.POSTS.audit): one holder per post; the holder alive, of age for his people, free, of the post's realm
 // and not a ruler (a ruler may lead an army); one council seat a person, no seat with a shire office or with a field
-// command (the Marshal may lead one army in person), one field command a person. The Marshal's seat (D-017, D-049) is
-// optional: the crown fills it for a war that needs one (two armies or two enemies) and that Marshal stands down at
-// peace; a ruler may also name one by his own choice at any time (and the lore's sitting Marshals are seeded so), and
-// that Marshal stays. Nothing requires the seat filled or empty. The player is Marshal (grade 9) exactly when he holds
-// that seat, and it needs a General's commission.
+// command, one field command a person.
+//
+// W1-1 (D-064, D-066): there is no Marshal. A division of the war map is a host and its commander a General; the
+// General of the crown's first host (P.firstHost: the realm's oldest standing host, kept while it stands) is the
+// realm's senior General. He sits at the council in the place the Marshal's seat had (r.council.general, a mirror of
+// the first host's post, never a seat of its own: seat:<realm>:general is read as div:<first host>) and does its
+// yearly task, and nothing else: he commands no other General. The crown keeps the place filled (P.fillGenerals, the
+// month's engine pass). An old save's Marshal becomes his realm's senior General on load (P.migrateMarshal).
 (function () {
   const P = A.POSTS = A.POSTS || {};
   P.V = 1;
@@ -59,7 +62,22 @@
   const RANK = { SEAT: 3, OFFICE: 2, FIELD: 1, STAFF: 0, HOUSE: 0, TITLE: 0 };
   const LAW = { HOUSE: 1, TITLE: 1 };
   P.cls = key => CLS[P.parse(key).kind];
-  const isMarshalKey = key => key.startsWith('seat:') && key.endsWith(':marshal');
+  // W1-1: the senior General's place at council reads the first host's post; the old Marshal's seat is gone
+  const isGenSeat = key => key.startsWith('seat:') && key.endsWith(':general');
+  const isOldMarshal = key => key.startsWith('seat:') && key.endsWith(':marshal');
+  // the realm's first host (pure): the stored one while it stands, else the oldest standing host of 3,000 men or more
+  P.firstHost = function (r) {
+    if (!r || r.alive === false || !r.forces || !Array.isArray(r.forces.divs)) return null;
+    const ds = r.forces.divs;
+    if (r.firstHost) { const d = ds.find(x => x && x.id === r.firstHost && !x.elite); if (d) return d; }
+    return ds.find(x => x && x.id && !x.elite && x.men >= 3e3) || null;
+  };
+  // the post a key names: the senior General's place is the first host's command
+  P.realKey = function (key) {
+    if (!key || !isGenSeat(key)) return key;
+    const d = P.firstHost(A.S.realms[P.parse(key).rid]);
+    return d ? P.divKey(d.id) : null;
+  };
 
   // ---- the mirrors: where each kind of post was kept before the registry ----------------------------------------------
   const offOf = (rid, oid) => { const r = A.S.realms[rid]; return r && r.pol && Array.isArray(r.pol.off) ? r.pol.off.find(o => o && o.id === oid) || null : null; };
@@ -119,7 +137,7 @@
         if (pc && isPC(was) && !pid && pc.office === k.id) pc.office = null;
       },
       realm: k => k.rid,
-      exists: k => { const r = A.S.realms[k.rid]; return !!(r && r.alive !== false && A.COUNCIL && A.COUNCIL[k.id]); },
+      exists: k => { const r = A.S.realms[k.rid]; return !!(r && r.alive !== false && A.COUNCIL && A.COUNCIL[k.id] && k.id !== 'general'); },
       style: k => `${(A.COUNCIL[k.id] || {}).name || k.id} of ${A.realmShort ? A.realmShort(k.rid) : k.rid}`,
     },
     office: {
@@ -141,7 +159,13 @@
       set(k, pid) { const d = A.divById && A.divById(k.id); if (d) d.cmd = pid || null; },
       realm: k => { const d = A.divById && A.divById(k.id); return d ? d.r : null; },
       exists: k => !!(A.divById && A.divById(k.id)),
-      style: k => { const d = A.divById && A.divById(k.id); return d ? `Commander of the ${String(d.name || 'division').replace(/^the /i, '')}` : 'Commander'; },
+      // W1-1: a division is a host, and its commander a General; the first host's is the senior General
+      style: k => {
+        const d = A.divById && A.divById(k.id);
+        if (!d) return 'General';
+        const r = A.S.realms[d.r], f = r && P.firstHost(r);
+        return f && f.id === d.id ? `Senior General of ${A.realmShort ? A.realmShort(d.r) : d.r}` : `General of the ${String(d.name || 'host').replace(/^the /i, '')}`;
+      },
     },
     // 9997-companies: a battalion's slot 4 (its senior captain) and its companies' slots 0-3, held by a person only when
     // one is recorded (b.p[slot]); a seed (a name the slot gives itself) holds no post. A person who leaves spends the
@@ -158,8 +182,9 @@
       exists: k => { const { b } = slotOf(k); return !!b && (k.s === 0 || !isSup(b)); },
       style: k => {
         const { d } = slotOf(k), C = A.CO;
-        if (!d || !C || !C.bnName) return k.s === 4 ? 'Senior Captain' : 'Captain';
-        return k.s === 4 ? 'Senior Captain of the ' + C.bnName(d, k.b) : 'Captain of the ' + C.coName(d, k.b, k.s);
+        // W1-1: a battalion's head leads a wing: a Commander
+        if (!d || !C || !C.bnName) return k.s === 4 ? 'Commander' : 'Captain';
+        return k.s === 4 ? 'Commander of the ' + C.bnName(d, k.b) : 'Captain of the ' + C.coName(d, k.b, k.s);
       },
     },
     // an elite order's Grand Master, who also leads the order's division (r.orders[oid] and the division's d.cmd)
@@ -241,7 +266,7 @@
   };
   const ixAdd = (pid, key) => { const m = index(); let s = m.get(pid); if (!s) m.set(pid, (s = new Set())); s.add(key); };
   const ixDel = (pid, key) => { const s = index().get(pid); if (s) { s.delete(key); if (!s.size) index().delete(pid); } };
-  P.holder = key => { const st = A.S && A.S.posts, h = st && st.h && st.h[key]; return h ? h.p : null; };
+  P.holder = key => { key = P.realKey(key); const st = A.S && A.S.posts, h = key && st && st.h && st.h[key]; return h ? h.p : null; };
   P.held = pid => { if (!pid || !A.S) return []; const s = index().get(pid); return s ? [...s] : []; };
   P.holds = (pid, kind) => P.held(pid).filter(k => !kind || k.startsWith(kind + ':'));
   P.seatOf = (pid, rid) => { const k = P.holds(pid, 'seat').find(x => !rid || P.parse(x).rid === rid); return k ? P.parse(k).id : null; };
@@ -259,34 +284,39 @@
     // one field command a person; a division's commander may lead one battalion of his own division in person (9997
     // puts a Commander at the head of his battalion in the line)
     if (ca === 'FIELD' && cb === 'FIELD') return ownBattalion(a, b) || ownBattalion(b, a);
-    if (ca === 'SEAT' && cb === 'FIELD') return isMarshalKey(a) && b.startsWith('army:');
-    if (ca === 'FIELD' && cb === 'SEAT') return isMarshalKey(b) && a.startsWith('army:');
+    if ((ca === 'SEAT' && cb === 'FIELD') || (ca === 'FIELD' && cb === 'SEAT')) return false;
     return true;      // a shire office beside a field command or another office (9996 holds its own two-office rule)
   };
   const ownBattalion = (a, b) => a.startsWith('div:') && b.startsWith('bn:') && P.parse(b).did === P.parse(a).id;
-  // does realm r need a Marshal (D-017: a war more than one general can hold together: two armies in the field, or
-  // two enemies at once)? keep: the seat already held stays filled while the realm is at war at all.
-  P.marshalNeeded = function (r, keep) {
-    if (!r || r.alive === false) return false;
-    const wars = A.atWar ? A.atWar(r.id) : [];
-    if (!wars.length) return false;
-    if (keep) return true;
-    return (A.armiesOf ? A.armiesOf(r.id).length : 0) >= 2 || (A.enemiesOf ? A.enemiesOf(r.id).length : 0) >= 2;
-  };
-  // may p take the Marshal's seat of realm rid (D-017: a General, or someone proved more capable than the generals)?
-  // An NPC: he leads an army of the realm, or holds a General's grade, or commands at least as well as its best general
-  // (with no army raised, as well as a seasoned one). The player's commission is checked in can().
-  P.marshalFit = function (p, rid) {
+  // may p lead the crown's first host (W1-1: a General, or someone proved as able as the realm's Generals)? An NPC: he
+  // holds a host or an army, or a General's grade, or commands at least as well as the best general in the field (with
+  // no army raised, as well as a seasoned one). The player's commission is checked in can().
+  P.generalFit = function (p, rid) {
     if (!p) return false;
-    if (P.holds(p.id, 'army').length || (p.milRank || 0) >= 7) return true;
+    if (P.holds(p.id, 'army').length || P.holds(p.id, 'div').length || (p.milRank || 0) >= 6) return true;
     const best = (A.armiesOf ? A.armiesOf(rid) : []).reduce((m, a) => { const g = A.P(a.gen); return live(g) ? Math.max(m, A.skill(g, 'command')) : m; }, 0);
     return A.skill(p, 'command') >= (best || 45);
   };
-  // the ruler's own choice of a Marshal (D-049): by the ruler himself, or seeded from the lore
-  const ownChoice = o => !!(o.ruler || o.why === 'ruler' || o.why === 'lore');
+  // the senior General of realm r (the holder of its first host), and whether pid is one
+  P.seniorGeneral = r => { const d = P.firstHost(r); return d ? P.holder(P.divKey(d.id)) : null; };
+  P.isSeniorGeneral = function (pid) {
+    if (!pid || !A.S) return false;
+    for (const k of P.holds(pid, 'div')) { const d = A.divById && A.divById(P.parse(k).id), r = d && A.S.realms[d.r], f = r && P.firstHost(r); if (f && f.id === d.id) return true; }
+    return false;
+  };
   // why pid may not hold key ('' when he may). Pure.
   P.can = function (key, pid, o) {
     o = o || {};
+    if (isGenSeat(key)) {
+      const rk = P.realKey(key), rid = P.parse(key).rid, p = A.P(pid);
+      if (!rk) return 'the realm has no standing host for a General to lead';
+      if (p && p.ruler) return 'a ruler commands no single host';
+      if (p && p.prison) return `${nm(p)} is in prison`;
+      if (p && p.realm !== rid) return `${nm(p)} is not of the realm`;
+      if (p && isPC(pid) && !(p.mil && !p.mil.merc && p.mil.rank >= 6 && p.mil.realm === rid)) return 'the first host goes to a General';
+      if (p && !isPC(pid) && !o.force && !P.generalFit(p, rid)) return `the first host goes to a General or a proven commander, and ${nm(p)} is neither`;
+      key = rk;
+    }
     const p = A.P(pid), [M, k] = mir(key);
     if (!M) return 'no such post';
     if (!M.exists(k)) return 'the post no longer exists';
@@ -309,14 +339,6 @@
       if (P.holds(p.id, 'seat').length) return "a councillor serves on no one's staff";
       if (p.id === k.rid) return "one does not serve on one's own staff";
     }
-    if (isMarshalKey(key)) {
-      const r = A.S.realms[k.rid];
-      // D-049: the seat is optional. A war that needs a Marshal opens it to every road (the crown's pick, the board, the
-      // court, the council's offer); otherwise only the ruler's own choice fills it
-      if (!o.force && !ownChoice(o) && !P.marshalNeeded(r, P.holder(key) === pid)) return 'the realm needs no Marshal now: a General leads, and only the crown may name one by its own choice';
-      if (isPC(pid) && !(p.mil && !p.mil.merc && p.mil.rank >= 7 && p.mil.realm === k.rid)) return 'the seat of Marshal goes to a General';
-      if (!isPC(pid) && !o.force && !P.marshalFit(p, k.rid)) return `the seat of Marshal goes to a General or a proven commander, and ${nm(p)} is neither`;
-    }
     return '';
   };
 
@@ -334,7 +356,7 @@
     }
   };
   // a stored title that names a post its owner lost becomes a past one ("once Chancellor of Varenna")
-  const STYLE_RX = /Marshal|Chancellor|Treasurer|Spymaster|Chaplain|General|Commander|Governor|Magistrate|Reeve|Warden|Collector|Sheriff/;
+  const STYLE_RX = /Chancellor|Treasurer|Spymaster|Chaplain|General|Commander|Governor|Magistrate|Reeve|Warden|Collector|Sheriff/;
   P.unstyle = function (p, key) {
     if (!p) return;
     const style = P.style(key);
@@ -344,28 +366,13 @@
     if (typeof p.title === 'string' && p.title && (p.title === style || style.startsWith(p.title + ' of '))) p.title = 'once ' + p.title;
   };
   const say = (t, c) => { if (A.log) A.log(t, c || 'warn'); };
-  // the player's grade follows the Marshal's seat: 9 while he holds it, his General's grade again when he leaves it
-  const pcMarshal = function (pid, on, why) {
-    const pc = A.pc(); if (!pc || pc.id !== pid || !pc.mil || pc.mil.merc) return;
-    if (on) {
-      if (pc.mil.rank < 9) { pc.mil.preMarshal = pc.mil.rank; pc.mil.rank = 9; pc.mil.rankSince = day(); }
-      if (A.ach) A.ach('marshal');
-    } else if (pc.mil.rank >= 9 && !pc.ruler) {
-      pc.mil.rank = Math.min(8, Math.max(7, pc.mil.preMarshal || 7));
-      delete pc.mil.preMarshal;
-      pc.mil.rankSince = day();
-      if (why === 'peace') {
-        say(`The war is over and the Marshal's baton goes back into its case. You serve on as ${GD.MIL[pc.mil.rank].title}.`, 'good');
-        A.fame && A.fame(pc, 2);
-      } else if (why === 'replaced' || why === 'dismissed') say(`You no longer hold the Marshal's seat. You serve on as ${GD.MIL[pc.mil.rank].title}.`, 'warn');
-    }
-  };
 
   // vacate key: the holder leaves it for why ('died', 'resigned', 'deserted', 'imprisoned', 'dismissed', 'promoted',
   // 'replaced', 'peace', 'under age', 'crowned', 'left the realm', ...). Returns the one who left, or null.
   P.vacate = function (key, why, o) {
     o = o || {};
-    const st = P.store(); if (!st) return null;
+    key = P.realKey(key);
+    const st = P.store(); if (!st || !key) return null;
     const r = st.h[key], [M, k] = mir(key);
     const pid = (r && r.p) || (M ? M.get(k) : null);
     if (M) M.set(k, null);
@@ -375,7 +382,8 @@
     P.stats.vacated++;
     const p = A.P(pid);
     if (live(p) && why !== 'died') P.unstyle(p, key);
-    if (isMarshalKey(key)) pcMarshal(pid, false, why);
+    // W1-1: the first host's General leaves the council's place with it
+    if (k.kind === 'div') mirrorSenior();
     // a post whose object is gone keeps no record
     if (M && !M.exists(k)) delete st.h[key];
     // an army in the field is never without a general: the crown names one at once (what A.wsDay did the next day),
@@ -409,6 +417,8 @@
     o = o || {};
     const no = P.can(key, pid, o);
     if (no && !o.force) return { ok: false, why: no };
+    key = P.realKey(key);
+    if (!key) return { ok: false, why: 'the realm has no standing host for a General to lead' };
     const r = rec(key), [M, k] = mir(key);
     const curId = r.p || M.get(k) || null;
     if (curId === pid) { if (M.get(k) !== pid) M.set(k, pid); if (r.p !== pid) { r.p = pid; ixAdd(pid, key); } return { ok: true, same: true }; }
@@ -422,8 +432,8 @@
       out = P.vacate(key, live(cur) ? 'replaced' : 'died', { keep: true });   // keep: no deputy, the appointee comes
       const by = A.P(o.by);
       if (live(out)) {
-        grudge(out, A.P(pid), P.cls(key) === 'SEAT' ? -30 : -15);
-        if (by && by.id !== out.id) grudge(out, by, -10);
+        if (!o.noGrudge) grudge(out, A.P(pid), P.cls(key) === 'SEAT' ? -30 : -15);
+        if (by && by.id !== out.id && !o.noGrudge) grudge(out, by, -10);
         // a field command swaps into the command the appointee freed (the nearest echelon), else the man waits for one
         if (P.cls(key) === 'FIELD') {
           const kind = P.parse(key).kind, swap = freed.find(f => f.startsWith(kind + ':')) || ECHELON.map(e => freed.find(f => f.startsWith(e + ':'))).find(Boolean);
@@ -435,12 +445,12 @@
     pushPrev(r, null);
     r.p = pid; r.s = day(); r.w = o.why || ''; delete r.vac;
     if (o.by) r.by = o.by;
-    // a Marshal named by the ruler's own choice (D-049) keeps the seat in peace; one named for a war stands down with it
-    if (isMarshalKey(key)) { if (ownChoice(o)) r.own = 1; else delete r.own; }
+    delete r.own;
     M.set(k, pid);
     ixAdd(pid, key);
     P.stats.appointed++;
-    if (isMarshalKey(key)) pcMarshal(pid, true);
+    // W1-1: the first host's General sits at the council at once (the month's sync keeps the mirror after)
+    if (key.startsWith('div:')) mirrorSenior();
     // a shire office the appointee gave up is filled now, the appointment done (9996-polity; CI 119)
     if (A.POL && A.POL.refillNow) for (const f of freed) if (f.startsWith('office:')) A.POL.refillNow(P.parse(f).rid);
     return { ok: true, out: out ? out.id : null, freed };
@@ -451,13 +461,15 @@
   // is not made a shire officer or a general behind the council's back); then nothing is written. The same rule the
   // month's sync applied to such writes in stage 1 (the higher class is kept), now at the moment of the write.
   P.place = function (key, pid, o) {
+    key = P.realKey(key);
+    if (!key) return { ok: false, why: 'no such post' };
     const c = RANK[P.cls(key)];
     for (const k2 of P.held(pid)) if (!P.compatible(key, k2) && RANK[P.cls(k2)] > c) return { ok: false, why: `${nm(A.P(pid))} holds ${P.style(k2)}` };
     return P.appoint(key, pid, Object.assign({ force: true }, o));
   };
 
-  // everything pid holds is left for why. o.cls: only these classes ('SEAT', 'OFFICE', 'FIELD'); o.marshal: with FIELD,
-  // the Marshal's seat too (it needs the commission); o.keepArmy: a new ruler keeps one army he leads in person.
+  // everything pid holds is left for why. o.cls: only these classes ('SEAT', 'OFFICE', 'FIELD'; the first host, with the
+  // senior General's place at council, is a FIELD post); o.keepArmy: a new ruler keeps one army he leads in person.
   P.leaveAll = function (pid, why, o) {
     o = o || {};
     const id = pid && pid.id ? pid.id : pid;
@@ -466,7 +478,7 @@
     for (const key of P.held(id)) {
       const c = P.cls(key);
       if (LAW[c]) continue;                       // a house or a title passes by law (A.kill names the heir)
-      const pick = !o.cls || o.cls.includes(c) || (o.marshal && isMarshalKey(key));
+      const pick = !o.cls || o.cls.includes(c);
       if (!pick) continue;
       if (o.keepArmy && key.startsWith('army:')) continue;
       if (why === 'imprisoned' && key.startsWith('free:')) continue;   // a free company waits for its captain's ransom
@@ -524,7 +536,10 @@
   const divRemove = A.divRemove;
   if (divRemove) A.divRemove = function (d) {
     try { if (d && d.id && A.S && A.S.posts && !d.elite) offRolls(P.divKeys(d)); } catch (e) { console.error('[posts] divRemove', e); }
-    return divRemove.apply(this, arguments);
+    const out = divRemove.apply(this, arguments);
+    // W1-1: a first host struck off: the council's place follows the next one
+    try { if (A.S && A.S.posts && d && !d.elite) { const r = A.S.realms[d.r]; if (r && r.firstHost === d.id) fixFirstHost(r); mirrorSenior(); } } catch (e) { console.error('[posts] divRemove', e); }
+    return out;
   };
   const demob = A.wsDemobilize;
   if (demob) A.wsDemobilize = A.wsDisband = function (a) {
@@ -542,7 +557,8 @@
     if (law === undefined) law = true;
     const out = [];
     for (const r of realmsAlive()) {
-      if (r.council && A.COUNCIL) for (const s of Object.keys(A.COUNCIL)) if (r.council[s]) out.push([P.seatKey(r.id, s), r.council[s]]);
+      // the senior General's place (r.council.general) mirrors the first host's post, which is read below
+      if (r.council && A.COUNCIL) for (const s of Object.keys(A.COUNCIL)) if (s !== 'general' && r.council[s]) out.push([P.seatKey(r.id, s), r.council[s]]);
       if (r.pol && Array.isArray(r.pol.off)) for (const o of r.pol.off) if (o && o.id && o.pid) out.push([P.offKey(r.id, o.id), o.pid]);
     }
     for (const a of (A.S.armies || [])) if (a && a.id && a.gen) out.push([P.armyKey(a.id), a.gen]);
@@ -645,60 +661,82 @@
       if (d && d.r === r.id && d.cmd !== r.orders[oid]) { d.cmd = r.orders[oid]; repair('order division'); }
     }
     syncPC(mode);
-    marshals(mode);
+    generals(mode);
     const lines = P._lines; P._lines = null;
     return lines;
   };
 
-  // the player: a field command needs a commission; the Marshal's seat a General's; grade 9 needs the seat
+  // the player: a field command needs a commission; the first host a General's grade
   const syncPC = function (mode) {
     const pc = A.pc(); if (!pc || !pc.alive) return;
     const commissioned = !!(pc.mil && !pc.mil.merc);
     for (const key of P.held(pc.id)) {
       if (P.cls(key) === 'FIELD' && !commissioned && !(pc.ruler && key.startsWith('army:')) && !key.startsWith('free:')) { P.vacate(key, 'resigned'); repair('no commission', `You no longer command ${P.style(key).replace(/^\w+ of /, '')}.`); }
-      else if (isMarshalKey(key) && !(commissioned && pc.mil.rank >= 7)) { P.vacate(key, 'no commission'); repair('no commission', 'The seat of Marshal goes to a General: you give it up.'); }
     }
-    // pc.office mirrors his seat
-    const seat = P.seatOf(pc.id);
-    if (seat && pc.office !== seat) { pc.office = seat; repair('office field'); }
-    else if (!seat && pc.office) { const r = A.realm(pc.realm); if (!(r && r.council && r.council[pc.office] === pc.id)) { pc.office = null; repair('office field'); } }
-    // a Marshal's grade without the seat
-    if (commissioned && pc.mil.rank >= 9 && !pc.ruler && !P.holds(pc.id, 'seat').some(isMarshalKey)) {
-      const r = A.realm(pc.mil.realm), key = r ? P.seatKey(r.id, 'marshal') : null;
-      if (key && !P.holder(key) && !P.can(key, pc.id)) P.appoint(key, pc.id, { why: 'grade', force: true });
-      else { pc.mil.rank = 8; pc.mil.rankSince = day(); repair('marshal grade', 'The crown has named no Marshal: you serve as High General.'); }
-    }
+    if (commissioned && pc.mil.rank < 6 && P.isSeniorGeneral(pc.id)) for (const key of P.holds(pc.id, 'div')) { P.vacate(key, 'no commission'); repair('no commission', 'The first host goes to a General: you give it up.'); }
+    // W1-1: no grade above General (an old save's High General or Marshal is a General)
+    if (pc.mil && pc.mil.rank > GD.MIL.length - 1) { pc.mil.rank = GD.MIL.length - 1; repair('old grade'); }
+    // pc.office mirrors his seat, or the senior General's place
+    const seat = P.seatOf(pc.id) || (P.isSeniorGeneral(pc.id) ? 'general' : null);
+    if (seat && pc.office !== seat) { pc.office = seat; pc.officeSince = A.S.year; repair('office field'); }
+    else if (!seat && pc.office) { const r = A.realm(pc.realm); if (!(r && r.council && r.council[pc.office] === pc.id && pc.office !== 'general')) { pc.office = null; repair('office field'); } }
   };
 
-  // D-017, D-049: the crown fills the Marshal's seat when a war needs one; that Marshal stands down at peace. A Marshal of
-  // the ruler's own choice (r.own) stays in peace and war alike: nothing forces the seat filled or empty
-  P.pickMarshal = function (r) {
-    const pcId = A.S.pc, key = P.seatKey(r.id, 'marshal'), C = [];
-    for (const a of (A.armiesOf ? A.armiesOf(r.id) : [])) {
-      const g = A.P(a.gen);
-      if (!live(g) || g.id === pcId || g.ruler || !adultOk(g) || g.realm !== r.id) continue;
-      if (P.holds(g.id, 'seat').length || P.can(key, g.id)) continue;
-      C.push([g, A.skill(g, 'command') * 2 + (g.fame || 0) / 4 + A.armyMen(a) / 20000]);
-    }
-    C.sort((x, y) => y[1] - x[1] || (String(x[0].id) < String(y[0].id) ? -1 : 1));
-    return C.length ? C[0][0] : null;
+  // ---- the senior General (W1-1, D-064 point 3) ----------------------------------------------------------------------
+  // every realm's first host is fixed (kept while it stands; else the oldest standing host of 3,000 men or more), and
+  // the council's place for the army mirrors whoever leads it. No dice: the crown's naming is P.fillGenerals.
+  const fixFirstHost = function (r) {
+    const d = P.firstHost(r), id = d ? d.id : null;
+    if ((r.firstHost || null) !== id) { if (id) r.firstHost = id; else delete r.firstHost; }
+    return d;
   };
-  const marshals = function () {
+  const mirrorSenior = function () {
     const pc = A.pc();
     for (const r of realmsAlive()) {
-      if (!r.council && !A.COUNCIL) continue;
-      const key = P.seatKey(r.id, 'marshal'), cur = P.holder(key), R = cur && A.S.posts.h[key];
-      if (cur && !(R && R.own) && !P.marshalNeeded(r, true)) { P.vacate(key, 'peace'); continue; }
-      if (cur || !P.marshalNeeded(r) || (pc && pc.ruler === r.id) || r.landless) continue;
-      const m = P.pickMarshal(r);
-      if (!m) continue;
-      P.appoint(key, m.id, { why: 'war', by: r.ruler });
-      if (!m.occ || /^(a lord of the realm|a general)$/.test(m.occ) || /^once /.test(m.occ)) m.occ = P.style(key);
-      // the Marshal takes the main host in person; its general takes the Marshal's old army
-      const main = (A.armiesOf(r.id) || []).slice().sort((x, y) => y.divs.length - x.divs.length)[0];
-      if (main && main.gen !== m.id && !isPC(main.gen) && P.holds(m.id, 'army').length) P.appoint(P.armyKey(main.id), m.id, { why: 'marshal', by: r.ruler, force: true });
-      if (pc && pc.mil && !pc.mil.merc && pc.mil.realm === r.id && A.log) A.log(`${A.rulerStyle ? A.rulerStyle(A.P(r.ruler), r) : 'The crown'} names ${nm(m)} Marshal of ${r.short} for the war.`, 'war');
+      const d = P.firstHost(r), g = d ? P.holder(P.divKey(d.id)) : null;
+      if (g) { r.council = r.council || {}; if (r.council.general !== g) r.council.general = g; }
+      else if (r.council && r.council.general) delete r.council.general;
+      if (pc && pc.alive && g === pc.id && A.ach) A.ach('senior_general');
     }
+  };
+  const generals = function () {
+    for (const r of realmsAlive()) fixFirstHost(r);
+    mirrorSenior();
+  };
+  // the crown names the General of its first host when the place is empty: its best General at hand (a General's grade
+  // or a proven commander of the realm who holds no other post), else one of its great houses' heads, else a man raised
+  // for it (A.wsGeneralFor). Engine only (it may make a person with the game's dice); a player ruler names his own.
+  P.fillGenerals = function () {
+    const pc = A.pc(), want = new Map();
+    for (const r of realmsAlive()) {
+      if (r.landless || (r.isRebel && !r.isNew) || !r.ruler || (pc && pc.ruler === r.id)) continue;
+      const d = fixFirstHost(r);
+      if (d && !P.holder(P.divKey(d.id)) && !d.cmd) want.set(r.id, { r, d, best: null, v: -1 });
+    }
+    if (!want.size) return 0;
+    for (const id in A.S.people) {
+      const p = A.S.people[id], w = p && p.alive && want.get(p.realm);
+      if (!w || p.ruler || p.prison || isPC(p.id) || !adultOk(p)) continue;
+      const RR = GD.RACES && GD.RACES[p.race];
+      if (RR && RR.old && A.age(p) > RR.old + 5) continue;
+      if (P.held(p.id).some(k => { const c = P.cls(k); return c === 'SEAT' || c === 'OFFICE' || c === 'FIELD' || c === 'STAFF'; })) continue;
+      if (!((p.milRank || 0) >= 6 || A.skill(p, 'command') >= 45)) continue;
+      const v = A.skill(p, 'command') * 2 + (p.fame || 0) / 4 + ((p.milRank || 0) >= 6 ? 20 : 0);
+      if (v > w.v || (v === w.v && String(p.id) < String(w.best.id))) { w.best = p; w.v = v; }
+    }
+    let n = 0;
+    for (const w of want.values()) {
+      let p = w.best;
+      if (!p && A.wsGeneralFor) p = A.P(A.wsGeneralFor(w.r.id));
+      if (!live(p) || isPC(p.id) || P.can(P.divKey(w.d.id), p.id)) continue;
+      if (P.place(P.divKey(w.d.id), p.id, { why: 'crown', by: w.r.ruler }).ok) {
+        n++;
+        p.milRank = Math.max(p.milRank || 0, 6);
+        if (!p.occ || /^(a lord of the realm|a general)$/.test(p.occ) || /^once /.test(p.occ)) p.occ = P.style(P.divKey(w.d.id));
+      }
+    }
+    if (n) mirrorSenior();
+    return n;
   };
 
   // a council for a realm born in play with nobody to fill it (engine only: it makes people with the game's dice)
@@ -707,7 +745,7 @@
     if (!ru || !ru.alive || (pc && pc.ruler === r.id) || !A.genNoble || !A.COUNCIL) return 0;
     let n = 0;
     for (const seat of Object.keys(A.COUNCIL)) {
-      if (seat === 'marshal' || (r.council && r.council[seat])) continue;
+      if (seat === 'general' || (r.council && r.council[seat])) continue;
       const p = A.genNoble(r.id, 'gentry', null, A.ri(30, 55));
       if (!adultOk(p)) p.born = A.S.year - Math.round((A.S.year - p.born) * GD.RACES[p.race].adult / 16);
       const sk = A.COUNCIL[seat].skill;
@@ -730,8 +768,8 @@
   };
   // a stored style that names a council seat of the person's realm he does not hold becomes a past one. On load and at
   // the New Year; between, P.unstyle catches each seat that changes hands.
-  const SEATW = { marshal: 'Marshal', chancellor: 'Chancellor', treasurer: 'Treasurer', spymaster: 'Spymaster', chaplain: 'Chaplain' };
-  const QUICK = /Marshal|Chancellor|Treasurer|Spymaster|Chaplain/;
+  const SEATW = { general: 'Senior General', chancellor: 'Chancellor', treasurer: 'Treasurer', spymaster: 'Spymaster', chaplain: 'Chaplain' };
+  const QUICK = /Senior General|Chancellor|Treasurer|Spymaster|Chaplain/;
   P.restyle = function () {
     const styled = A.COHERENCY && A.COHERENCY.styledAs;
     if (!styled) return 0;
@@ -782,11 +820,15 @@
     for (const [pid, ks] of by) for (let i = 0; i < ks.length; i++) for (let j = i + 1; j < ks.length; j++)
       if (!P.compatible(ks[i], ks[j])) bad.push(`${nm(A.P(pid))} holds ${P.style(ks[i])} and ${P.style(ks[j])}`);
     const pc = A.pc && A.pc();
-    if (pc && pc.alive && pc.mil && !pc.mil.merc && !pc.ruler) {
-      const r = A.realm(pc.mil.realm), seated = !!(r && r.council && r.council.marshal === pc.id);
-      if (seated !== (pc.mil.rank >= 9)) bad.push(`the player's grade (${GD.MIL[pc.mil.rank].title}) and the Marshal's seat (${seated ? 'held' : 'not held'}) disagree`);
-    }
+    if (pc && pc.alive && pc.mil && !pc.mil.merc && !GD.MIL[pc.mil.rank]) bad.push(`the player's grade (${pc.mil.rank}) is above General`);
     if (pc && pc.alive && pc.office) { const r = A.realm(pc.realm); if (!(r && r.council && r.council[pc.office] === pc.id)) bad.push(`the player's office (${pc.office}) is not a seat he holds`); }
+    // W1-1: no Marshal's seat anywhere; the council's place for the army is the first host's General
+    for (const key in st.h) if (isOldMarshal(key)) bad.push(`${key}: an old council seat above the Generals is still on the rolls`);
+    for (const r of realmsAlive()) {
+      if (r.council && r.council.marshal) bad.push(`${r.id}: an old council seat above the Generals is still filled`);
+      const g = P.seniorGeneral(r);
+      if (strict && r.firstHost && ((r.council && r.council.general) || null) !== (g || null)) bad.push(`${r.id}: the council's General is not the first host's`);
+    }
     return bad;
   };
 
@@ -804,7 +846,8 @@
       }
     } catch (e) { console.error('[posts] councils', e); }
   };
-  A.onMonth.push(function () { runSync('month'); councils(); });
+  const fill = () => { try { if (A.S && A.S.people && A.S.realms) P.fillGenerals(); } catch (e) { console.error('[posts] generals', e); } };
+  A.onMonth.push(function () { runSync('month'); councils(); fill(); });
   (A.onYear = A.onYear || []).push(function () { runSync('year'); councils(); try { P.restyle(); } catch (e) { console.error('[posts] restyle', e); } });
   // a new world: the registry is built from the first councils, offices and armies
   A.on && A.on('worldInit', function () { P.store(); IX = null; runSync('load'); try { P.restyle(); } catch (e) { console.error('[posts] restyle', e); } });
@@ -816,13 +859,80 @@
       if (A.S && A.S.people) {
         const had = !!(A.S.posts && A.S.posts.h);
         IX = null; P.store();
+        // W1-1: the Marshal's seat is laid down before the registry is built; its holder takes the first host after
+        const pend = P.migrateMarshal();
         const lines = P.sync('load') || [];
+        P.seatMarshals(pend);
         P.restyle();
         P.lastLoad = { had, lines };
         if (!had && lines.length && A.log) for (const l of lines.slice(0, 6)) A.log(`The realm's rolls are set straight: ${l}.`, 'warn');
       }
     } catch (e) { console.error('[posts] load', e); }
     return out;
+  };
+
+  // ---- an old save (W1-1, D-064, docs/design/war.md §15): no Marshal, no grade above General ---------------------------
+  // the old words of a rank in a stored style (pure on a string)
+  P.oldWords = s => typeof s !== 'string' || !/Marshal|High General|File-?[Ll]eader|Squad Captain|Senior Captain/.test(s) ? s
+    : s.replace(/Marshal of the (Wolves|Sun|Order)/g, 'Seneschal of the $1').replace(/Spear-Marshal/g, 'Spear-Lord')
+      .replace(/(Lord |Grand |Field |High )?Marshal\b/g, 'General').replace(/High General/g, 'General').replace(/File-?[Ll]eader/g, 'Sergeant')
+      .replace(/Squad Captain/g, 'Captain').replace(/Senior Captain/g, 'Commander');
+  // before the registry is built: the seat's records and mirrors go, grades above General fall to General, the old words
+  // of the people's styles are the five ranks'. Returns [[realm, the man who sat]] for P.seatMarshals.
+  P.migrateMarshal = function () {
+    const S = A.S, st = S.posts, pend = [];
+    if (!S || !S.realms) return pend;
+    for (const rid of Object.keys(S.realms)) {
+      const r = S.realms[rid]; if (!r) continue;
+      const key = 'seat:' + rid + ':marshal';
+      let m = r.council && r.council.marshal;
+      if (st && st.h && st.h[key]) { if (!m && st.h[key].p) m = st.h[key].p; delete st.h[key]; }
+      if (r.council && 'marshal' in r.council) delete r.council.marshal;
+      if (m) pend.push([rid, m]);
+    }
+    if (st && st.h) for (const key of Object.keys(st.h)) if (isOldMarshal(key)) delete st.h[key];
+    for (const id in S.people) {
+      const p = S.people[id]; if (!p) continue;
+      if (p.milRank > 7) p.milRank = 7;
+      if (p.occ) p.occ = P.oldWords(p.occ);
+      if (p.title) p.title = P.oldWords(p.title);
+    }
+    const pc = S.people[S.pc];
+    if (pc && pc.mil) { if (pc.mil.rank > 7) pc.mil.rank = 7; delete pc.mil.preMarshal; }
+    if (pc && pc.veteran && pc.veteran.rank > 7) pc.veteran.rank = 7;
+    if (pc && pc.office === 'marshal') pc.office = null;
+    // the advisors' ring (9999) and the polity's council tasks (9996) named the seat
+    if (pc && pc.adv && Array.isArray(pc.adv.ring)) for (const x of pc.adv.ring) if (x && x.role === 'marshal') x.role = 'general';
+    for (const rid of Object.keys(S.realms)) { const t = S.realms[rid] && S.realms[rid].pol && S.realms[rid].pol.task; if (t && t.marshal) { if (!t.general) t.general = t.marshal; delete t.marshal; } }
+    for (const a of S.armies || []) if (a && a.sub) a.sub = null;
+    if (S.ach && S.ach.marshal != null) { if (S.ach.senior_general == null) S.ach.senior_general = S.ach.marshal; delete S.ach.marshal; }
+    return pend;
+  };
+  // after the registry is built: each man who sat becomes his realm's senior General (the General of the first host).
+  // The record says the seat was laid down, and nobody is aggrieved by it; the General who led that host takes the
+  // army the new one leaves, or waits for a command; an army left without its general gets one from the crown.
+  P.seatMarshals = function (pend) {
+    let n = 0;
+    for (const [rid, m] of pend || []) {
+      const r = A.S.realms[rid], p = A.P(m), d = r && fixFirstHost(r);
+      if (!d || !live(p) || p.ruler || p.realm !== rid) continue;
+      const key = P.divKey(d.id);
+      if (P.holder(key) === p.id) continue;
+      const res = P.appoint(key, p.id, { why: 'seat laid down', by: r.ruler, force: true, noGrudge: true });
+      if (!res.ok) continue;
+      n++;
+      p.milRank = Math.max(p.milRank || 0, 6);
+      for (const f of res.freed || []) if (f.startsWith('army:')) deputyArmy(P.parse(f).id);
+      if (isPC(p.id) && p.mil) {
+        p.mil.div = d.id;
+        if (d.army) p.mil.army = d.army; else p.mil.army = null;
+        if (A.log) A.log(`The crown lays down the old seat above its Generals. You are a General, and as General of the crown's first host, the ${String(d.name).replace(/^the /i, '')}, you speak for the army at council.`, 'war');
+      }
+    }
+    mirrorSenior();
+    const pc = A.pc();
+    if (pc && pc.alive) { const s = P.isSeniorGeneral(pc.id); if (s) { pc.office = 'general'; if (pc.officeSince == null) pc.officeSince = A.S.year; } }
+    return n;
   };
 
   // the coherency net (src/core/08-coherency-checks): the registry's own rules

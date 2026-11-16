@@ -5,7 +5,6 @@
 //     COMING.LABELS. Every other scheduled item stays hidden: a surprise stays a surprise.
 //   - the customs of your realm (47-realm-customs, 990-far-peoples) due this month or next;
 //   - your faith's holy day, or the next feast day (GD.FESTIVALS, which 990 turns into a far faith's days);
-//   - your ambition's next step (97-first-life-fixes);
 //   - initiative at or near full, which stops filling.
 // It is a view: it reads the state and never writes it, draws no random number and calls no engine command. It uses
 // 91-visual-style's tokens.
@@ -109,12 +108,7 @@
       } catch (e) {}
     }
     out.sort((a, b) => a.at - b.at);
-    // standing things, not dated: the ambition's next step
-    const LF = A.LF;
-    try {
-      const a = LF && LF.ambOf && LF.ambOf(pc), D = a && LF.AMB[a.k];
-      if (D && !a.done && A.isAdult(pc)) out.push({ at: Infinity, kind: 'ambition', text: `${D.name}: ${D.step(pc)}`, icon: 'target', when: 'Ambition' });
-    } catch (e) {}
+    // (the ambition's next step was a standing line here; the ambitions are retired: P3, order 54, D-062)
     // (the pool of initiative is gone, D-019: no "initiative is full" line)
     out.sort((a, b) => a.at - b.at);
     return out.slice(0, CU.MAX).map(x => Object.assign(x, { when: x.when || CU.when(x.at) }));

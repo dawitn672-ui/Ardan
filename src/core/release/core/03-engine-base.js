@@ -10,6 +10,9 @@
 
 const A = {};
 
+// [W1-1] a grade in words: the rank, and "second step" for the second grade of a rank (the ladder, promotions)
+A.rankLabel = r => (GD.MIL[r] ? GD.MIL[r].title + (GD.MIL[r].step === 2 ? " (second step)" : "") : "");
+
 A.VERSION = 7;
 
 A.rngState = 1;

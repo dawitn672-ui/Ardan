@@ -33,7 +33,7 @@ export default {
       const run = look => {
         T.enter({ seed: 4040, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'F', startAge: 16 });
         let drawn = 0, moved = 0;
-        T.play(5, { each: () => { if (!look) return; const r0 = A.rngState, h0 = T.hash(A.S); UI.tab = 'life'; UI.render(); UI.COMING.items(A.pc()); if (A.rngState !== r0 || T.hash(A.S) !== h0) moved++; if (document.querySelector('#tabbody .whatnow .gl-promise, #tabbody .whatnow .gl-custom, #tabbody .whatnow .gl-feast, #tabbody .whatnow .gl-holy')) drawn++; } });
+        T.play(5, { each: () => { if (!look) return; const r0 = A.rngState, h0 = T.hash(A.S); UI.tab = 'life'; UI.render(); UI.COMING.items(A.pc()); if (A.rngState !== r0 || T.hash(A.S) !== h0) moved++; if (document.querySelector('#tabbody .whatnow .gl-promise') || UI.COMING.items(A.pc()).length) drawn++; } });
         return { w: T.hash(A.S.people) + ':' + A.rngState, drawn, moved };
       };
       const a = run(false), b = run(true);

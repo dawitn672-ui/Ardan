@@ -65,7 +65,7 @@
   // ---------------------------------------------------------------- the ring: who has your ear
 
   ADV.ROLE = {
-    chancellor: 'Chancellor', marshal: 'Marshal', treasurer: 'Treasurer', spymaster: 'Spymaster', chaplain: 'Chaplain',
+    chancellor: 'Chancellor', general: 'Senior General', treasurer: 'Treasurer', spymaster: 'Spymaster', chaplain: 'Chaplain',
     liege: 'your liege', spouse: null, father: 'your father', mother: 'your mother', eldest: null, friend: 'your friend',
     master: 'your master', captain: 'your captain', comrade: 'a comrade',
   };
@@ -88,7 +88,7 @@
     return ADV.ROLE[role] || role;
   };
   // the domain each role knows from their place, before their own skills
-  ADV.ROLE_DOM = { chancellor: 'court', marshal: 'war', treasurer: 'money', spymaster: 'court', chaplain: 'faith', liege: 'court',
+  ADV.ROLE_DOM = { chancellor: 'court', general: 'war', treasurer: 'money', spymaster: 'court', chaplain: 'faith', liege: 'court',
     spouse: 'kin', father: 'kin', mother: 'kin', eldest: 'kin', friend: 'any', master: 'work', captain: 'war', comrade: 'war' };
   const KIN = { father: 1, mother: 1 }, FRIEND = ['friend', 'best friend', 'bestfriend', 'comrade', 'student', 'lover', 'betrothed'];
   const MASTER = ['mentor', 'master', 'patron', 'superior'];
@@ -463,7 +463,7 @@
   // a want's words in the mouth of who says them (playtest 2, new #12: "Brand YOUR CAPTAIN: Come home whole. That is all
   // I ask." was a parent's line): kin, the men you serve with and a master each have their own; a master's trade sayings
   // are for a matter of work
-  ADV.ROLE_GROUP = { father: 'kin', mother: 'kin', spouse: 'kin', eldest: 'kin', captain: 'war', comrade: 'war', marshal: 'war', superior: 'war', master: 'work' };
+  ADV.ROLE_GROUP = { father: 'kin', mother: 'kin', spouse: 'kin', eldest: 'kin', captain: 'war', comrade: 'war', general: 'war', superior: 'war', master: 'work' };
   ADV.LINES.byGroup = {
     kin: {
       safety: ['Come home whole. That is all I ask.', 'I have buried enough. Do not make me bury you.', 'There is no shame in the safe road.'],

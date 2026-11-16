@@ -43,22 +43,34 @@ A.pcDivAttach = function (pc) {
     return;
   }
   let d = pc.mil.div ? divs.find(x => x.id === pc.mil.div) : null;
+  // [W1-1] the senior General leads the crown's first host (D-064 point 3), whatever his grade's step
+  const senior = A.POSTS && A.POSTS.isSeniorGeneral && A.POSTS.isSeniorGeneral(pc.id),
+    first = senior ? divs.find(x => x.id === r.firstHost) : null;
+  if (first) {
+    d = first;
+    pc.mil.div = d.id;
+  }
+  // [W1-1] a General is given a host of his own: not the first host while another General leads it
+  const fh = !first && pc.mil.rank === 6 && A.POSTS && A.POSTS.firstHost ? A.POSTS.firstHost(r) : null,
+    fhOther = fh && divs.length > 1 && A.POSTS.holder(A.POSTS.divKey(fh.id)) && A.POSTS.holder(A.POSTS.divKey(fh.id)) !== pc.id ? fh : null;
+  if (d && d === fhOther) d = null;
   if (!d) {
     const cat = A.catOf(pc.mil.troop),
-      fits = divs.filter(x => {
+      fits = divs.filter(x => x !== fhOther).filter(x => {
         const t = A.tplOf(x);
         return t && t.bns.includes(pc.mil.troop);
       }),
-      fits2 = fits.length ? fits : divs.filter(x => A.divS(x).main === cat),
-      pool = fits2.length ? fits2 : divs,
+      fits2 = fits.length ? fits : divs.filter(x => x !== fhOther && A.divS(x).main === cat),
+      pool = fits2.length ? fits2 : divs.filter(x => x !== fhOther).length ? divs.filter(x => x !== fhOther) : divs,
       home = A.prov(pc.home);
     d = pool.slice().sort((x, y) => (home ? A.wsDist(x.loc, home.id) - A.wsDist(y.loc, home.id) : 0))[0];
     pc.mil.div = d.id;
   }
   // [A2 stage 2] through the registry (A.setCmd); an elite order's division is its Grand Master's, never a member's
   for (const x of divs) if (x.cmd === pc.id && x !== d) A.setCmd(x, null, "moved");
-  if (pc.mil.rank === 6 && !d.elite) A.setCmd(d, pc.id, "board");
-  else {
+  if ((pc.mil.rank === 6 || first) && !d.elite) {
+    if (d.cmd !== pc.id) A.setCmd(d, pc.id, "board");
+  } else {
     if (d.cmd === pc.id) A.setCmd(d, null, "moved");
   }
 };
@@ -66,7 +78,7 @@ A.pcDivAttach = function (pc) {
 A.wsAttachPC = function () {
   const pc = A.pc();
   if (!pc || !pc.alive || !pc.mil || pc.mil.merc) return;
-  // [A2 posts] the division the player commanded before this call (a Commander made General hands it over)
+  // [A2 posts] the division the player commanded before this call (a General given an army hands his host over)
   const wasDiv = pc.mil.rank >= 7 && pc.mil.div && A.divById(pc.mil.div),
     hadDiv = wasDiv && wasDiv.cmd === pc.id ? wasDiv : null;
   A.pcDivAttach(pc);
@@ -77,30 +89,25 @@ A.wsAttachPC = function () {
     pc.mil.army = null;
     return;
   }
-  if (pc.mil.rank >= 7) {
+  // [W1-1] the senior General leads the crown's first host and nothing else (D-064 point 3): no army is his to take
+  const senior = A.POSTS && A.POSTS.isSeniorGeneral && A.POSTS.isSeniorGeneral(pc.id);
+  if (pc.mil.rank >= 7 && !senior) {
     let a = mine.find(x => x.gen === pc.id);
-    // [A2 posts] a promotion hands over a real command. A Marshal leads the main host (most divisions) in person; a
-    // General takes an army without a living general, else the one whose general is the weakest commander (before:
-    // always the second-largest). The general replaced takes the division the new General left, else waits for a
-    // command; the log names him. Before, he was overwritten without a word.
-    // The army a sitting Marshal leads in person is not a General's to take (D-049: a peacetime or lore Marshal may
-    // lead one when the host is raised), unless it is the only one.
-    const main = mine.slice().sort((x, y) => y.divs.length - x.divs.length)[0],
-      ms = A.POSTS && A.POSTS.holder(A.POSTS.seatKey(rid, "marshal")),
-      free = mine.filter(x => !ms || x.gen !== ms || x.gen === pc.id),
-      pool = free.length ? free : mine;
+    // [A2 posts] a promotion hands over a real command: the king's commission over an army (W1-1: a commission for this
+    // war, not a rank). A General takes an army without a living general, else the one whose general is the weakest
+    // commander (before: always the second-largest). The general replaced takes the division the new General left,
+    // else waits for a command; the log names him. Before, he was overwritten without a word.
+    const pool = mine;
     const want = A.POSTS
-      ? pc.mil.rank >= 9
-        ? main
-        : a ||
-          pool.find(x => !x.gen || !A.P(x.gen) || !A.P(x.gen).alive) ||
-          pool
-            .slice()
-            .sort(
-              (x, y) =>
-                A.skill(A.P(x.gen), "command") - A.skill(A.P(y.gen), "command") ||
-                y.divs.length - x.divs.length,
-            )[0]
+      ? a ||
+        pool.find(x => !x.gen || !A.P(x.gen) || !A.P(x.gen).alive) ||
+        pool
+          .slice()
+          .sort(
+            (x, y) =>
+              A.skill(A.P(x.gen), "command") - A.skill(A.P(y.gen), "command") ||
+              y.divs.length - x.divs.length,
+          )[0]
       : null;
     if (want && want !== a) {
       const out = A.P(want.gen),
@@ -117,12 +124,12 @@ A.wsAttachPC = function () {
           : ` ${A.fullName(out, false)} hands it over and waits for another command.`;
       }
       A.log(
-        `You are given command of the ${a.name}: ${a.divs.length} divisions, ${A.fmt(A.armyMen(a))} men.${moved}`,
+        `By the king's written word you are given command of the ${a.name} for this war: ${a.divs.length} ${a.divs.length === 1 ? "host" : "hosts"}, ${A.fmt(A.armyMen(a))} men.${moved}`,
         "war",
       );
       void res;
     }
-    if (
+    void (
       (a ||
         ((a =
           mine.find(x => !x.gen || !A.P(x.gen) || !A.P(x.gen).alive) ||
@@ -130,24 +137,11 @@ A.wsAttachPC = function () {
           mine[0]),
         A.setGen(a, pc.id, "board"),
         A.log(
-          `You are given command of the ${a.name}: ${a.divs.length} divisions, ${A.fmt(A.armyMen(a))} men.`,
+          `By the king's written word you are given command of the ${a.name} for this war: ${a.divs.length} ${a.divs.length === 1 ? "host" : "hosts"}, ${A.fmt(A.armyMen(a))} men.`,
           "war",
         )),
-      (pc.mil.army = a.id),
-      pc.mil.rank >= 8)
-    ) {
-      let k = 0;
-      for (const b of mine)
-        if (b !== a) {
-          if (b.sub === pc.id) k++;
-          else {
-            if (k < 2 && !b.sub) {
-              b.sub = pc.id;
-              k++;
-            }
-          }
-        }
-    }
+      (pc.mil.army = a.id))
+    );
     if (d && !a.divs.includes(d.id)) {
       const o = d.army ? A.army(d.army) : null;
       if (o) o.divs = o.divs.filter(x => x !== d.id);
@@ -158,7 +152,8 @@ A.wsAttachPC = function () {
     pc.mil.army = d && d.army ? d.army : mine[0].id;
     for (const a of mine) if (a.gen === pc.id) A.setGen(a, A.wsGeneralFor(rid), "replaced");
   }
-  if (pc.mil.rank < 8) for (const a of mine) if (a.sub === pc.id) a.sub = null;
+  // [W1-1] no army groups: the High General's three armies are gone (an old save's are let go)
+  for (const a of mine) if (a.sub) a.sub = null;
 };
 
 A.on("warEnd", () => {
@@ -2092,7 +2087,7 @@ A.wsSplit = function (aid) {
     enemy: a.order.enemy,
     obj: null,
   };
-  if (pc.mil && pc.mil.rank >= 8) b.sub = pc.id;
+  void b;
   A.armySync(a);
   return b;
 };
@@ -2324,14 +2319,15 @@ A.ECH = [
   },
   {
     k: "div",
-    name: "Division",
+    // [W1-1] a division of the war map is a host (up to 7,470 men), led by a General; a battalion is a wing
+    name: "Host",
     size: 3200,
     rank: 6,
     sym: "XX",
   },
   {
     k: "bat",
-    name: "Battalion",
+    name: "Wing",
     size: 800,
     rank: 5,
     sym: "II",
@@ -2345,7 +2341,7 @@ A.ECH = [
   },
   {
     k: "sqd",
-    name: "Squad",
+    name: "Section",
     size: 40,
     rank: 2,
     sym: "•••",
@@ -2428,10 +2424,11 @@ A.oobDivNode = function (d, key) {
       ? {
           name: A.fullName(g, false),
           rank: 6,
-          title: "Commander",
+          // [W1-1] a host's leader is its General; under 3,000 men it is a column under a Commander
+          title: d.men >= 3e3 ? "General" : "Commander",
           pid: g.id,
         }
-      : A.oobLeader(d.r, key, 6),
+      : A.HOSTS && A.HOSTS.leader ? A.HOSTS.leader(d) : A.oobLeader(d.r, key, d.men >= 3e3 ? 6 : 5),
   };
 };
 
@@ -2459,7 +2456,8 @@ A.oobRoot = function (a) {
       ? {
           name: A.fullName(g, false),
           rank: g.id === A.S.pc && g.mil ? g.mil.rank : 7,
-          title: g.id === A.S.pc && g.mil ? GD.MIL[g.mil.rank].title : "General",
+          // [W1-1] an army of two hosts or more is led by its commanding General, by the king's commission
+          title: ds.filter(d => d.men >= 3e3).length >= 2 ? "Commanding General" : g.id === A.S.pc && g.mil ? GD.MIL[g.mil.rank].title : "General",
           pid: g.id,
         }
       : A.oobLeader(a.realm, "A:" + a.id, 7),
@@ -2645,10 +2643,12 @@ A.COUNCIL = {
     skill: "diplomacy",
     desc: "Treaties, envoys, the realm's voice abroad.",
   },
-  marshal: {
-    name: "Marshal",
+  // [W1-1, D-064] the Marshal's seat is laid down: the army's voice at council is the senior General, the General of
+  // the crown's first host. Not a seat of its own: whoever holds that host sits here (999990-posts, P.firstHost)
+  general: {
+    name: "Senior General",
     skill: "command",
-    desc: "The host: drill, levies, war plans.",
+    desc: "The General of the crown's first host: drill, muster, the army's voice.",
   },
   treasurer: {
     name: "Treasurer",
@@ -2740,7 +2740,7 @@ A.rulerYear = function (pc) {
   r.council = r.council || {};
   const cs = k => {
     const p = A.P(r.council[k]);
-    return p && p.alive ? A.skill(p, A.COUNCIL[k].skill) : k === "marshal" ? A.skill(pc, "command") * 0.5 : 10;
+    return p && p.alive ? A.skill(p, A.COUNCIL[k].skill) : k === "general" ? A.skill(pc, "command") * 0.5 : 10;
   };
   for (const k in r.council) {
     const p = A.P(r.council[k]);
@@ -2789,7 +2789,7 @@ A.rulerYear = function (pc) {
   r.stability = A.clamp(r.stability + ds + A.ri(-3, 3), 0, 100);
   r.legit = A.clamp(r.legit + 2 + (pc.fame - 40) / 30, 0, 100);
   r.exhaustion = Math.max(0, r.exhaustion - (A.atWar(r.id).length ? 0 : 12));
-  r.armyQ = A.clamp(r.armyQ + (cs("marshal") - 40) / 2e3 + (r.drill === A.S.year ? 0.04 : 0) - 0.005, 0.5, 1.6);
+  r.armyQ = A.clamp(r.armyQ + (cs("general") - 40) / 2e3 + (r.drill === A.S.year ? 0.04 : 0) - 0.005, 0.5, 1.6);
   A.vassalYear(pc, r);
   A.pickHeir(r);
   if (r.stability < 15 && A.chance(0.35))

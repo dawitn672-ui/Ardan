@@ -679,7 +679,7 @@
         w: 1,
         cool: 5,
         title: "A scandal to use",
-        text: p=>`You learn that the ${A.pick(["Treasurer","Chancellor","Marshal"])} of ${A.realm(p.realm).short} is ${A.pick(["skimming the mint","in love with the queen's sister","secretly in debt to a foreign bank","selling army contracts"])}. A seat might open — if someone told the right person.`,
+        text: p=>`You learn that the ${A.pick(["Treasurer","Chancellor","Senior General"])} of ${A.realm(p.realm).short} is ${A.pick(["skimming the mint","in love with the queen's sister","secretly in debt to a foreign bank","selling army contracts"])}. A seat might open — if someone told the right person.`,
         choices: [
           {
             t: "Tell the crown",

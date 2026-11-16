@@ -236,8 +236,7 @@
     if (settle()) { UI.refresh(); return; }
     if (ST && ST.run) {
       if (!ST.wait) return;                                  // a step is running: it ends on its own
-      if (!ui.stopAfter) { UI.stepGo(); return; }            // the card it waited at is gone: go on
-      ui.stopAfter = false; UI.stepStop();                   // a battle ended it: start afresh
+      UI.stepGo(); return;                                   // the card or the battle it waited at is gone: go on
     }
     const camp = V2T.campaign();
     if ((kind === 'month' || kind === 'year') && camp) return UI.toast('You are on campaign: go a day or a week at a time.');
@@ -285,9 +284,15 @@
   // a battle (or a duel, or the old campaign map) stops the clock: the step ends when it is closed
   const STOPS = ['battle', 'duel', 'campaign', 'warroom'];
   const go0 = UI.stepGo;
+  // (P3, order 54, D-062: a battle or a duel that is over no longer ends the month or the year: the step carries on to
+  // its end once the screen is closed, as it does after a card. Only a step that now finds you on campaign, where time
+  // goes by the day or the week, ends there, and says why.)
   UI.stepGo = function () {
     try { if (A.S && A.S.queue.length && !A.headReady()) {} } catch (e) {}   // drops a head that cannot be shown
-    if (ui.stopAfter && ST && ST.run) { ui.stopAfter = false; return UI.stepStop(); }
+    if (ui.stopAfter && ST && ST.run) {
+      ui.stopAfter = false;
+      if ((ST.kind === 'month' || ST.kind === 'year') && V2T.campaign()) { if (!ST.why) ST.why = 'You are on campaign now: time goes by the day or the week.'; return UI.stepStop(); }
+    }
     return go0.apply(this, arguments);
   };
   // the end of a step: a quiet one says so in a toast of two seconds (never a card)

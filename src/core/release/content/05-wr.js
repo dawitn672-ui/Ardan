@@ -97,7 +97,7 @@
               fx: {skill:{survival:3},them:{op:10},happy:3},
             },
             lose: {
-              r: "You come back empty-handed, and the file-leader strikes you for straggling.",
+              r: "You come back empty-handed, and the sergeant strikes you for straggling.",
               fx: {health:-4,happy:-3,merit:-2},
             },
           },
@@ -163,7 +163,7 @@
               fx: {coin:40,honor:-6,piety:-4},
             },
             lose: {
-              r: "A file-leader sees you with it. Looting a shrine can earn a captain's rope; you get a flogging and lose the silver.",
+              r: "A sergeant sees you with it. Looting a shrine can earn a captain's rope; you get a flogging and lose the silver.",
               fx: {health:-12,merit:-5,honor:-6,wil:1},
             },
           },
@@ -240,7 +240,7 @@
             },
           },
           {
-            t: "Report {mhim} to the file-leader",
+            t: "Report {mhim} to the sergeant",
             r: "{mate} is flogged in front of the file. The officers note your name. The men do not like an informer.",
             fx: {merit:4,them:{op:-40},rel:{who:"comrade",op:-5,all:!0},happy:-3},
           },
@@ -252,7 +252,7 @@
         cond: (p,C)=>C.soldier(p)&&rank(p)<=3,
         setup: prep,
         title: "Twenty strokes",
-        text: "Captain {capt} has the drummer boy tied to a wagon wheel for losing a shoe on the march. Twelve strokes is the most a squad captain may give. He has called for twenty.",
+        text: "Captain {capt} has the drummer boy tied to a wagon wheel for losing a shoe on the march. Twelve strokes is the most a captain may give. He has called for twenty.",
         choices: [
           {
             t: "Step forward and take the last eight yourself",
@@ -270,7 +270,7 @@
             t: "Remind him, out loud, of the rule of twelve",
             check: {s:"diplomacy",s2:"learning",d:50},
             win: {
-              r: "A senior captain hears. The flogging stops at twelve. Captain {capt} smiles at you in a way you do not like.",
+              r: "A commander hears. The flogging stops at twelve. Captain {capt} smiles at you in a way you do not like.",
               fx: {honor:4,merit:1,flag:"wr_capt_enemy"},
             },
             lose: {
@@ -290,7 +290,7 @@
         cond: (p,C)=>C.soldier(p)&&rank(p)<=3,
         setup: prep,
         title: "The captain's nephew",
-        text: "The dry billet, the second horse, the easy guard at the general's tent: all of it goes to {sarge}, the captain's sister's son. Now he has your place on the file-leader's list too, and he cannot tie a buckle.",
+        text: "The dry billet, the second horse, the easy guard at the general's tent: all of it goes to {sarge}, the captain's sister's son. Now he has your place on the sergeant's list too, and he cannot tie a buckle.",
         choices: [
           {
             t: "Challenge him to a bout with practice staves",
@@ -356,7 +356,7 @@
         cond: (p,C)=>C.soldier(p)&&!p.mil.merc&&rank(p)<=4&&(C.flag(p,"foreign")||A.realm(p.mil.realm)&&A.realm(p.mil.realm).race&&A.realm(p.mil.realm).race!==p.race),
         setup: prep,
         title: "Not one of us",
-        text: p=>`"No ${GD.RACES[p.race]?GD.RACES[p.race].adj:"foreign"} gives orders to {mr} men." The squad captain says it to your face, cheerfully, as he hands the staff of command to a man with half your service.`,
+        text: p=>`"No ${GD.RACES[p.race]?GD.RACES[p.race].adj:"foreign"} gives orders to {mr} men." The captain says it to your face, cheerfully, as he hands the staff of command to a man with half your service.`,
         choices: [
           {
             t: "Volunteer for every hard duty until they see you",
@@ -575,7 +575,7 @@
               fx: {them:{op:6},happy:2},
             },
             lose: {
-              r: "{mate2} goes to the file-leader. You pay with a week of digging, a flogging and a third of your purse.",
+              r: "{mate2} goes to the sergeant. You pay with a week of digging, a flogging and a third of your purse.",
               fx: {health:-8,coinPct:-.3},
             },
           },
@@ -676,7 +676,7 @@
             check: {s:"wil",s2:"ins",d:45},
             win: {r:"Count, breathe, pick it up. The shaking passes. Nobody laughs a second time.",fx:{wil:2}},
             lose: {
-              r: "It does not pass. The file-leader sends you to the baggage for the day, kindly, which is worse.",
+              r: "It does not pass. The sergeant sends you to the baggage for the day, kindly, which is worse.",
               fx: {wil:1.5,happy:-4},
             },
           },
@@ -917,7 +917,7 @@
               fx: {coin:1330,fame:3,merit:5,deed:"took a knight for ransom"},
             },
             lose: {
-              r: 'A senior captain "takes charge" of your prisoner. You get 100 suns and a pat on the back.',
+              r: 'A commander "takes charge" of your prisoner. You get 100 suns and a pat on the back.',
               fx: {coin:100,happy:-6,wil:1},
             },
           },
@@ -947,7 +947,7 @@
         cond: (p,C)=>camp(p)&&rank(p)>=1,
         setup: (p,ctx)=>{prep(p,ctx),ctx.np=A.ri(8,30)},
         title: "Prisoners",
-        text: 'You have charge of {np} {foe} prisoners: farm boys mostly, levy men in padded coats. The column has no food to spare for them. The squad captain says, "Deal with it."',
+        text: 'You have charge of {np} {foe} prisoners: farm boys mostly, levy men in padded coats. The column has no food to spare for them. The captain says, "Deal with it."',
         choices: [
           {
             t: "Release them on oath not to fight again",
@@ -1195,7 +1195,7 @@
         w: .7,
         setup: prep,
         title: "The forlorn hope",
-        text: `The captain wants twenty volunteers for the first ladders. "The forlorn hope," the men call it. Double pay, and a file-leader's staff for any man who lives. Most do not.`,
+        text: `The captain wants twenty volunteers for the first ladders. "The forlorn hope," the men call it. Double pay, and a sergeant's staff for any man who lives. Most do not.`,
         choices: [
           {
             t: "Step forward",
@@ -1229,7 +1229,7 @@
         cond: (p,C)=>C.soldier(p)&&rank(p)>=2&&rank(p)<=3&&mates(p),
         setup: prep,
         title: "Your section",
-        text: 'Your section held the ford for six hours. Now the squad captain wants a man flogged because the section "gave ground" at the end, and he wants you to name him. {mate} was the one at the end of the line.',
+        text: 'Your section held the ford for six hours. Now the captain wants a man flogged because the section "gave ground" at the end, and he wants you to name him. {mate} was the one at the end of the line.',
         choices: [
           {
             t: "Take the blame yourself",
@@ -1369,8 +1369,8 @@
         id: "wr_file_blow",
         cond: (p,C)=>C.soldier(p)&&rank(p)===1&&A.squad(p).length>=2,
         setup: prep,
-        title: "The file-leader's staff",
-        text: "A new man in your file, {mate2}, drops his spear for the third time at drill, and the squad captain is watching. A file-leader may strike a soldier with hand or staff. Everyone waits to see if you will.",
+        title: "The sergeant's staff",
+        text: "A new man in your file, {mate2}, drops his spear for the third time at drill, and the captain is watching. A sergeant may strike a soldier with hand or staff. Everyone waits to see if you will.",
         choices: [
           {
             t: "Strike him, once, hard",
@@ -1601,7 +1601,7 @@
         choices: [
           {
             t: "Put your shoulder to the wagons",
-            r: "You push wagons until your back screams. The squad captain notices who works.",
+            r: "You push wagons until your back screams. The captain notices who works.",
             fx: {str:1,sta:.8,merit:3,health:-3},
           },
           {
@@ -1779,7 +1779,7 @@
               r: "Soldiers pay anything for fresh bread. You clear 30 suns in two days.",
               fx: {coin:30,skill:{trade:3}},
             },
-            lose: {r:"They eat and drink and leave without paying. A file-leader shrugs.",fx:{coin:-8,happy:-4}},
+            lose: {r:"They eat and drink and leave without paying. A sergeant shrugs.",fx:{coin:-8,happy:-4}},
           },
           {
             t: "Complain to the officers about the thieving",

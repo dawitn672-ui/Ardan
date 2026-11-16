@@ -63,7 +63,7 @@ RI.stance = function (v, k, r) {
     let s = d(W_NEW, a.want) + .7 * d(F_NEW, a.fear) + sore * POL.estGain(r, k, e) / 5;
     if (v.seat === 'chaplain' && x.g === 'faith') s += x.to === 1 ? -.4 : .3;
     if (v.seat === 'treasurer' && x.g === 'trade' && x.to === 1) s += (RI.years(r) < 1 ? .4 : .1);
-    if (v.seat === 'marshal' && x.g === 'obl' && x.to > cur) s += .3;
+    if (v.seat === 'general' && x.g === 'obl' && x.to > cur) s += .3;
     if (v.seat === 'chancellor' && x.g === 'just' && x.to > cur) s += .2;
     // a push away from the realm's own custom loses force, as 56's do
     const c = POL.custom(r, x.g), d0 = Math.abs(cur - c), d1 = Math.abs(x.to - c);

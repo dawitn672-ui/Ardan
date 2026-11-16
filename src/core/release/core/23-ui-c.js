@@ -1507,7 +1507,7 @@ UI.wrTabs = function (R2) {
   const pc = A.pc(),
     ruler = R2.key === "ruler",
     lockP = ruler ? null : "Ruler only",
-    lockM = R2.recruit ? null : "Marshal or ruler";
+    lockM = R2.recruit ? null : "Ruler only";
   return [
     {
       k: "cmd",
@@ -1594,7 +1594,7 @@ UI.wrHelpPanel = function () {
   ${sec("Supply", "<p>Supply flows from your capital and <b>depots</b>, weakening with every province. Too many divisions in one place, enemy land, desert and winter mean <b>hunger</b>: slower recovery, weaker attacks and men lost every day. Switch the map to <b>Supply</b> to see it.</p>")}
   ${sec("Equipment and men", "<p>Each kind of division (line, horse, bow) is made of battalions (they fill combat width) and support companies (free). Divisions need <b>men</b> from the manpower pool and <b>equipment</b> from the forges. Short of either, they fight at reduced strength.</p>")}
   ${sec("Industry", "<p><b>Forges</b> make equipment on production lines that get more efficient the longer they run (switching a line resets it). Idle forges sell arms abroad for coin. <b>Workshops</b> earn coin and build new forges, workshops, walls, depots and roads. The <b>economy law</b> trades the people's contentment for output.</p>")}
-  ${sec("Who commands what", "<p><b>Soldiers</b> follow their division. <b>Captains</b> choose how hard their men push. <b>Commanders</b> move a division. <b>Generals</b> run an army: give it a front, a battle plan, or move divisions by hand. <b>High Generals</b> run three armies. The <b>Marshal</b> runs all armies. The <b>ruler</b> also runs industry, manpower and peace.</p>")}`;
+  ${sec("Who commands what", "<p>Five ranks. <b>Soldiers</b> follow their host. <b>Sergeants</b> lead a section of about twelve. <b>Captains</b> lead a company of about two hundred and choose how hard their men push. <b>Commanders</b> lead a wing of several companies. <b>Generals</b> lead a host (a division on this map), one General to each host. A General given the king's written word for this war commands an army of several hosts: a front, a battle plan, or hosts moved by hand. General is the highest rank. The <b>ruler</b> commands every army and also runs industry, manpower and peace.</p>")}`;
 };
 
 UI.wrRoleCard = function (pc, R2) {
@@ -1602,7 +1602,7 @@ UI.wrRoleCard = function (pc, R2) {
     nd = R2.divs.size,
     na = R2.armies.size,
     ctl =
-      R2.key === "ruler" || R2.key === "marshal"
+      R2.key === "ruler"
         ? `${na} arm${na === 1 ? "y" : "ies"} · ${nd} division${nd === 1 ? "" : "s"}`
         : na
           ? `${na} arm${na === 1 ? "y" : "ies"} · ${nd} division${nd === 1 ? "" : "s"}`
@@ -1790,9 +1790,7 @@ UI.wrDivButtons = function (can, R2) {
   if (
     f &&
     (R2.key === "ruler" ||
-      R2.key === "marshal" ||
       R2.key === "general" ||
-      R2.key === "highgeneral" ||
       R2.key === "commander")
   )
     h += `<button class="small primary" data-a="wrLead" data-v="F${f.loc}">${UI.wrIcon("swords")}Lead this battle in person</button>`;

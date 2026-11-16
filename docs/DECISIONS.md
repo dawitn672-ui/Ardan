@@ -1075,6 +1075,345 @@ wife, children, brothers and sisters, alive and free), who answer by letter ("A 
 the realm still advise no one. `advLives` measures 74% and 3.3 advisors a life (peasant 2) against its 60% and 2.5 bars; the illness scene's
 family at the bed still needs `present`.
 
+### D-062 · Order 54: nothing without reason; the owner's war answers; no Marshal; the playtest round (2026-11-15 21:13 ET)
+**The rule.** "Not a single thing in this world should happen outside of reason." Written, highlighted, at the top of
+CLAUDE.md's standing rules and as game rule 18. Every system that decides (AI rulers, nobles, factions, commanders,
+NPC moves, courts, juries) must carry a reason it can name: a want, a fear, a grudge, a calculation, an emotion, a debt,
+a chance roll *weighted by* those. A random draw is allowed only as the dice within reasons, never instead of them.
+**The Marshal question** is answered by the rule, not by (a) or (b): a figure's wants follow his own post, circumstances
+and personality. **And the Marshal is removed (answer 10):** General is the highest rank of an army; several Generals
+by the army's size; nobles keep their own commands and armies under them, serving the king in a hierarchy that can
+breed regional disputes. This supersedes D-017, D-031's Marshal parts, D-049 and A2's Marshal seat; old saves map a
+Marshal to the realm's senior General.
+**The ten war answers** (docs/design/war.md) are recorded in order 54 and fold into D12a's design (revised as D12a-2)
+before D11 and D12b: sight by who you are; stops for anything involving you; stand by rank, role and delegation, with
+requests; **no levies, conscription when needed, armies of honour and volunteers**; wars end in surrender or defeat,
+moved by personality and emotion; a full report system by rank, relationship and importance; people known by situation;
+everything in world history and saves.
+**The playtest round (P3), fixed in the game:** (a) "Start a new life" after a save; (b) ambitions, chapters and the
+decisions that hand the player goals are retired to archive/ (free will: everything available, nothing handed); (c)
+crimes against a ruler have reasoned consequences (attempts are discovered, punished, remembered; forgiveness follows the
+ruler's opinion, personality and the crime, never automatic; a murdered monarch is dead and succession runs); (d) a
+soldier meets his first mission within months, by reason (his unit's war, his post); (e) army training tailored to each
+unit's make-up and tendencies, and the military path chosen by weapon, way of fighting and every useful aptitude
+(command, logistics, seamanship...) — with D11; (f) a step stops only for what matters and, once the cards are answered,
+**carries on to complete the month or year**; (g) growth made non-linear, researched (with G); (h) hair and (i) dress
+variety compounded, appearance matters in play where it fits (C8d); legendary names made mythical, the bow redrawn.
+**Nothing is low on the list.** Every known gap (CRITIQUE leftovers, H-entries' "left open", D-058's grammar) is a
+tracked item. **Permissions granted:** merge PR #2 (v2-integration) when CI is green; branch deletion is the owner's on
+GitHub (the session cannot delete refs), helped by a script.
+
+
+**Addendum (P3, the playtest fixes, 2026-11-16).** Five of the owner's playtest complaints are fixed in the game, each
+under the rule:
+- **(a) "Start a new life."** Cause: the confirm's yes set `UI._newLifeOk`, called `UI.startLife` and cleared the flag in a
+  `finally`; a pressed button's start is deferred two frames by 999999-one-redraw ("Making the world"), so the deferred
+  start found no pass and asked again, for ever. The menu's "Start a new life" also left the menu open over the creation
+  screen. Fix: the yes hands a one-use pass that `UI.startLife` spends; `UI.A.newLife` closes the box it came from. (X7's
+  worker and `UI.lifeSeed` were innocent: the seed is drawn ahead and taken once.)
+- **(b) Free will.** The ambitions (97 part 3, with What now's second-half pointers and the ruler's desk) and the chapters
+  (9993, with the dynasty legacies) are retired to `archive/p3-ambitions/` and `archive/p3-chapters/` (last built at
+  `c6fb716`). "The useless decisions" are read as the cards that handed the player an aim to pick (the ambition card, the
+  chapter's third aim, the legacy perks) and What now's suggestions. The goal stack (999998) keeps only what the player took
+  on: his debts (and his crown's), favours he owes, and promises made in the open and scheduled. `A.whatNow` stays as an
+  engine function (bots, hints) but is never shown as goals. The release's `pa_*` scenes, written for an ambition, now come
+  to a life that seeks the thing of its own will (`C.ambition` reads `A.SEEK`: the plan's aim, the training he chose, the
+  post he took; `src/people/9989-what-you-seek`). The Decisions page stays: it is what a player goes to, not what is
+  handed him. Old saves keep `p.amb` and `p.chap`; nothing reads them.
+- **(c) Crimes against a ruler** (`src/nobility/999993-crown-crimes`): an attempt needs reach (kin, a post, a noble of the
+  realm, a rank, his favour); its discovery is its own roll with a named reason (the guard, the spymaster, suspicion, the
+  doubled guard); it is recorded (`A.S.crown.rec`) and remembered (his opinion −100, the chronicle); the sentence follows the
+  realm's law and the judge's nature (death by default for treason; mercy, prison, a ransom, the hand, exile, or war for a
+  foreign prince, each with its reason); the block is real; forgiveness follows opinion, traits, gravity, gifts since and
+  repeated begging. A murdered king's death runs the succession (as before, through `A.kill`/`A.rulerDies`, the house
+  resolver and `A.POSTS`), and now the realm is shaken (stability, factions), an inquiry hunts an unknown hand for two years,
+  and once known his kin swear vengeance, a price is set, avengers come, and in his realm you are taken.
+- **(d) The first mission** (`src/war/99972-unit-work`): cause: missions came only at the year's turn (`A.milYear`), at peace
+  on a 55% coin. Now the unit's work comes month by month from its war, its post and its officer, each with its sender and
+  reason; a new man's first comes within his first months (certain by day 100).
+- **(f) A step completes after its cards.** A notable card, battle or duel stops the month or year midway; once the card or
+  chain is answered (or the battle's screen closed) the same step carries on to its end. A wound, an illness, a death or a
+  birth in the household and coming of age no longer end a year: they are written in its digest with their month. Only
+  Esc, death and being put on campaign end a step early. **Conflict recorded:** this replaces the standing rule's "only
+  notable things stop a year (... an illness or wound, a death or birth in the household, coming of age ...)": they stop
+  nothing now unless they bring a card; CLAUDE.md, V2_SPEC row 8 and the 999995 README are changed to match.
+
+### D-063 · T1: the push check is the quick tier; the long bot-life tier is nightly and before a version (2026-11-16)
+**Decision.** Tests are split in two by a list, `tests/long-tests.json` (threshold 200 s on CI, kept honest by
+`tests/run.mjs --check-tiers` in `tools/check.mjs`). Every push and pull request runs the quick tier over 8 shards balanced by measured
+time; the long tier runs in `long.yml` nightly, on demand, on `[full ci]` commits, on `release/*`, and a version is not cut
+until both are green. **Why.** 42 tests are over half the CPU time and made a run 35 to 45 minutes; a push now gets its answer in
+about 15 minutes with setup. **Nothing loses coverage:** every test still runs at least nightly, on the same index.html; the cost is
+that a regression only the long tier sees is found up to a day later (or at once with `[full ci]`), so a change to bots, arcs, war or
+saves should say `[full ci]`. **Rejected:** dropping or shortening the long tests (they are the only whole-life guard); a
+count split (what was there). **Left open:** moving `balance` to the long tier (not measured); the long run commits no times itself (an artifact).
+
+**Addendum (2026-11-16 03:40 ET, CI 131, the first run of both tiers, both green).** Measured: the quick shards took 9 to 19
+minutes of tests, the long tier 26 minutes, but the `balance` job took 37 minutes and held every push's answer to 38. It
+moves to `long.yml` (nightly, `[full ci]`, `release/*`, before a version), which D-063 had left open. Every shard's measured
+time was merged into `tests/test-times.json` (852 timed, none planned blind); 12 tests had crossed 200 s and joined the long
+list (54 now). Plan: quick 798 tests, about 11 minutes a shard; long 54, about 22. The wait for runners on CI 131 (12 to 20
+minutes) came from both tiers starting at once on a `[full ci]` push; a plain push starts 11 jobs and should not queue.
+
+### D-064 · D12a-2: the war design revised with the owner's ten answers; the gaps filled (2026-11-15 21:35 ET; order 54, D-062; revises D12a; steers W1, D11, D12b)
+`docs/design/war.md` keeps D12a's theatre, field, press and one engine (part one) and adds part two (§9 to §16). The
+owner's answers are followed as given (§7 sets each beside its question). Where they left room, these were chosen, as
+he would from his prior decisions; any of them may be overruled:
+1. **Ranks and units.** Five ranks (soldier, sergeant, captain, commander, General) and four units (section about 12,
+   company about 200, wing 600 to 3,000, **host** 3,000 to 12,000). One General a host, so Generals follow the army's
+   size; under 3,000 is a commander's column. Old grades map by the post held (File-Leader -> sergeant; Squad Captain
+   -> captain; Senior Captain -> commander; High General and Marshal -> General). *Why:* answer 10's "regular naming",
+   D12a's choice 10a without the Marshal, rule 9 (plain words), R14.
+2. **Who commands several hosts.** The king in person; else **one commanding General by the king's written word, for
+   that campaign only** (a commission, not a rank, title, pay scale or seat); else a council of war, slower and
+   quarrelsome. *Why:* an army needs one will or pays for lacking it; a standing rank above General would be the
+   Marshal again.
+3. **The senior General** is the General of the crown's first host. He takes the Marshal's council seat (56's fifth
+   seat and its yearly task) and nothing else: he does not command other Generals. `seat:<realm>:marshal` is retired.
+   *Why:* D-062 ("old saves map a Marshal to the realm's senior General"); the council still needs the army's voice.
+4. **Commands.** Every armed man is in one command; a command has one owner. The crown's command (royal knights,
+   crown regiments, crown lands, the orders, hired men) is led by Generals the king commissions, by merit. A
+   tenant-in-chief (a duke; a marquis or count with no duke over him) has his own, with officers he names, sworn to
+   him; he is its General by right or names one. A contingent is kept whole. A march lord may fight for his border
+   unsummoned. `GD.NOBLE_RUNGS`' numbers stand as a house's full strength. *Why:* answer 10, D-012.
+5. **The summons** has six answers (in full, with part, late, a deputy, coin, refusal), each decided from named reasons;
+   the muster records the reason given and the true one. **A lord's men serve the first season at his own cost; then
+   the crown pays or he decides again each season.** *Why:* answer 5 removes the forty days, and a campaign still
+   needs a clock: it becomes a person's decision.
+6. **Four kinds of dispute** (a private war, a refused summons, a quarrel inside the army, a border lord's own war),
+   each a ladder of decisions from a recorded grievance. One war record serves all fighting: `w.kind` realm, private,
+   border, rebellion or civil, with *commands* as its sides. *Why:* answer 10's "regional disputes within reason".
+7. **Men.** Sworn men (about 1 in 400 of the people), enlisted men (regiments by what the treasury pays; the roll,
+   about 1 in 100, volunteers who drill and march when mustered) and conscripts. **Conscription** is by proclamation
+   naming a real need, by lot, in three calls (one hearth in 20 for a season; in 10 for a year; in 5 while the enemy is
+   on home soil), raised by each lord in his lands; it costs hands in the fields (about 3, 6 and 12 in 100 working
+   men, double at harvest) and a remembered grievance. `r.army` reads as standing men, `r.levy` as the roll, the levy
+   law as the conscription law, levy troops as conscript foot. The numbers are starting points for the balance stage.
+8. **Following, desertion and mutiny** come from a company's ledger of what holds it and what pulls at it; mutiny needs
+   a grievance, a voice and an occasion.
+9. **One way of deciding** for every decider (`A.WHY.decide`, R1's core): options, reasons with kind, weight and
+   source, the temper (20's persona), **feelings as states with a cause and a heat that discounts reckoning**, a seeded
+   draw only between close options, a record. The owner's proud king and cold king are its two lab tests.
+10. **Wars end only by surrender or defeat.** Defeat is a fact (five conditions); surrender a decision from two pans
+    (to fight on; to yield), re-read monthly on what the decider has been *told*. Someone always asks first, and
+    asking has a price. **A truce is a pause (a year at most), never an end;** a war nobody marches in is still a war.
+    Eight pathways; terms only of real things, shaped by the casus. `w.score`, `A.checkPeace`, `A.peaceOdds` are retired
+    (W0 had left the score under the screen, D-052).
+11. **Sight** is from where your body stands (no one viewpoint; a soldier has no field view). **Stops:** anything whose
+    subjects include you, your unit, an order to you, your charges, or someone you know within sight; nothing else.
+    **Place:** given by the superior for reasons; chosen within it; requests answered with reasons.
+12. **Reports.** Everything not seen arrives as a report with a sender, a road, a day and a slant; timing is distance
+    over the carrier's speed, by urgency and by your place on the sender's list (need, then bond, then importance);
+    truth is what he knew, bent by what he wants believed, bent by each mouth. The player writes reports upward and can
+    be caught shading them. **A battle you were not at is played back as it was told to you** (answer 7), and corrected
+    when a truer account arrives.
+13. **Answer 8** ("keep it situation based... you know those you choose to get to know") is read as whom you *know*
+    (five reasons: serve you, guard you, you report to, thrown together, chosen), not as a drawing rule; for the
+    drawing D12a's 8a stands (your company man for man, the rest one figure for about six).
+14. **Answer 9** ("everything is properly accounted for in world history and saved in the same way") is read as: one
+    history for near and far in one shape, every record carrying reasons that point at records; **and so a war in an
+    old save goes on, converted as it stands,** not turned into a truce (D12a's recommendation 9a is dropped: a truce
+    nobody chose would be a thing without a reason).
+15. **Stability is a reading** of named pressures (the throne's right, each lord, the commons, the towns, the faith, the
+    army, the king himself); `r.stability` and `h.op` become sums of terms, old values fading in as "the past".
+    **A faction** needs a shared grievance, a tie and a leader; **a coup** a motive, access and an opening;
+    `A.factionsYear`'s bare dice go.
+16. **The military path** (D11+): a muster-master reads weapon, way of fighting, every useful aptitude, birth, patron
+    and the command's need, and makes offers with reasons; roles beside rank; a unit's training syllabus is built
+    from its make-up, abilities and tendencies (about forty drills in eight families, each arm its own list); a unit
+    always has a duty.
+17. **The build** is sixteen stages: W1-1 to W1-6 (no Marshal; minds; commands and the summons; no levies; surrender or
+    defeat; the realm's peace), D11-1 to D11-3 (the muster; units that differ; careers), D12b-1 to D12b-7 (hosts on
+    roads; the field by your eye; reports; the theatre; the press; sieges; balance). W1 needs no map and starts with
+    W1-1. **X7 part 2's gate is D12b-1** (hosts on roads retire `A.wsDay`); W1 and D11 are held to 2.5 ms a month in
+    all. An outcome-identical idle-day skip on the old engine (X7 part 2a) is offered but unmeasured.
+
+**Exceptions to record when built:** the war's and politics' own seeded streams (`seed:war`, `seed:politics`), as E1's.
+**Not decided here:** the balance numbers (shares of men, call sizes, budgets) beyond starting points; the Dispatches
+page's layout; whether "the realm's peace" (W1-6) should be its own work item.
+
+### D-065 · Order 55: every relationship needs a base (2026-11-15 21:34 ET)
+Rule 19. A meeting or a bond (getting to know, befriending, courting, asking favours, audiences) is open only where it
+has a base: (1) **the gap in standing** between the two (estate, rank, office, wealth, renown); (2) **the higher one's
+pride and personality** (proud, humble, kind, cruel, curious; his own origins: a baron risen from commoners sympathises,
+a duke born to gold does not); (3) **need** (he wants your skill, your sword, your silence, your coin, your vote); (4)
+**circumstance** (you serve him, guard him, saved him, share a road, a battle, a prison). Without a base the person will
+not look at you; the action is not offered, or offered as an attempt that a reasoned refusal answers. The player shifts
+the scales by knighthood and honour, mastery and renown, fame, wealth and connections (an introduction from someone who
+knows both). NPC to NPC bonds follow the same base. Work item **R2**, built with R1 (nothing without reason).
+
+
+### D-066 · W1-1: the war map's division is a host, its commander a General (2026-11-16)
+D-064 point 1 maps the old grades by the post held and sets the units' sizes (wing 600 to 3,000, host 3,000 to 12,000),
+but the old engine's units do not match the old grade names: a battalion is about 800 men (a wing) and a division up to
+7,470 (a host), while an army holds up to 24 divisions (170,000 men). Chosen, until D12b-1 builds hosts of contingents:
+1. **A division of 3,000 men or more is a host, and its commander a General; under 3,000 it is a column under a
+   Commander.** So the old Commander grade (6, a division) reads **General**, and a battalion's head (the old Senior
+   Captain, 5) **Commander**. One General to each host; a realm's Generals follow what it fields. *Why:* the owner's
+   "several Generals by army size" and "no host over 12,000, none without a General" hold on the old engine as it is;
+   reading the army as the host would need armies cut to one division each.
+2. **A host with no person at its head is led by a name it gives itself** (`A.oobLeader`, pure from ids), as 9997's
+   seed captains are. *Why:* about 200 divisions world-wide; making a person for each would cost the save and the month.
+3. **An army of two hosts or more is led by its commanding General, by the king's written word for that war:** the
+   existing post `army:<id>`, which ends when the army is stood down. With one host its general is that host's. *Why:*
+   D-064 point 2 as data at no cost; W1-3 adds the reasons for the choice and the council of war's price.
+4. **The eight grades stay as steps** (`GD.MIL`, 0 to 7): every rank comparison in the code holds and careers keep
+   their pace; a second grade of one rank reads "(second step)" on ladders and promotions (`A.rankLabel`). *Why:* a
+   five-grade ladder is D11-3's (careers rebased), with balance measured.
+5. **The senior General is the General of the realm's oldest standing host** (`r.firstHost`, kept while it stands), the
+   crown names him when the place is empty, and a General's superior is the crown. *Why:* D-064 point 3; the council
+   always has the army's voice (the old seat was mostly empty).
+**Not decided here:** unit words on screens ("division", "battalion" still appear outside the order of battle; D11-1's
+R14); hosts of contingents (D12b-1).
+
+### D-067 · G0: the growth standard; trials at Expert and Master (2026-11-16; order 54, D-062; refines growth.md, D-039, D-046)
+*Numbered D-067, not D-066: another agent may take D-066 in parallel.*
+1. **`docs/design/growth-standard.md` is the standard** for how stats and skills grow and decline in G1, G2, D11 and
+   D11+: `gain = EU × quality × teacher × talent × age(kind) × condition × R(level) × reach`, with `R(L) = 1.8 e^(−L/21.6)`
+   (a beginner's month worth about thirty of a master's), the routine ceiling for work, the teacher's ceiling one word
+   under him, sensitive ages by kind, per-stat age curves, detraining, and rust after 5/8/12 years that returns ×5.
+   *Why:* order 54, "growth is far too linear"; measured, a main skill climbs in a near-straight line from a daily drip of
+   ~380 gains a year (§1 of the doc).
+2. **Every change of a skill or stat carries a cause** in a ledger; the season's line and the Records tab read it (rule
+   18 applied to growth).
+3. **Trials at Expert and Master** (new): crossing into those words takes a deed fit for them (a stretch at that level,
+   succeeded); effort past the edge is stored (up to five points) and lands with the deed. growth.md §2.2's proofs for
+   Grandmaster and Legend and its census stand. *Why:* plateaus and leaps with a story, not a lottery. **For the owner
+   to confirm** (doc §5, item 1).
+4. **Kept from growth.md:** talent letters and reach (§1.4, §10), the eight words (§2.2), the body gate (§1.5, C9), disuse
+   spans and ×5 return (§2.7), with one change: rust stops at one word down **and** 15 points below the best.
+5. **The doc is a new file beside `growth.md`**, not a rewrite of it: growth.md is the owner-settled G design (D-046); the
+   standard governs its rates and says where it adds to it.
+
+### D-068 · C8d gate 1: the manhwa card is a second render layer drawn by code; no raster art; dress is a family, an accent and a person (2026-11-16; orders 56, 57, 58; D-024, D-029, D-060)
+**Chosen** (code `src/ui/engine/figure/manhwa/`, sheets `docs/design/demo-2d/c8d/`, the owner's note `docs/design/c8d-gate1.md`):
+1. **A new layer beside `compose()`, not a restyle of it.** The reference's look (large eyes, flat two-step shading, a
+   rim light, locks, a waist-up crop) needs its own head, hair and pen; the old layer's full-figure rig and soft tones
+   stay as they are for the game until the owner passes this gate. Both share the dice and the palettes.
+2. **Drawn, never painted, and no raster backgrounds.** A card must come from a person's data (thousands of people) and
+   the phone's first load matters (X7): a card is 21 KB gzipped with its scene; one painted scene of that size is 40 to
+   80 KB. The limit is stated to the owner: this is cel drawing; a painted look needs outside art (order 56's image
+   model, when there is a key).
+3. **Dress is three layers of reason.** A *family* is a people's grammar (north, desert, steppe, south); a *realm accent*
+   bends it across a border (Sabra against Qadir, Aldmark against Northreach); the *person* varies it by wealth and by
+   their own dice. A border town takes named pieces from the neighbouring family. Each garment's reason (climate, trade,
+   faith, law, wealth) is written beside it in `peoples.js`.
+4. **Order 58's rules are the kit's rules:** no two peoples share a crown or a helm; one of four soldiers wears no helm;
+   a serf carries his lord's mark and his lord's tools, a peasant his own; no folded arms; no pair of poses repeats in a station.
+5. **Proposed, for the owner to change:** banner colours and crests (the lore has map colours only), the keywords and
+   mottos, the name and age on the card, the ruler's title in place of "Royal".
+**Conflict recorded:** D-029 chose a tone-led finish (soft painted shading); the reference of order 57 is brighter and
+flatter. This layer follows order 57 (the later order); D-029's layer is kept, not removed.
+**Cost:** see H-063. **Not decided here:** whether it goes into the game (the gate), and how the remaining peoples map to families.
+
+### D-070 · Order 59: growth has no timetable; concepts, grasp, discipline and breakthroughs (2026-11-15 23:12 ET; amends D-067)
+The growth standard's fixed timetable (an ordinary talent at Master in about 27 years of full-time drill) is dropped.
+Passing a word needs its named **concepts grasped**; each person has a seeded, hidden **grasp** per concept (some come at
+once, some never, a lifelong blind spot possible); each month of real effort is a **chance** to grasp, raised by
+discipline, quality of effort, a teacher who holds the concept, variety and reflection, lowered by routine, fatigue,
+pride and despair; **breakthroughs** are sudden grasps tied to a named moment, leaping the stored effort. Result: with the
+same training one man is Master in five years and another stuck for life. Every turn has its cause in the ledger (rule
+18). The curve R(level) stays as the pace between turns. `docs/design/growth-standard.md` §3.16 (and rule 2 of its
+summary). Builds in G1/G2 and D11+. (D-069 is left to W1-2.)
+
+### D-072 · S1a: proficiencies retired; skills with levels, experience, concepts and breakthroughs (owner order 63, 2026-11-15 23:21 ET; design 2026-11-16; builds on D-046, D-067, D-070)
+**Owner:** "im no longer a fan of the proficiencies system its very bland. systematically remove it and refine a system of
+skills with levels and expierience. dynamic growth mechanics". **Design:** `docs/design/skills.md`, model `docs/design/skills/`.
+1. **One quantity.** A skill has a **level** (0 to 35: the eight words of growth.md §2.2, Beginner to Legend, in five
+   steps each; Myth for the dead) and **experience** toward the next step. A check reads the level's value on today's
+   0-100 scale at growth.md's word edges; there is no number beneath it. `p.skills[k]` stays as a mirror of that value,
+   written only by the engine, so 349 readers and 5,695 checks keep working. *Why:* "nothing may survive as a hidden
+   number", and no card's shape changes.
+2. **28 broad skills with 99 specialisms**, the keys the player sees today; the ten keys folded earlier (dagger, xbow,
+   lance, siegecraft…) are specialisms, for NPCs too. No new skill until it has five readers (69's rule). A specialism
+   acts two steps higher inside it, one lower in a sibling, and costs ×0.85 outside it.
+3. **Experience is the growth standard's formula as a price:** ten for a month of plain drill; a step costs
+   `120 × (e^(b/21.6) − e^(a/21.6))`. The daily drip, the 0.3 a month, the use-and-practice weights, the 6% session
+   "breakthrough" and the two-year rust are removed; sources are efforts with a quality and a cause.
+4. **No word by experience alone** (D-070 built in): nine named concepts a skill (252, in data); a person's need for
+   each is a hash (ease by skill and by concept, talent, a chance of a lifelong blind spot); each worked month is a
+   chance of insight; experience at an edge is stored (at half without the concept) and lands as a leap; breakthroughs
+   are sudden grasps at named moments, an eighth as likely against a blind spot. The page shows concept states in
+   words (dark, dim, clearer, close, grasped), never a number.
+5. **Proof from Expert up** (confirms D-067 item 3 as the *name* of the crossing): a succeeded stretch at the next word.
+6. **Growth moves with the life:** discipline (unbroken months), a rival, a teacher who holds the concept, a new land,
+   wounds, age, rest, purpose, company, comfort, kin skills, hours shared, specialism, pride; each a factor written in
+   the ledger with the gain it changed.
+7. **Kept from growth.md:** the words, talent letters (per skill, shown, from `p.apt`, until G1), the body's baseline
+   (C9), disuse, knacks (the 114 perks, at the crossings into Advanced, Expert, Master), arts and their forms untouched
+   (rank words only). **Cut from S1** (G3, G4, E2): narrow skills by rule, marks, fusion, the failed first try, manuals.
+8. **Other people:** one number as now, the same rules in closed form once a year, concepts by hash; at most 24 active
+   people stepped monthly; a teacher shows only what he grasped.
+**Conflicts recorded, and the fix chosen.**
+- *The census.* D-043 item 1 (order 36) dropped the caps on Grandmasters and Legends ("no count limit"); D-067 item 3
+  said the census of ten and one "stands". **Chosen:** order 36 holds: the census is a **count** the world keeps and
+  shows, never a cap; rarity comes from what the top takes, and a long test bounds it (1 to 12 Grandmasters, 0 to 2
+  Legends alive over 200 years), tuned by the concepts' needs. For the owner to overrule.
+- *Levels outside combat.* D-043 item 6 kept the ranks for fighting and wanted other callings without a grade ladder;
+  order 63 (later) asks for "a system of skills with levels". **Chosen:** every skill has the eight words; D-043's ban
+  on step-like *career* ladders stands untouched. For the owner to overrule.
+- *Hidden numbers.* §3.16's grasp is hidden by design; order 63's removal must leave nothing the player cannot reason
+  about. **Chosen:** the need is never shown as a number and is never a stored stat; its state is always on the page
+  in words, and a Master's judgement names it.
+- *Check odds.* growth.md §2.8 wanted G2 to move no check's odds; levels in steps move some by up to 6.4 in 100
+  downward at migration (the remainder goes on the bar). Accepted for a level that is the only number.
+- *Event text is read as text:* renaming `C.prof` to `C.lvl` and `C.apt` to `C.talent` in the packs is done with
+  `tools/release/identity-probe.mjs` before and after.
+**Not decided here:** talent's hiding and budget (G1), languages as skills (G3), the image-model work (order 60).
+
+### D-071 · Order 62: the route to the App Store is Capacitor 8 (SPM), Codemagic, TestFlight; not Appflow, not EAS (2026-11-16 03:30 ET)
+**Chosen** (owner order 62, rule 21; research and sources in `docs/IOS_ROADMAP.md`, the how-to in
+`.claude/skills/ios-capacitor-release`): the one-file web game is wrapped in **Capacitor 8** (today 8.6.2, Node 22+,
+Xcode 26+, the iOS project made with **Swift Package Manager**, `ios/App/App.xcodeproj`, no CocoaPods); built, signed
+(Codemagic's automatic signing with the owner's App Store Connect API key) and uploaded by **Codemagic** on its cloud Mac
+from the GitHub repo, with a hand-started workflow in `codemagic.yaml`; tested through **TestFlight**; then App Review.
+**Not chosen:** Ionic Appflow (no new customers since 2025-02-11, access ends 2027-12-31); Expo EAS Build (made for Expo
+and React Native; nothing documented for Capacitor); a Mac of our own (the owner has none); CocoaPods (no longer
+Capacitor's default; one more tool on the build machine). **Why:** the only route that needs no Mac, keeps the game one
+web page, and uses each vendor's documented path. **The owner's six facts** were re-checked 2026-11-16: 1, 2 and 5
+confirmed (with additions: Capacitor 8.5 adopted UIScene for Xcode 27; saves are too big for Preferences); 3 confirmed for
+Appflow, a nuance for EAS; 4 confirmed for Safari from iOS 17, unverified inside WKWebView; 6 confirmed for 4.2, while
+offline, no selection, no zoom and no bounce are practice rather than guideline text (kept as rules). **Revisit:** when
+Capacitor 9 is stable (it needs Xcode 27 and iOS 16) and when Apple posts an Xcode 27 deadline.
+
+### D-075 · The iPhone build's shape (2026-11-16 03:30 ET; with D-071)
+1. **The shell lives in `app/`**, a Capacitor project of its own (`app/package.json`, `app/capacitor.config.ts`,
+   `app/ios/`, `app/www/` ignored by git). The game's `package.json`, CI and tests stay as they are; SPM's
+   `Package.swift` points at the plugins in `app/node_modules` by relative path. The iOS project is made and kept on Linux
+   (`npx cap add ios` works without a Mac, checked) and committed; Codemagic only syncs and builds.
+2. **`www/` is the one-file page first** (`node tools/build.mjs --out=app/www/index.html`), exactly what CI tests; a split
+   build (plain script files, `script-src 'self'`, the worker as a file) only if a TestFlight build misses the load
+   budget on a real iPhone. The blob worker's CSP question under `capacitor://localhost` is left to that build: the
+   worker already falls back to the main thread.
+3. **Saves go to `@capacitor/filesystem`** (one file a slot under `Directory.Library`, keeping the four-slot rotation),
+   **settings and small keys to `@capacitor/preferences`**; IndexedDB and localStorage stay the web build's. Saves are
+   300 to 840 KB gzipped and Preferences is for "lightweight data". One switch under `SAVES` and one under `UI.store`;
+   nothing else in the game knows. Export goes through Filesystem and the Share sheet.
+4. **iPhone only, portrait only** (`TARGETED_DEVICE_FAMILY = 1`, portrait in Info.plist): the phone layout is the one
+   built and tested; iPad would add its own screenshots, layouts and review. Revisit after the first release.
+5. **Deployment target iOS 17.0** (Capacitor allows 15): `navigator.audioSession` (fact 4) and `dvh` exist from 17 and 15.4,
+   and every iPhone that runs 17 has a screen of at least 375 points.
+6. **Audio session `playback` while sound or music is on** (in the page, and `.playback` with `.mixWithOthers` in the
+   shell): the player who turned sound on hears it with the silent switch on; with both off nothing is set. *Considered:*
+   `ambient` (mixes, but muted by the switch, which players read as broken sound).
+7. **Plugins are reached as `window.Capacitor.Plugins.<Name>`**, injected by the native side, always guarded, so the page
+   needs no bundler and the web build is unchanged.
+8. **Builds start by hand** on the free M2 machine (500 minutes a month); `xcode:` is pinned and moved on purpose.
+
+### D-076 · The build rules read against the code (2026-11-16 03:30 ET; order 62, rule 21)
+The audit (`docs/IOS_ROADMAP.md` §7) found these conflicts between the rules and the code; each fix is in the roadmap §8 and
+`docs/PROGRESS.md` I1:
+1. **"One canvas for the map and the war map"**: the game has nine canvases (title strip, world, full map, war room, battle,
+   camp, big map, atlas, help strip), one on screen at a time. Read as **one canvas per map on screen, sharing one tile
+   cache**, each freed when its screen closes (D9); not one DOM canvas for all screens.
+2. **"Nothing on keys"**: the 13 key handlers are shortcuts beside buttons and stay; a key-only path would break the rule.
+3. **The war map's right-click order stays**: a tap on the same place gives the same order.
+4. **`vh` to `dvh`** keeps a `vh` line before each `dvh` for old engines; with iOS 17 as the floor (D-075) it is only for
+   the web build.
+5. **The dead mouse-hover tooltip code** in the release (`UI.tipsInit`, replaced by 59-descriptions) goes to `archive/`
+   when I1-2 touches it, not before.
+6. **Text selection is turned off** everywhere but inputs; the chronicle's export keeps the text the player may want to copy.
+
 
 ### D-061 · D9: the ground the game can read; roads in two ranks; map version 3; the ground is made again from the seed (2026-11-16 ET; CRITIQUE §17, M1 to M9, P18; D-016)
 **Chosen:**
@@ -1108,5 +1447,5 @@ family at the bed still needs `present`.
 **Conflict recorded:** "70% of towns on water" against "keep the generator's geography": moving the town, not the province,
 keeps both (the province's shape is the same as version 2 would give it, save for the dry realms). **Not chosen:** a quota for
 hills (the old way, 41%), and moving rivers to towns.
-**Left for the owner's war decisions (docs/design/war.md):** seasons on roads and passes, sea lanes on the route graph,
+**Left for D12b (the owner answered the war questions in D-064, `docs/design/war.md` part two):** seasons on roads and passes, sea lanes on the route graph,
 `fieldAt(site)`, the burn.
