@@ -61,6 +61,9 @@ A name that is no longer here was renamed in the naming pass: look it up in [NAM
 | [research/world-foundations.md](research/world-foundations.md) | Building an Asia-sized Ardan from the ground up |
 | [research/c7-name-data.md](research/c7-name-data.md) | Name data for the cultures (work item C7), with its data in `c7-name-data.json` |
 | [research/d11-military-branches.md](research/d11-military-branches.md) | Military branches and battlefield strategy (work item D11), with its data in `d11-military-branches.json` |
+| [research/codex-review.md](research/codex-review.md) | Review of the old Ardan Codex (the Far Lands, 1105; kept as `research/ardan-codex-old.html`): what it holds, what is outdated, what is useful for R1, D11+, G, E1 (H-066) |
+| [research/codex/reasons-and-cracks.md](research/codex/reasons-and-cracks.md) | From the Codex: how great powers hold together and crack, a catalogue of reasons for war (for R1 and W1-6) |
+| [research/codex/martial-concepts.md](research/codex/martial-concepts.md) | From the Codex: named martial concepts per skill, with blind spots (for growth-standard §3.16 and D11+) |
 
 ## Benchmarks (`benchmarks/`)
 
