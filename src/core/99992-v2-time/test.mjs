@@ -42,8 +42,8 @@ export default {
         const acts = () => [...document.querySelectorAll('[data-a]')].map(e => e.dataset.a);
         const page = acts();
         // 99997-v2-war: the War Room opens only for those who serve or rule (no view of a war you are not in), and in peace
-        // (D10, D-052) only for the crown and the Marshal, so the noble enlists and is made Marshal (rank 9)
-        if (A.V2W && !A.V2W.canRoom()) { A.enlist(A.pc()); A.pc().mil.rank = 9; }
+        // (D10, D-052) only for the crown (W1-1: there is no Marshal), so the noble enlists as a General and goes to war
+        if (A.V2W && !A.V2W.canRoom()) { const pc = A.pc(); A.enlist(pc); pc.mil.rank = 7; const me = pc.mil.realm, en = A.neighbors(me).find(x => A.realm(x) && A.realm(x).alive); if (en && !A.atWar(me).length) A.startWar(me, en, null, 'conquest'); A._idIdx = null; }
         UI.warRoomOpen && UI.warRoomOpen();
         const room = acts(), roomTime = [...document.querySelectorAll('.wr-time [data-a]')].map(e => e.dataset.a);
         UI.ov = null; UI.render();

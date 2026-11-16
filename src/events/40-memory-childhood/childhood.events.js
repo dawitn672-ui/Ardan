@@ -310,7 +310,7 @@
       choices: [
         { t: "Give {themHim} time, and a horse of {theirHis} own", r: "You ask nothing. In the second month {them} rides out alone and comes back laughing. In the third, {theyHe} calls you by name.",
           fx: { them: { op: 20 }, happy: 4 } },
-        { t: "Have {themHim} tell your marshal what {theyHe} saw", r: "{them} talks for two days and your clerks fill a book. It is good knowledge. {theyHe} does not look at you while giving it.",
+        { t: "Have {themHim} tell your senior General what {theyHe} saw", r: "{them} talks for two days and your clerks fill a book. It is good knowledge. {theyHe} does not look at you while giving it.",
           fx: (p, ctx) => { const r = A.realm(p.ruler), e = r && A.enemyRealmOf(r.id); if (e) ctx.rid = e; return fx(p, ctx, { them: { op: -10 }, armyXp: 5, claim: 1 }); } },
         { t: "Ask {themHim} to forgive you", r: "{theyHe} says there is nothing to forgive, in the voice you once used to say the same. It takes a year to become true.",
           fx: { them: { op: 25 }, wil: 1, honor: 2 } },

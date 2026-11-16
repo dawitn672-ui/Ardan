@@ -7,7 +7,7 @@
 // Pure reading of the event and the player; nothing is drawn.
 //
 // What the class does not read (CI run 88: the gate hid scenes from the lives they were written for):
-// - a clerk. Clerks serve a captain, a marshal, a crown and an office as well as a counting-house ("Your clerk waits
+// - a clerk. Clerks serve a captain, a General, a crown and an office as well as a counting-house ("Your clerk waits
 //   with the pen" for a general, "your clerks found in an old charter" for a ruler, "Your clerk shows you where the
 //   numbers could be smoothed" for a reeve).
 // - words the scene shows only under its own test: `${hasAsset(p,"workshop")?" of your own workshop":""}` is the

@@ -1530,7 +1530,7 @@
       cool: 3,
       cond: p=>{const r=A.realm(p.realm);return r&&!A.atWar(r.id).length&&A.neighbors(r.id).length>0},
       setup: (p,ctx)=>{const r=A.realm(p.realm),n=A.neighbors(r.id).map(A.realm).filter(x=>x&&x.alive&&!r.allies.includes(x.id));n.sort((a,b)=>A.relBetween(r.id,a.id)-A.relBetween(r.id,b.id)),ctx.rid=n.length?n[0].id:null,ctx.ratio=n.length?(A.realmPower(r)/Math.max(1,A.realmPower(n[0]))).toFixed(1):"1"},
-      text: 'At council, the marshal unrolls a map of the {other} border. "They are weak, and they insult us." Half the table nods. The other half looks at you. Our strength against theirs: about {ratio} to 1. Your voice may decide it.',
+      text: 'At council, the senior General unrolls a map of the {other} border. "They are weak, and they insult us." Half the table nods. The other half looks at you. Our strength against theirs: about {ratio} to 1. Your voice may decide it.',
       choices: [
         {
           t: "Argue for war",
@@ -1545,7 +1545,7 @@
           t: "Argue for peace and patience",
           check: {s:"diplomacy",s2:"persuasion",d:45},
           win: {
-            r: "Envoys go instead of armies. The marshal glares at you across the table.",
+            r: "Envoys go instead of armies. The senior General glares at you across the table.",
             fx: {realmRel:10,rulerOp:3},
           },
           lose: {r:"They call you timid. The war party has the crown's ear.",fx:{rulerOp:-4}},
@@ -1676,7 +1676,7 @@
     },
     {
       id: "cn_lord_rebellion",
-      council: ["spymaster","marshal","any"],
+      council: ["spymaster","general","any"],
       title: "A lord gathers men",
       trigger: !0,
       cool: 5,

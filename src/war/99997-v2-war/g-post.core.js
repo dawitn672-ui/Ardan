@@ -1,7 +1,7 @@
 // 99997-v2-war, part 7 (D10, D-052): war screens only at your rank, when deployed, on a mission, or when the situation
 // allows (owner order 5; docs/CRITIQUE.md D10, W4). Part 1 (a-gate) shuts every war that is not yours; this part
 // narrows what your own war shows you to your post:
-//  - the War Room by post (W.canRoom, in a-gate): the crown and the Marshal; in a war of yours a commander, or a captain
+//  - the War Room by post (W.canRoom, in a-gate): the crown; in a war of yours a commander, or a captain
 //    in the field; never a soldier or a sergeant;
 //  - its map within your rank's reach (W.scope, in a-gate): a captain his division's front, a soldier the next province;
 //  - enemy numbers as estimates below a commander: a War Room counter reads "~7k", not "7.3k";

@@ -1208,6 +1208,29 @@ the scales by knighthood and honour, mastery and renown, fame, wealth and connec
 knows both). NPC to NPC bonds follow the same base. Work item **R2**, built with R1 (nothing without reason).
 
 
+### D-066 · W1-1: the war map's division is a host, its commander a General (2026-11-16)
+D-064 point 1 maps the old grades by the post held and sets the units' sizes (wing 600 to 3,000, host 3,000 to 12,000),
+but the old engine's units do not match the old grade names: a battalion is about 800 men (a wing) and a division up to
+7,470 (a host), while an army holds up to 24 divisions (170,000 men). Chosen, until D12b-1 builds hosts of contingents:
+1. **A division of 3,000 men or more is a host, and its commander a General; under 3,000 it is a column under a
+   Commander.** So the old Commander grade (6, a division) reads **General**, and a battalion's head (the old Senior
+   Captain, 5) **Commander**. One General to each host; a realm's Generals follow what it fields. *Why:* the owner's
+   "several Generals by army size" and "no host over 12,000, none without a General" hold on the old engine as it is;
+   reading the army as the host would need armies cut to one division each.
+2. **A host with no person at its head is led by a name it gives itself** (`A.oobLeader`, pure from ids), as 9997's
+   seed captains are. *Why:* about 200 divisions world-wide; making a person for each would cost the save and the month.
+3. **An army of two hosts or more is led by its commanding General, by the king's written word for that war:** the
+   existing post `army:<id>`, which ends when the army is stood down. With one host its general is that host's. *Why:*
+   D-064 point 2 as data at no cost; W1-3 adds the reasons for the choice and the council of war's price.
+4. **The eight grades stay as steps** (`GD.MIL`, 0 to 7): every rank comparison in the code holds and careers keep
+   their pace; a second grade of one rank reads "(second step)" on ladders and promotions (`A.rankLabel`). *Why:* a
+   five-grade ladder is D11-3's (careers rebased), with balance measured.
+5. **The senior General is the General of the realm's oldest standing host** (`r.firstHost`, kept while it stands), the
+   crown names him when the place is empty, and a General's superior is the crown. *Why:* D-064 point 3; the council
+   always has the army's voice (the old seat was mostly empty).
+**Not decided here:** unit words on screens ("division", "battalion" still appear outside the order of battle; D11-1's
+R14); hosts of contingents (D12b-1).
+
 ### D-067 · G0: the growth standard; trials at Expert and Master (2026-11-16; order 54, D-062; refines growth.md, D-039, D-046)
 *Numbered D-067, not D-066: another agent may take D-066 in parallel.*
 1. **`docs/design/growth-standard.md` is the standard** for how stats and skills grow and decline in G1, G2, D11 and

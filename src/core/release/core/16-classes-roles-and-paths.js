@@ -211,15 +211,14 @@ A.leaveRolesFor = function (pc, newRole, quiet) {
   const say = (t, c) => {
     if (!quiet && pc.id === A.S.pc) A.log(t, c || "warn");
   };
-  // [A2 posts] "army-marshal" (the Marshal's seat, taken by the council's offer) keeps the commission: the seat needs
-  // a General's (D-017). Before, accepting the seat resigned the commission and left the Marshal with no command.
-  if (newRole !== "army" && newRole !== "army-marshal" && pc.mil && !pc.mil.merc) {
+  // [A2 posts] "army-general" (the senior General's place at council, W1-1: the crown's first host) keeps the
+  // commission: the place is a General's. Before, accepting the old Marshal's seat resigned the commission.
+  if (newRole !== "army" && newRole !== "army-general" && pc.mil && !pc.mil.merc) {
     const t = GD.MIL[pc.mil.rank].title;
-    // [A2 posts] every field post goes with the commission, and the Marshal's seat with it (it needs one)
+    // [A2 posts] every field post goes with the commission (the first host, and with it the senior General's place)
     if (A.POSTS)
       A.POSTS.leaveAll(pc.id, newRole === "ruler" ? "crowned" : "resigned", {
         cls: ["FIELD"],
-        marshal: true,
         keepArmy: newRole === "ruler",
       });
     if (
@@ -259,7 +258,7 @@ A.leaveRolesFor = function (pc, newRole, quiet) {
     say(`You put aside your work as ${C.ranks[pc.job.r][0].toLowerCase()}.`);
     pc.job = null;
   }
-  if (pc.office && newRole !== "council" && newRole !== "army-marshal") {
+  if (pc.office && newRole !== "council" && newRole !== "army-general") {
     const r = A.realm(pc.realm);
     // [A2 posts] the seat is left through the registry
     if (A.POSTS && r) A.POSTS.vacate(A.POSTS.seatKey(r.id, pc.office), newRole === "ruler" ? "crowned" : "resigned");
@@ -289,7 +288,7 @@ A.roleCheck = function (pc) {
     if (
       (pc.mil && !pc.mil.merc && pc.job && (pc.job = null),
       pc.mil && pc.company && (pc.mil = null),
-      pc.mil && !pc.mil.merc && pc.office && pc.office !== "marshal")
+      pc.mil && !pc.mil.merc && pc.office && pc.office !== "general")
     ) {
       const seat = (A.COUNCIL[pc.office] || {}).name || "councillor";
       A.log(`Your seat as ${seat} leaves no time for the army. You resign your commission.`, "warn");
@@ -315,7 +314,7 @@ A.roleBlock = function (pc, want) {
       ? "You are under arms. Resign your commission first (the War or Arms page)."
       : want === "job" && pc.company
         ? "You lead a free company."
-        : want === "army" && pc.office && pc.office !== "marshal"
+        : want === "army" && pc.office && pc.office !== "general"
           ? "You sit on the council. Give up the seat first."
           : want === "army" && pc.company
             ? "You already lead your own company."
@@ -752,7 +751,7 @@ GD.AIMS = {
     ic: "swords",
     desc: "Maps, musters, spies on the border. The host grows sharper; a war aim appears.",
     avail: pc =>
-      pc.ruler || (pc.mil && pc.mil.rank >= 7) || pc.office === "marshal" ? "" : "Only the war council plans wars.",
+      pc.ruler || (pc.mil && pc.mil.rank >= 7) || pc.office === "general" ? "" : "Only the war council plans wars.",
     rate: pc => 1 + (A.skill(pc, "tactics") + A.skill(pc, "command")) / 250,
     need: 140,
     day: pc => {
@@ -1145,7 +1144,7 @@ GD.PATHS = {
   army: {
     name: "The Army",
     ic: "shield",
-    desc: "From spear-carrier to Marshal. War makes careers and ends them.",
+    desc: "From spear-carrier to General. War makes careers and ends them.",
     careers: [],
   },
   court: {

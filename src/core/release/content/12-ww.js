@@ -4959,7 +4959,7 @@
         cond: (p,C)=>R(p,"POL-26")&&C.adult(p),
         w: 1,
         cool: 6,
-        text: `In the steam-bath hut by the jetty, a neighbor beats his back with birch twigs and talks: the Lord Marshal is holding back the queen's rye, the heir fainted at a drum, the Prince-Consort wants her set aside. "Speak low, the queen is listening," someone says, half joking. In Drevna it is never entirely a joke.`,
+        text: `In the steam-bath hut by the jetty, a neighbor beats his back with birch twigs and talks: the senior General is holding back the queen's rye, the heir fainted at a drum, the Prince-Consort wants her set aside. "Speak low, the queen is listening," someone says, half joking. In Drevna it is never entirely a joke.`,
         choices: [
           {
             t: "Hush him and change the subject",
@@ -5102,11 +5102,11 @@
         cond: (p,C)=>R(p,"POL-26")&&grown(p,C)&&early()&&!is(p,"noble","royal"),
         w: 1,
         once: !0,
-        text: `You are a carter on the rye carts: 2,000 bushels owed to Ughrak each winter under the Treaty of Thardush. Drevna calls it a gift; the clan-mothers say, "Count the rye before you thank the Drevnan." The Lord Marshal's men have stopped the carts at Sevmir, saying the roads are unsafe. They are not unsafe.`,
+        text: `You are a carter on the rye carts: 2,000 bushels owed to Ughrak each winter under the Treaty of Thardush. Drevna calls it a gift; the clan-mothers say, "Count the rye before you thank the Drevnan." The senior General's men have stopped the carts at Sevmir, saying the roads are unsafe. They are not unsafe.`,
         choices: [
           {
             t: "Wait at Sevmir with the carts",
-            r: "Weeks of cold and boredom, and the Marshal's men drinking your mead. If the Ughrak riders come for their rye, you will be the first to meet them.",
+            r: "Weeks of cold and boredom, and the General's men drinking your mead. If the Ughrak riders come for their rye, you will be the first to meet them.",
             fx: {wil:1,coin:3},
           },
           {
@@ -5117,7 +5117,7 @@
               fx: {honor:3,fame:2,favor:2,flag:"ww_dv_ryerun"},
             },
             lose: {
-              r: "The Marshal's riders bring you back with your hands tied. Zorac himself looks at you, and does not have to say anything.",
+              r: "The General's riders bring you back with your hands tied. Zorac himself looks at you, and does not have to say anything.",
               fx: {happy:-5,wil:1.5,favor:-2},
             },
           },
@@ -5365,7 +5365,7 @@
         cond: (p,C)=>R(p,"POL-26")&&C.adult(p)&&is(p,"gentry","noble","royal"),
         w: 1,
         cool: 6,
-        text: "New Year's Day: the great lords meet the queen as the Lake Council in the Listening Tower. Nobles wear silver ear-cuffs to honor the Listener, voices are kept low, and there are no drums for a league in any direction. This year the Council will hear the Lord Marshal on the rye, and the Prince-Consort on the heir.",
+        text: "New Year's Day: the great lords meet the queen as the Lake Council in the Listening Tower. Nobles wear silver ear-cuffs to honor the Listener, voices are kept low, and there are no drums for a league in any direction. This year the Council will hear the senior General on the rye, and the Prince-Consort on the heir.",
         choices: [
           {
             t: "Speak for the queen's daughter",
@@ -5761,7 +5761,7 @@
         cond: (p,C)=>R(p,"POL-31")&&grown(p,C)&&!is(p,"noble","royal"),
         w: .9,
         cool: 10,
-        text: "A carter of the Neck Road Carters' Guild offers you good pay to drive a wagon of Albina copper bars. The bills say Ostra. The road he gives you goes north, toward Andros's country and his mint. The Albina copper belongs to Lord Marshal Corvin Asterio, Queen Livia's own commander.",
+        text: "A carter of the Neck Road Carters' Guild offers you good pay to drive a wagon of Albina copper bars. The bills say Ostra. The road he gives you goes north, toward Andros's country and his mint. The Albina copper belongs to General Corvin Asterio, Queen Livia's own commander.",
         choices: [
           {
             t: "Drive the wagon and ask nothing",

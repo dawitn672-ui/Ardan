@@ -976,6 +976,35 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   `life-sim-systems` skill carries a note of the direction, not yet the built rules.
 - **Undo:** revert branch `d12a-2`'s commits; the first design is `0378b9e`.
 
+### H-061 · 2026-11-16 · W1-1: no Marshal, five ranks
+- **Game:** five ranks (soldier, sergeant, captain, commander, General); `GD.MIL` keeps eight grades as steps (0-7; High
+  General and Marshal gone; `A.rankLabel` adds "(second step)"). A war-map division of 3,000+ men is a host led by a
+  General, under 3,000 a column under a Commander (`A.HOSTS`, new feature `src/war/9999905-five-ranks`; seed Generals by
+  `A.oobLeader`, no persons made); an army of two hosts or more is led by its commanding General by the king's written
+  word (the `army:<id>` post); `a.sub` army groups retired. The council's `marshal` seat is now `general`, read from the
+  crown's first host (`A.POSTS.firstHost`, `r.firstHost`; `seat:<r>:general` redirects to `div:<first host>`); the crown
+  fills it monthly (`A.POSTS.fillGenerals`); a General's superior is the crown. Old saves: `A.POSTS.migrateMarshal` /
+  `seatMarshals` (Marshal -> senior General; player grade 9 -> 7 with the first host; old words in styles, the
+  achievement `marshal` -> `senior_general`, the advisors' ring and 9996's council task renamed). Rank-8/9 events
+  (`rk_gen_treaty`, `rk_gen_hang_officer`, `rk_mar_*`) re-gated to rank 7 or the senior General. Words swept in the
+  release source, content, lore, `data/names.json` (trade surname "Marshal" -> "Marcher"), the v2 engine and features;
+  orders' "Marshal of the ..." -> "Seneschal of the ...", Sunrise's Spear-Marshal -> Spear-Lord.
+- **Tests:** new `w1NoMarshalLint`, `w1NoMarshalWorld`, `w1GeneralsFollowHosts`, `w1SeniorGeneral`, `w1OldSaveMarshal`
+  and the sample save `tests/saves/v2.1.0-alpha.9-marshal.ardan` (made from 6dbabd3's build); `postsMarshalRepro` and
+  `postsMarshalOptional` replaced by `postsSeniorGeneralCourt` and `postsSeniorGeneralFill`; other tests' rank words and
+  Marshal setups updated (99992, 97, 994, 56, 38, 9997, 99997, 96, 999996, 999997, 99993). Bars moved, with reasons
+  in the tests: `postsDeathVacates` counts posts other than a court title (the army's general is now a great house's
+  head, whose title passes at the law's own pass); `pfNumbers` asks two numbers a life, not three (seed 4104's orc girl
+  reads two now that the crown names senior Generals with the game's dice).
+- **Left for W1-3:** the reasons for the king's choice of a commanding General, the king leading in person, the council
+  of war's cost; unit words ("division", "battalion") outside the order of battle (D11-1).
+- **Checks:** new tests 5/5 pass; posts 8/8; savesStillLoad 13 saves; 99992, 97, 994, 56, 9996, 9997, 9999, 99997,
+  999996, 999997 tests touched pass; `node --test tests/v2` 89/89; lint-stages, lint-kin, lint-events (the four changed
+  packs), `build-v2 --check`, `--check-tiers` ok; `coherency --quick` no contradiction; `long-life-audit --seed=7
+  --years=30` clean (0 errors, audit empty, 0 broken post months).
+- **Commits:** `35b2f9e` (the stage), `1f69eed` (test bars, long tier).
+- **Undo:** revert branch `w1-1`'s commits (base `6dbabd3`); D-066 records the choices.
+
 ### H-062 · 2026-11-16 · G0: the growth standard (research and design only)
 *Numbered H-062, not H-061: another agent may take H-061 in parallel.*
 - **Docs:** `docs/design/growth-standard.md`: a one-page summary for the owner; §1 today's growth measured over nine

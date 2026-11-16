@@ -77,7 +77,7 @@ CO.add('one captain per company', () => {
         const b = d.bs[i]; if (!b || !b.p) continue;
         for (const s in b.p) {
           const id = b.p[s]; if (!id) continue;
-          const p = A.P(id), where = `${d.name || d.id}, battalion ${i + 1}, ${s === '4' ? "the senior captain's place" : 'company ' + (+s + 1)}`;
+          const p = A.P(id), where = `${d.name || d.id}, battalion ${i + 1}, ${s === '4' ? "the commander's place" : 'company ' + (+s + 1)}`;
           if (!live(p)) bad.push(`${where}: held by ${who(id)}`);
           else if (id !== A.S.pc && p.realm !== d.r) bad.push(`${where}: held by ${who(id)}, of another realm`);
           (at[id] = at[id] || []).push([d.id, s, where]);
@@ -200,9 +200,10 @@ CO.add('no child in an adult office', () => {
 }, { owner: ME });
 
 // one office, one name: two living people of a realm are not both styled with one of its council offices (p.occ, written
-// by whoever appointed them and never cleared; p.title, frozen lore). "Marshal of the Crown knights", "of the host" or
-// "of the Wolves" is another post (an order's, an army's), and "cousin of the Lord Marshal" names a kinsman, not a style.
-const SEATW = { marshal: 'Marshal', chancellor: 'Chancellor', treasurer: 'Treasurer', spymaster: 'Spymaster', chaplain: 'Chaplain' };
+// by whoever appointed them and never cleared; p.title, frozen lore). "Senior General of the Crown knights", "of the
+// host" is another post, and "cousin of the senior General" names a kinsman, not a style. (W1-1: the army's place at
+// council is the senior General's; there is no Marshal.)
+const SEATW = { general: 'Senior General', chancellor: 'Chancellor', treasurer: 'Treasurer', spymaster: 'Spymaster', chaplain: 'Chaplain' };
 // A past style ("once Chancellor of Varenna", written by the post registry when a seat changes hands) and a kinsman's
 // ("sister of Chancellor Edmund Hale") name no post the person holds (A2, D-031).
 const styledAs = (s, w) => String(s).split(/;\s*/).some(part => {

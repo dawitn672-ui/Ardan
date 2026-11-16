@@ -500,7 +500,7 @@ export default {
       !r.ruler.includes('Look for love') && r.pureNoble && r.pureRuler;
     return { ok, detail: `a noble of 30: ${r.noble.join(' | ')}; a peasant of 20: ${r.peasant.join(' | ')}; a crown in debt: ${r.ruler.join(' | ')}; drawing pure ${r.pureNoble && r.pureRuler}` };
   },
-  // cycle 2 (lives F3): a Marshal of the council who had left the army drilled the town muster; a Chancellor kept the
+  // cycle 2 (lives F3): the army's councillor who had left the army drilled the town muster; a Chancellor kept the
   // scribe's love-letter duty. The top of the ladder now takes in councillors, lords and retired commanders
   async lfTierGatesWide(pg) {
     const r = await pg.evaluate(() => {
@@ -508,7 +508,7 @@ export default {
       const pc = A.pc(), ids = ['pf_spear_pike_drill', 'rk_vt_militia', 'av_road_sellsword_offer', 'gf_village', 'ln_d_scr_lover', 'ln_d_proclamation'].filter(id => A.EV[id]);
       const w = () => ids.map(id => A.LF.weight(A.EV[id], pc) > 0);
       const villager = w(), topV = A.lfTop(pc);
-      pc.office = 'marshal'; const marshal = w(), topM = A.lfTop(pc); pc.office = null;
+      pc.office = 'general'; const marshal = w(), topM = A.lfTop(pc); pc.office = null;
       pc.veteran = { rank: 7, years: 20, battles: 9 }; const veteran = A.lfTop(pc); pc.veteran = null;
       pc.job = { c: 'scribe', r: 0 }; const scribe = A.LF.weight(A.EV.ln_d_scr_lover || { id: 'ln_d_scr_lover' }, pc) > 0;
       pc.job = { c: 'courtier', r: 2 }; const courtier = A.LF.weight(A.EV.ln_d_scr_lover || { id: 'ln_d_scr_lover' }, pc) > 0;
@@ -516,7 +516,7 @@ export default {
     });
     const i = r.ids.indexOf('ln_d_scr_lover');
     const ok = !r.topV && r.topM && r.veteran && r.marshal.every(x => !x) && r.villager.filter((x, k) => k !== i).every(Boolean) && r.scribe && !r.courtier;
-    return { ok, detail: `${r.ids.join(', ')}: open to a villager ${r.villager.join('/')}, to a Marshal of the council ${r.marshal.join('/')}; a retired general at the top: ${r.veteran}; the scribe's letters for a scribe ${r.scribe}, for a courtier ${r.courtier}` };
+    return { ok, detail: `${r.ids.join(', ')}: open to a villager ${r.villager.join('/')}, to the senior General ${r.marshal.join('/')}; a retired general at the top: ${r.veteran}; the scribe's letters for a scribe ${r.scribe}, for a courtier ${r.courtier}` };
   },
 
   // lfRepeats (v2 merge): a scene its owner queues is spaced by A.lfSpaced, a quiet that doubles with each showing, and

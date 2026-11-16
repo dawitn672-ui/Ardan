@@ -1450,12 +1450,12 @@
         id: "ct_council_quarrel",
         cool: 6,
         cond: RU,
-        setup: (p,ctx)=>{const r=RM(p),m=seatHolder(r,"marshal"),t=seatHolder(r,"treasurer");ctx.m=m?A.fullName(m):"Your marshal",ctx.t=t?A.fullName(t):"Your treasurer",ctx.sum=F(inc(p,.06))},
+        setup: (p,ctx)=>{const r=RM(p),m=seatHolder(r,"general"),t=seatHolder(r,"treasurer");ctx.m=m?A.fullName(m):"Your senior General",ctx.t=t?A.fullName(t):"Your treasurer",ctx.sum=F(inc(p,.06))},
         title: "A quarrel at the council table",
         text: ()=>"{m} slams a fist on the council table: the host needs {sum} for new horses and pay arrears. {t} goes red: there is no such money, and the banks will not lend more. Both look at you. The rest of the council finds the ceiling very interesting.",
         choices: [
           {
-            t: "Back the marshal",
+            t: "Back the senior General",
             r: "The host gets its horses. The treasury gets a hole.",
             fx: rf((r,p)=>{r.treasury-=inc(p,.06),r.armyQ=Math.min(1.6,r.armyQ+.04)}),
           },
@@ -1660,7 +1660,7 @@
           },
           {
             t: "Send {them} to the frontier to learn soldiering",
-            r: "Off to the border fort with a grizzled marshal. Either it will make {them} or it will break {them}.",
+            r: "Off to the border fort with a grizzled General. Either it will make {them} or it will break {them}.",
             fx: (p,ctx)=>{const h=A.P(ctx.pid);h&&(A.trainSkill(h,"command",8),A.trainSkill(h,"sword",6)),A.applyFx(p,{them:{op:-8}},ctx)},
           },
           {
@@ -1903,7 +1903,7 @@
         id: "ct_war_council",
         cool: 6,
         cond: (p,C)=>RUA(p,C)&&A.atWar(p.ruler).length===0&&A.neighbors(p.ruler).length>0,
-        setup: (p,ctx)=>{const r=RM(p),ns=A.neighbors(p.ruler).map(A.realm).filter(t2=>t2&&t2.alive&&!t2.isRebel&&!(r.allies||[]).includes(t2.id)&&!(r.truce&&r.truce[t2.id]>A.S.year)),t=ns.length?ns.reduce((a,b)=>A.realmPower(a)<A.realmPower(b)?a:b):null;ctx.tid=t?t.id:"",ctx.tname=t?nm(t):"your neighbor";const m=seatHolder(r,"marshal");ctx.m=m?A.fullName(m):"Your marshal"},
+        setup: (p,ctx)=>{const r=RM(p),ns=A.neighbors(p.ruler).map(A.realm).filter(t2=>t2&&t2.alive&&!t2.isRebel&&!(r.allies||[]).includes(t2.id)&&!(r.truce&&r.truce[t2.id]>A.S.year)),t=ns.length?ns.reduce((a,b)=>A.realmPower(a)<A.realmPower(b)?a:b):null;ctx.tid=t?t.id:"",ctx.tname=t?nm(t):"your neighbor";const m=seatHolder(r,"general");ctx.m=m?A.fullName(m):"Your senior General"},
         title: "The war council",
         text: ()=>'{m} spreads a map on the table and taps it. "{tname}. Their levies are thin, their court is distracted, and the border forts are rotten. One summer, Majesty. One summer and the land is ours." The council waits for your word.',
         choices: [
@@ -1920,7 +1920,7 @@
           },
           {
             t: "Refuse. The realm needs peace",
-            r: "The marshal rolls up his map. The war party sulks. The farmers sow.",
+            r: "The senior General rolls up his map. The war party sulks. The farmers sow.",
             fx: rf((r,p)=>{st(r,3),allOp(p,-1)}),
           },
         ],

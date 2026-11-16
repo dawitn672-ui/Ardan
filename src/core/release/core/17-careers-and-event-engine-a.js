@@ -550,7 +550,7 @@ A.SEAT_LINK = {
   treasurer: ["steward", "merchant"],
   spymaster: ["spy"],
   chaplain: ["clergy"],
-  marshal: [],
+  general: [],
 };
 
 A.seatEligible = function (pc, seat) {
@@ -565,7 +565,7 @@ A.seatEligible = function (pc, seat) {
   )
     return false;
   const sk = A.skill(pc, S.skill);
-  if (seat === "marshal") return !!(pc.mil && !pc.mil.merc && pc.mil.rank >= 8 && sk >= 55);
+  if (seat === "general") return !!(pc.mil && !pc.mil.merc && pc.mil.rank >= 6 && sk >= 55);
   const j = pc.job,
     C = j ? GD.CAREERS[j.c] : null;
   return (
@@ -581,8 +581,8 @@ A.seatOffers = function (pc) {
     r.council = r.council || {};
     for (const seat of A.shuffle(Object.keys(A.COUNCIL))) {
       if (!A.seatEligible(pc, seat)) continue;
-      // [A2 posts] the registry's rules: the Marshal's seat only for a war that needs one (D-017; a peacetime Marshal is
-      // the ruler's own appointment, D-049), no seat the player may not hold
+      // [A2 posts] the registry's rules: no seat the player may not hold (W1-1: the senior General's place is the crown's
+      // first host, for a General)
       if (A.POSTS && A.POSTS.can(A.POSTS.seatKey(r.id, seat), pc.id, { by: "offer" })) continue;
       const cur = A.P(r.council[seat]);
       if (!cur || !cur.alive || A.skill(cur, A.COUNCIL[seat].skill) + 8 < A.skill(pc, A.COUNCIL[seat].skill)) {
@@ -617,7 +617,7 @@ Object.assign(A.CHOICE_FN, {
     if (!r) return;
     const cur = A.P(r.council && r.council[seat]);
     // [A2 posts] the seat is taken through the registry: the seat he held before is given up (two seats at once was
-    // possible), the man dismissed is moved with a grudge; the Marshal keeps his commission and takes the main army
+    // possible), the man dismissed is moved with a grudge; the senior General keeps his commission and takes the first host
     if (A.POSTS) {
       const no = A.POSTS.can(A.POSTS.seatKey(r.id, seat), pc.id, { by: "offer" });
       if (no) {
@@ -625,13 +625,13 @@ Object.assign(A.CHOICE_FN, {
         return;
       }
     }
-    A.leaveRolesFor(pc, seat === "marshal" ? "army-marshal" : "council");
+    A.leaveRolesFor(pc, seat === "general" ? "army-general" : "council");
     r.council = r.council || {};
     if (A.POSTS) A.POSTS.appoint(A.POSTS.seatKey(r.id, seat), pc.id, { why: "offer", by: r.ruler, force: true });
     else r.council[seat] = pc.id;
     pc.office = seat;
     pc.officeSince = A.S.year;
-    if (seat === "marshal" && A.wsAttachPC) A.wsAttachPC();
+    if (seat === "general" && A.wsAttachPC) A.wsAttachPC();
     if (cur && cur.alive && cur.id !== pc.id) {
       if (pc.rel[cur.id]) A.addOp(pc, cur, -30);
       else A.link(pc, cur, "rival", -30, "rival");
@@ -856,7 +856,7 @@ A.COUNCIL_ACTS = {
       ),
     },
   ],
-  marshal: [
+  general: [
     {
       k: "drill",
       name: "Drill the host",
@@ -2540,7 +2540,7 @@ A.incidentRole = function (pc, k) {
       ? "chancellor"
       : pc.office === "spymaster" && ["spy", "murder", "defector"].includes(k)
         ? "spymaster"
-        : (pc.office === "marshal" || (pc.mil && !pc.mil.merc && pc.mil.rank >= 5)) &&
+        : (pc.office === "general" || (pc.mil && !pc.mil.merc && pc.mil.rank >= 5)) &&
             ["border", "raid", "defector"].includes(k)
           ? "commander"
           : pc.job && pc.job.c === "envoy" && pc.job.r >= 1 && ["envoy", "ships", "elope"].includes(k)

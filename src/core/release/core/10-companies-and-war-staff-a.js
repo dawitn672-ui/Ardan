@@ -38,7 +38,7 @@ A.foundCompany = function (pc) {
   if (pc.mil) {
     A.log(`You leave ${pc.mil.unit}.`);
     // [A2 stage 2] the commission's posts are left with it (before: only the grade went)
-    if (A.POSTS && !pc.mil.merc) A.POSTS.leaveAll(pc.id, "resigned", { cls: ["FIELD"], marshal: true });
+    if (A.POSTS && !pc.mil.merc) A.POSTS.leaveAll(pc.id, "resigned", { cls: ["FIELD"] });
     pc.mil = null;
   }
   pc.company = {
@@ -510,7 +510,7 @@ A.newBattleForPC = function (pc, warId, enemy, company) {
     mine = Math.round(Math.min(r.army * 0.45 + r.levy * 0.1, 6e4));
     myRealm = pc.ruler;
   } else {
-    const lead = GD.MIL[Math.min(pc.mil.rank, 9)].leads;
+    const lead = GD.MIL[Math.min(pc.mil.rank, GD.MIL.length - 1)].leads;
     mine = Math.round(lead * A.rf(1, pc.mil.rank >= 6 ? 1.2 : 1.6));
     myRealm = pc.mil.merc ? pc.mil.contract || pc.realm : pc.mil.realm;
   }

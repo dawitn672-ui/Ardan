@@ -177,7 +177,7 @@
     const p = A.newPerson({ given: c.given, sur: c.sur, surMode: /^of /.test(c.sur) ? 'place' : 'trade', sex: c.sex, race, realm: d.r, cult: cultOf(d), faith: r.faith, born: A.S.year - c.age, status: slot === 4 ? 'gentry' : 'peasant', home: b.h, traits: CO.TEMPER_TRAIT[c.temper] ? [CO.TEMPER_TRAIT[c.temper]] : [] });
     p.skills.command = c.cmd; p.skills.tactics = Math.max(10, c.cmd - 6); p.skills.spear = Math.max(p.skills.spear || 0, 30 + c.cmd / 3);
     p.milRank = slot === 4 ? 5 : 4;
-    p.occ = (slot === 4 ? 'Senior Captain of the ' : 'Captain of the ') + (slot === 4 ? CO.bnName(d, i) : CO.coName(d, i, slot));
+    p.occ = (slot === 4 ? 'Commander of the ' : 'Captain of the ') + (slot === 4 ? CO.bnName(d, i) : CO.coName(d, i, slot));
     p.flags.coCap = A.S.year;
     p.coAt = { d: d.id, b: i, s: slot };
     CO.touch(b);
@@ -854,7 +854,7 @@
         // over inside the appointment (to the better of its sergeants, CO.slotClear)
         if (c.pid && A.POSTS && A.POSTS.appoint) A.POSTS.appoint(A.POSTS.coyKey(d.id, i, 4), c.pid, { why: 'promoted', force: true });
         else if (c.pid) (b.p = b.p || {})[4] = c.pid;
-        if (c.pid && c.person) { c.person.milRank = 5; c.person.occ = 'Senior Captain of the ' + CO.bnName(d, i); }
+        if (c.pid && c.person) { c.person.milRank = 5; c.person.occ = 'Commander of the ' + CO.bnName(d, i); }
         delete b.vac;
         CO.sat(d, i, 4, 15);
         for (const [jj, cc, o] of cand.slice(1)) if (o.cmd > c.cmd) CO.sat(d, jj, cc, -20);
@@ -1148,7 +1148,7 @@
     if (!c) return [];
     if (c.pid) return [c.pid];
     const key = 'cap:' + c.seed;
-    if (A.WC && A.WC.keepName) A.WC.keepName(key, (slot === 4 ? 'Senior Captain ' : 'Captain ') + c.name);
+    if (A.WC && A.WC.keepName) A.WC.keepName(key, (slot === 4 ? 'Commander ' : 'Captain ') + c.name);
     return [key];
   };
   // the man who led a division: its commander, its army's general, else its senior captain

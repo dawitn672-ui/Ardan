@@ -1167,7 +1167,7 @@
    "comp": {"standing":140000,"heavyHorse":6000,"lightHorse":4000,"elephants":600,"heavyFoot":18000,"spear":34000,"missile":21000,"other":56400},
    "fleet": {"ships":"About 200 war canoes and barges (rivers)","field":"About 60,000 in the dry season"},
    "coin": {"coin":"gold weight","worth":28.8},
-   "primer": {"intro":"The gold of the Golden Plains, whose weights set the price of gold from Sabra to Qadira; ivory, iron, cattle and the second-largest army in the world.","ruler":"Emperor Mosi III Kanemba, chief voice of all the ancestors, emperor since 1094 as his father's son; his left hand went numb in November 1104. Capital Zanara.","people and land":"11,000,000 people on 1,905,975 km², almost all human. State faith: the Thousand Ancestors; the High Rememberer can refuse to sing an emperor's line.","strength":"140,000 standing, 560,000 at full levy; built around a great spear host run by runners and drums and paid in gold. Fleet: about 200 war canoes and barges on the rivers.","three people to know":"Mosi III Kanemba, the emperor with the numb hand. Juma Kanemba, the Marshal whose riders march by night. Nia Tembo, who must cut the road to Atani before the May rains.","ties":"An uneasy treaty with Sahrim; a dispute with Abara over the Road Promise; the Scale Pact with Qadir and the Gold Road to Sabra, both since 1071; rivalry with Kesh, which fears a road that bypasses its ports."}
+   "primer": {"intro":"The gold of the Golden Plains, whose weights set the price of gold from Sabra to Qadira; ivory, iron, cattle and the second-largest army in the world.","ruler":"Emperor Mosi III Kanemba, chief voice of all the ancestors, emperor since 1094 as his father's son; his left hand went numb in November 1104. Capital Zanara.","people and land":"11,000,000 people on 1,905,975 km², almost all human. State faith: the Thousand Ancestors; the High Rememberer can refuse to sing an emperor's line.","strength":"140,000 standing, 560,000 at full levy; built around a great spear host run by runners and drums and paid in gold. Fleet: about 200 war canoes and barges on the rivers.","three people to know":"Mosi III Kanemba, the emperor with the numb hand. Juma Kanemba, the General whose riders march by night. Nia Tembo, who must cut the road to Atani before the May rains.","ties":"An uneasy treaty with Sahrim; a dispute with Abara over the Road Promise; the Scale Pact with Qadir and the Gold Road to Sabra, both since 1071; rivalry with Kesh, which fears a road that bypasses its ports."}
   },
   "POL-21": {
    "id": "POL-21",
@@ -1247,7 +1247,7 @@
    "comp": {"standing":80000,"heavyHorse":13000,"lightHorse":2000,"elephants":0,"heavyFoot":2000,"spear":39600,"missile":6500,"other":16900},
    "fleet": {"ships":"None","field":"About 25,000 from one host; 60,000 if both kings agree"},
    "coin": {"coin":"salt bar","worth":0.25},
-   "primer": {"intro":"The highland kingdom that holds the source of the Monuti, and so Tamar's harvest: coffee, cattle, stream gold, pike-held terraces, and two crowned kings who swap the crown every New Year's Day.","ruler":"Twin kings since 1090 under the Compact of 1053: Yared Asfari reigns in odd years and holds the crown for 1105; Yonas Asfari reigns in even years. Each keeps his own court, guard and host. Capital Abara.","people and land":"6,500,000 people on 737,900 km², almost all human. State faith: the Thousand Ancestors, with the royal ancestor houses at Abara.","strength":"80,000 standing in two hosts that have not fought together since 1049, 320,000 at full levy; built around pike hedges on chosen ground. No fleet.","three people to know":"Yared Asfari, the king of 1105, who calls his twin's promise void. Gebre Tsega, the Marshal holding Tamowa, quietly paid by a Zanari merchant. Tekle Asfari, the exiled prince who wants to come home.","ties":"Allied to Tamar since 989, taking a river gift each year; a dispute with Zanara; pepper comes up the Monundi from Kesh, searched by Yared's new toll-men; pays Tessar to keep Tekle on the Neck."}
+   "primer": {"intro":"The highland kingdom that holds the source of the Monuti, and so Tamar's harvest: coffee, cattle, stream gold, pike-held terraces, and two crowned kings who swap the crown every New Year's Day.","ruler":"Twin kings since 1090 under the Compact of 1053: Yared Asfari reigns in odd years and holds the crown for 1105; Yonas Asfari reigns in even years. Each keeps his own court, guard and host. Capital Abara.","people and land":"6,500,000 people on 737,900 km², almost all human. State faith: the Thousand Ancestors, with the royal ancestor houses at Abara.","strength":"80,000 standing in two hosts that have not fought together since 1049, 320,000 at full levy; built around pike hedges on chosen ground. No fleet.","three people to know":"Yared Asfari, the king of 1105, who calls his twin's promise void. Gebre Tsega, the General holding Tamowa, quietly paid by a Zanari merchant. Tekle Asfari, the exiled prince who wants to come home.","ties":"Allied to Tamar since 989, taking a river gift each year; a dispute with Zanara; pepper comes up the Monundi from Kesh, searched by Yared's new toll-men; pays Tessar to keep Tekle on the Neck."}
   },
   "POL-23": {
    "id": "POL-23",
@@ -1407,7 +1407,7 @@
    "comp": {"standing":64000,"heavyHorse":5000,"lightHorse":1200,"elephants":0,"heavyFoot":200,"spear":16200,"missile":28900,"other":12500},
    "fleet": {"ships":"None at sea","field":"About 24,000 in summer; 8,000 by sled in winter"},
    "coin": {"coin":"bear","worth":0.86},
-   "primer": {"intro":"The Lakeland: furs, beeswax, rye and the Dawn Church's oldest monasteries, ruled by a queen whose family cannot bear the sound of drums.","ruler":"Queen Milena Dravic, crowned in June 1085 as her father's daughter by Patriarch Kirill of Velgrad; the great lords meet as the Lake Council each New Year's Day. Capital Drevna.","people and land":"5,800,000 people on 693,175 km², nearly all human, with 46,400 half-orcs, 23,200 orcs and 17,400 dwarves. State faith: the Dawn Church, under a lesser Patriarch at Drevna.","strength":"64,000 standing, 280,000 at full levy; built around crossbows, ice and silence, an army that wins by waiting. No sea fleet; about 300 lake boats and 50 whaling boats.","three people to know":"Milena Dravic, who cannot command within sound of drums. Vadim Zorac, the Lord Marshal who holds the rye. Ludmila Dravic, the heir training with wax in her ears.","ties":"Hostile peace with Ughrak under the Treaty of Thardush (1066); rivalry with Velgrad; the Truce of Dobin with Hrimfell; rivalry of faith with Solenne; salt from Skyhold; marriage talks with Greyhaven."}
+   "primer": {"intro":"The Lakeland: furs, beeswax, rye and the Dawn Church's oldest monasteries, ruled by a queen whose family cannot bear the sound of drums.","ruler":"Queen Milena Dravic, crowned in June 1085 as her father's daughter by Patriarch Kirill of Velgrad; the great lords meet as the Lake Council each New Year's Day. Capital Drevna.","people and land":"5,800,000 people on 693,175 km², nearly all human, with 46,400 half-orcs, 23,200 orcs and 17,400 dwarves. State faith: the Dawn Church, under a lesser Patriarch at Drevna.","strength":"64,000 standing, 280,000 at full levy; built around crossbows, ice and silence, an army that wins by waiting. No sea fleet; about 300 lake boats and 50 whaling boats.","three people to know":"Milena Dravic, who cannot command within sound of drums. Vadim Zorac, the senior General who holds the rye. Ludmila Dravic, the heir training with wax in her ears.","ties":"Hostile peace with Ughrak under the Treaty of Thardush (1066); rivalry with Velgrad; the Truce of Dobin with Hrimfell; rivalry of faith with Solenne; salt from Skyhold; marriage talks with Greyhaven."}
   },
   "POL-27": {
    "id": "POL-27",
@@ -1607,7 +1607,7 @@
    "comp": {"standing":35000,"heavyHorse":4600,"lightHorse":2000,"elephants":0,"heavyFoot":9067,"spear":6200,"missile":6833,"other":6300},
    "fleet": {"ships":"12 galleys (Livia)","field":"Livia 14,000; Andros 13,000"},
    "coin": {"coin":"old Leontine","worth":0.36},
-   "primer": {"intro":"The Neck, the only land road between the Southland and the Eastland, torn by civil war since 1061: copper, cedar, road tolls, and two crowned claimants who deny each other exists.","ruler":"Two. Queen Livia Tessaran, crowned by the Temple at Tessar on 12 April 1061 on her father's disputed deathbed words. Prince Andros Tessaran, her cousin, proclaimed at Calossa the same day and crowned by the Dawn Church in 1062. Capital Tessar; Andros winters at Coreria.","people and land":"1,900,000 people on 182,575 km², almost all human. Faith split about half each between the Temple in the south and the Dawn Church in the north.","strength":"35,000 standing (Livia 18,000, Andros 17,000), 90,000 at full levy; built around a queen behind walls and engines with hired swords, and a prince in a winter camp who buys towns. Fleet: Livia's 12 galleys.","three people to know":"Livia Tessaran, the queen with the fire. Andros Tessaran, the prince who buys garrisons. Corvin Asterio, her Lord Marshal, who has sold copper to the enemy's mint since 1101.","ties":"Solenne backs Livia and Velgrad backs Andros; Ostra and Stonehold are creditors; Morhaven trades with both; Corvasse hires Livia 800 crossbowmen and Ulun sells her oil; old enmity with Tamar; Abara pays to keep its exiled prince here."}
+   "primer": {"intro":"The Neck, the only land road between the Southland and the Eastland, torn by civil war since 1061: copper, cedar, road tolls, and two crowned claimants who deny each other exists.","ruler":"Two. Queen Livia Tessaran, crowned by the Temple at Tessar on 12 April 1061 on her father's disputed deathbed words. Prince Andros Tessaran, her cousin, proclaimed at Calossa the same day and crowned by the Dawn Church in 1062. Capital Tessar; Andros winters at Coreria.","people and land":"1,900,000 people on 182,575 km², almost all human. Faith split about half each between the Temple in the south and the Dawn Church in the north.","strength":"35,000 standing (Livia 18,000, Andros 17,000), 90,000 at full levy; built around a queen behind walls and engines with hired swords, and a prince in a winter camp who buys towns. Fleet: Livia's 12 galleys.","three people to know":"Livia Tessaran, the queen with the fire. Andros Tessaran, the prince who buys garrisons. Corvin Asterio, her senior General, who has sold copper to the enemy's mint since 1101.","ties":"Solenne backs Livia and Velgrad backs Andros; Ostra and Stonehold are creditors; Morhaven trades with both; Corvasse hires Livia 800 crossbowmen and Ulun sells her oil; old enmity with Tamar; Abara pays to keep its exiled prince here."}
   },
   "POL-32": {
    "id": "POL-32",
@@ -2529,7 +2529,7 @@
    "people": 40000,
    "levy": 1200,
    "since": "891",
-   "notes": "Castellans of Vitia since 891; the house's power is the Lord Marshal's office."
+   "notes": "Castellans of Vitia since 891; the house's power is the senior General's office."
   },
   "FAM-112": {
    "id": "FAM-112",
@@ -3177,7 +3177,7 @@
    "people": 0,
    "levy": 0,
    "since": "612",
-   "notes": "No peerage: the Gate-Wardenship is an office (a marshal's rung in war)."
+   "notes": "No peerage: the Gate-Wardenship is an office (a General's rung in war)."
   },
   "FAM-415": {
    "id": "FAM-415",
@@ -5779,7 +5779,7 @@
    "ancestor": "General Cesare Montaro, Who Bled Laughing",
    "origin": "927",
    "story": "The first carrier was Ruggero Montaro, born at the citadel of Vitia in 927, grandson of the castellan Taddeo Montaro. His mother first noticed it when he was three and put his hand into the hearth to fetch a roasting chestnut, then laughed at the blister. He never cried when he fell, and he walked on a thorn in his heel for a week until it festered. In the winter of 952, as a young sergeant, he held the wall of the Montessa Gate all night against Crown foothill bandits who had come for the gate's grain. In the morning the castle surgeon found that his shin was broken;",
-   "significance": "In 1105 the laughing blood commands Varenna's army. Dario Montaro is Lord Marshal of 78,000 men and leader of the War Party, Vittor holds the Crown Road army of 9,000 at Ardata, and Ottavia leads the Laughing Company."
+   "significance": "In 1105 the laughing blood commands Varenna's army. Dario Montaro is Lord General of 78,000 men and leader of the War Party, Vittor holds the Crown Road army of 9,000 at Ardata, and Ottavia leads the Laughing Company."
   },
   "BLD-15": {
    "id": "BLD-15",
@@ -10270,106 +10270,52 @@
    "code": "M01",
    "title": "Soldier",
    "f": "Soldier",
-   "holds": "Himself or herself; stands in a mess of ten and a file of twenty",
+   "holds": "Himself or herself; stands in a mess of ten and a section of about twelve",
    "size": "1",
    "address": "by name; 'you there' to a stranger"
   },
   {
    "ladder": "military",
    "code": "M02",
-   "title": "File-Leader",
-   "f": "File-Leader",
-   "holds": "A file of twenty: two messes of ten who eat, march and sleep together. He leads one mess himself and the senior soldier of the other answers to him",
-   "size": "20",
-   "address": "'File-Leader'; 'Twenty-Man' in the north"
-  },
-  {
-   "ladder": "military",
-   "code": "M03",
    "title": "Sergeant",
    "f": "Sergeant",
-   "holds": "A section of two files (forty), the squad's left or right hand",
-   "size": "40",
-   "address": "'Sergeant'"
-  },
-  {
-   "ladder": "military",
-   "code": "M04",
-   "title": "Sergeant-Major",
-   "f": "Sergeant-Major",
-   "holds": "No command of his own: the company's senior non-commissioned man, who keeps the roll, the drill and the discipline for a company or a whole regiment",
-   "size": "200-3,200 (advises)",
-   "address": "'Sergeant-Major'; 'Old Sarge' behind his back"
+   "holds": "A section of about twelve who eat, march and sleep together; on its second step, two sections",
+   "size": "12-40",
+   "address": "'Sergeant'; 'Twelve-Man' in the north"
   },
   {
    "ladder": "military",
    "code": "M05",
-   "title": "Squad Captain",
-   "f": "Squad Captain",
-   "holds": "A squad of a hundred: his own file and two sections under their sergeants (20 + 40 + 40).",
-   "size": "100",
-   "address": "'Captain' (in the squad), 'Squad Captain' (in writing)"
-  },
-  {
-   "ladder": "military",
-   "code": "M06",
    "title": "Captain",
    "f": "Captain",
-   "holds": "A company of two hundred (two squads) with its sergeant-major, standard-bearer and horn",
-   "size": "200",
+   "holds": "A company of about two hundred with its sergeants, standard-bearer and horn; on its first step, the captain's second, half a company",
+   "size": "100-200",
    "address": "'Captain'"
   },
   {
    "ladder": "military",
    "code": "M07",
-   "title": "Senior Captain",
-   "f": "Senior Captain",
-   "holds": "A wing of four companies, or an elite corps of that size; the first rung that commands other captains",
-   "size": "800",
-   "address": "'Captain' to his face, 'Senior Captain' on the roll; 'Captain of Captains' in the Sunlands"
+   "title": "Commander",
+   "f": "Commander",
+   "holds": "A wing of three to fifteen companies; the first rung that commands other captains",
+   "size": "600-3,000",
+   "address": "'Commander'; 'Captain of Captains' in the Sunlands"
   },
   {
    "ladder": "military",
    "code": "M08",
-   "title": "Commander",
-   "f": "Commander",
-   "holds": "A regiment of four wings: the first rung that commands more than one kind of troop, and the first trusted with a mixed order of battle",
-   "size": "3,200",
-   "address": "'Commander'"
-  },
-  {
-   "ladder": "military",
-   "code": "M09",
    "title": "General",
    "f": "General",
-   "holds": "A battle of four regiments (van, main or rear, or a wing of the line), or an independent march or fortress command",
-   "size": "12,800",
-   "address": "'General'"
-  },
-  {
-   "ladder": "military",
-   "code": "M10",
-   "title": "High General",
-   "f": "High General",
-   "holds": "A field army of four battles, or a whole theatre; in the Sunlands often styled 'Captain-General', on a border 'Warden of the March'",
-   "size": "51,200",
-   "address": "'High General', 'Captain-General', 'Lord Warden'"
-  },
-  {
-   "ladder": "military",
-   "code": "M11",
-   "title": "Marshal",
-   "f": "Marshal",
-   "holds": "The whole field strength of a crown: every army, every theatre, every fleet that the sovereign does not lead in person.",
-   "size": "200,000 and up (or all of a small realm's host)",
-   "address": "'Lord Marshal', 'Marshal'"
+   "holds": "A host of two to five wings, as many men as one man can lead from one hill. The highest rank: there is no rank above it. One General to each host; the General of the crown's first host is the realm's senior General and speaks for the army at council. A General given the king's written word commands an army of several hosts for one campaign, a commission and not a rank",
+   "size": "3,000-12,000",
+   "address": "'General'; 'Captain-General' in the Sunlands, 'Lord Warden' on a border"
   },
   {
    "ladder": "military",
    "code": "M12",
    "title": "Supreme Commander",
    "f": "Supreme Commander",
-   "holds": "The sovereign, who commands every soldier in law and some in fact. Not a rank to be earned: it comes with the crown, the khan's tablet, the…",
+   "holds": "The sovereign, who commands every soldier in law and some in fact, and every army he leads in person. Not a rank to be earned: it comes with the crown, the khan's tablet, the…",
    "size": "all",
    "address": "the sovereign's own style"
   },
@@ -10576,7 +10522,7 @@
    "code": "O05",
    "title": "Great Officer",
    "f": "Great Officer",
-   "holds": "One of the crown's five or six: Lord Chancellor, Lord Treasurer, Chief Justice, Master of the Household, Admiral, Marshal",
+   "holds": "One of the crown's five or six: Lord Chancellor, Lord Treasurer, Chief Justice, Master of the Household, Admiral, General",
    "size": "",
    "address": "Lord Chancellor; My Lord"
   },
@@ -10639,7 +10585,7 @@
   "POL-01": {
    "style": "Emperor of Aldmark",
    "forms": "Jarl and Earl (count), Lord of a March (marquis), Lord (baron), Knight",
-   "command": "Marshal of the Empire (Crown Host) and Lords of the Marches"
+   "command": "General of the Empire (Crown Host) and Lords of the Marches"
   },
   "POL-02": {
    "style": "High Luminary (head of state, S04)",
@@ -10649,7 +10595,7 @@
   "POL-03": {
    "style": "King of Varenna",
    "forms": "Baron (about 400 barons and knights), Lord of a March (Ardane), Lord of a great town (Serafin)",
-   "command": "Lord Marshal; Captain-Generals of the Crown Road and Crown Coast"
+   "command": "Senior General; Captain-Generals of the Crown Road and Crown Coast"
   },
   "POL-04": {
    "style": "Doge (head of state, S04, for life)",
@@ -10703,13 +10649,13 @@
   },
   "POL-14": {
    "style": "King of Greyhaven (a Tidewell who has dived the harbor ring)",
-   "forms": "Lord of a house, Marshal of the Rift, Knight, ship-owners marrying into the peerage",
-   "command": "Admiral of the Channel; Marshal of the Rift on land"
+   "forms": "Lord of a house, General of the Rift, Knight, ship-owners marrying into the peerage",
+   "command": "Admiral of the Channel; General of the Rift on land"
   },
   "POL-15": {
    "style": "King of Morhaven (Falcone)",
    "forms": "Lord (about 150 knightly houses), horse-lords of the steppe edge, Dame",
-   "command": "Prince as Marshal of the Steppe March"
+   "command": "Prince as General of the Steppe March"
   },
   "POL-16": {
    "style": "First Banker (S04) elected by the Twelve",
@@ -10734,7 +10680,7 @@
   "POL-20": {
    "style": "Emperor of Zanara, Voice of the Ancestors (S01)",
    "forms": "Vassal King (S02 below the emperor), noble, Rememberer, governor",
-   "command": "Marshal of the Empire"
+   "command": "General of the Empire"
   },
   "POL-21": {
    "style": "Prince of Kesh (S03, sovereign prince)",
@@ -10744,7 +10690,7 @@
   "POL-22": {
    "style": "Twin Kings of Abara (S02 x 2)",
    "forms": "Lord of a valley (count), horse gentry, Rememberer",
-   "command": "Marshal of the Northern Host and Marshal of the Blue Host (two)"
+   "command": "General of the Northern Host and General of the Blue Host (two)"
   },
   "POL-23": {
    "style": "King of Hrimfell (Jotunhall line, chosen at the Thing)",
@@ -10759,12 +10705,12 @@
   "POL-25": {
    "style": "King of Velgrad (Sevrin); crowned by the Patriarch of Dawn",
    "forms": "Lord of the Lords' Bench (count and baron), Lord of a March, Patriarch of Dawn",
-   "command": "Lord Marshal"
+   "command": "Senior General"
   },
   "POL-26": {
    "style": "Queen of Drevna (Dravic)",
-   "forms": "Lake lord (count), Lord Marshal, Prince-Consort",
-   "command": "Lord Marshal"
+   "forms": "Lake lord (count), senior General, Prince-Consort",
+   "command": "Senior General"
   },
   "POL-27": {
    "style": "Abbot of the White Stair (S04); Steward rules until an abbot is 18",
@@ -10788,8 +10734,8 @@
   },
   "POL-31": {
    "style": "Queen Livia (Temple-crowned) and Prince Andros (Dawn-crowned)",
-   "forms": "Old imperial nobles, Lord Marshal, Lord Chancellor, Dame",
-   "command": "Lord Marshals of each claimant"
+   "forms": "Old imperial nobles, senior General, Lord Chancellor, Dame",
+   "command": "Senior Generals of each claimant"
   },
   "POL-32": {
    "style": "Sultan of Ambrel, Guardian of the Water (S02)",
@@ -13034,7 +12980,7 @@
   [
    1097,
    "Stanislav weds Zora Koren",
-   "Prince Stanislav of Velgrad marries Zora Koren, 20, daughter of the Lord Marshal Zoran Koren, in the Dawn Cathedral."
+   "Prince Stanislav of Velgrad marries Zora Koren, 20, daughter of the General Zoran Koren, in the Dawn Cathedral."
   ],
   [
    1097,
@@ -13533,8 +13479,8 @@
   ],
   [
    1104,
-   "The Marshal's camp at Atani",
-   "Marshal Juma Kanemba camps at Atani with 6,000 spearmen and 800 horse to guard 11,000 laborers cutting the east road."
+   "The General's camp at Atani",
+   "General Juma Kanemba camps at Atani with 6,000 spearmen and 800 horse to guard 11,000 laborers cutting the east road."
   ],
   [
    1104,
@@ -13629,7 +13575,7 @@
   [
    1104,
    "The rye held at Sevmir",
-   "Lord Marshal Vadim Zorac holds the 2,000 bushels of winter rye owed to Ughrak at Sevmir, saying the roads are unsafe."
+   "General Vadim Zorac holds the 2,000 bushels of winter rye owed to Ughrak at Sevmir, saying the roads are unsafe."
   ],
   [
    1104,

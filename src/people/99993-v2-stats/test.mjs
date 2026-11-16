@@ -491,7 +491,7 @@ export default {
         'After the battle, the captains reckon it: your counterattack countered their frontal assault +20%, drill, kit and experience −12%.',
         // (the playtest's realms were Solenne, Gorath, Abara and Zanara; this world's own realms stand in for them)
         `${RS[0]} sends 881,788 suns to ${RS[1]} for its war: the siege, in 1110.`, `${RS[2]} owes ${RS[1]} 402,000 suns from a loan of 1104, and has paid none of it back.`,
-        'You take a hit — 7 damage.', 'Your superiors notice the extra hours. (Merit +15)', 'For Senior Captain: merit 379/600, command skill 28/35, months at your present rank 1/16.',
+        'You take a hit — 7 damage.', 'Your superiors notice the extra hours. (Merit +15)', 'For Commander: merit 379/600, command skill 28/35, months at your present rank 1/16.',
         'In a fight: Crushed knee that never bends right: worth 45 to 43 (speed -7, stamina -3).', 'Captain Godric of Highwold (Cunning, command 56)'].map(w);
       const traits = Object.keys(GD.ORDERS || {}).flatMap(k => A.orderTraits(k));
       for (const l of lines.concat(traits)) if (LINE.test(l) || MORE.some(x => x.test(l)) || /%|\+\d/.test(l)) found.push('line: ' + l.slice(0, 90));

@@ -1188,7 +1188,7 @@ A.famMembers = function (hid) {
         m.role,
       )
     )
-      p.milRank = Math.max(0, Math.min(9, F.military.rank + (i === 0 ? 0 : -A.ri(0, 3))));
+      p.milRank = Math.max(0, Math.min(GD.MIL.length - 1, F.military.rank + (i === 0 ? 0 : -A.ri(0, 3))));
     if (F.rung && i === 0 && F.kind === "noble") p.title = F.title;
     h.members.push(p.id);
   });

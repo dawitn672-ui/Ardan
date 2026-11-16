@@ -2193,16 +2193,16 @@
     },
     // ---- Albina copper on the Neck Road, going north
     {
-      id: "cb_ww_ts_copper", title: "The marshal's inquiry",
+      id: "cb_ww_ts_copper", title: "The General's inquiry",
       cond: (p, C) => free(p, C) && C.flag(p, "ww_ts_copper") && since(p, "ww_ts_copper") >= 2,
       w: 3, once: true,
-      text: "You drove Albina copper north, and red-dawn soldiers waved you through every fort. Now the copper has turned up as Andros's coin, and Lord Marshal Corvin Asterio wants to know who drove it. His men are questioning carters of the Neck Road Guild, one by one. The guild master has told you to say nothing.",
+      text: "You drove Albina copper north, and red-dawn soldiers waved you through every fort. Now the copper has turned up as Andros's coin, and General Corvin Asterio wants to know who drove it. His men are questioning carters of the Neck Road Guild, one by one. The guild master has told you to say nothing.",
       choices: [
         { t: "Say nothing, as the guild says",
-          r: "The marshal's men question you for a day and get nothing. The guild master shakes your hand.",
+          r: "The General's men question you for a day and get nothing. The guild master shakes your hand.",
           fx: { wil: 1, rep: 2, favor: -2 } },
-        { t: "Tell the marshal's men who hired you",
-          r: "The guild master is taken. The marshal's men pay well. The other carters will not share a fire with you.",
+        { t: "Tell the General's men who hired you",
+          r: "The guild master is taken. The General's men pay well. The other carters will not share a fire with you.",
           fx: { coin: 30, favor: 4, honor: -2, newRel: { type: "enemy", op: -40 } } },
         { t: "Leave the Neck Road for a season",
           r: "You drive somewhere else, for less, until the inquiry runs out of carters.",
@@ -3024,7 +3024,7 @@
       id: "cb_pl_doubleagent", title: "The spy asks to come home",
       cond: (p, C) => C.ruler(p) && C.flag(p, "pl_doubleagent") && since(p, "pl_doubleagent") >= 2,
       w: 3, once: true,
-      text: "For two years the spy your guards caught has fed false letters to your neighbour, and your neighbour has planned against a realm that does not exist. Now the spy sends word: they are suspected, and want to come home, with a pardon and a pension. Your marshal says one more season of letters is worth more than one spy.",
+      text: "For two years the spy your guards caught has fed false letters to your neighbour, and your neighbour has planned against a realm that does not exist. Now the spy sends word: they are suspected, and want to come home, with a pardon and a pension. Your senior General says one more season of letters is worth more than one spy.",
       choices: [
         { t: "Bring the spy home, with the pardon",
           r: "The spy comes over the border at night and kneels to you. The letters stop. Your neighbour learns what they were.",

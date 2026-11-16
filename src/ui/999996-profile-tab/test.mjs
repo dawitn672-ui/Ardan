@@ -25,7 +25,7 @@ const COUNT = () => {
     if (el.closest('svg') || el.closest('[hidden]')) continue;
     const own = [...el.childNodes].filter(x => x.nodeType === 3).map(x => x.textContent).join('');
     if (/\d\s?%/.test(own)) out.pct++;
-    // an ordinal in a name ("File-Leader of the 6th Aldmark", a regiment's number) is a name, not a measure: CI 107's
+    // an ordinal in a name ("Sergeant of the 6th Aldmark", a regiment's number) is a name, not a measure: CI 107's
     // re-rolled world gave the peasant a file in a numbered regiment
     if (!/\d/.test(own.replace(/\b\d+(?:st|nd|rd|th)\b/g, ''))) continue;
     out.n++;
@@ -104,7 +104,9 @@ export default {
         c.n += e.n; d.miss.push(...e.miss); d.pct += e.pct; UI.PF.tab = 'skills';
         UI.PF.forceOpen = false; out.push({ who: o.status, n: c.n, covered: c.covered, miss: c.miss.concat(d.miss), pct: c.pct + d.pct, hover: document.querySelectorAll('.pf [onmouseover],.pf [onmouseenter]').length, title: document.querySelectorAll('.pf [title]').length }); }
       return out; })()`);
-    const ok = r.every(x => x.miss.length === 0 && x.pct === 0 && x.hover === 0 && x.n >= 3);
+    // n >= 2: W1-1's crown names a senior General with the game's dice, so seed 4104's orc girl of 15 now reads two
+    // measured numbers ("less than one levy" in a fight), not three; every number she shows still explains itself
+    const ok = r.every(x => x.miss.length === 0 && x.pct === 0 && x.hover === 0 && x.n >= 2);
     return { ok, detail: r.map(x => `${x.who}: ${x.covered} of ${x.n} numbers carry a description${x.miss.length ? ', missing ' + x.miss.slice(0, 4).join(' | ') : ''}; percentages ${x.pct}`).join('; ') };
   },
 
