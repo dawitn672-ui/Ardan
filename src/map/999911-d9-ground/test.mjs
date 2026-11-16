@@ -117,14 +117,23 @@ export default {
       A.newGame({ seed: 4242, realm: 'POL-05', status: 'noble', startAge: 30 });
       const G = D9.ground(); let rivers = 0, passes = 0, sample = null;
       for (const e of G.edges) { const x = D9.attack(e.a, e.b); if (!x) continue; if (/ford|bridge|none/.test(x.kind)) rivers++; if (/pass/.test(x.kind)) passes++; if (!sample) sample = x; }
-      let years = 0, named = [];
-      const recs = () => { const out = []; for (const w of A.S.wars.concat(A.S.pastWars || [])) for (const b of w.battles || []) if (b.aar) out.push(b.aar.map(c => c.label).join('; ')); return out; };
-      for (; years < 40; years++) { T.play(1); named = recs().filter(t => /\b(ford|bridge|pass|river)\b/i.test(t)); if (named.length && seen.length >= 3) break; if (!A.pc() || !A.pc().alive) break; }
-      A.fightDay = fd;
+      // the report: each fight's after-action reckoning as it ends (23-after-action's A.aarFight, which also goes on the war's
+      // battle record where the war keeps one), from the attacker's side
+      let years = 0; const named = [];
+      const fe = A.fightEnd;
+      A.fightEnd = function (pid) {
+        const F = A.S.fights && A.S.fights[pid];
+        let rep = null; try { rep = F && F.aarT && F.aarT.cross ? A.aarFight(F, true, true) : null; } catch (e) {}
+        const r = fe.apply(this, arguments);
+        if (rep) { const t = rep.causes.map(c => c.label).join('; '); if (/\b(ford|bridge|pass|river)\b/i.test(t)) named.push(t); }
+        return r;
+      };
+      for (; years < 40; years++) { T.play(1); if (named.length && seen.length >= 3) break; if (!A.pc() || !A.pc().alive) break; }
+      A.fightDay = fd; A.fightEnd = fe;
       return { rivers, passes, sample, seen: seen.slice(0, 5), nSeen: seen.length, years, named: named.slice(0, 3), nNamed: named.length };
     });
     const ok = r.rivers > 0 && r.passes > 0 && r.nSeen > 0 && r.seen.every(s => s.f < 1 && s.n) && r.nNamed > 0;
-    return { ok, detail: `roads across a river ${r.rivers}, over a pass ${r.passes} (e.g. ${JSON.stringify(r.sample)}); in ${r.years} years ${r.nSeen} fight days over a crossing (${r.seen.map(s => `${s.place}: x${s.f} ${s.n}`).join('; ')}); battle records naming it ${r.nNamed}: ${r.named.join(' | ')}` };
+    return { ok, detail: `roads across a river ${r.rivers}, over a pass ${r.passes} (e.g. ${JSON.stringify(r.sample)}); in ${r.years} years ${r.nSeen} fight days over a crossing (${r.seen.map(s => `${s.place}: x${s.f} ${s.n}`).join('; ')}); fights whose report names it ${r.nNamed}: ${r.named.join(' | ')}` };
   },
 
   // done-when 5: neighbouring realms never share a colour (on three worlds, the map as made and after 20 years)

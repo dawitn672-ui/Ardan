@@ -74,7 +74,7 @@ their bonus on top.
 | `d9Ground` | 3 seeds: high roads 189 to 202, tracks 601 to 630; every place on a road; every water a road crosses has a ford or bridge (0 missing); 27 to 67 passes; 129 to 171 tributaries; wood 27 to 42%, marsh 2 to 4%; seas, ranges, rivers, forests and passes named, all distinct; towns on water 73 to 84% (mean 78%) |
 | `d9Terrain` | 10 seeds: no oasis off dry land (0 to 11 retyped a seed, mean 6); the largest word 22 to 31% (hills in 8 seeds, forest once) |
 | `d9Play` | every high road 1.56x and every track 1.31x faster than the same way without one (march 1.53x, 1.32x); a journey across the map 257 days on roads against 282; supply lines on high roads or rivers 15 of 37 (0 without the ground) |
-| `d9AttackAcross` | 78 roads across a river, 66 over a pass; in two years of war 101 fight days over a crossing; 25 battle records name it |
+| `d9AttackAcross` | 78 roads across a river, 71 over a pass; a war's fights over a crossing, and their after-action reports name it ("The Newhurst Pass", "The ford near Madora") |
 | `d9RealmColors` | 3 worlds and one 20 years on: 0 neighbouring pairs share a colour (the closest pair 0.07 in OKLab, after 20 years) |
 | `d9OneMap` | `MAP.paint` draws the world tab, the full map, the war room and the atlas; redraw (main-thread CPU) at most about 22 ms |
 | `d9SaveAndPure` | the ground after a load is the same; nothing of it is saved; drawing every map is pure |
