@@ -1008,7 +1008,9 @@ A.findPatron = function (pc) {
   cands = [...new Set(cands)].filter(
     p2 => A.classOf(p2) >= Math.min(9, cls + 1) && !(pc.rel[p2.id] && pc.rel[p2.id].patron),
   );
-  let p = cands.length ? A.pick(cands) : null;
+  // [R2, D-080] a patron takes you up only on a base: the candidate whose reasons lean furthest decides (A.REACH);
+  // with none, a man of your own world (below) takes the interest
+  let p = A.REACH ? A.REACH.pickPatron(pc, cands) : cands.length ? A.pick(cands) : null;
   if (!p) {
     p = A.makeAcquaintance ? A.makeAcquaintance(pc, "mentor") : null;
     if (p)

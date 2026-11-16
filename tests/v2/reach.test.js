@@ -52,7 +52,7 @@ test('the risen baron agrees more often than the duke born to gold', () => {
 });
 
 test('need opens doors', () => {
-  const c = { act: 'audience', gap: 4, lowWord: 'peasant', highWord: 'count', yes: [] };
+  const c = { act: 'audience', gap: 4.5, lowWord: 'peasant', highWord: 'count', yes: [] };
   assert.equal(judge(EVEN, c).state, 'closed');
   const sword = Object.assign({}, c, { yes: [{ kind: 'want', weight: 1.6, label: 'he needs your sword' }] });
   const j = judge(EVEN, sword);

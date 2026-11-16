@@ -402,13 +402,20 @@ A.applyFx = function (pc, fx, ctx) {
         if (t) {
           if (pc.rel[t.id]) {
             if (v.op) A.addOp(pc, t, v.op);
-            if (v.type) {
+            // [R2, D-080] a close bond with someone far above you needs a base; the scene itself counts as one
+            const rb = v.type && A.REACH ? A.REACH.eventBond(pc, t, v.type) : null;
+            if (rb) out.push(`(${rb.msg})`);
+            if (v.type && !rb) {
               // [C6, D-057] a kin word only for kin the tree places (A.KIN.guard)
               const kg = A.KIN && A.KIN.guard ? A.KIN.guard(pc, t, v.type, v.back || v.type) : null;
               pc.rel[t.id].type = kg ? kg[0] : v.type;
               if (t.rel[pc.id]) t.rel[pc.id].type = kg ? kg[1] : v.back || v.type;
             }
-          } else A.link(pc, t, v.type || "acquaint", v.op || 0, v.back || v.type || "acquaint");
+          } else {
+            const rb = v.type && A.REACH ? A.REACH.eventBond(pc, t, v.type) : null;
+            if (rb) out.push(`(${rb.msg})`);
+            A.link(pc, t, rb ? rb.keep : v.type || "acquaint", v.op || 0, rb ? rb.keep : v.back || v.type || "acquaint");
+          }
         }
         break;
       case "newRel": {
@@ -1257,6 +1264,9 @@ A.getToKnow = function (pid) {
       ok: false,
       msg: "You cannot spare the time for that today.",
     };
+  // [R2, D-080] every relationship needs a base: a man far above you may not let you near (A.REACH, 9999960-reach)
+  const gate = A.REACH ? A.REACH.knowGate(pc, t) : null;
+  if (gate) return gate;
   A.S.time -= A.knowCost;
   const ro = A.roster(pc).find(x => x.p.id === pid),
     gap = A.classOf(t) - A.classOf(pc),

@@ -40,7 +40,7 @@ export const ACTS = {
   patron: { k: .85, will: 'take you up', wont: 'take you up' },
 };
 export const T = {
-  step: .7,      // log-odds per step of standing beyond the first, before the act and his pride
+  step: .6,      // log-odds per step of standing beyond the first, before the act and his pride
   near: 1,       // a gap of this or less is near-equals: no decision (what works for them is kept)
   band: 1.5,     // options within this of the best go to the draw (why.js's default)
   gold: .4,      // born to gold: against
@@ -52,6 +52,7 @@ export const T = {
 };
 
 const n = x => (isFinite(x) ? +x : 0);
+const an = w => (/^[aeiou]/i.test(String(w)) ? 'an ' : 'a ') + w;
 const R = (kind, weight, label, source, pub) => ({ kind, weight, label, source: source || null, pub: pub ? 1 : 0 });
 // his words for a woman: the wiring passes c.she
 const her = s => String(s).replace(/\bhimself\b/g, 'herself').replace(/\bhe\b/g, 'she').replace(/\bHe\b/g, 'She').replace(/\bhis\b/g, 'her').replace(/\bhim\b/g, 'her');
@@ -60,7 +61,7 @@ export function options(c) {
   const act = ACTS[c.act] || ACTS.know, tr = c.traits || [], has = t => tr.includes(t);
   const yes = [], no = [];
   const gap = Math.max(0, n(c.gap) - T.near);
-  if (gap > 0) no.push(R('station', act.k * T.step * gap, `a ${c.lowWord || 'commoner'} is far beneath a ${c.highWord || 'lord'}`, { t: 'gap', g: n(c.gap) }, 1));
+  if (gap > 0) no.push(R('station', act.k * T.step * gap, `${an(c.lowWord || 'commoner')} is far beneath ${an(c.highWord || 'lord')}`, { t: 'gap', g: n(c.gap) }, 1));
   if (c.born === 'gold') no.push(R('station', T.gold, 'born to gold, he has never had to look down', { t: 'born' }, 1));
   if (c.born === 'low') yes.push(R('sympathy', T.risen, `he was born ${c.origWord || 'low'} himself`, { t: 'born' }, 1));
   if (has('cruel')) no.push(R('station', T.cruel, 'he likes to see a man refused', { t: 'trait', k: 'cruel' }));

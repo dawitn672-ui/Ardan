@@ -1232,7 +1232,9 @@ A.interactOptions = function (pc, t) {
     )
       out.push("swear");
   }
-  return out;
+  // [R2, D-080] an act out of reach (a peasant courting a duchess, asking a king for money) is not offered; the person
+  // view says why (A.REACH.closedLine)
+  return A.REACH ? A.REACH.filterOpts(pc, t, out) : out;
 };
 
 A.interact = function (tid, key, arg) {
@@ -1264,9 +1266,12 @@ const interactNow = function (tid, key, arg) {
       ok: false,
       msg: "You cannot spare the time for that today.",
     };
-  if (!pc.rel[tid]) A.link(pc, t, "acquaint", 0, "acquaint");
+  // [R2, D-080] an act that needs a base he does not see is refused with his reason (A.REACH.interactGate); an
+  // attempt within reach is his decision (A.WHY), and counts as done
+  const gate = A.REACH ? A.REACH.interactGate(pc, t, key) : null;
+  if (!gate && !pc.rel[tid]) A.link(pc, t, "acquaint", 0, "acquaint");
   const r = pc.rel[tid],
-    res = A.INT_FN[key](pc, t, r, arg);
+    res = gate || A.INT_FN[key](pc, t, r, arg);
   if (
     (res.ok !== false &&
       ((pc.flags.ints[ik] = count + 1), I.cost && (A.S.time -= I.cost), res.msg && A.log(res.msg, res.cls || "")),

@@ -1264,7 +1264,7 @@ var __ARDAN_V2_MAKE = (() => {
     patron: { k: 0.85, will: "take you up", wont: "take you up" }
   };
   var T2 = {
-    step: 0.7,
+    step: 0.6,
     // log-odds per step of standing beyond the first, before the act and his pride
     near: 1,
     // a gap of this or less is near-equals: no decision (what works for them is kept)
@@ -1287,13 +1287,14 @@ var __ARDAN_V2_MAKE = (() => {
     // his opinion of you: op / 25, at most 3, for (or against when below zero)
   };
   var n = (x) => isFinite(x) ? +x : 0;
+  var an = (w) => (/^[aeiou]/i.test(String(w)) ? "an " : "a ") + w;
   var R = (kind, weight, label, source, pub) => ({ kind, weight, label, source: source || null, pub: pub ? 1 : 0 });
   var her = (s) => String(s).replace(/\bhimself\b/g, "herself").replace(/\bhe\b/g, "she").replace(/\bHe\b/g, "She").replace(/\bhis\b/g, "her").replace(/\bhim\b/g, "her");
   function options(c) {
     const act = ACTS[c.act] || ACTS.know, tr = c.traits || [], has = (t) => tr.includes(t);
     const yes = [], no = [];
     const gap = Math.max(0, n(c.gap) - T2.near);
-    if (gap > 0) no.push(R("station", act.k * T2.step * gap, `a ${c.lowWord || "commoner"} is far beneath a ${c.highWord || "lord"}`, { t: "gap", g: n(c.gap) }, 1));
+    if (gap > 0) no.push(R("station", act.k * T2.step * gap, `${an(c.lowWord || "commoner")} is far beneath ${an(c.highWord || "lord")}`, { t: "gap", g: n(c.gap) }, 1));
     if (c.born === "gold") no.push(R("station", T2.gold, "born to gold, he has never had to look down", { t: "born" }, 1));
     if (c.born === "low") yes.push(R("sympathy", T2.risen, `he was born ${c.origWord || "low"} himself`, { t: "born" }, 1));
     if (has("cruel")) no.push(R("station", T2.cruel, "he likes to see a man refused", { t: "trait", k: "cruel" }));
@@ -4688,10 +4689,10 @@ var __ARDAN_V2_MAKE = (() => {
     const wideA = (P.wide + (male ? 0 : -0.012)) * H * (1 + 0.1 * mu);
     F.leg = side.map((s, i) => {
       const free = (sway >= 0 ? -1 : 1) === s ? Math.abs(sway) : 0;
-      const an = [s * wideA / 2 + cx * 0.35 + s * free * H * 0.012, y.ankle], hip = F.hipJ[i];
-      const kn = add(mix2(hip, an, 0.5), [s * H * (4e-3 + 0.015 * free), -B * 0.012 + free * H * 5e-3]);
+      const an2 = [s * wideA / 2 + cx * 0.35 + s * free * H * 0.012, y.ankle], hip = F.hipJ[i];
+      const kn = add(mix2(hip, an2, 0.5), [s * H * (4e-3 + 0.015 * free), -B * 0.012 + free * H * 5e-3]);
       const toe = rad(s * (16 + 16 * free + (male ? 4 : -4)));
-      return { hip, kn, an, toe, free, s };
+      return { hip, kn, an: an2, toe, free, s };
     });
     F.arm = side.map((s, i) => {
       const A = P.arm[i], S = F.shJ[i], fs = A.fs || [1, 1], L1 = F.armL[0] * fs[0], L2 = F.armL[1] * fs[1];
@@ -6003,7 +6004,7 @@ var __ARDAN_V2_MAKE = (() => {
       const R0 = form === "flail" ? 34 : 42, cc = F.W(c[0], c[1]), n3 = 8;
       let sp = "";
       for (let i = 0; i < n3; i++) {
-        const an = i / n3 * Math.PI * 2 + 0.2, ca = Math.cos(an), sa = Math.sin(an), w2 = q === 0 ? 4 : 8, len2 = R0 * (q === 0 ? 1.5 : 1.75);
+        const an2 = i / n3 * Math.PI * 2 + 0.2, ca = Math.cos(an2), sa = Math.sin(an2), w2 = q === 0 ? 4 : 8, len2 = R0 * (q === 0 ? 1.5 : 1.75);
         sp += polyline(F.P([[c[0] + ca * R0 * 0.8 - sa * w2, c[1] + sa * R0 * 0.8 + ca * w2], [c[0] + ca * len2, c[1] + sa * len2], [c[0] + ca * R0 * 0.8 + sa * w2, c[1] + sa * R0 * 0.8 - ca * w2]]), true);
       }
       S.both(sp, st.l, st.k, 0.9);
@@ -7441,8 +7442,8 @@ var __ARDAN_V2_MAKE = (() => {
         S.stroke(polyline([add(G.an, [sg * F.legR[3] * 0.8, F.footL * 0.12]), a, b]), g2.b, 2);
         let d = "";
         for (let k = 0; k < 6; k++) {
-          const an = k * Math.PI / 3, q = F.footL * 0.05;
-          d += `M${n1(b[0])} ${n1(b[1])}l${n1(Math.cos(an) * q)} ${n1(Math.sin(an) * q)}`;
+          const an2 = k * Math.PI / 3, q = F.footL * 0.05;
+          d += `M${n1(b[0])} ${n1(b[1])}l${n1(Math.cos(an2) * q)} ${n1(Math.sin(an2) * q)}`;
         }
         S.stroke(d, g2.k, 1.6);
         S.stroke(d, g2.l, 0.8);
