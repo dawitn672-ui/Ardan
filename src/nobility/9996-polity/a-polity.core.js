@@ -428,7 +428,7 @@ POL.makeFor = function (r, k) {
   // A2: ages 30-55 are a human's; an elf or a dwarf made for an office is as far into his adult years (an elf reeve of
   // 37 held an office twelve years before his people's age of majority)
   if (!A.isAdult(p)) p.born = A.S.year - Math.round((A.S.year - p.born) * GD.RACES[p.race].adult / 16);
-  if (e === 'burg') { p.status = 'merchant'; p.skills.stewardship = Math.max(p.skills.stewardship || 0, A.ri(25, 55)); }
+  if (e === 'burg') { p.status = 'merchant'; A.SK.raiseTo(p, 'stewardship', A.ri(25, 55), 'made a burgher'); }
   if (e === 'cler') { p.job = { c: 'clergy', r: 3 }; p.flags.priest = A.S.year; p.literate = true; }
   if (e === 'army') p.mil = { rank: 4, xp: 0 };
   POL.stats.made++;

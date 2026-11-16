@@ -878,7 +878,7 @@ A.inherit = function (from, to) {
       if (x.k === "taught")
         for (const k of Object.keys(from.skills))
           if (A.skill(from, k) >= 40 && A.skill(to, k) < A.skill(from, k) * 0.45)
-            to.skills[k] = Math.max(to.skills[k] || 0, Math.round(A.skill(from, k) * 0.45));
+            A.SK ? A.SK.raiseTo(to, k, Math.round(A.skill(from, k) * 0.45), "taught by a parent") : (to.skills[k] = Math.max(to.skills[k] || 0, Math.round(A.skill(from, k) * 0.45)));
     }
 };
 

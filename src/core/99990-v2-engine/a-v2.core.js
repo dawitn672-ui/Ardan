@@ -1393,6 +1393,7 @@ var __ARDAN_V2_MAKE = (() => {
         x *= a.mul;
         if (a.mulTag) tags.push(a.mulTag);
       }
+      if (a.q === "work" && q < 0.1) tags.push("asks nothing new");
       const teach = a.teacher != null ? teacherMul(value(a.teacher), L, a.good || 0) : 1;
       if (teach > 1) {
         x *= teach;
@@ -1473,7 +1474,7 @@ var __ARDAN_V2_MAKE = (() => {
         }
         x = 0;
       }
-      if (s.lv === 0 && x > 0) rec(p, age, k, "born", `${SKILL[k].name}: first tried (${a.why})`);
+      if (s.lv === 0 && !(s.xp > 0) && x > 0) rec(p, age, k, "born", `${SKILL[k].name}: first tried (${a.why})`);
       if (x < 0) x = 0;
       s.xp += x;
       s.used = age;

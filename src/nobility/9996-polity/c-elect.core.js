@@ -223,7 +223,7 @@ if (FW && typeof FW.election === 'function') {
     try {
       const ka = A.P(me.ruler);
       const h = A.genNoble(me.id, 'noble', null, A.ri(34, 56), 'M');
-      h.sur = 'Harovi'; h.surMode = 'house'; h.skills.command = Math.max(h.skills.command || 0, 45); h.fame = Math.max(h.fame || 0, 40);
+      h.sur = 'Harovi'; h.surMode = 'house'; A.SK.raiseTo(h, 'command', 45, 'raised to lead'); h.fame = Math.max(h.fame || 0, 40);
       const kname = ka ? A.fullName(ka, false) : 'The Spear-Lord';
       if (A.chance(clamp(0.25 + (me.legit || 50) / 250 + (me.stability || 50) / 400, 0.3, 0.7))) {
         me.gov = 'hereditary';

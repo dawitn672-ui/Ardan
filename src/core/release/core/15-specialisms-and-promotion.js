@@ -1569,22 +1569,9 @@ A.growthYear = function (pc) {
   pc.habit = pc.habit || {};
   for (const k in pc.habitY || {}) pc.habit[k] = pc.habitY[k] === y ? (pc.habit[k] || 0) + 1 : 0;
   for (const k in pc.habit) if (!pc.habitY || pc.habitY[k] !== y) pc.habit[k] = 0;
-  const used = pc.used || {},
-    rusted = [];
-  for (const k in pc.skills) {
-    const v = pc.skills[k] || 0;
-    if (v < 30 || (used[k] != null && y - used[k] < 2)) continue;
-    const loss = (v - 30) * 0.03 * (A.age(pc) > (GD.RACES[pc.race] || {}).primeEnd ? 1.4 : 1);
-    if (loss >= 0.25) {
-      pc.skills[k] = v - loss;
-      if (loss >= 0.8) rusted.push(GD.SKILLS[k] || k);
-    }
-  }
-  if (rusted.length)
-    A.log(
-      `Out of practice: ${rusted.slice(0, 3).join(", ")} ${rusted.length > 1 ? "are" : "is"} getting rusty.`,
-      "warn",
-    );
+  // S1b (D-072): the two-year rust (3% a year of what stood above 30) is retired; disuse is the growth standard's, in
+  // levels, with its grace by word and kind (src/people/36-skills, A.SK.year)
+  if (A.SK && A.SK.year) A.SK.year(pc);
 };
 
 A.PROMO_REQ = {

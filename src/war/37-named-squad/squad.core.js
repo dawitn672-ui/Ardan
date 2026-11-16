@@ -35,7 +35,8 @@
           const rec = p.sq = Object.assign({ n: 0, y: A.S.year }, SQ.record(p));
           const before = SQ.standing(p);
           rec.n++; rec.last = A.S.year; if (good) rec.won = (rec.won || 0) + 1;
-          for (const k of skills) p.skills[k] = Math.min(90, (p.skills[k] || 20) + (good ? 1.5 : 0.8));
+          // S1b: a fight is a stretch for the squad's men, through the one door (A.gainXp)
+          for (const k of skills) A.gainXp(p, k, good ? 1.5 : 1, { q: 'stretch', d: A.SK.lvOf(p, k) + 1, failed: !good, why: 'a fight with the squad' });
           const now = SQ.standing(p);
           if (now && now !== before) A.log(`${p.given} has come back from ${rec.n} missions with you now: ${now}. The new men watch what ${A.he(p)} does.`, 'good');
         }

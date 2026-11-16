@@ -212,6 +212,7 @@ export function month(p, age, acts = [], ctx = {}) {
     let q = quality({ q: a.q, demand: a.demand != null ? value(a.demand) : undefined, d: a.d != null ? value(a.d) : undefined, failed: a.failed }, L);
     let x = XP_UNIT * a.eu * q * tm * learnAge(k, age) * (ctx.cond ?? 1);
     if (a.mul != null && a.mul !== 1) { x *= a.mul; if (a.mulTag) tags.push(a.mulTag); }
+    if (a.q === 'work' && q < 0.1) tags.push('asks nothing new');
     const teach = a.teacher != null ? teacherMul(value(a.teacher), L, a.good || 0) : 1;
     if (teach > 1) { x *= teach; tags.push('teacher'); }
     if (L >= reach) { x *= PAST_REACH; tags.push('past your talent\'s reach'); }
@@ -231,7 +232,7 @@ export function month(p, age, acts = [], ctx = {}) {
       if (s.rust <= 0.01) { s.rust = 0; rec(p, age, k, 'rust', `${SKILL[k].name} is sharp again`); }
       x = 0;
     }
-    if (s.lv === 0 && x > 0) rec(p, age, k, 'born', `${SKILL[k].name}: first tried (${a.why})`);
+    if (s.lv === 0 && !(s.xp > 0) && x > 0) rec(p, age, k, 'born', `${SKILL[k].name}: first tried (${a.why})`);
     if (x < 0) x = 0;
     s.xp += x; s.used = age; led(p, age, k, x, a.why, tags);
     const T = touched[k] || (touched[k] = { q: 0, why: a.why, x: 0, trig: [], teacherHolds: false });

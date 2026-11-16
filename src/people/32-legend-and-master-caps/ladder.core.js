@@ -34,7 +34,7 @@
       if (L && !room && L.id !== before && A.fightWorth(L) >= 91) {
         const ws = Object.keys(L.skills).filter(k => ['melee', 'sword', 'axe', 'spear', 'lance', 'mounted', 'shield', 'bow', 'xbow', 'dagger', 'dualwield'].includes(k));
         for (let i = 0; i < 80 && A.fightWorth(L) >= 88; i++) {
-          for (const k of ws) L.skills[k] = Math.max(50, L.skills[k] - 2);
+          for (const k of ws) A.SK.put(L, k, Math.max(50, L.skills[k] - 2), 'the ladder has no room');
           for (const s of ['spd', 'ins', 'str', 'sta', 'wil']) L.st[s] = Math.max(40, L.st[s] - 1);
         }
       }
