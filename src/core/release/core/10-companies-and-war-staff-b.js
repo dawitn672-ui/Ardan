@@ -475,7 +475,10 @@ A.forcesAI = function (r) {
     for (let k = 0; k < 4 && standing + F.queue.reduce((a, q) => a + q.men, 0) < base * 0.92; k++) {
       const tid = A.wpick(tids, t => F.tpl[t].share || 1),
         s = A.tplS(r.id, tid);
-      if (!(s && r.roll > s.men * 2 && r.treasury > s.men * 6) || !A.trainDiv(r, tid).ok) break;
+      // [W1-4] the roll is a fifth of the old pool: a regiment is raised once the roll holds half its men (the pool
+      // needed twice them; a small realm's regiment starts under strength, A.trainDiv), and a kind too large for the roll is passed over for another rather than ending the year's raising
+      if (!(s && r.roll >= s.men * (A.MEN ? 0.5 : 2) && r.treasury > s.men * 6)) { if (A.MEN) continue; break; }
+      if (!A.trainDiv(r, tid).ok) break;
     }
   else if (r.army > base * 1.4 && F.divs.length > 1 && !war) {
     const d = F.divs.filter(x => !x.call).sort((a, b) => a.men - b.men)[0];

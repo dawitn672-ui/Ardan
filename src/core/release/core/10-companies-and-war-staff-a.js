@@ -3467,28 +3467,31 @@ A.trainDiv = function (r, tid) {
       ok: false,
       msg: "The drill yards are full (8 divisions in training).",
     };
-  if (r.roll < s.men)
+  // [W1-4] the roll is a fifth of the old pool: with half a regiment's men on it, the regiment is raised under strength
+  // and filled from the roll as it grows
+  const men = A.MEN && r.roll < s.men && r.roll >= s.men * 0.5 ? Math.floor(r.roll) : s.men;
+  if (r.roll < men)
     return {
       ok: false,
-      msg: `Not enough manpower: need ${A.fmt(s.men)}, have ${A.fmt(r.roll)}.`,
+      msg: `Not enough men on the roll: need ${A.fmt(men)}, have ${A.fmt(r.roll)}.`,
     };
-  const cost = Math.round(s.men * 4 + s.cost * 6);
+  const cost = Math.round(men * 4 + s.cost * 6 * (men / s.men));
   if (r.treasury < cost)
     return {
       ok: false,
       msg: `Raising it costs ${A.coin(cost)}.`,
     };
-  r.roll -= s.men;
+  r.roll -= men;
   r.treasury -= cost;
   const days = Math.round(90 + s.n * 6 + (s.cats.horse + s.cats.beast) * 12);
   r.forces.queue.push({
     tpl: tid,
-    men: s.men,
+    men,
     left: days,
     days,
   });
   return {
     ok: true,
-    msg: `${A.fmt(s.men)} men called up. They will be ready in about ${Math.round(days / 30)} months.`,
+    msg: `${A.fmt(men)} men called up. They will be ready in about ${Math.round(days / 30)} months.`,
   };
 };
