@@ -1068,3 +1068,13 @@ Branch `p3-playtest` from `v2-integration` at `2aaf1ba`; one commit a fix; not p
   no contradiction, no check rose.
 - **Undo:** revert the five commits, newest first; to bring the ambitions or chapters back, move their folders from
   `archive/` into `src/events/` and restore their manifest stages.
+
+### H-066 · 2026-11-16 · The old Ardan Codex reviewed (research only)
+- **Asked:** the owner uploaded an old, outdated Codex (the Far Lands, 1105) and asked what in it is useful.
+- **Docs:** `docs/research/codex-review.md` (what it is, what matches, contradicts or is gone, 12 useful items by work item,
+  recommendations); `docs/research/codex/reasons-and-cracks.md` and `docs/research/codex/martial-concepts.md` (plain lifts, no
+  code); the file itself as `docs/research/ardan-codex-old.html`. `docs/README.md` indexes them.
+- **Found:** its data is already in `archive/` (99-far-lands, 990 to 993, retired in H-001); it adds prose, quarrels, money and
+  chokepoint tables, realm secrets. Outdated: military templates, Marshal, levies (the war score is not in it).
+- **Game:** nothing. No code, data or test changed.
+- **Undo:** revert the branch `codex-review` commits.
