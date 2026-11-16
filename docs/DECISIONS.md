@@ -1361,3 +1361,56 @@ skills with levels and expierience. dynamic growth mechanics". **Design:** `docs
   `tools/release/identity-probe.mjs` before and after.
 **Not decided here:** talent's hiding and budget (G1), languages as skills (G3), the image-model work (order 60).
 
+### D-071 · Order 62: the route to the App Store is Capacitor 8 (SPM), Codemagic, TestFlight; not Appflow, not EAS (2026-11-16 03:30 ET)
+**Chosen** (owner order 62, rule 21; research and sources in `docs/IOS_ROADMAP.md`, the how-to in
+`.claude/skills/ios-capacitor-release`): the one-file web game is wrapped in **Capacitor 8** (today 8.6.2, Node 22+,
+Xcode 26+, the iOS project made with **Swift Package Manager**, `ios/App/App.xcodeproj`, no CocoaPods); built, signed
+(Codemagic's automatic signing with the owner's App Store Connect API key) and uploaded by **Codemagic** on its cloud Mac
+from the GitHub repo, with a hand-started workflow in `codemagic.yaml`; tested through **TestFlight**; then App Review.
+**Not chosen:** Ionic Appflow (no new customers since 2025-02-11, access ends 2027-12-31); Expo EAS Build (made for Expo
+and React Native; nothing documented for Capacitor); a Mac of our own (the owner has none); CocoaPods (no longer
+Capacitor's default; one more tool on the build machine). **Why:** the only route that needs no Mac, keeps the game one
+web page, and uses each vendor's documented path. **The owner's six facts** were re-checked 2026-11-16: 1, 2 and 5
+confirmed (with additions: Capacitor 8.5 adopted UIScene for Xcode 27; saves are too big for Preferences); 3 confirmed for
+Appflow, a nuance for EAS; 4 confirmed for Safari from iOS 17, unverified inside WKWebView; 6 confirmed for 4.2, while
+offline, no selection, no zoom and no bounce are practice rather than guideline text (kept as rules). **Revisit:** when
+Capacitor 9 is stable (it needs Xcode 27 and iOS 16) and when Apple posts an Xcode 27 deadline.
+
+### D-075 · The iPhone build's shape (2026-11-16 03:30 ET; with D-071)
+1. **The shell lives in `app/`**, a Capacitor project of its own (`app/package.json`, `app/capacitor.config.ts`,
+   `app/ios/`, `app/www/` ignored by git). The game's `package.json`, CI and tests stay as they are; SPM's
+   `Package.swift` points at the plugins in `app/node_modules` by relative path. The iOS project is made and kept on Linux
+   (`npx cap add ios` works without a Mac, checked) and committed; Codemagic only syncs and builds.
+2. **`www/` is the one-file page first** (`node tools/build.mjs --out=app/www/index.html`), exactly what CI tests; a split
+   build (plain script files, `script-src 'self'`, the worker as a file) only if a TestFlight build misses the load
+   budget on a real iPhone. The blob worker's CSP question under `capacitor://localhost` is left to that build: the
+   worker already falls back to the main thread.
+3. **Saves go to `@capacitor/filesystem`** (one file a slot under `Directory.Library`, keeping the four-slot rotation),
+   **settings and small keys to `@capacitor/preferences`**; IndexedDB and localStorage stay the web build's. Saves are
+   300 to 840 KB gzipped and Preferences is for "lightweight data". One switch under `SAVES` and one under `UI.store`;
+   nothing else in the game knows. Export goes through Filesystem and the Share sheet.
+4. **iPhone only, portrait only** (`TARGETED_DEVICE_FAMILY = 1`, portrait in Info.plist): the phone layout is the one
+   built and tested; iPad would add its own screenshots, layouts and review. Revisit after the first release.
+5. **Deployment target iOS 17.0** (Capacitor allows 15): `navigator.audioSession` (fact 4) and `dvh` exist from 17 and 15.4,
+   and every iPhone that runs 17 has a screen of at least 375 points.
+6. **Audio session `playback` while sound or music is on** (in the page, and `.playback` with `.mixWithOthers` in the
+   shell): the player who turned sound on hears it with the silent switch on; with both off nothing is set. *Considered:*
+   `ambient` (mixes, but muted by the switch, which players read as broken sound).
+7. **Plugins are reached as `window.Capacitor.Plugins.<Name>`**, injected by the native side, always guarded, so the page
+   needs no bundler and the web build is unchanged.
+8. **Builds start by hand** on the free M2 machine (500 minutes a month); `xcode:` is pinned and moved on purpose.
+
+### D-076 · The build rules read against the code (2026-11-16 03:30 ET; order 62, rule 21)
+The audit (`docs/IOS_ROADMAP.md` §7) found these conflicts between the rules and the code; each fix is in the roadmap §8 and
+`docs/PROGRESS.md` I1:
+1. **"One canvas for the map and the war map"**: the game has nine canvases (title strip, world, full map, war room, battle,
+   camp, big map, atlas, help strip), one on screen at a time. Read as **one canvas per map on screen, sharing one tile
+   cache**, each freed when its screen closes (D9); not one DOM canvas for all screens.
+2. **"Nothing on keys"**: the 13 key handlers are shortcuts beside buttons and stay; a key-only path would break the rule.
+3. **The war map's right-click order stays**: a tap on the same place gives the same order.
+4. **`vh` to `dvh`** keeps a `vh` line before each `dvh` for old engines; with iOS 17 as the floor (D-075) it is only for
+   the web build.
+5. **The dead mouse-hover tooltip code** in the release (`UI.tipsInit`, replaced by 59-descriptions) goes to `archive/`
+   when I1-2 touches it, not before.
+6. **Text selection is turned off** everywhere but inputs; the chronicle's export keeps the text the player may want to copy.
+
