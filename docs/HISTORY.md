@@ -948,3 +948,14 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - CI 128 (`f28a996`) failed only `lfRepeats` (with the first-life fixes 10.1 prompts a year against 13.5 without, 0.748
   against a bar of 0.75; it read 0.77 before X3 part 2's gates). 97 cuts repeats by design; the bar is 0.7 of off's.
 
+### H-059 · 2026-11-16 · T1: two test tiers, shards by time
+- The owner asked to cut the long testing. Measured from 14 CI shard logs (`/tmp/ardan/ci*.txt`, four workers a job): 852
+  tests, about 14 CPU-hours; 42 tests of 200 to 1,800 s (kinBotLives, temperMovesTheWar, worldArcsInBotLives, rivalsBotLives, pcLives,
+  aoArcsEveryBranch, ...) are 28,400 s of it, and the old `i % 8` split put several of them in one shard (35 to 45 minutes a run).
+- `tests/run.mjs`: `--tier=quick|long|all`, shards balanced by `tests/test-times.json` (longest first onto the lightest shard,
+  and run longest first within a shard), `--plan`, `--check-tiers`, `--times-out=`; `tests/long-tests.json`; `tools/test-times.mjs`;
+  `tools/check.mjs` runs `--check-tiers`. `check.yml` runs the quick tier (estimate: 810 tests, 12 minutes a shard); new `long.yml`
+  runs the long tier nightly, on demand, on `[full ci]` and `release/*`. Build, balance and press jobs unchanged (balance not
+  measured here: no log has it). 167 tests had no CI time in the logs (planned at 30 s): the first long and quick runs' time artifacts fix that.
+- Undo: `git revert` the commit; the old runner split was `i % n` over the test list, and `check.yml` ran all tests.
+
