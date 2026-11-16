@@ -97,8 +97,8 @@ Before D9 a redraw cost (the same probe, the same machine) world tab 3.3 ms, ful
 - **One canvas for the map and the war map: not yet.** `MAP.paint` makes them one component (one set of layers in one
   order), but the full map (`#gmap`) and the war room (`#warmap`) are still two canvases. The route: one canvas element
   kept by `MAP.paint`'s caller, the war room a mode of the full map (its overlay and counters are already layers).
-- **Throttled 4x at 375 x 667, DPR 2** (a loaded machine, so noisy): a redraw costs 76 to 193 ms of main-thread CPU against
-  82 to 154 ms before D9. Neither meets a 50 ms budget on a throttled phone; the cost is the kept pictures' copies at twice
+- **Throttled 4x at 375 x 667, DPR 2** (two runs on a quiet machine, still noisy): a redraw costs 31 to 197 ms of
+  main-thread CPU against 5 to 158 ms before D9, the same range view by view (the war room at zoom 4 the dearest in both). Neither meets a 50 ms budget on a throttled phone; the cost is the kept pictures' copies at twice
   the pixels, before and after D9. The route: redraw only on change (no redraw while still), and copy the kept picture at
   the canvas's device size once.
 - **Offline, relative paths:** no files are fetched; names come from `data/names.json` on the page.
