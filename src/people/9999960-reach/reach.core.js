@@ -201,7 +201,19 @@
     const j = RE.view(lo, hi, act);
     return j.state === 'equal' || j.state === 'kin' ? 1 : clamp(+j.yes || 0, 0, 1);
   };
-  RE.hint = 'A knighthood, a name, a purse, a deed, or a friend who knows you both could change that.';
+  // what could change his mind, of what the lower man lacks
+  RE.hintFor = function (lo) {
+    const k = [];
+    if (!(lo && lo.noble && lo.noble.rung >= 2)) k.push('a knighthood');
+    if (!lo || (+lo.fame || 0) < 55) k.push('a name');
+    if (!lo || (+lo.coin || 0) < 1000) k.push('a purse');
+    k.push('a deed', 'a friend who knows you both');
+    return A.cap(k.slice(0, -1).join(', ') + ' or ' + k[k.length - 1]) + ' could change that.';
+  };
+  RE.hint = RE.hintFor(null);
+  // the note's button is a 44-point target on a phone (rule 21)
+  const style = () => { if (typeof document === 'undefined' || document.getElementById('reach-style')) return; const s = document.createElement('style'); s.id = 'reach-style'; s.textContent = ':root .reach-line button.tt-i{min-width:44px;min-height:44px}'; (document.head || document.documentElement).appendChild(s); };
+  style();
 
   // the decision. ctx: { extra, log }. A shut door draws nothing; a near-equal or kin decides nothing.
   RE.decide = function (hi, lo, act, ctx) {
@@ -212,7 +224,7 @@
     if (j.state === 'equal' || j.state === 'kin') return { ok: true, state: j.state };
     const isPc = lo.id === A.S.pc;
     if (isPc && lo.reachNo && lo.reachNo[hi.id] === A.S.year) j.state = 'closed';
-    if (j.state === 'closed' && isPc && lo.reachNo && lo.reachNo[hi.id] === A.S.year) return { ok: false, state: 'closed', msg: E.say(nameOf(hi), c.act, false, j.nay, A.him(hi)) + ' ' + RE.hint };
+    if (j.state === 'closed' && isPc && lo.reachNo && lo.reachNo[hi.id] === A.S.year) return { ok: false, state: 'closed', msg: E.say(nameOf(hi), c.act, false, j.nay, A.him(hi)) + ' ' + RE.hintFor(lo) };
     // a shut door is still his decision, recorded; it draws nothing (no option comes within the band of "no")
     const rec = A.WHY.decide(hi, 'reach', j.options, { at: lo.id, log: isPc && ctx.log !== false, r: hi.ruler || hi.realm });
     const ok = !!rec && rec.chose === 'yes';
@@ -223,7 +235,7 @@
       N[hi.id] = A.S.year;
       const ks = Object.keys(N); if (ks.length > RE.T.noCap) delete N[ks[0]];
     }
-    return { ok, state: j.state, rec, msg: E.say(nameOf(hi), c.act, ok, top, A.him(hi)) + (ok ? '' : ' ' + RE.hint) };
+    return { ok, state: j.state, rec, msg: E.say(nameOf(hi), c.act, ok, top, A.him(hi)) + (ok ? '' : ' ' + RE.hintFor(lo)) };
   };
 
   // ---------------------------------------------------------------- the player's paths
@@ -263,7 +275,7 @@
       if (v.state === 'closed') { shut.push(WORDS[a]); if (v.sayNo && !why.includes(v.sayNo)) why.push(v.sayNo); }
     }
     if (!shut.length) return '';
-    return `<div class="small muted reach-line" style="margin-top:6px">Out of your reach: ${UI.esc(shut.join(', '))}. ${UI.noteBtn(why.slice(0, 2).join(' ') + ' ' + RE.hint, 'why not')}</div>`;
+    return `<div class="small muted reach-line" style="margin-top:6px">Out of your reach: ${UI.esc(shut.join(', '))}. ${UI.noteBtn(why.slice(0, 2).join(' ') + ' ' + RE.hintFor(pc), 'why not')}</div>`;
   };
   const WORDS = { know: 'small courtesies', befriend: 'friendship', audience: 'a hearing', favour: 'favours', court: 'courtship', wed: 'marriage', patron: 'patronage' };
   // A.interact's gate: an act within reach but not settled is an attempt he answers; a shut one is refused with why
@@ -289,7 +301,7 @@
   RE.knowBtn = function (pc, t, cls, label) {
     const v = RE.view(pc, t, 'know');
     const can = A.S.time >= (A.knowCost || 1);
-    if (v.state === 'closed') return `<button class="${cls}" data-a="know" data-v="${UI.esc(t.id)}" disabled data-note="${UI.esc((v.sayNo || '') + ' ' + RE.hint)}">${UI.esc(label)}</button>`;
+    if (v.state === 'closed') return `<button class="${cls}" data-a="know" data-v="${UI.esc(t.id)}" disabled data-note="${UI.esc((v.sayNo || '') + ' ' + RE.hintFor(pc))}">${UI.esc(label)}</button>`;
     const note = v.state === 'try' ? ` data-note="${UI.esc('Not a sure thing. ' + (v.sayNo || ''))}"` : '';
     return `<button class="${cls}" data-a="know" data-v="${UI.esc(t.id)}" ${can ? '' : 'disabled'}${note}>${UI.esc(label)}</button>`;
   };

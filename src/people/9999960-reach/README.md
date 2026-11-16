@@ -23,8 +23,8 @@ Its answers (`A.REACH.view`, pure): **equal** (a gap of one step or none: near-e
 decision), **kin** (a base of its own), **open** (the reasons settle it), **try** (an attempt: a seeded draw among the
 reasons, A.rand only then), **closed** (nothing could choose it: not offered, and the note says why). The player is told
 the heaviest reason: "Lord Aymer will hear you now: a knight of your name is worth an hour." / "King Osric will not know
-you: a peasant is far beneath a king. A knighthood, a name, a purse, a deed, or a friend who knows you both could
-change that." A refusal stands for the year (`pc.reachNo`).
+you: a peasant is far beneath a king. A knighthood, a name, a purse, a deed or a friend who knows you both could
+change that." (the hint names only what he lacks). A refusal stands for the year (`pc.reachNo`).
 
 **Origin.** A man's estate of birth is `p.status` (a knighthood or a lordship is `p.noble`, laid over it), so a baron
 whose status is peasant rose from the plough. A crown changes `status` to royal: `A.makeRuler` and founding a realm
