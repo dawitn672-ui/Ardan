@@ -5,6 +5,7 @@
 | `owner-ref-1-lineup.png` | The owner; generated with OpenAI's image model | 2026-11-13 02:10 | "The core concept of what I'm looking for, but tailored to the game" (D-029) |
 | `owner-ref-3-legendary-blade.png` | The owner (an image-model example, shown in a phone viewer) | 2026-11-13 20:04 ET | "How's this for an example of a legendary blade. Make sure it sits well with the character design, as it should be a part of the portrait" (D-045) |
 | `owner-ref-2-medieval.png` | The owner; the same image model, asked to make it medieval | 2026-11-13 02:25 | "It got the idea that I wanted of fully representing each individual armor and clothing" (D-029) |
+| `owner-manhwa-cards.webp` | The owner; made in ChatGPT from his words: "make it 10x more visually appealing like manwha and anime and pay close attention and detail to their roles and differences in their nations and cultures. mold this style into charcter profiles." | 2026-11-15 22:20 | The target look for character profiles (order 57) |
 
 **What `owner-ref-1-lineup.png` holds** (the traits to carry over; the content is modern dress and is not used):
 - Full-body figures standing in a lineup, each with its own stance and attitude (hands in pockets, arms folded, hand on hip).
@@ -31,3 +32,20 @@ customisable; the profile card around the figure carries name, rank and words.
   collar; a faceted, cut-jewel pommel. Legend shown by craft and contrast (dark steel, gold, a gem), not by glow.
 - Shown alone on a dark ground with a title plate. **In the game it must also sit in the portrait,** worn or held by the
   figure in the same hand as the character art (D-045).
+
+**What `owner-manhwa-cards.webp` shows** (order 57; the target for profiles; its nation names are not ours and are not used):
+- Profile cards, waist-up, 4 peoples x 8 stations (serf, peasant, artisan, merchant, clergy, soldier, knight or noble, royal):
+  bright, painted manhwa and anime figures (large clear eyes, clean line, soft cel shading with rim light, hair drawn in
+  locks with highlights), each in front of a painted scene that fits station and land (fields, forge, harbour, cloister,
+  camp, palace; northern pines and snow, desert domes, high peaks, jungle).
+- The frame: a dark navy card with a thin gold edge; top left a banner with the nation's crest and name; bottom a station
+  label with its icon, three keywords ("Craftsman · Tools · Repairs") and a one-line motto.
+- Station reads at a glance from dress: undyed linen and a shawl for a serf, an apron for an artisan, rich dyed robes and
+  a coin purse for a merchant, white and gold for clergy, mail and a tabard for a soldier, fur-collared capes and chains
+  for nobles, a crown and ermine for royals.
+- Peoples differ in headwear (turbans, wraps, hoods, bare), cloth (wool and fur in the north, light linen in the desert,
+  bead and wrap in the south), palette and skin.
+- **Its weak spots, for Ardan to do better (order 56):** the top of every ladder converges (all four royals wear the same
+  ermine cape and crown; knights look alike); soldiers share one helmet; serf and peasant are barely told apart in two
+  peoples; poses repeat (arms folded); the differences between neighbours are absent (each people is one look). Ardan's
+  version keeps the appeal and the frame and adds the gradations: border towns, mixed dress, wealth inside a station, age, wear.

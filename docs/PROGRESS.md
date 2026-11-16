@@ -70,7 +70,7 @@ or a finding changes what stands on what.
 - [ ] **D9** · The inked, detailed map; war fronts that spread like a burn (D-016)
 - [ ] **D12b** · War and command depth. Stages (war.md §16): **D12b-1** hosts on roads (X7 part 2's gate) · **D12b-2** one engine, the field by your eye · **D12b-3** reports and the people you know · **D12b-4** the theatre and the burn · **D12b-5** the press · **D12b-6** sieges and the verbs · **D12b-7** balance, retire, records
 - [ ] **X7 part 2** · Phone speed, each press: the engine's month (A.wsDay and the war sim are half a press at year 0), with D12b/X5 (D-023)
-- [ ] **C8d** · (order 56: every design, weapon and garment differs by nation, border and culture, small differences between neighbours to drastic ones between far peoples) Hair in depth; dress and appearance variety compounded (serf / peasant / merchant read right); looks matter in play where it fits
+- [ ] **C8d** · **Gate 1 first (order 57): manhwa profile cards in the owner's reference style, shown before building in;** (order 56: every design, weapon and garment differs by nation, border and culture, small differences between neighbours to drastic ones between far peoples) Hair in depth; dress and appearance variety compounded (serf / peasant / merchant read right); looks matter in play where it fits
 - [ ] **L2** · Legendaries: mythical names, character and aura; the bow redrawn to be truly legendary
 - [ ] **Gaps** · Every known leftover: "the" before realm forms, lore people's names, tablets' phone shell, missions abroad for cards, U6/U10/U12/U17/U21, 200% text, mourning dress, NPC dress by occasion, jewellery, mounts, interiors (V19), cut-in tone (V11-12)
 - [ ] **X4** · Balance pass

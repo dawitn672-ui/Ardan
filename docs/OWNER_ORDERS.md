@@ -141,6 +141,16 @@ order is replaced, strike it through and say by what.
     ChatGPT subscription, only OpenAI's API with a key; the owner declined the key form at 2026-11-15 22:12 ET and asked where to find
     it and what a free plan allows. Until a key exists: the figure library draws, and images the owner makes in ChatGPT and
     shares are used as references.
+57. **Profiles in this style** · recorded 2026-11-15 22:20 ET. The owner shared a ChatGPT image (`docs/design/reference/owner-manhwa-cards.webp`:
+    4 peoples x 8 stations as manhwa and anime profile cards) and wrote, verbatim:
+
+    > this is what i got when i said-make it 10x more visually appealing like manwha and anime and pay close attention and detail to their roles and differences in their nations and cultures. mold this style into charcter profiles.
+
+    **Read as:** the character profiles (the Profile tab's card, people's cards, the portraits in scenes) take this look:
+    bright painted manhwa and anime figures, a scene behind that fits station and land, a dark card with a gold edge, the
+    nation's banner and crest, the station with its icon, three keywords and a motto. Detail in role and in the difference
+    between nations and cultures (order 56). Built as C8d's first gate: a style frame shown to the owner before it goes
+    into the game (as with C8's gates).
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
