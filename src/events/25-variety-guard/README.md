@@ -54,3 +54,14 @@ The plan asks for "no repeat within 10 years, no same shape back to back". In th
 - **Theme, not structure.** A shape is a theme, not the structure of an event. Two different "someone asks you for coin" events with different settings are not caught.
 - **Fixed events.** Activities that queue one fixed event (a camp brawl after a drill) pass through the guard only as "seen".
 - **NPC repeats remain.** NPC moves still repeat 16% of the time within 10 years, mostly the follow-ups of a repeated move (a loan, then its repayment).
+
+## The second look (CI 133-134)
+
+The roll weighs a scene against the shapes already seen and the queue, but v2-time spreads a month's rolled scenes over its
+days and holds a fourth to the next month (both through `A.schedule`), so what surfaces in front of a scene is not what the
+roll saw. Seed 6 in 1118 met three money scenes in a row: `wc_bread_since` > `bd_friend_debt` > `ww_ald_oakline`, all rolled.
+Now `A.evSurfaceHold(q)` looks again when a rolled scene reaches the head of the queue (v2-time's `A.headReady` asks it): the
+third of one shape in a row waits, by v2-time's own hold, to the next month, at most `A.EV_SURFACE_HOLDS` (2) times. A
+trigger-only scene, a forced one, a consequence or a request (`chain`, `ask`), a gathering's, a dated promise (`label`) and
+a result already open never wait. With the guard off (`A.evVariety = null`) it does nothing. Seed 6 alone: 1 triple
+before, 0 after.
