@@ -1509,9 +1509,10 @@ A.sessionQ = function (pc, key, k) {
   const r = A.rand();
   let luck = 0.7 + A.rand() * 0.6,
     tag = "";
+  // S1b (D-072): a session's good day is a mood (the body's training); a skill's breakthroughs are a concept grasped
   if (r < 0.06) {
     luck = 2.1;
-    tag = "breakthrough";
+    tag = "fine day";
   } else {
     if (r < 0.14) {
       luck = 0.35;
@@ -1530,7 +1531,7 @@ A.sessionQ = function (pc, key, k) {
 A.sessionNote = function (S) {
   const pct = m => (m >= 1 ? "+" : "−") + Math.round(Math.abs(m - 1) * 100) + "%",
     bits = S.parts.filter(([, m]) => Math.abs(m - 1) >= 0.03).map(([n, m]) => `${n} ${pct(m)}`);
-  return ` — ${S.tag === "breakthrough" ? "Breakthrough! Everything clicks" : S.tag === "bad day" ? "A wasted day" : S.q >= 1.25 ? "A great session" : S.q >= 0.9 ? "A solid session" : S.q >= 0.6 ? "A middling session" : "A poor session"}${bits.length ? " (" + bits.join(", ") + ")" : ""}.`;
+  return ` — ${S.tag === "fine day" ? "A fine day: everything goes right" : S.tag === "bad day" ? "A wasted day" : S.q >= 1.25 ? "A great session" : S.q >= 0.9 ? "A solid session" : S.q >= 0.6 ? "A middling session" : "A poor session"}${bits.length ? " (" + bits.join(", ") + ")" : ""}.`;
 };
 
 A.trainingSession = function (pc, key, arg, d, fn) {
@@ -1554,7 +1555,7 @@ A.trainingSession = function (pc, key, arg, d, fn) {
     pc.habitY = pc.habitY || {};
     pc.habitY[k] = A.S.year;
   }
-  if (S.tag === "breakthrough" && k && A.willGrow) A.willGrow(pc, 0.5, "breakthrough");
+  if (S.tag === "fine day" && k && A.willGrow) A.willGrow(pc, 0.5, "breakthrough");
   if (res && res.msg) res.msg = res.msg.replace(/\.?\s*$/, "") + A.sessionNote(S);
   if (S.parts.some(([n]) => n === "overtrained" || n === "hurt") && A.SESSION_ACTS[key] !== "mind" && A.chance(0.12)) {
     pc.health = Math.max(1, pc.health - A.ri(4, 10));

@@ -806,9 +806,9 @@ A.train = function (p, s, amt) {
 // S1b (D-072): the shim. Experience moves only through A.gainXp (src/people/36-skills): amt x 0.2 months of effort,
 // with the cause read from what is running. The older growth (a curve on the number, aptitude caps, the perk log) is
 // retired to archive/s1-proficiencies/.
-A.trainSkill = function (p, k, amt) {
+A.trainSkill = function (p, k, amt, cause) {
   if (!GD.SKILLS[k]) return 0;
-  return A.SK && A.SK.trainShim ? A.SK.trainShim(p, k, amt) : 0;
+  return A.SK && A.SK.trainShim ? A.SK.trainShim(p, k, amt, cause) : 0;
 };
 
 A.skillEff = function (p, k) {

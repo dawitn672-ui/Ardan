@@ -532,7 +532,9 @@ A.doActivity = function (key, arg) {
       ok: false,
       msg: "Not implemented",
     };
-  const res = A.SESSION_ACTS && A.SESSION_ACTS[key] ? A.trainingSession(pc, key, arg, dim, fn) : fn(pc, arg, dim);
+  const run = () => (A.SESSION_ACTS && A.SESSION_ACTS[key] ? A.trainingSession(pc, key, arg, dim, fn) : fn(pc, arg, dim)),
+    // S1b (D-072): what an activity teaches carries its cause (a lesson from a teacher in reach, or practice alone)
+    res = A.SK && A.SK.actCause ? A.SK.within(A.SK.actCause(pc, key, arg), run) : run();
   return res && res.ok === false
     ? res
     : (A.spend(key),

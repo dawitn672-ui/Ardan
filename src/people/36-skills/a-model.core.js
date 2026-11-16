@@ -213,7 +213,7 @@
     if (a.spec && SK.LEG) for (const lk in SK.LEG) if (SK.LEG[lk][0] === c && skills[lk] != null) { if (skills[lk] > (skills[c] || 0)) skills[c] = skills[lk]; delete skills[lk]; }
     const lv0 = lvOfValue(skills[c] || 0), L = VALUES[lv0], t = (p.tal && p.tal[c]) || 'C', [tm, reach] = Eng.TALENT[t] || Eng.TALENT.C;
     const age = Math.max(4, A.age(p));
-    let x = 10 * a.eu * A.V2.growth.quality(a.d != null ? Object.assign({}, a, { d: VALUES[a.d] || 0, demand: a.demand != null ? VALUES[a.demand] : undefined }) : a, L) * tm * Eng.learnAge(c, age);
+    let x = 10 * a.eu * A.V2.growth.quality(Object.assign({}, a, { d: a.d != null ? VALUES[a.d] || 0 : undefined, demand: a.demand != null ? VALUES[a.demand] : undefined }), L) * tm * Eng.learnAge(c, age);
     if (L >= reach) x *= 0.25;
     if (SK.bodyStall(p, c, lv0)) x = 0;
     if (!(x > 0)) return 0;

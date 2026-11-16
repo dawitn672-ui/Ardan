@@ -19,7 +19,7 @@ A.FN_STAGE_ORDER = {
     'advisors', 'v2-stats', 'v2-family', 'v2-content.lines', 'v2-content.cards', 'households', 'x3-honest-cards', 'journal'
   ],
   'A.eventChoose': [
-    'variety-guard', 'belief-versus-truth', 'learn-by-doing', 'moods', 'body-mind', 'bonds', 'npc-beliefs',
+    'variety-guard', 'belief-versus-truth', 'skills', 'moods', 'body-mind', 'bonds', 'npc-beliefs',
     'choice-memories', 'every-number-counts', 'echo-scenes', 'first-life-fixes.origin', 'first-life-fixes', 'wilds',
     'confidants', 'identity', 'choice-stakes', 'advisors', 'v2-stats', 'v2-content', 'households', 'journal'
   ],

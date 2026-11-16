@@ -274,7 +274,8 @@ A.schoolYear = function (pc) {
   if (!pc.school) return;
   const sc = pc.school;
   sc.years++;
-  A.trainSkill(pc, sc.skill, 9);
+  // S1b (D-072): school is a monthly drill under its master (A.SK.queueMonth), not a lump at the year's end
+  if (!A.SK) A.trainSkill(pc, sc.skill, 9);
   A.train(pc, "ins", 1.4);
   A.train(pc, "spd", 0.8);
   A.train(pc, "str", 0.6);

@@ -149,10 +149,10 @@ export function person({ id, seed = 'ardan', talent = {}, gift, grasp, memory = 
 }
 export const blank = () => ({ lv: 0, xp: 0, st: 0, proved: false, best: 0, rust: 0, used: null, streak: 0, gap: 0, fresh: -1, ins: {}, got: {}, sp: [] });
 export const sk = (p, k) => p.sk[k] || (p.sk[k] = blank());
-const led = (p, age, k, xp, why, tags) => { if (Math.abs(xp) > 1e-9) p.ledger.push({ age: Math.round(age * 100) / 100, k, xp: Math.round(xp * 100) / 100, why, tags: tags || [] }); };
+const led = (p, age, k, xp, why, tags) => { if (Math.abs(xp) > 1e-9) p.ledger.push({ age: Math.round(age * 100) / 100, k, xp, why, tags: tags || [] }); };
 // what was earned and is gone (the half not stored at an edge, the store full, the top reached): its own ledger line,
 // so the ledger's sum always equals what was gained, stored and lost (s1Ledger)
-const lostLine = (p, age, k, x, why) => { if (x > 1e-9) p.ledger.push({ age: Math.round(age * 100) / 100, k, xp: 0, lost: Math.round(x * 1e6) / 1e6, why, tags: ['lost'] }); };
+const lostLine = (p, age, k, x, why) => { if (x > 1e-9) p.ledger.push({ age: Math.round(age * 100) / 100, k, xp: 0, lost: x, why, tags: ['lost'] }); };
 const rec = (p, age, k, kind, text) => p.rec.push({ age: Math.floor(age), k, kind, text });
 export const reads = (p, k) => { const s = p.sk[k]; return s ? Math.max(0, value(s.lv) - s.rust) : 0; };
 

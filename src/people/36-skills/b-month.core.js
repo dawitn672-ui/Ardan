@@ -66,7 +66,7 @@
     const v = SK.view(pc), before = SK.snapshot(pc);
     // C9: a level past what the body carries does not rise (the stall is the ledger's reason)
     for (const a of acts) { const s = pc.sk[a.skill]; if (SK.bodyStall(pc, a.skill, s ? s.lv : 0)) { a.mul = 0; a.mulTag = 'your arm cannot carry what your hand knows'; } }
-    SK.E().month(v, SK.ageF(pc), acts, SK.monthCtx(pc));
+    SK.E().month(v, SK.ageF(pc), acts, SK.monthCtx(pc, acts));
     SK.drain(pc, v, before);
     SK.trainStats(pc, v);
   };
@@ -111,11 +111,13 @@
       const d = s.lv - (e.lv0 || 0);
       const causes = Object.keys(e.by).filter(w => e.by[w] > 0 && w !== 'other' && w !== 'set' && w !== 'stored').sort((a, b) => e.by[b] - e.by[a]).slice(0, 2);
       if (d > 0) rose.push({ k, d, causes, x: e.x, word: SK.wordOf(s.lv) > SK.wordOf(e.lv0 || 0) ? SK.wordName(s.lv) : null });
-      else if (!held && e.x > 0) { const why = SK.holdReason(pc, k, e); if (why) held = { k, why }; }
+      // a stall is named once a year (the first season), not every season
+      else if (!held && e.x > 0 && L.s % 4 === 0) { const why = SK.holdReason(pc, k, e); if (why) held = { k, why }; }
     }
     if (!rose.length && !held) return;
     rose.sort((a, b) => b.d - a.d || b.x - a.x);
-    const bits = rose.slice(0, 2).map(r => `${SK.name(r.k)} ${r.word ? 'reached ' + r.word : r.d === 1 ? 'rose a step' : 'rose ' + ['', '', 'two', 'three', 'four', 'five'][Math.min(5, r.d)] + ' steps'}${r.causes.length ? ', chiefly from ' + r.causes.join(' and ') : ''}`);
+    const cause = w => (/^carried over from /.test(w) ? 'what ' + w.slice(18) + ' carried over' : w);
+    const bits = rose.slice(0, 2).map(r => `${SK.name(r.k)} ${r.word ? 'reached ' + r.word : r.d === 1 ? 'rose a step' : 'rose ' + ['', '', 'two', 'three', 'four', 'five'][Math.min(5, r.d)] + ' steps'}${r.causes.length ? ', chiefly from ' + r.causes.map(cause).join(' and ') : ''}`);
     let line = bits.length ? `This season ${bits.join('; ')}.` : '';
     if (held) line += `${line ? ' ' : 'This season '}${SK.name(held.k)} held: ${held.why}.`;
     A.log(line, 'muted');

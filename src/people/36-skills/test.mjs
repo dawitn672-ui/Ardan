@@ -20,7 +20,7 @@ const LOAD = async (b) => {
   return { raw, ok, ver: d.S.ver };
 };
 
-export const limits = { s1Mirror: 2400, s1Reasons: 2400, s1TwoLives: 2400 };
+export const limits = { s1Mirror: 2400, s1Reasons: 2400, s1Ledger: 2400, s1NotLinear: 3600, s1NoProficiency: 3600 };
 export default {
   // §9 row by row, on every save in tests/saves/ (and press/)
   async s1Migrate(pg) {
