@@ -151,6 +151,22 @@ order is replaced, strike it through and say by what.
     nation's banner and crest, the station with its icon, three keywords and a motto. Detail in role and in the difference
     between nations and cultures (order 56). Built as C8d's first gate: a style frame shown to the owner before it goes
     into the game (as with C8's gates).
+58. **Design corrections for the next iteration of the profiles** (C8d) · recorded 2026-11-15 22:27 ET. The owner's words, verbatim:
+
+    > These are the design corrections that should govern the next iteration:
+    >
+    > * Royalty: Distinct political and cultural identities, not interchangeable crowns and fur capes. Northern monarchs use heavy furs and dark metals; Qadiri rulers use desert silks, layered turbans, and geometric goldwork; Wind Rider rulers use steppe regalia, leather, and clan insignia; Zanari rulers use elaborate woven textiles, distinctive jewelry, and ceremonial armor.
+    > * Military: Different equipment, rank insignia, shields, weapons, and helmet traditions. Not every soldier needs a helmet.
+    > * Social class: Serfs should visibly communicate dependency and labor obligations. Peasants should look like independent rural households, with more personal possessions and regional clothing.
+    > * Body language: Varied poses, gestures, expressions, and equipment. Avoid repeating folded arms.
+    > * Cultural overlap: Border settlements should show mixed fabrics, borrowed armor, shared hairstyles, hybrid architecture, and neighboring cultural influences.
+    >
+    > One important distinction: national identity should be recognizable without making every citizen look identical. Regional variation, wealth, occupation, and personal taste should all influence appearance. just mark this down in its order and keep going full speed
+
+    **Read as:** the rules for C8d's gate 1 and everything after it. The four peoples named are the reference image's
+    (`owner-manhwa-cards.webp`); in Ardan each is the archetype for its nearest real people (a northern, a desert, a steppe
+    and a southern forest people of `src/ui/engine/figure/cultures.js`), and the same care goes to every other people.
+    Recognisable nations, never uniform citizens: region, wealth, occupation and personal taste vary every look.
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
