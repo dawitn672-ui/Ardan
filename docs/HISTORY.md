@@ -1333,5 +1333,9 @@ Each failure, its cause and the fix:
   one warning (cm_summons has six choices, D-082 point 6); lint-choices 0 obviously best; `--check-tiers` ok;
   `coherency --quick` (8 lives, 12 years): no contradiction; `long-life-audit --seed=7 --years=30`: 0 errors, audit
   empty, 0 months with a broken post rule. Not run here: `csWorlds` and the long tier, the balance league (CI's).
-- **Undo:** revert branch `w1-3`'s commits (base `7716f05`, merged with `bfb9082`); the release's old lines are in
+- **After merging S1b** (`eb3eac7`, skills with levels): the 18 most exposed tests re-run (cm*, w1GeneralsFollowHosts,
+  w1SeniorGeneral, w1OldSaveMarshal, whyFactionsAndGenerals, postsSeniorGeneralFill, poPure, poMusterAsBefore,
+  v2wNoSpectate, renderRng) pass; the summons' spread in that world: 261 lords, full 138, part 38, deputy 31, late 26,
+  coin 21, refuse 7, with a true reason under the excuse for 39 of 123 (the test asks a quarter: many excuses are true).
+- **Undo:** revert branch `w1-3`'s commits (base `7716f05`, merged with `bfb9082` and `eb3eac7`); the release's old lines are in
   `7716f05`'s copies of the six release files above.
