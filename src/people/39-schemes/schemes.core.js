@@ -125,7 +125,7 @@
           if (v.found) { SC.end(pc, s.id); A.queue({ type: 'event', ev: s.k === 'murder' ? 'sch_found_murder' : 'sch_found', forced: true, ctx: { pid: s.t, k: s.k, sc: 1 } }); }
           else if (v.end) SC.end(pc, s.id);
           if (v.smear) { const t = A.P(s.t); if (t) { t.fame = clamp((t.fame || 0) - v.smear, 0, 100); for (const id of Object.keys(t.rel || {})) { const o = A.P(id); if (o && o.rel && o.rel[t.id] && id !== String(pc.id)) o.rel[t.id].op = clamp((o.rel[t.id].op || 0) - v.smear / 2, -100, 100); } } }
-          if (v.kill) { const t = A.P(s.t); if (t && t.alive) A.kill(t, v.kill); }
+          if (v.kill) { const t = A.P(s.t); if (t && t.alive) { if (A.CROWN && A.CROWN.isRuler(t)) A.CROWN.schemeKill(pc, t, v.kill); else A.kill(t, v.kill); } }
         }
         if (v.expose) { const t = A.P(ctx && ctx.pid); if (t) t.fame = clamp((t.fame || 0) - v.expose, 0, 100); }
         const a = pc.scAgainst;
