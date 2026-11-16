@@ -40,7 +40,10 @@ export default {
   // late and sometimes wrong. Enlisted, the same war is yours.
   async v2wNoSpectate(pg) {
     const r = await pg.evaluate(() => {
-      T.enter({ seed: 7311, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 24 });
+      // (W1-3: seed 7311's life, auto-answering, now takes the recruiting sergeant's shilling in its second month and is
+      // in the war from then on; the test is about a life outside the war, so another seed: 36 months outside on both
+      // builds)
+      T.enter({ seed: 7312, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 24 });
       const pc = A.pc(), me = pc.realm, en = A.neighbors(me)[0];
       A.startWar(me, en, null, 'conquest');
       // a second war between two other realms

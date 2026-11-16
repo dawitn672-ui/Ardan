@@ -206,8 +206,10 @@
     for (const h of CM.tics(rid)) {
       const hp = h.headPid != null ? A.P(h.headPid) : null;
       if (pc && hp && hp.id === pc.id) {
-        // the player's own house: his men wait for his answer (the card)
-        const e = { h: h.id, p: pc.id, a: 'ask', m: CM.men(CM.house(h)), n: CM.full(h), g: '', t: '', tp: 0, d: now(), s: 0, why: [] };
+        // the player's own house: his men wait for his answer (the card); a lord who serves elsewhere (in the army, a
+        // company, the crown) is not asked, and his steward sends them under a captain
+        const asked = !(pc.ruler || pc.mil || pc.company || !A.isAdult(pc));
+        const e = { h: h.id, p: pc.id, a: asked ? 'ask' : 'deputy', m: CM.men(CM.house(h)), n: CM.full(h), g: asked ? '' : 'he serves elsewhere', t: '', tp: 0, d: now(), s: 0, why: [] };
         CM.apply(e, h, r, w, CM.divs(CM.house(h)));
         m.e.push(e);
         continue;
@@ -353,7 +355,8 @@
       const p = A.P(h.headPid), sk = A.skill(p, 'command') || 0, ri = Math.max(0, CM.rungIdx(h.rung));
       return { id: h.id, at: p.id, reasons: [
         rs('claim', ri / 8 * 1.2, `A great name: ${h.name}`, { t: 'rung', id: h.id, r: ri }, 1),
-        rs('merit', (sk - 40) / 30, sk >= 50 ? 'He knows how to command' : 'He has little skill in command', { t: 'merit', id: p.id, r: Math.round(sk) }, 1),
+        // merit weighs more than a name: a host wants a man who can lead it (a General needs a command of 45, A.POSTS.can)
+        rs('merit', (sk - 45) / 15, sk >= 50 ? 'He knows how to command' : 'He has little skill in command', { t: 'merit', id: p.id, r: Math.round(sk) }, 1),
         king && p.house && king.house && p.house === king.house ? rs('kin', .4, 'Of the king\'s own house', { t: 'kin', id: p.id }, 1) : null,
         rs('loyalty', ((h.op != null ? h.op : 50) - 50) / 40, (h.op || 50) >= 50 ? 'A loyal house' : 'A house with a grievance', { t: 'opinion', id: h.id, r: Math.round(h.op || 50) }, 0),
         h.military ? rs('merit', .4, 'A house of the sword', { t: 'military', id: h.id }, 1) : null,
