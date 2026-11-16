@@ -1113,3 +1113,13 @@ that a regression only the long tier sees is found up to a day later (or at once
 saves should say `[full ci]`. **Rejected:** dropping or shortening the long tests (they are the only whole-life guard); a
 count split (what was there). **Left open:** moving `balance` to the long tier (not measured); the long run commits no times itself (an artifact).
 
+### D-065 · Order 55: every relationship needs a base (2026-11-15 21:34 ET)
+Rule 19. A meeting or a bond (getting to know, befriending, courting, asking favours, audiences) is open only where it
+has a base: (1) **the gap in standing** between the two (estate, rank, office, wealth, renown); (2) **the higher one's
+pride and personality** (proud, humble, kind, cruel, curious; his own origins: a baron risen from commoners sympathises,
+a duke born to gold does not); (3) **need** (he wants your skill, your sword, your silence, your coin, your vote); (4)
+**circumstance** (you serve him, guard him, saved him, share a road, a battle, a prison). Without a base the person will
+not look at you; the action is not offered, or offered as an attempt that a reasoned refusal answers. The player shifts
+the scales by knighthood and honour, mastery and renown, fame, wealth and connections (an introduction from someone who
+knows both). NPC to NPC bonds follow the same base. Work item **R2**, built with R1 (nothing without reason).
+

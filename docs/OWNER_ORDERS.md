@@ -121,6 +121,15 @@ order is replaced, strike it through and say by what.
     - **Nothing is "low on the list":** everything gets fixed eventually.
     - **Permissions:** merge v2-integration (PR #2); help delete the unneeded branches; fill the gaps at my own discretion as
       the owner would decide. Asked: can the long testing be cut back?
+55. **Every relationship needs a base** (D-065) · recorded 2026-11-15 21:34 ET. The owner's words, verbatim:
+
+    > add this to the list - every relationship needs a base. if im a peasant why would the king allow me to get to know him. most nobles wouldnt even look at me let alone talk to me and those who would either need me for something or just have a type of personality that allows them to do that. for a example a baron who used to be a commoner might sympathize more than a duke born with a goldne spoon. its about staus, pride and personality. becoming a honourable knight is  a way to shift the scales abit. same with becoming a well renowned master of anything or increasng your fame wealth or connections. (JUST LIKE IN REAL LIFE)
+
+    **Read as:** who will know you follows status, pride and personality, as in real life. A peasant cannot simply get to
+    know a king; most nobles will not look at him, let alone talk; those who do either need something from him or have the
+    temper for it (a baron risen from commoners may sympathise where a duke born to gold will not). The scales shift with
+    knighthood and honour, renown as a master of anything, fame, wealth and connections. Rule 18 (nothing without reason)
+    applied to every acquaintance.
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
@@ -171,6 +180,7 @@ the newest stamp wins when two entries disagree, unless the older one is an owne
 16. ~~**The Marshal's seat stays vacant until truly needed,** then goes to a General or someone proved more capable than the generals; **General is the army's highest everyday rank** (D-017).~~ **Superseded by order 54 (D-062): no Marshal; General is the highest rank; several Generals by army size; nobles' own commands under the king.** · recorded 2026-11-12 10:46 ET
 17. **No initiative cap;** overtraining has its own consequences. **Only notable events or problems stop a month or a year,** never ordinary conversations or happenings (D-019). · recorded 2026-11-12 10:46 ET
 18. **NOTHING HAPPENS WITHOUT REASON.** Chance, luck, calculation, petty or emotional reasons, but never for no reason. Every figure acts from a thought process that fits post, circumstances and personality; coups, rebellions and factions follow stability, relations, ambitions and circumstance; everything intertwined. (order 54, D-062) · recorded 2026-11-15 21:12 ET
+19. **Every relationship needs a base:** whether someone will know you, talk to you or befriend you follows the gap in status, their pride and personality, and what they need; knighthood, honour, renown, mastery, fame, wealth and connections shift it. (order 55, D-065) · recorded 2026-11-15 21:34 ET
 
 ## Round 2 work list (Nov 12)
 Step 0 restructure (done) · Step 1 harsh critique (in progress) · A1 lag · A2 one holder per post · A3 coherency
