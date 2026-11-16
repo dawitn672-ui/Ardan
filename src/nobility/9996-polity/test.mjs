@@ -213,10 +213,15 @@ export default {
     const r = await pg.evaluate(() => {
       const out = {};
       for (const [k, st] of [['ruler', 'royal'], ['lord', 'noble']]) {
-        T.enter({ seed: 4801, race: 'human', realm: 'POL-02', status: st, sex: 'F', startAge: 22 });
-        const pc = A.pc(), x = A.realm('POL-02');
-        if (k === 'ruler') { A.makeRuler(pc, x.id); }
-        T.play(1);
+        // (W1-3: seed 4801's lord now dies in her first year, a duel; the page is read for a life that lives the year, the
+        // first of four seeds that does)
+        let pc, x;
+        for (let seed = 4801; seed < 4805; seed++) {
+          T.enter({ seed, race: 'human', realm: 'POL-02', status: st, sex: 'F', startAge: 22 });
+          pc = A.pc(); x = A.realm('POL-02');
+          if (k === 'ruler') { A.makeRuler(pc, x.id); }
+          if (T.play(1) !== 'dead' && A.pc().alive) break;
+        }
         const c = A.P(x.council.chancellor); if (c) c.given = '<b>Bad</b>';
         UI.tab = 'realm'; UI.realmView = 'pol'; UI.poOpen = true;
         const h0 = T.hash(A.S), rng0 = A.rngState;
