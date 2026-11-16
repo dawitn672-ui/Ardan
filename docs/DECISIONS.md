@@ -1271,12 +1271,12 @@ R14); hosts of contingents (D12b-1).
 flatter. This layer follows order 57 (the later order); D-029's layer is kept, not removed.
 **Cost:** see H-063. **Not decided here:** whether it goes into the game (the gate), and how the remaining peoples map to families.
 
-### D-070 · Order 59: growth has no timetable; concepts, grasp, discipline and epiphanies (2026-11-15 23:12 ET; amends D-067)
+### D-070 · Order 59: growth has no timetable; concepts, grasp, discipline and breakthroughs (2026-11-15 23:12 ET; amends D-067)
 The growth standard's fixed timetable (an ordinary talent at Master in about 27 years of full-time drill) is dropped.
 Passing a word needs its named **concepts grasped**; each person has a seeded, hidden **grasp** per concept (some come at
 once, some never, a lifelong blind spot possible); each month of real effort is a **chance** to grasp, raised by
 discipline, quality of effort, a teacher who holds the concept, variety and reflection, lowered by routine, fatigue,
-pride and despair; **epiphanies** are sudden grasps tied to a named moment, leaping the stored effort. Result: with the
+pride and despair; **breakthroughs** are sudden grasps tied to a named moment, leaping the stored effort. Result: with the
 same training one man is Master in five years and another stuck for life. Every turn has its cause in the ledger (rule
 18). The curve R(level) stays as the pace between turns. `docs/design/growth-standard.md` §3.16 (and rule 2 of its
 summary). Builds in G1/G2 and D11+. (D-069 is left to W1-2.)

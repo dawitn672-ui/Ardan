@@ -172,7 +172,7 @@ order is replaced, strike it through and say by what.
     > i dont like the idea of results being so predictable that anyone can become a master with that much training. theres too many variables like in real life one might get it in 5 years of discipline and profound epiphanies whilst one might be stuck behind his entire life due to not grasping one concept
 
     **Read as:** no fixed number of years makes a master. The same training gives very different lives: one reaches
-    mastery in five years of discipline and profound epiphanies, another is stuck his whole life behind one concept he
+    mastery in five years of discipline and profound breakthroughs, another is stuck his whole life behind one concept he
     never grasps. Growth turns on discipline, insight and the person, and the outcome is uncertain (chance allowed, but
     every turn has its reason, rule 18).
 60. **Visual design waits for the image model** · recorded 2026-11-15 23:14 ET. The owner's words, verbatim:
@@ -183,6 +183,12 @@ order is replaced, strike it through and say by what.
     visual design projects are postponed: L2 (legendaries' look, the bow), C8d's hair and dress, and the visual Gaps
     (mourning dress, jewellery, mounts, interiors, cut-in tone). Systems work goes on at full speed. The map (D9) stays,
     because the war on it (D12b) stands on it; its look can be revisited with the image model.
+61. **"Breakthroughs", not "epiphanies"** · recorded 2026-11-15 23:14 ET. The owner's words, verbatim:
+
+    > dont call them epipanies call them breakthoughs
+
+    **Read as:** order 59's sudden grasps are named **breakthroughs** everywhere (docs, code, the player's words). The
+    owner's own word in order 59 ("profound epiphanies") is kept as he wrote it.
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
@@ -234,7 +240,7 @@ the newest stamp wins when two entries disagree, unless the older one is an owne
 17. **No initiative cap;** overtraining has its own consequences. **Only notable events or problems stop a month or a year,** never ordinary conversations or happenings (D-019). · recorded 2026-11-12 10:46 ET
 18. **NOTHING HAPPENS WITHOUT REASON.** Chance, luck, calculation, petty or emotional reasons, but never for no reason. Every figure acts from a thought process that fits post, circumstances and personality; coups, rebellions and factions follow stability, relations, ambitions and circumstance; everything intertwined. (order 54, D-062) · recorded 2026-11-15 21:12 ET
 19. **Every relationship needs a base:** whether someone will know you, talk to you or befriend you follows the gap in status, their pride and personality, and what they need; knighthood, honour, renown, mastery, fame, wealth and connections shift it. (order 55, D-065) · recorded 2026-11-15 21:34 ET
-20. **Growth is not a timetable:** no amount of training guarantees mastery; discipline, grasp and epiphanies make one man a master in five years and leave another stuck for life behind one concept. (order 59, D-070) · recorded 2026-11-15 23:12 ET
+20. **Growth is not a timetable:** no amount of training guarantees mastery; discipline, grasp and breakthroughs make one man a master in five years and leave another stuck for life behind one concept. (order 59, D-070) · recorded 2026-11-15 23:12 ET
 
 ## Round 2 work list (Nov 12)
 Step 0 restructure (done) · Step 1 harsh critique (in progress) · A1 lag · A2 one holder per post · A3 coherency
