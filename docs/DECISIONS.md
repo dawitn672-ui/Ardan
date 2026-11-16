@@ -1103,3 +1103,79 @@ variety compounded, appearance matters in play where it fits (C8d); legendary na
 tracked item. **Permissions granted:** merge PR #2 (v2-integration) when CI is green; branch deletion is the owner's on
 GitHub (the session cannot delete refs), helped by a script.
 
+### D-064 · D12a-2: the war design revised with the owner's ten answers; the gaps filled (2026-11-15 21:35 ET; order 54, D-062; revises D12a; steers W1, D11, D12b)
+`docs/design/war.md` keeps D12a's theatre, field, press and one engine (part one) and adds part two (§9 to §16). The
+owner's answers are followed as given (§7 sets each beside its question). Where they left room, these were chosen, as
+he would from his prior decisions; any of them may be overruled:
+1. **Ranks and units.** Five ranks (soldier, sergeant, captain, commander, General) and four units (section about 12,
+   company about 200, wing 600 to 3,000, **host** 3,000 to 12,000). One General a host, so Generals follow the army's
+   size; under 3,000 is a commander's column. Old grades map by the post held (File-Leader -> sergeant; Squad Captain
+   -> captain; Senior Captain -> commander; High General and Marshal -> General). *Why:* answer 10's "regular naming",
+   D12a's choice 10a without the Marshal, rule 9 (plain words), R14.
+2. **Who commands several hosts.** The king in person; else **one commanding General by the king's written word, for
+   that campaign only** (a commission, not a rank, title, pay scale or seat); else a council of war, slower and
+   quarrelsome. *Why:* an army needs one will or pays for lacking it; a standing rank above General would be the
+   Marshal again.
+3. **The senior General** is the General of the crown's first host. He takes the Marshal's council seat (56's fifth
+   seat and its yearly task) and nothing else: he does not command other Generals. `seat:<realm>:marshal` is retired.
+   *Why:* D-062 ("old saves map a Marshal to the realm's senior General"); the council still needs the army's voice.
+4. **Commands.** Every armed man is in one command; a command has one owner. The crown's command (royal knights,
+   crown regiments, crown lands, the orders, hired men) is led by Generals the king commissions, by merit. A
+   tenant-in-chief (a duke; a marquis or count with no duke over him) has his own, with officers he names, sworn to
+   him; he is its General by right or names one. A contingent is kept whole. A march lord may fight for his border
+   unsummoned. `GD.NOBLE_RUNGS`' numbers stand as a house's full strength. *Why:* answer 10, D-012.
+5. **The summons** has six answers (in full, with part, late, a deputy, coin, refusal), each decided from named reasons;
+   the muster records the reason given and the true one. **A lord's men serve the first season at his own cost; then
+   the crown pays or he decides again each season.** *Why:* answer 5 removes the forty days, and a campaign still
+   needs a clock: it becomes a person's decision.
+6. **Four kinds of dispute** (a private war, a refused summons, a quarrel inside the army, a border lord's own war),
+   each a ladder of decisions from a recorded grievance. One war record serves all fighting: `w.kind` realm, private,
+   border, rebellion or civil, with *commands* as its sides. *Why:* answer 10's "regional disputes within reason".
+7. **Men.** Sworn men (about 1 in 400 of the people), enlisted men (regiments by what the treasury pays; the roll,
+   about 1 in 100, volunteers who drill and march when mustered) and conscripts. **Conscription** is by proclamation
+   naming a real need, by lot, in three calls (one hearth in 20 for a season; in 10 for a year; in 5 while the enemy is
+   on home soil), raised by each lord in his lands; it costs hands in the fields (about 3, 6 and 12 in 100 working
+   men, double at harvest) and a remembered grievance. `r.army` reads as standing men, `r.levy` as the roll, the levy
+   law as the conscription law, levy troops as conscript foot. The numbers are starting points for the balance stage.
+8. **Following, desertion and mutiny** come from a company's ledger of what holds it and what pulls at it; mutiny needs
+   a grievance, a voice and an occasion.
+9. **One way of deciding** for every decider (`A.WHY.decide`, R1's core): options, reasons with kind, weight and
+   source, the temper (20's persona), **feelings as states with a cause and a heat that discounts reckoning**, a seeded
+   draw only between close options, a record. The owner's proud king and cold king are its two lab tests.
+10. **Wars end only by surrender or defeat.** Defeat is a fact (five conditions); surrender a decision from two pans
+    (to fight on; to yield), re-read monthly on what the decider has been *told*. Someone always asks first, and
+    asking has a price. **A truce is a pause (a year at most), never an end;** a war nobody marches in is still a war.
+    Eight pathways; terms only of real things, shaped by the casus. `w.score`, `A.checkPeace`, `A.peaceOdds` are retired
+    (W0 had left the score under the screen, D-052).
+11. **Sight** is from where your body stands (no one viewpoint; a soldier has no field view). **Stops:** anything whose
+    subjects include you, your unit, an order to you, your charges, or someone you know within sight; nothing else.
+    **Place:** given by the superior for reasons; chosen within it; requests answered with reasons.
+12. **Reports.** Everything not seen arrives as a report with a sender, a road, a day and a slant; timing is distance
+    over the carrier's speed, by urgency and by your place on the sender's list (need, then bond, then importance);
+    truth is what he knew, bent by what he wants believed, bent by each mouth. The player writes reports upward and can
+    be caught shading them. **A battle you were not at is played back as it was told to you** (answer 7), and corrected
+    when a truer account arrives.
+13. **Answer 8** ("keep it situation based... you know those you choose to get to know") is read as whom you *know*
+    (five reasons: serve you, guard you, you report to, thrown together, chosen), not as a drawing rule; for the
+    drawing D12a's 8a stands (your company man for man, the rest one figure for about six).
+14. **Answer 9** ("everything is properly accounted for in world history and saved in the same way") is read as: one
+    history for near and far in one shape, every record carrying reasons that point at records; **and so a war in an
+    old save goes on, converted as it stands,** not turned into a truce (D12a's recommendation 9a is dropped: a truce
+    nobody chose would be a thing without a reason).
+15. **Stability is a reading** of named pressures (the throne's right, each lord, the commons, the towns, the faith, the
+    army, the king himself); `r.stability` and `h.op` become sums of terms, old values fading in as "the past".
+    **A faction** needs a shared grievance, a tie and a leader; **a coup** a motive, access and an opening;
+    `A.factionsYear`'s bare dice go.
+16. **The military path** (D11+): a muster-master reads weapon, way of fighting, every useful aptitude, birth, patron
+    and the command's need, and makes offers with reasons; roles beside rank; a unit's training syllabus is built
+    from its make-up, abilities and tendencies (about forty drills in eight families, each arm its own list); a unit
+    always has a duty.
+17. **The build** is sixteen stages: W1-1 to W1-6 (no Marshal; minds; commands and the summons; no levies; surrender or
+    defeat; the realm's peace), D11-1 to D11-3 (the muster; units that differ; careers), D12b-1 to D12b-7 (hosts on
+    roads; the field by your eye; reports; the theatre; the press; sieges; balance). W1 needs no map and starts with
+    W1-1. **X7 part 2's gate is D12b-1** (hosts on roads retire `A.wsDay`); W1 and D11 are held to 2.5 ms a month in
+    all. An outcome-identical idle-day skip on the old engine (X7 part 2a) is offered but unmeasured.
+
+**Exceptions to record when built:** the war's and politics' own seeded streams (`seed:war`, `seed:politics`), as E1's.
+**Not decided here:** the balance numbers (shares of men, call sizes, budgets) beyond starting points; the Dispatches
+page's layout; whether "the realm's peace" (W1-6) should be its own work item.

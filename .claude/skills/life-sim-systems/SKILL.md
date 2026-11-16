@@ -103,6 +103,13 @@ Each realm has: king > dukes (at most 3; ≥24 counties → 3, ≥14 → 2, ≥7
   - The test requires the high-value choice to beat the low one at every rank by 4 points or more at sergeant and above.
 - **After-action report:** the three biggest signed contributions in words (the ground, tactics, numbers, quality, elites, your part).
 - **Not your war?** Then the player gets no view of it, only rumour.
+- **Where the design is going (D-064, `docs/design/war.md` part two; not built yet, so the lines above still describe the code):**
+  - Five ranks (soldier, sergeant, captain, commander, General) and no Marshal; a host is 3,000 to 12,000 men under one General; the king, or one General by his word for one campaign, commands several.
+  - Every armed man is in one command (the crown's, or a great lord's own under officers he names); the king summons and each lord answers from named reasons; contingents are kept whole. Private wars, refused summonses and border lords' wars follow from it.
+  - No levies: sworn men, enlisted men and the roll; conscription by proclamation in real need, with a cost in fields and a remembered grievance.
+  - Every decider weighs named reasons, bent by temper and by feelings that have a cause and cool; dice only choose between close options. A war ends only by surrender or defeat.
+  - You see from where you stand; everything else is a report with a sender, a road, a day and a slant.
+  - Stability is the sum of named pressures; a faction needs a shared grievance, a tie and a leader; a coup needs a motive, access and an opening.
 
 ## Checklist before shipping a system
 - [ ] Does every number come with words or a real unit?

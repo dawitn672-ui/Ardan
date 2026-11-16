@@ -948,3 +948,13 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - CI 128 (`f28a996`) failed only `lfRepeats` (with the first-life fixes 10.1 prompts a year against 13.5 without, 0.748
   against a bar of 0.75; it read 0.77 before X3 part 2's gates). 97 cuts repeats by design; the bar is 0.7 of off's.
 
+### H-059 · 2026-11-15 21:35 ET · D12a-2: the war design revised with the owner's ten answers (design only)
+- **Docs:** `docs/design/war.md` revised (part one kept, changes marked *(D12a-2)*; part two new, §9 to §16: command
+  without a Marshal, manpower without levies, why wars start and end, your place in it, stability and upheavals, the
+  military path and training, records and old saves, the build order in sixteen stages); a one-page summary for the
+  owner at its top; two diagrams, `docs/design/war/5-command.svg` and `6-reports.svg`, drawn by
+  `docs/design/war/build-command.mjs`. D-064 records the choices made where the answers left room.
+- **Game:** nothing. No code, data or test changed.
+- **Left open:** every stage of §16; CRITIQUE §2's "done when" for D11 and D12b still read the first plan; the
+  `life-sim-systems` skill carries a note of the direction, not yet the built rules.
+- **Undo:** revert branch `d12a-2`'s commits; the first design is `0378b9e`.
