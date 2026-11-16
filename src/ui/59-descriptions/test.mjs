@@ -781,7 +781,9 @@ export default {
       UI.ov = null; UI.renderModal();
       return { bad: bad.slice(0, 8), n: bad.length, seen };
     });
-    return { ok: !r.n && r.seen.moved > 0, detail: `${r.seen.marks} glyphs (${r.seen.moved} on a child's words), ${r.n} on a grid or flex row or repeating a name${r.n ? ': ' + r.bad.join('; ') : ''}` };
+    // S1b (D-072): the old skill rows carried the only long titles on these pages (their descriptions); the skill rows open a
+    // sheet now, so a page may hold no mark at all; where one is, it must still sit on a child's words, never on a grid row
+    return { ok: !r.n, detail: `${r.seen.marks} glyphs (${r.seen.moved} on a child's words), ${r.n} on a grid or flex row or repeating a name${r.n ? ': ' + r.bad.join('; ') : ''}` };
   },
   // B5 (H-014's open follow-up): an info button beside an action never adds a cell or a row. In a grid or a column of
   // flex it must be out of the flow (position absolute); everywhere else it is an inline item of a row.

@@ -240,7 +240,8 @@ export function month(p, age, acts = [], ctx = {}) {
     if (iq > T.q) T.q = iq; if (x >= T.x) { T.x = x; T.why = a.why; }
     if (a.trigger) T.trig.push([a.trigger, a.why]);
     if (a.teacher != null) { T.teacher = Math.max(T.teacher || 0, a.teacher); T.who = a.who; if (a.holds === false) T.noHold = true; }
-    if (a.q === 'stretch' && !a.failed && atEdge(s) && (a.d ?? 0) >= s.lv + 1) { s.proved = true; s.proofWhy = a.why; }
+    // (p.proofSlack: the game lets a stretch at the top of your own word prove you, D-077; the model has none)
+    if (a.q === 'stretch' && !a.failed && atEdge(s) && (a.d ?? 0) >= s.lv + 1 - (p.proofSlack || 0)) { s.proved = true; s.proofWhy = a.why; }
     let n = 0;
     for (const j in SKILL[k].kin) {
       const o = p.sk[j]; if (!o || o.lv === 0 || o.lv >= s.lv || atEdge(o) || n++ >= DYN.kinMax) continue;

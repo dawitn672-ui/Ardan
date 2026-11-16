@@ -12,6 +12,7 @@
     const N = pc.needs; if (N && typeof N === 'object') ctx.needs = { rest: N.rest, company: N.company, purpose: N.purpose, comfort: N.comfort };
     if (pc.flags && pc.flags.weary) ctx.weary = true;
     if (pc.happy != null && pc.happy < 15) ctx.despair = true;
+    if (SK.INSIGHT_LIFE && SK.INSIGHT_LIFE !== 1) ctx.insightMul = SK.INSIGHT_LIFE;
     return ctx;
   };
   const pos = (Eng, s) => Eng.totalTo(s.lv) + s.xp + s.st;
@@ -46,7 +47,7 @@
       SK.record(pc, r.k, r.kind, r.text);
       const big = r.kind === 'breakthrough' || (r.kind === 'word' && SK.wordOf(pc.sk[r.k].lv) >= 3);
       const cls = r.kind === 'word' || r.kind === 'breakthrough' ? 'big' : r.kind === 'grasp' ? 'good' : r.kind === 'stall' || r.kind === 'rust' ? 'warn' : r.kind === 'slip' ? 'muted' : null;
-      if (cls) A.log(r.text.replace(/^./, c => c.toUpperCase()) + '.', cls);
+      if (cls) A.log(SK.untoken(r.text).replace(/^./, c => c.toUpperCase()) + '.', cls);
       if (big && SK.notable) SK.notable(pc, r);
     }
   };
@@ -87,6 +88,19 @@
     const v = SK.view(pc), before = SK.snapshot(pc);
     SK.E().year(v, SK.ageF(pc));
     SK.drain(pc, v, before);
+    SK.offerDeed(pc);
+  };
+  // a person who has stood ready for a word a year (the concepts grasped, the proof wanting) is known to be ready, and the
+  // world offers the test: the card "A chance to be judged" comes, not left to the draw of thousands of cards (CI 137:
+  // ready at Advanced V for eight years and offered it once). At most once a year; the card has its own price.
+  SK.offerDeed = function (pc) {
+    if (!A.EV || !A.EV.sk_deed_offered || !A.isAdult || !A.isAdult(pc) || pc.prison) return;
+    const k = SK.edgeSkill && SK.edgeSkill(pc, 'ready'); if (!k) return;
+    const s = pc.sk[k]; if (s.stallAt == null || SK.ageF(pc) - s.stallAt < 1) return;
+    if ((pc.flags.sk_deed_y || 0) >= A.S.year) return;
+    if (A.S.queue.some(q => q && q.ev === 'sk_deed_offered')) return;
+    pc.flags.sk_deed_y = A.S.year;
+    A.queue({ type: 'event', ev: 'sk_deed_offered' });
   };
   // the season's line (31-learn-by-doing's, rewritten in words): what rose and chiefly why; one stall named; no numbers
   SK.holdReason = function (pc, k, e) {

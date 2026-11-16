@@ -66,6 +66,9 @@ export default {
       let k = __cc.king(); const R = A.realm('POL-01'), st0 = R.stability, kin = A.CROWN.kinOfDead(k).map(x => x.id);
       // a king with no spymaster and no fear in him, and a killer at the top of his craft: the knife gets through, in time
       if (R.council) R.council.spymaster = null; __cc.traits(k, (k.traits || []).filter(t => t !== 'paranoid'));
+      // (S1b CI 137: in some worlds the inquiry names the hand while the knife is still being tried, and the scaffold's card is
+      // queued then, with the loop's queue cleared after it; every cc_ card queued from here on counts)
+      const q0 = A.queue; let ccSeen = false; A.queue = function (it) { if (it && /^cc_/.test(it.ev || '')) ccSeen = true; return q0.apply(this, arguments); };
       let res, g = 0; const home = pc.home; while (k.alive && pc.alive && g++ < 40) { pc.flags.ints = {}; A.S.time = 60; pc.prison = null; pc.realm = 'POL-01'; pc.home = home; A.S.queue = []; res = A.interact(k.id, 'murder'); if (k.alive && A.S.crown) A.S.crown.guard = {}; }
       A.S.queue = [];
       const rec = A.S.crown.rec.find(x => x.k === 'regicide');
@@ -75,7 +78,7 @@ export default {
       if (rec && !rec.known) { rec.why = 'the test'; A.CROWN.known(pc, rec, false); }
       out.kinHate = kin.filter(id => { const p = A.P(id); return p && p.alive && p.rel[pc.id] && p.rel[pc.id].op <= -100; }).length; out.kin = kin.length;
       out.bounty = !!(A.S.crown.bounty[pc.id] && A.S.crown.bounty[pc.id].amt > 0);
-      out.sentenced = rec && rec.verdict; out.card = A.S.queue.some(q => /^cc_/.test(q.ev || ''));
+      out.sentenced = rec && rec.verdict; out.card = ccSeen || A.S.queue.some(q => /^cc_/.test(q.ev || '')); A.queue = q0;
       // an unknown hand: the inquiry finds it within its two years, often enough
       let solved = 0, tries = 0;
       for (let seed = 9980; seed < 9986; seed++) {

@@ -109,7 +109,7 @@
     try {
       if (e && q.view && q.view.choices && q.view.choices[idx]) {
         const c = e.choices[q.view.choices[idx].i];
-        if (c) cz = c.check || c.group ? { q: 'stretch', d: c.check ? SK.lvOfValue(c.check.d || 45) : undefined, why: typeof e.title === 'string' ? e.title : 'a moment' } : { q: 'practice', why: typeof e.title === 'string' ? e.title : 'a moment' };
+        if (c) cz = c.check || c.group ? { q: 'stretch', d: c.check ? SK.lvOfValue(c.check.d || 45) : undefined, why: SK.cardTitle(q, e) } : { q: 'practice', why: SK.cardTitle(q, e) };
       }
     } catch (err) { cz = null; }
     return cz ? SK.within(cz, choose, this, arguments) : choose.apply(this, arguments);

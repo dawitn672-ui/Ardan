@@ -281,7 +281,10 @@ export default {
       };
       // a scene with nobody to fit drops, and adds nobody to the family
       const none = (i, what, s) => { dropped[what]++; if (!(s.v.skip || s.ctx.skip)) bad.push(`${i} ${what}: no one to fit and the scene still shows`); if (s.grown.length) bad.push(`${i} ${what}: ${s.grown.length} relative(s) made`); };
-      for (let i = 0; i < 6; i++) {
+      // (S1b CI 137: a dead aunt on the father's side is a matter of the world's draws; one world in six had one. Ten lives,
+      // two of them still asked of each scene)
+      const NL = 10;
+      for (let i = 0; i < NL; i++) {
         const pc = AKT.life('ak_feud', 9100 + i * 17, i % 2 ? 'F' : 'M', ['artisan', 'peasant', 'merchant'][i % 3]);
         const m = scene(pc, 'ak_inherit', 'ak_inherit_1', 'u');
         const cz = H.who(pc, 'ak_inherit', 'cz'), czk = cz && A.V2F.kinOf(pc, cz);
@@ -305,7 +308,7 @@ export default {
         for (const t of [m.ctx.hk, b.ctx.oc, b.ctx.doc]) if (t && names.has(t)) bad.push(`${i}: a made-up name ${t} is already in the family`);
         rows.push(`${m.ctx.side || '-'} brother ${m.q ? m.q.given : '-'}, cousin ${f.q ? f.q.given : '-'} (father ${unc ? unc.given : '-'}), aunt ${b.q ? b.q.given : '-'}`);
       }
-      for (const k of Object.keys(found)) if (found[k] < 2) bad.push(`the ${k} found its real kin in only ${found[k]} of 6 lives`);
+      for (const k of Object.keys(found)) if (found[k] < 2) bad.push(`the ${k} found its real kin in only ${found[k]} of ${NL} lives`);
       // no unmarried uncle in the tree: none is written in, and the mill does not happen
       const pc = AKT.life('ak_feud', 9301, 'M');
       for (const par of [H.parent(pc, 'M'), H.parent(pc, 'F')]) for (const s of H.sibs(par)) if (!H.everWed(s)) s.exSpouses = ['x'];

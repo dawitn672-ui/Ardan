@@ -1493,7 +1493,7 @@ var __ARDAN_V2_MAKE = (() => {
         T3.who = a.who;
         if (a.holds === false) T3.noHold = true;
       }
-      if (a.q === "stretch" && !a.failed && atEdge(s) && (a.d ?? 0) >= s.lv + 1) {
+      if (a.q === "stretch" && !a.failed && atEdge(s) && (a.d ?? 0) >= s.lv + 1 - (p.proofSlack || 0)) {
         s.proved = true;
         s.proofWhy = a.why;
       }

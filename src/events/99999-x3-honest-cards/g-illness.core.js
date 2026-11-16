@@ -50,6 +50,9 @@
   // crisis comes once, so a second blow afterwards goes to the mortal roll as before. Called by A.mortalCheck.
   X3.illEdge = function (pc, cause) {
     const I = pc && pc.ill;
+    // (S1b CI 137, seed 930: the crisis was queued and held him at 4, and a sacked town's card, taking the head of the queue,
+    // took the 4 before the crisis was met: the queued crisis still decides, so he is held at the edge until it is answered)
+    if (I && I.crisis && I.cr && pc.alive && pc.health <= 0 && pc.id === A.S.pc && A.S.queue.some(q => q && q.ev === 'x3_ill_crisis') && (cause == null || String(cause) === I.name)) { pc.health = 1; return true; }
     if (!I || I.crisis || !pc.alive || pc.health > 0 || pc.id !== A.S.pc || !A.isAdult(pc) || !A.EV.x3_ill_crisis) return false;
     if (cause != null && String(cause) !== I.name) return false;   // a named blow of its own (a battle, a beast) is its own death
     I.crisis = 1; X3.illAfter(pc, I, false);

@@ -89,7 +89,11 @@
   SK.lvOf = function (p, k) {
     const c = SK.LEG[k] ? SK.LEG[k][0] : k;
     // the player's table; a number older code wrote since the month's pass is read at once (adopted at the month)
-    if (full(p) && p.sk[c]) { const m = p.skills && p.skills[c]; return m == null || m === VALUES[p.sk[c].lv] ? p.sk[c].lv : lvOfValue(m); }
+    if (full(p) && p.sk[c]) {
+      const m = p.skills && p.skills[c], lv0 = m == null || m === VALUES[p.sk[c].lv] ? p.sk[c].lv : lvOfValue(m);
+      // a legacy key older code wrote (a test, a scene: p.skills.axe = 60) is read through its skill, the higher
+      return c !== k && p.skills && p.skills[k] ? Math.max(lv0, lvOfValue(p.skills[k])) : lv0;
+    }
     const sk = p && p.skills; if (!sk) return 0;
     let lv = lvOfValue(sk[c] || 0);
     // older code may still write a legacy key on someone new: it is read through its skill, the higher of the two
@@ -153,11 +157,20 @@
   };
 
   // ---- the player's view for the engine ------------------------------------------------------------------------------
+  // CI 137's balance (D-077): two of the design's walls, measured in bot lives, held a life's skills at Advanced V for a
+  // decade and more (the player's offices and pay read skills on the scale the world's people are rolled on). Both are
+  // named constants, the owner's to move:
+  // - PROOF_SLACK: a stretch succeeded at the top step of your own word proves you for the next (the model asks the next
+  //   word's own level; the cards hold few checks at 55 and up, so an edge waited on luck, not on a deed);
+  // - INSIGHT_LIFE: a month of a life is many-sided (the post, the cards, the talk, the plan), so its chance of insight is
+  //   twice the model's single month of drill; still a chance, still blind spots, still a proof from Expert.
+  SK.PROOF_SLACK = 1;
+  SK.INSIGHT_LIFE = 2;
   const memo = new Map();
   SK.view = function (p) {
     let m = memo.get(p.id); if (!m) { if (memo.size > 30) memo.clear(); m = new Map(); memo.set(p.id, m); }
     return { id: p.id, seed: String(A.S ? A.S.seed : 'ardan'), talent: p.tal || {}, memory: SK.memoryOf ? SK.memoryOf(p) : 1,
-      proud: SK.proudOf ? SK.proudOf(p) : false, sk: p.sk, ledger: [], rec: [], rng: A.rand, needMemo: m };
+      proud: SK.proudOf ? SK.proudOf(p) : false, proofSlack: SK.PROOF_SLACK, sk: p.sk, ledger: [], rec: [], rng: A.rand, needMemo: m };
   };
   SK.need = (p, k, c) => SK.E().need(SK.view(p), k, c);
 
@@ -169,8 +182,15 @@
   SK.whyNow = function () {
     if (SK.cur) return SK.cur;
     const q = A.S && A.S.queue && A.S.queue[0], e = q && q.type === 'event' && A.EV && A.EV[q.ev];
-    if (e) return { q: 'practice', why: typeof e.title === 'string' ? e.title : 'a moment' };
+    if (e) return { q: 'practice', why: SK.cardTitle(q, e) };
     return { q: 'practice', why: 'the year\'s doings' };
+  };
+  // a card's title as the player read it: the view's, with its tokens filled ("As {oa} tells it" is a template, CI 137)
+  SK.untoken = s => String(s == null ? '' : s).replace(/\s*\{[A-Za-z0-9_.]+\}\s*/g, ' ').replace(/\s+/g, ' ').trim();
+  SK.cardTitle = function (q, e) {
+    const v = q && q.view && typeof q.view.title === 'string' ? q.view.title : null;
+    const t = SK.untoken(v != null ? v : typeof (e && e.title) === 'string' ? e.title : '');
+    return t && !/^(as|a|the|of)$/i.test(t) ? t : 'a moment';
   };
   SK.MONTH_CAP = 40;   // efforts queued in a month, bounded (rule 21): like ones are summed
   A.gainXp = function (p, k, eu, cause) {
@@ -198,7 +218,9 @@
     SK.ledger(p, c, -x, why || 'a setback', ['setback']);
   };
   // the shim the 300 older calls go through: amt x 0.2 effort, the cause read from what is running
-  SK.SHIM = 0.2;
+  // (0.2 in the design; 0.5 since CI 137: the older code's grants, a duel, a battle, a council's month, a card, were the old
+  // growth's main road, and at 0.2 a noble of 35 stood at Advanced V with no office within reach; D-077)
+  SK.SHIM = 0.5;
   SK.trainShim = function (p, k, amt, cause) {
     if (!p || !GD.SKILLS[k] || !(amt > 0 || amt < 0)) return 0;
     return A.gainXp(p, k, amt * SK.SHIM, cause || SK.cur || undefined);
@@ -239,7 +261,7 @@
     e.x = Math.round((e.x + x) * 100) / 100;
     if (extra) { if (extra.lost) e.lost += extra.lost; if (extra.back) e.back += extra.back; if (extra.held) e.held += extra.held; }
     if (x || !extra) {
-      const by = e.by, w = String(why || 'other').slice(0, 80);
+      const by = e.by, w = SK.untoken(why || 'other').slice(0, 80) || 'other';
       const r2 = v => Math.round(v * 100) / 100;
       if (by[w] != null || Object.keys(by).length < SK.BY_MAX) by[w] = r2((by[w] || 0) + x); else by.other = r2((by.other || 0) + x);
     }
@@ -269,7 +291,7 @@
   SK.record = function (p, k, t, text) {
     if (!isPC(p)) return;
     const R = p.skr = Array.isArray(p.skr) ? p.skr : [];
-    R.push({ y: A.S.year, k, t, text: String(text).slice(0, 160) });
+    R.push({ y: A.S.year, k, t, text: SK.untoken(text).slice(0, 160) });
     if (SK.tap) SK.tap.push(R[R.length - 1]);
     if (R.length > SK.REC_MAX) {
       const y0 = R[0].y, dec = Math.floor(y0 / 10) * 10, some = R.filter(r => r.t !== 'fold' && Math.floor(r.y / 10) * 10 === dec);

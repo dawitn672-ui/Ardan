@@ -223,8 +223,8 @@
   .skrow .skl{grid-area:l;font-size:16px;font-variant-numeric:normal;white-space:nowrap;color:var(--ink-2,inherit)}
   .skrow .skbar{grid-area:b;display:block;height:6px;border-radius:3px;background:var(--line,rgba(127,127,127,.25));overflow:hidden;position:relative}
   .skbar i{display:block;height:100%;width:100%;transform-origin:0 50%;background:var(--gold,#c9a24a);transition:transform .3s ease}
-  .skrow .skst{grid-area:b;justify-self:end;font-size:11px;letter-spacing:1px;opacity:.8}
-  .skrow .sks{grid-area:s;font-size:13px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46vw}
+  .skrow .skst{grid-area:b;justify-self:end;font-size:14px;letter-spacing:1px;opacity:.8}
+  .skrow .sks{grid-area:s;font-size:14px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46vw}
   .skgroup>summary{min-height:44px;display:flex;align-items:center;gap:8px;cursor:pointer;font-family:var(--fh,inherit);letter-spacing:.04em}
   .sk-sheet{display:flex;flex-direction:column;gap:8px;max-width:34em}
   .sk-title{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}.sk-title b{font-size:1.15em}.sk-word{min-height:44px;display:inline-flex;align-items:center;cursor:pointer;text-decoration:underline dotted}
@@ -238,7 +238,7 @@
   .work-sheet{display:flex;flex-direction:column;gap:6px;margin:8px 0}
   .work-pick{display:flex;flex-direction:column;gap:4px}.work-pick select{min-height:44px;font-size:16px}
   .work-how{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:52px;text-align:left;padding:8px 10px}
-  .work-how span{font-size:13px;opacity:.8;font-weight:normal}
+  .work-how span{font-size:14px;opacity:.8;font-weight:normal}
   @media (prefers-reduced-motion: reduce){.skbar i{transition:none}}
   `;
   if (typeof document !== 'undefined' && !document.getElementById('skills-style')) { const st = document.createElement('style'); st.id = 'skills-style'; st.textContent = css; (document.head || document.documentElement).appendChild(st); }
