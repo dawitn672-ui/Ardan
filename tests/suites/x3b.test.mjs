@@ -79,7 +79,7 @@ const LIFE = ([w, years]) => {
     }
     for (const a of v.adv || []) {
       out.adv++; const t = A.P(a.id);
-      if (!t || !t.alive || t.prison || !X3.present(pc, t)) out.counsel.push(`${tag}: ${a.r} ${t ? t.given : a.id} is not there`);
+      if (!t || !t.alive || t.prison || !X3.reaches(pc, t)) out.counsel.push(`${tag}: ${a.r} ${t ? t.given : a.id} is not there`);
     }
   } });
   out.dropped = JSON.parse(JSON.stringify(X3.stats)); out.end = r;
