@@ -68,7 +68,7 @@
   }
   D9.drawWays = function (ctx, W, H, v, screen, SW) {
     const t0 = now(), c = D9.ctx(), G = c.G, geo = D9.geo(), L = D9.LOOK;
-    const vx = v ? v.x0 : 0, vy = v ? v.y0 : 0, vw = v ? v.w : KW, vh = v ? v.h : KH, sx = W / vw, sy = H / vh, k = ratio(screen, SW);
+    const vx = v ? v.x0 : 0, vy = v ? v.y0 : 0, vw = v ? v.w : KW, vh = v ? v.h : KH, sx = W / vw, sy = H / vh, k = Math.min(1.7, ratio(screen, SW));   // on a phone the canvas is shown at a third of its size: lines no wider than this
     // the zoom as 62 and 99991 reckon it: the screen's width of the frame
     const zoom = KW / (SW / sx);
     const X = x => (x - vx) * sx, Y = y => (y - vy) * sy, x1v = vx + vw, y1v = vy + vh, m = 30 / sx;

@@ -948,3 +948,19 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - CI 128 (`f28a996`) failed only `lfRepeats` (with the first-life fixes 10.1 prompts a year against 13.5 without, 0.748
   against a bar of 0.75; it read 0.77 before X3 part 2's gates). 97 cuts repeats by design; the bar is 0.7 of off's.
 
+
+### H-059 · 2026-11-16 ET · D9: the map's ground, read by the game and drawn (D-061)
+- **Branch** `d9-map` from `v2-integration` (`7aee21c`), not pushed. Steps: `aec5924` the ground engine
+  (`src/map/engine/ground.js`, `tests/v2/ground.test.js`), `e1c7f63` map version 3 (towns on water, oases on dry land, terrain
+  from the ground), `1e1d84d` the ground in play and on the map, one map component (`src/map/999911-d9-ground`), then the look,
+  the tools and this record.
+- **Edited in place** (each marked D9): the release (`21-map.js` `MAP.paint`; `23-ui-c.js` `UI.gmDraw` and `23-ui-d.js`
+  `UI.drawWarBasic` lay their layers through it; `11-armies-...-a.js` `A.divMove` and `A.fightDay`; `10-companies-...-b.js`
+  `A.wsPath` and `A.supplyNeighbours`), `23-after-action` (the crossing as a cause), `38-orders` (`roundRoad`), `62-inked-map`
+  (`IM.under`, `IM.underKey` in the lines picture), `9991-atlas` (`MAP.paint`), `91-visual-style` (`UI.mapRealmHex`), `99991-v2-map`
+  (version 3, the ground on the world, `VM.landNames`).
+- **Tools:** `tools/d9/road-crops.mjs` (the roads-or-borders crops and their key, `docs/design/map/d9/roads-vs-borders/`),
+  `tools/d9/sheet.mjs` (the owner's sheet, `docs/design/map/d9/sheet.png`).
+- **Undo:** revert the branch's commits, newest first. Saves keep only the map's seed and version. An older build reads a
+  version 3 save's map as version 2 (its towns' sites would not match), so undo before version 3 saves are kept; version 2
+  saves are unaffected either way.

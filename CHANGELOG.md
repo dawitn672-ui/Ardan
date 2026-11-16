@@ -5,6 +5,12 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **The map has roads, fords and passes.** High roads and tracks join the towns, most of which now stand on a river or the shore;
+  every road meets a river at a ford or a bridge, and mountain roads go over named passes. Woods, marsh, tributaries and the
+  names of seas, ranges, rivers and forests are on the map, and no two neighbouring realms share a colour.
+- **The ground matters.** You travel and armies march faster on the roads, supply runs along roads and rivers, and an attack
+  across a river or through a pass costs the attacker, as the battle report says. Oases lie in dry country, and hills no longer
+  cover half the land.
 - **Cards say what you are, and where.** No one calls you "my lord" or "your men" unless you are a lord or lead men, a home-town scene
   does not find you on campaign, a child under six is not asked a grown man's question, and counsel comes only from someone in
   the room. A card's price is the price: a physician's cut of your purse and a lost house are said before you choose.
