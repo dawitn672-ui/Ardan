@@ -1316,3 +1316,48 @@ same training one man is Master in five years and another stuck for life. Every 
 18). The curve R(level) stays as the pace between turns. `docs/design/growth-standard.md` §3.16 (and rule 2 of its
 summary). Builds in G1/G2 and D11+. (D-069 is left to W1-2.)
 
+### D-072 · S1a: proficiencies retired; skills with levels, experience, concepts and breakthroughs (owner order 63, 2026-11-15 23:21 ET; design 2026-11-16; builds on D-046, D-067, D-070)
+**Owner:** "im no longer a fan of the proficiencies system its very bland. systematically remove it and refine a system of
+skills with levels and expierience. dynamic growth mechanics". **Design:** `docs/design/skills.md`, model `docs/design/skills/`.
+1. **One quantity.** A skill has a **level** (0 to 35: the eight words of growth.md §2.2, Beginner to Legend, in five
+   steps each; Myth for the dead) and **experience** toward the next step. A check reads the level's value on today's
+   0-100 scale at growth.md's word edges; there is no number beneath it. `p.skills[k]` stays as a mirror of that value,
+   written only by the engine, so 349 readers and 5,695 checks keep working. *Why:* "nothing may survive as a hidden
+   number", and no card's shape changes.
+2. **28 broad skills with 99 specialisms**, the keys the player sees today; the ten keys folded earlier (dagger, xbow,
+   lance, siegecraft…) are specialisms, for NPCs too. No new skill until it has five readers (69's rule). A specialism
+   acts two steps higher inside it, one lower in a sibling, and costs ×0.85 outside it.
+3. **Experience is the growth standard's formula as a price:** ten for a month of plain drill; a step costs
+   `120 × (e^(b/21.6) − e^(a/21.6))`. The daily drip, the 0.3 a month, the use-and-practice weights, the 6% session
+   "breakthrough" and the two-year rust are removed; sources are efforts with a quality and a cause.
+4. **No word by experience alone** (D-070 built in): nine named concepts a skill (252, in data); a person's need for
+   each is a hash (ease by skill and by concept, talent, a chance of a lifelong blind spot); each worked month is a
+   chance of insight; experience at an edge is stored (at half without the concept) and lands as a leap; breakthroughs
+   are sudden grasps at named moments, an eighth as likely against a blind spot. The page shows concept states in
+   words (dark, dim, clearer, close, grasped), never a number.
+5. **Proof from Expert up** (confirms D-067 item 3 as the *name* of the crossing): a succeeded stretch at the next word.
+6. **Growth moves with the life:** discipline (unbroken months), a rival, a teacher who holds the concept, a new land,
+   wounds, age, rest, purpose, company, comfort, kin skills, hours shared, specialism, pride; each a factor written in
+   the ledger with the gain it changed.
+7. **Kept from growth.md:** the words, talent letters (per skill, shown, from `p.apt`, until G1), the body's baseline
+   (C9), disuse, knacks (the 114 perks, at the crossings into Advanced, Expert, Master), arts and their forms untouched
+   (rank words only). **Cut from S1** (G3, G4, E2): narrow skills by rule, marks, fusion, the failed first try, manuals.
+8. **Other people:** one number as now, the same rules in closed form once a year, concepts by hash; at most 24 active
+   people stepped monthly; a teacher shows only what he grasped.
+**Conflicts recorded, and the fix chosen.**
+- *The census.* D-043 item 1 (order 36) dropped the caps on Grandmasters and Legends ("no count limit"); D-067 item 3
+  said the census of ten and one "stands". **Chosen:** order 36 holds: the census is a **count** the world keeps and
+  shows, never a cap; rarity comes from what the top takes, and a long test bounds it (1 to 12 Grandmasters, 0 to 2
+  Legends alive over 200 years), tuned by the concepts' needs. For the owner to overrule.
+- *Levels outside combat.* D-043 item 6 kept the ranks for fighting and wanted other callings without a grade ladder;
+  order 63 (later) asks for "a system of skills with levels". **Chosen:** every skill has the eight words; D-043's ban
+  on step-like *career* ladders stands untouched. For the owner to overrule.
+- *Hidden numbers.* §3.16's grasp is hidden by design; order 63's removal must leave nothing the player cannot reason
+  about. **Chosen:** the need is never shown as a number and is never a stored stat; its state is always on the page
+  in words, and a Master's judgement names it.
+- *Check odds.* growth.md §2.8 wanted G2 to move no check's odds; levels in steps move some by up to 6.4 in 100
+  downward at migration (the remainder goes on the bar). Accepted for a level that is the only number.
+- *Event text is read as text:* renaming `C.prof` to `C.lvl` and `C.apt` to `C.talent` in the packs is done with
+  `tools/release/identity-probe.mjs` before and after.
+**Not decided here:** talent's hiding and budget (G1), languages as skills (G3), the image-model work (order 60).
+

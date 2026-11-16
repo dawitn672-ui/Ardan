@@ -1078,3 +1078,25 @@ Branch `p3-playtest` from `v2-integration` at `2aaf1ba`; one commit a fix; not p
   chokepoint tables, realm secrets. Outdated: military templates, Marshal, levies (the war score is not in it).
 - **Game:** nothing. No code, data or test changed.
 - **Undo:** revert the branch `codex-review` commits.
+
+### H-067 · 2026-11-16 · S1a: the design for skills with levels and experience (order 63; nothing in the game)
+- **Asked** (order 63): retire the proficiencies everywhere; skills with levels and experience; growth that moves with
+  the life. Design only.
+- **Written:** `docs/design/skills.md`: the owner's page; §1 what is removed (data, engine, every place the player reads
+  it, tests), counted with `git grep` at `962791e` (5,695 checks, 4,989 skill grants in effects, 337 `A.trainSkill`
+  calls, 349 `A.skill` reads, 252 `C.prof`, 110 direct writes to `.skills`, 51 "proficien"); §2 the model (28 skills,
+  99 specialisms, 35 levels, the experience table, 252 concepts, grasp, proof, breakthroughs, talent, rust); §3 sources
+  and the fourteen things that move growth; §4-§5 checks and effects; §6 kept and cut; §7 the ledger; §8 the page at
+  375 × 667; §9 migration; §10 other people and the census; §11 ten choices for the owner; §12 for S1b (the engine
+  module, twelve file steps, data bounds, cost, eighteen tests, lints, six stages with done-when).
+- **Scripts** (`docs/design/skills/`, not game code): `gen-data.mjs` → `skills.json`; `model.mjs` (imports the growth
+  standard's `../growth/model.mjs`); `lives.mjs` → `lives.json` and the tables; `chart.mjs` → `lives.svg` (rendered in
+  Chromium, light and dark, and looked at). Twelve concept names come from `docs/research/codex/martial-concepts.md`.
+- **Measured in the model:** a prodigy (talent S, easy needs, a grandmaster's drill) is Master in 4 years; an ordinary
+  plodder in 27; a gifted, well-taught man with one blind concept ends at Expert V; of 400 people of talent C given
+  the same best training 343 reach Master in 8 to 49 years (middle 11) and 57 never.
+- **Game:** nothing. No code, data or test changed.
+- **Left open:** the owner's choices (§11; two are conflicts between earlier orders, recorded in D-072); S1b.
+- **Undo:** revert branch `s1a`'s commits (`docs/design/skills.md`, `docs/design/skills/`, and the lines added to
+  DECISIONS, HISTORY, PROGRESS and `docs/README.md`).
+
