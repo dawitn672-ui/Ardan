@@ -65,7 +65,7 @@ The squad and the front were never on the screen together while the fight was st
   - nothing left to move on the front.
 - **Lower officers.** A captain, senior captain or commander still fights 44's tactical battle on the first day; that is his layer. The days after it and the end are two-scales scenes: the same book, with company orders rolled on his command ("Order the company forward", "Wheel the company onto the 3rd Aldmark Horse", "Pull the company back in order"). These days go through a `company` layer at a quarter of 44's company strengths.
 - **Drafts for the front** (`twoscales.events.js`, 1 event). A soldier's own division is raised near his home and is often left out of the field armies. Once a month at war, if his division has not been asked into a fight for 75 days and another division of his realm is fighting, the sergeant asks for a draft for it. Going moves you to that division (merit +2, happy −2). Staying keeps your company (happy +2).
-- **The levy, for a life outside the army.** When your home province is fought over and a garrison of your side stands in it, the bell rings: "Take a spear and stand with the levy" or "Bar the door and keep your people close". The levy stands beside the garrison division, with three neighbours for a squad: your friends and kin who live there, or new neighbours. It is the same scene, and it sends the front through a `levy` layer at 0.6 of the soldier's strengths. It comes at most once every 300 days.
+- **The muster, for a life outside the army.** When your home province is fought over and a garrison of your side stands in it, the bell rings: "Take a spear and stand with the muster" or "Bar the door and keep your people close". The muster stands beside the garrison division, with three neighbours for a squad: your friends and kin who live there, or new neighbours. It is the same scene, and it sends the front through a `muster` layer at 0.6 of the soldier's strengths. It comes at most once every 300 days.
 - **Registered.** `A.SIGNATURE.twoScales` is set, beside 34's `bothScales`.
 
 **Measured by.**
@@ -124,7 +124,7 @@ You did not die in any of the 2,550 played fights (7 policies on 300 fights, and
 
 8 lives a path, 56 in all (`bench.mjs --what=lives --lives=8`; run before a scene ended early when your division is pulled out, which changes what a scene holds, not whether one comes):
 
-| Path | Lives that meet one | In the army | In the levy | Two-scales fights | Of them over on the first day | Per 10 years of service |
+| Path | Lives that meet one | In the army | In the muster | Two-scales fights | Of them over on the first day | Per 10 years of service |
 | --- | --- | --- | --- | --- | --- | --- |
 | soldier (enlists at 18) | **6 of 8** | 6 | 0 | 32 | 17 | 1.4 |
 | serf | 6 of 8 | 3 | 4 | 15 | 9 | 0.6 |
@@ -135,7 +135,7 @@ You did not die in any of the 2,550 played fights (7 policies on 300 fights, and
 | royal | 3 of 8 | 2 | 1 | 11 | 5 | 0.6 |
 
 - **The soldier path is not "every run".** 7 of the 8 soldiers had a realm at war while they served, and 6 of those 7 met a two-scales fight. The seventh was asked into one fight and kept his head down. The eighth served in a realm that stayed at peace.
-- **26 of the 56 lives meet one.** 12 meet one in the levy, and 21 meet a fight in which the front can still move.
+- **26 of the 56 lives meet one.** 12 meet one in the muster, and 21 meet a fight in which the front can still move.
 - **What made the difference.** In a 12-life soldier run with the drafts and the captain's days but before the short scene, 4 of 12 met one. With the short scene it was 10 of 12, in a world of 67 features. Most fights a soldier is asked into end on their first day, and most of his fights come after his first promotions.
 
 `test.mjs` (on the full build):
@@ -148,7 +148,7 @@ You did not die in any of the 2,550 played fights (7 policies on 300 fights, and
 | `twoScalesReplay` | The same fight played twice through the real actions, once drawn at every step: the same world. The game's journal (01-replay) of 8 commands replays the clicks to the same world |
 | `twoScalesSave` | Saved while the scene waits for the day and while it is in front of the player: both load, draw and play to the end. A scene missing its later fields, and a release line battle with no scene, load and play |
 | `twoScalesChronicle` | "At Novice you stood two days in the 5th Solenne Line with Enzo at your shoulder, and the line went forward." is in the story log and in the Chronicle's book. 34's three panels come next |
-| `twoScalesOtherLives` | A commoner is called to "The levy at Aressa" and stands with three neighbours; the front goes through the `levy` layer, and no army record is left on the player. A soldier in garrison is drafted to the division that is fighting. A captain's tactical battle is followed by the fight's later days: "Order the company forward / Hold the company where it stands / Rest the company in turns behind the line". A fight over on its first day gets its short scene, before 34's panels. A division pulled out mid-fight ends the scene with the retreat, and 34's panels come when the fight it left is over |
+| `twoScalesOtherLives` | A commoner is called to "The muster at Aressa" and stands with three neighbours; the front goes through the `muster` layer, and no army record is left on the player. A soldier in garrison is drafted to the division that is fighting. A captain's tactical battle is followed by the fight's later days: "Order the company forward / Hold the company where it stands / Rest the company in turns behind the line". A fight over on its first day gets its short scene, before 34's panels. A division pulled out mid-fight ends the scene with the retreat, and 34's panels come when the fight it left is over |
 | `twoScalesPhone` | iPhone SE (375 px, with 71-phone): nothing wider than the screen or past its edge, no sideways scroll, every control 44 px, no text under 14 px outside the print. axe-core (WCAG 2.1 A and AA): 0 violations on the phone and on a desktop |
 
 The draft event passes `tools/lint-events.mjs` (0 errors, 0 warnings) and `tools/lint-choices.mjs` (0 obviously best, 1 compared by numbers).
@@ -175,7 +175,7 @@ On `--only=one-battle-two-scales` the scene runs, draws, saves and replays (`two
 - **Drawing is pure.** The print's ground glyphs are a hash of the province, and no random number is drawn. Every value goes through `UI.esc`, and only hex colours go into the SVG.
 - **The dice are the engine's.** The scene's own draws (who is hit by the arrow, a comrade's fall, wounds) use `A.chance`, `A.pick` and `A.ri`, in the engine, never when drawing.
 - **"Go on" is the player's clock.** The scene's buttons call `A.missionChoose` and then `A.advance`, both journal commands, so problem reports replay.
-- **Old saves load.** `A.S.tsq`, `A.S.tsEnded`, `A.S.tsLevy`, `A.S.tsDraft`, `p.tsN` and `m.ts` are all optional. A mission without `m.ts` is the release's.
+- **Old saves load.** `A.S.tsq`, `A.S.tsEnded`, `A.S.tsMuster`, `A.S.tsDraft`, `p.tsN` and `m.ts` are all optional. A mission without `m.ts` is the release's.
 - **No inline handlers.** The buttons use `data-a` (`mChoose`, `mAuto`, `mClose`, the release's own, wrapped).
 
 **Limits.**
@@ -186,12 +186,12 @@ On `--only=one-battle-two-scales` the scene runs, draws, saves and replays (`two
   - Moving the ask to the day before the fight would need a change to how armies march.
 - **A soldier in a realm at peace never meets it.** One of the 8 soldier lives (and 2 of 12 in an earlier run) served in a realm that stayed at peace.
 - **The soldier's swing sits just under the officer's (17 and 19 pooled),** as 44 intended, but close to it. Both are inside the band. The soldier's reads 14.7 on one set of 150, under War 1's 15.
-- **The levy is rare.** It needs a fight in your own home province with a garrison of your side in it. Over 56 lives: 12 lives met it (serfs 4, artisans 3, peasants 2, nobles 2, royals 1). No merchant life did.
+- **The muster is rare.** It needs a fight in your own home province with a garrison of your side in it. Over 56 lives: 12 lives met it (serfs 4, artisans 3, peasants 2, nobles 2, royals 1). No merchant life did.
 - **The print is procedural.** The standards, the line and the ground are drawn from the snapshot in the inked map's vocabulary. An illustrator could give the field a real woodcut, and the figures under your standard are stick figures.
 - **The print's own words are small on a phone.** At 375 px they are about 7 px. Everything they say is also in the text under the print.
 - **The balance bench was not run here** (the coordinator runs it). Soldier lives may lose a little more of their squad than with the release's line battle (best play about 0.28 of the three men beside you a fight), and no longer get the made-up second battle's war score. I expect the soldier lives inside the peasant path to move a little in fame and happiness. Death bands should hold: no player died in 2,550 played fights.
 - **Not playtested.** Whether the book reads as one moment, the trailer moment, needs a human eye.
 
-## v2: a levy is told estimates (99997-v2-war)
+## v2: a muster is told estimates (99997-v2-war)
 
-The call to the levy, the front's words, the standards' slips and titles, and the day's tally give counts through `TS.told(n, mine)`: 99997-v2-war's `W.levyCount` when it is in the build ("about 6,500"), else the count itself (playtest 2 finding 5).
+The call to the muster, the front's words, the standards' slips and titles, and the day's tally give counts through `TS.told(n, mine)`: 99997-v2-war's `W.musterCount` when it is in the build ("about 6,500"), else the count itself (playtest 2 finding 5).

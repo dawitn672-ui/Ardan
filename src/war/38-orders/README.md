@@ -150,4 +150,4 @@ The events pass `tools/lint-events.mjs` and `tools/lint-choices.mjs`.
 - **Feints are rare and half of them catch nothing.** 84 in 288 wars; 43 struck after the garrison came out, and only 3 times was a division seen on its way to the bait. The rest of the "drawn" strikes came when the held place had weakened for other reasons.
 - **A cautious general gives ground** (unchanged from the last round): with a third held back and no offensive while outnumbered, he loses more of his own provinces than steady.
 - **The letters are not the battle.** Going in with the first wave is a check in the letter, not a place in the line battle (War 1).
-- **Only the soldier's chain.** A noble's levy or a mercenary company gets no letters.
+- **Only the soldier's chain.** A noble's muster or a mercenary company gets no letters.

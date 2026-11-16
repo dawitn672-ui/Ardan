@@ -77,7 +77,7 @@ their cracks; the ten quarrels; the four causal chains) is the catalogue for the
 | `17-careers-and-event-engine-a.js:580` `A.seatOffers`, `:664`, `:696` `A.councilMonth`, `12-nobility-and-politics.js:190` `A.nobleAction` | the crown offers the player a seat, keeps or dismisses him | the king's opinion of him (R2's base), his skill, renown, a rival's word |
 | `17-careers-and-event-engine-a.js:986` `A.councilPropose` | a proposal at council passes | the councillors' stances (56's tally) |
 | `17-careers-and-event-engine-a.js:2230` `A.justifyMonth` | a forged claim is found out | the spymasters' skills on both sides |
-| `src/core/engine/game.js:85` `nextMonth` | v2 kit's call to serve | W1-3's muster (left: a v2 engine module, rebundled with `tools/build-v2.mjs`; the v2 kit's own call, not the game's) |
+| ~~`src/core/engine/game.js:85` `nextMonth`~~ | v2 kit's call to serve | **Routed in W1-4**: the why engine's `decide` (the war needs men, against the standing men being enough), the same pace |
 | `src/nobility/999993-crown-crimes` (P3) | sentences and forgiveness (dice within named reasons) | already named: route `CC.forgiveOdds` and the sentence through `A.WHY.decide` with the ruler as decider (his temper and feelings at the criminal), the first users after W1-2 |
 
 ### Not decisions (heuristic hits), for the lint's next pass

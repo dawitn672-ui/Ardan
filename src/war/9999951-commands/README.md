@@ -88,7 +88,7 @@ unsummoned rising), a private war (`w.kind`, the grievances on each house). **Th
 ## What the player sees, by rank (`c-player.core.js`, `cm.events.js`)
 
 - **A landed lord** owing men (`A.POL.pcOath`) is summoned: **cm_summons**, six answers with what each costs. In full or
-  with part he rides with his men (the release's levy battle; he is in the war at his rank until it ends or he goes
+  with part he rides with his men (the release's muster battle; he is in the war at his rank until it ends or he goes
   home, `A.CMD.ridesWith`, read by 99997-v2-war's `W.side`); late, a deputy, coin, or refusal. A refusal is judged by the
   same ladder (`A.CMD.pcJudge`): a fine, a son at court, a rung lost, forsworn, attainder, or the excuse accepted; the
   judgment is **cm_sentence**, where he submits, keeps silent, or writes to the others who stayed home. After the first,

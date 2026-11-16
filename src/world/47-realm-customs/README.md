@@ -30,7 +30,7 @@ In the release a realm's ways are paragraphs in its primer. Legal customs exist 
   | `mourn` | a parent dies | who takes the estate: the eldest, the eldest son, the youngest, daughters, all alike, the temple's tenth first, or the lord | 17 |
   | `wed` | you marry | the dowry doubled, abolished, or turned into a bride price you pay | 8 |
   | `name` | your child is born | named for a grandparent or a parent (the release's naming prompt then offers it) | 7 |
-  | `levy` | your realm goes to war | once a war: serve or pay | 6 |
+  | `muster` | your realm goes to war | once a war: serve or pay | 6 |
   | `law` | after a punishment | what the custom adds | 8 |
   | `ward` | a standing rule, met when your life fits it (armed, mounted, rich, poor, unwed …) | | 13 |
   | `market` | you sell at home | a cut of the proceeds | 4 |
@@ -53,7 +53,7 @@ In the release a realm's ways are paragraphs in its primer. Legal customs exist 
 
 A first meeting is a scene at most every `SCENE_QUIET` (3) years, doubling with each scene of the life (97's `A.lfSpaced`); the rest are met quietly with their log line (v2 merge, lfRepeats).
 
-| `everyKindFires` | Each of the ten kinds fires at its moment: a bride price paid (287), a child named for its grandfather, an equal share of a father's estate, the levy once a war, a tenth off a sale |
+| `everyKindFires` | Each of the ten kinds fires at its moment: a bride price paid (287), a child named for its grandfather, an equal share of a father's estate, the muster once a war, a tenth off a sale |
 | `sharesFollowTheLaw` | A middle son of three, estate 250: eldest 0, eldest son 0, youngest 0, daughters 0, equal 83, after the temple's tenth 75, to the lord 0 |
 | `cardPureAndEscaped` | The card escapes its words, and drawing it changes neither the state nor the random stream |
 | `realLivesMeetCustoms` | In eight realms (human, elf, dwarf, orc and giant), the first life that lasts 30 years meets at least 2 of its customs in all eight |
@@ -68,7 +68,7 @@ A first meeting is a scene at most every `SCENE_QUIET` (3) years, doubling with 
 | Lives of 30 years or more only | 25 of 34 (74%). The misses leaned on customs a typical life never reaches: a grave custom (only at your own death), a cut of home sales (bots rarely sell at home), a rule for the mounted or the rich, and an estate custom among giants and dwarves, whose parents rarely die within sixty years |
 | After moving ten customs to moments lives reach | **34 of 34 (100%)**; the plan's bar is 90% |
 
-The customs met, over the 102 counted lives (`tools/bench/reports/customs.json`): year 65, mourn 47, ward 37, rite 35, law 16, levy 12, wed 11, grave 6, name 5. A bot seldom marries or has children, so the wed and name customs are the ones a player meets more often than the bench shows.
+The customs met, over the 102 counted lives (`tools/bench/reports/customs.json`): year 65, mourn 47, ward 37, rite 35, law 16, muster 12, wed 11, grave 6, name 5. A bot seldom marries or has children, so the wed and name customs are the ones a player meets more often than the bench shows.
 
 **Rules kept.**
 - Everything is drawn in the month hook or at the moment itself. The card only reads.
@@ -85,7 +85,7 @@ The customs met, over the 102 counted lives (`tools/bench/reports/customs.json`)
 
 `free` counted nobles and rulers, so on New Year's Day the Emperor of Aldmark heard the reeve knock for the hearth mark. Now:
 
-- A custom of dues asks only the commons (`B.WHO.commons`: free, not noble, no title of rung 2 or more, no council seat, not a ruler). A custom of dues is a year's due or a war's levy whose name says tax, tithe, toll, penny, mark, tenth, tribute, levy, loan or labour days (`B.isDue`); scutage and "whose host" stay with the knights.
+- A custom of dues asks only the commons (`B.WHO.commons`: free, not noble, no title of rung 2 or more, no council seat, not a ruler). A custom of dues is a year's due or a war's muster whose name says tax, tithe, toll, penny, mark, tenth, tribute, muster, loan or labour days (`B.isDue`); scutage and "whose host" stay with the knights.
 - A ruler hears the other side once a year: "The hearth mark comes in across Aldmark: N souls. Your clerks count it into the treasury."
 - 996's Coming up asks the same rule (`B.whoFor`).
 

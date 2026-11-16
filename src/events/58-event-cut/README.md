@@ -36,7 +36,7 @@ Simply marking the events and letting the roll fill its slots from the rest was 
 | --- | --- | --- | --- |
 | ~~Templates~~ | division designs, army doctrine | nobody: retired by W0 (D-052), the player no longer designs divisions | everyone |
 | Industry | forges, workshops, production lines, the war-economy law | the ruler, army rank 7 (General) and up | everyone else, including the Marshal below rank 7 |
-| Manpower | training new divisions, levies | the ruler, the Marshal, army rank 7 (General) and up | everyone else |
+| Manpower | training new divisions, conscripts | the ruler, the Marshal, army rank 7 (General) and up | everyone else |
 
 Command, Forces and Wars (the fronts, the host, the wars of the realm) stay for everyone: a nobody watching a 200-division war is Uniqueness 4's "both scales at once". A hint or a stale tab that asks for a hidden tab lands on Command. The War tab's line "The War Room shows the host, its templates and forges" now says "the fronts and the host" to those who cannot use templates or forges (patch `EC-WARCARD`).
 

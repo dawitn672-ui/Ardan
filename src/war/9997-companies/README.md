@@ -78,7 +78,7 @@ S.coOn, S.coRet (retired names), S.coForY (forage records), P.coDes (deserters b
 - +10 for a won fight of 3,000 men or more, −10 for each month of arrears, +15 for a promotion, −20 when passed over by a man of less command.
 - Once a year, +5 under a general of his own temper, −10 under his opposite (bold against cautious).
 - It fades 5% a month.
-- At −50 a captain leaves. In peace he asks for a transfer (`co_transfer_request` if it is your battalion), and his sergeant takes over. In a war against rebels he takes his company over to the other side: its men go to their levy (`co_turncoat`, or 57 kind `turn`).
+- At −50 a captain leaves. In peace he asks for a transfer (`co_transfer_request` if it is your battalion), and his sergeant takes over. In a war against rebels he takes his company over to the other side: its men go to their muster (`co_turncoat`, or 57 kind `turn`).
 - **Promotion.** When a senior captain falls or leaves, the post stays vacant until the New Year. Then, in a realm at war, the best captain of the division by merit (command + satisfaction / 5) takes it, and better men passed over lose 20 (`co_passed_over` if that is you).
 
 **Captains in danger.** At a fight's end, a battalion that lost a quarter or more puts each of its company captains at risk: 3%, or 13% if his side was beaten. In the line battle, a unit that lost a quarter, or routed on the losing side, puts its own captain at the same risk. A fallen captain is replaced by the better of his two sergeants, who is a seed of his own ("Sergeant Ivo takes the company", in the log and the battle log). If it is your company, the sergeant is made a person and `co_new_captain` comes.

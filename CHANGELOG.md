@@ -5,6 +5,23 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **No more levies.** A realm's armies are its sworn men (knights, men-at-arms, a lord's retinue, about one in four
+  hundred of the people), the regiments its treasury pays, and the roll: volunteers, about one in a hundred, who drill
+  some days a year and march when mustered. Nobody is taken by a yearly tax of men.
+- **Conscription, only when it is needed.** A crown at war may proclaim a call by lot, and only for a need it can name:
+  the enemy on its own soil, a stronghold besieged, a host lost, fewer spears than the enemy. One hearth in twenty for a
+  season, one in ten for a year, one in five while the enemy stands on home soil. Each great lord raises it in his own
+  lands, in full, by half, or late, for his own reasons; the men drill a month and march as conscript foot in his
+  contingent. The fields lose their hands (twice as badly at harvest), and the parishes remember every call: a call for
+  their own doors is forgiven, one held past its term or made for a king's pride is not. The law now says how far the
+  crown may call on its own word.
+- **Men desert and companies mutiny for reasons.** Every company in the field weighs what holds it (an oath, pay on the
+  day, their own doors, a captain who wins, years together) against what pulls at it (hunger, pay owed, the harvest at
+  home, half the company dead, winter, a term served and still held). Conscripts slip away first; sworn men almost
+  never. A mutiny needs a grievance, a man the others follow, and an occasion, and the captain must answer it.
+- **If your hearth's lot is drawn,** you go, pay for a substitute, hide in the loft, or take to the roads, each with its
+  price. As a ruler you proclaim the call yourself and decide when the conscripts go home. As a soldier, the War tab
+  tells you in words how your company holds together.
 - **The great lords have their own armies.** Every soldier of a realm now serves in one command: the crown's (the
   king's own regiments, his knights, the orders, hired men, led by Generals he commissions) or a great lord's (a duke,
   or a marquis or count who holds straight of the crown), whose first host the lord leads himself or gives to a General

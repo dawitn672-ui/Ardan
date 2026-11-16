@@ -76,7 +76,7 @@ Release: `A.CHOICE_FN.takeSeat`, `A.seatOffers`, `A.nobleAction('office')`, `A.r
 the real Marshal, else the crown; no made-up Marshal). Features: 56 `RI.fillCouncil`, `RI.deal`; 994
 `CAR.closeCareer`; 9999 the advisors' unseat; 9997 `CO.clearMe` (exported); 9996 `POL.makeFor` and the release's
 `A.wsGeneralFor` make long-lived people at adult ages; 99995 marks a title vacant at the death; 99994's invented
-"Marshal of the host/levies" offices are Captains.
+"Marshal of the host/conscripts" offices are Captains.
 
 Stage 2: the release's `A.wsNewArmy`, `A.wsDay` (a dead general), `A.wsAttachPC` (both fallbacks), `A.pcDivAttach`,
 `A.staffApply`, `A.staffAppoint`, `A.staffResolveDelegates`, `A.orderRaise` / `A.orderMaster`, `A.foundCompany`,

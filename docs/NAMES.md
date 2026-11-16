@@ -105,3 +105,21 @@ The renames kept the build exactly as it was: feature folders keep their numbers
 | `tools/bench/rankfx.mjs` | `tools/bench/rank-battle-effect.mjs` | 2026-11-12 11:23 ET |
 | `tools/bench/rankfx-lab.mjs` | `tools/bench/rank-battle-effect-lab.mjs` | 2026-11-12 11:23 ET |
 | `tools/v2/png.js` | `tools/v2/png-encoder.js` | 2026-11-12 11:23 ET |
+
+## Renamed after the pass, by hand (W1-4, D-086)
+
+Not written by `tools/rename-pass.mjs`: the levy retired (order 54, answer 5). Old saves are converted on load
+(`src/war/9999952-men/a-convert.core.js`).
+
+| Old | New | Renamed |
+| --- | --- | --- |
+| `src/core/04-world-fixes/broke-crown-levies.core.js` | `src/core/04-world-fixes/broke-crown-musters.core.js` | 2026-11-16 |
+| `r.levy`, `r.levyCap`, `r.levy0` (the realm's pool) | `r.roll`, `r.rollCap`, `r.roll0` (the roll) | 2026-11-16 |
+| `r.laws.levy`, `A.LEVY` (the levy law) | `r.laws.conscript`, `A.CONSCRIPT_LAW` (the conscription law) | 2026-11-16 |
+| `h.levy`, `GD.NOBLE_RUNGS[].levy`, `contract.levy` | `h.men`, `.men`, `contract.men` | 2026-11-16 |
+| `A.emergencyLevy` | retired (archive/w1-4-levies); `A.CALLS` | 2026-11-16 |
+| `A.CHOICE_FN.levyBattle`, `A.CHOICE_FN.tsLevy`, `TS.levyOk`, `TS.levyMen`, `m.ts.levy` | `summonsBattle`, `tsMuster`, `TS.musterOk`, `TS.musterMen`, `m.ts.muster` | 2026-11-16 |
+| `VS.leviesOf`, `VS.shownLevies`, `VS.levyWords`, `VS.levyRank`, `VS.v2Levies` | `VS.conscriptsOf`, `VS.shownConscripts`, `VS.conscriptWords`, `VS.conscriptRank`, `VS.v2Conscripts` | 2026-11-16 |
+| court `levyUp`/`levyDown`, doctrine `levy`, custom kind `levy` | `conscriptUp`/`conscriptDown`, `nation`, `call` | 2026-11-16 |
+| events `pp_dw_levy`, `ww_ald_levy`, `wr_hf_levy`, `ss_rp_levy`, `rk_cmd_levy_lord`, `pl_heavy_levy`, `dr_new_levy`, `sc_wc_levies`; arc mark `aw_bandit_levy` | `pp_dw_muster`, `ww_ald_muster`, `wr_hf_lot`, `ss_rp_muster`, `rk_cmd_muster_lord`, `pl_heavy_call`, `dr_new_conscripts`, `sc_wc_conscripts`; `aw_bandit_muster` | 2026-11-16 |
+| test `v2sLevyScale` | `v2sConscriptScale` | 2026-11-16 |

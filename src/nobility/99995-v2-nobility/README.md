@@ -22,7 +22,7 @@ has 850-1,100 nobles; a 30-county realm about 1,300.
   county holds it: v2 starts a march or a duchy at its seat (`opts.dukeAt` / `opts.marchAt`, an engine change), and
   otherwise it is that county's count. Its rung follows the title it holds (`h.v2rung` keeps the old one). A lesser
   great house (N04-N07) seated in a county takes the first viscounty, barony or manor of its rank under that county's
-  count. Every other title gets a new house (arms, levy from the county's people, 9996's contract on its first New
+  count. Every other title gets a new house (arms, muster from the county's people, 9996's contract on its first New
   Year) and a head made by the game's `A.genNoble`, with 0-3 children (1-3 for a duke or marquis) so the line can pass.
 - **One holder per title.** The title's key rides on `p.noble.court`; titles move only in the family lane's
   `A.V2F.inherit` (its `giveLordship` copies `p.noble`). When an heir already had a rung of their own the key is added

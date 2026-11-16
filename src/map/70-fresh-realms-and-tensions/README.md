@@ -22,7 +22,7 @@ The release rolls 13 scripted branches of history in the first year. 43-varied-w
   - *the Gorur Caravanserai Clans*, from the Horde; *Duchy of Castella*, from Varenna; *March of Zorek*, *Duchy of Zorek*.
 - **Gives it a ruling house.** This is the strongest great house seated in its provinces, whose head (often a lore character) takes the throne. If no great house is seated there, a new house is made with a surname in the culture's style. The other great houses seated there go with it, and so do the people who live there.
 - **Gives it its parent's ways.** It keeps the parent's laws, faith, culture, coin, army quality and doctrine. Its realm bible (47) has its own want, fear and place, and inherits the parent's customs. Its culture and faith are registered in the realm tables (`GD.REALM_CULTURE`, `GD.REALM_FAITH`, `A.AGGRO`, `GD.DOCTRINE`), so its children, its voice (54) and its customs are its parent's people's.
-- **Shares out what the parent had** in proportion to the people taken: the army, the levy, the ships, the treasury and the income. The parent's divisions in the lost provinces fall back to its own garrisons, and the parent sheds the men. The breakaway musters its own divisions and gets a market with its parent's exports and imports.
+- **Shares out what the parent had** in proportion to the people taken: the army, the muster, the ships, the treasury and the income. The parent's divisions in the lost provinces fall back to its own garrisons, and the parent sheds the men. The breakaway musters its own divisions and gets a market with its parent's exports and imports.
 - **Leaves a quarrel.** The parent:
   - claims every lost province;
   - writes "Took Zorek from us" in its feud ledger (55-bonds), dated to the year of the break;

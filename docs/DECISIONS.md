@@ -1544,6 +1544,114 @@ home (`A.CMD.ridesWith`, read by `W.side`). *Why:* he is deployed at his rank, w
 deputy, coin or nothing stays outside it. The release's yearly summons and the polity's po_muster no longer ask a lord the
 W1-3 summons already asked; po_muster's quiet (answer as last time) carries over to cm_summons.
 
+### D-086 · W1-4: the levy is retired as a word and a field; old saves read as the design says (2026-11-16; order 54 answer 5; D-064 point 7)
+1. **The word is gone from the game's source, data, tools and engine tests** (`w4NoLevyLint`: every line of every `.js`,
+   `.mjs` and `.json` file under `src`, `data`, `tools` and `tests/v2`), in code and words alike, so that nothing can
+   print it and no field carries it. Allowed: the old-save converter (`9999952-men/a-convert.core.js`, which must name
+   what an old save stores), tests, notes (`*.md`), the archive and the tools' historical records (bench reports, critique
+   probes, the rename map). The marshal lint read only strings; this one reads everything, because the order is to
+   remove the levy as a thing, not only as a word on a page.
+2. **Renames** (`docs/NAMES.md`): `r.levy` → `r.roll`, `r.levyCap`/`r.levy0` → `r.rollCap`/`r.roll0`, `r.laws.levy` →
+   `r.laws.conscript`, `A.LEVY` → `A.CONSCRIPT_LAW`, a house's `levy` (its full strength, lore and state) → `h.men`,
+   `GD.NOBLE_RUNGS[].levy` → `.men`, `contract.levy` → `contract.men`, the court's `levyUp/Down` → `conscriptUp/Down`, the
+   war map's doctrine `levy` → `nation`, `GD.BN.LV` named "Conscript foot" (the code `LV` stays), the fighting worth's unit
+   "levies" → "conscripts" (`VS.conscriptsOf` and kin; the reference fighter is the same untrained spearman), 72's home
+   levy → the home muster (`m.ts.muster`, `TS.musterOk`, `A.CHOICE_FN.tsMuster`), the release's levy battle →
+   `summonsBattle`, the custom kind `levy` → `call`, and eight event ids and an arc's mark (`pp_dw_muster`, `aw_bandit_muster`,
+   `ww_ald_muster`, `wr_hf_lot`, `ss_rp_muster`, `rk_cmd_muster_lord`, `pl_heavy_call`, `dr_new_conscripts`,
+   `sc_wc_conscripts`). The rename was a step of its own (`a81d8cc`), checked with `identity-probe` over nine fixed-seed
+   lives of ten years: the same random stream and journal length in every life; only key names, ids and words differ.
+3. **Old saves** convert on load (`A.MEN_CONVERT` in `A.migrate`, then `A.MEN.convert` after the world is read): every
+   renamed field, the seen-event ids and custom ids, queued cards' fn names; the pool becomes the roll, cut to one in a
+   hundred of the people; a division made only of levy battalions becomes conscript foot of a call for its war's need
+   (`A.CALLS.adopt`) when its realm is at war, and goes home at peace. Of the 13 sample saves, 6 were at war with such hosts
+   in the field (32 divisions kept as conscripts) and 12 sent such men home at peace (9,600 to 85,853 a save); every one
+   loads with no old field left (`w4OldSaves`).
+
+### D-087 · W1-4: three kinds of men, and the roll at one in a hundred (2026-11-16; D-064 point 7; war.md §10.1, §10.3)
+1. **`r.army` stays the war map's count of men under arms** (the sum of the divisions, as `A.forcesSync` keeps it): the
+   standing men plus any conscripts of an open call. `A.MEN.of(r)` reads the kinds: sworn = the standing men up to one in
+   400 of the people (D-064's number, read rather than stored: knights, men-at-arms and retinues are inside the war map's
+   regiments, and a second count of them would have to be kept true through every battle); enlisted = the rest of the
+   standing men; conscripts = divisions with `d.call` and the men waiting at a call's musters. A division's own kind
+   (`A.MEN.kindOf`, for its ledger): an order, a guard or mostly heavy horse is sworn; a call's is conscript; the rest
+   enlisted.
+2. **The roll fills toward one in a hundred** (`A.MEN.rollCap`, ×1.2 under the nation-in-arms doctrine); the law no
+   longer multiplies it. The old pool was about one in twenty (49 per thousand in a seed-7 world against 10 now), so the
+   roll refills at 0.3 of the gap a year where the pool took 0.2. **Measured** (seed 7, the bot's life, every realm):
+   standing men per thousand people 11.76 / 11.84 / 11.72 at years 0, 10 and 20 before; 11.76 / 11.88 / 11.37 after: the
+   same order and nearly the same size.
+3. **Where the release weighed a realm by its army and a share of its pool** (its strength for the war council and the
+   AI, a faction's share of the swords, the polity's power, a campaign's numbers, war weariness from losses), it reads
+   `A.MEN.reserve(r)`: the roll plus the conscripts the crown's own law lets it call (3, 6 or 12 in 100 working men).
+   *Why:* a realm should weigh what it could put in the field, and with the roll a fifth of the pool the old formulas
+   would have made every realm weaker against its houses and factions without any reason in the world.
+4. **The AI trains regiments to its standing size, not counting conscripts,** and never trains or refills conscript foot
+   from the roll (`trainDiv` refuses a call's template; `divRefill` fills a conscript division from its call's waiting
+   men); a disbanded conscript division goes home, not onto the roll.
+
+### D-088 · W1-4: conscription by proclamation (2026-11-16; D-064 point 7; war.md §10.2)
+1. **The need is checked against the world each month for a realm at war** (`A.CALLS.need`): an enemy host of 1,000 or
+   more on its soil (allows the last call), a province besieged, the standing men below 0.6 of what took the field (both
+   the second), fewer men ready than the enemies' armies by more than 15% (the first; the second when a first is out),
+   or the king's will under the crown's-right law with a proud, ambitious temper (the first). A council sits on it at
+   most every 90 days unless the enemy newly stands on home soil.
+2. **The crown decides through `A.WHY` (kind `conscript`)**: no call, or each call the need allows. For a call: the need
+   (duty for home soil, reckoning otherwise), a spent roll; against: a heavier call, a call beyond the law, no coin (a
+   broke crown's empty treasury weighs heavily, as the world fix B1 holds it). For no call: the hands in the fields
+   (more at the harvest), the commons' memory of the last call, a shaking throne, a roll still full, a call already out.
+3. **The share is of working men, from hearths:** a call takes `province people / 5.5 / (20, 10 or 5)` men, which is
+   3.03, 6.06 and 12.1 in 100 of the working men (0.3 of the people). A heavier call takes that share in all, not on top
+   of an earlier call still out. *Why:* §10.2's three calls are degrees of one burden.
+4. **Each lord raises it in his own lands**: every province goes to the nearest seat (a tenant-in-chief's, or the crown's
+   capital); each tenant-in-chief answers through `A.WHY` (kind `raise`: full, half, late), not logged in `A.S.why` (the
+   call keeps his answer and its first reason, as the muster does). After 30 to 45 days of drill (longer where sworn men
+   are few) the men form conscript foot in his contingent, at most 16 divisions of 8,000 a call; the rest wait and fill
+   the gaps. *Why:* the old engine steps every division every day; a big realm's last call (hundreds of thousands) as
+   divisions of a few thousand would multiply the war map's cost (X7's gate).
+5. **The fields:** 45-economy's output of every good is cut by the share of working men out, twice in July to October,
+   at most half; the crown loses half that share of a month's taxes; the dead lower their provinces' people.
+6. **The end:** when the need has passed or the term is up the crown decides (kind `release`): home, home with a bounty
+   (one sun a man), or hold them (the promise broken: the grievance's heaviest part). At peace every call ends at once.
+7. **The grievance** is a weight per call (`A.CALLS.weight`, README) and lands on the realm (stability at once and a
+   fading yearly pull, war weariness), the provinces (unrest), the lords whose tenants went (opinion, `h.cmGr` for W1-6,
+   an `A.WHY` anger) and the next council ("the commons remember").
+**Measured** (seed 7, 30 years; see H-076): calls, their needs, men, dead and grievances in the history entry.
+
+### D-089 · W1-4: following, desertion and mutiny from a ledger, without dice (2026-11-16; D-064 point 8; war.md §10.4)
+1. **Read monthly, not weekly,** for each division in an army of a realm at war (the design's "each week on campaign";
+   a month is the engine's step for everything but the war map's days, and nothing else would read a weekly figure).
+2. **Desertion is worked out, not rolled:** the share that goes is `0.02 × kind × gap^1.5` a month (at most a fifth),
+   where the gap is how far the pulls outweigh the holds (log units, like `A.WHY`'s) and kind is 1 for conscripts, 0.6
+   the roll, 0.35 enlisted, 0.03 sworn. *Why:* a company's leaking is many men's choices; its expected count is the
+   honest figure, and it keeps the world's stream untouched. Each desertion of 25 men or more is written with its two
+   heaviest pulls. Deserters: a third hanged, a third brigands, a third home in hiding.
+3. **A mutiny's three parts are named and all three are needed;** it climbs one rung a month and falls back one when a
+   part goes. The voice is a sergeant or old soldier named from the division's id (no person is made: D-066 point 2's
+   reason). The commander's answer at the deputation is a decision (kind `mutiny`, not logged); giving way sends that
+   company home, not the whole call.
+4. **The lab** (§10.5): ten companies three months unpaid, hungry and beaten: 10 of 10 desert a twentieth or more or
+   mutiny; the same paid, fed and winning: 0 of 10.
+
+### D-090 · W1-4: the player's lot, proclamation and ledger (2026-11-16; D-064 point 7; order 54)
+1. **The lot is chance with a reason** (the call, his hearth): one in 20, 10 or 5, ×1.6 for an unmarried man, never the
+   hearth's only man (a married man with a child under 16) before the last call; priests, a lord's officers, millers and
+   smiths spared. It is drawn on `A.rand` when the call is proclaimed (marked for `lint-reasons`: a lottery by law, not a
+   figure's decision). The card has four choices (go, a substitute for 30 + 25 a degree suns, hide on a check, flee:
+   marked a deserter, whom the release's recruiters refuse).
+2. **The ruler's proclamation is his own decision** (mn_proclaim), with its costs on the card; his choice is written into
+   `A.S.why` as a record of kind `conscript` with the reasons his council laid before him. "No call" costs the crown
+   legitimacy before an invader (lint-choices: no choice obviously best).
+3. **The release's own scenes of a man taken for service** (`lf_lover_to_war`, `wr_hf_lot`, `ss_rp_muster`) fire only
+   while a call is out in the realm, by a gate on their setup (their text and cond, which the classifiers read, are
+   untouched); `pl_heavy_call` ("under the heavy law the realm takes one man in five") is retired the same way: under the
+   new law no call takes anyone by itself.
+4. **The ledger in words** is on the War tab for a soldier (`UI.menCard`): one line for how the company holds, its three
+   heaviest holds and pulls, any mutiny with its grievance and its voice; the call's note opens on a tap from a 44-point
+   button.
+**Conflict recorded:** the v2 kit's muster card (`src/core/engine/game.js`) was rolled at a quarter a month; it now goes
+through the why engine with the same pace and named reasons (lint-reasons 63 → 62).
+
 ### D-074 · S1b: how the skills design was built, and where the build departs from the letter (2026-11-16; D-072, order 63)
 1. **The owner's open choices (skills.md §11) are taken as written,** each a named constant in one place so it can be
    overruled: five steps a word (`STEPS`), the walls (`NEED`, `BLIND` in `src/people/engine/skills.js`), stored at half
