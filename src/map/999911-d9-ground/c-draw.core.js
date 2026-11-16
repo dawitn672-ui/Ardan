@@ -24,6 +24,8 @@
   D9.on = () => !!(D9.ctx() && typeof document !== 'undefined');
   D9.stats = { frames: 0, ms: 0, roads: 0, marks: 0 };
   const now = () => (typeof performance !== 'undefined' ? performance.now() : 0);
+  // fixed tables the drawing loops read, made once (owner order 62: no new objects inside per-frame loops)
+  const REED = [-0.7, 0, 0.7], SIDES = [-1, 1], RANKS = [2, 1];
   const ratio = (cv, W) => { let d = 0; try { d = cv && cv.getBoundingClientRect ? cv.getBoundingClientRect().width : 0; } catch (e) {} return d > 0 ? Math.min(2.4, Math.max(0.6, W / d)) : 1; };
   const hash = k => { let h = Math.imul(k ^ 0x9e3779b9, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); h ^= h >>> 16; return (h >>> 0) / 4294967296; };
 
@@ -80,7 +82,7 @@
         const kk = yy * gw + xx, cv = G.cover[kk]; if (!cv) continue;
         const h = hash(kk), px = X(xx * 10 + 5 + (h - 0.5) * 6 * step), py = Y(yy * 10 + 5 + (hash(kk + 7919) - 0.5) * 6 * step);
         if (cv === 1) { tree.moveTo(px + r, py); tree.arc(px, py, r, 0, Math.PI * 2); tree.moveTo(px, py + r); tree.lineTo(px, py + r * 1.9); }
-        else { reed.moveTo(px - r * 1.2, py + r); reed.lineTo(px + r * 1.2, py + r); for (const dx of [-0.7, 0, 0.7]) { reed.moveTo(px + dx * r, py + r); reed.lineTo(px + dx * r * 1.3, py - r * (dx ? 0.6 : 1)); } }
+        else { reed.moveTo(px - r * 1.2, py + r); reed.lineTo(px + r * 1.2, py + r); for (const dx of REED) { reed.moveTo(px + dx * r, py + r); reed.lineTo(px + dx * r * 1.3, py - r * (dx ? 0.6 : 1)); } }
         marks++;
       }
       ctx.fillStyle = L.wood; ctx.strokeStyle = L.wood; ctx.lineWidth = Math.max(0.8, r * 0.35); ctx.fill(tree); ctx.stroke(tree);
@@ -88,7 +90,7 @@
     }
     // roads: tracks first, high roads over them; one path and two strokes a rank
     let n = 0;
-    for (const rank of [2, 1]) {
+    for (const rank of RANKS) {
       if (rank === 2 && zoom < L.zoom.track) continue;
       const look = rank === 1 ? L.high : L.track, path = new Path2D();
       for (const o of geo.roads) {
@@ -108,9 +110,9 @@
         ctx.save(); ctx.translate(px, py); ctx.rotate(x.ang);
         if (x.kind === 'bridge') {   // two flared lines along the road
           ctx.strokeStyle = L.paper; ctx.lineWidth = 3.2 * k;
-          for (const sgn of [-1, 1]) { ctx.beginPath(); ctx.moveTo(-s * 1.3, sgn * s * 0.95); ctx.lineTo(-s * 0.8, sgn * s * 0.55); ctx.lineTo(s * 0.8, sgn * s * 0.55); ctx.lineTo(s * 1.3, sgn * s * 0.95); ctx.stroke(); }
+          for (const sgn of SIDES) { ctx.beginPath(); ctx.moveTo(-s * 1.3, sgn * s * 0.95); ctx.lineTo(-s * 0.8, sgn * s * 0.55); ctx.lineTo(s * 0.8, sgn * s * 0.55); ctx.lineTo(s * 1.3, sgn * s * 0.95); ctx.stroke(); }
           ctx.strokeStyle = L.ink; ctx.lineWidth = 1.4 * k;
-          for (const sgn of [-1, 1]) { ctx.beginPath(); ctx.moveTo(-s * 1.3, sgn * s * 0.95); ctx.lineTo(-s * 0.8, sgn * s * 0.55); ctx.lineTo(s * 0.8, sgn * s * 0.55); ctx.lineTo(s * 1.3, sgn * s * 0.95); ctx.stroke(); }
+          for (const sgn of SIDES) { ctx.beginPath(); ctx.moveTo(-s * 1.3, sgn * s * 0.95); ctx.lineTo(-s * 0.8, sgn * s * 0.55); ctx.lineTo(s * 0.8, sgn * s * 0.55); ctx.lineTo(s * 1.3, sgn * s * 0.95); ctx.stroke(); }
         } else {                     // a pale diamond on the road
           ctx.beginPath(); ctx.moveTo(-s, 0); ctx.lineTo(0, -s * 0.7); ctx.lineTo(s, 0); ctx.lineTo(0, s * 0.7); ctx.closePath();
           ctx.fillStyle = L.ford; ctx.fill(); ctx.strokeStyle = L.ink; ctx.lineWidth = 1.1 * k; ctx.stroke();
@@ -124,8 +126,8 @@
       for (const p of geo.pass) {
         if (p.x < vx || p.x > x1v || p.y < vy || p.y > y1v) continue;
         ctx.save(); ctx.translate(X(p.x), Y(p.y)); ctx.rotate(p.ang + Math.PI / 2);
-        for (const [col, lw] of [[L.paper, 3.4 * k], [L.ink, 1.5 * k]]) {
-          ctx.strokeStyle = col; ctx.lineWidth = lw;
+        for (let pass = 0; pass < 2; pass++) {
+          ctx.strokeStyle = pass ? L.ink : L.paper; ctx.lineWidth = (pass ? 1.5 : 3.4) * k;
           ctx.beginPath(); ctx.arc(-s * 1.1, 0, s, -0.9, 0.9); ctx.stroke();
           ctx.beginPath(); ctx.arc(s * 1.1, 0, s, Math.PI - 0.9, Math.PI + 0.9); ctx.stroke();
         }

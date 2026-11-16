@@ -85,3 +85,20 @@ Before D9 a redraw cost (the same probe, the same machine) world tab 3.3 ms, ful
 - The terrain word is still one per province; the cover is what a battle could read inside one, and nothing reads it yet.
 - The player's own battle (99997-v2-war) does not yet take the crossing; the war map's fights do.
 - Names are English places for most of the land (C7's common pool); the far peoples' pools give their own.
+
+## The iPhone rules (owner order 62 / rule 21)
+
+- **Redraw only when something changes; culling.** The ways are drawn into 62's kept picture of the view (rebuilt only when
+  the scale or the view's margin changes); roads are culled by their boxes, marks by the view's cells, names by the view.
+- **No new objects in the drawing loops:** the loops read fixed tables (`REED`, `SIDES`, `RANKS`); one `Path2D` a rank and
+  a kind is made per rebuild of the kept picture, not per frame. The names still build a box array per name per frame
+  (99991's labels do the same); the route is to keep the boxes in a reused typed array with the labels.
+- **No input of its own:** nothing here listens to the pointer; pan, zoom and tap stay the maps' own.
+- **One canvas for the map and the war map: not yet.** `MAP.paint` makes them one component (one set of layers in one
+  order), but the full map (`#gmap`) and the war room (`#warmap`) are still two canvases. The route: one canvas element
+  kept by `MAP.paint`'s caller, the war room a mode of the full map (its overlay and counters are already layers).
+- **Throttled 4x at 375 x 667, DPR 2** (a loaded machine, so noisy): a redraw costs 76 to 193 ms of main-thread CPU against
+  82 to 154 ms before D9. Neither meets a 50 ms budget on a throttled phone; the cost is the kept pictures' copies at twice
+  the pixels, before and after D9. The route: redraw only on change (no redraw while still), and copy the kept picture at
+  the canvas's device size once.
+- **Offline, relative paths:** no files are fetched; names come from `data/names.json` on the page.
