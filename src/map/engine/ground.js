@@ -31,6 +31,7 @@ export const DEFAULTS = {
   RIVER_NAME: 300,   // rivers to name: this much flow at the mouth, and at least RIVER_KM long
   RIVER_KM: 200,
   CLEAR_R: 2,        // fields round a town: woods cleared within this many cells of its site
+  SHARE: 0.5,        // a cell a road already runs on costs this share to the next road (roads share corridors)
 };
 
 // a binary heap of (cost, cell) on typed arrays
@@ -89,10 +90,13 @@ export function buildGround(w, o = {}) {
   const dist = new Float64Array(N), prev = new Int32Array(N), stamp = new Int32Array(N), done = new Int32Array(N), H = heap();
   let tick = 0;
   const DX = [1, -1, 0, 0, 1, 1, -1, -1], DY = [0, 0, 1, -1, 1, -1, 1, -1];
+  // a road already made is cheaper to follow (C.SHARE), so roads share their corridors and meet at forks, rather than
+  // running side by side a cell apart
+  const used = new Uint8Array(N);
   const stepCost = (k, j, diag) => {
     const sl = Math.abs(hm[j] - hm[k]) / (diag ? 1.414 : 1);
     let c = 1 + sl / 70 + (cover[j] === COVER.WOOD ? 0.5 : cover[j] === COVER.MARSH ? 1.8 : 0) + (hm[j] > 1800 ? 0.6 : 0);
-    c *= diag ? 1.414 : 1;
+    c *= (diag ? 1.414 : 1) * (used[j] ? C.SHARE : 1);
     if (riv[j] >= C.STREAM_T && riv[k] < C.STREAM_T) c += riv[j] >= C.RIVER_T ? 5 + Math.log(riv[j] / C.RIVER_T) : 1.2;
     return c;
   };
@@ -124,6 +128,7 @@ export function buildGround(w, o = {}) {
     if (b <= a) continue;
     const r = way(a, b); if (!r) continue;
     const diff = r.cost / Math.max(1, r.straight);
+    if (diff <= C.TRACK_MAX) for (const k of r.path) used[k] = 1;
     edges.push({ a, b, rank: diff <= C.TRACK_MAX ? RANK.TRACK : RANK.NONE, km: Math.round(r.km), cost: Math.round(r.cost * 10) / 10, diff: Math.round(diff * 100) / 100, path: r.path, cross: [], pass: -1, wet: 0 });
   }
 

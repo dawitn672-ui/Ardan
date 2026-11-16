@@ -387,7 +387,9 @@
       b.clip(LP, 'evenodd');
       const inner = [], outer = [];
       for (const o of prov) { const pa = S.prov[o.a], pb = S.prov[o.b]; ((pa && pb && pa.owner === pb.owner) ? inner : outer).push(o); }
-      if (inner.length && L >= 0) { b.setLineDash([1.1 * up / lp, 2.9 * up / lp]); b.strokeStyle = 'rgba(43,29,16,.55)'; b.lineWidth = 0.85 * up / lp; b.stroke(pathOf(inner)); }
+      // D9 (999911-d9-ground): province bounds are round dots in a cool grey, never warm and never solid, so a stranger
+      // does not take them for the roads (warm and solid) laid over the same picture
+      if (inner.length && L >= 0) { const sat = IM.groundElsewhere && IM.groundElsewhere(); b.setLineDash([0.01 * up / lp, 3.8 * up / lp]); b.strokeStyle = sat ? 'rgba(206,216,230,.6)' : 'rgba(84,96,112,.55)'; b.lineWidth = 1.45 * up / lp; b.stroke(pathOf(inner)); }
       if (outer.length) {
         const OP = pathOf(outer);
         b.setLineDash([]); b.strokeStyle = 'rgba(236,224,196,.75)'; b.lineWidth = 3.4 * up / lp; b.stroke(OP);

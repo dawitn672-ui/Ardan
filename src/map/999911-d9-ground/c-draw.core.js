@@ -1,8 +1,8 @@
 // 999911-d9-ground on the map: the ways and the names of the land, laid by the one map component (MAP.paint, under 62's
 // ink), and realm colours that neighbours never share.
 //   - MAP.ways: woods (small trees) and marsh (reeds) from the cover, close in; roads in two ranks (a high road is a
-//     red-brown line in a pale casing, a track a pale line in a dark brown casing: solid and cased, where every border is
-//     dashed or dotted ink); a ford (a pale blue diamond) or a bridge (two flared lines) at each crossing; a pass mark (two arcs across
+//     red line in a pale casing, a track a warm brown line with a faint dark edge: warm, solid and continuous, from town to
+//     town, where a realm border is dashed dark ink and a province bound cool grey dots, 62); a ford (a pale blue diamond) or a bridge (two flared lines) at each crossing; a pass mark (two arcs across
 //     the road) on each pass.
 //   - VM.landNames (called by 99991's labels, by the same placing rule): seas and ranges, then rivers along their course,
 //     forests and passes.
@@ -17,7 +17,7 @@
   const KW = 7000, KH = 4500;
   D9.LOOK = {
     high: { core: 'rgba(138,40,18,.96)', casing: 'rgba(250,238,210,.9)', w: 1.9 },
-    track: { core: 'rgba(240,222,180,.96)', casing: 'rgba(70,38,14,.75)', w: 1.5 },
+    track: { core: 'rgba(150,86,32,.97)', casing: 'rgba(36,22,10,.4)', w: 1.7 },
     wood: 'rgba(26,58,30,.5)', marsh: 'rgba(40,72,70,.62)', ink: 'rgba(28,22,16,.92)', paper: 'rgba(250,240,214,.9)', ford: 'rgba(196,226,242,.95)',
     zoom: { track: 1.6, cover: 2.6, cross: 2.6, pass: 1.8 },
   };
@@ -98,7 +98,7 @@
         const p = o.pts; path.moveTo(X(p[0]), Y(p[1])); for (let i = 2; i < p.length; i += 2) path.lineTo(X(p[i]), Y(p[i + 1])); n++;
       }
       const w = look.w * k * (zoom < 1.5 ? 0.8 : zoom >= 4 ? 1.25 : 1);
-      ctx.strokeStyle = look.casing; ctx.lineWidth = w + (rank === 1 ? 2 : 1.4) * k; ctx.stroke(path);
+      ctx.strokeStyle = look.casing; ctx.lineWidth = w + (rank === 1 ? 2 : 1) * k; ctx.stroke(path);
       ctx.strokeStyle = look.core; ctx.lineWidth = w; ctx.stroke(path);
     }
     // fords and bridges

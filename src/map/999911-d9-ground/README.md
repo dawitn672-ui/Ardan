@@ -51,8 +51,13 @@ their bonus on top.
 - **One map component.** `MAP.paint` (in the release's `21-map.js`) lays the ground, the realms' colours, the front, the ways and
   the ink for the world tab, the full map, the war room and the atlas of your journeys; each adds only its own marks.
 - **The ways** are laid into 62's kept picture of the lines (`IM.under`, keyed by `IM.underKey`), over the borders and under the
-  towns, so a still or panning map pays one copy. A high road is a red-brown line in a pale casing, a track a thinner brown line:
-  solid and warm, where a realm border is dashed ink and a province bound dotted. From zoom 1.6 tracks; from 2.6 woods (small
+  towns, so a still or panning map pays one copy. A high road is a red line in a pale casing, a track a warm brown line with a
+  faint dark edge: solid, warm and continuous from town to town. A realm border is dashed dark ink on a pale halo, and a
+  province bound (62) is faint cool grey dots, never warm and never solid. Roads share their corridors (a cell a road already
+  runs on costs half to the next one), so they meet at forks instead of running side by side a cell apart.
+- **Roads or borders, read by strangers** (`tools/d9/road-crops.mjs`): the first playtester (Sonnet, crops only) read 69 of
+  100 on the earlier look (pale tracks, brown dotted bounds), confusing province bounds with roads (20) and tracks with
+  borders (10); the look above answers that. New crops on an unseen seed are in `docs/design/map/d9/roads-vs-borders-2/`. From zoom 1.6 tracks; from 2.6 woods (small
   trees), marsh (reeds), fords (a pale blue diamond) and bridges (two flared lines); from 1.8 a pass is two arcs across its road.
 - **Names of the land**, through 99991's labels and by its rule (a name that would touch one already written waits): seas and
   ranges after the realms, then rivers along their course, forests and passes after the provinces. Names come from C7's pools,

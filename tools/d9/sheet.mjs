@@ -47,7 +47,7 @@ h1{font:600 20px Cinzel,Georgia,serif;margin:14px 18px 4px}p.k{margin:0 18px 10p
 .row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 18px 6px}.row img{width:100%;display:block;border:1px solid #4a3f30}
 .f{margin:0 18px 16px;font-size:12.5px;color:#d8ccb0}</style>
 <h1>D9 · the map's ground, three seeds</h1>
-<p class="k">Left: the whole continent (high roads only). Right: a close view (zoom ${zoom}): high roads (red-brown, pale casing), tracks (thin brown), realm borders (dashed ink), province bounds (dotted), fords (pale diamonds), bridges (two flared lines), passes (two arcs), woods (small trees), marsh (reeds), rivers with their tributaries, and the names of seas, ranges, rivers, forests and passes.</p>
+<p class="k">Left: the whole continent (high roads only). Right: a close view (zoom ${zoom}): high roads (red-brown, pale casing), tracks (solid brown), realm borders (dashed ink), province bounds (faint grey dots), fords (pale diamonds), bridges (two flared lines), passes (two arcs), woods (small trees), marsh (reeds), rivers with their tributaries, and the names of seas, ranges, rivers, forests and passes.</p>
 ${rows.map(r => `<div class="row"><img src="${img(r.shots[0])}"><img src="${img(r.shots[1])}"></div>
 <div class="f">Seed ${r.facts.seed}: ${r.facts.high} high roads, ${r.facts.track} tracks, ${r.facts.ford} fords, ${r.facts.bridge} bridges, ${r.facts.passes} passes · terrain ${r.facts.terr} · e.g. ${r.facts.names}</div>`).join('\n')}`;
 const sp = await (await b.newContext({ viewport: { width: 1500, height: 900 } })).newPage();
