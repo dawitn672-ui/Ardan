@@ -189,6 +189,45 @@ order is replaced, strike it through and say by what.
 
     **Read as:** order 59's sudden grasps are named **breakthroughs** everywhere (docs, code, the player's words). The
     owner's own word in order 59 ("profound epiphanies") is kept as he wrote it.
+62. **The end goal: Ardan on the iPhone App Store** (D-071) · recorded 2026-11-15 23:17 ET. The owner's words, verbatim:
+
+    > This is not a task to start now. Keep going with your current work. This is about the end goal, so you build toward it from today.
+    >
+    > THE END GOAL
+    > Ardan will ship on the Apple App Store as an iPhone app. The web game gets wrapped in Capacitor (a native iOS shell around a WebView). I'm on Windows with no Mac, so iOS builds will run on a cloud Mac (Codemagic) connected to the GitHub repo, then go to TestFlight, then to App Review.
+    >
+    > WHAT TO DO NOW (learning only)
+    > 1. Research the route from today's official docs, not memory (capacitorjs.com, developer.apple.com, docs.codemagic.io). Facts I've checked so far; re-verify them:
+    >    - Capacitor 8 is current. It needs Node 22+ and uses Swift Package Manager by default, so the iOS project is ios/App/App.xcodeproj (no Podfile, no .xcworkspace).
+    >    - Since 28 April 2026, Apple only accepts uploads built with Xcode 26+ and the iOS 26 SDK.
+    >    - Ionic Appflow is closed to new customers and shuts down at the end of 2027, so don't plan around it. Expo EAS Build is for React Native, so it doesn't apply either.
+    >    - Web Audio on iOS is muted by the silent switch unless navigator.audioSession.type = 'playback'. Sound only unlocks after the first tap.
+    >    - iOS can clear WebView localStorage, so real saves should go through @capacitor/preferences or @capacitor/filesystem.
+    >    - Apple rejects apps that feel like a website (Guideline 4.2). The app must work fully offline and must not allow text selection, zoom or page bounce.
+    > 2. Map the whole route as stages: performance → iPhone readiness (touch, screen sizes, safe areas, audio, saves) → build into a self-contained www/ folder → Capacitor setup → Codemagic signing and TestFlight → App Store listing, privacy and age rating → review. For each stage, list the steps, the exact commands and config, what only I can do (Apple Developer account at $99/yr, App Store Connect app record, API key), and the known pitfalls.
+    > 3. Write it down:
+    >    - docs/IOS_ROADMAP.md: the full route, dated, with source links. Mark anything not yet verified.
+    >    - .claude/skills/ios-capacitor-release: the how-to version you'll follow when we reach that stage.
+    >    - Add a short "End goal: iPhone App Store" section to CLAUDE.md that points to both, plus the build rules below.
+    >    - Record each choice in docs/DECISIONS.md.
+    >
+    > BUILD RULES FROM NOW ON (so nothing has to be redone later)
+    > - Input: mouse or tap only. Use Pointer Events (pointerdown/move/up/cancel), never mouse-only events. Nothing may depend on hover, right-click, double-click or the keyboard. Tap targets must be at least 44×44 points.
+    > - Layout: must work from a small iPhone (about 375×667 points) up to a Pro Max. Keep room for env(safe-area-inset-*) padding. Use dvh units, not vh.
+    > - Assets: relative paths only (./). No CDNs, no web fonts from the internet, no network calls. Everything must work offline.
+    > - Rendering: HTML for menus and panels, updating only what changed. One canvas for the map and the war map, with culling, and only redrawing when something changes. Animate only transform and opacity.
+    > - Performance: no data that grows forever, no new objects inside per-frame loops, look things up by id with a Map. Test with the CPU slowed 4–6× to act like a phone.
+    > - Saves: go through one save module, so the storage underneath can be switched to Capacitor storage later without touching the game code.
+    > - Audio: one AudioContext, unlocked on the first tap, and paused when the app goes to the background.
+    > - Keep the source in src/, data/ and assets/. Later a build script will output www/ for Capacitor, so don't hard-code paths that assume a particular folder layout.
+    >
+    > When something you build would make the iPhone version harder, say so and suggest the version that keeps the route open. Update the roadmap and the skill whenever you learn something new.
+
+    **Read as:** the end goal is a Capacitor-wrapped iOS app, built on Codemagic's cloud Mac from GitHub, through
+    TestFlight to App Review. Now: research the route from official docs and write `docs/IOS_ROADMAP.md`, the skill
+    `.claude/skills/ios-capacitor-release`, a CLAUDE.md section with the build rules, and the choices in DECISIONS. The
+    build rules bind all work from today; anything that would make the iPhone version harder is said and a route-keeping
+    version proposed.
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
@@ -241,6 +280,7 @@ the newest stamp wins when two entries disagree, unless the older one is an owne
 18. **NOTHING HAPPENS WITHOUT REASON.** Chance, luck, calculation, petty or emotional reasons, but never for no reason. Every figure acts from a thought process that fits post, circumstances and personality; coups, rebellions and factions follow stability, relations, ambitions and circumstance; everything intertwined. (order 54, D-062) · recorded 2026-11-15 21:12 ET
 19. **Every relationship needs a base:** whether someone will know you, talk to you or befriend you follows the gap in status, their pride and personality, and what they need; knighthood, honour, renown, mastery, fame, wealth and connections shift it. (order 55, D-065) · recorded 2026-11-15 21:34 ET
 20. **Growth is not a timetable:** no amount of training guarantees mastery; discipline, grasp and breakthroughs make one man a master in five years and leave another stuck for life behind one concept. (order 59, D-070) · recorded 2026-11-15 23:12 ET
+21. **Built for the iPhone App Store from today** (order 62, D-071): pointer events only, nothing on hover, right-click, double-click or keys; 44-point tap targets; 375x667 to Pro Max with safe areas and dvh; relative paths, offline, no network; one canvas for maps with culling; transform and opacity only; no unbounded data; one save module; one AudioContext unlocked on first tap. · recorded 2026-11-15 23:17 ET
 
 ## Round 2 work list (Nov 12)
 Step 0 restructure (done) · Step 1 harsh critique (in progress) · A1 lag · A2 one holder per post · A3 coherency
