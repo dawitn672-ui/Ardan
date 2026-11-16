@@ -1231,6 +1231,26 @@ Each failure, its cause and the fix:
   years; G1's talent discovery.
 - **Undo:** revert the S1b commits on `s1b` (`1f029d3`..`90551aa`); old saves of version 15 then refuse to load in an
   older build, as any newer save does.
+- **Addendum, CI 137** (branch `s1b-ci` on `2153d35`; check run 137 and long run 7 failed 21 tests and one band). Each
+  failure, its cause and its fix:
+  - *Balance, noble peak coin 6,302* (band 30,000+): a noble of 35 stood at Advanced V for six to eleven years (the
+    Expert concepts, or a proof the cards rarely offer), with no council seat in reach against people rolled at 70 to 92.
+    Game: `SK.SHIM` 0.5, `SK.INSIGHT_LIFE` 2, `SK.PROOF_SLACK` 1, the proving card offered yearly to the ready (D-077).
+    The full league: every band met (noble 87,012; check win rate 52.2).
+  - *lives, unfilled tokens* ("As {oa} tells it"): a cause took the card's title template. Game: the title as read
+    (`SK.cardTitle`), and no token survives in the record, the ledger or the log (`SK.untoken`); 3 lives × 60 years, none.
+  - *phoneTargets, 13 px*: game, the state words and stored ticks at 14 px. *pfFits*: game, the Profile's best four, not
+    wrapping. *lookNoCut, v2sSheet, ttMarkNoCell, lnRenderPure, bodyMindRenderPure*: the tests read the old rows, tiers,
+    hours and names; moved to the skill rows and the data's names.
+  - *x3IllnessArc*: game, a sick player whose crisis card waits is held at the edge until it is met (seed 930).
+  - *stWhiteRetry, lnWorkAndYear, s1NotLinear*: the tests assumed fine-grained growth at once, one life's ±8 of luck,
+    and idle skills in the count; each now says so.
+  - *v2svRoundTrip*: the save version is 15. *nyOneRedraw, ccRegicide, kinRealTree, uwFirstMission*: world draws (no
+    quiet child's year, an inquiry quicker than the knife, one dead aunt in six, one soldier with a single mission); the
+    tests now hold their rule without hinging on one draw. *coBattleFromDivision, ttCov2Realm*: pass on this build.
+  - *Not fixed:* `flBeastOdds` (seed 4301's pool of fighters misses its 60-74 bin by 3.7 standard errors, the fighters at
+    86 to 100 losing more than shown; seeds 4302 and 4303 pass within 5 points; for a look at the duel's own reading of
+    skill), `v2sNumbers` (fails the same before S1b: P3's), `carMissionSize` (fails the same before S1b).
 ### H-064 · 2026-11-16 · W1-2: minds (R1's core)
 - **Asked:** `A.WHY.decide`, one way of deciding for every decider (D-064 point 9); the owner's two lab kings as tests;
   the first structural decisions routed through it; a lint against bare dice with a baseline; reasons shown where the
