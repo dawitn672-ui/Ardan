@@ -1,0 +1,2306 @@
+{
+ "note": "S1a design data (docs/design/skills.md). 28 skills; the 10 legacy keys they fold are read through them.",
+ "groups": [
+  "Arms",
+  "The body",
+  "War",
+  "The land",
+  "The sea",
+  "Crafts",
+  "Trade",
+  "Letters",
+  "Faith",
+  "Court",
+  "The shadow"
+ ],
+ "words": [
+  "beginner",
+  "intermediate",
+  "advanced",
+  "expert",
+  "master",
+  "grandmaster",
+  "legend"
+ ],
+ "skills": [
+  {
+   "id": "sword",
+   "name": "Swordsmanship",
+   "group": "Arms",
+   "kind": "motor",
+   "gov": [
+    "ins",
+    "spd"
+   ],
+   "legacy": [
+    "dagger",
+    "dualwield"
+   ],
+   "specialisms": [
+    {
+     "id": "the-arming-sword",
+     "name": "the arming sword"
+    },
+    {
+     "id": "the-long-sword",
+     "name": "the long sword"
+    },
+    {
+     "id": "the-knife",
+     "name": "the knife",
+     "legacy": "dagger"
+    },
+    {
+     "id": "two-blades",
+     "name": "two blades",
+     "legacy": "dualwield"
+    }
+   ],
+   "kin": {
+    "melee": 0.25,
+    "spear": 0.1,
+    "shield": 0.1
+   },
+   "concepts": [
+    {
+     "id": "the-guard",
+     "name": "the guard",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-line",
+     "name": "the line",
+     "word": "advanced"
+    },
+    {
+     "id": "the-measure",
+     "name": "the measure",
+     "word": "expert"
+    },
+    {
+     "id": "the-bind",
+     "name": "the bind",
+     "word": "expert"
+    },
+    {
+     "id": "the-tempo",
+     "name": "the tempo",
+     "word": "master"
+    },
+    {
+     "id": "the-feint-read",
+     "name": "the feint read",
+     "word": "master"
+    },
+    {
+     "id": "the-single-time",
+     "name": "the single time",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-stillness",
+     "name": "the stillness",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-sword-forgotten",
+     "name": "the sword forgotten",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "spear",
+   "name": "Spear, axe and mace",
+   "group": "Arms",
+   "kind": "motor",
+   "gov": [
+    "str",
+    "ins"
+   ],
+   "legacy": [
+    "axe"
+   ],
+   "specialisms": [
+    {
+     "id": "the-spear",
+     "name": "the spear"
+    },
+    {
+     "id": "the-axe",
+     "name": "the axe",
+     "legacy": "axe"
+    },
+    {
+     "id": "the-mace-and-hammer",
+     "name": "the mace and hammer"
+    },
+    {
+     "id": "the-bill-and-pike",
+     "name": "the bill and pike"
+    }
+   ],
+   "kin": {
+    "melee": 0.25,
+    "sword": 0.1,
+    "bow": 0.05
+   },
+   "concepts": [
+    {
+     "id": "the-grip",
+     "name": "the grip",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-point-s-line",
+     "name": "the point's line",
+     "word": "advanced"
+    },
+    {
+     "id": "the-measure",
+     "name": "the measure",
+     "word": "expert"
+    },
+    {
+     "id": "the-butt-and-the-blade",
+     "name": "the butt and the blade",
+     "word": "expert"
+    },
+    {
+     "id": "the-hook-and-the-pull",
+     "name": "the hook and the pull",
+     "word": "master"
+    },
+    {
+     "id": "the-rank-s-rhythm",
+     "name": "the rank's rhythm",
+     "word": "master"
+    },
+    {
+     "id": "the-long-tempo",
+     "name": "the long tempo",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-yielding-haft",
+     "name": "the yielding haft",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-reach-forgotten",
+     "name": "the reach forgotten",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "shield",
+   "name": "Shield work",
+   "group": "Arms",
+   "kind": "motor",
+   "gov": [
+    "str",
+    "sta"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "the-buckler",
+     "name": "the buckler"
+    },
+    {
+     "id": "the-wall",
+     "name": "the wall"
+    },
+    {
+     "id": "the-great-shield",
+     "name": "the great shield"
+    }
+   ],
+   "kin": {
+    "melee": 0.2,
+    "unarmed": 0.1
+   },
+   "concepts": [
+    {
+     "id": "the-cover",
+     "name": "the cover",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-edge",
+     "name": "the edge",
+     "word": "advanced"
+    },
+    {
+     "id": "the-angle",
+     "name": "the angle",
+     "word": "expert"
+    },
+    {
+     "id": "the-press",
+     "name": "the press",
+     "word": "expert"
+    },
+    {
+     "id": "the-opening-shield",
+     "name": "the opening shield",
+     "word": "master"
+    },
+    {
+     "id": "the-wall-s-breath",
+     "name": "the wall's breath",
+     "word": "master"
+    },
+    {
+     "id": "the-shield-that-strikes",
+     "name": "the shield that strikes",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-weight-borrowed",
+     "name": "the weight borrowed",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-door-that-is-not-there",
+     "name": "the door that is not there",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "bow",
+   "name": "Archery",
+   "group": "Arms",
+   "kind": "motor",
+   "gov": [
+    "str",
+    "ins"
+   ],
+   "legacy": [
+    "xbow",
+    "throwing"
+   ],
+   "specialisms": [
+    {
+     "id": "the-war-bow",
+     "name": "the war bow"
+    },
+    {
+     "id": "the-hunting-bow",
+     "name": "the hunting bow"
+    },
+    {
+     "id": "the-crossbow",
+     "name": "the crossbow",
+     "legacy": "xbow"
+    },
+    {
+     "id": "the-javelin-and-sling",
+     "name": "the javelin and sling",
+     "legacy": "throwing"
+    }
+   ],
+   "kin": {
+    "tracking": 0.1,
+    "survival": 0.1
+   },
+   "concepts": [
+    {
+     "id": "the-anchor",
+     "name": "the anchor",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-loose",
+     "name": "the loose",
+     "word": "advanced"
+    },
+    {
+     "id": "the-wind",
+     "name": "the wind",
+     "word": "expert"
+    },
+    {
+     "id": "the-range-by-eye",
+     "name": "the range by eye",
+     "word": "expert"
+    },
+    {
+     "id": "the-moving-mark",
+     "name": "the moving mark",
+     "word": "master"
+    },
+    {
+     "id": "the-breath-between",
+     "name": "the breath between",
+     "word": "master"
+    },
+    {
+     "id": "the-arrow-before-the-thought",
+     "name": "the arrow before the thought",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-far-cast",
+     "name": "the far cast",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-mark-that-comes-to-you",
+     "name": "the mark that comes to you",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "melee",
+   "name": "Footwork and close fighting",
+   "group": "Arms",
+   "kind": "motor",
+   "gov": [
+    "ins",
+    "spd"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "the-line",
+     "name": "the line"
+    },
+    {
+     "id": "the-skirmish",
+     "name": "the skirmish"
+    },
+    {
+     "id": "fighting-in-harness",
+     "name": "fighting in harness"
+    }
+   ],
+   "kin": {
+    "sword": 0.15,
+    "spear": 0.15,
+    "unarmed": 0.15,
+    "athletics": 0.15,
+    "music": 0.1
+   },
+   "concepts": [
+    {
+     "id": "the-stance",
+     "name": "the stance",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-footing",
+     "name": "the footing",
+     "word": "advanced"
+    },
+    {
+     "id": "the-press",
+     "name": "the press",
+     "word": "expert"
+    },
+    {
+     "id": "the-second-man",
+     "name": "the second man",
+     "word": "expert"
+    },
+    {
+     "id": "the-gap",
+     "name": "the gap",
+     "word": "master"
+    },
+    {
+     "id": "the-turn-of-the-line",
+     "name": "the turn of the line",
+     "word": "master"
+    },
+    {
+     "id": "the-whole-field-in-the-eye",
+     "name": "the whole field in the eye",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-calm",
+     "name": "the calm",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-crowd-made-slow",
+     "name": "the crowd made slow",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "riding",
+   "name": "Riding and the lance",
+   "group": "Arms",
+   "kind": "motor",
+   "gov": [
+    "sta",
+    "ins"
+   ],
+   "legacy": [
+    "lance",
+    "mounted"
+   ],
+   "specialisms": [
+    {
+     "id": "the-long-road",
+     "name": "the long road"
+    },
+    {
+     "id": "the-lance",
+     "name": "the lance",
+     "legacy": "lance"
+    },
+    {
+     "id": "the-fight-from-the-saddle",
+     "name": "the fight from the saddle",
+     "legacy": "mounted"
+    },
+    {
+     "id": "breaking-and-schooling",
+     "name": "breaking and schooling"
+    }
+   ],
+   "kin": {
+    "husbandry": 0.15,
+    "melee": 0.1
+   },
+   "concepts": [
+    {
+     "id": "the-seat",
+     "name": "the seat",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-hands",
+     "name": "the hands",
+     "word": "advanced"
+    },
+    {
+     "id": "the-horse-s-mind",
+     "name": "the horse's mind",
+     "word": "expert"
+    },
+    {
+     "id": "the-gallop-s-balance",
+     "name": "the gallop's balance",
+     "word": "expert"
+    },
+    {
+     "id": "the-couched-point",
+     "name": "the couched point",
+     "word": "master"
+    },
+    {
+     "id": "the-turn-on-the-haunch",
+     "name": "the turn on the haunch",
+     "word": "master"
+    },
+    {
+     "id": "one-body",
+     "name": "one body",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-charge-held",
+     "name": "the charge held",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-horse-that-knows",
+     "name": "the horse that knows",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "athletics",
+   "name": "Athletics",
+   "group": "The body",
+   "kind": "motor",
+   "gov": [
+    "sta",
+    "spd"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "the-run",
+     "name": "the run"
+    },
+    {
+     "id": "the-climb",
+     "name": "the climb"
+    },
+    {
+     "id": "the-swim",
+     "name": "the swim"
+    }
+   ],
+   "kin": {
+    "unarmed": 0.15,
+    "melee": 0.1,
+    "stealth": 0.1,
+    "survival": 0.1
+   },
+   "concepts": [
+    {
+     "id": "the-breath",
+     "name": "the breath",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-pace",
+     "name": "the pace",
+     "word": "advanced"
+    },
+    {
+     "id": "the-fall",
+     "name": "the fall",
+     "word": "expert"
+    },
+    {
+     "id": "the-second-wind",
+     "name": "the second wind",
+     "word": "expert"
+    },
+    {
+     "id": "the-long-day",
+     "name": "the long day",
+     "word": "master"
+    },
+    {
+     "id": "the-economy",
+     "name": "the economy",
+     "word": "master"
+    },
+    {
+     "id": "the-body-listened-to",
+     "name": "the body listened to",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-pain-set-aside",
+     "name": "the pain set aside",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-tirelessness",
+     "name": "the tirelessness",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "unarmed",
+   "name": "Wrestling and fists",
+   "group": "The body",
+   "kind": "motor",
+   "gov": [
+    "str",
+    "sta"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "wrestling",
+     "name": "wrestling"
+    },
+    {
+     "id": "the-fist",
+     "name": "the fist"
+    },
+    {
+     "id": "the-tavern-brawl",
+     "name": "the tavern brawl"
+    }
+   ],
+   "kin": {
+    "melee": 0.2,
+    "athletics": 0.15
+   },
+   "concepts": [
+    {
+     "id": "the-base",
+     "name": "the base",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-grip",
+     "name": "the grip",
+     "word": "advanced"
+    },
+    {
+     "id": "the-measure",
+     "name": "the measure",
+     "word": "expert"
+    },
+    {
+     "id": "the-balance-broken",
+     "name": "the balance broken",
+     "word": "expert"
+    },
+    {
+     "id": "the-lock",
+     "name": "the lock",
+     "word": "master"
+    },
+    {
+     "id": "the-weight-borrowed",
+     "name": "the weight borrowed",
+     "word": "master"
+    },
+    {
+     "id": "the-touch-that-reads",
+     "name": "the touch that reads",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-soft-answer",
+     "name": "the soft answer",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-fight-ended-before",
+     "name": "the fight ended before",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "command",
+   "name": "Command",
+   "group": "War",
+   "kind": "judgement",
+   "gov": [
+    "wil",
+    "int"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "the-company",
+     "name": "the company"
+    },
+    {
+     "id": "the-garrison",
+     "name": "the garrison"
+    },
+    {
+     "id": "the-host",
+     "name": "the host"
+    }
+   ],
+   "kin": {
+    "tactics": 0.25,
+    "intimidation": 0.1,
+    "persuasion": 0.1
+   },
+   "concepts": [
+    {
+     "id": "the-voice",
+     "name": "the voice",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-order-understood",
+     "name": "the order understood",
+     "word": "advanced"
+    },
+    {
+     "id": "the-men-s-mood",
+     "name": "the men's mood",
+     "word": "expert"
+    },
+    {
+     "id": "the-example",
+     "name": "the example",
+     "word": "expert"
+    },
+    {
+     "id": "the-reserve",
+     "name": "the reserve",
+     "word": "master"
+    },
+    {
+     "id": "the-order-not-given",
+     "name": "the order not given",
+     "word": "master"
+    },
+    {
+     "id": "the-army-s-breath",
+     "name": "the army's breath",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-trust",
+     "name": "the trust",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-banner-alone",
+     "name": "the banner alone",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "tactics",
+   "name": "Tactics and siegecraft",
+   "group": "War",
+   "kind": "judgement",
+   "gov": [
+    "int",
+    "ins"
+   ],
+   "legacy": [
+    "siegecraft"
+   ],
+   "specialisms": [
+    {
+     "id": "the-open-field",
+     "name": "the open field"
+    },
+    {
+     "id": "siegecraft",
+     "name": "siegecraft",
+     "legacy": "siegecraft"
+    },
+    {
+     "id": "the-ambush-and-the-raid",
+     "name": "the ambush and the raid"
+    }
+   ],
+   "kin": {
+    "command": 0.25,
+    "stewardship": 0.1,
+    "craft": 0.05
+   },
+   "concepts": [
+    {
+     "id": "the-map",
+     "name": "the map",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-ground",
+     "name": "the ground",
+     "word": "advanced"
+    },
+    {
+     "id": "the-flank",
+     "name": "the flank",
+     "word": "expert"
+    },
+    {
+     "id": "the-supply",
+     "name": "the supply",
+     "word": "expert"
+    },
+    {
+     "id": "the-reserve",
+     "name": "the reserve",
+     "word": "master"
+    },
+    {
+     "id": "the-enemy-s-mind",
+     "name": "the enemy's mind",
+     "word": "master"
+    },
+    {
+     "id": "the-battle-refused",
+     "name": "the battle refused",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-siege-s-patience",
+     "name": "the siege's patience",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-war-in-the-first-move",
+     "name": "the war in the first move",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "survival",
+   "name": "Woodcraft and hunting",
+   "group": "The land",
+   "kind": "lore",
+   "gov": [
+    "sta",
+    "int"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "the-hunt",
+     "name": "the hunt"
+    },
+    {
+     "id": "the-snare-and-the-forage",
+     "name": "the snare and the forage"
+    },
+    {
+     "id": "the-hard-country",
+     "name": "the hard country"
+    }
+   ],
+   "kin": {
+    "tracking": 0.25,
+    "husbandry": 0.1,
+    "medicine": 0.1
+   },
+   "concepts": [
+    {
+     "id": "the-fire",
+     "name": "the fire",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-water",
+     "name": "the water",
+     "word": "advanced"
+    },
+    {
+     "id": "the-weather-read",
+     "name": "the weather read",
+     "word": "expert"
+    },
+    {
+     "id": "the-beast-s-habit",
+     "name": "the beast's habit",
+     "word": "expert"
+    },
+    {
+     "id": "the-lean-season",
+     "name": "the lean season",
+     "word": "master"
+    },
+    {
+     "id": "the-stand",
+     "name": "the stand",
+     "word": "master"
+    },
+    {
+     "id": "the-country-as-larder",
+     "name": "the country as larder",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-stillness",
+     "name": "the stillness",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-wild-at-home",
+     "name": "the wild at home",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "tracking",
+   "name": "Tracking and scouting",
+   "group": "The land",
+   "kind": "lore",
+   "gov": [
+    "ins",
+    "int"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "the-trail",
+     "name": "the trail"
+    },
+    {
+     "id": "the-watch",
+     "name": "the watch"
+    },
+    {
+     "id": "scouting-for-a-host",
+     "name": "scouting for a host"
+    }
+   ],
+   "kin": {
+    "survival": 0.25,
+    "stealth": 0.15
+   },
+   "concepts": [
+    {
+     "id": "the-sign",
+     "name": "the sign",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-age-of-a-trail",
+     "name": "the age of a trail",
+     "word": "advanced"
+    },
+    {
+     "id": "the-broken-pattern",
+     "name": "the broken pattern",
+     "word": "expert"
+    },
+    {
+     "id": "the-wind",
+     "name": "the wind",
+     "word": "expert"
+    },
+    {
+     "id": "the-mind-of-the-quarry",
+     "name": "the mind of the quarry",
+     "word": "master"
+    },
+    {
+     "id": "the-ground-ahead",
+     "name": "the ground ahead",
+     "word": "master"
+    },
+    {
+     "id": "the-trail-unseen",
+     "name": "the trail unseen",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-country-in-the-head",
+     "name": "the country in the head",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-hunter-not-there",
+     "name": "the hunter not there",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "husbandry",
+   "name": "Farming and herding",
+   "group": "The land",
+   "kind": "motor",
+   "gov": [
+    "sta",
+    "str"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "the-plough",
+     "name": "the plough"
+    },
+    {
+     "id": "the-herd",
+     "name": "the herd"
+    },
+    {
+     "id": "horses",
+     "name": "horses"
+    },
+    {
+     "id": "vine-and-orchard",
+     "name": "vine and orchard"
+    }
+   ],
+   "kin": {
+    "survival": 0.1,
+    "stewardship": 0.1,
+    "riding": 0.1
+   },
+   "concepts": [
+    {
+     "id": "the-seasons",
+     "name": "the seasons",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-soil",
+     "name": "the soil",
+     "word": "advanced"
+    },
+    {
+     "id": "the-beast-s-health",
+     "name": "the beast's health",
+     "word": "expert"
+    },
+    {
+     "id": "the-fallow",
+     "name": "the fallow",
+     "word": "expert"
+    },
+    {
+     "id": "the-breeding-line",
+     "name": "the breeding line",
+     "word": "master"
+    },
+    {
+     "id": "the-bad-year-stored-against",
+     "name": "the bad year stored against",
+     "word": "master"
+    },
+    {
+     "id": "the-land-s-heart",
+     "name": "the land's heart",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-eye-for-stock",
+     "name": "the eye for stock",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-valley-made-rich",
+     "name": "the valley made rich",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "sea",
+   "name": "Seamanship",
+   "group": "The sea",
+   "kind": "motor",
+   "gov": [
+    "sta",
+    "str"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "the-deck",
+     "name": "the deck"
+    },
+    {
+     "id": "the-helm",
+     "name": "the helm"
+    },
+    {
+     "id": "the-nets",
+     "name": "the nets"
+    },
+    {
+     "id": "the-sea-fight",
+     "name": "the sea fight"
+    }
+   ],
+   "kin": {
+    "survival": 0.1,
+    "athletics": 0.1,
+    "trade": 0.05
+   },
+   "concepts": [
+    {
+     "id": "the-knots",
+     "name": "the knots",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-wind-s-eye",
+     "name": "the wind's eye",
+     "word": "advanced"
+    },
+    {
+     "id": "the-tide",
+     "name": "the tide",
+     "word": "expert"
+    },
+    {
+     "id": "the-lead-and-the-line",
+     "name": "the lead and the line",
+     "word": "expert"
+    },
+    {
+     "id": "the-weather-a-day-off",
+     "name": "the weather a day off",
+     "word": "master"
+    },
+    {
+     "id": "the-ship-s-voice",
+     "name": "the ship's voice",
+     "word": "master"
+    },
+    {
+     "id": "the-dead-reckoning",
+     "name": "the dead reckoning",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-lee-shore",
+     "name": "the lee shore",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-sea-s-temper",
+     "name": "the sea's temper",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "craft",
+   "name": "Craft",
+   "group": "Crafts",
+   "kind": "motor",
+   "gov": [
+    "str",
+    "int"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "smithing",
+     "name": "smithing"
+    },
+    {
+     "id": "armouring",
+     "name": "armouring"
+    },
+    {
+     "id": "carpentry",
+     "name": "carpentry"
+    },
+    {
+     "id": "masonry",
+     "name": "masonry"
+    },
+    {
+     "id": "cloth-and-leather",
+     "name": "cloth and leather"
+    },
+    {
+     "id": "fine-work",
+     "name": "fine work"
+    }
+   ],
+   "kin": {
+    "trade": 0.1,
+    "stewardship": 0.05
+   },
+   "concepts": [
+    {
+     "id": "the-edge-kept",
+     "name": "the edge kept",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-true-line",
+     "name": "the true line",
+     "word": "advanced"
+    },
+    {
+     "id": "the-material-s-will",
+     "name": "the material's will",
+     "word": "expert"
+    },
+    {
+     "id": "the-jig",
+     "name": "the jig",
+     "word": "expert"
+    },
+    {
+     "id": "the-temper",
+     "name": "the temper",
+     "word": "master"
+    },
+    {
+     "id": "the-hidden-fault",
+     "name": "the hidden fault",
+     "word": "master"
+    },
+    {
+     "id": "the-form-that-serves",
+     "name": "the form that serves",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-hand-that-stops",
+     "name": "the hand that stops",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-work-that-outlasts",
+     "name": "the work that outlasts",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "medicine",
+   "name": "Medicine",
+   "group": "Crafts",
+   "kind": "lore",
+   "gov": [
+    "int",
+    "ins"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "wounds-and-bones",
+     "name": "wounds and bones"
+    },
+    {
+     "id": "fevers",
+     "name": "fevers"
+    },
+    {
+     "id": "herbs",
+     "name": "herbs"
+    },
+    {
+     "id": "midwifery",
+     "name": "midwifery"
+    }
+   ],
+   "kin": {
+    "learning": 0.2,
+    "survival": 0.1
+   },
+   "concepts": [
+    {
+     "id": "the-clean-hand",
+     "name": "the clean hand",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-pulse",
+     "name": "the pulse",
+     "word": "advanced"
+    },
+    {
+     "id": "the-signs",
+     "name": "the signs",
+     "word": "expert"
+    },
+    {
+     "id": "the-dose",
+     "name": "the dose",
+     "word": "expert"
+    },
+    {
+     "id": "the-fever-s-course",
+     "name": "the fever's course",
+     "word": "master"
+    },
+    {
+     "id": "the-knife-s-limit",
+     "name": "the knife's limit",
+     "word": "master"
+    },
+    {
+     "id": "the-patient-and-not-the-wound",
+     "name": "the patient and not the wound",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-thing-not-done",
+     "name": "the thing not done",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-death-put-off",
+     "name": "the death put off",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "music",
+   "name": "Music, song and dance",
+   "group": "Crafts",
+   "kind": "motor",
+   "gov": [
+    "int",
+    "wil"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "the-voice",
+     "name": "the voice"
+    },
+    {
+     "id": "the-harp-and-strings",
+     "name": "the harp and strings"
+    },
+    {
+     "id": "the-dance",
+     "name": "the dance"
+    },
+    {
+     "id": "the-long-lay",
+     "name": "the long lay"
+    }
+   ],
+   "kin": {
+    "persuasion": 0.1,
+    "etiquette": 0.1,
+    "melee": 0.05
+   },
+   "concepts": [
+    {
+     "id": "the-pitch",
+     "name": "the pitch",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-time",
+     "name": "the time",
+     "word": "advanced"
+    },
+    {
+     "id": "the-phrase",
+     "name": "the phrase",
+     "word": "expert"
+    },
+    {
+     "id": "the-room",
+     "name": "the room",
+     "word": "expert"
+    },
+    {
+     "id": "the-silence",
+     "name": "the silence",
+     "word": "master"
+    },
+    {
+     "id": "the-borrowed-tune-made-new",
+     "name": "the borrowed tune made new",
+     "word": "master"
+    },
+    {
+     "id": "the-song-that-is-yours",
+     "name": "the song that is yours",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-listeners-held",
+     "name": "the listeners held",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-song-that-stays",
+     "name": "the song that stays",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "trade",
+   "name": "Trade",
+   "group": "Trade",
+   "kind": "lore",
+   "gov": [
+    "int",
+    "wil"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "the-market",
+     "name": "the market"
+    },
+    {
+     "id": "the-long-road",
+     "name": "the long road"
+    },
+    {
+     "id": "the-counting-house",
+     "name": "the counting house"
+    },
+    {
+     "id": "goods-judged",
+     "name": "goods judged"
+    }
+   ],
+   "kin": {
+    "stewardship": 0.2,
+    "persuasion": 0.2,
+    "gambling": 0.05
+   },
+   "concepts": [
+    {
+     "id": "the-count",
+     "name": "the count",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-price",
+     "name": "the price",
+     "word": "advanced"
+    },
+    {
+     "id": "the-other-man-s-need",
+     "name": "the other man's need",
+     "word": "expert"
+    },
+    {
+     "id": "the-weight-and-the-measure",
+     "name": "the weight and the measure",
+     "word": "expert"
+    },
+    {
+     "id": "the-credit",
+     "name": "the credit",
+     "word": "master"
+    },
+    {
+     "id": "the-season-ahead",
+     "name": "the season ahead",
+     "word": "master"
+    },
+    {
+     "id": "the-market-made",
+     "name": "the market made",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-loss-taken-early",
+     "name": "the loss taken early",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-name-that-is-coin",
+     "name": "the name that is coin",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "stewardship",
+   "name": "Stewardship and supply",
+   "group": "Trade",
+   "kind": "lore",
+   "gov": [
+    "int",
+    "wil"
+   ],
+   "legacy": [
+    "logistics"
+   ],
+   "specialisms": [
+    {
+     "id": "the-estate",
+     "name": "the estate"
+    },
+    {
+     "id": "the-household",
+     "name": "the household"
+    },
+    {
+     "id": "supply",
+     "name": "supply",
+     "legacy": "logistics"
+    },
+    {
+     "id": "the-mint-and-the-tax",
+     "name": "the mint and the tax"
+    }
+   ],
+   "kin": {
+    "trade": 0.2,
+    "learning": 0.1,
+    "tactics": 0.1
+   },
+   "concepts": [
+    {
+     "id": "the-tally",
+     "name": "the tally",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-store",
+     "name": "the store",
+     "word": "advanced"
+    },
+    {
+     "id": "the-yield",
+     "name": "the yield",
+     "word": "expert"
+    },
+    {
+     "id": "the-honest-reeve",
+     "name": "the honest reeve",
+     "word": "expert"
+    },
+    {
+     "id": "the-lean-year",
+     "name": "the lean year",
+     "word": "master"
+    },
+    {
+     "id": "the-many-hands",
+     "name": "the many hands",
+     "word": "master"
+    },
+    {
+     "id": "the-estate-as-one-thing",
+     "name": "the estate as one thing",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-tax-that-holds",
+     "name": "the tax that holds",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-house-that-feeds-a-realm",
+     "name": "the house that feeds a realm",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "gambling",
+   "name": "Gaming and wagers",
+   "group": "Trade",
+   "kind": "lore",
+   "gov": [
+    "int",
+    "ins"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "dice",
+     "name": "dice"
+    },
+    {
+     "id": "cards-and-tables",
+     "name": "cards and tables"
+    },
+    {
+     "id": "the-wager",
+     "name": "the wager"
+    }
+   ],
+   "kin": {
+    "intrigue": 0.1,
+    "trade": 0.1
+   },
+   "concepts": [
+    {
+     "id": "the-odds",
+     "name": "the odds",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-stake",
+     "name": "the stake",
+     "word": "advanced"
+    },
+    {
+     "id": "the-tell",
+     "name": "the tell",
+     "word": "expert"
+    },
+    {
+     "id": "the-run-that-is-not-there",
+     "name": "the run that is not there",
+     "word": "expert"
+    },
+    {
+     "id": "the-table-read",
+     "name": "the table read",
+     "word": "master"
+    },
+    {
+     "id": "the-walk-away",
+     "name": "the walk away",
+     "word": "master"
+    },
+    {
+     "id": "the-game-behind-the-game",
+     "name": "the game behind the game",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-calm",
+     "name": "the calm",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-luck-made",
+     "name": "the luck made",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "learning",
+   "name": "Letters and learning",
+   "group": "Letters",
+   "kind": "lore",
+   "gov": [
+    "int",
+    "wil"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "the-law",
+     "name": "the law"
+    },
+    {
+     "id": "chronicle-and-history",
+     "name": "chronicle and history"
+    },
+    {
+     "id": "numbers-and-stars",
+     "name": "numbers and stars"
+    },
+    {
+     "id": "the-old-tongue",
+     "name": "the old tongue"
+    }
+   ],
+   "kin": {
+    "faith": 0.2,
+    "medicine": 0.1,
+    "diplomacy": 0.1
+   },
+   "concepts": [
+    {
+     "id": "the-letters",
+     "name": "the letters",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-argument",
+     "name": "the argument",
+     "word": "advanced"
+    },
+    {
+     "id": "the-old-grammar",
+     "name": "the old grammar",
+     "word": "expert"
+    },
+    {
+     "id": "the-source-weighed",
+     "name": "the source weighed",
+     "word": "expert"
+    },
+    {
+     "id": "the-argument-from-authority",
+     "name": "the argument from authority",
+     "word": "master"
+    },
+    {
+     "id": "the-doubt",
+     "name": "the doubt",
+     "word": "master"
+    },
+    {
+     "id": "the-question-no-one-asked",
+     "name": "the question no one asked",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-plain-word",
+     "name": "the plain word",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-book-that-will-be-read",
+     "name": "the book that will be read",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "faith",
+   "name": "Faith",
+   "group": "Faith",
+   "kind": "lore",
+   "gov": [
+    "wil",
+    "int"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "the-rites",
+     "name": "the rites"
+    },
+    {
+     "id": "scripture",
+     "name": "scripture"
+    },
+    {
+     "id": "preaching",
+     "name": "preaching"
+    },
+    {
+     "id": "the-care-of-souls",
+     "name": "the care of souls"
+    }
+   ],
+   "kin": {
+    "learning": 0.2,
+    "persuasion": 0.1
+   },
+   "concepts": [
+    {
+     "id": "the-prayers",
+     "name": "the prayers",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-rite",
+     "name": "the rite",
+     "word": "advanced"
+    },
+    {
+     "id": "the-text-and-the-gloss",
+     "name": "the text and the gloss",
+     "word": "expert"
+    },
+    {
+     "id": "the-listening",
+     "name": "the listening",
+     "word": "expert"
+    },
+    {
+     "id": "the-doubt-borne",
+     "name": "the doubt borne",
+     "word": "master"
+    },
+    {
+     "id": "the-sermon-s-turn",
+     "name": "the sermon's turn",
+     "word": "master"
+    },
+    {
+     "id": "the-silence",
+     "name": "the silence",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-care-of-the-unlovely",
+     "name": "the care of the unlovely",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-peace-given",
+     "name": "the peace given",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "persuasion",
+   "name": "Persuasion",
+   "group": "Court",
+   "kind": "judgement",
+   "gov": [
+    "int",
+    "wil"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "the-bargain",
+     "name": "the bargain"
+    },
+    {
+     "id": "the-speech",
+     "name": "the speech"
+    },
+    {
+     "id": "the-plea",
+     "name": "the plea"
+    }
+   ],
+   "kin": {
+    "diplomacy": 0.2,
+    "trade": 0.1,
+    "intrigue": 0.1,
+    "etiquette": 0.1
+   },
+   "concepts": [
+    {
+     "id": "the-opening",
+     "name": "the opening",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-listener",
+     "name": "the listener",
+     "word": "advanced"
+    },
+    {
+     "id": "the-other-man-s-want",
+     "name": "the other man's want",
+     "word": "expert"
+    },
+    {
+     "id": "the-pause",
+     "name": "the pause",
+     "word": "expert"
+    },
+    {
+     "id": "the-objection-welcomed",
+     "name": "the objection welcomed",
+     "word": "master"
+    },
+    {
+     "id": "the-crowd-s-one-mind",
+     "name": "the crowd's one mind",
+     "word": "master"
+    },
+    {
+     "id": "the-plain-truth-told-well",
+     "name": "the plain truth told well",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-word-unsaid",
+     "name": "the word unsaid",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-voice-men-follow",
+     "name": "the voice men follow",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "diplomacy",
+   "name": "Diplomacy",
+   "group": "Court",
+   "kind": "judgement",
+   "gov": [
+    "int",
+    "wil"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "the-embassy",
+     "name": "the embassy"
+    },
+    {
+     "id": "the-treaty",
+     "name": "the treaty"
+    },
+    {
+     "id": "the-quarrel-settled",
+     "name": "the quarrel settled"
+    }
+   ],
+   "kin": {
+    "persuasion": 0.2,
+    "etiquette": 0.2,
+    "intrigue": 0.1
+   },
+   "concepts": [
+    {
+     "id": "the-forms",
+     "name": "the forms",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-interest",
+     "name": "the interest",
+     "word": "advanced"
+    },
+    {
+     "id": "the-thing-neither-can-say",
+     "name": "the thing neither can say",
+     "word": "expert"
+    },
+    {
+     "id": "the-patience",
+     "name": "the patience",
+     "word": "expert"
+    },
+    {
+     "id": "the-door-left-open",
+     "name": "the door left open",
+     "word": "master"
+    },
+    {
+     "id": "the-third-party",
+     "name": "the third party",
+     "word": "master"
+    },
+    {
+     "id": "the-peace-both-can-sell",
+     "name": "the peace both can sell",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-long-memory",
+     "name": "the long memory",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-word-that-binds-kings",
+     "name": "the word that binds kings",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "etiquette",
+   "name": "Courtesy",
+   "group": "Court",
+   "kind": "judgement",
+   "gov": [
+    "int",
+    "wil"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "the-court",
+     "name": "the court"
+    },
+    {
+     "id": "the-feast",
+     "name": "the feast"
+    },
+    {
+     "id": "courtship",
+     "name": "courtship"
+    }
+   ],
+   "kin": {
+    "diplomacy": 0.2,
+    "music": 0.1
+   },
+   "concepts": [
+    {
+     "id": "the-address",
+     "name": "the address",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-precedence",
+     "name": "the precedence",
+     "word": "advanced"
+    },
+    {
+     "id": "the-room-read",
+     "name": "the room read",
+     "word": "expert"
+    },
+    {
+     "id": "the-gift",
+     "name": "the gift",
+     "word": "expert"
+    },
+    {
+     "id": "the-slight-unseen",
+     "name": "the slight unseen",
+     "word": "master"
+    },
+    {
+     "id": "the-fashion-led",
+     "name": "the fashion led",
+     "word": "master"
+    },
+    {
+     "id": "the-ease",
+     "name": "the ease",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-rule-broken-rightly",
+     "name": "the rule broken rightly",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-court-in-a-glance",
+     "name": "the court in a glance",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "intimidation",
+   "name": "Intimidation",
+   "group": "Court",
+   "kind": "judgement",
+   "gov": [
+    "wil",
+    "str"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "the-threat",
+     "name": "the threat"
+    },
+    {
+     "id": "the-question-put-hard",
+     "name": "the question put hard"
+    },
+    {
+     "id": "the-presence-in-arms",
+     "name": "the presence in arms"
+    }
+   ],
+   "kin": {
+    "command": 0.1,
+    "persuasion": 0.1
+   },
+   "concepts": [
+    {
+     "id": "the-stare",
+     "name": "the stare",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-quiet",
+     "name": "the quiet",
+     "word": "advanced"
+    },
+    {
+     "id": "the-threat-unsaid",
+     "name": "the threat unsaid",
+     "word": "expert"
+    },
+    {
+     "id": "the-man-s-fear-found",
+     "name": "the man's fear found",
+     "word": "expert"
+    },
+    {
+     "id": "the-one-example",
+     "name": "the one example",
+     "word": "master"
+    },
+    {
+     "id": "the-mercy-that-frightens",
+     "name": "the mercy that frightens",
+     "word": "master"
+    },
+    {
+     "id": "the-name-that-goes-before",
+     "name": "the name that goes before",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-calm-hand",
+     "name": "the calm hand",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-dread",
+     "name": "the dread",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "stealth",
+   "name": "Stealth",
+   "group": "The shadow",
+   "kind": "motor",
+   "gov": [
+    "spd",
+    "int"
+   ],
+   "legacy": [],
+   "specialisms": [
+    {
+     "id": "the-quiet-road",
+     "name": "the quiet road"
+    },
+    {
+     "id": "locks-and-hands",
+     "name": "locks and hands"
+    },
+    {
+     "id": "the-disguise",
+     "name": "the disguise"
+    }
+   ],
+   "kin": {
+    "intrigue": 0.15,
+    "tracking": 0.15,
+    "athletics": 0.1
+   },
+   "concepts": [
+    {
+     "id": "the-quiet-foot",
+     "name": "the quiet foot",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-shadow",
+     "name": "the shadow",
+     "word": "advanced"
+    },
+    {
+     "id": "the-waiting",
+     "name": "the waiting",
+     "word": "expert"
+    },
+    {
+     "id": "the-other-man-s-eye",
+     "name": "the other man's eye",
+     "word": "expert"
+    },
+    {
+     "id": "the-plain-sight",
+     "name": "the plain sight",
+     "word": "master"
+    },
+    {
+     "id": "the-lock-s-logic",
+     "name": "the lock's logic",
+     "word": "master"
+    },
+    {
+     "id": "the-absence",
+     "name": "the absence",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-crowd-as-cloak",
+     "name": "the crowd as cloak",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-one-never-there",
+     "name": "the one never there",
+     "word": "legend"
+    }
+   ]
+  },
+  {
+   "id": "intrigue",
+   "name": "Intrigue and deceit",
+   "group": "The shadow",
+   "kind": "judgement",
+   "gov": [
+    "int",
+    "ins"
+   ],
+   "legacy": [
+    "deception"
+   ],
+   "specialisms": [
+    {
+     "id": "the-plot",
+     "name": "the plot"
+    },
+    {
+     "id": "the-spy-s-craft",
+     "name": "the spy's craft"
+    },
+    {
+     "id": "the-lie",
+     "name": "the lie",
+     "legacy": "deception"
+    }
+   ],
+   "kin": {
+    "stealth": 0.1,
+    "diplomacy": 0.1,
+    "persuasion": 0.1
+   },
+   "concepts": [
+    {
+     "id": "the-listening",
+     "name": "the listening",
+     "word": "intermediate"
+    },
+    {
+     "id": "the-debt",
+     "name": "the debt",
+     "word": "advanced"
+    },
+    {
+     "id": "the-lie-that-is-mostly-true",
+     "name": "the lie that is mostly true",
+     "word": "expert"
+    },
+    {
+     "id": "the-second-purpose",
+     "name": "the second purpose",
+     "word": "expert"
+    },
+    {
+     "id": "the-web",
+     "name": "the web",
+     "word": "master"
+    },
+    {
+     "id": "the-long-game",
+     "name": "the long game",
+     "word": "master"
+    },
+    {
+     "id": "the-hand-unseen",
+     "name": "the hand unseen",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-enemy-s-friend",
+     "name": "the enemy's friend",
+     "word": "grandmaster"
+    },
+    {
+     "id": "the-realm-as-a-board",
+     "name": "the realm as a board",
+     "word": "legend"
+    }
+   ]
+  }
+ ],
+ "sharedConcepts": {
+  "the-measure": [
+   "sword",
+   "spear",
+   "unarmed"
+  ],
+  "the-stillness": [
+   "sword",
+   "survival"
+  ],
+  "the-grip": [
+   "spear",
+   "unarmed"
+  ],
+  "the-press": [
+   "shield",
+   "melee"
+  ],
+  "the-weight-borrowed": [
+   "shield",
+   "unarmed"
+  ],
+  "the-wind": [
+   "bow",
+   "tracking"
+  ],
+  "the-calm": [
+   "melee",
+   "gambling"
+  ],
+  "the-reserve": [
+   "command",
+   "tactics"
+  ],
+  "the-silence": [
+   "music",
+   "faith"
+  ],
+  "the-listening": [
+   "faith",
+   "intrigue"
+  ]
+ }
+}
