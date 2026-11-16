@@ -26,8 +26,8 @@
   // ---- which sections are open: the player's, kept in the browser (never in the save) --------------------------------------
   PF.open = {};
   const KEY = 'ardan_pf_v1';
-  try { const raw = window.localStorage && window.localStorage.getItem(KEY); if (raw) { const o = JSON.parse(raw); if (o && typeof o === 'object') for (const k of Object.keys(o)) PF.open[k] = !!o[k]; } } catch (e) {}
-  PF.saveOpen = () => { try { window.localStorage.setItem(KEY, JSON.stringify(PF.open)); } catch (e) {} };
+  try { const raw = UI.store.get(KEY); if (raw) { const o = JSON.parse(raw); if (o && typeof o === 'object') for (const k of Object.keys(o)) PF.open[k] = !!o[k]; } } catch (e) {}
+  PF.saveOpen = () => { UI.store.set(KEY, JSON.stringify(PF.open)); };
 
   // ---- the hero -------------------------------------------------------------------------------------------------------------
   PF.arms = function (p, size) {
@@ -281,7 +281,7 @@
     return tr.length ? `<div class="pf-chips" aria-label="Character">${tr.join('')}</div>` : empty('No marked trait yet. Your deeds will show one.');
   } });
   PF.tab = 'skills';
-  try { const t = window.localStorage && window.localStorage.getItem('ardan_pf_tab'); if (t) PF.tab = t; } catch (e) {}
+  try { const t = UI.store.get('ardan_pf_tab'); if (t) PF.tab = t; } catch (e) {}
   PF.panelOf = k => PF.PANELS.find(x => x.k === k) || PF.PANELS[0];
   PF.panelBody = (def, p) => { try { return def.body(p); } catch (e) { console.error('profile panel ' + def.k, e); return empty('This part could not be drawn.'); } };
   PF.tabs = function (p) {
@@ -328,7 +328,7 @@
     },
     pfTab(v, el) {
       const d = PF.panelOf(v), bar = el && el.closest('.pf-tabs'), panel = document.getElementById('pf-panel'); if (!bar || !panel) return;
-      PF.tab = d.k; try { window.localStorage.setItem('ardan_pf_tab', d.k); } catch (e) {}
+      PF.tab = d.k; UI.store.set('ardan_pf_tab', d.k);
       for (const b of bar.querySelectorAll('.pf-tab')) { const on = b.dataset.v === d.k; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; }
       panel.setAttribute('aria-labelledby', 'pf-t-' + d.k);
       panel.innerHTML = PF.panelBody(d, A.pc());
