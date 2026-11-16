@@ -88,6 +88,10 @@ export default {
       A.queue = function (it) { if (it && it.type === 'event' && KEYS.includes(it.ev)) seen.push({ ev: it.ev, day: A.absDay(), lost: +(it.ctx && it.ctx.lost || 0) }); return q0.apply(this, arguments); };
       A.log = function (t) { lines.push(String(t)); return l0.apply(this, arguments); };
       let honour = null, life = [];
+      // P3 CI (H-068 addendum): the unit's monthly missions (99972-unit-work) are cleared with the queue each month here,
+      // but they moved the dice, and the one pay-day line this seed's sixteen years held fell out of the world. This test
+      // is about the company's own scenes, so the unit's work is stood down for it.
+      const duty0 = A.UNITWORK && A.UNITWORK.onDuty; if (A.UNITWORK) A.UNITWORK.onDuty = () => false;
       try {
         A.newGame({ seed: 9742, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
         const en = A.neighbors('POL-01')[0];
@@ -117,7 +121,7 @@ export default {
           }
           honour = { scenes: seen.filter(x => x.ev === 'co_honour').length, lines: lines.slice(k0).filter(t => /another name for its colours/.test(t)).length };
         }
-      } finally { A.queue = q0; A.log = l0; }
+      } finally { A.queue = q0; A.log = l0; if (A.UNITWORK) A.UNITWORK.onDuty = duty0; }
       const L = ev => life.filter(x => x.ev === ev);
       const bad = [];
       for (const ev of ['co_roll_call', 'co_captain_word']) {

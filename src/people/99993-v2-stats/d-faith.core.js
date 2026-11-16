@@ -37,6 +37,9 @@ A.onMonth.push(pc => {
 });
 // an effect on piety for a faithless player becomes pull
 A.addStage('A.applyFx', 'v2-stats', applyFx => function (pc, fx) {
+  // (P3 CI, x3PreviewReplay400: a choice that takes holy orders, rl_f_priest's "Answer the call", is the choice of faith
+  // itself; its piety is the priest's, not a pull, as the card's preview says)
+  if (pc && fx && typeof fx === 'object' && fx.job === 'clergy' && VS.isPC(pc) && !VS.hasFaith(pc)) VS.takeFaith(pc);
   if (pc && fx && typeof fx === 'object' && !Array.isArray(fx) && typeof fx.piety === 'number' && VS.isPC(pc) && !VS.hasFaith(pc)) {
     VS.addPull(pc, fx.piety);
     const o = Object.assign({}, fx); delete o.piety;

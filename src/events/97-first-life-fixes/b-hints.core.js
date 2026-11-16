@@ -192,7 +192,7 @@
         '<li>When something happens, read it and pick a choice. Each one shows its odds.</li>' +
         '<li>Press <b>Continue</b>, then step on.</li>' +
         '<li>Try an activity on the Life page: make a friend, train, look for love. Do too much too fast and you tire.</li>' +
-        '<li>Nothing is set for you: the Path, your plan, the people you know and the Decisions page are where a life is made. What you have taken on (debts, promises) is kept at the top of Life.</li>' +
+        '<li>Nothing is set for you: the Path, your plan and the people you know are yours to choose.</li>' +
         '<li>When you die, you go on as your heir.</li></ol></section>';
       body.innerHTML = first + '<h3 class="help-more-h">More, by subject</h3>' + fold;
       return t.innerHTML;
