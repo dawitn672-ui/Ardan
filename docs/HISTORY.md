@@ -959,3 +959,13 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   measured here: no log has it). 167 tests had no CI time in the logs (planned at 30 s): the first long and quick runs' time artifacts fix that.
 - Undo: `git revert` the commit; the old runner split was `i % n` over the test list, and `check.yml` ran all tests.
 
+### H-060 · 2026-11-15 21:35 ET · D12a-2: the war design revised with the owner's ten answers (design only)
+- **Docs:** `docs/design/war.md` revised (part one kept, changes marked *(D12a-2)*; part two new, §9 to §16: command
+  without a Marshal, manpower without levies, why wars start and end, your place in it, stability and upheavals, the
+  military path and training, records and old saves, the build order in sixteen stages); a one-page summary for the
+  owner at its top; two diagrams, `docs/design/war/5-command.svg` and `6-reports.svg`, drawn by
+  `docs/design/war/build-command.mjs`. D-064 records the choices made where the answers left room.
+- **Game:** nothing. No code, data or test changed.
+- **Left open:** every stage of §16; CRITIQUE §2's "done when" for D11 and D12b still read the first plan; the
+  `life-sim-systems` skill carries a note of the direction, not yet the built rules.
+- **Undo:** revert branch `d12a-2`'s commits; the first design is `0378b9e`.

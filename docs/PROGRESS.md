@@ -52,8 +52,8 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [ ] **P3** · Order 54 playtest round: new life after a save; ambitions, chapters and handed goals retired (free will); reasoned consequences for crimes against rulers (no automatic forgiveness); first mission within months; a step completes after its cards are answered
 - [ ] **R1** · Nothing without reason (rule 18): every AI, noble, faction, commander and NPC decision carries a nameable reason from post, circumstance, personality and emotion; a lint and a run audit
 - [ ] **R2** · Every relationship needs a base (rule 19, order 55): access to a person by the gap in standing, their pride and personality, need and circumstance; knighthood, renown, mastery, fame, wealth and introductions shift it; NPC bonds alike
-- [ ] **W1** · No Marshal: General the highest rank, several Generals by army size, nobles' own commands under the king; old saves map the Marshal; conscription instead of levies (with D11)
-- [ ] **D12a-2** · War design revised with the owner's ten answers (order 54)
+- [ ] **W1** · No Marshal: General the highest rank, several Generals by army size, nobles' own commands under the king; old saves map the Marshal; conscription instead of levies (with D11). Stages (war.md §16): **W1-1** no Marshal, five ranks · **W1-2** minds (reasons and feelings; R1's core) · **W1-3** commands and the summons · **W1-4** no levies · **W1-5** surrender or defeat · **W1-6** the realm's peace (stability, factions, private wars, risings, coups)
+- [x] **D12a-2** · War design revised with the owner's ten answers (order 54): part two of `docs/design/war.md` (§9 to §16), two diagrams, sixteen stages (D-064, H-059) · branch `d12a-2` · 2026-11-15 21:35 ET
 - [x] **T1** · Faster testing: a quick tier on every push, the long bot-life tier nightly and before versions
 - [ ] **L2** · Legendaries: mythical names, character and aura; the bow redrawn to be truly legendary
 - [ ] **C8d** · Hair in depth; dress and appearance variety compounded (serf / peasant / merchant read right); looks matter in play where it fits
@@ -62,8 +62,8 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [ ] **Gaps** · Every known leftover: "the" before realm forms, lore people's names, tablets' phone shell, missions abroad for cards, U6/U10/U12/U17/U21, 200% text, mourning dress, NPC dress by occasion, jewellery, mounts, interiors (V19), cut-in tone (V11-12)
 - [ ] **D9** · The inked, detailed map; war fronts that spread like a burn (D-016)
 - [x] **D12a** · War design: theatre, field, press; sight by rank; one engine with a cause ledger; nine stages (`docs/design/war.md`) · `0378b9e` · 2026-11-14 05:43 ET · **10 owner decisions pending**
-- [ ] **D11** · Military branches (feudal armies, D-012)
-- [ ] **D12b** · War and command depth
+- [ ] **D11** · Military branches (feudal armies, D-012). Stages (war.md §16, with D11+): **D11-1** the muster · **D11-2** units that differ, tailored training, duties · **D11-3** careers
+- [ ] **D12b** · War and command depth. Stages (war.md §16): **D12b-1** hosts on roads (X7 part 2's gate) · **D12b-2** one engine, the field by your eye · **D12b-3** reports and the people you know · **D12b-4** the theatre and the burn · **D12b-5** the press · **D12b-6** sieges and the verbs · **D12b-7** balance, retire, records
 - [ ] **X4** · Balance pass
 - [ ] **X5** · State diet; stop committing index.html every round (D-018)
 

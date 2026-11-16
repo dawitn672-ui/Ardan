@@ -39,7 +39,7 @@ A name that is no longer here was renamed in the naming pass: look it up in [NAM
 | [design/brief.md](design/brief.md) | The design system brief, "Woodblock & Light" |
 | [design/brief-audit.md](design/brief-audit.md) | The brief checked against the built game |
 | [design/characters.md](design/characters.md) | Character design: faces, bodies and dress (C8a) |
-| [design/war.md](design/war.md) | D12a: war as a visual simulation (theatre, field, press) |
+| [design/war.md](design/war.md) | D12a, revised as D12a-2: war as a visual simulation (theatre, field, press); command without a Marshal, the lords' own armies, conscription, why wars start and end, reports, upheavals, the military path, the sixteen build stages (D-064) |
 | [design/growth.md](design/growth.md) | G design: 17 stats, thousands of skills, hundreds of fighting styles, legendary arts |
 | [design/economy-and-items.md](design/economy-and-items.md) | E1 and E2 design: markets that run themselves, hundreds of weapons, unique items |
 | [design/legendaries/legendaries.md](design/legendaries/legendaries.md) | Ten legendary arms, one from each of ten realms (orders 36 and 52): the page and its plates, how pieces, arts and forms are named, the redrawn bow; and `ordinary.png`, the game's ordinary arms before and after order 52 |
