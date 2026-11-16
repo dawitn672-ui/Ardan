@@ -550,25 +550,10 @@ A.weaponSkillOf = function (p) {
 };
 
 A.ACT = {
+  // S1b (D-072): "Work at a skill": alone, a lesson, a harder test or thinking it over, through A.gainXp (36-skills'
+  // A.SK.work). The old practice, with its number, tier word and aptitude, is in archive/s1-proficiencies/old-views.js.
   practice(pc, arg, d) {
-    const k = arg && GD.SKILLS[arg] ? arg : A.weaponSkillOf(pc),
-      trait = pc.traits.reduce((m, t) => m * ((GD.TRAITS[t] && GD.TRAITS[t].train) || 1), 1),
-      before = A.skill(pc, k),
-      g = A.trainSkill(pc, k, 5.5 * d * trait),
-      [s1, s2] = GD.SKILL_STAT[k] || ["int", "wil"];
-    A.train(pc, s1, 0.6 * d);
-    A.train(pc, s2, 0.4 * d);
-    const how = A.pick(GD.SKILL_PRACTICE[k] || ["long hours of practice"]),
-      tier = GD.profTier(A.skill(pc, k)),
-      apt = pc.apt && pc.apt[k] ? GD.aptName(pc.apt[k]) : "";
-    return GD.SKILL_CAT_OF[k] === "Martial" && A.chance(0.05)
-      ? ((pc.health -= 6),
-        {
-          msg: `${A.cap(how)}. You pull something in your shoulder. (+${A.round(g, 1)} ${GD.SKILLS[k]}, now ${tier})`,
-        })
-      : {
-          msg: `${A.cap(how)}.${apt === "Prodigy" || apt === "Gifted" ? " It comes to you easily." : apt === "Hopeless" || apt === "Clumsy" ? " It does not come easily." : ""} (+${A.round(g, 1)} ${GD.SKILLS[k]}: ${before} → ${A.skill(pc, k)}, ${tier})`,
-        };
+    return A.SK && A.SK.work ? A.SK.work(pc, arg, d) : { msg: "You practise for some days." };
   },
   train_yard(pc, arg, d) {
     const k = arg && GD.SKILLS[arg] ? arg : A.weaponSkillOf(pc),

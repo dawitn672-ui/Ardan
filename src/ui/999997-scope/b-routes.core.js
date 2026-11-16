@@ -44,7 +44,7 @@
     } catch (e) { return L; }
   };
 
-  // ---- the proficiency list: a babe has none to list (the Proficiencies overlay and the old profile sheet draw it) -----------------
+  // ---- the skills list: a babe has none to list (the Skills overlay and the old profile sheet draw it) -----------------
   const pb = UI.profBlock;
   if (typeof pb === 'function') UI.profBlock = function (pc) {
     try { if (pc && !UI.scope(pc).sees('skills')) return '<p class="small muted">A babe has learned nothing yet.</p>'; } catch (e) {}

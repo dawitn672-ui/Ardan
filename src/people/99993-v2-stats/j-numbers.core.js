@@ -281,8 +281,7 @@
     [/(opinion of you (?:up|down)) \([+−-]\d{1,3}\)/g, '$1'],
     // the duel's blows: "You take a hit — 7 damage."
     [/— (\d{1,3}) damage\./g, (m, n) => `— ${hurt(+n)}.`],
-    // decisions: "A proficiency at 50 (best: Lance 57)", "Learning 55, or a diploma", "Spymaster with Intrigue 30+"
-    [/A proficiency at (\d{1,3}) \(best: (.+?) (\d{1,3})\)/g, (m, a, n, b) => `A proficiency at ${tier(+a)} or better (best: ${n}, ${tier(+b)})`],
+    // decisions: "Learning 55, or a diploma", "Spymaster with Intrigue 30+" (a skill's own requirement is in words since S1b)
     [/\b(Learning|Intrigue|Command|Diplomacy|Persuasion|Stewardship|Trade|Medicine|Faith lore|Letters & learning) (\d{1,3})(\+|, or)/g, (m, n, v, tail) => `${n} at ${tier(+v)}${tail === '+' ? ' or better' : ' or better, or'}`],
     [/\bThe court's odds for it \((\d{1,3})\)/g, (m, n) => `The court's odds for it: ${VS.oddsText(+n)}`],
     // 20-ai-personality's "Opinion of you 39" in a reason list

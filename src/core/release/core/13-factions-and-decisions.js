@@ -1682,7 +1682,8 @@ DEC("treatise", {
   reqs: pc => {
     const best = A.bestSkillOf(pc);
     return [
-      R(`A proficiency at 50 (best: ${GD.SKILLS[best.k]} ${best.v})`, best.v >= 50),
+      // S1b (D-072): a level in words (50 is the top of Advanced IV)
+      R(`A skill at Advanced IV (best: ${GD.SKILLS[best.k]}, ${A.SK ? A.SK.levelName(A.SK.lvOfValue(best.v)) : best.v})`, best.v >= 47),
       R("Once every 6 years", !pc.flags.author || A.S.year - pc.flags.author >= 6),
     ];
   },

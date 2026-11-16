@@ -3090,11 +3090,11 @@ GD.ACTIVITIES = {
     desc: "Weapon drills with whatever you own.",
   },
   practice: {
-    name: "Practice a proficiency",
+    name: "Work at a skill",
     cost: 1,
     minAge: 6,
     cat: "Body & mind",
-    desc: "Pick any proficiency and work at it. Talents learn faster.",
+    desc: "Pick a skill and how: alone, a lesson from someone better, a harder test, or a quiet time to think it over.",
   },
   run: {
     name: "Run the hills",
@@ -3789,21 +3789,8 @@ GD.SKILL_PRACTICE = {
   gambling: ["dice in the tavern", "learning the odds of every throw", "watching the cheats work"],
 };
 
-GD.PROF_TIERS = [
-  [0, "Untrained"],
-  [15, "Novice"],
-  [35, "Trained"],
-  [55, "Skilled"],
-  [70, "Expert"],
-  [85, "Master"],
-  [96, "Legendary"],
-];
-
-GD.profTier = v => {
-  let t = GD.PROF_TIERS[0][1];
-  for (const [m, n] of GD.PROF_TIERS) if (v >= m) t = n;
-  return t;
-};
+// S1b (D-072): GD.PROF_TIERS and GD.profTier (Untrained to Legendary) are retired; one ladder of words, A.SK.WORDS
+// (src/people/36-skills), in archive/s1-proficiencies/old-views.js.
 
 GD.PERKS = {
   melee: [
@@ -4692,7 +4679,7 @@ GD.PERKS = {
     [
       65,
       "Scholar",
-      "Learn other proficiencies faster",
+      "Learn other skills faster",
       {
         check: 8,
         learn: 0.1,
@@ -4970,20 +4957,7 @@ GD.SKILL_SYN = {
   faith: [["learning", 0.4]],
 };
 
-GD.APT_LEVELS = [
-  [1.8, "Prodigy"],
-  [1.45, "Gifted"],
-  [1.2, "Apt"],
-  [1, ""],
-  [0.7, "Clumsy"],
-  [0.5, "Hopeless"],
-];
-
-GD.aptName = v => {
-  if (!v || v === 1) return "";
-  for (const [m, n] of GD.APT_LEVELS) if (v >= m) return n;
-  return "Hopeless";
-};
+// S1b (D-072): GD.APT_LEVELS and GD.aptName are retired: a talent is a letter, F to S (A.SK.TALENT_WORD).
 
 GD.APT_BIAS = {
   human: [],

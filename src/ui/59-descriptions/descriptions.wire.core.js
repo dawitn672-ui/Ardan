@@ -4,7 +4,7 @@
 //
 // The profile (desktop side panel and the phone's You page): health, happiness, looks, renown, honor, piety and their
 // numbers; each stat's number (its name already opened the release's stat tip); the trait, quirk, faith, people and
-// blood chips (they keep their titles, which the engine lifts while a popover is open); the best proficiencies.
+// blood chips (they keep their titles, which the engine lifts while a popover is open); the best skills.
 // The top bar: the date and age, coin. The Realm tab (as ruler): treasury, stability, legitimacy, war
 // weariness, infamy. People: each opinion bar. The Life tab: the needs card of 35-moods, when it is in the build.
 (function () {
@@ -54,7 +54,7 @@
       }
       h = h.slice(0, bi) + body;
     }
-    // the best proficiencies: each row opens its skill
+    // the best skills: each row opens its sheet (36-skills draws the rows with their own anchors; older rows here)
     const byName = {}; for (const k in GD.SKILLS) byName[UI.esc(GD.SKILLS[k])] = k;
     h = h.replace(/<div class="prow" title="[^"]*"><span>([^<]*)/g, (m, nm) => byName[nm] ? `<div class="prow"${UI.ttAttrs('skill', byName[nm])} aria-label="${UI.esc(nm)}: ${A.skill(pc, byName[nm])}"><span>${nm}` : m);
     return h;

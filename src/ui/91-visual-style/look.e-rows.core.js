@@ -443,7 +443,7 @@ ${X('#profile .lk-dlt.dn')}{color:var(--danger)}
 @media (prefers-reduced-motion:no-preference){:root:not([data-motion=reduced]):not([data-motion=off]) #profile .barrow.lk-pulse .bar > i{animation:lkPulse 300ms ease-out 1}
   :root:not([data-motion=reduced]):not([data-motion=off]) #profile .lk-dlt{animation:lkDlt var(--m-snap,240ms) var(--ease-snap,ease-out) both}}
 
-/* ---- the rail's proficiencies: one line each, the name cut with an ellipsis (a long name such as "Hafts: axe, mace &
+/* ---- the rail's skills: one line each, the name cut with an ellipsis (a long name such as "Hafts: axe, mace &
    spear" wrapped to two lines and pushed the rail's buttons out of sight at 1366 x 768); the full name is the row's label */
 @media (min-width:761px){${X('#profile .profs .prow > span:first-child')}{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 

@@ -233,13 +233,15 @@ export default {
   // no proficiency anywhere a player can read: every tab, the skills overlay, every skill's sheet, the activity sheet,
   // the story log and the cards met, in three lives at 1366 and 375 wide
   async s1NoProficiency(pg) {
-    const BAD = /proficien|\bJourneyman\b|\bAdept\b|\bNovice\b|\b\d[\d,]* hours\b/i;
+    // "Novice" and "Trained" are words of other ladders too (a church rank, a fighting worth): the retired tier words are
+    // looked for in skill rows and sheets only
+    const BAD = /proficien|\b\d[\d,]* hours\b/i;
     const hits = [];
     for (const [w, h] of [[1366, 768], [375, 667]]) {
       await pg.setViewportSize({ width: w, height: h });
       const r = await pg.evaluate((BADs) => {
         const BAD = new RegExp(BADs, 'i'), out = [], rows = [];
-        const look = (where) => { const t = document.body.innerText || ''; const m = t.match(BAD); if (m) out.push(where + ': ' + t.slice(Math.max(0, m.index - 40), m.index + 40).replace(/\s+/g, ' ')); for (const el of document.querySelectorAll('.skrow')) { const s = el.innerText; if (/\d|%/.test(s)) rows.push(s.replace(/\s+/g, ' ').slice(0, 80)); } };
+        const look = (where) => { const t = document.body.innerText || ''; const m = t.match(BAD); if (m) out.push(where + ': ' + t.slice(Math.max(0, m.index - 40), m.index + 40).replace(/\s+/g, ' ')); for (const el of document.querySelectorAll('.skrow, .pf-sk')) { const s = el.innerText; if (/\d|%|Journeyman|Adept|Novice|Untrained|Skilled|Trained/.test(s)) rows.push(s.replace(/\s+/g, ' ').slice(0, 80)); } };
         for (const [seed, status] of [[3301, 'noble'], [3302, 'artisan'], [3303, 'peasant']]) {
           T.enter({ seed, race: 'human', realm: 'POL-01', status, sex: 'M', startAge: 14 });
           T.play(12, { onEvent: v => { const s = [v.title, v.text, ...v.choices.map(c => c.t)].join(' '); const m = s.match(BAD); if (m) out.push('card ' + v.title + ': ' + m[0]); } });
@@ -249,7 +251,7 @@ export default {
           UI.ov = { type: 'profile' }; UI.renderModal(); look('the profile sheet');
           UI.ov = { type: 'actSheet', id: 'practice' }; UI.renderModal(); look('Work at a skill');
           UI.ov = null; UI.renderModal();
-          for (const k in A.pc().sk) { const s = UI.skillSheet(A.pc(), k); const m = s.replace(/<[^>]+>/g, ' ').match(BAD); if (m) out.push('sheet ' + k + ': ' + m[0]); }
+          for (const k in A.pc().sk) { const s = UI.skillSheet(A.pc(), k); const m = s.replace(/<[^>]+>/g, ' ').match(/proficien|Journeyman|Adept|Novice|Untrained| hours/i); if (m) out.push('sheet ' + k + ': ' + m[0]); }
           for (const e of A.S.log) for (const l of e.lines) { const t = Array.isArray(l) ? l[0] : l; if (typeof t === 'string' && BAD.test(t)) out.push('log: ' + t.slice(0, 100)); }
         }
         UI.tab = 'life'; UI.render();
