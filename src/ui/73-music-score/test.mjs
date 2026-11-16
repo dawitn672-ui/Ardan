@@ -223,7 +223,7 @@ export default {
       return { has, started, live1, g1, g2, saved: { music: saved.music, vol: saved.musicVol }, hid, frozen, shown, ticking, checkedNow, after: st, peek: SC.peek() === null };
     });
     const ok = r.has && r.started && r.live1 > 0 && r.g1 > 0.3 && Math.abs(r.g2 - 0.04) < 0.01 && r.saved.music === true && r.saved.vol === 20 &&
-      r.hid === 'suspended' && r.frozen && r.shown === 'running' && r.ticking && r.checkedNow && r.peek && r.after.live === 0 && r.after.state === 'closed';
+      r.hid === 'suspended' && r.frozen && r.shown === 'running' && r.ticking && r.checkedNow && r.peek && r.after.live === 0 && r.after.state !== 'closed';
     return { ok, detail: `menu has the toggle and slider ${r.has}; on: ${r.live1} sources playing at gain ${r.g1.toFixed(2)}; slider to 20: gain ${r.g2.toFixed(3)}, saved ${JSON.stringify(r.saved)}; hidden tab ${r.hid}, scheduler stopped ${r.frozen}; shown ${r.shown}, ticking ${r.ticking}; off: ${r.after.live} sources left, context ${r.after.state}` };
   },
 

@@ -6,6 +6,7 @@
 //     move; the underline is drawn as text-decoration (not a bottom border, which would drop 10 points below the word);
 //   - a chip: a transparent ::after hit box 44 points tall centred on it, so the pill keeps its look;
 //   - a stat row: a minimum height of 44 points (a few points taller, in a list).
+// A description glyph inside a button is left alone: the button is the target (and the glyph takes no touch there, 71-phone).
 // Not touched here: the skills rows (.prow, .pf-sk: S1b's new skills page owns them) and the map canvases (D9).
 // Scoped to a touch screen or a phone-width window; a mouse on a wide window is unchanged. Rules sit after 59-descriptions
 // and 71-phone, so they win at equal specificity.
@@ -16,7 +17,7 @@ const WORD = ['span.tt', 'b.tt', '.tt-n', 'b[data-tt]', 'span[data-tt]:not(.chip
 const CHIP = ['.chip[data-tt]', '.chip[data-tip]', '.chip.tipt'];
 const TAP_CSS = `
 @media (pointer:coarse), (max-width:760px){
-  ${IN(WORD, ':not(.tt-pop *)')}{
+  ${IN(WORD, ':not(.tt-pop *):not(button *)')}{
     display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;margin-top:-10px;margin-bottom:-10px;
     border-bottom:0;text-decoration:underline dotted var(--accent-line);text-underline-offset:3px}
   ${IN(CHIP)}{position:relative}
