@@ -216,6 +216,14 @@ export default {
       const IM = UI.INKMAP; IM.budgetMs = 1e9; IM.reset(); UI.render();
       const out = {};
       IM.hatched = 0; MAP.overlay(); out.hatched = IM.hatched;
+      // D9 (D-061): on a generated map no two neighbours share a colour or come near one (36 colours, neighbours furthest
+      // apart), so the hatch may have nothing to mark: count the neighbouring pairs closer than IM.HATCH_D
+      const lab = h => { const v = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(c => c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+        const l = Math.cbrt(0.4122214708 * v[0] + 0.5363325363 * v[1] + 0.0514459929 * v[2]), m = Math.cbrt(0.2119034982 * v[0] + 0.6806995451 * v[1] + 0.1073969566 * v[2]), q = Math.cbrt(0.0883024619 * v[0] + 0.2817188376 * v[1] + 0.6299787005 * v[2]);
+        return [0.2104542553 * l + 0.793617785 * m - 0.0040720468 * q, 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * q, 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * q]; };
+      out.close = 0; out.d9 = !!(A.D9 && A.D9.ctx && A.D9.ctx());
+      for (const p of A.S.prov) for (const j of p.adj) { const a = p.owner, b = A.S.prov[j].owner; if (!a || !b || a >= b || a === 'unclaimed' || b === 'unclaimed') continue;
+        const x = lab(UI.realmHex(a)), y = lab(UI.realmHex(b)); if (Math.hypot(x[0] - y[0], x[1] - y[1], x[2] - y[2]) < IM.HATCH_D) out.close++; }
       UI.A.ov('bigmap');
       const s0 = JSON.stringify(A.S), r0 = A.rngState;
       const P = A.prov(A.realm('POL-01').capitalProv), at = z => { const w = 7000 / z; UI.gm.view = UI.wrClampView({ x0: P.sx - w / 2, y0: P.sy - w / 3, w, h: 0 }); };
@@ -232,8 +240,8 @@ export default {
       UI.ov = null; UI.render();
       return out;
     });
-    const ok = r.hatched > 0 && r.glow > 0 && r.glowOff === 0 && r.arrowsFar === 0 && (r.arrowsNear > 0 || r.paths === 0) && r.pure;
-    return { ok, detail: `${r.hatched} realms hatched beside a neighbour of near the same colour; the selected realm's border glows in ${r.glow} pieces (${r.glowOff} with none selected); arrows for marching divisions: ${r.arrowsFar} at zoom 1, ${r.arrowsNear} at zoom 4 (${r.paths} divisions you can see on the march); drawing ${r.pure ? 'pure' : 'CHANGED the state'}` };
+    const ok = (r.hatched > 0 || (r.d9 && r.close === 0)) && r.glow > 0 && r.glowOff === 0 && r.arrowsFar === 0 && (r.arrowsNear > 0 || r.paths === 0) && r.pure;
+    return { ok, detail: `${r.hatched} realms hatched beside a neighbour of near the same colour (${r.close} neighbouring pairs that near${r.d9 ? ', D9 colours' : ''}); the selected realm's border glows in ${r.glow} pieces (${r.glowOff} with none selected); arrows for marching divisions: ${r.arrowsFar} at zoom 1, ${r.arrowsNear} at zoom 4 (${r.paths} divisions you can see on the march); drawing ${r.pure ? 'pure' : 'CHANGED the state'}` };
   },
 
   // cycle 1 visual B7 and world B8: the full map's legend names the realms in view (it listed the same 40 at every
@@ -267,7 +275,7 @@ export default {
         if (d(x.color, y.color) < 0.08) near0++;
         if (d(MAP.realmColor(x), MAP.realmColor(y)) < 0.08) near1++;
       }
-      const kw = Object.values(A.S.realms).filter(x => /^POL-(0\d|1\d|2\d|3[0-4])$/.test(x.id)).every(x => MAP.realmColor(x) === x.color);
+      const kw = Object.values(A.S.realms).filter(x => /^POL-(0\d|1\d|2\d|3[0-4])$/.test(x.id)).every(x => MAP.realmColor(x) === (A.D9 && A.D9.colorOf && A.D9.colorOf(x.id) || x.color));   // D9 (D-061): a generated map's own colours
       return { a: a.split(',').length, b: b.split(',').length, differ: a !== b, below, pairs: pairs.size, near0, near1, kw };
     });
     const ok = r.differ && r.a >= 10 && r.b >= 3 && r.below && r.near1 === 0 && r.kw;

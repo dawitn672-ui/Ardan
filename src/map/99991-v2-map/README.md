@@ -100,3 +100,22 @@
 - **Test** `v2mapAhead`: the worker's world is the page's own build to the bit (every field and typed array hashed);
   Begin with no seed typed builds nothing; `A.newGame` with the same options gives the same state on the worker's
   continent as on the page's.
+
+## D9: map version 3 and the ground (D-061)
+
+- **Towns on water.** `VM.waterSite`: a province's town (`sx`, `sy`) moves from its seed to the nearest cell of the province on a
+  river or a stream (the drawn paths laid on the grid, `VM.riverRaster`, from flow `VM.STREAM_T` = 40), a lake shore or the sea's
+  shore, within `VM.SITE_R` (18 cells); a bigger river and an inland cell are preferred. 73 to 84% of towns stand on water.
+- **Oases on dry land.** A realm whose release land was half or more desert, steppe or savanna (`VM.ARID_REALM`) is placed among
+  the first, on the dry cell with the most dry land round it, and pays for green cells as it grows (`VM.DRY_PAY`; green realms pay
+  `VM.GREEN_PAY` for dry ones). Its oases are seeded on its dry land and take it first. One the land still leaves off dry ground
+  becomes a town named for its water (`q.retype`; `onProv` keeps the old name as `oname`).
+- **Terrain read from the ground** (`VM.terrainOf`), with no word on more than `VM.TERR_CAP` (31%) of the provinces: see D-061.
+  Hills fall from 41% to 11 to 31% a seed.
+- **Rivers from a stream's flow.** `w.rivers` starts at `VM.STREAM_T`; the drawing shows the tributaries from zoom 4
+  (999911-d9-ground lowers `VM.SAT.RIVER_MIN` there).
+- **The ground** (`w.ground`, `A.V2.ground.buildGround`, about 250 ms) is built with the world, in the worker too. See
+  `src/map/999911-d9-ground/README.md`.
+- **Version 2 worlds are built exactly as before** (the same grid and provinces, hash-checked on three seeds), so a v2 save keeps
+  its map; it gets the ground over it. `VM.release()` now carries each province's release biome and name (the worker's base too).
+- **One map component**: the full map and the war room lay their layers through `MAP.paint` (release, `21-map.js`).

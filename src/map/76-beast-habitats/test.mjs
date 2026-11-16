@@ -13,10 +13,10 @@ const CHECKER = () => {
     allowed(id, P) {
       const nm = (LORE.creatures.find(c => c.id === id) || {}).name, rg = A.BH.RANGE[nm];
       if (!rg) return { ok: false, why: 'no canon range' };
-      const code = this.regionOf(P.name);
+      const code = this.regionOf(P.name) || this.regionOf(P.oname);   // D9: an oasis retyped as a town keeps its written name (oname)
       if (!code) return { ok: false, why: 'no canon region' };
       const nar = (A.BH.NARROW[nm] || {})[code];
-      if (!rg.regions.includes(code) || (nar && !nar.includes(P.name))) return { ok: false, why: `${P.name} is in ${code}, outside ${rg.range}` };
+      if (!rg.regions.includes(code) || (nar && !nar.includes(P.name) && !nar.includes(P.oname))) return { ok: false, why: `${P.name} is in ${code}, outside ${rg.range}` };
       if (this.terr(A.BEASTS[id], P.terr)) return { ok: true };
       // the terrain word may be waived only where no province of that region (as narrowed) fits it. Changed for v2: on a
       // generated continent (A.S.v2map) the region's ground is the live provinces' terrain, not the map as written's,
