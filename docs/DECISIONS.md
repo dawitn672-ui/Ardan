@@ -1207,3 +1207,22 @@ not look at you; the action is not offered, or offered as an attempt that a reas
 the scales by knighthood and honour, mastery and renown, fame, wealth and connections (an introduction from someone who
 knows both). NPC to NPC bonds follow the same base. Work item **R2**, built with R1 (nothing without reason).
 
+
+### D-067 · G0: the growth standard; trials at Expert and Master (2026-11-16; order 54, D-062; refines growth.md, D-039, D-046)
+*Numbered D-067, not D-066: another agent may take D-066 in parallel.*
+1. **`docs/design/growth-standard.md` is the standard** for how stats and skills grow and decline in G1, G2, D11 and
+   D11+: `gain = EU × quality × teacher × talent × age(kind) × condition × R(level) × reach`, with `R(L) = 1.8 e^(−L/21.6)`
+   (a beginner's month worth about thirty of a master's), the routine ceiling for work, the teacher's ceiling one word
+   under him, sensitive ages by kind, per-stat age curves, detraining, and rust after 5/8/12 years that returns ×5.
+   *Why:* order 54, "growth is far too linear"; measured, a main skill climbs in a near-straight line from a daily drip of
+   ~380 gains a year (§1 of the doc).
+2. **Every change of a skill or stat carries a cause** in a ledger; the season's line and the Records tab read it (rule
+   18 applied to growth).
+3. **Trials at Expert and Master** (new): crossing into those words takes a deed fit for them (a stretch at that level,
+   succeeded); effort past the edge is stored (up to five points) and lands with the deed. growth.md §2.2's proofs for
+   Grandmaster and Legend and its census stand. *Why:* plateaus and leaps with a story, not a lottery. **For the owner
+   to confirm** (doc §5, item 1).
+4. **Kept from growth.md:** talent letters and reach (§1.4, §10), the eight words (§2.2), the body gate (§1.5, C9), disuse
+   spans and ×5 return (§2.7), with one change: rust stops at one word down **and** 15 points below the best.
+5. **The doc is a new file beside `growth.md`**, not a rewrite of it: growth.md is the owner-settled G design (D-046); the
+   standard governs its rates and says where it adds to it.

@@ -974,3 +974,18 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Left open:** every stage of §16; CRITIQUE §2's "done when" for D11 and D12b still read the first plan; the
   `life-sim-systems` skill carries a note of the direction, not yet the built rules.
 - **Undo:** revert branch `d12a-2`'s commits; the first design is `0378b9e`.
+
+### H-062 · 2026-11-16 · G0: the growth standard (research and design only)
+*Numbered H-062, not H-061: another agent may take H-061 in parallel.*
+- **Docs:** `docs/design/growth-standard.md`: a one-page summary for the owner; §1 today's growth measured over nine
+  fixed-seed bot lives from birth; §2 the research put plainly, with sources, and six games compared; §3 the standard
+  (a cause for every change, the formula family, the practice curve, quality of effort and the routine ceiling, teachers
+  and their ceiling, the learner's age by kind, condition, named plateaus, trials at Expert and Master with stored effort,
+  disuse by kind, each stat's curve over a life, detraining and setbacks, how every source feeds in, words for the
+  player, three worked lives, NPC kits); §4 for the builders (files and functions, saves and migration, thirteen tests
+  that prove "not linear", a cost budget); §5 choices for the owner. Scripts in `docs/design/growth/`: `measure.mjs`
+  (bot lives, year by year), `analyze.mjs`, `model.mjs` (the standard, runnable), `lives.mjs` (the worked lives),
+  `chart.mjs` → `curves.svg`; the measured data `today.json`. D-067 records it. `growth.md` points to it; PROGRESS ticks G0.
+- **Game:** nothing. No code, data or test changed.
+- **Left open:** the owner's choices in §5 (trials at Expert and Master above all); building it is G1/G2 and D11+.
+- **Undo:** revert branch `g0`'s commits.
