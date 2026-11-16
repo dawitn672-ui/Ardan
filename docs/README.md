@@ -18,6 +18,7 @@ A name that is no longer here was renamed in the naming pass: look it up in [NAM
 | [VERSIONS.md](VERSIONS.md) | Every version of the game, its commit, and how to play any of them |
 | [NAMES.md](NAMES.md) | Old names and new names from the naming pass, so old notes can be followed |
 | [IDEAS.md](IDEAS.md) | Ideas, cut features and things for later |
+| [IOS_ROADMAP.md](IOS_ROADMAP.md) | The end goal (order 62): the route to the iPhone App Store (Capacitor 8, Codemagic, TestFlight), the owner's facts re-checked, what only the owner can do, and the code audited against the build rules |
 
 ## v2 (`v2/`)
 
@@ -61,6 +62,7 @@ A name that is no longer here was renamed in the naming pass: look it up in [NAM
 | [research/player-complaints.md](research/player-complaints.md) | What players complain about in games like Ardan, and where Ardan stands |
 | [research/world-foundations.md](research/world-foundations.md) | Building an Asia-sized Ardan from the ground up |
 | [research/c7-name-data.md](research/c7-name-data.md) | Name data for the cultures (work item C7), with its data in `c7-name-data.json` |
+| [research/ios/](research/ios/) | The iPhone audit's probes: `tap-probe.mjs` (44-point targets at 375×667, Chromium or WebKit) and `webkit-boot.mjs` (the one-file page in WebKit: CSP, blob worker, a save) |
 | [research/d11-military-branches.md](research/d11-military-branches.md) | Military branches and battlefield strategy (work item D11), with its data in `d11-military-branches.json` |
 | [research/codex-review.md](research/codex-review.md) | Review of the old Ardan Codex (the Far Lands, 1105; kept as `research/ardan-codex-old.html`): what it holds, what is outdated, what is useful for R1, D11+, G, E1 (H-066) |
 | [research/codex/reasons-and-cracks.md](research/codex/reasons-and-cracks.md) | From the Codex: how great powers hold together and crack, a catalogue of reasons for war (for R1 and W1-6) |

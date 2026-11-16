@@ -1100,3 +1100,30 @@ Branch `p3-playtest` from `v2-integration` at `2aaf1ba`; one commit a fix; not p
 - **Undo:** revert branch `s1a`'s commits (`docs/design/skills.md`, `docs/design/skills/`, and the lines added to
   DECISIONS, HISTORY, PROGRESS and `docs/README.md`).
 
+### H-065 · 2026-11-16 03:30 ET · I1-0: the route to the iPhone App Store, researched and written (order 62; nothing in the game)
+*Numbered H-065: H-064 is another agent's.*
+- **Asked** (order 62, rule 21): re-check the owner's six facts from today's official docs; map the route (performance,
+  iPhone readiness, a `www/` build, Capacitor, Codemagic and TestFlight, the listing, review) with commands, config, the
+  owner's own steps and pitfalls; write the roadmap, a skill, a CLAUDE.md section with the build rules, and the decisions.
+- **Written:** `docs/IOS_ROADMAP.md` (verdicts on the six facts, what else is true now, seven stages with a sample
+  `capacitor.config.ts`, Info.plist keys, a privacy manifest and a `codemagic.yaml` for a Capacitor 8 SPM project; the
+  one-file page in WKWebView; the owner's steps and when; the audit against each build rule with file:line; 13 fixes,
+  sized and placed); `.claude/skills/ios-capacitor-release/SKILL.md`; CLAUDE.md "End goal: iPhone App Store" and the
+  skill in the Layout table; D-071 (the route), D-075 (eight choices: `app/`, one file first, Filesystem and Preferences,
+  iPhone and portrait only, iOS 17, the audio session, plugins without a bundler, builds by hand), D-076 (six readings of
+  the rules against the code); PROGRESS I1 with seven stages, and the audit's fixes folded into X5, X7 part 2, D9 and Gaps;
+  `docs/README.md`.
+- **Probes** (`docs/research/ios/`): `tap-probe.mjs` (Chromium and WebKit, 375×667: 58 of 382 controls under 44 points, none
+  on the title, the event card and seven pages; no sideways scroll) and `webkit-boot.mjs` (the one-file page booted in
+  Playwright's WebKit with its CSP, `'strict-dynamic'` and a blob worker; a save landed in IndexedDB, 345 KB). WebKit was
+  installed into the session's scratch folder with `playwright install webkit` and `install-deps webkit`.
+- **Run, not kept:** `npx cap add ios` with `@capacitor/cli` 8.6.2 in a scratch folder on Linux, which confirmed the SPM
+  layout (`ios/App/App.xcodeproj`, `CapApp-SPM/Package.swift`, no Podfile) and the template's defaults (iOS 15, iPhone and
+  iPad, landscape, a SceneDelegate).
+- **Sources:** capacitorjs.com, ionic.io, developer.apple.com, docs.codemagic.io and Codemagic's CLI docs, WebKit Bugzilla,
+  MDN, docs.expo.dev, the npm registry; listed in the roadmap §11. Three Apple pages would not render (privacy manifest,
+  encryption export, the HIG on audio): what rests on them is marked unverified.
+- **Game:** nothing. No game code, data, test or tool changed.
+- **Left open:** every stage after I1-0; the [U] items (audio session and blob worker inside WKWebView under
+  `capacitor://`, CSS bounce control, the first automated upload without a Mac) wait for the first TestFlight build.
+- **Undo:** revert branch `ios-route`'s commit.
