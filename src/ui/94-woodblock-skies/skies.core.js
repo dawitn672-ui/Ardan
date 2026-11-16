@@ -964,7 +964,7 @@
     color:var(--ink,#eee8da);background:color-mix(in srgb,var(--surface,var(--surface-1,#141a2c)) 85%,transparent);border:1px solid ${INK};border-radius:1px;pointer-events:none}
   .sky-in svg{animation:skyIn .7s ease-out both}
   @keyframes skyIn{from{opacity:0;filter:saturate(.4) brightness(1.25)}to{opacity:1;filter:none}}
-  @media (max-width:760px){.woodcut-wrap svg.woodcut[data-print=sky]{aspect-ratio:39/14;max-height:30vh}.sky-cart{top:7px;right:8px;font-size:14px;letter-spacing:.03em;padding:5px 3px}}
+  @media (max-width:760px){.woodcut-wrap svg.woodcut[data-print=sky]{aspect-ratio:39/14;max-height:30vh;max-height:30dvh}.sky-cart{top:7px;right:8px;font-size:14px;letter-spacing:.03em;padding:5px 3px}}
   @media (prefers-reduced-motion: reduce){.sky-in svg{animation:none}}
   `;
   SK.install = function () {

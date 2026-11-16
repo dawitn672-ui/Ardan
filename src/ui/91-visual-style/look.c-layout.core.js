@@ -10,7 +10,7 @@
   const D = '#game:not(.phone)';   // desktop only: never touches 71-phone's layout
   LOOK.css.layout = `
 @media (min-width:761px){
-  ${D}{grid-template-columns:248px minmax(0,1fr) 488px;grid-template-rows:44px minmax(0,1fr);gap:8px;padding:8px;height:100vh;min-height:0}
+  ${D}{grid-template-columns:248px minmax(0,1fr) 488px;grid-template-rows:44px minmax(0,1fr);gap:8px;padding:8px;height:100vh;height:100dvh;min-height:0}
   ${D} #side{grid-column:auto;min-height:0}
   ${D} #logwrap{height:auto;min-height:0}
   ${D} #topbar{min-height:44px;height:44px;padding:0 10px;gap:10px;align-items:center;flex-wrap:nowrap;border-radius:var(--r-m)}
@@ -270,7 +270,7 @@ ${X('.acts:not(.lk-acts) > .act:hover:not(:disabled)')}{border-color:var(--accen
 }
 /* 761-1099: two columns; the rail is a strip over the story, the full rail a sheet (the Stats button) */
 @media (min-width:761px) and (max-width:1099px){
-  ${D}{grid-template-columns:minmax(0,1fr) 440px;grid-template-rows:auto auto minmax(0,1fr);height:100vh;grid-template-areas:"top top" "rail side" "log side"}
+  ${D}{grid-template-columns:minmax(0,1fr) 440px;grid-template-rows:auto auto minmax(0,1fr);height:100vh;height:100dvh;grid-template-areas:"top top" "rail side" "log side"}
   ${D} #topbar{grid-area:top;height:auto;min-height:44px;flex-wrap:wrap;padding:4px 10px}
   ${D} #profile.panel{grid-area:rail;position:relative;overflow:visible;display:grid;grid-template-columns:48px minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;gap:2px 12px;padding:8px 12px;min-height:64px;z-index:20}
   ${D} #profile.panel > :not(.fold-pid):not(.lk-vitals):not(.lk-railbtn){display:none}
@@ -286,7 +286,7 @@ ${X('.acts:not(.lk-acts) > .act:hover:not(:disabled)')}{border-color:var(--accen
   ${D} #logwrap{grid-area:log}
   ${D} #side{grid-area:side}
   /* the sheet */
-  #game.lk-rail-open:not(.phone) #profile{display:flex;flex-direction:column;align-items:stretch;position:absolute;left:8px;top:56px;width:min(340px,calc(100vw - 480px));max-height:calc(100vh - 72px);overflow:auto;box-shadow:var(--e-3);z-index:40}
+  #game.lk-rail-open:not(.phone) #profile{display:flex;flex-direction:column;align-items:stretch;position:absolute;left:8px;top:56px;width:min(340px,calc(100vw - 480px));max-height:calc(100vh - 72px);max-height:calc(100dvh - 72px);overflow:auto;box-shadow:var(--e-3);z-index:40}
   #game.lk-rail-open:not(.phone) #profile > *{display:revert}
   #game.lk-rail-open:not(.phone) #profile > .fold-pid{display:grid}
   #game.lk-rail-open:not(.phone) #profile > .lk-vitals, #game.lk-rail-open:not(.phone) #profile > .lk-stats, #game.lk-rail-open:not(.phone) #profile > .lk-needs{display:grid}

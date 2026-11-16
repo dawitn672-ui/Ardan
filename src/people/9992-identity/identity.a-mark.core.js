@@ -361,7 +361,7 @@
 .id-kind{display:inline-block;min-width:44px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
 .id-deed{margin-left:48px}
 .id-past{margin-top:4px}
-.id-designer{max-width:680px;max-height:calc(100vh - 32px);overflow:auto;background:var(--overlay,#232c46)}
+.id-designer{max-width:680px;max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow:auto;background:var(--overlay,#232c46)}
 .id-namer{background:var(--overlay,#232c46)}
 .id-d-head{gap:14px;align-items:center;margin-bottom:8px}
 .id-d-prev svg{display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35))}

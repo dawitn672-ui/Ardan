@@ -1255,7 +1255,7 @@ UI.ovModalBasic = function (ov) {
                   },
                 )}</div>`
               : ov.type === "bigmap"
-                ? `<div class="panel mbox full">${close}<h2>Ardan in ${A.S.year} AR</h2><div class="mapwrap" style="flex:1;min-height:0"><canvas id="bigmap" width="1400" height="900" style="max-height:calc(100vh - 140px);object-fit:contain"></canvas></div>${
+                ? `<div class="panel mbox full">${close}<h2>Ardan in ${A.S.year} AR</h2><div class="mapwrap" style="flex:1;min-height:0"><canvas id="bigmap" width="1400" height="900" style="max-height:calc(100vh - 140px);max-height:calc(100dvh - 140px);object-fit:contain"></canvas></div>${
                     UI.mapMode && UI.mapMode !== "political" && UI.mapMode !== "terrain" && UI.mapLegend
                       ? UI.mapLegend()
                       : `<div class="legend">${Object.values(A.S.realms)

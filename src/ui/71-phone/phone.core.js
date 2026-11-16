@@ -199,7 +199,7 @@ PH.CSS = `
   #modal.ph-sheet.ph-pin > .mbox > .choices{position:sticky;bottom:calc(-16px - env(safe-area-inset-bottom, 0px));margin-bottom:calc(-16px - env(safe-area-inset-bottom, 0px));padding-bottom:calc(16px + env(safe-area-inset-bottom, 0px));
     background:linear-gradient(180deg, transparent, var(--surface-1) 14px);z-index:1}
   #modal.ph-sheet .woodcut-wrap{margin:-16px -14px 12px;border-radius:var(--r-l) var(--r-l) 0 0;overflow:hidden}
-  #modal.ph-sheet .woodcut-wrap svg{display:block;width:100%;height:auto;max-height:30vh}
+  #modal.ph-sheet .woodcut-wrap svg{display:block;width:100%;height:auto;max-height:30vh;max-height:30dvh}
   #modal.ph-sheet .mbox > .row:has(> .grow > h2){display:grid;grid-template-columns:64px minmax(0,1fr);column-gap:12px;align-items:center}
   #modal.ph-sheet .mbox > .row:has(> .grow > h2) > .grow{display:contents}
   #modal.ph-sheet .mbox > .row:has(> .grow > h2) > :first-child:not(.grow){grid-column:1;grid-row:1;width:64px}
@@ -228,7 +228,7 @@ PH.CSS = `
   #title{padding:calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px))}
   #title .logo{font-size:${T(40)}}
   #title .sub{font-size:${T(14)};letter-spacing:.2em;margin-bottom:10px}
-  #title .mapstrip{max-height:24vh;object-fit:cover}
+  #title .mapstrip{max-height:24vh;max-height:24dvh;object-fit:cover}
   #title .blurb{font-size:${T(16)};margin:10px 0}
   #title .btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;max-width:420px;margin:0 auto;box-sizing:border-box}
   #title .btns button{width:100%;min-width:0;min-height:48px;margin:0;padding:10px 12px}
