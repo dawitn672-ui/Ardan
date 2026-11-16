@@ -944,3 +944,7 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   seats both and an absent one speaks as "A letter from home: ...". advLives at its 60% bar: 74% of big choices counselled,
   3.3 advisors a life, peasant 2 (`16b21ca`; an addendum to D-059).
 
+### H-058 · 2026-11-15 20:38 ET · CI 128: lfRepeats at 70%
+- CI 128 (`f28a996`) failed only `lfRepeats` (with the first-life fixes 10.1 prompts a year against 13.5 without, 0.748
+  against a bar of 0.75; it read 0.77 before X3 part 2's gates). 97 cuts repeats by design; the bar is 0.7 of off's.
+
