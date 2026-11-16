@@ -5,6 +5,15 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Every relationship needs a base.** A king will not get to know a peasant, and most lords will not look at one. Who
+  lets you near follows the gap between you, his pride and his temper, his own birth (a baron risen from the plough
+  sympathises; a duke born to gold does not), what he needs of you (your sword in a war, your skill, your silence, your
+  coin, your voice in council) and what you share (you serve him, stood in his line, shared his cell or his lessons).
+  You shift the scales by knighthood and a good name, mastery, renown, wealth, a deed, and a friend who knows you both.
+  What is out of reach is not offered, and a note says why; what is within reach but not sure is an attempt, and he
+  answers with his reason ("Lord Aymer will hear you now: a knight of your name is worth an hour"). A refusal stands for
+  the year. Patrons, a great house's match for your child and your friends' circles follow the same base.
+
 - **Kings and lords decide for reasons you can read.** A crown goes to war, a great house joins or leaves a faction, and
   the king names his first host's General by weighing named reasons (an insult, bad blood, a cause, his Generals' count
   of the enemy's spears, an old wrong, a debt, his temper), never by a roll of the dice alone. The news of a war now ends

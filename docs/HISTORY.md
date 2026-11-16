@@ -1192,3 +1192,46 @@ Branch `p3-playtest` from `v2-integration` at `2aaf1ba`; one commit a fix; not p
 - **Undo:** revert the branch `w1-2`'s commits (base `2d7de66`, merged with `be59d5c`); the old war roll is
   `git show 2d7de66:src/core/release/core/17-careers-and-event-engine-a.js` and the old `DV.tryWar` the same commit's
   `src/diplomacy/99996-v2-diplomacy/diplomacy.core.js`.
+
+### H-073 · 2026-11-16 · R2: every relationship needs a base (order 55, rule 19, D-065, D-080)
+- **What:** `A.REACH` (`src/people/9999960-reach`) over a pure engine module, `src/people/engine/reach.js` (`A.V2.reach`):
+  whether a higher man lets a lower one near is his decision through `A.WHY.decide(hi, 'reach', [yes, no])`, with the
+  gap in standing (against, bent by pride against warmth), his traits and his birth (risen from below: "he was born a
+  peasant himself"; born to gold: against), need (sword, skill, silence, coin, vote, what you know), circumstance
+  (service, a shared line, cell, lessons, company, work, a life saved), the scales the player shifts (knighthood,
+  honour, renown, mastery, wealth, a recent deed, an introduction, a shared lord, a guild) and his opinion. Five answers:
+  equal and kin (no decision: near-equals keep what worked), open, try (an attempt; A.rand only then), closed (not
+  offered, with a click-to-open note). why.js gained two kinds, `station` and `sympathy`.
+- **Gated:** get to know (release `A.getToKnow` and 30-get-to-know's scene: the button shut with its note, a refusal
+  spends the time and gives his reason); the interactions (release `A.interactOptions` leaves out a closed act,
+  `interactNow` answers an attempt; the person view lists what is out of reach with a note); an event's close bond
+  with someone far above (release `A.applyFx` `them`: the scene counts 2, else the bond stays and the card says why);
+  `A.findPatron`; the `match_child` decision; 41-friend-circles' newcomer (weighted by the pull). `A.makeRuler` and
+  founding a realm stamp `p.orig`. A refusal stands for the year (`pc.reachNo`, at most 40); the player's records are
+  kind `reach` in `A.S.why` (at most 20).
+- **Release files edited:** `03-engine-base.js` (makeRuler), `04-realms-and-war-years-b.js` (interactOptions,
+  interactNow), `10-companies-and-war-staff-a.js` (founding a realm), `13-factions-and-decisions.js` (match_child),
+  `16-classes-roles-and-paths.js` (findPatron), `18-event-view-a.js` (getToKnow, applyFx `them`), `23-ui-e.js` (the
+  roster's and the person view's Get to know, the out-of-reach line). Features: 30-get-to-know, 41-friend-circles,
+  21-npc-initiative's test (its stranger is now near the player's station).
+- **Numbers** (browser tests, seeded): a peasant and an emperor: closed, 0 of 40; knighted with a good name, renowned
+  (fame 92) or introduced by a friend at court: an attempt, 7, 7 and 8 of 40, the reason naming the shift ("... will
+  know you: a knight of your name is worth an hour"); a baron risen from peasants 0.42 against a born baron 0.12 and a
+  proud duke born to gold 0.022; a count at war hears a peasant swordsman ("he needs your sword"), shut without; NPC
+  friendship pull across a wide gap 0.32 against 1.00 across a narrow one (800 pairs); a great patron for a peasant:
+  none.
+- **Cost:** `A.REACH.view` 0.31 ms a call (900 calls in a fresh world); the person view of a ruler with the reach line
+  6.4 ms a draw in all. Nothing monthly. Rendering draws nothing (`reachStateAndPurity`, `renderRng`).
+- **Tests:** `node --test tests/v2/*.test.js` 103/103 (reach 6/6); browser `reachPeasantAndKing`, `reachScalesShift`,
+  `reachRisenAndBorn`, `reachNeedOpens`, `reachNpcBonds`, `reachStateAndPurity` pass; with them, on the merged build,
+  renderRng, replayWithRender, savesStillLoad, gk*, npcInitiativeHistory, firstImpressions, clickLint, whyRecordsKept;
+  before the merge 41 tests of the touched features (bonds*, circles*, npcInitiative*, click*, why*, c6*, schemes*,
+  confidants) all pass. lint-stages, lint-kin, lint-events (get-to-know, friend-circles), lint-choices (0 obviously
+  best), `build-v2 --check`, `--check-tiers` ok; lint-reasons 66 = baseline. `coherency --quick` (8 lives, 12 years):
+  coherent; `long-life-audit --seed=7 --years=30`: 0 errors, audit empty, 0 months with a broken post rule. Not run
+  here: the balance league and the long tier (CI).
+- **Commits:** `13338c5` (the engine and its tests), `b8faf16` (A.REACH in the game, the gates, the browser tests),
+  `1585cad` (the hint, the 44-point note), `39ebc6d` (merge of `v2-integration` 018631d), then the records and `index.html`.
+- **Undo:** revert the branch `r2`'s commits (base `3d33c43`); delete `src/people/9999960-reach` and
+  `src/people/engine/reach.js`, take the `reach` line out of `src/core/engine/index.js` and rebuild the bundle; every
+  release hook is guarded by `A.REACH`, so a build without the feature runs as before.

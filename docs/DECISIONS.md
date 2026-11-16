@@ -1464,3 +1464,39 @@ The audit (`docs/IOS_ROADMAP.md` §7) found these conflicts between the rules an
    when I1-2 touches it, not before.
 6. **Text selection is turned off** everywhere but inputs; the chronicle's export keeps the text the player may want to copy.
 
+
+### D-080 · R2: every relationship needs a base, as a decision of the higher man's (2026-11-16; order 55, rule 19, D-065; over D-069)
+D-065 set the four parts (the gap in standing; his pride, personality and origins; need; circumstance) and the scales
+(knighthood and honour, mastery and renown, fame, wealth, connections). Chosen in building it:
+1. **A base is an `A.WHY` decision of the higher man's**, `A.WHY.decide(hi, 'reach', [yes, no])`, with the four parts and
+   the scales as named reasons (`src/people/engine/reach.js`, pure and unit-tested; the wiring `src/people/9999960-reach`,
+   `A.REACH`). *Why:* rule 18 (D-069) asks every figure's choice to go through it; the reason he gives the player is
+   then the reason used, and the temper (pride against warmth) bends the gap with no new machinery. Two reason kinds
+   were added to why.js: `station` (1 + .8 pride − .4 warmth) and `sympathy` (1 + .6 warmth − .3 pride).
+2. **Near-equals decide nothing.** A gap of one step of standing or none (a peasant and a craftsman, a knight and a
+   gentleman) keeps what already worked: no decision, no draw, no record; kin likewise. *Why:* the order is about the
+   wide gap; every existing first meeting, scene and test among equals stays as it was.
+3. **Five answers, three shown.** `equal`, `kin`, `open` (no draw), `try` (a seeded draw among the reasons, A.rand only
+   then), `closed` (no option but "no" within the band: never chosen). A closed act is **not offered** (the button shut,
+   or left out of the actions) with a click-to-open note saying why in plain words; a `try` act is **offered as an
+   attempt** that he answers with his reason. A refusal stands for the year (`pc.reachNo`, at most 40).
+4. **The scale.** Standing is A.classOf's steps (peasant 2, craftsman 3, knight 4, lord 5, a baron's rung 5.5, a count's
+   6.5, a duke's 7, a crown 9). The gap weighs 0.6 a step beyond the first, by the act: know 0.9, befriend 1, audience
+   0.8, favour 1, court 1.15, wed 1.4, patron 0.85. Set so that a peasant is shut out from a king or a proud duke, a
+   knight of good name, a peasant of the realm's best renown or one introduced by a friend at court is an attempt that
+   succeeds about one time in five, and a baron risen from the plough hears a peasant about four times in ten against
+   one in ten for a baron born noble (tests: `reachScalesShift`, `reachRisenAndBorn`).
+5. **Origin is the estate of birth, `p.status`.** The game lays a knighthood or a lordship over it (`p.noble`) and
+   changes it only when a crown makes a man royal; `A.makeRuler` and founding a realm stamp `p.orig` before. *Why:* no
+   new field for the many, and old saves need nothing.
+6. **What is gated:** get to know (the release and 30's scene), the befriending, audience, favour and courting
+   interactions, an event's close bond with someone far above (the scene counts as a circumstance of weight 2), a patron,
+   a great house's match for the player's child, and an NPC newcomer's friend in the player's circle (weighted by the
+   pull, no draw of its own). **Not gated:** insults, quarrels, duels, family matters, favours already owed, the court
+   actions of the nobility (a gentleman is of the court), and the release's `newRel` and `lover`, whose people
+   (`A.makeAcquaintance`, `A.makeLoveInterest`) are near-equals by construction; NPC marriages are made within one
+   estate by the release and v2 already.
+**Conflict recorded:** none with an order. The owner's "a baron who used to be a commoner might sympathize" needs a
+birth station that the release never kept apart from the current one for a crowned man: point 5.
+**Not decided here:** the share of NPC friendships across a wide gap (0.32 of the pull across a narrow one in the test
+world) is left as the reasons give it; a road, a ship and a guard duty shared have no record in the game yet to read.
