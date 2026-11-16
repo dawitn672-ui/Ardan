@@ -231,7 +231,11 @@ export default {
       const near = cs.every(c => c.c ? c.c.realms.includes(pc.realm) || c.c.realms.includes((A.prov(pc.home) || {}).owner) : (A.WC.nearRealms(pc).has(c.e.a) || A.WC.nearRealms(pc).has(c.e.b) || A.WC.nearProvs(pc).has(c.e.p)));
       const war = cs.find(c => c.k === 'war' || c.k === 'peace');
       A.WC.canon = canon;
-      return { empty, skip: v.skip, text: v.text, res, n: cs.length, near, same: !!war && res.includes(war.ref) && v.text.includes(war.ref) };
+      // the war the result names is one the text named: {since_event} may cite a war too (CI 133's world: "since the end
+      // of the Salt War" before "the old men talk of the War of the Aldmark Succession"), so the first war cited is
+      // not always {last_war}'s
+      const same = !!war && cs.some(c => (c.k === 'war' || c.k === 'peace') && res.includes(c.ref) && v.text.includes(c.ref));
+      return { empty, skip: v.skip, text: v.text, res, n: cs.length, near, same };
     });
     return { ok: r.empty && !r.skip && r.n >= 2 && r.near && r.same, detail: `nothing to cite: dropped ${r.empty}; after 25 years: "${r.text}" / result "${r.res}"; ${r.n} entries cited, all near: ${r.near}, the same war in text and result: ${r.same}` };
   },
