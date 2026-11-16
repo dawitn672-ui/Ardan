@@ -1553,7 +1553,7 @@ A.fightEnd = function (pid, winner) {
     if (!r) continue;
     const lost = rid === F.a ? F.deadA : F.deadD;
     r.exhaustion = A.clamp(
-      r.exhaustion + (lost / Math.max(2e3, r.army + r.roll * 0.2)) * (rid === L ? 55 : 35),
+      r.exhaustion + (lost / Math.max(2e3, r.army + (A.MEN ? A.MEN.reserve(r) : r.roll) * 0.2)) * (rid === L ? 55 : 35),
       0,
       100,
     );

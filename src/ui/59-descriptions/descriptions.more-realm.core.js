@@ -13,7 +13,7 @@
 
   // ---- factions ----------------------------------------------------------------------------------------------------
   TT.facParts = function (f) {
-    const r = A.realm(f.realm), all = A.realmHouses(f.realm).reduce((a, h) => a + A.houseStrength(h), 0) + (r.army * 0.25 + r.roll * 0.05);
+    const r = A.realm(f.realm), all = A.realmHouses(f.realm).reduce((a, h) => a + A.houseStrength(h), 0) + (r.army * 0.25 + (A.MEN ? A.MEN.reserve(r) : r.roll) * 0.05);
     const mem = f.members.map(id => A.S.houses[id]).filter(Boolean).map(h => [L('house', h.id, esc(h.name)), A.houseStrength(h)]);
     if (f.pc && pc() && pc().noble) mem.push(['You', 200]);
     // 56-court-and-treasury: the council voices that lean its way (4% each), and a leader who truly wants it (5%), at most 15%

@@ -12,6 +12,7 @@ import { renown, renownWords, recordDeed, promotionCheck } from '../../people/en
 import { makeUnit, makeArmy, campaignStep, battlePhase, afterAction, CHOICES, TERRAIN } from '../../war/engine/war.js';
 const TERRAIN_AT = (k) => TERRAIN[k]?.at ?? 'in battle';
 import { breakthrough } from '../../people/engine/body.js';
+import { decide } from '../../people/engine/why.js';
 
 export const PLANS = {
   child: { play: 'Run wild outdoors', chores: 'Help around the house', lessons: 'Sit for lessons' },
@@ -82,7 +83,13 @@ export function nextMonth(g) {
   for (const r of W.realms) {
     if (r.id === me.realm) continue;
     const rel = W.diplomacy.get(me.realm, r.id);
-    if (rel.pact === 'war' && me.age >= 16 && !g.flags[`served-${r.id}-${rel.pactSince}`] && g.rng.chance(0.25) && !cards.some((c) => c.enemyId != null)) {
+    // W1-4: the realm's call reaches you for a reason (a war it is in, men of your age taken), weighed against the
+    // standing men being enough this month; the same pace as the old roll (a quarter of the months), now with its reasons
+    if (rel.pact === 'war' && me.age >= 16 && !g.flags[`served-${r.id}-${rel.pactSince}`] && !cards.some((c) => c.enemyId != null) &&
+      decide({ temper: {}, feel: [] }, 'conscript', [
+        { id: 'call', reasons: [{ kind: 'duty', weight: 0, label: `The war with ${r.name} needs men`, source: { t: 'war', at: r.id }, pub: 1 }] },
+        { id: 'wait', reasons: [{ kind: 'reckoning', weight: Math.log(3), label: 'The standing men may be enough this month', source: { t: 'roll' }, pub: 0 }] },
+      ], { rand: () => g.rng.next() }).chose === 'call') {
       g.flags[`served-${r.id}-${rel.pactSince}`] = true;
       const ev = EVENTS.find((x) => x.id === 'muster'); const ctx = ctxFor(g); ctx.tmp.enemy = r.name;
       cards.push({ kind: 'event', ...cardFor(ctx, ev), _ev: ev, _ctx: ctx, enemyId: r.id });

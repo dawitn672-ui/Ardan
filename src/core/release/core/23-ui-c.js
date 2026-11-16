@@ -53,7 +53,7 @@ UI.realmTabBasic = function (pc) {
       (h +=
         '<div class="tiny muted">Infamy rises when you take land without a claim. At 40 neighbors start a coalition; above 60 it may march.</div>'),
       (h += `<div class="group-h">Laws</div><div class="small"><b>Crown authority</b> <span class="muted">— income ×, lords' yearly mood</span><div class="row">${A.AUTH.map(([n, inc, op], i) => `<button class="small ${r.laws.authority === i ? "primary" : ""}" data-a="setLaw" data-v="authority|${i}" title="Income ×${inc}; vassal mood ${op >= 0 ? "+" : ""}${op}/yr">${n}</button>`).join("")}</div><div class="tiny muted">Higher: more income, angrier lords and a Liberty faction. Raising needs stability 40 and legitimacy 50. One step a year.</div></div>`),
-      (h += `<div class="small" style="margin-top:6px"><b>Conscripts</b><div class="row">${A.CONSCRIPT_LAW.map(([n, mul, op, d], i) => `<button class="small ${r.laws.conscript === i ? "primary" : ""}" data-a="setLaw" data-v="muster|${i}" title="${UI.esc(d)}">${n}</button>`).join("")}</div></div>`),
+      (h += `<div class="small" style="margin-top:6px"><b>Conscripts</b><div class="row">${A.CONSCRIPT_LAW.map(([n, mul, op, d], i) => `<button class="small ${r.laws.conscript === i ? "primary" : ""}" data-a="setLaw" data-v="conscript|${i}" title="${UI.esc(d)}">${n}</button>`).join("")}</div></div>`),
       (h += `<div class="row small" style="margin-top:6px">Taxes: ${Object.entries(A.TAX)
         .map(
           ([k, v]) =>

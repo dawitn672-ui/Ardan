@@ -1495,7 +1495,7 @@ A.neighbors = function (rid) {
 A.realmPower = function (r) {
   return !r || !r.alive
     ? 0
-    : (r.army + r.roll * 0.3) * r.armyQ * (0.65 + r.stability / 250) * (r.treasury < 0 ? 0.8 : 1);
+    : (r.army + (A.MEN ? A.MEN.reserve(r) : r.roll) * 0.3) * r.armyQ * (0.65 + r.stability / 250) * (r.treasury < 0 ? 0.8 : 1);
 };
 
 A.atWar = function (rid) {

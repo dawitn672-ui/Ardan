@@ -92,7 +92,7 @@ A.factionsOf = rid => (A.S.factions || []).filter(f => f.realm === rid);
 A.factionPower = function (f) {
   const r = A.realm(f.realm);
   if (!r) return 0;
-  const all = A.realmHouses(f.realm).reduce((a, h) => a + A.houseStrength(h), 0) + (r.army * 0.25 + r.roll * 0.05);
+  const all = A.realmHouses(f.realm).reduce((a, h) => a + A.houseStrength(h), 0) + (r.army * 0.25 + (A.MEN ? A.MEN.reserve(r) : r.roll) * 0.05);
   return (
     (f.members
       .map(id => A.S.houses[id])
@@ -474,7 +474,7 @@ A.leaveFaction = function () {
 };
 
 A.CONSCRIPT_LAW = [
-  ["By the estates' leave", 0.75, 1, "The crown calls only the first call on its own word; more needs the lords' consent. The lords like you for it."],
+  ["By the estates' leave", 0.75, 1, "The crown calls only the first call (one hearth in twenty) on its own word; more needs the lords' consent. The lords like you for it."],
   ["The old custom", 1, 0, "The first and second calls on the crown's word, as the old charters allow."],
   ["The crown's right", 1.3, -2, "Every call, the last among them, on the crown's word alone. The lords grumble every year."],
 ];
@@ -527,16 +527,15 @@ A.setLaw = function (k, v) {
       ok: true,
     };
   }
-  if (k === "muster") {
+  if (k === "conscript") {
     const cur = r.laws.conscript;
     return v === cur || v < 0 || v > 2
       ? {
           ok: false,
         }
-      : ((r.roll = Math.round((r.roll * A.CONSCRIPT_LAW[v][1]) / A.CONSCRIPT_LAW[cur][1])),
-        (r.laws.conscript = v),
+      : ((r.laws.conscript = v),
         (A.S.yearActs["law_" + k] = 1),
-        A.log(`New conscription law: ${A.CONSCRIPT_LAW[v][0]}. The muster rolls now count ${A.fmt(r.roll)}.`),
+        A.log(`New conscription law: ${A.CONSCRIPT_LAW[v][0]}. ${A.CONSCRIPT_LAW[v][3]}`),
         {
           ok: true,
         });

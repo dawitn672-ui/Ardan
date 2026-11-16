@@ -3867,7 +3867,10 @@ var __ARDAN_V2_MAKE = (() => {
     for (const r of W.realms) {
       if (r.id === me.realm) continue;
       const rel = W.diplomacy.get(me.realm, r.id);
-      if (rel.pact === "war" && me.age >= 16 && !g2.flags[`served-${r.id}-${rel.pactSince}`] && g2.rng.chance(0.25) && !cards.some((c) => c.enemyId != null)) {
+      if (rel.pact === "war" && me.age >= 16 && !g2.flags[`served-${r.id}-${rel.pactSince}`] && !cards.some((c) => c.enemyId != null) && decide({ temper: {}, feel: [] }, "conscript", [
+        { id: "call", reasons: [{ kind: "duty", weight: 0, label: `The war with ${r.name} needs men`, source: { t: "war", at: r.id }, pub: 1 }] },
+        { id: "wait", reasons: [{ kind: "reckoning", weight: Math.log(3), label: "The standing men may be enough this month", source: { t: "roll" }, pub: 0 }] }
+      ], { rand: () => g2.rng.next() }).chose === "call") {
         g2.flags[`served-${r.id}-${rel.pactSince}`] = true;
         const ev = EVENTS.find((x) => x.id === "muster");
         const ctx2 = ctxFor(g2);

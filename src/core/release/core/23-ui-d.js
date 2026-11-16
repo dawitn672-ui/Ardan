@@ -342,9 +342,9 @@ UI.wrManpower = function () {
   if (!r) return "";
   A.F(r);
   const cap = r.rollCap || Math.max(r.roll, 1);
-  let h = `<div class="card small"><div class="row"><b>Manpower</b><span class="right muted">${UI.esc(r.short)}</span></div>${UI.barRow("Pool", r.roll, Math.max(cap, r.roll), r.roll < cap * 0.2 ? "hpbar" : "", null, `${UI.kfmt(r.roll)}/${UI.kfmt(cap)}`)}<div class="tiny muted">The pool refills each year toward what your land and conscription law can give (${r.roll >= cap * 0.98 ? "it is full now" : `about +${A.fmt(Math.max(0, Math.round((cap - r.roll) * 0.2)))} next year`}). Training a division takes its men at once; refits draw on the pool all the time.</div></div>`;
+  let h = `<div class="card small"><div class="row"><b>Manpower</b><span class="right muted">${UI.esc(r.short)}</span></div>${UI.barRow("The roll", r.roll, Math.max(cap, r.roll), r.roll < cap * 0.2 ? "hpbar" : "", null, `${UI.kfmt(r.roll)}/${UI.kfmt(cap)}`)}<div class="tiny muted">The roll is the volunteers who drill and march when mustered; it fills each year toward one man in a hundred of your people (${r.roll >= cap * 0.98 ? "it is full now" : `about +${A.fmt(Math.max(0, Math.round((cap - r.roll) * 0.2)))} next year`}). Training a regiment takes its men at once; refits draw on the roll all the time. Conscripts come only by a call to arms.</div></div>`;
   if (A.CONSCRIPT_LAW)
-    h += `<div class="group-h">Conscription law</div><div class="wr-laws">${A.CONSCRIPT_LAW.map(([n, mul, op, d], i) => `<button class="small ${r.laws.conscript === i ? "on" : ""}" data-a="setLaw" data-v="muster|${i}" ${pc.ruler ? "" : "disabled"}><b>${UI.esc(n)}</b><small>${UI.esc(d)} Pool ×${mul}.</small></button>`).join("")}</div>`;
+    h += `<div class="group-h">Conscription law</div><div class="wr-laws">${A.CONSCRIPT_LAW.map(([n, mul, op, d], i) => `<button class="small ${r.laws.conscript === i ? "on" : ""}" data-a="setLaw" data-v="conscript|${i}" ${pc.ruler ? "" : "disabled"}><b>${UI.esc(n)}</b><small>${UI.esc(d)}</small></button>`).join("")}</div>`;
   h += '<div class="group-h">Train a division</div>';
   for (const t of Object.values(r.forces.tpl)) {
     const s = A.tplS(r.id, t.id),

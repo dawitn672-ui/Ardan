@@ -166,7 +166,7 @@ const temples = r => (Array.isArray(r.riGreat) ? r.riGreat.length : 0) + Math.mi
 POL.unrest = r => clamp(60 - (r.stability != null ? r.stability : 50), 0, 60);
 POL.cloutRaw = function (r) {
   const p = r.pol || {}, pos = g => POL.pos(r, g);
-  const hs = A.realmHouses(r.id), all = hs.reduce((a, h) => a + A.houseStrength(h), 0), denom = all + (r.army || 0) * .25 + (r.roll || 0) * .05;
+  const hs = A.realmHouses(r.id), all = hs.reduce((a, h) => a + A.houseStrength(h), 0), denom = all + (r.army || 0) * .25 + (A.MEN ? A.MEN.reserve(r) : r.roll || 0) * .05;
   const houseShare = denom > 0 ? all / denom : .3, armyShare = denom > 0 ? (r.army || 0) * .25 / denom : .3;
   const nT = POL.towns(r.id).length, coast = POL.towns(r.id).filter(t => (A.S.prov[t] || {}).coast).length;
   const war = A.atWar(r.id).length > 0, revolt = A.S.wars && A.S.wars.some(w => w.cb === 'liberty' || w.cb === 'independence' ? (w.def || []).includes(r.id) : false);

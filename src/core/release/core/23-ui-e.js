@@ -1359,6 +1359,8 @@ UI.TAB.war = function (pc) {
   if (pc.mil) add += UI.drillCard(pc);
   // [W1-3] the muster roll of the player's realm, at his rank (9999951-commands)
   if (UI.musterCard) add += UI.musterCard(pc);
+  // [W1-4] the call to arms and the company's ledger in words (9999952-men)
+  if (UI.menCard) add += UI.menCard(pc);
   add += UI.ordersCard(pc, true);
   const i = h.indexOf('<div class="group-h">Wars of your realm</div>');
   return i >= 0 ? h.slice(0, i) + add + h.slice(i) : h + add;

@@ -1,12 +1,12 @@
 // A broke crown cannot raise armies without limit (world review cycle 2, B1).
 //
-// The release's A.indMonth calls A.emergencyMuster (at war, up to three new divisions a month while the host is under
-// 35% of its normal size) and refills every division at peace (A.divReinforce), and its industry lines charge
+// The release's A.indMonth called out a muster (at war, up to three new divisions a month while the host was under
+// 35% of its normal size; retired in W1-4) and refills every division at peace (A.divReinforce), and its industry lines charge
 // `work x 9` suns a month to the treasury, whatever the treasury holds. None of it asks whether the crown can pay. The
 // League of the Nine Wells (one oasis, an income of 26,690) so reached 1.47 million men and 33.6 million of debt in one
 // soak. Now, for a crown not run by the player:
 //   1. broke means the treasury is below zero and the debt is above a year's income (WF.broke);
-//   2. a broke crown calls out no musters, finishes no new divisions and does not refill its old ones;
+//   2. a broke crown finishes no new divisions and does not refill its old ones;
 //   3. its workshops are paid only from a treasury above zero: below it, the month's work is not done (no cost, no
 //      output);
 //   4. once a year, a crown whose debt is above two years' income disbands its newest divisions until the host's
@@ -21,11 +21,8 @@
   const ai = r => !!(r && r.alive && !r.playerRun && !(A.pc() && A.pc().ruler === r.id));
   WF.broke = r => !!(r && (r.treasury || 0) < 0 && (r.debt || 0) > Math.max(1, r.income || 0) * WF.BROKE_DEBT);
 
-  const muster = A.emergencyMuster;
-  if (typeof muster === 'function') A.emergencyMuster = function (r) {
-    if (ai(r) && WF.broke(r)) { WF.stats.rollHeld++; return; }
-    return muster.apply(this, arguments);
-  };
+  // (W1-4: the release's emergency muster, which this held back for a broke crown, is retired; a call to arms weighs the
+  // empty treasury among its reasons, A.CALLS.options)
   const qs = A.queueStep;
   if (typeof qs === 'function') A.queueStep = function (r, days) {
     // a broke crown's recruits wait in the depot: their time does not run, and nothing joins the host

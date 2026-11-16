@@ -1,57 +1,13 @@
 // The release's core, companies and war staff (part 2 of 2): Free companies, seizing land, battle ends, armies and the war staff's raising and mobilising.
 // Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
-// Defines: A.emergencyMuster, A.disbandDiv, A.TPL_XP, A.tplEdit, A.provLocalSupply, A.supplyNeighbours, A.supplyBase,
+// Defines: A.disbandDiv, A.TPL_XP, A.tplEdit, A.provLocalSupply, A.supplyNeighbours, A.supplyBase,
 // A.sameArr, A.supScratch, A.supplyMap, A.supplyRoute, A.supplyInfo, A.divSupUse, A.forcesYear, A.forcesAI,
 // A.cmdRole, A.lineSet, A.fxAct, A.setStance, A.WS, A.armyDivs, A.armyMen, A.armiesOf, A.army, A.armiesAt, A.divsAt,
 // A.hostile, A.friendly, A.relAll, A.relSig, A.relMemo, A.wsDist, A.wsPath, A.adjacent, A.ARMY_NAMES, A.wsNewArmy,
 // A.wsGeneralFor, A.armySync, A.wsRaise, A.wsMobilize, wsMobilizeNow.
 
-A.emergencyMuster = function (r) {
-  const F = r.forces,
-    L0 = LORE.realms[r.id],
-    base = ((L0 ? L0.army : r.army0 || r.army || 2e3) * (r.provPop || 1)) / (r.basePop || 1);
-  if (r.army >= base * 0.35 || r.roll < 1500) return;
-  let t = Object.values(F.tpl).find(x => x.kind === "garrison");
-  if (!t) {
-    const lv = A.wsTroopsFor(r.id).includes("LV") ? "LV" : "SP";
-    t = A.tplAdd(r, {
-      name: "Conscript Host",
-      bns: Array(6).fill(lv),
-      sup: [],
-      kind: "garrison",
-      share: 0.01,
-    });
-  }
-  const s = A.tplS(r.id, t.id),
-    ps = A.realmProvs(r.id).filter(p => !p.occ),
-    loc = r.capitalProv != null && !A.S.prov[r.capitalProv].occ ? r.capitalProv : (ps[0] || {}).id;
-  if (loc == null) return;
-  const n = Math.min(3, Math.floor(r.roll / s.men));
-  for (let i = 0; i < n; i++) {
-    const d = A.newDiv(r, t.id, loc, {
-      str: 1,
-      exp: 4,
-      eqf: 0,
-      org: 0.7,
-    });
-    r.roll -= d.men;
-    for (const k in s.eq) {
-      const take = Math.min(s.eq[k], Math.floor(r.ind.stock[k] || 0));
-      d.eq[k] = take;
-      r.ind.stock[k] -= take;
-    }
-    // [X1 baked patch events/994-careers CAR-MUSTER-LOG] Calling out a realm's musters logged one line per division ("the
-    // 92nd ... gathers", "the 93rd ... gathers"), a dozen in one autumn. It now logs one line per realm a month, with
-    // the count (A.musterLog).
-    const pc = A.pc();
-    if (pc && (pc.realm === r.id || pc.ruler === r.id)) {
-      if (A.musterLog) A.musterLog(r, d, loc);
-      else A.log(`${r.short} calls out its musters: the ${d.name} gathers at ${A.provName(loc)}.`, "war");
-    }
-  }
-  if (n) A.news(`${r.short} calls out its musters.`, "war");
-  A.forcesSync(r);
-};
+// [W1-4] the release's emergency muster (men called out whenever the host ran low, without a reason or an end) is retired:
+// the archive's W1-4 folder. Conscripts are raised only by a call for a named need (src/war/9999952-men, A.CALLS).
 
 A.disbandDiv = function (d) {
   if (d && d.elite) {
@@ -60,7 +16,12 @@ A.disbandDiv = function (d) {
     return alt ? A.disbandDiv(alt) : null;
   }
   const r = A.realm(d.r);
-  if (r) {
+  // [W1-4] conscripts of a call go home to their hearths, not onto the roll
+  if (r && d.call && A.CALLS && A.CALLS.sendHome) {
+    A.CALLS.sendHome(d);
+    A.divRemove(d);
+    A.forcesSync(r);
+  } else if (r) {
     r.roll += Math.round(d.men * 0.8);
     A.divRemove(d);
     A.forcesSync(r);
@@ -438,13 +399,13 @@ A.forcesYear = function (r) {
   r.stability = A.clamp(r.stability + law.stab, 0, 100);
   if (law.needExh && !A.atWar(r.id).length) I.law = "war";
   if (law.war && !A.atWar(r.id).length && A.chance(0.5) && !(A.myRealm && A.myRealm() === r)) I.law = "partial";
+  // [W1-4] the roll fills toward one man in a hundred of the people (A.MEN.rollCap); the conscription law no longer
+  // swells it (the old law multiplied the pool)
   const L0 = LORE.realms[r.id],
-    lawMul = A.CONSCRIPT_LAW && r.laws && r.laws.conscript != null ? A.CONSCRIPT_LAW[r.laws.conscript][1] : 1,
-    cap =
-      (((L0 ? L0.roll : r.roll0 || (r.roll0 = Math.max(r.roll, r.army * 3))) * (r.provPop || 1)) / (r.basePop || 1)) *
-      lawMul;
-  r.rollCap = Math.round(cap * (1 + (A.rdoc(r).mp || 0)));
-  r.roll = Math.round(r.roll + (r.rollCap - r.roll) * (r.roll < r.rollCap ? 0.2 : 0.1));
+    cap = (((L0 ? L0.roll : r.roll0 || (r.roll0 = Math.max(r.roll, r.army * 3))) * (r.provPop || 1)) / (r.basePop || 1));
+  r.rollCap = A.MEN && A.MEN.rollCap ? A.MEN.rollCap(r) : Math.round(cap * (1 + (A.rdoc(r).mp || 0)));
+  // [W1-4] volunteers come forward to fill the roll a little faster than the old pool refilled (it is a fifth its size)
+  r.roll = Math.round(r.roll + (r.rollCap - r.roll) * (r.roll < r.rollCap ? (A.MEN ? 0.3 : 0.2) : 0.1));
   r.forces.xp = Math.min(200, r.forces.xp + 2 + r.forces.divs.length * 0.15);
   const pc = A.pc();
   if (((pc && pc.ruler === r.id && !r.forces.auto) || A.forcesAI(r), !A.atWar(r.id).length)) {
@@ -506,17 +467,19 @@ A.forcesAI = function (r) {
   }
   const L = LORE.realms[r.id],
     base = (((L ? L.army : r.army0 || r.army) * (r.provPop || 1)) / (r.basePop || 1)) * (war ? 1.15 : 1),
-    tids = Object.keys(F.tpl),
-    inQ = F.queue.reduce((a, q) => a + q.men, 0);
-  if (r.army + inQ < base * 0.92 && tids.length)
-    for (let k = 0; k < 4 && r.army + F.queue.reduce((a, q) => a + q.men, 0) < base * 0.92; k++) {
+    // [W1-4] conscript foot of a call is not trained from the roll, and does not count toward the standing host
+    tids = Object.keys(F.tpl).filter(t => !F.tpl[t].call),
+    inQ = F.queue.reduce((a, q) => a + q.men, 0),
+    standing = A.MEN && A.MEN.of ? A.MEN.of(r).standing : r.army;
+  if (standing + inQ < base * 0.92 && tids.length)
+    for (let k = 0; k < 4 && standing + F.queue.reduce((a, q) => a + q.men, 0) < base * 0.92; k++) {
       const tid = A.wpick(tids, t => F.tpl[t].share || 1),
         s = A.tplS(r.id, tid);
       if (!(s && r.roll > s.men * 2 && r.treasury > s.men * 6) || !A.trainDiv(r, tid).ok) break;
     }
   else if (r.army > base * 1.4 && F.divs.length > 1 && !war) {
-    const d = F.divs.slice().sort((a, b) => a.men - b.men)[0];
-    A.disbandDiv(d);
+    const d = F.divs.filter(x => !x.call).sort((a, b) => a.men - b.men)[0];
+    if (d) A.disbandDiv(d);
   }
   // [X1 baked patch core/04-world-fixes WLD-AI-DEBT] AI realm debt never went down: only interest (8%) was charged,
   // nothing repaid the principal, and surplus gold above 3x income was deleted for +1 stability instead. Realms now

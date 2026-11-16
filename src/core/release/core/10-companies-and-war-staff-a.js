@@ -507,7 +507,7 @@ A.newBattleForPC = function (pc, warId, enemy, company) {
     myRealm = pc.company.contract || pc.realm;
   } else if (pc.ruler) {
     const r = A.realm(pc.ruler);
-    mine = Math.round(Math.min(r.army * 0.45 + r.roll * 0.1, 6e4));
+    mine = Math.round(Math.min(r.army * 0.45 + (A.MEN ? A.MEN.reserve(r) : r.roll) * 0.1, 6e4));
     myRealm = pc.ruler;
   } else {
     const lead = GD.MIL[Math.min(pc.mil.rank, GD.MIL.length - 1)].leads;
@@ -516,7 +516,7 @@ A.newBattleForPC = function (pc, warId, enemy, company) {
   }
   const er = A.realm(enemy);
   theirs = Math.round(mine * A.rf(0.65, 1.45));
-  if (er && theirs > er.army + er.roll * 0.3) theirs = Math.max(200, Math.round(er.army + er.roll * 0.3));
+  if (er && theirs > er.army + (A.MEN ? A.MEN.reserve(er) : er.roll) * 0.3) theirs = Math.max(200, Math.round(er.army + (A.MEN ? A.MEN.reserve(er) : er.roll) * 0.3));
   mine = Math.max(150, mine);
   theirs = Math.max(120, theirs);
   const place =
@@ -1289,8 +1289,8 @@ A.startCampaign = function (warId) {
     theirSide = side === "att" ? w.def : w.att,
     r = A.realm(myRealm);
   let myMen;
-  if (pc.ruler) myMen = Math.round(Math.min(r.army * 0.7 + r.roll * 0.2, 9e4));
-  else myMen = Math.round(Math.min(GD.MIL[pc.mil.rank].leads * A.rf(0.6, 0.9), r ? r.army * 0.6 + r.roll * 0.1 : 2e4));
+  if (pc.ruler) myMen = Math.round(Math.min(r.army * 0.7 + (A.MEN ? A.MEN.reserve(r) : r.roll) * 0.2, 9e4));
+  else myMen = Math.round(Math.min(GD.MIL[pc.mil.rank].leads * A.rf(0.6, 0.9), r ? r.army * 0.6 + (A.MEN ? A.MEN.reserve(r) : r.roll) * 0.1 : 2e4));
   myMen = Math.max(1500, myMen);
   const startProv = A.frontProv(mySide, theirSide) || A.prov(r && r.capitalProv != null ? r.capitalProv : pc.home);
   C.armies.push(A.campArmy(C, myRealm, side, myMen, r ? r.armyQ : 0.9, startProv.id, true, pc.id));
@@ -1298,7 +1298,7 @@ A.startCampaign = function (warId) {
     const rr = A.realm(rid);
     if (!rr || !rr.alive) continue;
     const s = w.att.includes(rid) ? "att" : "def";
-    let men = Math.round(rr.army * 0.6 + rr.roll * 0.15);
+    let men = Math.round(rr.army * 0.6 + (A.MEN ? A.MEN.reserve(rr) : rr.roll) * 0.15);
     if (rid === myRealm) men = Math.max(0, men - myMen);
     if (!(rid === (s === "att" ? w.leadA : w.leadD))) men = Math.round(men * 0.4);
     const n = men > 3e4 ? 2 : men > 2e3 ? 1 : 0;
@@ -3010,7 +3010,9 @@ A.divRefill = function (d, r, frac) {
   const s = A.divS(d),
     F = r.forces;
   let got = 0;
-  const gap = Math.max(0, s.men - d.men);
+  // [W1-4] a conscript division's gaps are filled from the men of its call waiting at the muster, not from the roll
+  if (d.call && A.CALLS && A.CALLS.refill) got = A.CALLS.refill(d, r, frac);
+  const gap = d.call ? 0 : Math.max(0, s.men - d.men);
   if (gap > 0 && r.roll > 0) {
     const add = Math.min(gap, Math.ceil(gap * frac * (1 + (s.fx.reinf || 0))), Math.floor(r.roll));
     if (add > 0) {
@@ -3321,7 +3323,7 @@ A.indMonth = function (r) {
   }
   if (((I.mDone = (I.mDone || 0) + 1), !A.atWar(r.id).length))
     for (const d of r.forces.divs) A.divReinforce(d, r, 0.25);
-  if (A.atWar(r.id).length && !(A.myRealm && A.myRealm() === r && !r.forces.auto)) A.emergencyMuster(r);
+  // [W1-4] nothing called out here any more: conscripts come by a call for a named need (A.CALLS, 9999952-men)
   for (const d of r.forces.divs)
     if (d.train > 0) {
       d.train = Math.max(0, d.train - 30);
@@ -3442,6 +3444,12 @@ A.queueStep = function (r, days) {
 A.trainDiv = function (r, tid) {
   {
     const t = r && r.forces && r.forces.tpl[tid];
+    // [W1-4] conscript foot is raised only by a call to arms
+    if (t && t.call)
+      return {
+        ok: false,
+        msg: "Conscript foot is raised only by a call to arms, by lot, for a need.",
+      };
     if (t && t.order)
       return {
         ok: false,
