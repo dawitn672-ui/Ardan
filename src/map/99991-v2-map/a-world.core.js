@@ -18,13 +18,25 @@
 // A.V2MAP and A.V2.continent.
 (A.V2MAP = A.V2MAP || {}).define = function (A) {
 const VM = A.V2MAP;
-VM.VERSION = 2;                                 // 2: sea realms on the shore (playtest 1, #21); a v1 save rebuilds as v1
+VM.VERSION = 3;                                 // 2: sea realms on the shore (playtest 1, #21); a v1 save rebuilds as v1
+                                                // 3 (D9, D-061): towns on water, oases on dry land, terrain read from the
+                                                // ground with no word on more than a third; a v2 save rebuilds as v2
 VM.GW = 467; VM.GH = 300;                       // the generator's grid: 15 km cells over the release's 7,000 x 4,500 km
 // erosion at 0.5 droplets a cell (v2's default is 0.9): the same look at this grid, a third less time
 VM.OPTS = { landFraction: 0.38, latTop: 56, latBottom: 16, maxIslands: 0, provinces: 1, droplets: Math.round(VM.GW * VM.GH * 0.5) };
 VM.ELEV_M = 8000;
-VM.RIVER_T = 120;                               // flow (v2's accumulated moisture) where a river begins                               // v2's land height (0 to 0.62) in metres
-VM.TERR_SHARE = { mountains: 0.065, hills: 0.41 };   // the release's mix: 20 and 126 of 306 provinces
+VM.RIVER_T = 120;                               // flow (v2's accumulated moisture) where a river begins
+VM.STREAM_T = 40;                               // D9: where a stream begins (the tributaries drawn close in; a town may stand on one)
+VM.TERR_SHARE = { mountains: 0.065, hills: 0.41 };   // the release's mix: 20 and 126 of 306 provinces (map versions 1 and 2)
+// D9 (map version 3): the terrain word is read from each province's own ground (its height, its relief, how much of it
+// is wood, marsh, sand or ice); hills are rough or high country, not a quota, and settled lowland in a wooded climate is
+// cleared farmland. No word may cover more than VM.TERR_CAP of the provinces: past it, the provinces with the weakest
+// claim take their next best word (read from the same ground).
+VM.TERR_CAP = 0.31;
+VM.HILL = { relief: 250, elev: 800 };            // a province is hilly when its heights spread this much (sd, metres) or it stands this high
+VM.SITE_R = 14;                                 // a town moves at most this many cells (140 km) from its seed to stand on water
+VM.DRY_PAY = 2.5; VM.GREEN_PAY = 1.5;           // what a dry realm pays for a green cell, and a green realm for a dry one
+VM.ARID_REALM = 0.5;                            // a realm whose release land was this share dry (desert, steppe, savanna) is seated on dry land
 VM.ISLE_RX = /\b(isles?|islands?|archipelago)\b/i;            // a realm named for islands: a peninsula on the shore
 VM.COAST_RX = /\b(coast|shore|bay|strand|sea)\b|reef\b/i;       // a realm named for the sea: a seat on the shore
 // the realms C7 renamed (D-058) keep the sea their old names promised, by id
@@ -126,7 +138,7 @@ function spacedCell(gw, gh, x, y, ok, placed, r) {
       for (const s of placed) { const d = f * (r + s.r); if ((s.x - jx) * (s.x - jx) + (s.y - jy) * (s.y - jy) < d * d) return false; } return true; });
     if (k >= 0) { placed.push({ x: k % gw, y: (k / gw) | 0, r }); return k; }
   }
-  const k = nearestCell(gw, gh, x, y, ok); placed.push({ x: k % gw, y: (k / gw) | 0, r }); return k;
+  const k = nearestCell(gw, gh, x, y, ok); if (k >= 0) placed.push({ x: k % gw, y: (k / gw) | 0, r }); return k;
 }
 
 // A warp from the release's land to the new land that keeps the share of land to the west of a point and, within a
@@ -174,8 +186,73 @@ VM.biomeWord = (b, t) => {
     default: return null;   // beach, water
   }
 };
+// the release's dry words, and v2's dry cells (desert, steppe, and the hot grassland and scrub the release calls savanna)
+VM.ARID_WORDS = /^(Desert|Steppe|Savanna|Salt flat)$/;
+VM.aridCell = (b, t) => b === BIO.DESERT || b === BIO.STEPPE || (b === BIO.GRASSLAND && t > 17) || (b === BIO.SCRUB && t > 19);
+// the smoothed river paths (in km) laid on the game's grid: each cell a path runs through keeps the largest flow there
+VM.riverRaster = function (rivers, gw, gh) {
+  const r = new Float32Array(gw * gh);
+  for (const a of rivers) for (let i = 0; i + 5 < a.length; i += 3) {
+    const x0 = a[i] / 10, y0 = a[i + 1] / 10, x1 = a[i + 3] / 10, y1 = a[i + 4] / 10, f = Math.min(a[i + 2], a[i + 5]);
+    const n = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0) * 2));
+    for (let s = 0; s <= n; s++) {
+      const x = Math.floor(x0 + (x1 - x0) * s / n), y = Math.floor(y0 + (y1 - y0) * s / n);
+      if (x < 0 || y < 0 || x >= gw || y >= gh) continue;
+      const k = y * gw + x; if (f > r[k]) r[k] = f;
+    }
+  }
+  return r;
+};
 const TERR_OF = { 'Temperate forest': 'forest', Taiga: 'forest', 'Tropical rainforest': 'forest', 'Temperate rainforest': 'forest',
   Steppe: 'steppe', Savanna: 'steppe', 'Dry woodland': 'plains', Desert: 'desert', Marsh: 'marsh', Tundra: 'tundra', Glacier: 'tundra', 'Alpine highland': 'hills' };
+
+// D9 (map version 3): each province's terrain word from its own ground, in this order: mountains (the roughest and highest,
+// by the release's quota), then what the ground plainly is (sand, marsh, ice), then hills (rough or high), then wood
+// (unless it is settled lowland, which a medieval people had cleared to fields), then dry grass, then open plains. No word
+// on more than VM.TERR_CAP of the provinces: past it, the provinces with the weakest claim to the word (the least rough,
+// the least wooded, the least dry) take the next word their ground gives.
+const WOOD_RX = /forest|Taiga|rainforest/i, SETTLED = { 'capital city': 1, city: 1, 'market town': 1, town: 1 };
+VM.terrainOf = function (prov, M) {
+  const share = (q, re) => { let c = 0; for (const w in q.bio) if (re.test(w)) c += q.bio[w]; return c / Math.max(1, q.n); };
+  const score = q => q.elev + 2.5 * q.relief;
+  const rank = prov.slice().sort((a, b) => score(b) - score(a) || a.id - b.id), nM = Math.round(M * VM.TERR_SHARE.mountains);
+  const mount = new Set(); rank.forEach((q, i) => { if (i < nM && q.elev >= 1200) mount.add(q); });
+  // each province's claims, strongest word first; the strength orders who gives way under the cap
+  const claims = q => {
+    const out = [];
+    if (mount.has(q)) out.push(['mountains', 9]);
+    const sand = share(q, /^Desert$/), marsh = share(q, /^Marsh$/), cold = share(q, /^(Tundra|Glacier)$/), wood = share(q, WOOD_RX), grass = share(q, /^(Steppe|Savanna)$/);
+    if (sand >= 0.45) out.push(['desert', 2 + sand]);
+    if (marsh >= 0.35) out.push(['marsh', 2 + marsh]);
+    if (cold >= 0.45) out.push(['tundra', 2 + cold]);
+    // hilly: the heights spread (relief, the sd of a province's heights); high country counts only where it is broken too, so
+    // a high flat plateau stays open ground
+    const rough = q.relief / VM.HILL.relief + Math.max(0, q.elev - VM.HILL.elev) / (4 * VM.HILL.elev);
+    if (rough >= 1) out.push(['hills', rough]);
+    const cleared = SETTLED[q.type] && q.elev < 400 && q.relief < VM.HILL.relief * 0.6;
+    if (wood >= 0.5 && !cleared) out.push(['forest', wood]);
+    if (grass >= 0.4) out.push(['steppe', grass]);
+    if (wood >= 0.3 && !cleared && !out.some(c => c[0] === 'forest')) out.push(['forest', wood * 0.5]);
+    // open plains, as strong as the province is open; its weaker leanings come after, for the cap
+    const lean = [['forest', wood], ['steppe', grass], ['hills', rough * 0.6], ['marsh', marsh]].filter(c => c[1] >= 0.15 && !out.some(o => o[0] === c[0])).sort((a, b) => b[1] - a[1]);
+    out.push(['plains', 1 - (lean.length ? lean[0][1] : 0)], ...lean);
+    return out;
+  };
+  const C = prov.map(claims), at = prov.map(() => 0);
+  for (let i = 0; i < prov.length; i++) prov[i].terr = C[i][0][0];
+  const cap = Math.floor(M * VM.TERR_CAP);
+  for (let round = 0; round < 12; round++) {
+    const by = {}; prov.forEach((q, i) => { (by[q.terr] = by[q.terr] || []).push(i); });
+    let moved = false;
+    for (const t of Object.keys(by).sort()) {
+      if (by[t].length <= cap) continue;
+      const list = by[t].sort((a, b) => C[a][at[a]][1] - C[b][at[b]][1] || a - b);
+      for (const i of list.slice(0, list.length - cap)) if (at[i] < C[i].length - 1) { at[i]++; prov[i].terr = C[i][at[i]][0]; moved = true; }
+    }
+    if (!moved) break;
+  }
+  for (const q of prov) if (q.terr === 'mountains' && !/Alpine|Glacier|Taiga/.test(q.biome)) q.biome = 'Alpine highland';
+};
 
 // base: { gw, gh, grid (the release's province grid), provinces: [{ id, realm, sx, sy, cells }] } (the map as written)
 VM.build = function (seed, base, v = VM.VERSION) {
@@ -211,6 +288,11 @@ VM.build = function (seed, base, v = VM.VERSION) {
     const sl = Math.max(x > 0 ? Math.abs(e - elev[k - 1]) : 0, x < gw - 1 ? Math.abs(e - elev[k + 1]) : 0, k >= gw ? Math.abs(e - elev[k - gw]) : 0, k + gw < N ? Math.abs(e - elev[k + gw]) : 0);
     cost[k] = 1 + sl * 300 + (gen.acc[gi[k]] > 500 ? 5 : 0) + e * 6 + hash01(k) * 0.8;
   }
+  // the dry cells, and the rivers on the game's grid (the drawn paths, so a town on a river is on the line you see)
+  const arid = new Uint8Array(N); let nArid = 0;
+  for (let k = 0; k < N; k++) if (land[k] && VM.aridCell(gen.biome[gi[k]], gen.temp[gi[k]])) { arid[k] = 1; nArid++; }
+  const rivers = C.riverPaths(gen, VM.STREAM_T).map(pts => { const a = new Float32Array(pts.length * 3); pts.forEach(([u, v, f], i) => { a[3 * i] = (u + 0.5) / fx * 10; a[3 * i + 1] = (v + 0.5) / fy * 10; a[3 * i + 2] = f; }); return a; });
+  const riv = VM.riverRaster(rivers, gw, gh);
   T.land = now() - T.t0;
 
   // ---- 2. who goes where: realms (and each unclaimed wild) carried by the warp
@@ -228,6 +310,8 @@ VM.build = function (seed, base, v = VM.VERSION) {
   // and grow along the coast rather than inland, so the name fits the land
   const names = base.realmNames || {};
   for (const u of units) { const nm = names[u.key] || ''; u.sea = v < 2 ? null : VM.SEA_ID[u.key] || (VM.ISLE_RX.test(nm) ? 'peninsula' : VM.COAST_RX.test(nm) ? 'coast' : null); }
+  // D9: a realm of the dry country in the release (its oases with it) is seated on dry land and keeps to it
+  for (const u of units) { let a = 0, t = 0; for (const p of u.provs) { const c = Math.max(1, p.cells || 1); t += c; if (VM.ARID_WORDS.test(p.biome || '')) a += c; } u.arid = v >= 3 && nArid > 0 && t > 0 && a / t >= VM.ARID_REALM; }
   const toSea = new Float32Array(N).fill(1e9), qs = [];
   for (let k = 0; k < N; k++) if (ocean[k]) { toSea[k] = 0; qs.push(k); }
   for (let h = 0; h < qs.length; h++) { const k = qs[h], x = k % gw; for (const j of [x > 0 ? k - 1 : -1, x < gw - 1 ? k + 1 : -1, k - gw, k + gw]) if (j >= 0 && j < N && toSea[j] > toSea[k] + 1) { toSea[j] = toSea[k] + 1; qs.push(j); } }
@@ -238,8 +322,13 @@ VM.build = function (seed, base, v = VM.VERSION) {
     expo = k => { const x = k % gw, y = (k / gw) | 0, x0 = Math.max(0, x - R), y0 = Math.max(0, y - R), x1 = Math.min(gw, x + R + 1), y1 = Math.min(gh, y + R + 1);
       return (sat[y1 * (gw + 1) + x1] - sat[y0 * (gw + 1) + x1] - sat[y1 * (gw + 1) + x0] + sat[y0 * (gw + 1) + x0]) / ((x1 - x0) * (y1 - y0)); };
   }
+  // the share of dry land within R cells of each cell (a summed-area table, built once per radius)
+  const drySat = (() => { if (!nArid) return null; const t = new Int32Array((gw + 1) * (gh + 1)); for (let y = 0; y < gh; y++) for (let x = 0; x < gw; x++) t[(y + 1) * (gw + 1) + x + 1] = arid[y * gw + x] + t[y * (gw + 1) + x + 1] + t[(y + 1) * (gw + 1) + x] - t[y * (gw + 1) + x]; return t; })();
+  const dryAround = R => k => { const x = k % gw, y = (k / gw) | 0, x0 = Math.max(0, x - R), y0 = Math.max(0, y - R), x1 = Math.min(gw, x + R + 1), y1 = Math.min(gh, y + R + 1), W1 = gw + 1;
+    return (drySat[y1 * W1 + x1] - drySat[y0 * W1 + x1] - drySat[y1 * W1 + x0] + drySat[y0 * W1 + x0]) / ((x1 - x0) * (y1 - y0)); };
   // the sea realms are placed first (the shore is scarce), then the biggest, so the small ones fit in around them
-  const order = units.map((u, i) => i).sort((a, b) => (units[b].sea ? 1 : 0) - (units[a].sea ? 1 : 0) || units[b].cells - units[a].cells || a - b), seatU = new Int32Array(units.length);
+  // (v3: the dry realms right after them, as dry country is scarce too)
+  const order = units.map((u, i) => i).sort((a, b) => (units[b].sea ? 1 : 0) - (units[a].sea ? 1 : 0) || (units[b].arid ? 1 : 0) - (units[a].arid ? 1 : 0) || units[b].cells - units[a].cells || a - b), seatU = new Int32Array(units.length);
   for (const i of order) {
     const u = units[i], t = nLand * u.cells / totalCells, r = Math.sqrt(t / Math.PI);
     const cap = u.provs.find(p => p.type === 'capital city') || u.provs.slice().sort((a, b) => (b.pop || 0) - (a.pop || 0) || a.id - b.id)[0];
@@ -256,11 +345,27 @@ VM.build = function (seed, base, v = VM.VERSION) {
       }
       if (k >= 0) placedU.push({ x: k % gw, y: (k / gw) | 0, r });
     }
+    if (k < 0 && u.arid) {   // D9 (v3): the dry realm's seat is the dry cell with the most dry land around it, not far from the warp's
+      const R = Math.max(4, Math.round(r)), dd = dryAround(R); let best = -Infinity;
+      for (let f = 0.7; k < 0 && f > 0.01; f -= 0.15) for (let j = 0; j < N; j++) {
+        if (!arid[j] || used[j]) continue;
+        const jx = j % gw, jy = (j / gw) | 0;
+        if (placedU.some(s => { const d = f * (r + s.r); return (s.x - jx) ** 2 + (s.y - jy) ** 2 < d * d; })) continue;
+        const sc = 4 * dd(j) - Math.hypot(jx - nx, jy - ny) / (gw * 0.35);
+        if (sc > best) { best = sc; k = j; }
+      }
+      if (k >= 0) placedU.push({ x: k % gw, y: (k / gw) | 0, r });
+    }
     if (k < 0) k = spacedCell(gw, gh, nx, ny, j => land[j] && !used[j], placedU, r);
     used[k] = 1; seatU[i] = k;
   }
   // a sea realm pays for every cell it holds away from the shore
-  const bias = units.map(u => { if (!u.sea) return null; const b = new Float32Array(N); for (let k = 0; k < N; k++) if (land[k]) b[k] = Math.max(0, toSea[k] - 2) * (u.sea === 'peninsula' ? 3 : 1.2); return b; });
+  const bias = units.map(u => { if (!u.sea && !u.arid) return null; const b = new Float32Array(N);
+    for (let k = 0; k < N; k++) if (land[k]) b[k] = (u.sea ? Math.max(0, toSea[k] - 2) * (u.sea === 'peninsula' ? 3 : 1.2) : 0) + (u.arid && !arid[k] ? VM.DRY_PAY : 0);
+    return b; });
+  // and a realm of green country pays a little for dry land, so the dry country is left to the dry realms (v3)
+  if (units.some(u => u.arid)) { const g = new Float32Array(N); for (let k = 0; k < N; k++) if (arid[k]) g[k] = VM.GREEN_PAY; units.forEach((u, i) => { if (!u.arid && !bias[i]) bias[i] = g; }); }
+  T.dry = nArid / Math.max(1, nLand);
   units.forEach((u, i) => { u.seat = seatU[i]; seedsU.push(seatU[i]); targetsU.push(Math.max(u.provs.length, nLand * u.cells / totalCells)); });
   const uOwner = new Int16Array(N).fill(-1);
   grow(gw, gh, land, 1, seedsU, targetsU, cost, uOwner, bias);
@@ -280,40 +385,73 @@ VM.build = function (seed, base, v = VM.VERSION) {
     const n = st(cells.map(k => [k % gw, (k / gw) | 0, 1]));
     const seeds = [], targets = [], pick = new Uint8Array(N), placed = [];
     const ordered = u.provs.slice().sort((a, b) => (a.type === 'capital city' ? -1 : 0) - (b.type === 'capital city' ? -1 : 0) || a.id - b.id);
+    // D9: an oasis is seeded on the realm's dry land when it has any, and grows over dry land first
+    const dryHere = v >= 3 && cells.some(k => arid[k]) && u.provs.some(p => p.type === 'oasis'), oasisBias = [];
+    let wetPay = null, dryPay = null;
     for (const p of ordered) {
-      let k; const t = Math.max(1, cells.length * Math.max(1, p.cells) / u.cells), r = Math.sqrt(t / Math.PI);
+      let k = -1; const t = Math.max(1, cells.length * Math.max(1, p.cells) / u.cells), r = Math.sqrt(t / Math.PI);
+      const tx = n[0] + (p.sx / 10 - o[0]) / o[2] * n[2] * 0.8, ty = n[1] + (p.sy / 10 - o[1]) / o[3] * n[3] * 0.8;
+      const oasis = dryHere && p.type === 'oasis';
       if (p.type === 'capital city' && !pick[u.seat]) { k = u.seat; placed.push({ x: k % gw, y: (k / gw) | 0, r }); }
-      else k = spacedCell(gw, gh, n[0] + (p.sx / 10 - o[0]) / o[2] * n[2] * 0.8, n[1] + (p.sy / 10 - o[1]) / o[3] * n[3] * 0.8, j => tag[j] === ui && !pick[j], placed, r);
+      else if (oasis) k = spacedCell(gw, gh, tx, ty, j => tag[j] === ui && !pick[j] && arid[j], placed, r);
+      if (k < 0) k = spacedCell(gw, gh, tx, ty, j => tag[j] === ui && !pick[j], placed, r);
+      if (dryHere && !wetPay) { wetPay = new Float32Array(N); dryPay = new Float32Array(N); for (const c of cells) { wetPay[c] = arid[c] ? 0 : 4; dryPay[c] = arid[c] ? 1.5 : 0; } }
+      oasisBias.push(oasis ? wetPay : dryPay);   // the oases take the realm's dry land first; its other places leave it to them
       pick[k] = 1; seeds.push(k); targets.push(t);
     }
     const own = new Int16Array(N).fill(-1);
-    grow(gw, gh, tag, ui, seeds, targets, cost, own);
+    grow(gw, gh, tag, ui, seeds, targets, cost, own, wetPay ? oasisBias : null);
     for (const k of cells) grid[k] = ordered[own[k]].id;
     ordered.forEach((p, i) => { seatOf[p.id] = seeds[i]; });
   });
   T.provs = now() - T.t0;
 
   // ---- 4. the fields the map decides
-  const M = P.length, acc = Array.from({ length: M }, () => ({ n: 0, x: 0, y: 0, e: 0, e2: 0, t: 0, coast: false, adj: new Set(), bio: {} }));
+  const M = P.length, acc = Array.from({ length: M }, () => ({ n: 0, x: 0, y: 0, e: 0, e2: 0, t: 0, coast: false, adj: new Set(), bio: {}, dry: 0 }));
   for (let k = 0; k < N; k++) {
     const id = grid[k]; if (id < 0) continue;
     const a = acc[id], x = k % gw, y = (k / gw) | 0, em = Math.max(0, elev[k]) * VM.ELEV_M;
     a.n++; a.x += x; a.y += y; a.e += em; a.e2 += em * em; a.t += gen.temp[gi[k]];
     const w = VM.biomeWord(gen.biome[gi[k]], gen.temp[gi[k]]); if (w) a.bio[w] = (a.bio[w] || 0) + 1;
+    if (arid[k]) a.dry++;
     for (const j of [x > 0 ? k - 1 : -1, x < gw - 1 ? k + 1 : -1, y > 0 ? k - gw : -1, y < gh - 1 ? k + gw : -1]) {
       if (j < 0) continue; const o = grid[j];
       if (o >= 0 && o !== id) a.adj.add(o); else if (o < 0 && ocean[j]) a.coast = true;
     }
   }
+  // D9 (v3): a town stands on water. Its site moves from the seed to the nearest cell of its province on a river, a lake
+  // shore or the sea's shore (within VM.SITE_R cells), a bigger river and an inland cell (not on the province's edge)
+  // preferred; a province with no water in reach keeps its seed. Ties break by cell index.
+  VM.waterSite = function (id, k0) {
+    const x0 = k0 % gw, y0 = (k0 / gw) | 0, R = VM.SITE_R; let best = k0, bs = Infinity;
+    for (let y = Math.max(0, y0 - R); y <= Math.min(gh - 1, y0 + R); y++) for (let x = Math.max(0, x0 - R); x <= Math.min(gw - 1, x0 + R); x++) {
+      const k = y * gw + x; if (grid[k] !== id) continue;
+      const d = Math.hypot(x - x0, y - y0); if (d > R) continue;
+      let sea = false, lake = false, edge = false;
+      for (const j of [x > 0 ? k - 1 : -1, x < gw - 1 ? k + 1 : -1, y > 0 ? k - gw : -1, y < gh - 1 ? k + gw : -1]) {
+        if (j < 0) continue;
+        if (grid[j] < 0) { if (ocean[j]) sea = true; else lake = true; } else if (grid[j] !== id) edge = true;
+      }
+      const f = riv[k]; if (!(f >= VM.STREAM_T || sea || lake)) continue;
+      const sc = d - (f >= VM.STREAM_T ? Math.min(3, 0.5 + Math.log(f / VM.STREAM_T)) : 0) - (sea ? 1.5 : lake ? 1 : 0) + (edge ? 2.5 : 0);
+      if (sc < bs - 1e-9) { bs = sc; best = k; }
+    }
+    return best;
+  };
   const prov = P.map(p => {
     const a = acc[p.id], n = Math.max(1, a.n), cx = a.x / n, cy = a.y / n;
     const kc = nearestCell(gw, gh, cx, cy, j => grid[j] === p.id), ks = seatOf[p.id] >= 0 ? seatOf[p.id] : kc;
     const mean = a.e / n, sd = Math.sqrt(Math.max(0, a.e2 / n - mean * mean));
     let bio = null, bn = -1; for (const w of Object.keys(a.bio).sort()) if (a.bio[w] > bn) { bn = a.bio[w]; bio = w; }
-    return { id: p.id, x: (kc % gw) * 10 + 5, y: ((kc / gw) | 0) * 10 + 5, sx: (ks % gw) * 10 + 5, sy: ((ks / gw) | 0) * 10 + 5,
-      cells: a.n, adj: [...a.adj].sort((x, y) => x - y), sea: [], coast: a.coast, elev: Math.round(mean), relief: sd, temp: a.t / n, biome: bio || 'Dry woodland' };
+    const site = v >= 3 && P[p.id].type !== 'oasis' ? VM.waterSite(p.id, ks) : ks;
+    return { id: p.id, x: (kc % gw) * 10 + 5, y: ((kc / gw) | 0) * 10 + 5, sx: (site % gw) * 10 + 5, sy: ((site / gw) | 0) * 10 + 5,
+      cells: a.n, adj: [...a.adj].sort((x, y) => x - y), sea: [], coast: a.coast, elev: Math.round(mean), relief: sd, temp: a.t / n, biome: bio || 'Dry woodland',
+      bio: a.bio, n: a.n, dry: a.dry / n, type: P[p.id].type };
   });
-  // terrain: mountains and hills by quota over the roughest, highest provinces; the rest by their biome
+  // terrain: mountains and hills by quota over the roughest, highest provinces; the rest by their biome (v1, v2); read
+  // from the ground (v3, D9)
+  if (v >= 3) VM.terrainOf(prov, M);
+  else {
   const score = q => q.elev + 2.5 * q.relief;
   const rank = prov.slice().sort((a, b) => score(b) - score(a) || a.id - b.id);
   const nM = Math.round(M * VM.TERR_SHARE.mountains), nH = Math.round(M * VM.TERR_SHARE.hills);
@@ -325,10 +463,27 @@ VM.build = function (seed, base, v = VM.VERSION) {
     if (hills < nH && q.elev >= 250) { q.terr = 'hills'; hills++; return; }
     q.terr = t === 'hills' ? 'mountains' : t;
   });
-  for (const q of prov) { delete q.relief; delete q.temp; }
+  }
+  // D9 (v3): an oasis is a spring in dry country. One the land left off dry ground (its realm found too little of it) is no
+  // oasis: it becomes a town named for the water it stands on, and the save keeps its old name (q.retype)
+  if (v >= 3) for (const q of prov) {
+    if (q.type !== 'oasis') continue;
+    const site = Math.floor(q.sy / 10) * gw + Math.floor(q.sx / 10);
+    if (VM.ARID_WORDS.test(q.biome) && arid[site]) continue;
+    const k = VM.waterSite(q.id, site), x = k % gw, nb = [x > 0 ? k - 1 : -1, x < gw - 1 ? k + 1 : -1, k - gw, k + gw].filter(j => j >= 0 && j < N);
+    const word = riv[k] >= VM.STREAM_T ? 'Ford' : nb.some(j => ocean[j]) ? 'Haven' : nb.some(j => grid[j] < 0) ? 'Mere'
+      : q.terr === 'forest' ? 'Wood' : q.terr === 'hills' || q.terr === 'mountains' ? 'Hill' : 'Field';
+    const was = P[q.id].name || '';
+    q.retype = { type: 'town', name: /\bOasis\b/.test(was) ? was.replace(/\bOasis\b/, word) : was, was };
+    q.sx = x * 10 + 5; q.sy = ((k / gw) | 0) * 10 + 5;
+  }
+  for (const q of prov) { delete q.relief; delete q.temp; delete q.bio; delete q.n; delete q.dry; delete q.type; }
   T.ms = now() - T.t0;
-  const rivers = C.riverPaths(gen, VM.RIVER_T).map(pts => { const a = new Float32Array(pts.length * 3); pts.forEach(([u, v, f], i) => { a[3 * i] = (u + 0.5) / fx * 10; a[3 * i + 1] = (v + 0.5) / fy * 10; a[3 * i + 2] = f; }); return a; });
-  return { seed, v, gw, gh, grid, prov, gen, rivers, land: nLand, units: units.map((u, i) => ({ key: u.key, seat: u.seat, target: targetsU[i] })), T };
+  const w = { seed, v, gw, gh, grid, prov, gen, rivers, riv, ocean, land: nLand, units: units.map((u, i) => ({ key: u.key, seat: u.seat, target: targetsU[i] })), T };
+  // D9: the ground the game reads (roads, crossings, passes, cover, named features), from this world alone
+  if (A.V2.ground && typeof A.V2.ground.buildGround === 'function') { w.ground = A.V2.ground.buildGround(w, { elev, gi, metres: VM.ELEV_M,
+    places: P.map(p => ({ type: (prov[p.id].retype || {}).type || p.type, realm: p.realm })), params: { STREAM_T: VM.STREAM_T, RIVER_T: VM.RIVER_T } }); T.ground = now() - T.t0 - T.ms; }
+  return w;
 };
 };
 A.V2MAP.define(A);
