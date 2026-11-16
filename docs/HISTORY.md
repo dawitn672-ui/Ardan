@@ -1150,7 +1150,7 @@ Branch `p3-playtest` from `v2-integration` at `2aaf1ba`; one commit a fix; not p
 - **Stage 5, the page and the words** (`f16a408`): `UI.skillRows`, `UI.skillsBlock`, `UI.skillSheet` (the skill's
   popover), "Work at a skill"; every string of §1.3; the old views and the ladders of words retired. s1Phone (no sideways
   scroll, nothing under 44 points at 375 × 667), clickLint, uiSmoke, renderRng green.
-- **Stage 6, other people, lints, docs** (`STAGE6`): the closed form once a year for people with a post, the 24 who
+- **Stage 6, other people, lints, docs** (`90551aa`): the closed form once a year for people with a post, the 24 who
   matter month by month, the census `S.top` (a count); `C.prof`/`C.apt` renamed to `C.lvl`/`C.talent` in 200 places
   (identity-probe before and after: IDENTICAL on 9 lives and every event class); `tools/lint-skills.mjs` in
   `tools/check.mjs` with `tests/skills-baseline.json`; CLAUDE.md, the life-sim-systems skill, CHANGELOG, PROGRESS.
@@ -1160,5 +1160,5 @@ Branch `p3-playtest` from `v2-integration` at `2aaf1ba`; one commit a fix; not p
 - **Left open:** the 329 `A.trainSkill` calls and 95 raw writes to `p.skills` (counted, only falling; D-074); the
   balance league and the long tier on CI (this machine ran at a load of 15 to 18 on 4 cores); the census over 200
   years; G1's talent discovery.
-- **Undo:** revert the S1b commits on `s1b` (`1f029d3`..`STAGE6`); old saves of version 15 then refuse to load in an
+- **Undo:** revert the S1b commits on `s1b` (`1f029d3`..`90551aa`); old saves of version 15 then refuse to load in an
   older build, as any newer save does.
