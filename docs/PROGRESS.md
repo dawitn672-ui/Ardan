@@ -49,6 +49,16 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [x] **C7** · Names and cultures in the game: one common English pool, a lean per realm, people from the neighbour and trade partners, no twins, fiefs in their own people's language, four realm names fit their governments, the renaming hack deleted (D-058, `docs/design/names-and-cultures.md`)
 - [x] **Order 52** · Legendaries and arts renamed; ordinary arms as made things (45 forms); Sickle Moon (D-050) · `334f81e` · 2026-11-14 11:22 ET
 - [x] **C8c** · Dress, class and regalia: dress by station, people (four cuts), occasion and place; only a livery is shared; a soldier's bust; hoods for the road; a scene tag on every event and the print that follows it; outfits the player changes (D-060, `docs/design/demo-2d/c8c/`). **Blind reading 83 in 100 over six readings, 81 on the final sheet: the bar of 85 is not held (serf, peasant, merchant)**
+- [ ] **P3** · Order 54 playtest round: new life after a save; ambitions, chapters and handed goals retired (free will); reasoned consequences for crimes against rulers (no automatic forgiveness); first mission within months; a step completes after its cards are answered
+- [ ] **R1** · Nothing without reason (rule 18): every AI, noble, faction, commander and NPC decision carries a nameable reason from post, circumstance, personality and emotion; a lint and a run audit
+- [ ] **W1** · No Marshal: General the highest rank, several Generals by army size, nobles' own commands under the king; old saves map the Marshal; conscription instead of levies (with D11)
+- [ ] **D12a-2** · War design revised with the owner's ten answers (order 54)
+- [ ] **T1** · Faster testing: a quick tier on every push, the long bot-life tier nightly and before versions
+- [ ] **L2** · Legendaries: mythical names, character and aura; the bow redrawn to be truly legendary
+- [ ] **C8d** · Hair in depth; dress and appearance variety compounded (serf / peasant / merchant read right); looks matter in play where it fits
+- [ ] **D11+** · Military path by weapon, way of fighting and every useful aptitude; training tailored to each unit's make-up
+- [ ] **G0** · Growth non-linear: research and a standard (before G)
+- [ ] **Gaps** · Every known leftover: "the" before realm forms, lore people's names, tablets' phone shell, missions abroad for cards, U6/U10/U12/U17/U21, 200% text, mourning dress, NPC dress by occasion, jewellery, mounts, interiors (V19), cut-in tone (V11-12)
 - [ ] **D9** · The inked, detailed map; war fronts that spread like a burn (D-016)
 - [x] **D12a** · War design: theatre, field, press; sight by rank; one engine with a cause ledger; nine stages (`docs/design/war.md`) · `0378b9e` · 2026-11-14 05:43 ET · **10 owner decisions pending**
 - [ ] **D11** · Military branches (feudal armies, D-012)

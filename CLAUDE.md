@@ -19,6 +19,12 @@ built on top of it: **features** that add code and events, the **v2 engine** (pl
 
 ## Standing rules (the owner's)
 
+> ### ⚑ NOT A SINGLE THING IN THIS WORLD HAPPENS OUTSIDE OF REASON.
+> Things may come down to chance, luck, reasoned or calculated action, even petty and emotional reasons, but **never to
+> no reason at all.** Every figure acts from a thought process that fits his post, circumstances and personality. Coups,
+> rebellions and factions follow a kingdom's stability, the king's relations with each noble, and their own ambitions,
+> desires and circumstances. Everything is intertwined. (The owner, order 54, for the rest of this game's making; D-062.)
+
 - **Descriptions open on click, never on hover.** A button or an info icon opens a description; nothing pops up on
   hover. (Round 2 order B4, done: `src/ui/59-descriptions` opens on click, tap and Enter only, a `title=` of more than
   three words is lifted into a click-to-open note, an activity opens a sheet first, and `src/ui/99998-click-open/test.mjs`

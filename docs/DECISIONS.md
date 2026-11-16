@@ -1075,3 +1075,31 @@ wife, children, brothers and sisters, alive and free), who answer by letter ("A 
 the realm still advise no one. `advLives` measures 74% and 3.3 advisors a life (peasant 2) against its 60% and 2.5 bars; the illness scene's
 family at the bed still needs `present`.
 
+### D-062 · Order 54: nothing without reason; the owner's war answers; no Marshal; the playtest round (2026-11-15 21:13 ET)
+**The rule.** "Not a single thing in this world should happen outside of reason." Written, highlighted, at the top of
+CLAUDE.md's standing rules and as game rule 18. Every system that decides (AI rulers, nobles, factions, commanders,
+NPC moves, courts, juries) must carry a reason it can name: a want, a fear, a grudge, a calculation, an emotion, a debt,
+a chance roll *weighted by* those. A random draw is allowed only as the dice within reasons, never instead of them.
+**The Marshal question** is answered by the rule, not by (a) or (b): a figure's wants follow his own post, circumstances
+and personality. **And the Marshal is removed (answer 10):** General is the highest rank of an army; several Generals
+by the army's size; nobles keep their own commands and armies under them, serving the king in a hierarchy that can
+breed regional disputes. This supersedes D-017, D-031's Marshal parts, D-049 and A2's Marshal seat; old saves map a
+Marshal to the realm's senior General.
+**The ten war answers** (docs/design/war.md) are recorded in order 54 and fold into D12a's design (revised as D12a-2)
+before D11 and D12b: sight by who you are; stops for anything involving you; stand by rank, role and delegation, with
+requests; **no levies, conscription when needed, armies of honour and volunteers**; wars end in surrender or defeat,
+moved by personality and emotion; a full report system by rank, relationship and importance; people known by situation;
+everything in world history and saves.
+**The playtest round (P3), fixed in the game:** (a) "Start a new life" after a save; (b) ambitions, chapters and the
+decisions that hand the player goals are retired to archive/ (free will: everything available, nothing handed); (c)
+crimes against a ruler have reasoned consequences (attempts are discovered, punished, remembered; forgiveness follows the
+ruler's opinion, personality and the crime, never automatic; a murdered monarch is dead and succession runs); (d) a
+soldier meets his first mission within months, by reason (his unit's war, his post); (e) army training tailored to each
+unit's make-up and tendencies, and the military path chosen by weapon, way of fighting and every useful aptitude
+(command, logistics, seamanship...) — with D11; (f) a step stops only for what matters and, once the cards are answered,
+**carries on to complete the month or year**; (g) growth made non-linear, researched (with G); (h) hair and (i) dress
+variety compounded, appearance matters in play where it fits (C8d); legendary names made mythical, the bow redrawn.
+**Nothing is low on the list.** Every known gap (CRITIQUE leftovers, H-entries' "left open", D-058's grammar) is a
+tracked item. **Permissions granted:** merge PR #2 (v2-integration) when CI is green; branch deletion is the owner's on
+GitHub (the session cannot delete refs), helped by a script.
+
