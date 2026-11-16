@@ -252,7 +252,7 @@
   // on the page a skill is one control (the whole row opens its description); Records keeps the tier as its own
   const skillRow = r => trig(['skill', r.k], `<span class="pf-l">${esc(r.name)}${r.apt === 'apt' ? ' <span class="pf-apt" aria-label="quick to learn">★</span>' : r.apt === 'slow' ? ' <span class="pf-apt" aria-label="slow to learn">▽</span>' : ''}</span><span class="pf-tier">${esc(r.tier)}</span><span class="pf-prog" aria-hidden="true"><i style="transform:scaleX(${Math.round(r.frac * 1000) / 1000})"></i></span>`, 'pf-sk', 'li');
   PF.addPanel({ k: 'skills', label: 'Skills', body: p => {
-    const arts = PF.styles(p).filter(x => x.rank > 0).slice(0, 2), rows = PF.skills(p, false).slice(0, 5);
+    const arts = PF.styles(p).filter(x => x.rank > 0).slice(0, 2), rows = PF.skills(p, false).slice(0, 4);   // (S1b CI 137: four, a level is two words where a tier was one; the page's word budget, D-077)
     let s = '';
     if (arts.length) s += '<ul class="pf-list">' + arts.map(x => li(x.main ? 'Main style' : 'Style', `${note('A way of fighting taught by a school or a house. Each rank unlocks techniques you can use in a duel.', esc(x.name), 'pf-w')} <span class="pf-m2">${esc(x.rankWord)}</span>`)).join('') + '</ul>';
     s += rows.length ? '<ul class="pf-skills">' + rows.map(skillRow).join('') + '</ul>' : empty(UI.scope && !UI.scope(p).sees('skills') ? 'A babe has learned nothing yet.' : 'Nothing learned yet. Try your hand at something.');
@@ -456,8 +456,9 @@
 .pf-h2{margin:8px 0 2px;font:600 var(--t-small,13px)/1.3 var(--f-ui);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
 .pf-empty,.pf-fine{margin:2px 0;color:var(--ink-3);font-size:var(--t-small,13px)}
 .pf-fight .pf-row{grid-template-columns:6.6em auto minmax(0,1fr);border-bottom:0}
-#game .pf .tt.pf-sk{display:grid;grid-template-columns:minmax(0,1fr) 7.4em 64px;gap:8px;align-items:center;text-decoration:none;border:0;border-bottom:1px solid var(--line);padding:0 4px;margin:0 -4px;border-radius:5px}.pf .tt.pf-sk:hover{background:var(--accent-tint)}
-.pf-sk{display:grid;grid-template-columns:minmax(0,1fr) 7.4em 64px;gap:8px;align-items:center;font-size:var(--t-ui,14px);min-height:26px}
+#game .pf .tt.pf-sk{display:grid;grid-template-columns:minmax(0,1fr) 8.6em 64px;gap:8px;align-items:center;text-decoration:none;border:0;border-bottom:1px solid var(--line);padding:0 4px;margin:0 -4px;border-radius:5px}.pf .tt.pf-sk:hover{background:var(--accent-tint)}
+.pf-sk{display:grid;grid-template-columns:minmax(0,1fr) 8.6em 64px;gap:8px;align-items:center;font-size:var(--t-ui,14px);min-height:26px}
+.pf-sk .pf-l,.pf-sk .pf-tier{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .pf-tier{font-weight:600;color:var(--ink)}
 .pf-prog{display:block;height:5px;border-radius:3px;background:var(--line);overflow:hidden}
 .pf-prog i{display:block;height:100%;background:var(--accent)}

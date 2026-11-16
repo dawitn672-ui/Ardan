@@ -536,8 +536,9 @@ export default {
         if (t) { const txt = t.textContent; let i = 0;
           for (const w of txt.split(/(\s+)/)) { if (w.trim()) { const rg = document.createRange(); rg.setStart(t, i); rg.setEnd(t, i + w.length); const tops = new Set([...rg.getClientRects()].map(x => Math.round(x.top))); if (tops.size > 1) broken.push(w); } i += w.length; } }
         const over = [];
-        for (const row of document.querySelectorAll('#profile .profs .prow')) {
-          const a = row.querySelector('.v2-tier'), b = row.querySelector('.v2-hrs'), nm = row.querySelector(':scope > span:first-child');
+        // S1b (D-072): a skill row is 36-skills' .skrow: its name, its level and its two words of state must not overlap
+        for (const row of document.querySelectorAll('#profile .skills .skrow')) {
+          const a = row.querySelector('.skl'), b = row.querySelector('.sks') || row.querySelector('.skl'), nm = row.querySelector('.skn');
           if (!a || !b || !nm) continue;
           // the text's own extent, not the box's: a word wider than its column spills over its neighbour
           const ext = el => { const rg = document.createRange(); rg.selectNodeContents(el); return rg.getBoundingClientRect(); };
@@ -546,7 +547,7 @@ export default {
           const hit = (x, y) => x.left < y.right - 3 && y.left < x.right - 3 && x.top < y.bottom - 3 && y.top < x.bottom - 3;
           if (hit(A1, B1) || hit(N1, A1) || hit(N1, B1)) over.push(nm.textContent.trim());
         }
-        return { cut, name: n ? n.textContent.trim() : '', words: !!t, broken, over, rows: document.querySelectorAll('#profile .profs .prow .v2-tier').length, vitals: document.querySelectorAll('#profile .lk-vitals .barrow').length };
+        return { cut, name: n ? n.textContent.trim() : '', words: !!t, broken, over, rows: document.querySelectorAll('#profile .skills .skrow .skl').length, vitals: document.querySelectorAll('#profile .lk-vitals .barrow').length };
       });
     } finally { await ctx.close(); }
     const ok = r.vitals >= 5 && !r.cut.length && /Hoofbreaker/.test(r.name) && r.words && !r.broken.length && r.rows > 0 && !r.over.length;

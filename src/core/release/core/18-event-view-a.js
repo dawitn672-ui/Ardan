@@ -217,7 +217,7 @@ A.eventChoose = function (idx) {
     // S1b (D-072): a check is a stretch: 0.3 of a month's effort against its difficulty, a failure teaching a third more
     if (!GD.STATS.includes(c.check.s) && GD.SKILLS[c.check.s])
       A.SK
-        ? A.gainXp(pc, c.check.s, 0.3, { q: "stretch", d: A.SK.lvOfValue(c.check.d || 45), failed: !success, why: typeof e.title === "string" ? e.title : "a test" })
+        ? A.gainXp(pc, c.check.s, 0.3, { q: "stretch", d: A.SK.lvOfValue(c.check.d || 45), failed: !success, why: A.SK.cardTitle ? A.SK.cardTitle(q, e) : "a test" })
         : A.trainSkill(pc, c.check.s, 1.5);
   } else if (c.group && A.groupFightPC) {
     const g = A.groupFightPC(pc, c.group, q.ctx || {});
@@ -343,7 +343,7 @@ A.applyFx = function (pc, fx, ctx) {
       case "skill":
         // S1b (D-072): a card's grant is experience: n x 0.2 of a month's effort, a stretch when the choice had a check
         // or stakes (the eventChoose stage "skills" sets the cause), a practice otherwise
-        for (const s in v) A.SK ? A.gainXp(pc, s, v[s] * 0.2, A.SK.cur || undefined) : A.trainSkill(pc, s, v[s]);
+        for (const s in v) A.SK ? A.gainXp(pc, s, v[s] * A.SK.SHIM, A.SK.cur || undefined) : A.trainSkill(pc, s, v[s]);
         break;
       case "rep":
         if (A.addRep) A.addRep(pc, v);

@@ -1488,3 +1488,23 @@ The audit (`docs/IOS_ROADMAP.md` §7) found these conflicts between the rules an
    post's work against its rank's demand, talent, age, concepts by hash. Before S1b nobody but the player grew.
 7. **Notable** (a breakthrough, a word from Expert up) is a line in the year's digest (`A.V2Y.met`), as a coming of
    age is; it does not stop the year by itself (D-019, order 17).
+
+### D-077 · S1b after CI 137: the walls a life met at Advanced V, eased by named constants (2026-11-16; D-072, D-074)
+**Found** (CI 137, balance job: noble median peak coin 6,302 against 30,000 to 700,000). Twelve league nobles played to 35
+on the build and on the one before S1b: before, their best skill stood at 73 to 100 and four held a council seat or the
+rank of General; after, 51 to 65, most of them at Advanced V (51) for six to eleven years, behind the Expert concepts or
+waiting for a proof the cards rarely offer (the proving card came once in eight years), and one held a seat. The world's
+seats, posts and pay compare the player with people rolled on the old scale (councillors at 70 to 92).
+**Chosen**, each a named constant in `src/people/36-skills/a-model.core.js`, the owner's to move:
+1. `SK.SHIM` 0.2 → 0.5: older code's grants (a duel, a battle, a council's month, a card's `skill`) were the old growth's
+   main road; at 0.2 they were a tenth of what they gave. A card's `skill: n` reads the same constant.
+2. `SK.INSIGHT_LIFE` = 2: a month of a life is many-sided (post, cards, talk, plan), so its chance of insight is twice
+   the model's single month of drill. The model (`docs/design/skills/model.mjs`, `lives.json`) is unchanged: the factor
+   comes in through `ctx.insightMul`.
+3. `SK.PROOF_SLACK` = 1: a stretch succeeded at the top step of your own word proves you for the next (the model asks
+   the next word's own level, and the cards hold few checks at 55 and up).
+4. The proving card is offered once a year to someone who has stood ready a year (`SK.offerDeed`), instead of waiting on
+   the draw among thousands of cards.
+5. The Profile's skills panel shows the best four (a level is two words where a tier was one; the page's word budget).
+**Not done:** the world's rolls (councillors, mentors, order masters at 70 to 96) are left on the old scale; holding them
+to what their years allow (the closed form) is the fuller answer and touches the legend ladder and war; for the owner.

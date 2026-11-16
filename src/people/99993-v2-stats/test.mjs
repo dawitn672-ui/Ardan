@@ -167,10 +167,11 @@ export default {
       // twice), and a skill row whose tier sat in the release's number column; each row now has exactly a tier and hours
       const heads = (h.match(/<div class="group-h">([^<]*)<\/div>/g) || []).map(x => x.replace(/<[^>]+>/g, ''));
       const full = UI.profBlock(A.pc());
-      const rows = (full.match(/<div class="prow"[\s\S]*?<div class="bar"/g) || []);
-      const rowsOk = rows.length > 0 && rows.every(x => /class="v2-tier"/.test(x) && /\d hours</.test(x) && !/<b>\d+<\/b>/.test(x));
+      // S1b (D-072): a skill row is its name and its level in words (36-skills' .skrow); the hours are gone
+      const rows = (full.match(/<div class="skrow[^"]*"[\s\S]*?<span class="skl">[^<]*<\/span>/g) || []);
+      const rowsOk = rows.length > 0 && rows.every(x => /<span class="skl">(Rusty · )?(Beginner|Intermediate|Advanced|Expert|Master|Grandmaster|Legend) [IV]+<\/span>/.test(x) && !/\d hours/.test(x) && !/<b>\d+<\/b>/.test(x));
       // C9 (D-040, order 34): the body in words on the measured scale, no real units (kg, m/s, km a day, ms) at all
-      return { t: t.slice(0, 1600), words: /Strength\s*(feeble|weak|slight|average|strong|very strong|mighty|off the chart)/.test(t), kg: /\d+ kg/.test(t), ms: /\d+(\.\d)? m\/s/.test(t), km: /km a day/.test(t), react: /\d+ ms/.test(t), mind: /Wits/.test(t), tier: /(Untrained|Novice|Apprentice|Journeyman|Adept|Expert|Master)/.test(t) && /hours/.test(t), oldBars: /Strength \d+|Combat Instincts/.test(t),
+      return { t: t.slice(0, 1600), words: /Strength\s*(feeble|weak|slight|average|strong|very strong|mighty|off the chart)/.test(t), kg: /\d+ kg/.test(t), ms: /\d+(\.\d)? m\/s/.test(t), km: /km a day/.test(t), react: /\d+ ms/.test(t), mind: /Wits/.test(t), tier: /(Beginner|Intermediate|Advanced|Expert|Master|Grandmaster|Legend) [IV]+/.test(t) && !/\d hours/.test(t), oldBars: /Strength \d+|Combat Instincts/.test(t),
         dupHeads: heads.length !== new Set(heads).size, heads, rowsOk, rows: rows.length };
     });
     const ok = r.words && !r.kg && !r.ms && !r.km && !r.react && r.mind && r.tier && !r.oldBars && !r.dupHeads && r.rowsOk;

@@ -23,6 +23,8 @@ What changed for the player, in plain words, one section per version (newest fir
   it over. Twelve new moments: the master's word, the chance to be judged, the rival, the quiet winter, a specialism,
   "some never see it", and more.
 - **The season's line** now says in words what rose and chiefly why, and what held and why.
+- **Skills grow at a living pace.** What you do in a month counts more toward a step, ideas come a little sooner in a
+  busy life, and once you are ready for a new word the chance to prove it comes to you within a year.
 - **Old saves:** every skill becomes the level under its old number (no word is lost; the rest goes on the bar), the
   folded skills become specialisms, and gifts become talent letters.
 - **Kings and lords decide for reasons you can read.** A crown goes to war, a great house joins or leaves a faction, and

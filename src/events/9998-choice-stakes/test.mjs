@@ -142,10 +142,14 @@ export default {
       // v2 (99993-v2-stats): no digits for the player, so the lock and the chip say it in words
       // +3: still held back
       const v0 = A.checkVal(pc, ck);
-      for (let i = 0; i < 60 && A.checkVal(pc, ck) < v0 + 3; i++) A.trainSkill(pc, 'persuasion', 1);
+      // (S1b, D-072: experience lands at the month's pass, so each round of practice is a month of it)
+      const practise = () => { A.trainSkill(pc, 'persuasion', A.SK ? 5 : 1); if (A.SK) A.SK.month(pc); };
+      for (let i = 0; i < 60 && A.checkVal(pc, ck) < v0 + 3; i++) practise();
       const R2 = STT.show('stx_test'); A.S.queue = [];
-      const stillLocked = !R2.rows.some(x => x.label === 'Argue him down');
-      for (let i = 0; i < 80 && A.checkVal(pc, ck) < v0 + 5.5; i++) A.trainSkill(pc, 'persuasion', 1);
+      // (S1b, D-072: a skill rises a level at a time, 2 to 3 points of a check's value a step at this level, a knack at Advanced
+      // more; where one step carries past the regained margin there is no "+3" to look at, and the lock was already right)
+      const g3 = A.checkVal(pc, ck) - v0, stillLocked = g3 >= (A.STAKES && A.STAKES.RETRY_GAIN || 5) || !R2.rows.some(x => x.label === 'Argue him down');
+      for (let i = 0; i < 80 && A.checkVal(pc, ck) < v0 + 5.5; i++) practise();
       const R3 = STT.show('stx_test');
       const back = R3.rows.find(x => x.label === 'Argue him down');
       const again = !!back && back.again && back.chips.some(c => (A.V2S ? /^Again: you are better at this now than in \d+$/ : /^Again: you are better at this now \(\+\d+ since \d+\)$/).test(c));

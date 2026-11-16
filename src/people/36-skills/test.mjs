@@ -169,9 +169,12 @@ export default {
         const pc = A.pc();
         let last = {};
         for (let y = 0; y < 30 && pc.alive; y++) {
-          for (const k in pc.sk) last[k] = pc.sk[k].lv;
+          // (CI 137: a year counts only for a skill that was worked that year, by the steady drill of the plan or a post;
+          // the skills a life holds and leaves idle sat in the Intermediate count and diluted it)
+          const E = SK.E(), pos = s => E.totalTo(s.lv) + s.xp + s.st, at = {}, streak = {};
+          for (const k in pc.sk) { last[k] = pc.sk[k].lv; at[k] = pos(pc.sk[k]); streak[k] = pc.sk[k].streak; }
           if (T.play(1) !== 'ok') break;
-          for (const k in pc.sk) { const w = SK.wordOf(last[k] || 0); if (rate[w]) { rate[w][0] += 1; rate[w][1] += pc.sk[k].lv - (last[k] || 0); } }
+          for (const k in pc.sk) { const s = pc.sk[k], w = SK.wordOf(last[k] || 0); if (rate[w] && s.streak >= 12 && streak[k] >= 1 && pos(s) > (at[k] || 0)) { rate[w][0] += 1; rate[w][1] += s.lv - (last[k] || 0); } }
         }
       }
       // the same month of drill at two levels, as the share of a step it buys
