@@ -68,16 +68,16 @@
     const [id, b, s] = String(arg).split('|'), d = A.divById(id);
     if (!d || !CO.ok(d)) return '';
     const c = CO.cap(d, +b, +s);
-    if (!c) return '<b>No senior captain</b><div class="tiny">The post is vacant until the year\'s promotions.</div>';
+    if (!c) return '<b>No commander</b><div class="tiny">The post is vacant until the year\'s promotions.</div>';
     const G = A.GENERALS, sat = c.sat || 0;
-    return `<b>${c.pc ? 'You' : esc((+s === 4 ? 'Senior Captain ' : 'Captain ') + c.name)}</b><div class="tiny">Command ${Math.round(c.cmd)} · ${esc(G && G.NAMES ? G.NAMES[c.temper] || c.temper : c.temper)} · ${sat >= 30 ? 'content' : sat <= -30 ? 'unhappy' : 'neither pleased nor not'} (${sat})</div>`;
+    return `<b>${c.pc ? 'You' : esc((+s === 4 ? 'Commander ' : 'Captain ') + c.name)}</b><div class="tiny">Command ${Math.round(c.cmd)} · ${esc(G && G.NAMES ? G.NAMES[c.temper] || c.temper : c.temper)} · ${sat >= 30 ? 'content' : sat <= -30 ? 'unhappy' : 'neither pleased nor not'} (${sat})</div>`;
   };
   const view = d => (CO.ok(d) ? d.bs : null);
   // one battalion row (pure)
   CO.bnRow = function (d, i, open) {
     const b = d.bs[i], m = CO.bm(b), mo = CO.bMo(b), sup = CO.isSup(b.c), sen = sup ? null : CO.cap(d, i, 4), mine = CO.mineIs(d, i);
     const hon = (b.hon || []).map(h => `<span class="co-seal" title="${esc(h[0] + ', ' + h[1])}">${esc(h[0].replace(/^(Battle of|Fight at) /, '').slice(0, 1))}</span>`).join('');
-    let h = `<div class="co-row${mine ? ' co-mine' : ''}"><div class="co-name"><b>${esc(CO.bnName(d, i))}</b>${hon ? ' ' + hon : ''}${mine ? ' <span class="tag">yours</span>' : ''}<div class="tiny muted">${sup ? 'support' : `<span data-tt="coCap" data-v="${esc(d.id + '|' + i + '|4')}">${sen ? esc(sen.pc ? 'You' : 'Sen. Capt. ' + sen.name) : 'no senior captain'}</span>`}</div></div>` +
+    let h = `<div class="co-row${mine ? ' co-mine' : ''}"><div class="co-name"><b>${esc(CO.bnName(d, i))}</b>${hon ? ' ' + hon : ''}${mine ? ' <span class="tag">yours</span>' : ''}<div class="tiny muted">${sup ? 'support' : `<span data-tt="coCap" data-v="${esc(d.id + '|' + i + '|4')}">${sen ? esc(sen.pc ? 'You' : 'Commander ' + sen.name) : 'no commander'}</span>`}</div></div>` +
       `<div class="co-bars"><span class="tiny" data-tt="coMen" data-v="${esc(d.id + '|' + i)}">${A.fmt(m)}</span>${bar(m, nominal(b.c), 'men', `${m} of ${nominal(b.c)} men`)}` +
       `<span class="tiny" data-tt="coMo" data-v="${esc(d.id + '|' + i + '|-1')}">mo ${Math.round(mo)}</span>${bar(mo, 100, 'mo', `morale ${Math.round(mo)}`)}<span class="tiny" data-tt="coXp" data-v="${esc(d.id + '|' + i)}">xp ${Math.round(b.x)}</span>${b.wd >= 1 ? `<span class="tiny muted" data-tt="coHurt" data-v="${esc(d.id + '|' + i)}">${Math.round(b.wd)} hurt</span>` : ''}</div></div>`;
     if (open && !sup) {
@@ -105,7 +105,7 @@
     const cap = C.cap, sj = C.sergeants[0];
     const key = C.d.id + '|' + C.b + '|' + C.i, men = `${tt('coMen', key, `${A.fmt(C.men)} fit`)} · ${tt('coHurt', C.d.id + '|' + C.b, `${A.fmt(C.wd)} hurt`)}${dead ? ` · ${tt('coLoss', 'dead', `${A.fmt(dead)} dead`)}` : ''}${des ? ` · ${tt('coLoss', 'des', `${A.fmt(des)} deserted`)}` : ''}`;
     return `<div class="card co-card" role="region" aria-label="Your company"><div class="row"><b>${esc(C.name)}</b><span class="right tag">${esc(word(C.mo))}</span></div>` +
-      `<div class="small">${cap.pc ? 'You are its captain' : `Captain <b>${esc(cap.name)}</b> <span class="muted" data-tt="coCap" data-v="${esc(C.d.id + '|' + C.b + '|' + C.i)}">(${esc((A.GENERALS && A.GENERALS.NAMES && A.GENERALS.NAMES[cap.temper]) || cap.temper)}, command ${Math.round(cap.cmd)})</span>`}${C.sen ? ` · senior captain ${esc(C.sen.pc ? 'you' : C.sen.name)}` : ''}</div>` +
+      `<div class="small">${cap.pc ? 'You are its captain' : `Captain <b>${esc(cap.name)}</b> <span class="muted" data-tt="coCap" data-v="${esc(C.d.id + '|' + C.b + '|' + C.i)}">(${esc((A.GENERALS && A.GENERALS.NAMES && A.GENERALS.NAMES[cap.temper]) || cap.temper)}, command ${Math.round(cap.cmd)})</span>`}${C.sen ? ` · commander ${esc(C.sen.pc ? 'you' : C.sen.name)}` : ''}</div>` +
       `<div class="small">Company sergeant ${esc(sj.name)}${sq.length ? ` · beside you: ${sq.map(p => esc(p.given)).join(', ')}` : ''}</div>` +
       `<div class="small">${men}</div>` +
       `<div class="small"><span data-tt="coMo" data-v="${esc(C.d.id + '|' + C.b + '|' + C.i)}">Morale ${Math.round(C.mo)}</span> · ${tt('coFood', C.d.id, `bread for ${Math.round(C.food)} days`)} · ${tt('coPay', C.d.id, C.pay ? `pay ${C.pay} month${C.pay > 1 ? 's' : ''} behind` : 'paid up')}${C.hon.length ? ' · honours: ' + C.hon.map(h => esc(h[0] + ' ' + h[1])).join(', ') : ''}</div></div>`;

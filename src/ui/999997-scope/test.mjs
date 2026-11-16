@@ -1,5 +1,5 @@
 // 999997-scope (B5 part 2, D-055): UI.scope(pc) is one pure reader of age, class, post, rank, war and household, and six
-// lives (a newborn, a child of 9, a squire of 16, a File-Leader at war, a captain in garrison, a councillor) draw every page,
+// lives (a newborn, a child of 9, a squire of 16, a sergeant at war, a captain in garrison, a councillor) draw every page,
 // overlay and person card with no string their scope forbids. The forbidden lists are data, below, one per life.
 const POL = "race: 'human', realm: 'POL-01'";
 
@@ -27,11 +27,11 @@ export const LIVES = [
     must: [/Spar with someone/, /Spend time together/],
   },
   {
-    name: 'File-Leader at war',
+    name: 'sergeant at war',
     setup: `(() => { T.enter({ seed: 8104, ${POL}, status: 'peasant', sex: 'M', startAge: 25 }); const pc = A.pc(); A.enlist(pc); pc.mil.rank = 1; const me = pc.mil.realm; A.startWar(me, A.neighbors(me)[0], null, 'conquest'); A._idIdx = null; A.advance(12); A._idIdx = null; A.S.queue = []; })()`,
     pages: [/Open the War Room/, /War Room/, /Statecraft/, /Govern the realm/, /Plot to seize/, /Fund a trade venture/, /Find work/, /Enlist in/, /Browse schools/, /Seek a fighting school/, /Negotiate peace/, /Dictate the peace/],
     cards: [],
-    must: [/File-Leader/, /Order of battle/],
+    must: [/Sergeant/, /Order of battle/],
   },
   {
     name: 'captain in garrison',

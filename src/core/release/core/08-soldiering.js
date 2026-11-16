@@ -100,10 +100,10 @@ A.comradeDies = function (pc, c, how) {
   return line;
 };
 
-// [A2 posts] what resigning a commission costs: every field post and the Marshal's seat are left; at war, someone who
-// held a command (a division or more, or the seat) loses fame and the crown's goodwill
+// [A2 posts] what resigning a commission costs: every field post is left (the first host with the senior General's
+// place, W1-1); at war, someone who held a command (a host or more) loses fame and the crown's goodwill
 const resignPosts = function (pc) {
-  const left = A.POSTS.leaveAll(pc.id, "resigned", { cls: ["FIELD"], marshal: true });
+  const left = A.POSTS.leaveAll(pc.id, "resigned", { cls: ["FIELD"] });
   if (left.length && A.atWar(pc.mil.realm).length) {
     A.fame(pc, -2);
     const ru = A.P((A.realm(pc.mil.realm) || {}).ruler);
@@ -122,8 +122,8 @@ A.resign = function () {
           msg: 'In wartime, leaving is desertion. (Use "Desert" if you mean it.)',
         }
       : (A.log(`You leave ${pc.mil.unit} after ${pc.mil.years} years as ${A.milTitle(pc)}.`),
-        // [A2 posts] leaving the army leaves every field post and the Marshal's seat (which needs the commission);
-        // at war a commander who walks away costs fame and the crown's goodwill
+        // [A2 posts] leaving the army leaves every field post; at war a commander who walks away costs fame and the
+        // crown's goodwill
         A.POSTS && resignPosts(pc),
         (pc.mil.retired = true),
         (pc.veteran = {

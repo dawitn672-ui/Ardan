@@ -25,7 +25,7 @@ const COUNT = () => {
     if (el.closest('svg') || el.closest('[hidden]')) continue;
     const own = [...el.childNodes].filter(x => x.nodeType === 3).map(x => x.textContent).join('');
     if (/\d\s?%/.test(own)) out.pct++;
-    // an ordinal in a name ("File-Leader of the 6th Aldmark", a regiment's number) is a name, not a measure: CI 107's
+    // an ordinal in a name ("Sergeant of the 6th Aldmark", a regiment's number) is a name, not a measure: CI 107's
     // re-rolled world gave the peasant a file in a numbered regiment
     if (!/\d/.test(own.replace(/\b\d+(?:st|nd|rd|th)\b/g, ''))) continue;
     out.n++;

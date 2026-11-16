@@ -96,7 +96,7 @@ export default {
       try {
         res[name] = await p.evaluate(async motion => {
           MOT.start(undefined, motion);
-          UI.MOMENTS.show({ k: 'promoted', word: 'Promoted', sub: 'File-Leader', who: A.S.pc });
+          UI.MOMENTS.show({ k: 'promoted', word: 'Promoted', sub: 'Sergeant', who: A.S.pc });
           const el = document.getElementById('mo-cut');
           const o = { cls: el.className, moving: MOT.moving('#mo-cut'), anims: MOT.anims('#mo-cut'), attr: document.documentElement.dataset.motion || 'none' };
           await new Promise(r => setTimeout(r, 1320));

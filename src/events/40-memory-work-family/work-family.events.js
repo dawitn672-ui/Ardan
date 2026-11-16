@@ -818,7 +818,7 @@
         { t: "Go up the first ladder", check: { s: "athletics", s2: "wil", d: 55 },
           win: { r: "You are over the parapet before the defenders turn round. The company follows. When the commander asks who was first, men say your name before the captain can.", fx: { merit: 15, fame: 3, wil: 1.5, deed: "First up the ladder" } },
           lose: { r: "A stone takes you on the fourth rung. You wake in the surgeons' tent with the captain's compliments.", fx: { health: -20, cause: "a stone from the wall", wound: "concussion", merit: 5 } } },
-        { t: "Go to the senior captain who heard you that day", check: { s: "diplomacy", s2: "command", d: 55 },
+        { t: "Go to the commander who heard you that day", check: { s: "diplomacy", s2: "command", d: 55 },
           win: { r: "He remembers. The ladder list is read again with your name in the middle. The captain stops smiling, which is better and worse.", fx: { merit: 3, honor: 2 } },
           lose: { r: "He does not remember, or will not. You go up the ladder anyway, now known as someone who complains.", fx: { merit: -5, health: -10, cause: "a fall from a ladder" } } },
         { t: "Pay a grey veteran to take your rung (15 suns)", req: p => p.coin >= 15,

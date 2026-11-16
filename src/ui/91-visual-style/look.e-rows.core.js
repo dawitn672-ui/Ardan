@@ -30,7 +30,7 @@
     sergeant: 'uncommon', ten_battles: 'uncommon', big_family: 'uncommon', rich: 'uncommon', outlaw: 'uncommon', polyglot: 'uncommon', knighted: 'uncommon',
     captain: 'rare', master_craft: 'rare', banker: 'rare', lord: 'rare', school_master: 'rare', beast: 'rare', founder: 'rare', patriarch: 'rare',
     general: 'epic', centurion: 'epic', giant_killer: 'epic', usurper: 'epic', dynasty3: 'epic', hundred_kills: 'epic', pirate_king: 'epic', ancient: 'epic',
-    marshal: 'legendary', ruler: 'legendary', conqueror: 'legendary', king_slayer: 'legendary', peasant_king: 'legendary', dragon: 'legendary',
+    senior_general: 'legendary', ruler: 'legendary', conqueror: 'legendary', king_slayer: 'legendary', peasant_king: 'legendary', dragon: 'legendary',
     legend: 'mythic',
   };
   const TIER_NAME = { common: 'Common', uncommon: 'Uncommon', rare: 'Rare', epic: 'Epic', legendary: 'Legendary', mythic: 'Mythic' };

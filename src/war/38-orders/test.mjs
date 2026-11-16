@@ -61,10 +61,8 @@ export default {
           // four sets of twelve worlds (a world's war depends on the whole stream its seed draws, which C7 changed: the old twelve alone gave bold's field share +7 points over steady's and the new twelve 0, and other sets of twelve gave +2 and +1 on the old build too)
           A.newGame({ seed: 71 + s + 100 * ([0, 1, 2, 3, 5, 7, 11, 40].indexOf(burn) % 4), race: 'human', realm: 'POL-05', status: 'peasant', sex: 'M', startAge: 30 });
           const me = ['POL-01', 'POL-02', 'POL-03'][s % 3], en = A.neighbors(me)[s % 2];
-          // the tempers are compared under generals the crown deals alike: since D-049 Aldmark and Varenna start with the
-          // lore's sitting Marshal, a seasoned commander who takes the main host himself, and two wars in three would be
-          // his (steady read 29% field fights with him, 20% without; CI 112). He is set aside for this count
-          for (const rid of [me, en]) if (A.POSTS && A.realm(rid) && A.realm(rid).council && A.realm(rid).council.marshal) A.POSTS.vacate(A.POSTS.seatKey(rid, 'marshal'), 'test');
+          // the tempers are compared under generals the crown deals alike (W1-1: the senior General leads the first host and
+          // takes no army, so no lore commander is set aside any more; CI 112's note on D-049's Marshals is history)
           if (!en) continue;
           A.startWar(me, en, null, 'conquest');
           const think = A.armyThink, fend = A.fightEnd, occ = A.occupy, seen = new Map();

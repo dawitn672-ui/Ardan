@@ -30,11 +30,12 @@ const SETUP = () => {
       A.chance = () => offered;
       try { return A.nobleAction('office'); } finally { A.chance = ch; A.pick = pk; }
     },
-    marshals(r) {
+    // W1-1: who is styled the realm's senior General (one man, the General of the first host)
+    seniors(r) {
       const out = [];
       for (const id in A.S.people) {
         const p = A.S.people[id];
-        if (p && p.alive && p.realm === r.id && /^Marshal of /.test(A.mainRole(p))) out.push(p.id);
+        if (p && p.alive && p.realm === r.id && /^Senior General of /.test(A.mainRole(p))) out.push(p.id);
       }
       return out;
     },
@@ -52,127 +53,97 @@ const SETUP = () => {
 };
 
 export default {
-  // the owner's report (posts-map.md 2.1, road 1): a Captain named Marshal kept his company, got no army, and another
-  // man held the title. Now: no Marshal in a war one army can hold; never a Captain; a General named Marshal for a war
-  // that needs one takes the seat, grade 9, every army, the main host in person; its general takes his old army; one
-  // Marshal; resigning leaves nothing behind.
-  async postsMarshalRepro(pg) {
+  // the owner's report (posts-map.md 2.1, road 1): a Captain named to the army's council seat kept his company, got no
+  // army, and another man held the title. W1-1 (D-064): there is no Marshal; the army's place at council is the senior
+  // General's, the General of the crown's first host. The court's roll never gives it to a Captain; a General given it
+  // takes the first host and the council's place, no army, and only one man holds it; resigning leaves nothing behind.
+  async postsSeniorGeneralCourt(pg) {
     const r = await pg.evaluate('(' + SETUP.toString() + ')();(' + (() => {
-      const { pc, r, foes } = PT.aldmark(11);
+      const { pc, r } = PT.aldmark(11);
       const out = { steps: [] };
-      const step = name => out.steps.push({ name, rank: pc.mil ? pc.mil.rank : null, seat: r.council.marshal === pc.id, office: pc.office || null, role: A.cmdRole(pc).key, marshals: PT.marshals(r).length, audit: A.POSTS.audit().length });
+      const step = name => out.steps.push({ name, rank: pc.mil ? pc.mil.rank : null, senior: A.POSTS.isSeniorGeneral(pc.id), seat: r.council.general === pc.id, office: pc.office || null, role: A.cmdRole(pc).key, seniors: PT.seniors(r).length, audit: A.POSTS.audit().length });
       step('captain at war');
-      out.needed1 = A.POSTS.marshalNeeded(r);
-      PT.court('marshal'); A.advance(2);
-      step('court roll, one war');
-      // a second enemy: a war the generals cannot hold together
-      const f2 = foes.find(f => f.id !== foes[0].id && !A.atWar('POL-01').some(w => A.warSide(w, f.id)));
-      if (f2) A.startWar('POL-01', f2.id);
-      A.S.armies = A.S.armies || []; A.wsMobilize && A.wsMobilize('POL-01');
-      out.needed2 = A.POSTS.marshalNeeded(r);
-      out.captainCan = A.POSTS.can(A.POSTS.seatKey('POL-01', 'marshal'), pc.id);
-      // the crown's own pick for the seat is made at the month's end; take it out of the way to test the court's road
-      if (r.council.marshal) A.POSTS.vacate(A.POSTS.seatKey('POL-01', 'marshal'), 'test');
-      PT.court('marshal'); A.advance(2);
-      step('court roll as Captain, great war');
-      // promoted General: an army of his own
-      pc.mil.rank = 7; A.wsAttachPC();
-      out.armyAsGeneral = (A.armiesOf('POL-01').find(a => a.gen === pc.id) || {}).id || null;
+      out.captainCan = A.POSTS.can(A.POSTS.seatKey('POL-01', 'general'), pc.id);
+      PT.court('general'); A.advance(2);
+      step('court roll as Captain');
+      pc.mil.rank = 6; A.wsAttachPC();
       step('general');
-      if (r.council.marshal && r.council.marshal !== pc.id) A.POSTS.vacate(A.POSTS.seatKey('POL-01', 'marshal'), 'test');
-      const mine = A.armiesOf('POL-01').slice().sort((x, y) => y.divs.length - x.divs.length);
-      out.mainBefore = mine[0] ? { id: mine[0].id, gen: mine[0].gen } : null;
-      PT.court('marshal');
-      step('named Marshal as General');
-      const main = A.army(out.mainBefore.id);
-      out.leadsMain = !!main && main.gen === pc.id;
-      out.oldMainGen = out.mainBefore.gen && out.mainBefore.gen !== pc.id ? { id: out.mainBefore.gen, holds: A.POSTS.held(out.mainBefore.gen) } : null;
-      out.allArmies = A.armiesOf('POL-01').every(a => A.cmdRole(pc).armies.has(a.id));
+      PT.court('general'); A.advance(2);
+      step('court roll as General');
+      out.army = A.armiesOf('POL-01').some(a => a.gen === pc.id);
+      pc.mil.rank = 7; A.wsAttachPC();
+      step('second step');
+      out.army2 = A.armiesOf('POL-01').some(a => a.gen === pc.id);
       A.POSTS.sync('month');
       out.strict = A.POSTS.audit({ strict: true });
-      A.advance(30);
-      step('a month on');
-      // he resigns: nothing stays his
       out.resign = A.resign();
       A.POSTS.sync('month');
       step('resigned');
-      out.afterResign = { posts: A.POSTS.held(pc.id), seat: r.council.marshal === pc.id, gen: A.armiesOf('POL-01').some(a => a.gen === pc.id), div: A.divsOf('POL-01').some(d => d.cmd === pc.id), war: !!(A.V2W && A.V2W.canRoom && A.V2W.canRoom()) };
+      out.afterResign = { posts: A.POSTS.held(pc.id), seat: r.council.general === pc.id, gen: A.armiesOf('POL-01').some(a => a.gen === pc.id), div: A.divsOf('POL-01').some(d => d.cmd === pc.id) };
       out.strict2 = A.POSTS.audit({ strict: true });
       return out;
     }).toString() + ')()');
     const s = n => r.steps.find(x => x.name === n) || {};
     const checks = {
-      oneWarNoMarshal: !r.needed1 && !s('court roll, one war').seat && s('court roll, one war').rank === 4,
-      greatWarNeedsOne: r.needed2,
-      captainRefused: /General/.test(r.captainCan || '') && !s('court roll as Captain, great war').seat && s('court roll as Captain, great war').rank === 4,
-      generalHasArmy: !!r.armyAsGeneral,
-      marshalSeated: s('named Marshal as General').seat && s('named Marshal as General').rank === 9 && s('named Marshal as General').role === 'marshal' && s('named Marshal as General').office === 'marshal',
-      leadsMainHost: r.leadsMain && r.allArmies,
-      oldGeneralMoved: !r.oldMainGen || r.oldMainGen.holds.some(k => k.startsWith('army:')),
-      oneMarshal: r.steps.every(x => x.marshals <= 1),
+      captainRefused: /General/.test(r.captainCan || '') && !s('court roll as Captain').seat && s('court roll as Captain').rank === 4,
+      generalSeated: s('court roll as General').senior && s('court roll as General').seat && s('court roll as General').office === 'general' && s('court roll as General').rank === 6,
+      noArmy: !r.army && !r.army2 && s('second step').senior,
+      oneSenior: r.steps.every(x => x.seniors <= 1),
       strictAudit: !r.strict.length && !r.strict2.length,
       resignLeavesNothing: r.resign && r.resign.ok && !r.afterResign.posts.length && !r.afterResign.seat && !r.afterResign.gen && !r.afterResign.div,
     };
     const ok = Object.values(checks).every(Boolean);
-    return { ok, detail: `${Object.entries(checks).filter(x => !x[1]).map(x => 'FAILED ' + x[0]).join(', ') || 'all held'} | ` + r.steps.map(x => `${x.name}: rank ${x.rank} seat ${x.seat} role ${x.role} marshals ${x.marshals}`).join('; ') + (r.strict.length ? ' | ' + r.strict.slice(0, 3).join('; ') : '') };
+    return { ok, detail: `${Object.entries(checks).filter(x => !x[1]).map(x => 'FAILED ' + x[0]).join(', ') || 'all held'} | ` + r.steps.map(x => `${x.name}: rank ${x.rank} senior ${x.senior} role ${x.role} seniors ${x.seniors}`).join('; ') + (r.strict.length ? ' | ' + r.strict.slice(0, 3).join('; ') : '') };
   },
 
-  // D-049 (owner order 51): the Marshal's seat is optional. The lore's sitting Marshals start in their seats (Aldmark's
-  // Leofric Stane) and keep them in peace; a ruler may name a General or a proven commander in peace, not just anyone;
-  // the court's roll cannot give the seat in peace; a Marshal the crown named for a war stands down at peace, one of the
-  // ruler's own choice does not; nothing in the audit asks the seat to be filled or empty
-  async postsMarshalOptional(pg) {
+  // D-049, W1-1: the lore's sitting army chiefs start as their realms' senior Generals (Aldmark's Leofric Stane); the
+  // crown fills every realm's first host within a month; a ruler may name a General or a proven commander, not just
+  // anyone; nobody holds the old Marshal's seat
+  async postsSeniorGeneralFill(pg) {
     const r = await pg.evaluate('(' + SETUP.toString() + ')();(' + (() => {
       T.enter({ seed: 23, race: 'human', realm: 'POL-02', status: 'noble', sex: 'M', startAge: 26 });
-      const out = {};
-      const ald = A.realm('POL-01'), m = A.P(ald.council.marshal);
-      out.lore = m ? { name: A.fullName(m, false), cast: m.castId, role: A.mainRole(m), own: (A.S.posts.h[A.POSTS.seatKey('POL-01', 'marshal')] || {}).own } : null;
-      const seeded = Object.keys(A.S.realms).filter(id => { const x = A.S.realms[id]; return x && x.alive && x.council && x.council.marshal; });
-      out.seeded = seeded.length;
-      T.play(2);
-      out.kept = seeded.filter(id => { const x = A.realm(id), h = A.P(x.council.marshal); return h && h.alive; }).length;
-      out.keptOrDead = seeded.every(id => { const x = A.realm(id), rec = A.S.posts.h[A.POSTS.seatKey(id, 'marshal')]; return x.council.marshal || (rec && rec.prev && /died|crowned|under age|imprisoned|left/.test(rec.prev[rec.prev.length - 1][3])); });
-      // a realm at peace with its seat empty: who may the ruler name?
-      const r = Object.values(A.S.realms).find(x => x && x.alive && !x.isRebel && !x.landless && x.council && !x.council.marshal && !A.atWar(x.id).length && x.id !== A.pc().realm);
+      const out = {}, P = A.POSTS;
+      const ald = A.realm('POL-01'), m = A.P(P.seniorGeneral(ald));
+      out.lore = m ? { name: A.fullName(m, false), cast: m.castId, role: A.mainRole(m) } : null;
+      out.seeded = Object.keys(A.S.realms).filter(id => { const x = A.S.realms[id]; return x && x.alive && P.seniorGeneral(x); }).length;
+      PT.days(40);
+      const pc = A.pc();
+      const live = Object.values(A.S.realms).filter(x => x && x.alive && !x.landless && !(x.isRebel && !x.isNew) && x.ruler && P.firstHost(x) && !(pc && pc.ruler === x.id));
+      out.firsts = live.length;
+      out.filled = live.filter(x => P.seniorGeneral(x)).length;
+      const r = live.find(x => x.id !== pc.realm && x.id !== 'POL-01');
       out.realm = r && r.id;
       if (r) {
-        const key = A.POSTS.seatKey(r.id, 'marshal');
-        const men = Object.values(A.S.people).filter(p => p.alive && p.realm === r.id && !p.ruler && A.isAdult(p) && !p.prison && !A.POSTS.held(p.id).length && p.id !== A.S.pc);
-        const weak = men.slice().sort((a, b) => A.skill(a, 'command') - A.skill(b, 'command'))[0];
-        const strong = men.slice().sort((a, b) => A.skill(b, 'command') - A.skill(a, 'command'))[0];
-        if (strong) strong.skills.command = Math.max(A.skill(strong, 'command'), 60);
+        const key = P.seatKey(r.id, 'general');
+        const men = Object.values(A.S.people).filter(p => p.alive && p.realm === r.id && !p.ruler && A.isAdult(p) && !p.prison && !P.held(p.id).some(k => ['SEAT', 'OFFICE', 'FIELD', 'STAFF'].includes(P.cls(k))) && p.id !== A.S.pc && (p.milRank || 0) < 6);
+        const weak = men.slice().sort((a, b) => A.skill(a, 'command') - A.skill(b, 'command') || (a.id < b.id ? -1 : 1))[0];
+        const strong = men.slice().sort((a, b) => A.skill(b, 'command') - A.skill(a, 'command') || (a.id < b.id ? -1 : 1))[0];
+        out.men = men.length;
+        if (strong) strong.skills.command = Math.max(A.skill(strong, 'command'), 70);
         out.weakCmd = weak && A.skill(weak, 'command');
-        out.weakRuler = weak ? A.POSTS.can(key, weak.id, { ruler: true }) : 'none';
-        out.strongCourt = strong ? A.POSTS.can(key, strong.id, { by: 'court' }) : 'none';
-        out.strongRuler = strong ? A.POSTS.can(key, strong.id, { ruler: true }) : 'none';
-        const res = strong ? A.POSTS.appoint(key, strong.id, { why: 'ruler', by: r.ruler }) : { ok: false };
-        out.appointed = res.ok;
-        PT.days(40);
-        out.ownKept = r.council.marshal === (strong && strong.id);
-        A.POSTS.sync('month');
-        out.audit1 = A.POSTS.audit({ strict: true });
-        // the same man named by the crown for a war: at peace he stands down
-        A.POSTS.vacate(key, 'test');
-        A.POSTS.appoint(key, strong.id, { why: 'war', by: r.ruler, force: true });
-        PT.days(40);
-        out.warStoodDown = !r.council.marshal || A.atWar(r.id).length > 0;
-        A.POSTS.sync('month');
-        out.audit2 = A.POSTS.audit({ strict: true });
+        out.weakRuler = weak ? P.can(key, weak.id, { ruler: true }) : 'none';
+        out.strongRuler = strong ? P.can(key, strong.id, { ruler: true }) : 'none';
+        const was = P.seniorGeneral(r);
+        const res = strong ? P.appoint(key, strong.id, { why: 'ruler', by: r.ruler }) : { ok: false };
+        out.appointed = res.ok && P.seniorGeneral(r) === strong.id && r.council.general === strong.id;
+        out.wasHolds = was ? P.held(was).filter(k => P.cls(k) === 'FIELD').length : 0;
+        P.sync('month');
+        out.audit1 = P.audit({ strict: true });
       }
+      out.marshalKeys = Object.keys(A.S.posts.h).filter(k => /:marshal$/.test(k)).length + Object.values(A.S.realms).filter(x => x.council && x.council.marshal).length;
       return out;
     }).toString() + ')()');
     const checks = {
-      loreMarshal: !!r.lore && r.lore.cast === 'CHR-0005' && /^Marshal of /.test(r.lore.role) && r.lore.own === 1,
+      loreSenior: !!r.lore && r.lore.cast === 'CHR-0005' && /^Senior General of /.test(r.lore.role),
       seededSome: r.seeded >= 3,
-      keptInPeace: r.keptOrDead && r.kept >= r.seeded - 1,
+      crownFills: r.filled >= r.firsts - 1 && r.firsts > 10,
       weakRefused: /proven commander/.test(r.weakRuler || ''),
-      courtRefusedInPeace: /needs no Marshal/.test(r.strongCourt || ''),
-      rulerMayInPeace: r.strongRuler === '' && r.appointed,
-      ownStays: r.ownKept && !r.audit1.length,
-      warMarshalStandsDown: r.warStoodDown && !r.audit2.length,
+      rulerMay: r.strongRuler === '' && r.appointed,
+      audit: !r.audit1 || !r.audit1.length,
+      noMarshal: !r.marshalKeys,
     };
     const ok = Object.values(checks).every(Boolean);
-    return { ok, detail: `${Object.entries(checks).filter(x => !x[1]).map(x => 'FAILED ' + x[0]).join(', ') || 'all held'} | Aldmark's Marshal at the start: ${r.lore ? r.lore.name + ' (' + r.lore.role + ')' : 'none'}; ${r.seeded} lore Marshals, ${r.kept} alive in their seats two years on; in ${r.realm} at peace: a man of command ${r.weakCmd} "${r.weakRuler}", the court "${r.strongCourt}", the ruler's choice "${r.strongRuler}"; his own Marshal kept ${r.ownKept}, a war's Marshal stood down ${r.warStoodDown}${r.audit1.length || r.audit2.length ? ' | ' + r.audit1.concat(r.audit2).slice(0, 3).join('; ') : ''}` };
+    return { ok, detail: `${Object.entries(checks).filter(x => !x[1]).map(x => 'FAILED ' + x[0]).join(', ') || 'all held'} | Aldmark's senior General at the start: ${r.lore ? r.lore.name + ' (' + r.lore.role + ')' : 'none'}; ${r.seeded} seeded from the lore, ${r.filled} of ${r.firsts} first hosts led a month on; in ${r.realm} (${r.men} men without a post): a man of command ${r.weakCmd} "${r.weakRuler}", the ruler's choice "${r.strongRuler}", the man replaced keeps ${r.wasHolds} field post${r.audit1 && r.audit1.length ? ' | ' + r.audit1.slice(0, 3).join('; ') : ''}` };
   },
 
   // A2 stage 2: the new posts, each with one holder, handed over and left with consequences, with nothing adopted
@@ -293,8 +264,6 @@ export default {
   async postsHandover(pg) {
     const r = await pg.evaluate('(' + SETUP.toString() + ')();(' + (() => {
       const { pc, r } = PT.aldmark(23);
-      // the lore's sitting Marshal (D-049) leads an army in person, which a General does not take: out of the way here
-      if (r.council.marshal) A.POSTS.vacate(A.POSTS.seatKey('POL-01', 'marshal'), 'test');
       // every army led by a living general, so the new General must displace one
       for (const a of A.armiesOf('POL-01')) if (!a.gen || !A.P(a.gen) || !A.P(a.gen).alive) a.gen = A.wsGeneralFor('POL-01');
       A.POSTS.sync('month');
@@ -322,7 +291,7 @@ export default {
     const r = await pg.evaluate('(' + SETUP.toString() + ')();(' + (() => {
       const { r } = PT.aldmark(37);
       A.advance(40);
-      const seatK = Object.keys(r.council).find(k => k !== 'marshal' && A.P(r.council[k]) && A.P(r.council[k]).alive && r.council[k] !== A.S.pc);
+      const seatK = Object.keys(r.council).find(k => k !== 'general' && A.P(r.council[k]) && A.P(r.council[k]).alive && r.council[k] !== A.S.pc);
       const cId = r.council[seatK];
       const off = (r.pol.off || []).find(o => o.pid && o.pid !== cId && A.P(o.pid) && A.P(o.pid).alive);
       const army = A.armiesOf('POL-01').find(a => a.gen && a.gen !== A.S.pc && a.gen !== cId && (!off || a.gen !== off.pid));
@@ -332,7 +301,9 @@ export default {
         n: victims.length,
         seat: r.council[seatK] || null, seatRec: A.S.posts.h[A.POSTS.seatKey('POL-01', seatK)],
         off: off ? off.pid : 'none', army: army ? army.gen : 'none', armyOk: !!army && army.gen !== victims[2] && !!A.P(army.gen) && A.P(army.gen).alive,
-        held: victims.map(id => A.POSTS.held(id).length),
+        // a court title passes by the realm's law at its own pass (99995; the registry's year sync), not at the death:
+        // W1-1 made the army's general a great house's head (no Marshal leads the first army), who may carry one
+        held: victims.map(id => A.POSTS.held(id).filter(k => !k.startsWith('title:')).length),
       };
       out.audit = A.POSTS.audit();
       return out;
@@ -369,8 +340,8 @@ export default {
           if (T.play(1) !== 'dead' && A.pc().alive) break;
         }
         const pc = A.pc(), r = A.realm('POL-01');
-        A.enlist(pc, false); pc.mil.rank = 9;                     // a Marshal's grade in peace, without the seat
-        const seats = Object.keys(A.COUNCIL).filter(k => k !== 'marshal');
+        A.enlist(pc, false); pc.mil.rank = 9;                     // W1-1: an old save's Marshal's grade, without the seat
+        const seats = Object.keys(A.COUNCIL).filter(k => k !== 'general');
         const two = A.P(r.council[seats[0]]);
         r.council[seats[1]] = two.id;                            // one man in two seats
         const dead = A.P(r.council[seats[2]]); dead.alive = false; dead.died = A.S.year;   // a dead councillor
@@ -386,7 +357,7 @@ export default {
         return {
           rank: pc.mil.rank, twoSeats: Object.values(r.council).filter(x => x === m.two).length,
           deadSeat: Object.values(r.council).includes(m.dead), kidOff: r.pol.off.find(o => o.id === m.off).pid === m.kid,
-          need: A.POSTS.marshalNeeded(r), audit: A.POSTS.audit({ strict: true }), lines: (A.POSTS.lastLoad && A.POSTS.lastLoad.lines) || [],
+          audit: A.POSTS.audit({ strict: true }), lines: (A.POSTS.lastLoad && A.POSTS.lastLoad.lines) || [],
           hash: T.hash(A.S), rng: A.rngState,
         };
       };
@@ -395,7 +366,7 @@ export default {
     }, [b64, SETUP.toString()]);
     const a = r.a, real = r.real;
     const okReal = !b64 || (!r.hadPosts && r.loaded !== false && real.posts > 0 && !real.audit.length && real.rng && (r.realPlay === 'ok' || r.realPlay === 'dead') && !r.realAudit.length);
-    const okFix = a.rank === (a.need ? 9 : 8) && a.twoSeats === 1 && !a.deadSeat && !a.kidOff && !a.audit.length && a.lines.length >= 3 && a.hash === r.b.hash && a.rng === r.b.rng;
+    const okFix = a.rank === 7 && a.twoSeats === 1 && !a.deadSeat && !a.kidOff && !a.audit.length && a.lines.length >= 3 && a.hash === r.b.hash && a.rng === r.b.rng;
     return { ok: okReal && okFix, detail: `${b64 ? `alpha.2 save: registry ${real.posts} posts, audit ${real.audit.length}, stream kept ${real.rng}, a year on ${r.realPlay} audit ${r.realAudit.length}` : 'no sample save'} | faults: grade ${a.rank}, seats of one man ${a.twoSeats}, dead seat ${a.deadSeat}, child office ${a.kidOff}, audit ${a.audit.length}, ${a.lines.length} lines (${a.lines.slice(0, 4).join('; ')}); same twice ${a.hash === r.b.hash && a.rng === r.b.rng}${a.audit.length ? ' | ' + a.audit.slice(0, 3).join('; ') : ''}` };
   },
 

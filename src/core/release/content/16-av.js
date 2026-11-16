@@ -5028,7 +5028,7 @@
         cool: 8,
         title: "The election",
         setup: (p,ctx)=>{ctx.pid=A.makeAcquaintance(p,"rival").id},
-        text: "The hundredman, the squad captain of the first hundred, is dead of a wound gone bad. In the Free Companies the men choose their officers. {them} wants it. So, perhaps, do you.",
+        text: "The hundredman, the captain of the first hundred, is dead of a wound gone bad. In the Free Companies the men choose their officers. {them} wants it. So, perhaps, do you.",
         choices: [
           {
             t: "Stand for it",

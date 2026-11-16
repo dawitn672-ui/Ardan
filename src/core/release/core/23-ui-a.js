@@ -1569,7 +1569,7 @@ UI.courtTabBasic = function (pc) {
   h += `<div class="acts" style="margin-top:8px">
     <button class="act" data-a="nAct" data-v="court"><div class="an">Attend court</div><div class="ad">Be seen. Make friends and enemies.</div></button>
     <button class="act" data-a="nAct" data-v="petition"><div class="an">Petition for advancement</div><div class="ad">Ask the crown to raise your rung.</div></button>
-    <button class="act" data-a="nAct" data-v="office"><div class="an">Seek a council seat</div><div class="ad">Chancellor, Marshal, Treasurer, Spymaster or Chaplain.</div></button>
+    <button class="act" data-a="nAct" data-v="office"><div class="an">Seek a council seat</div><div class="ad">Chancellor, Treasurer, Spymaster or Chaplain; a General may be named the senior General.</div></button>
     <button class="act" data-a="nAct" data-v="estate"><div class="an">Manage your estate</div><div class="ad">Reeves, mills and rents.</div></button>
     <button class="act" data-a="act" data-v="plot_throne" ${A.canAct("plot_throne")[0] ? "" : "disabled"}><div class="an">Plot for the throne</div><div class="ad">Treason, if it fails.</div></button></div>`;
   h += `<div class="group-h">The ladder (Part 12)</div><table class="t small"><tr><th>Rung</th><th>Holds</th></tr>${GD.NOBLE_RUNGS.slice()

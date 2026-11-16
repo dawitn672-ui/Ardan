@@ -364,7 +364,7 @@
 
   // ---- the realm ------------------------------------------------------------------------------------------------------
   const realmOf = id => A.realm(id) || (pc() && A.realm(pc().ruler || pc().realm));
-  const council = (r, k, p) => { const c = r.council && A.P(r.council[k]); return c && c.alive ? A.skill(c, A.COUNCIL[k].skill) : k === 'marshal' && p ? A.skill(p, 'command') * 0.5 : 10; };
+  const council = (r, k, p) => { const c = r.council && A.P(r.council[k]); return c && c.alive ? A.skill(c, A.COUNCIL[k].skill) : k === 'general' && p ? A.skill(p, 'command') * 0.5 : 10; };
   TT.stabParts = function (r) {
     const p = pc(), mine = p && p.ruler === r.id && r.playerRun, parts = [];
     if (mine) {

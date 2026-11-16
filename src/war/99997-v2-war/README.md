@@ -8,7 +8,7 @@
 
 - **A war is yours** when you fight in it. That means your realm as its ruler, the realm you serve in (enlisted, an officer, a general, an order's member), or a sell-sword's employer. Being born in a realm at war is not enough (`A.V2W.inWar`, `fightsIn`, `myWars`).
   - 72-one-battle-two-scales' levy counts while its scene runs: you stand in that fight.
-- **The War Room** belongs to your post (`A.V2W.canRoom`, D10 below): the crown and the Marshal in peace and war; in your war a commander, or a captain in the field.
+- **The War Room** belongs to your post (`A.V2W.canRoom`, D10 below): the crown in peace and war (W1-1: no Marshal); in your war a commander, or a captain in the field.
   - In war it is drawn with only your wars in `A.S.wars`.
   - For a life outside the army it stays shut (`UI.warRoomOpen`, `A.warRoomView`, a queued `warroom`). The War tab loses its War Room button and reads "is at war, but you are not in it" in place of the release's "is at peace".
 - **The surfaces that stay shut** for any other war:
@@ -27,7 +27,7 @@
 
 **War screens by post** (D10, D-052; `a-gate.core.js` and `g-post.core.js`)
 
-- **The War Room** (`W.canRoom`): the crown, and the Marshal who raises the host, in peace and war. In a war of yours, a commander (rank 7 and up, an army's general), or a captain (ranks 4-6, a sell-sword captain) while deployed (`W.deployed`: his division marches with an army, his company is under contract). Never a soldier or a sergeant: his war is the War tab (his company, his orders, rumour) and the battle at his rank. The War tab's War Room button, the army's Path card button and the "Open the War Room" hint follow the same rule.
+- **The War Room** (`W.canRoom`): the crown in peace and war (W1-1: there is no Marshal). In a war of yours, a commander (rank 7 and up, an army's general), or a captain (ranks 4-6, a sell-sword captain) while deployed (`W.deployed`: his division marches with an army, his company is under contract). Never a soldier or a sergeant: his war is the War tab (his company, his orders, rumour) and the battle at his rank. The War tab's War Room button, the army's Path card button and the "Open the War Room" hint follow the same rule.
 - **What the map shows** (`W.scope`, inside `W.withSeen`): a commander the theatre; a captain two provinces round his division; a soldier or a sergeant his province and the next. His own division always shows.
 - **Enemy numbers below a commander** are estimates: a War Room counter reads "~7k" (`W.counterEstimate`), not "7.3k".
 - **The map's Wars mode** is offered only to a life in a war (`UI.mapModeHidden`, read by the release's `UI.mapModes`).

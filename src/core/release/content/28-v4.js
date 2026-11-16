@@ -265,7 +265,7 @@
         w: 1,
         cool: 4,
         title: "The war council",
-        text: p=>`The war council argues late into the night. ${doc(p,"shock")?"You want to attack. The old marshal wants to wait.":doc(p,"shield")?"They want to attack. You want to make the enemy come to you.":doc(p,"supply")?"They argue about battle plans. You ask how the army will eat in three weeks.":"They want a battle in the field. You want the enemy's fortress and the roads it guards."} All eyes turn to you.`,
+        text: p=>`The war council argues late into the night. ${doc(p,"shock")?"You want to attack. The old General wants to wait.":doc(p,"shield")?"They want to attack. You want to make the enemy come to you.":doc(p,"supply")?"They argue about battle plans. You ask how the army will eat in three weeks.":"They want a battle in the field. You want the enemy's fortress and the roads it guards."} All eyes turn to you.`,
         choices: [
           {
             t: "Argue for your doctrine",
@@ -274,7 +274,7 @@
               r: "The council comes round. The plan is yours. If it fails, so do you.",
               fx: {merit:12,fame:2,skill:{tactics:3}},
             },
-            lose: {r:"The marshal overrules you, coldly.",fx:{merit:2,bossOp:-4}},
+            lose: {r:"The General overrules you, coldly.",fx:{merit:2,bossOp:-4}},
           },
           {
             t: "Hold your tongue and watch",

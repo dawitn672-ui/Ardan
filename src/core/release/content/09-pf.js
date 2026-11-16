@@ -661,7 +661,7 @@
             t: "Drill like it matters",
             check: {s:"spear",s2:"sta",d:40},
             win: {
-              r: "Level, push, step, level. {sarge} puts you in the front rank and names you file-leader of the muster.",
+              r: "Level, push, step, level. {sarge} puts you in the front rank and names you sergeant of the muster.",
               fx: {skill:{spear:3,command:1},sta:.4,fame:1},
             },
             lose: {
@@ -4707,13 +4707,13 @@
         cool: 8,
         setup: (p,ctx)=>{who(p,ctx,"rival"),ctx.stake=A.pick([5,10,15])},
         title: "Captains",
-        text: "{themFull} is the best Captains player in {home}: horse, foot, engines and a marshal on a squared board. {They} plays for {stake} suns a game and has a long line of losers.",
+        text: "{themFull} is the best Captains player in {home}: horse, foot, engines and a general on a squared board. {They} plays for {stake} suns a game and has a long line of losers.",
         choices: [
           {
             t: "Play for the stake",
             check: {s:"tactics",s2:"int",d:52},
             win: {
-              r: (p,ctx)=>`You bait {theirHis} horse into the center and take the marshal from the flank. ${ctx.stake} suns, and a crowd asking for a rematch.`,
+              r: (p,ctx)=>`You bait {theirHis} horse into the center and take the general from the flank. ${ctx.stake} suns, and a crowd asking for a rematch.`,
               fx: (p,ctx)=>A.applyFx(p,{coin:ctx.stake,fame:1,skill:{tactics:3},them:{type:"rival",op:-5}},ctx),
             },
             lose: {

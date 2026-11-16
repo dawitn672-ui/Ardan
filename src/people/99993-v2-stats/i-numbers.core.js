@@ -444,7 +444,7 @@ VS.sweepTitles = function (root) {
     return r;
   };
 }
-// the council: "Marshal ... — Command 52" for the holder
+// the council: "Senior General ... — Command 52" for the holder
 if (typeof UI.realmTabBasic === 'function') {
   const rt0 = UI.realmTabBasic;
   UI.realmTabBasic = function () {

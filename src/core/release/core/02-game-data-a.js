@@ -2739,7 +2739,7 @@ GD.CAREERS = {
     ranks: [
       ["Hired spear", 0, 300],
       ["Veteran", 3, 420],
-      ["File-leader", 5, 600],
+      ["Sergeant", 5, 600],
       ["Company captain", 9, 2400],
       ["Captain-general", 15, 9e3],
     ],
@@ -2749,6 +2749,11 @@ GD.CAREERS = {
   },
 };
 
+// [W1-1, D-064, D-066] Five ranks: soldier, sergeant, captain, commander, General. The eight grades are kept as steps
+// (pay, merit, men led), so every rank comparison in the code still holds; a grade with step 2 is the second step of
+// the same rank, never a rank of its own (A.rankLabel). The old words map by the post held: File-Leader -> Sergeant,
+// Squad Captain -> Captain, Senior Captain (a battalion, ~800 men: a wing) -> Commander, Commander of a division (up to
+// 7,470 men: a host) -> General. High General and Marshal are gone: General is the highest rank, one to each host.
 GD.MIL = [
   {
     code: "M01",
@@ -2759,7 +2764,7 @@ GD.MIL = [
   },
   {
     code: "M02",
-    title: "File-Leader",
+    title: "Sergeant",
     leads: 20,
     merit: 30,
     pay: 420,
@@ -2767,13 +2772,14 @@ GD.MIL = [
   {
     code: "M03",
     title: "Sergeant",
+    step: 2,
     leads: 40,
     merit: 75,
     pay: 600,
   },
   {
     code: "M05",
-    title: "Squad Captain",
+    title: "Captain",
     leads: 100,
     merit: 140,
     pay: 1200,
@@ -2781,20 +2787,21 @@ GD.MIL = [
   {
     code: "M06",
     title: "Captain",
+    step: 2,
     leads: 200,
     merit: 240,
     pay: 2400,
   },
   {
     code: "M07",
-    title: "Senior Captain",
+    title: "Commander",
     leads: 800,
     merit: 400,
     pay: 4e3,
   },
   {
     code: "M08",
-    title: "Commander",
+    title: "General",
     leads: 3200,
     merit: 650,
     pay: 7e3,
@@ -2802,23 +2809,10 @@ GD.MIL = [
   {
     code: "M09",
     title: "General",
-    leads: 12800,
+    step: 2,
+    leads: 12e3,
     merit: 1e3,
     pay: 12e3,
-  },
-  {
-    code: "M10",
-    title: "High General",
-    leads: 51200,
-    merit: 1500,
-    pay: 2e4,
-  },
-  {
-    code: "M11",
-    title: "Marshal",
-    leads: 2e5,
-    merit: 2200,
-    pay: 3e4,
   },
 ];
 
@@ -3373,8 +3367,8 @@ GD.ACH = {
   ten_battles: ["Old Soldier", "Survive ten battles."],
   sergeant: ["Sergeant", "Rise to Sergeant."],
   captain: ["Captain", "Rise to Captain."],
-  general: ["General", "Command twelve thousand as General."],
-  marshal: ["Marshal of the Realm", "Command a crown's entire host."],
+  general: ["General", "Lead a host as General."],
+  senior_general: ["Senior General", "Lead the crown's first host and speak for the army at council."],
   knighted: ["Knighted", "Be raised to Knight."],
   lord: ["A Lord of Ardan", "Hold a baron's rung or higher."],
   ruler: ["Crowned", "Rule a realm."],

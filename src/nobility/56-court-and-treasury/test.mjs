@@ -37,21 +37,21 @@ export default {
       const RI = A.RI, L = Object.values(A.S.realms).filter(x => x.alive && !x.isRebel);
       let seats = 0, filled = 0, cast = 0, heads = 0, titled = 0, aims = 0;
       const wants = {}, fears = {}, headIds = new Set(Object.values(A.S.houses).map(h => h.headPid).filter(Boolean));
-      const RX = { chancellor: /chancellor|envoy|speaker|vizier|herald|seneschal/i, marshal: /marshal|general|warlord|constable|commander/i, treasurer: /treasurer|steward|banker|reeve|factor/i, spymaster: /spy|whisper/i, chaplain: /chaplain|bishop|abbot|priest|prior/i };
+      const RX = { chancellor: /chancellor|envoy|speaker|vizier|herald|seneschal/i, general: /marshal|general|warlord|constable|commander/i, treasurer: /treasurer|steward|banker|reeve|factor/i, spymaster: /spy|whisper/i, chaplain: /chaplain|bishop|abbot|priest|prior/i };
       for (const x of L) for (const seat of Object.keys(A.COUNCIL)) {
-        // the Marshal's seat stands empty unless a war needs one (D-017, A2's 999990-posts)
-        if (seat === 'marshal' && A.POSTS && !(x.council || {}).marshal) continue;
+        // the army's place at council is the senior General's (W1-1): the first host's General, counted where there is one
+        if (seat === 'general' && A.POSTS && !(x.council || {}).general) continue;
         seats++;
         const p = A.P((x.council || {})[seat]); if (!p || !p.alive) continue;
         filled++; if (p.castId) cast++; if (headIds.has(p.id)) heads++;
         if (RX[seat].test(String(p.title || ''))) titled++;
         const a = RI.aims(p); if (a && RI.WANT[a.want] && RI.FEAR[a.fear]) { aims++; wants[a.want] = (wants[a.want] || 0) + 1; fears[a.fear] = (fears[a.fear] || 0) + 1; }
       }
-      const ald = A.realm('POL-01'), m = A.P(ald.council.marshal);
+      const ald = A.realm('POL-01'), m = A.P(ald.council.general);
       return { realms: L.length, seats, filled, cast, heads, titled, aims, wants, fears, aldMarshal: m ? A.fullName(m, false) + ' (' + (m.title || '') + ')' : null };
     });
     const ok = r.filled === r.seats && r.aims === r.filled && Object.keys(r.wants).length >= 6 && Object.keys(r.fears).length >= 5 && r.cast >= r.seats * .3 && r.titled >= 6;   // 15 before D-031: most cast titles that fit a seat were the generals' (the Marshal's seat is empty in peace)
-    return { ok, detail: `${r.realms} realms: ${r.filled}/${r.seats} seats held by named people (${r.cast} from the cast, ${r.heads} heads of houses, ${r.titled} whose own title is the seat's); every one has a want and a fear: wants ${JSON.stringify(r.wants)}, fears ${JSON.stringify(r.fears)}; Aldmark's Marshal: ${r.aldMarshal}` };
+    return { ok, detail: `${r.realms} realms: ${r.filled}/${r.seats} seats held by named people (${r.cast} from the cast, ${r.heads} heads of houses, ${r.titled} whose own title is the seat's); every one has a want and a fear: wants ${JSON.stringify(r.wants)}, fears ${JSON.stringify(r.fears)}; Aldmark's senior General: ${r.aldMarshal}` };
   },
 
   // Diplomacy 3: the loudest push follows the realm's need, and the crown's own temper moves the odds

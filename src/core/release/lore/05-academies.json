@@ -1,6 +1,6 @@
 {
  "POL-01": [
-  {"type":"war","name":"The Marshal's School of Oath Hill","seat":"Kingsmere","note":"Marshal Stane's officers learn to march two hosts of 20,000 a day apart on the river roads, to build the Hartgate Box, and to count a Hide's men, horses and fodder before they count glory."},
+  {"type":"war","name":"The Generals' School of Oath Hill","seat":"Kingsmere","note":"General Stane's officers learn to march two hosts of 20,000 a day apart on the river roads, to build the Hartgate Box, and to count a Hide's men, horses and fodder before they count glory."},
   {"type":"letters","name":"The Oath Hall Scriptorium","seat":"Kingsmere","note":"Scribes learn Old Solen for law and treaties and copy the Oath Hall rolls, the same rolls that let the Oath Moot refuse the Emperor a war tax."},
   {"type":"faith","name":"The High Hall-Keeper's Seminary","seat":"Kingsmere","note":"Hall-priests are ordained here under the Emperor's headship of the Seven Halls and learn the oath-lays chanted at dawn on Oath Hill."},
   {"type":"trade","name":"The Iron Road Counting House","seat":"Eagleburg","note":"At the end of the Iron Road clerks learn to price Irondeep iron, grain barges and Millrun horses, and to read a dwarf's contract twice."},
@@ -16,7 +16,7 @@
   {"type":"sea","name":"The Lorina Oar Hall","seat":"Lorina","note":"The captains of the See's eastern galleys teach oar, sail and the Bay of Lanterns from Lorina, where House Brennus children learn to row before they learn Old Solen."}
  ],
  "POL-03": [
-  {"type":"war","name":"The Marshal's School of Vitia","seat":"Vitia","note":"Montaro captains teach command, supply and siege in the citadel that Galen the Bold starved out in 747 and that has been stocked for two years ever since."},
+  {"type":"war","name":"The Generals' School of Vitia","seat":"Vitia","note":"Montaro captains teach command, supply and siege in the citadel that Galen the Bold starved out in 747 and that has been stocked for two years ever since."},
   {"type":"letters","name":"The College of the Lion Laws","seat":"Varenna","note":"Below Lion Hill, barons' sons and clever clerks learn Old Solen, the Solen Code as the Lion Laws amended it, and the forms of the Great Council."},
   {"type":"medicine","name":"The Physicians of the Lion Stair","seat":"Varenna","note":"The Cardane physicians teach pulse, wounds and fevers from a book of royal deaths their house began the night the Lionheart died on the palace stair in 902."},
   {"type":"faith","name":"The Cathedral School of the Temple Ward","seat":"Varenna","note":"The Temple trains Varenna's priests beside the cathedral that crowns its kings, and teaches the Luminary's clerks to count the Temple's sixth of the land."},
@@ -105,7 +105,7 @@
   {"type":"crafts","name":"The Timber Guild of Wrendale","seat":"Wrendale","note":"The richest guild after the Toll-House: sawyers, joiners and shipwrights' boys learn to choose a keel oak standing and season it for years, and the guild's mark sells Wrendale oak to three crowns."}
  ],
  "POL-15": [
-  {"type":"war","name":"The Marshal's School of the Steppe March","seat":"Castel Ascino","note":"Officers learn the fort chain, the tower codes, the Horse Road and the siege of 895 to 897 from the men who keep Castel Ascino, the inland anchor of the steppe watch."},
+  {"type":"war","name":"The Generals' School of the Steppe March","seat":"Castel Ascino","note":"Officers learn the fort chain, the tower codes, the Horse Road and the siege of 895 to 897 from the men who keep Castel Ascino, the inland anchor of the steppe watch."},
   {"type":"letters","name":"The Chancery School of Morhaven","seat":"Morhaven","note":"Clerks learn Old Solen, the Solen Code with the Falcone Edicts, and the chancery hand from the Clarenzi notaries, who have copied the kingdom's rolls since 760."},
   {"type":"faith","name":"The Lucina Chapter School","seat":"Lucina","note":"The Temple trains its priests and the clerks of its debt courts among its own Lucina farms, bought with the Schism Tax and never given back."},
   {"type":"trade","name":"The Salt Quay Hall of Felano","seat":"Lucina","note":"Felano's merchants teach bills of lading, Lunetti bills of exchange and the grain trade to both Tessarian camps, in a port bigger and richer than the capital."},
@@ -145,7 +145,7 @@
   {"type":"crafts","name":"The Water-Skin Tents of Nahuma","seat":"Januma Caravanserai","note":"Nahuma leatherworkers teach saddles and water-skins of camel and goat hide sealed with gulf pitch, the best in the Waste."}
  ],
  "POL-20": [
-  {"type":"war","name":"The Marshal's College of the Horn Camps","seat":"Zanara","note":"Officers learn the bull's horns, the herd march and the drum orders that steer 60,000 spears on the grass, and why no Zanari army has marched beyond the grass since Mirah."},
+  {"type":"war","name":"The Generals' College of the Horn Camps","seat":"Zanara","note":"Officers learn the bull's horns, the herd march and the drum orders that steer 60,000 spears on the grass, and why no Zanari army has marched beyond the grass since Mirah."},
   {"type":"faith","name":"The Rememberers' Hall of the Ancestor Hill","seat":"Zanara","note":"Rememberers learn every emperor's line by heart, in Zanari and Old Tedani, beside the High Rememberer who can refuse to sing an emperor."},
   {"type":"letters","name":"The Tembo Writing House","seat":"Zanara","note":"The Tembo, scribes to the Rememberers since letters came with the Well Quarter's charter of 988, teach clerks to write tribute rolls, road surveys and treaties."},
   {"type":"trade","name":"The Scale Street Hall","seat":"Zanara","note":"The five Gold Houses teach weighing, assaying and the gold weight of 4.2 g whose standard sets the price of gold from Sabra to Qadira."},
@@ -182,7 +182,7 @@
  ],
  "POL-25": [
   {"type":"faith","name":"The Monastery School of Lamp Street","seat":"Velgrad","note":"The great seminary of the Dawn Church below the cathedral: the liturgy in Eastfolk, not Old Solen, priests who may marry, and the Dark Weeks fasted in full before a deacon is given his lamp."},
-  {"type":"war","name":"The Marshal's School at Yarec","seat":"Yarec","note":"House Koren's march school: officers learn pass walls, the road stations of the Neck and the Ostmir Gate, and the first lesson of every course is why Velgrad has not wintered in the Lakeland since Brodava."},
+  {"type":"war","name":"The Generals' School at Yarec","seat":"Yarec","note":"House Koren's march school: officers learn pass walls, the road stations of the Neck and the Ostmir Gate, and the first lesson of every course is why Velgrad has not wintered in the Lakeland since Brodava."},
   {"type":"letters","name":"The Bench Hall","seat":"Velgrad","note":"Bench lords' sons learn the Code of Radoslav on Bear Hill: to judge with a priest present, to price a free man's life at 60 sables, and how the Bench names a regent when it must."},
   {"type":"trade","name":"The Fur Staple of Velgrad","seat":"Velgrad","note":"Every pelt sold abroad is graded and taxed in its walled yard; clerks learn to grade a sable by touch, to reckon blood-silver in pelts and to read the old Fur Road tally-rolls."},
   {"type":"crafts","name":"The Redcrown Pit and Forge Guild","seat":"Belansk","note":"Sulfur-diggers, pitch-boilers and smiths of Redcrown iron learn their trades under the Belak pits, and the guild's pitch-pots go to every galley at Sevany."},

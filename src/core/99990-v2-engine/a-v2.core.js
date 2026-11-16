@@ -1447,7 +1447,7 @@ var __ARDAN_V2_MAKE = (() => {
         strengthInLevies: Math.round(members * avgWorth2),
         terror: 0.25 + rng.next() * 0.2,
         // morale shock dealt to foes
-        ranks: ["Aspirant", "Sworn Brother", "Blade", "Captain of the Order", "Marshal of the Order", "Grand Master"]
+        ranks: ["Aspirant", "Sworn Brother", "Blade", "Captain of the Order", "Seneschal of the Order", "Grand Master"]
       };
     });
   }
@@ -3184,7 +3184,7 @@ var __ARDAN_V2_MAKE = (() => {
     const fw = fightingWorth(me, "sword", me.estate === "noble" ? "plate" : me.estate === "gentry" ? "mail" : "levy");
     const rank = me.titles.length && renown(me, W.year) > 40 ? "commander" : me.estate === "noble" ? "captain" : me.estate === "gentry" ? "sergeant" : "soldier";
     me.gear = me.estate === "noble" ? "plate" : me.estate === "gentry" ? "mail" : "levy";
-    me.career ?? (me.career = { name: "soldiering", ladder: ["Levy", "Veteran", "Sergeant", "Captain", "Knight-captain", "Marshal"] });
+    me.career ?? (me.career = { name: "soldiering", ladder: ["Levy", "Veteran", "Sergeant", "Captain", "Knight-captain", "General"] });
     if (me.rankIndex == null) me.rankIndex = { soldier: 0, sergeant: 2, captain: 3, commander: 4 }[rank];
     const order = W.orders.find((o) => o.patron === me.realm) ?? null, foeOrder = W.orders.find((o) => o.patron === enemyId) ?? null;
     const mk = (side, name, withOrder) => makeArmy(name, side, [

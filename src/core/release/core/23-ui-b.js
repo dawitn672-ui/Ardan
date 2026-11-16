@@ -1729,8 +1729,7 @@ UI.chainOfCommand = function (pc) {
   if (!m.merc && r) {
     const ru = A.P(r.ruler);
     if (ru) rows.push(["crown", ru, A.rulerStyle(ru, r), "Sovereign"]);
-    const ma = r.council && A.P(r.council.marshal);
-    if (ma && ma.alive && ma.id !== pc.id) rows.push(["", ma, A.fullName(ma), "Marshal of the realm"]);
+    // [W1-1] no Marshal between a General and the crown; the senior General commands no other General
   } else if (m.merc) rows.push(["", null, m.company || "The company", "Company captain-general"]);
   const b = A.superior(pc);
   if (b) rows.push(["", b, A.fullName(b), A.superiorTitle(pc)]);

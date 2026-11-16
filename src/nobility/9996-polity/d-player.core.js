@@ -55,7 +55,7 @@ if (baseTaxes) RI.taxes = function (pc) {
 const SKILL = { gov: 'stewardship', mag: 'diplomacy', reeve: 'stewardship', warden: 'command', customs: 'stewardship' };
 POL.appointer = function (r, o) {
   const by = GD.POL_OFFICES[o.k].by, C = r.council || {};
-  const p = by === 'chancellor' ? A.P(C.chancellor) : by === 'marshal' ? A.P(C.marshal) : by === 'town' ? A.P(C.treasurer) : A.P(r.ruler);
+  const p = by === 'chancellor' ? A.P(C.chancellor) : by === 'general' ? A.P(C.general) : by === 'town' ? A.P(C.treasurer) : A.P(r.ruler);
   return live(p) ? p : A.P(r.ruler);
 };
 POL.seekScore = function (r, o, p, appointer) {

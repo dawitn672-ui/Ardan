@@ -47,7 +47,8 @@ export default {
     });
     return { ok: r.taken === 0 && r.other > 0, detail: `200 lost battles against the player's own faction: taken ${r.taken} times; against the crown: ${r.other}` };
   },
-  // I1: careers top out; a commoner of renown is knighted, the order then admits him, a fief follows, a General can be Marshal
+  // I1: careers top out; a commoner of renown is knighted, the order then admits him, a fief follows, a General can be the
+  // senior General (W1-1: the army's place at council)
   async carRaised(pg) {
     const r = await pg.evaluate(() => {
       // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent
@@ -63,16 +64,16 @@ export default {
       // a fief, later
       pc.fame = 60; pc.mil.rank = 6; pc.flags.cr_knighted = A.S.year - 5; pc.born = A.S.year - 38;
       out.fiefable = A.CAR.fiefable(pc);
-      // the council: rank 8 was needed for Marshal; a General of renown now qualifies
+      // the council: a grade above General was needed for the army's seat; a General of renown now qualifies
       pc.mil.rank = 7; pc.skills.command = 60; pc.fame = 50;
       for (const s of Object.keys(pc.st || {})) pc.st[s] = Math.max(pc.st[s], 80);   // a mind that carries the skill (C9's cap): this world's captain was drawn slower than the old one
-      out.marshal = A.seatEligible(pc, 'marshal');
+      out.marshal = A.seatEligible(pc, 'general');
       out.top = A.CAR.atTop(pc);
       out.generalMerit = GD.MIL[7].merit;
       return out;
     });
     const ok = !r.birthBefore && r.knightable && r.asked && r.rung === 2 && r.birthAfter && r.fiefable && r.marshal && r.top === 'command' && r.generalMerit === 2000;
-    return { ok, detail: `a peasant captain of renown 40: knightable ${r.knightable}, asked ${r.asked}, rung ${r.rung}; the Iron Wolf's birth line ${r.birthBefore} -> ${r.birthAfter}; a fief ${r.fiefable}; Marshal for a General ${r.marshal}; above the top: ${r.top}; General's merit bar ${r.generalMerit} (1,000 before)` };
+    return { ok, detail: `a peasant captain of renown 40: knightable ${r.knightable}, asked ${r.asked}, rung ${r.rung}; the Iron Wolf's birth line ${r.birthBefore} -> ${r.birthAfter}; a fief ${r.fiefable}; the senior General's place for a General ${r.marshal}; above the top: ${r.top}; General's merit bar ${r.generalMerit} (1,000 before)` };
   },
   // B7: "Bandit hunt: Enemy dead 5,141. Your losses 0" for a General
   async carMissionSize(pg) {

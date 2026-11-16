@@ -3462,7 +3462,7 @@
         cond: (p,C)=>early()&&C.realm(p,"POL-22","POL-20","POL-18")&&(C.adult(p)||C.teen(p)),
         w: 1,
         once: !0,
-        text: p=>`Runners bring news at the gallop: at dawn on New Year's Day, King Yared of Abara tore up his twin brother's road promise to Zanara. Eight thousand Abari pikes at Tamowa face Marshal Juma's fifteen thousand. ${p.realm==="POL-18"?"And King Yared demands Tamar's river gift in silver by 1 March, or he threatens the Source rite at the Monuti's headwaters.":p.realm==="POL-20"?"Zanari runners say the Emperor wants a gold road east, free of tolls.":"Your lord wears his border colors very carefully this month."}`,
+        text: p=>`Runners bring news at the gallop: at dawn on New Year's Day, King Yared of Abara tore up his twin brother's road promise to Zanara. Eight thousand Abari pikes at Tamowa face General Juma's fifteen thousand. ${p.realm==="POL-18"?"And King Yared demands Tamar's river gift in silver by 1 March, or he threatens the Source rite at the Monuti's headwaters.":p.realm==="POL-20"?"Zanari runners say the Emperor wants a gold road east, free of tolls.":"Your lord wears his border colors very carefully this month."}`,
         choices: [
           {
             t: "Drive cattle to sell to the camps",

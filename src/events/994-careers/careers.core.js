@@ -6,8 +6,9 @@
 //   kneels") comes with terms (cr_coup_pardon). "Usurper" is awarded when the throne is taken, not when it is tried.
 // - A commoner of renown can be raised: knighted (cr_knighted), then given a fief (cr_fief).
 // - The top of a ladder has something above it: an honour, a command or an office (cr_honour), and a General can
-//   be named Marshal of the council, a merchant prince Treasurer.
-// - Promotion above Senior Captain is slower (merit x1.5, General x2), so rank 7 is a life's work, not a young man's.
+//   be named the senior General (W1-1: the crown's first host, with the army's place at council), a merchant prince
+//   Treasurer.
+// - Promotion above Commander is slower (merit x1.5, General x2), so rank 7 is a life's work, not a young man's.
 (function () {
   const CAR = A.CAR = A.CAR || {};
   CAR.OFF = false;
@@ -146,13 +147,14 @@
   };
 
   // ---- the council takes a General, and a merchant prince -----------------------------------------------------
-  // The release asked rank 8 (High General, one a realm) of a Marshal, so a General never sat on the council.
+  // The release asked a grade above General of the army's councillor, so a General never sat on the council (W1-1: the
+  // place is the senior General's, the General of the crown's first host).
   const elig = A.seatEligible;
   if (typeof elig === 'function') A.seatEligible = function (pc, seat) {
     const ok = elig.apply(this, arguments);
     if (ok || CAR.OFF || !pc || pc.ruler || !free(pc) || !A.isAdult(pc) || pc.flags.cr_traitor) return ok;
     try {
-      if (seat === 'marshal') return !!(pc.mil && !pc.mil.merc && pc.mil.rank >= 7 && (pc.fame || 0) >= 35 && A.skill(pc, 'command') >= 50);
+      if (seat === 'general') return !!(pc.mil && !pc.mil.merc && pc.mil.rank >= 6 && (pc.fame || 0) >= 35 && A.skill(pc, 'command') >= 50);
       if (seat === 'treasurer') { const J = pc.job && GD.CAREERS[pc.job.c]; return !!(J && pc.job.c === 'merchant' && pc.job.r >= J.ranks.length - 1 && (pc.coin || 0) >= 50000 && (pc.fame || 0) >= 30); }
     } catch (e) {}
     return ok;
@@ -162,7 +164,7 @@
   // a mission's men: the rank's in a war; away from one, what the mission is (a bandit hunt 20 to 300)
   CAR.MISSION_CAP = { bandits: [20, 300] };
   A.missionSize = function (type, rank, war) {
-    const base = rank <= 0 ? 10 : GD.MIL[Math.min(rank, 9)].leads;
+    const base = rank <= 0 ? 10 : GD.MIL[Math.min(rank, GD.MIL.length - 1)].leads;
     const cap = CAR.MISSION_CAP[type];
     if (cap) return Math.max(Math.min(base, cap[1]), Math.min(cap[0], base));
     return war ? base : Math.min(base, 400);

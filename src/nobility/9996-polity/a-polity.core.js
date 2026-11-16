@@ -232,11 +232,11 @@ POL.grainIdx = function (r) {
   try { const m = A.mkt && A.mkt(r.id), G = GD.GOODS || (A.E && A.E.GOODS); if (!m || !m.p || m.p.grain == null) return 1; const b = G && G.grain ? G.grain.base : 4; return m.p.grain / Math.max(.1, b); } catch (e) { return 1; }
 };
 // the named leader of an estate: the head of the strongest house, the highest cleric, the richest merchant, the
-// Marshal, an elder of the commons; pure (never makes a person)
+// senior General (W1-1), an elder of the commons; pure (never makes a person)
 POL.leaderOf = function (r, k) {
   const C = r.council || {}, seat = s => { const p = A.P(C[s]); return live(p) ? p : null; };
   if (k === 'nob') { const h = A.realmHouses(r.id).slice().sort((a, b) => A.houseStrength(b) - A.houseStrength(a) || String(a.id).localeCompare(String(b.id)))[0]; const p = h && h.headPid ? A.P(h.headPid) : null; return live(p) ? p : null; }
-  if (k === 'army') return seat('marshal');
+  if (k === 'army') return seat('general');
   if (k === 'cler') { const o = POL.holders(r, 'mag').find(p => POL.estateOf(p) === 'cler'); return seat('chaplain') || o || null; }
   const off = (r.pol && r.pol.off) || [];
   if (k === 'burg') { for (const o of off) if (o.k === 'reeve') { const p = A.P(o.pid); if (live(p)) return p; } return seat('treasurer'); }
@@ -313,7 +313,7 @@ GD.POL_OFFICES = {
   gov: { n: 'Governor', est: ['nob', 'army'], pay: .005, cap: 2500, term: 0, by: 'crown', d: 'Holds a shire for the crown: its taxes, its muster, its peace.' },
   mag: { n: 'Magistrate', est: null, pay: 150, term: 0, by: 'chancellor', d: 'Hears the shire\'s cases.' },
   reeve: { n: 'Reeve', est: ['burg', 'nob'], pay: .0025, cap: 1200, term: 6, by: 'town', d: 'Keeps the market peace and the town\'s tolls.' },
-  warden: { n: 'Warden of the March', est: ['army', 'nob'], pay: 300, term: 0, by: 'marshal', d: 'Holds a border shire against a hostile neighbour.' },
+  warden: { n: 'Warden of the March', est: ['army', 'nob'], pay: 300, term: 0, by: 'general', d: 'Holds a border shire against a hostile neighbour.' },
   customs: { n: 'Collector of customs', est: ['burg', 'nob'], pay: .005, cap: 1500, term: 4, by: 'sold', d: 'Takes the crown\'s share of sea trade in a port.' },
 };
 // the office's name where the realm has its own (by its kind); pure
@@ -544,7 +544,7 @@ POL.grantRight = function (r, h, right) {
 
 POL.TASKS = {
   chancellor: { court: 'Court an estate', draft: 'Draft a law', mend: 'Mend a neighbour' },
-  marshal: { drill: 'Drill the host', muster: 'Speed the muster', peace: 'Keep the peace' },
+  general: { drill: 'Drill the host', muster: 'Speed the muster', peace: 'Keep the peace' },
   treasurer: { press: 'Press the taxes', audit: 'Audit the officials', fund: 'Fund works' },
   spymaster: { court: 'Watch the court', estates: 'Watch the estates', realm: 'Watch a realm' },
   chaplain: { obey: 'Preach obedience', poor: 'Tend the poor', faith: 'Defend the faith' },
@@ -554,7 +554,7 @@ POL.aiTask = function (r, seat, p) {
   const a = A.RI && A.RI.aims ? A.RI.aims(p) : null, w = a ? a.want : 'order', ES = POL.estState(r);
   const angry = EST.filter(k => ES[k].angry).length, war = A.atWar(r.id).length > 0;
   if (seat === 'chancellor') return angry ? 'court' : (w === 'peace' && hash(p.id, A.S.year, 'm') < .5 ? 'mend' : w === 'order' || w === 'liberty' ? 'draft' : 'court');
-  if (seat === 'marshal') return war || w === 'glory' ? (hash(p.id, A.S.year) < .5 ? 'drill' : 'muster') : r.stability < 45 ? 'peace' : 'drill';
+  if (seat === 'general') return war || w === 'glory' ? (hash(p.id, A.S.year) < .5 ? 'drill' : 'muster') : r.stability < 45 ? 'peace' : 'drill';
   if (seat === 'treasurer') return (r.treasury || 0) < (r.income || 0) * .5 || w === 'wealth' ? 'press' : POL.holders(r, 'gov').length && hash(p.id, A.S.year, 'a') < .45 ? 'audit' : 'fund';
   if (seat === 'spymaster') return w === 'crown' || w === 'order' ? 'court' : POL.hostiles(r).length ? 'realm' : 'estates';
   if (seat === 'chaplain') return w === 'faith' ? 'faith' : ES.comm.ap < -2 ? 'poor' : (r.legit || 50) < 60 ? 'obey' : 'faith';
@@ -585,7 +585,7 @@ POL.taskFx = function (r, seat, t, p) {
     if (t === 'draft') r.pol.draft = A.S.year;
     if (t === 'mend') { const n = (A.neighbors(r.id) || []).filter(x => A.realm(x) && A.realm(x).alive).sort((a, b) => A.relBetween(r.id, a) - A.relBetween(r.id, b))[0]; if (n && A.addRel && A.relBetween(r.id, n) < 0) A.addRel(r.id, n, 5); }
   }
-  if (seat === 'marshal') {
+  if (seat === 'general') {
     if (t === 'drill') r.armyQ = clamp((r.armyQ || 1) + .02, .3, 1.6);
     if (t === 'muster') r.pol.muster = A.S.year;
     if (t === 'peace') r.stability = clamp(r.stability + 2, 0, 100);

@@ -70,7 +70,7 @@ Object.assign(UI.TIPS, {
     const [rid, oid] = String(v || '').split('|'), r = realmOf(rid), o = r && r.pol.off.find(x => x.id === oid); if (!o) return D('No office.');
     const p = A.P(o.pid), D0 = GD.POL_OFFICES[o.k];
     return H(`${esc(POL.offName(o.k, r.id))} of ${esc((A.S.prov[o.at] || {}).name || '')}`) + D(esc(D0.d)) + R('Pay a year', esc(A.coin(o.pay || 0))) + R('Held since', o.since || '—') +
-      (o.term ? R('Term ends', o.term) : '') + R('Chosen by', esc({ crown: 'the crown', chancellor: 'the Chancellor', marshal: 'the Marshal', town: "the town's guildmasters", sold: 'sale, by the crown' }[D0.by])) +
+      (o.term ? R('Term ends', o.term) : '') + R('Chosen by', esc({ crown: 'the crown', chancellor: 'the Chancellor', general: 'the senior General', town: "the town's guildmasters", sold: 'sale, by the crown' }[D0.by])) +
       (p ? R('Estate', esc(POL.estName(POL.estateOf(p), r.id))) : '') + (o.k === 'gov' && o.g ? R('Keeps of the shire\'s tax', o.g + '%') : '');
   },
 });

@@ -145,10 +145,10 @@ if (typeof UI.startLife === 'function') {
 
 // ---- Uniqueness 5: the War Room shows the design and production desks only to the ranks that run them.
 // The release listed Templates (division design), Industry (forges, production lines, economy law) and Manpower
-// (training new divisions) for everyone, greyed out with "Marshal or ruler" / "Ruler only". A farmhand, a squire or a
+// (training new divisions) for everyone, greyed out with "Ruler only". A farmhand, a squire or a
 // sergeant now sees Command, Forces and Wars: the fronts and the host, which are the living history around them.
 // The release's own unlock rules stand (Templates went with W0, D-052: the player no longer designs divisions):
-// Industry and Manpower for the ruler, the Marshal (Manpower) and Generals (rank 7) and up.
+// Industry and Manpower for the ruler (W1-1: no Marshal; a General runs no desk of the crown's).
 if (typeof UI.wrTabs === 'function') {
   const wrTabs = UI.wrTabs;
   UI.wrTabs = function () { return wrTabs.apply(this, arguments).filter(t => !t.lock); };

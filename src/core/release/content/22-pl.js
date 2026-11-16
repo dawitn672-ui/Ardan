@@ -336,7 +336,7 @@
         w: 1,
         cool: 5,
         title: "A quarrel on the council",
-        setup: (p,ctx)=>{const c=A.realm(p.ruler).council,ks=Object.keys(c).filter(k=>A.P(c[k])&&A.P(c[k]).alive);ctx.a=ks[0]?A.COUNCIL[ks[0]].name:"Chancellor",ctx.b=ks[1]?A.COUNCIL[ks[1]].name:"Marshal",ctx.pid=ks[0]?c[ks[0]]:null},
+        setup: (p,ctx)=>{const c=A.realm(p.ruler).council,ks=Object.keys(c).filter(k=>A.P(c[k])&&A.P(c[k]).alive);ctx.a=ks[0]?A.COUNCIL[ks[0]].name:"Chancellor",ctx.b=ks[1]?A.COUNCIL[ks[1]].name:"Senior General",ctx.pid=ks[0]?c[ks[0]]:null},
         text: "Your {a} and your {b} have stopped speaking. Each says the other is robbing the realm. Each wants the other dismissed. The rest of the council is picking sides.",
         choices: [
           {
@@ -863,7 +863,7 @@
         choices: [
           {
             t: "Answer with every man you owe, and more",
-            r: "You ride in at the head of a full company. The marshal writes your name down.",
+            r: "You ride in at the head of a full company. The General writes your name down.",
             fx: {favor:12,coin:-60,fame:3,honor:3},
           },
           {t:"Bring exactly what you owe",r:"No more, no less. Nobody can fault you.",fx:{favor:2,coin:-30}},
@@ -970,10 +970,10 @@
       },
       {
         id: "pl_council_work_marshal",
-        cond: (p,C)=>C.adult(p)&&C.office(p,"marshal"),
+        cond: (p,C)=>C.adult(p)&&C.office(p,"general"),
         w: 1.2,
         cool: 3,
-        title: "The marshal's rolls",
+        title: "The army's rolls",
         text: "The muster rolls are a lie. Half the lords report men who are dead, old or imaginary, and pocket the pay. Fixing it means making enemies of men with castles.",
         choices: [
           {

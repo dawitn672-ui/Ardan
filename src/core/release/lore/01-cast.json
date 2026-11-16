@@ -77,7 +77,7 @@
   "group": "Generals, admirals and captains",
   "role": "general",
   "ruler": false,
-  "title": "Marshal",
+  "title": "Senior General",
   "rung": "M11",
   "looks": "A spare, upright man of 57 with a close white beard, a once-broken nose and a plain red wool cloak over old mail.",
   "manner": "Dry and careful, he answers questions with counts of men, wagons and days, and never raises his voice in council.",
@@ -1862,7 +1862,7 @@
   "group": "Generals, admirals and captains",
   "role": "general",
   "ruler": false,
-  "title": "Marshal of the Rift, warden of the Rift Watch",
+  "title": "General of the Rift, warden of the Rift Watch",
   "rung": "M07",
   "looks": "A tall, lean woman of 42 with close-cropped grey-brown hair, mason's dust on her boots and a worn mail coat.",
   "manner": "Brisk and demanding, she walks the walls at dawn and asks every mason how many stones he laid.",
@@ -2134,7 +2134,7 @@
   "group": "Elite fighters, duelists and school masters",
   "role": "fighter",
   "ruler": false,
-  "title": "Master of Noon Hall; Marshal of the Holy Coast province",
+  "title": "Master of Noon Hall; General of the Holy Coast province",
   "rung": "M07",
   "looks": "A solid man of 44 with a pox-pitted face, a right eye half-blind from a lance splinter and a sun-painted shield.",
   "manner": "Grim and sober, he speaks little, never drinks, and seems to be doing penance in everything he does.",
@@ -2542,7 +2542,7 @@
   "group": "Elite fighters, duelists and school masters",
   "role": "fighter",
   "ruler": false,
-  "title": "Master of the Hall of the Lion; Marshal of the Crown knights",
+  "title": "Master of the Hall of the Lion; General of the Crown knights",
   "rung": "M09",
   "looks": "A grey-bearded knight of 45 with knees bowed by the saddle and a white lance scar running from lip to ear.",
   "manner": "Steady and slow to anger, he speaks plainly and keeps his own counsel, even with his commanders.",
@@ -2559,7 +2559,7 @@
   "group": "Generals, admirals and captains",
   "role": "general",
   "ruler": false,
-  "title": "Lord Marshal; War Party",
+  "title": "Senior General; War Party",
   "rung": "N04",
   "looks": "A barrel-chested, grey man of 52 with eleven scars he can count, an open helm and a left foot that catches on stairs.",
   "manner": "Loud, cheerful and fearless, he laughs at danger and at people, and his calm often reads as coldness.",
@@ -2700,7 +2700,7 @@
   "looks": "A tall, thin boy of 12 with long arms and fingers, who grew a hand's breadth last year and squints at anything beyond 20 paces.",
   "manner": "Quiet and careful, he moves through the palace by memory and covers his poor sight with polite silence.",
   "wants": "He wants to be good enough with lance and sword that no one ever guesses he cannot see a banner.",
-  "fears": "He fears his father dying and being fought over like a prize by his mother and the Lord Marshal."
+  "fears": "He fears his father dying and being fought over like a prize by his mother and the senior General."
  },
  "CHR-0161": {
   "id": "CHR-0161",
@@ -3324,7 +3324,7 @@
   "group": "Rulers, heirs and royal family",
   "role": "royal",
   "ruler": false,
-  "title": "Marshal of the Steppe March; commands the field army",
+  "title": "General of the Steppe March; commands the field army",
   "rung": "R02",
   "looks": "A lean, weathered prince of 34 with a short dark beard, a steppe felt cap and a plain riding coat over his mail.",
   "manner": "Earnest and blunt, he talks of towers, horses and walls, and distrusts his father's bargains.",
@@ -5810,7 +5810,7 @@
   "rung": "",
   "looks": "A hard man of 48, in a mail hauberk, with a ridge of healed bone across his right knuckles.",
   "manner": "Quiet and dutiful, he speaks rarely and simply, and teaches the great-axe with his hands more than with words.",
-  "wants": "Wants the king alive through 1105 and the Bear Guard loyal to the king, not to Lord Marshal Zoran Koren.",
+  "wants": "Wants the king alive through 1105 and the Bear Guard loyal to the king, not to General Zoran Koren.",
   "fears": "Fears the king's bear-blood failing him, as it fails all the tallest Sevrins, and the Bear Guard falling to…"
  },
  "CHR-0353": {
@@ -5857,9 +5857,9 @@
   "group": "Generals, admirals and captains",
   "role": "general",
   "ruler": false,
-  "title": "Lord Marshal; Lord of the Ostec March",
+  "title": "Senior General; Lord of the Ostec March",
   "rung": "N02",
-  "looks": "A stern, grey-bearded man of 54, broad and straight, in a Lord Marshal's red-collared coat with a heavy silver chain.",
+  "looks": "A stern, grey-bearded man of 54, broad and straight, in a senior General's red-collared coat with a heavy silver chain.",
   "manner": "Cold, measured and polite, he speaks like a lender reading a contract and never forgets a debt or a slight.",
   "wants": "Wants to be regent for his grandson Radoslav if the short-lived king dies, and to keep Velgrad's army in his own hand.",
   "fears": "Fears being passed over for the regency in favor of his own daughter, the queen."
@@ -6082,7 +6082,7 @@
   "rung": "",
   "looks": "A broad, weathered woman of 38 with short iron-grey hair, a scar along her jaw, and the Ostec March colors on her coat.",
   "manner": "Practical and brisk, she speaks like a quartermaster, counting men, horses and days in every sentence.",
-  "wants": "Wants the Ostec March garrisons fed and ready through the spring while the Lord Marshal plays at court.",
+  "wants": "Wants the Ostec March garrisons fed and ready through the spring while the senior General plays at court.",
   "fears": "Fears being ordered by Zoran Koren to march her garrisons against the king's men in a fight over the regency."
  },
  "CHR-0369": {
@@ -6098,9 +6098,9 @@
   "title": "Captain of the Bear Guard",
   "rung": "M07",
   "looks": "A very tall man of 42 with long arms, a great-axe on his shoulder, and the Bear Guard's black bear on white across his mail.",
-  "manner": "Polite and correct, he says what he must and nothing more, and smiles only with the Lord Marshal's people.",
+  "manner": "Polite and correct, he says what he must and nothing more, and smiles only with the senior General's people.",
   "wants": "Wants to keep his command of the Bear Guard whatever happens, by staying close to both the king and Zoran Koren.",
-  "fears": "Fears Ruslan Hardhand, his old master, who knows he is reporting to the Lord Marshal."
+  "fears": "Fears Ruslan Hardhand, his old master, who knows he is reporting to the senior General."
  },
  "CHR-0370": {
   "id": "CHR-0370",
@@ -6163,7 +6163,7 @@
   "group": "Generals, admirals and captains",
   "role": "general",
   "ruler": false,
-  "title": "Lord Marshal; Warden of the Steppe March",
+  "title": "Senior General; Warden of the Steppe March",
   "rung": "N02",
   "looks": "A heavy, grizzled man of 56 with a lined, angry face, a soldier's stoop, and the Steppe March warden's silver chain.",
   "manner": "Proud and harsh, he speaks of the rye as shame and treats anyone who mentions Zorek as an enemy.",
@@ -8463,7 +8463,7 @@
   "looks": "A lean man of 57, stiff at dawn, with a javelin scar in his right calf and a tamarisk lance.",
   "manner": "Proud and reserved, he speaks of honor and the Long Ride, and avoids any talk of Zanara.",
   "wants": "Wants to keep his school's good name and his student Mansur's trust while the clans argue over the Salt Road.",
-  "fears": "Fears that the Desert Night March he sold will be used against the clans by Marshal Juma's riders."
+  "fears": "Fears that the Desert Night March he sold will be used against the clans by General Juma's riders."
  },
  "CHR-0510": {
   "id": "CHR-0510",
@@ -8887,8 +8887,8 @@
   "rung": "",
   "looks": "A tall, muscular man of 40 with a spearman's scarred hands, a shaven head, and a short stabbing spear.",
   "manner": "Confident and careful, he speaks of duty and peace while watching everyone's reaction.",
-  "wants": "Wants his uncle's crown, promised to him by the Marshal in return for reporting the night drills.",
-  "fears": "Fears his uncle discovering that his own nephew sold him to Marshal Juma."
+  "wants": "Wants his uncle's crown, promised to him by the General in return for reporting the night drills.",
+  "fears": "Fears his uncle discovering that his own nephew sold him to General Juma."
  },
  "CHR-0535": {
   "id": "CHR-0535",
@@ -8917,9 +8917,9 @@
   "group": "Generals, admirals and captains",
   "role": "general",
   "ruler": false,
-  "title": "Marshal of the Empire",
+  "title": "Senior General of the Empire",
   "rung": "M11",
-  "looks": "A strong, red-faced man of 38 with a heavy jaw, a marshal's gold arm-rings, and a cotton robe over light mail.",
+  "looks": "A strong, red-faced man of 38 with a heavy jaw, a General's gold arm-rings, and a cotton robe over light mail.",
   "manner": "Ambitious and commanding, he speaks bluntly to soldiers and smoothly to lords he needs.",
   "wants": "Wants the regency if the emperor dies, and Tamowa taken from Abara before the May rains.",
   "fears": "Fears the stroke in his own blood, and the young heir's friends turning the runners against him."
@@ -8972,7 +8972,7 @@
   "rung": "N03",
   "looks": "A hard-faced woman of 46 with gold anklets, a dusty mining robe, and a whip at her belt.",
   "manner": "Cold and businesslike, she speaks of slaves as numbers and of war as a way to buy more.",
-  "wants": "Wants Marshal Juma to march into Abara and take captives for her mines.",
+  "wants": "Wants General Juma to march into Abara and take captives for her mines.",
   "fears": "Fears that her dying vein will be discovered before she finds a new one."
  },
  "CHR-0540": {
@@ -8990,7 +8990,7 @@
   "looks": "A proud, grey-bearded man of 55 with a vassal king's gold circlet, a leopard-skin cloak, and old spear scars.",
   "manner": "Proud and resentful, he speaks of the old Tedana kingdom and treats the emperor's envoys coldly.",
   "wants": "Wants a fair share of the Tedana gold, or the old crown of the Tedana itself.",
-  "fears": "Fears that the Marshal already knows about his night drills and is waiting to strike."
+  "fears": "Fears that the General already knows about his night drills and is waiting to strike."
  },
  "CHR-0541": {
   "id": "CHR-0541",
@@ -9109,7 +9109,7 @@
   "looks": "A tall, powerful man of 34 with long runner's legs, a First Spear's leopard-skin collar, and a heavy spear.",
   "manner": "Commanding and calm, he drills his men tirelessly and speaks of discipline above all.",
   "wants": "Wants the 36,000 men of the Horn Regiments drilled and ready for war with Abara or Sahrim.",
-  "fears": "Fears the Marshal and the heir pulling the army apart if the emperor dies."
+  "fears": "Fears the General and the heir pulling the army apart if the emperor dies."
  },
  "CHR-0548": {
   "id": "CHR-0548",
@@ -9159,7 +9159,7 @@
   "rung": "M07",
   "looks": "A big, heavy man of 44 with an elephant goad, a horn badge on his chest, and tusk scars across his thigh.",
   "manner": "Gruff and patient, he talks to his elephants gently and to men harshly.",
-  "wants": "Wants the Marshal's elephants fed and ready for war at Atani before the May rains.",
+  "wants": "Wants the General's elephants fed and ready for war at Atani before the May rains.",
   "fears": "Fears his elephants panicking in battle and trampling his own men."
  },
  "CHR-0552": {
@@ -9461,9 +9461,9 @@
   "group": "Generals, admirals and captains",
   "role": "general",
   "ruler": false,
-  "title": "Marshal of the Northern Host",
+  "title": "General of the Northern Host",
   "rung": "N03",
-  "looks": "A broad, stern man of 46 with a close-cut grey beard, a marshal's green-bordered shawl, and a heavy spear.",
+  "looks": "A broad, stern man of 46 with a close-cut grey beard, a General's green-bordered shawl, and a heavy spear.",
   "manner": "Hard and unforgiving, he speaks bluntly to his officers and remembers every old grudge.",
   "wants": "Wants to hold Tamowa against Juma Kanemba's 12,000 and keep the Zanari road shut for King Yared.",
   "fears": "Fears Prince Tekle coming home with the southern lords behind him."
@@ -9682,9 +9682,9 @@
   "group": "Generals, admirals and captains",
   "role": "general",
   "ruler": false,
-  "title": "Marshal of the Blue Host",
+  "title": "General of the Blue Host",
   "rung": "M11",
-  "looks": "A tall, strong woman of 32 with a marshal's blue-bordered shawl, a short spear, and her father's grave face.",
+  "looks": "A tall, strong woman of 32 with a General's blue-bordered shawl, a short spear, and her father's grave face.",
   "manner": "Practical and cool, she speaks plainly to soldiers and keeps her own counsel with kings.",
   "wants": "Wants to keep the Blue Host out of a war at Tamowa that her king did not choose.",
   "fears": "Fears Gebre Tsega's war dragging the Blue Host into a fight with Zanara."

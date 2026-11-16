@@ -18,7 +18,7 @@ export function makeOrders(realms, seed, count = 5) {
     const avgWorth = rng.float(14, 26); // in levies; see body.fightingWorth calibration
     return { id: i, ...t, members, avgWorth, patron: rng.pick(realms).id, renown: rng.int(60, 200),
       strengthInLevies: Math.round(members * avgWorth), terror: 0.25 + rng.next() * 0.2, // morale shock dealt to foes
-      ranks: ['Aspirant', 'Sworn Brother', 'Blade', 'Captain of the Order', 'Marshal of the Order', 'Grand Master'] };
+      ranks: ['Aspirant', 'Sworn Brother', 'Blade', 'Captain of the Order', 'Seneschal of the Order', 'Grand Master'] };
   });
 }
 

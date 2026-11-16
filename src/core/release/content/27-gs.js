@@ -600,7 +600,7 @@
       gscene: {roles:[]},
       title: "The first tilt",
       setup: needG((p,ctx)=>{foreign(p,ctx),npc(p,ctx,"a knight in green and gold","gentry")}),
-      text: "Your first opponent: {them} of {other}, green and gold, a good seat on a big horse. The marshal drops the flag.",
+      text: "Your first opponent: {them} of {other}, green and gold, a good seat on a big horse. The marshal of the lists drops the flag.",
       choices: [
         {
           t: "Aim for the shield, ride hard",

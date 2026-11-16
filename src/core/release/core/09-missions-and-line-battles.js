@@ -79,7 +79,7 @@ A.newMission = function (pc, enemy, war) {
   // whatever the mission: a General's bandit hunt fought 12,800 and logged "Enemy dead: 5,141. Your losses: 0". A
   // bandit hunt is now 20 to 300 men and a mission away from any war at most 400 (A.missionSize); a mission in a war
   // keeps the rank's numbers.
-  const size = A.missionSize ? A.missionSize(type, rank, war) : rank <= 0 ? 10 : GD.MIL[Math.min(rank, 9)].leads,
+  const size = A.missionSize ? A.missionSize(type, rank, war) : rank <= 0 ? 10 : GD.MIL[Math.min(rank, GD.MIL.length - 1)].leads,
     foeRealm = enemy || "unclaimed",
     fr = A.realm(foeRealm),
     foeTroops = (fr && fr.comp && GD.DOCTRINE[foeRealm]) || GD.DOCTRINE.unclaimed,
@@ -640,12 +640,12 @@ A.STAGES = {
 A.milOrder = function (m, pc) {
   const who =
       m.rank <= 0
-        ? "Your file-leader"
+        ? "Your sergeant"
         : m.rank <= 2
           ? "Your captain"
           : m.rank <= 4
             ? "Orders from the commander"
-            : "Orders from the marshal",
+            : "Orders from the General",
     unit = A.milUnitWord(m.rank),
     what = {
       patrol: "patrol the border villages",

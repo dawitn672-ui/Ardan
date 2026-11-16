@@ -128,11 +128,11 @@
         cond: (p,C)=>low(p,C),
         setup: prep,
         title: "Kit inspection",
-        text: ()=>`Kit inspection at dawn. The file-leader walks the line with a stick, and your ${A.pick(["spear-head has a bloom of rust on it","shield strap is split through","water flask is missing","helmet liner has rotted away"])}. Lost or ruined arms come out of your pay. Three men down the line, the stick stops.`,
+        text: ()=>`Kit inspection at dawn. The sergeant walks the line with a stick, and your ${A.pick(["spear-head has a bloom of rust on it","shield strap is split through","water flask is missing","helmet liner has rotted away"])}. Lost or ruined arms come out of your pay. Three men down the line, the stick stops.`,
         choices: [
           {
             t: "Own up and take the stoppage",
-            r: "Two suns from your pay and a long look. But the file-leader remembers who told the truth.",
+            r: "Two suns from your pay and a long look. But the sergeant remembers who told the truth.",
             fx: {coin:-2,merit:1,honor:1},
           },
           {
@@ -143,7 +143,7 @@
               fx: {them:{op:6}},
             },
             lose: {
-              r: "The file-leader sees the swap. Now you both scrub the latrine trench.",
+              r: "The sergeant sees the swap. Now you both scrub the latrine trench.",
               fx: {them:{op:-4},merit:-2,happy:-3},
             },
           },
@@ -155,7 +155,7 @@
               fx: {skill:{craft:3},merit:2},
             },
             lose: {
-              r: "Your mending falls apart in the file-leader's hand. He holds it up for the whole file to see.",
+              r: "Your mending falls apart in the sergeant's hand. He holds it up for the whole file to see.",
               fx: {coin:-2,happy:-3},
             },
           },
@@ -247,7 +247,7 @@
               r: "A week of humming and you could blow them yourself. In a fight, that is the difference between living and not.",
               fx: {skill:{music:2,tactics:2},merit:2},
             },
-            lose: {r:"They all sound the same to you. You learn to watch the file-leader's back instead.",fx:{int:.3}},
+            lose: {r:"They all sound the same to you. You learn to watch the sergeant's back instead.",fx:{int:.3}},
           },
           {
             t: "Pay the drummer boy to drill you at night (2 suns)",
@@ -267,17 +267,17 @@
         cond: (p,C)=>low(p,C),
         setup: prep,
         title: "Drill",
-        text: "Drill, every day the weather allows and some days it does not: {drill}. Today the squad captain is watching, and so is a rider from {elite}.",
+        text: "Drill, every day the weather allows and some days it does not: {drill}. Today the captain is watching, and so is a rider from {elite}.",
         choices: [
           {
             t: "Put everything into it",
             check: {s:"sta",s2:"ins",d:45},
             win: {
-              r: "You finish first and cleanest. The rider asks the squad captain your name.",
+              r: "You finish first and cleanest. The rider asks the captain your name.",
               fx: {merit:5,sta:.6,ins:.5,fame:1},
             },
             lose: {
-              r: "You push too hard and go down on the last turn. The squad captain sighs.",
+              r: "You push too hard and go down on the last turn. The captain sighs.",
               fx: {sta:.6,health:-3,wil:.5},
             },
           },
@@ -304,7 +304,7 @@
             t: "Set a watch on the pot and catch the thief",
             check: {s:"ins",s2:"stealth",d:40},
             win: {
-              r: ()=>`It is not {mate2}. It is ${A.pick(["the cook's dog","the file-leader's servant boy","a man from the next mess"])}. {mate2} buys you a drink for clearing {m2his} name.`,
+              r: ()=>`It is not {mate2}. It is ${A.pick(["the cook's dog","the sergeant's servant boy","a man from the next mess"])}. {mate2} buys you a drink for clearing {m2his} name.`,
               fx: both({rel:{who:"comrade",op:4,all:!0}},op2(12)),
             },
             lose: {
@@ -324,7 +324,7 @@
               r: "The mess agrees. Fair shares, ladled out. It is the first time anyone has done what you said.",
               fx: {skill:{command:2},merit:2,rel:{who:"comrade",op:3,all:!0}},
             },
-            lose: {r:'"Who made you file-leader?" Nobody listens.',fx:{happy:-2}},
+            lose: {r:'"Who made you sergeant?" Nobody listens.',fx:{happy:-2}},
           },
         ],
       },
@@ -336,7 +336,7 @@
         text: "The new boy in the mess, {kid}, says he is seventeen. He has no beard, his voice cracks, and at night he cries for his mother quietly so nobody hears. You hear. He told the recruiting sergeant a lie for the bounty. He is {kidage}.",
         choices: [
           {
-            t: "Tell the squad captain and get him sent home",
+            t: "Tell the captain and get him sent home",
             r: "The boy hates you for a week. Then a letter comes from his mother, and you are not hated any more.",
             fx: {honor:4,merit:1,happy:2},
           },
@@ -603,17 +603,17 @@
         cond: (p,C)=>low(p,C)&&two(p),
         setup: (p,ctx)=>{prep(p,ctx),ctx.vil=prov(p.home)},
         title: "One night",
-        text: `{mate2} has a sweetheart in a village eight kilometers off and wants one night. "Tell the file-leader I've got the flux. I'll be back for muster." If the file-leader checks, you both pay.`,
+        text: `{mate2} has a sweetheart in a village eight kilometers off and wants one night. "Tell the sergeant I've got the flux. I'll be back for muster." If the sergeant checks, you both pay.`,
         choices: [
           {
             t: "Cover for {m2him}",
             check: {s:"deception",s2:"int",d:40},
             win: {
-              r: "The file-leader takes one sniff toward the latrine and does not look further. {mate2} is back for muster, grinning.",
+              r: "The sergeant takes one sniff toward the latrine and does not look further. {mate2} is back for muster, grinning.",
               fx: both({happy:2},op2(20)),
             },
             lose: {
-              r: "The file-leader checks the latrines. Both of you dig them for a week.",
+              r: "The sergeant checks the latrines. Both of you dig them for a week.",
               fx: both({merit:-3,happy:-3},op2(8)),
             },
           },
@@ -761,14 +761,14 @@
             },
           },
           {
-            t: "Complain to the squad captain",
+            t: "Complain to the captain",
             check: {s:"diplomacy",s2:"wil",d:55},
             win: {
-              r: "The squad captain is honest, for once. The sergeant is fined and the fund vanishes.",
+              r: "The captain is honest, for once. The sergeant is fined and the fund vanishes.",
               fx: {merit:3,honor:3,rel:{who:"comrade",op:4,all:!0}},
             },
             lose: {
-              r: "The squad captain and the sergeant drink together. You have a hard year.",
+              r: "The captain and the sergeant drink together. You have a hard year.",
               fx: {merit:-4,health:-5,wil:2,happy:-4},
             },
           },
@@ -897,7 +897,7 @@
               fx: {skill:{bow:2,xbow:2},merit:3},
             },
             lose: {
-              r: "Your cap leaks. You shoot half as far as you should, and the file-leader notices.",
+              r: "Your cap leaks. You shoot half as far as you should, and the sergeant notices.",
               fx: {merit:-1},
             },
           },
@@ -1096,7 +1096,7 @@
           {
             t: "Put in a whole sun",
             req: p=>p.coin>=1,
-            r: "It is the best night of the year. {mate} sings, the file-leader dances, and nobody talks about the war.",
+            r: "It is the best night of the year. {mate} sings, the sergeant dances, and nobody talks about the war.",
             fx: {coin:-1,happy:6,rel:{who:"comrade",op:4,all:!0}},
           },
           {
@@ -1123,7 +1123,7 @@
         cond: (p,C)=>C.soldier(p)&&rk(p)===1,
         setup: prep,
         title: "The file's rag",
-        text: "As file-leader you carry the file's standard: a stick with a colored rag on it. This morning it is gone from beside your blanket. Across the camp, another file is laughing loudly, and the rag is flying from their cook-pot.",
+        text: "As sergeant you carry the file's standard: a stick with a colored rag on it. This morning it is gone from beside your blanket. Across the camp, another file is laughing loudly, and the rag is flying from their cook-pot.",
         choices: [
           {
             t: "Take it back in the night",
@@ -1138,10 +1138,10 @@
             },
           },
           {
-            t: "Walk over and ask for it, file-leader to file-leader",
+            t: "Walk over and ask for it, sergeant to sergeant",
             check: {s:"persuasion",s2:"intimidation",d:45},
             win: {
-              r: 'Their file-leader grins and hands it over. "Had to try." You share a jug that night.',
+              r: 'Their sergeant grins and hands it over. "Had to try." You share a jug that night.',
               fx: {newRel:{type:"friend",op:25}},
             },
             lose: {
@@ -1149,7 +1149,7 @@
               fx: {
                 duel: {
                   tier: 2,
-                  title: "another file-leader",
+                  title: "another sergeant",
                   opts: {kind:"brawl",lethal:!1,toYield:!0,place:"the other file's fire",title:"For the rag"},
                 },
               },
@@ -1167,7 +1167,7 @@
         cond: (p,C)=>C.soldier(p)&&rk(p)===1&&war(p)&&two(p),
         setup: prep,
         title: "Counting heads",
-        text: "After the fight a file-leader counts heads. You count nineteen, then nineteen again. {mate2} is missing. The field is dark, the enemy's horse is still out there, and the squad captain says the file will move at first light.",
+        text: "After the fight a sergeant counts heads. You count nineteen, then nineteen again. {mate2} is missing. The field is dark, the enemy's horse is still out there, and the captain says the file will move at first light.",
         choices: [
           {
             t: "Go back out and look for {m2him}",
@@ -1183,7 +1183,7 @@
           },
           {
             t: "Send two volunteers",
-            r: "Two men go out, and two come back carrying {mate2}. They are heroes for a week. You are the file-leader who sent them.",
+            r: "Two men go out, and two come back carrying {mate2}. They are heroes for a week. You are the sergeant who sent them.",
             fx: both({skill:{command:3},merit:3},op2(10)),
           },
           {
@@ -1198,7 +1198,7 @@
         cond: (p,C)=>C.soldier(p)&&rk(p)===1&&mates(p),
         setup: (p,ctx)=>{prep(p,ctx),ctx.yrs=A.ri(12,25)},
         title: "The oldest man",
-        text: "A file-leader is usually the oldest steady man in the file. You are not. {mate} has {yrs} years in the ranks and expected the staff. Now {mhe} obeys you slowly, with a little smile, and the file watches to see what you will do.",
+        text: "A sergeant is usually the oldest steady man in the section. You are not. {mate} has {yrs} years in the ranks and expected the staff. Now {mhe} obeys you slowly, with a little smile, and the file watches to see what you will do.",
         choices: [
           {
             t: "Ask {mhim} for advice, openly",
@@ -1214,7 +1214,7 @@
             t: "Out-march and out-dig {mhim}",
             check: {s:"sta",s2:"str",d:50},
             win: {
-              r: 'For a month you are first up, last down, deepest in the ditch. One morning {mate} calls you "file-leader" without the smile.',
+              r: 'For a month you are first up, last down, deepest in the ditch. One morning {mate} calls you "sergeant" without the smile.',
               fx: {them:{op:10},sta:1,merit:3},
             },
             lose: {r:"{mate} out-marches you without trying. Years count.",fx:{sta:.8,wil:1,happy:-2}},
@@ -1226,7 +1226,7 @@
         cond: (p,C)=>C.soldier(p)&&rk(p)===1&&two(p),
         setup: prep,
         title: "Up, up",
-        text: "The file-leader wakes the file. {mate2} will not get up: says {m2he} has a fever, and {m2he} is hot to the touch, but {m2he} also has a jug under the blanket and a pay-day headache. The march leaves in a quarter of an hour.",
+        text: "The sergeant wakes the file. {mate2} will not get up: says {m2he} has a fever, and {m2he} is hot to the touch, but {m2he} also has a jug under the blanket and a pay-day headache. The march leaves in a quarter of an hour.",
         choices: [
           {
             t: "Look closer before you decide",
@@ -1257,13 +1257,13 @@
         text: "The press party brought in a new man for your file: {lad}, a weaver's apprentice dragged out of an alehouse. He swears he is the only son of a widow, and the law says only sons are exempt. The sergeant says everybody says that.",
         choices: [
           {
-            t: "Take his case to the squad captain",
+            t: "Take his case to the captain",
             check: {s:"persuasion",s2:"learning",d:45},
             win: {
               r: "You find a priest who knows the widow. {lad} goes home with a paper, and you have one man fewer and a good name in the town.",
               fx: {honor:5,fame:1},
             },
-            lose: {r:"The squad captain is short of men and does not care about widows. {lad} stays.",fx:{happy:-2}},
+            lose: {r:"The captain is short of men and does not care about widows. {lad} stays.",fx:{happy:-2}},
           },
           {
             t: "Make a soldier of him",
@@ -1421,14 +1421,14 @@
             },
           },
           {
-            t: "Report him to the squad captain with the cook as witness",
+            t: "Report him to the captain with the cook as witness",
             check: {s:"persuasion",s2:"learning",d:50},
             win: {
               r: "The quartermaster's sergeant is broken to the ranks. Your section eats properly, and the other sergeants buy you drinks.",
               fx: {merit:5,honor:3,fame:1},
             },
             lose: {
-              r: "His cousin is the squad captain's cousin too. Nothing happens, except to your duties.",
+              r: "His cousin is the captain's cousin too. Nothing happens, except to your duties.",
               fx: {merit:-3,wil:1},
             },
           },
@@ -1479,7 +1479,7 @@
               fx: {wil:1,unflag:"rk_deadpay"},
             },
             lose: {
-              r: "The clerk walks down the line to find the voice. He finds you. A heavy fine and the squad captain's contempt.",
+              r: "The clerk walks down the line to find the voice. He finds you. A heavy fine and the captain's contempt.",
               fx: {coin:-30,merit:-10,honor:-3,unflag:"rk_deadpay"},
             },
           },
@@ -1617,28 +1617,28 @@
         cond: (p,C)=>mid(p,C)&&war(p),
         setup: prep,
         title: "A stupid order",
-        text: "The squad captain orders your section across three hundred paces of open meadow to take a hedge full of crossbowmen. There is a sunken lane that runs round to the same hedge. He did not look at the map. He is not here.",
+        text: "The captain orders your section across three hundred paces of open meadow to take a hedge full of crossbowmen. There is a sunken lane that runs round to the same hedge. He did not look at the map. He is not here.",
         choices: [
           {
             t: "Obey to the letter",
-            r: "You take the hedge across the open meadow. It costs four men. The squad captain calls it a fine attack.",
+            r: "You take the hedge across the open meadow. It costs four men. The captain calls it a fine attack.",
             fx: {merit:4,happy:-6,wil:1.5},
           },
           {
             t: "Take the sunken lane instead",
             check: {s:"tactics",s2:"stealth",d:50},
             win: {
-              r: "You come out of the lane behind the hedge. The crossbowmen run. The squad captain takes credit, and the section knows the truth.",
+              r: "You come out of the lane behind the hedge. The crossbowmen run. The captain takes credit, and the section knows the truth.",
               fx: {merit:6,skill:{tactics:3},rel:{who:"comrade",op:8,all:!0}},
             },
             lose: {
-              r: "The lane is watched too. You take the hedge, late and bloody, and the squad captain wants to know why you disobeyed.",
+              r: "The lane is watched too. You take the hedge, late and bloody, and the captain wants to know why you disobeyed.",
               fx: {merit:-4,health:-6,wil:1},
             },
           },
           {
             t: "Send a runner back to argue",
-            r: "By the time the runner returns, the chance is gone. The squad captain is furious with everyone.",
+            r: "By the time the runner returns, the chance is gone. The captain is furious with everyone.",
             fx: {merit:-2},
           },
         ],
@@ -1689,7 +1689,7 @@
               fx: {rel:{who:"comrade",op:6,all:!0},skill:{command:2},newRel:{type:"friend",op:15}},
             },
             lose: {
-              r: "They were waiting. Two of your men take a beating and the squad captain fines both sections.",
+              r: "They were waiting. Two of your men take a beating and the captain fines both sections.",
               fx: {coin:-4,rel:{who:"comrade",op:-2,all:!0}},
             },
           },
@@ -1705,7 +1705,7 @@
             },
           },
           {
-            t: "Take it to the squad captain",
+            t: "Take it to the captain",
             r: "He separates the sections by a field and tells you both to grow up. Your men think you ran to the teacher.",
             fx: {rel:{who:"comrade",op:-3,all:!0},merit:1},
           },
@@ -1743,8 +1743,8 @@
         id: "rk_sgt_recommend",
         cond: (p,C)=>mid(p,C)&&two(p),
         setup: prep,
-        title: "A file-leader's staff",
-        text: "The squad captain wants a name for file-leader, and he will take yours. {mate} is your friend, steady, slow and liked. {mate2} is sharp and brave and nobody can stand {m2him}.",
+        title: "A sergeant's staff",
+        text: "The captain wants a name for sergeant, and he will take yours. {mate} is your friend, steady, slow and liked. {mate2} is sharp and brave and nobody can stand {m2him}.",
         choices: [
           {
             t: "Name {mate}",
@@ -1755,7 +1755,7 @@
             t: "Name {mate2}",
             check: {s:"command",s2:"int",d:45},
             win: {
-              r: "{mate2} is a good file-leader, which surprises everyone but you. The squad captain notices your eye for men.",
+              r: "{mate2} is a good sergeant, which surprises everyone but you. The captain notices your eye for men.",
               fx: both({merit:5,skill:{command:2},them:{op:-5}},op2(25)),
             },
             lose: {
@@ -1800,7 +1800,7 @@
         once: !0,
         setup: prep,
         title: "The warrant",
-        text: `A squad captain is the first rung with a written warrant from a lord, and the first who can be hanged for a mistake that kills his squad. Yours is waiting at the steward's office of Lord {lord}. The steward's clerk says there is "a small fee for the seal". Twenty suns.`,
+        text: `A captain is the first rung with a written warrant from a lord, and the first who can be hanged for a mistake that kills his squad. Yours is waiting at the steward's office of Lord {lord}. The steward's clerk says there is "a small fee for the seal". Twenty suns.`,
         choices: [
           {
             t: "Pay the fee (20 suns)",
@@ -1832,7 +1832,7 @@
         cond: (p,C)=>C.soldier(p)&&rk(p)===3&&two(p),
         setup: prep,
         title: "Left hand, right hand",
-        text: "A squad captain has two sergeants, his left hand and his right. Yours, {mate} and {mate2}, hate each other over something that happened before you came. Today each refuses to march behind the other's section.",
+        text: "A captain has two sergeants, his left hand and his right. Yours, {mate} and {mate2}, hate each other over something that happened before you came. Today each refuses to march behind the other's section.",
         choices: [
           {
             t: "Make them march together, at the head, all day",
@@ -1849,7 +1849,7 @@
             lose: {r:"Each tells a different story, and both are lies. You are no wiser.",fx:{}},
           },
           {
-            t: "Break one of them back to file-leader",
+            t: "Break one of them back to the ranks",
             r: "You break {mate2}. The squad is quieter. {mate2} is a dangerous man to have behind you.",
             fx: both({merit:2,skill:{command:1}},op2(-40)),
           },
@@ -1860,7 +1860,7 @@
         cond: (p,C)=>C.soldier(p)&&rk(p)===3&&lowborn(p),
         setup: (p,ctx)=>{prep(p,ctx),ctx.kn=nm(p)},
         title: "A banner of knights",
-        text: `A knight's banner, twenty lances, is put under your command for a raid. A banner is a squad captain's command by the book. Sir {kn}, who leads them, looks at your boots and says, "My lances do not take orders from a ploughboy."`,
+        text: `A knight's banner, twenty lances, is put under your command for a raid. A banner is a captain's command by the book. Sir {kn}, who leads them, looks at your boots and says, "My lances do not take orders from a ploughboy."`,
         choices: [
           {
             t: "Show him the warrant and the book",
@@ -1902,7 +1902,7 @@
         cond: (p,C)=>C.soldier(p)&&rk(p)===3,
         setup: (p,ctx)=>{prep(p,ctx),ctx.sold=nm(p)},
         title: "A week's pay",
-        text: "{sold} sold his issued cloak to a farmer for bread money. A squad captain can fine a soldier up to a week's pay. His wife and two children are living in a lean-to behind the baggage carts, and they are the ones who ate the bread.",
+        text: "{sold} sold his issued cloak to a farmer for bread money. A captain can fine a soldier up to a week's pay. His wife and two children are living in a lean-to behind the baggage carts, and they are the ones who ate the bread.",
         choices: [
           {
             t: "Fine him the full week. Rules are rules.",
@@ -1963,7 +1963,7 @@
         cond: (p,C)=>C.soldier(p)&&rk(p)===3&&C.ageAdj(p)<26,
         setup: (p,ctx)=>{prep(p,ctx),ctx.os=nm(p),ctx.oy=A.ri(22,34)},
         title: "Too young for this",
-        text: `Squad captains are young. Your senior sergeant, {os}, has {oy} years of service and grey in his beard. He calls you "sir" in a tone that means "boy". In the first week he tests you: the squad's kit list comes to you with three deliberate mistakes.`,
+        text: `Captains are young. Your senior sergeant, {os}, has {oy} years of service and grey in his beard. He calls you "sir" in a tone that means "boy". In the first week he tests you: the squad's kit list comes to you with three deliberate mistakes.`,
         choices: [
           {
             t: "Find all three and hand it back without a word",
@@ -2847,7 +2847,7 @@
         cond: (p,C)=>C.soldier(p)&&rk(p)===5,
         setup: (p,ctx)=>{prep(p,ctx),ctx.acc=nm(p)},
         title: "The court of three",
-        text: "A senior captain may try a soldier before a court of three captains. Today it is an officer: Captain {acc}, accused of cowardice. He pulled his company back from a ridge without orders. He says he would have lost every man. The ridge fell an hour later anyway.",
+        text: "A commander may try a soldier before a court of three captains. Today it is an officer: Captain {acc}, accused of cowardice. He pulled his company back from a ridge without orders. He says he would have lost every man. The ridge fell an hour later anyway.",
         choices: [
           {
             t: "Acquit him: he saved two hundred men",
@@ -3391,10 +3391,10 @@
       },
       {
         id: "rk_gen_treaty",
-        cond: (p,C)=>C.soldier(p)&&rk(p)>=8&&war(p)&&crown(p),
+        cond: (p,C)=>C.soldier(p)&&rk(p)>=7&&war(p)&&crown(p),
         setup: (p,ctx)=>{prep(p,ctx),ctx.env=nm(p),ctx.eid=foeId(p)||""},
         title: "An armistice for the theatre",
-        text: "A high general may sign an armistice for his theatre of war. The {foe} envoy, {env}, comes to your tent with a white staff: a truce until next Harvest Home, each side to keep what it holds. Your men are tired. So are theirs. {king} wants victory, not a truce.",
+        text: "A General given an army by the king's written word may sign an armistice for his theatre of war. The {foe} envoy, {env}, comes to your tent with a white staff: a truce until next Harvest Home, each side to keep what it holds. Your men are tired. So are theirs. {king} wants victory, not a truce.",
         choices: [
           {
             t: "Sign it",
@@ -3533,10 +3533,10 @@
       },
       {
         id: "rk_gen_hang_officer",
-        cond: (p,C)=>C.soldier(p)&&rk(p)>=8,
+        cond: (p,C)=>C.soldier(p)&&rk(p)>=7,
         setup: (p,ctx)=>{prep(p,ctx),ctx.nep=nm(p)},
         title: "A duke's nephew",
-        text: "A high general may hang an officer up to senior captain. Senior Captain {nep} let his wing loot a temple and kill the priests who stood in the door. The witnesses are many. He is also the nephew of the most powerful duke at court, who has already written to you.",
+        text: "A General may hang an officer up to commander. Commander {nep} let his wing loot a temple and kill the priests who stood in the door. The witnesses are many. He is also the nephew of the most powerful duke at court, who has already written to you.",
         choices: [
           {
             t: "Hang him",
@@ -3557,14 +3557,14 @@
       },
       {
         id: "rk_mar_pardon",
-        cond: (p,C)=>C.soldier(p)&&rk(p)===9,
+        cond: (p,C)=>C.soldier(p)&&rk(p)>=7,
         setup: (p,ctx)=>{prep(p,ctx),ctx.cond=nm(p)},
-        title: "The marshal pardons",
-        text: "A marshal pardons. A woman has walked two hundred kilometers to kneel in your doorway. Her son, {cond}, a sergeant, struck his captain and is to hang on Friday. She says the captain was drunk and beating a boy. Your clerks say the law is clear.",
+        title: "The General pardons",
+        text: "A General pardons. A woman has walked two hundred kilometers to kneel in your doorway. Her son, {cond}, a sergeant, struck his captain and is to hang on Friday. She says the captain was drunk and beating a boy. Your clerks say the law is clear.",
         choices: [
           {
             t: "Pardon him",
-            r: "You write the pardon in your own hand. The army will say the marshal is soft. The mother will say other things, for the rest of her life.",
+            r: "You write the pardon in your own hand. The army will say the General is soft. The mother will say other things, for the rest of her life.",
             fx: {honor:6,piety:3,fame:2,merit:-10},
           },
           {
@@ -3831,10 +3831,10 @@
       },
       {
         id: "rk_mar_budget",
-        cond: (p,C)=>C.soldier(p)&&rk(p)===9&&crown(p),
+        cond: (p,C)=>C.soldier(p)&&C.office(p,"general")&&crown(p),
         setup: (p,ctx)=>{prep(p,ctx),ctx.chan=nm(p)},
         title: "The chancellor's knife",
-        text: `A marshal answers to nobody but the sovereign, and the sovereign must receive him standing. The chancellor, {chan}, receives you sitting, and tells you that the army's money for next year will be cut by a third. "Peace is cheaper than soldiers, marshal."`,
+        text: `The senior General answers to nobody but the sovereign, and the sovereign must receive him standing. The chancellor, {chan}, receives you sitting, and tells you that the army's money for next year will be cut by a third. "Peace is cheaper than soldiers, General."`,
         choices: [
           {
             t: "Go to the sovereign directly",
@@ -3863,10 +3863,10 @@
       },
       {
         id: "rk_mar_ally",
-        cond: (p,C)=>C.soldier(p)&&rk(p)>=8&&war(p),
+        cond: (p,C)=>C.soldier(p)&&rk(p)>=7&&war(p),
         setup: (p,ctx)=>{prep(p,ctx),ctx.am=nm(p)},
-        title: "Two marshals",
-        text: "An allied army has joined yours. When two crowns join a host, each marshal commands his own men, and the senior by warrant date leads the council. Marshal {am}'s warrant is a month older than yours. His plan is bad, and he knows you know it.",
+        title: "Two Generals",
+        text: "An allied army has joined yours. When two crowns join their armies, each General commands his own men, and the elder by commission leads the council of war. General {am}'s commission is a month older than yours. His plan is bad, and he knows you know it.",
         choices: [
           {
             t: "Accept his lead and make the best of it",
@@ -3891,7 +3891,7 @@
       },
       {
         id: "rk_mar_arsenal",
-        cond: (p,C)=>C.soldier(p)&&rk(p)>=8,
+        cond: (p,C)=>C.soldier(p)&&C.office(p,"general"),
         setup: (p,ctx)=>{prep(p,ctx),ctx.am=nm(p)},
         title: "The arsenal",
         text: "Your master of the arsenal, {am}, reports at last what the inventory shows: half the crossbows in the royal arsenal have rotted strings and warped stocks, the pikes are wormy, and the stone shot has been sold to builders. Someone has been selling the realm's war, piece by piece, for ten years.",
@@ -5838,7 +5838,7 @@
         cond: (p,C)=>dyn(p,C)&&C.soldier(p)&&C.flag(p,"rk_fm_office")&&war(p),
         setup: (p,ctx)=>{prepF(p,ctx),prep(p,ctx)},
         title: "The family's men",
-        text: "The marshal's order: {funit} is to hold the ford for a day while the army withdraws. Every man in it comes from your family's villages. You know their mothers. A day at that ford means most of them will not come home.",
+        text: "The General's order: {funit} is to hold the ford for a day while the army withdraws. Every man in it comes from your family's villages. You know their mothers. A day at that ford means most of them will not come home.",
         choices: [
           {
             t: "Hold the ford",
@@ -5854,14 +5854,14 @@
           },
           {
             t: "Hold it half a day, then withdraw",
-            r: "Half a day is enough for most of the army. The marshal is angry. The villages are not.",
+            r: "Half a day is enough for most of the army. The General is angry. The villages are not.",
             fx: {merit:-10,honor:2,rel:{who:"comrade",op:8,all:!0}},
           },
           {
-            t: "Ask the marshal for a different post",
+            t: "Ask the General for a different post",
             check: {s:"persuasion",s2:"etiquette",d:55},
             win: {
-              r: "The marshal sends a hired company instead. Your family's villages never learn how close it was.",
+              r: "The General sends a hired company instead. Your family's villages never learn how close it was.",
               fx: {merit:-3},
             },
             lose: {r:'"Your family has held fords before, I believe." The order stands.',fx:{merit:-5,wil:1}},

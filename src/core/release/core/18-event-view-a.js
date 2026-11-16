@@ -1399,7 +1399,7 @@ A.bondsYear = function (pc) {
 
 A.STAFF = {
   file: {
-    label: "File-leader",
+    label: "Head of the file",
     skill: "melee",
     s2: "command",
     lvl: 1,
@@ -2092,7 +2092,7 @@ GD.ORDERS = {
     exp: 84,
     gear: "knight",
     lead: "Grand Master of the Iron Wolf",
-    ranks: ["Wolf-Aspirant", "Wolf-Brother|Wolf-Sister", "Pack-Leader", "Marshal of the Wolves"],
+    ranks: ["Wolf-Aspirant", "Wolf-Brother|Wolf-Sister", "Pack-Leader", "Seneschal of the Wolves"],
     spec: "Two hundred and sixty knights in black plate on barded horses, a wolf's head on every helm. The hardest charge in the north: they have never broken first.",
     tac: "shock",
     terr: ["plains", "steppe"],
@@ -2138,7 +2138,7 @@ GD.ORDERS = {
     gear: "knight",
     org: 0.35,
     lead: "Grand Master of the Knights of the Sun",
-    ranks: ["Dawn Aspirant", "Knight of the Sun", "Sun-Captain", "Marshal of the Sun"],
+    ranks: ["Dawn Aspirant", "Knight of the Sun", "Sun-Captain", "Seneschal of the Sun"],
     spec: "The Holy See's vowed knights in gilded plate, written in the Book of Noon as already dead. They do not rout: a knight who flees is struck from the light forever.",
     tac: "counter",
     terr: ["plains"],
@@ -2553,7 +2553,7 @@ GD.ORDER_RANKS = {
     ["Aspirant", "Aspirant"],
     ["Knight-Brother", "Knight-Sister"],
     ["Knight-Captain", "Knight-Captain"],
-    ["Marshal of the Order", "Marshal of the Order"],
+    ["Seneschal of the Order", "Seneschal of the Order"],
     null,
   ],
   guard: [

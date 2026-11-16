@@ -184,7 +184,7 @@ A.wrAdvice = function (pc, R2) {
       if (miss.length)
         out.push({
           ic: "star",
-          t: `For ${GD.MIL[pc.mil.rank + 1].title}: ${miss.map(x => `${x.label.toLowerCase()} ${x.have}${x.need !== "" ? "/" + x.need : ""}`).join(", ")}.`,
+          t: `For ${A.rankLabel(pc.mil.rank + 1)}: ${miss.map(x => `${x.label.toLowerCase()} ${x.have}${x.need !== "" ? "/" + x.need : ""}`).join(", ")}.`,
         });
     }
   }
@@ -1630,7 +1630,7 @@ UI.promoBoardHtml = function (pc) {
   // [X1 baked patch people/99999-v2-renown RN-WORDS] Merit was shown as a counter ("Merit 112 / 30") in the year's
   // summary and explained as a bar to meet; it no longer decides promotion. In the source: say where you stand for
   // the next rank in words, and say how the board decides.
-  return `<div class="wr-board"><div class="small"><b>Promotion board — ${UI.esc(N.title)}</b> <span class="tiny muted">(leads ${A.fmt(N.leads)})</span></div>${b.map(x => `<div class="tiny row">${x.ok ? `<span class="good-t">${UI.wrIcon("check")}</span>` : `<span class="${x.soft ? "warn-t" : "bad-t"}">${UI.wrIcon(x.soft ? "triangle-alert" : "x")}</span>`}<span class="grow">${UI.esc(x.label)}${x.soft ? ' <span class="muted">(helps)</span>' : ""}</span><b>${UI.esc(String(x.have))}${x.need !== "" ? " / " + UI.esc(String(x.need)) : ""}</b></div>`).join("")}<div class="tiny muted">The board sits every three months. A deed that beat the odds in front of the army counts most; steady service and a patron help; a post must fall open. It can come twice in a year, or not for years, and a great deed can carry you past a rank.</div></div>`;
+  return `<div class="wr-board"><div class="small"><b>Promotion board — ${UI.esc(A.rankLabel(pc.mil.rank + 1))}</b> <span class="tiny muted">(leads ${A.fmt(N.leads)})</span></div>${b.map(x => `<div class="tiny row">${x.ok ? `<span class="good-t">${UI.wrIcon("check")}</span>` : `<span class="${x.soft ? "warn-t" : "bad-t"}">${UI.wrIcon(x.soft ? "triangle-alert" : "x")}</span>`}<span class="grow">${UI.esc(x.label)}${x.soft ? ' <span class="muted">(helps)</span>' : ""}</span><b>${UI.esc(String(x.have))}${x.need !== "" ? " / " + UI.esc(String(x.need)) : ""}</b></div>`).join("")}<div class="tiny muted">The board sits every three months. A deed that beat the odds in front of the army counts most; steady service and a patron help; a post must fall open. It can come twice in a year, or not for years, and a great deed can carry you past a rank.</div></div>`;
 };
 
 Object.assign(UI.A, {
