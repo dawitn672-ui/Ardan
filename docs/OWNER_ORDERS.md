@@ -130,6 +130,17 @@ order is replaced, strike it through and say by what.
     temper for it (a baron risen from commoners may sympathise where a duke born to gold will not). The scales shift with
     knighthood and honour, renown as a master of anything, fame, wealth and connections. Rule 18 (nothing without reason)
     applied to every acquaintance.
+56. **Detail between peoples; image generation for visual work** · recorded 2026-11-15 22:12 ET. The owner's words, verbatim:
+
+    > i want attention to detail in the way each Character design weapon clothing and all differ from small to drastic differnces between nations borders and cultures. i want you to use chatgpt image generation whenver you need visual work and design completed if it hits its limit then wait for it to be done and work around it until then
+
+    **Read as:** every character's design, weapons and clothing differ by nation, by border and by culture, from small
+    differences (neighbours across a border: a cut, a colour, a fastening, a hilt) to drastic ones (far peoples), with
+    attention to detail; folded into C8d (and L2, E2 for arms). Image generation (OpenAI's) is to be used for visual design
+    work whenever needed, waiting out limits and working around them meanwhile. **Status:** the session cannot use a
+    ChatGPT subscription, only OpenAI's API with a key; the owner declined the key form at 2026-11-15 22:12 ET and asked where to find
+    it and what a free plan allows. Until a key exists: the figure library draws, and images the owner makes in ChatGPT and
+    shares are used as references.
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
