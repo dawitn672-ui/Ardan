@@ -41,6 +41,7 @@ A name that is no longer here was renamed in the naming pass: look it up in [NAM
 | [design/characters.md](design/characters.md) | Character design: faces, bodies and dress (C8a) |
 | [design/war.md](design/war.md) | D12a, revised as D12a-2: war as a visual simulation (theatre, field, press); command without a Marshal, the lords' own armies, conscription, why wars start and end, reports, upheavals, the military path, the sixteen build stages (D-064) |
 | [design/growth.md](design/growth.md) | G design: 17 stats, thousands of skills, hundreds of fighting styles, legendary arts |
+| [design/growth-standard.md](design/growth-standard.md) | G0: the growth standard (order 54, "growth is far too linear"): today's growth measured over nine bot lives, the research, and the rules G and D11+ build on (the practice curve, quality of effort, teachers, age, plateaus and trials, disuse, the body by age, a reason for every change); scripts and `curves.svg` in `design/growth/` |
 | [design/economy-and-items.md](design/economy-and-items.md) | E1 and E2 design: markets that run themselves, hundreds of weapons, unique items |
 | [design/legendaries/legendaries.md](design/legendaries/legendaries.md) | Ten legendary arms, one from each of ten realms (orders 36 and 52): the page and its plates, how pieces, arts and forms are named, the redrawn bow; and `ordinary.png`, the game's ordinary arms before and after order 52 |
 | [design/reference/](design/reference/README.md) | The owner's reference pictures for character art (D-029) |

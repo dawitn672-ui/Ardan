@@ -21,6 +21,14 @@ Use this when building or reviewing character, family, politics or war systems f
 - Conditioning moves toward a **natural ceiling** (lift ×3.8 for an untrained adult; Earth's record is about ×3.8 too). Gains shrink near the top, and idle months lose a little.
 - **Breakthroughs** are the only way past a ceiling: winning a real-stakes attempt by a surge of will against long odds raises the ceiling by about 12% for each unit of magnitude. This is how a human climbs to giant-class.
 - Learn by doing: skills are hours practised × talent × age factor (children fast, elders slow) × wits. Tiers are Untrained 0, Novice 30, Apprentice 200, Journeyman 800, Adept 2,500, Expert 6,000, Master 12,000, Grandmaster 25,000 and Legend 50,000 hours.
+- **Growth must not be linear, and every change needs a cause** (Ardan's G0 standard, `docs/design/growth-standard.md`, D-067;
+  a design, not yet built). Gain = effort × quality (routine work stops teaching once you can do it; a task above you
+  under stakes teaches most) × teacher (by the gap in words, never past one word under him) × talent × age by kind
+  (movement young, tongues before 17, judgement from 30) × condition × a steep practice curve (a beginner's month worth
+  about thirty of a master's). Plateaus carry a named reason; crossing a high word takes a deed, and stored effort lands
+  as a leap. Each stat has its own age curve (speed peaks first, decline quickens after 60); bodies detrain (endurance
+  first) and retrain fast; skills rust only after years and return ×5. Measure it with bot lives: R² of a straight line
+  through the climbing years, gains by word, flat years (`docs/design/growth/analyze.mjs`).
 
 ## 2. Races are different bodies
 Humans are the yardstick. Square-cube law: a 5.6 m giant has about 10× human strength, is slow to react (420 ms) and is very tough (×14). Orcs carry about 2.2× human lift and ×1.9 toughness, and mature by 16. Dwarves are dense and tough with long lives; elves are fast and fragile.
