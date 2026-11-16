@@ -1,0 +1,16 @@
+{
+  "id": "beard_short",
+  "z": "beard",
+  "_note": "A short beard of a few weeks and a moustache: a mass close on the jaw, a thinner growth fading up the cheek, short hairs grown down along the jaw (removed where a cut crosses) that soften both edges, and moustache locks from under the nose to the corners of the mouth.",
+  "layers": [
+    {"id": "cheek_stub", "z": "face", "role": "hair.shadow", "alpha": 0.32, "clip": "head.skin", "d": "M 612 470 S 598 520 566 556 528 584 500 606 488 640 470 650 430 648 400 640 390 624 L 380 700 L 620 700 Z"},
+    {"id": "mass", "role": "hair.shadow", "alpha": 0.82, "d": "M 612 528 S 594 560 562 588 528 610 502 632 490 652 462 658 430 656 404 646 388 634 L 378 640 S 388 676 408 704 440 720 488 720 532 704 572 680 604 650 624 616 626 570 Z"},
+    {"id": "lit", "role": "hair.half", "clip": "mass", "d": "M 360 620 S 420 650 480 662 520 646 540 610 L 560 760 L 360 760 Z", "alpha": 0.9},
+    {"id": "chin_lit", "role": "hair.light", "clip": "mass", "lod": 1, "d": "M 400 668 S 424 680 450 686 474 692 462 712 432 712 406 696 Z", "alpha": 0.7},
+    {"id": "hairs_top", "role": "hair.shadow", "lod": 1, "alpha": 0.8, "hairs": {"g": "M 612 520 S 590 556 556 584 520 610 494 640 470 654 430 652 398 638", "w": [16, 16, 16, 14, 12, 10, 10, 10], "n": 120, "ang": [1.6, 1.9], "len": [9, 8], "bend": 0.15, "wid": 1.3}},
+    {"id": "hairs", "role": "hair.deep", "lod": 1, "hairs": {"g": "M 620 540 S 610 600 576 660 524 696 466 712 414 694 388 650", "w": [34, 40, 40, 34, 30, 30, 22], "n": 160, "ang": [1.7, 1.95], "len": [11, 10], "bend": 0.15, "wid": 1.5, "lo": 0.4}},
+    {"id": "hairs_l", "role": "hair.light", "lod": 2, "hairs": {"g": "M 540 650 S 500 686 450 698 410 680 392 646", "w": [26, 30, 30, 26, 18], "n": 60, "ang": [1.8, 1.95], "len": [9, 8], "bend": 0.15, "wid": 1.1}},
+    {"id": "under_line", "role": "hair.line", "line": "M 610 650 S 572 690 530 714 486 726 440 724 408 708 390 684", "w": [0.5, 2, 2.6, 2.6, 2.4, 1.6, 0.5], "k": "contour", "alpha": 0.8},
+    {"id": "moustache", "z": "beard", "ramp": "hair", "locks": [{"g": "M 428 582 S 452 586 474 598 488 616", "w": [14, 15, 3], "edge": 1}, {"g": "M 420 584 S 404 590 394 602 390 618", "w": [13, 14, 3], "edge": 1}, {"g": "M 444 586 S 464 594 480 610", "w": [11, 12, 2], "strands": 1}, {"g": "M 414 588 S 402 598 396 612", "w": [10, 10, 2], "strands": 1}, {"g": "M 432 584 S 446 590 458 600", "w": [8, 9, 2], "strands": 1}]}
+  ]
+}

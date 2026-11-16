@@ -1,0 +1,34 @@
+1: knight - plate harness, tabard with castle emblem, sword
+2: clergy - cream robe with gold stole, pendant
+3: clergy - hooded cowl, white stole, rosary and cross
+4: noble - purple dress, belted with pouch, long sleeves in a dyed colour
+5: merchant - orange sash with beads, light wrap, key and pouch at the belt
+6: merchant - green tunic with a pouch and keys on the belt, blue cap
+7: artisan - leather apron, tool in hand, grey work shirt
+8: soldier - kettle helmet, red and tan tabard, mail collar, round shield
+9: serf - plain brown rough tunic, rope belt, no ornament
+10: peasant - undyed tan dress with patches, rope belt
+11: merchant - teal striped robe, blue turban, layered long coat
+12: soldier - helmet, bow and arrows, sword, red tabard
+13: soldier - kettle helmet, green tabard, round shield, mail collar
+14: noble - orange and gold robe, jewelled turban, ornate sash and dagger
+15: royal - gold crown, ermine collar, red robe
+16: royal - gold crown, gold cape, white and gold dress
+17: royal - crown, ermine collar, purple robe and green cloak
+18: serf - drab brown sack dress with patches, rope belt
+19: peasant - pale tunic with patches, rope belt, cleaner and lighter cloth
+20: clergy - white wimple, cowl, white stole with crosses
+21: artisan - apron over a brown dress, rope belt and pouch
+22: royal - crown, purple mantle, gold and white robe with a jewel
+23: artisan - leather apron, hammer at the belt, blue sleeves
+24: peasant - grey shirt, plain turban, simple belt, held a small item
+25: noble - teal robe with fur collar, gold chain, fur hat, red belt
+26: artisan - apron, hammer at the belt, brown turban
+27: noble - blue and grey dress with fur collar, gold necklace, circlet
+28: artisan - apron, hammer in hand, necklace, yellow dress
+29: merchant - green capelet, blue dress, belt pouch, white coif
+30: merchant - tall hat, bead necklaces, red sash, pouch and keys
+31: soldier - mail collar, shield, sword, grey and tan tabard
+32: clergy - cowl, cream robe, small pendant
+
+The hardest pairs to separate were serf and peasant, merchant and noble, and artisan and merchant. Serf and peasant both wear undyed rough cloth with rope belts. I went by how patched, drab and dark the cloth was (9, 18 as serfs), against lighter and cleaner cloth (10, 19, 24 as peasants). Those calls are the least certain. Merchant and noble overlap in dyed colours and jewellery, so I used the belt pouch and keys for merchants, and fur, chains and circlets for nobles. People 4, 11 and 14 are the least sure of those. Artisan and merchant differ mainly in the apron and tools, which is a clear cue. Soldier and knight were easy to tell apart, because plate harness is rare and common soldiers wear a helmet, tabard and shield. Clergy were easy to spot from the stole, cowl or wimple. Royals were easy to spot from the crowns.

@@ -1,0 +1,357 @@
+{
+  "format": "ardan-mod",
+  "formatVersion": 1,
+  "id": "example",
+  "name": "Stones and Debts",
+  "version": "1.0.0",
+  "author": "Ardan",
+  "about": "The example mod: a boundary stone that moves, a friend in debt, and a spring custom in Aldmark. Read MODDING.md to write your own.",
+  "words": {
+    "default": {
+      "bounds": "beating of the bounds"
+    },
+    "CUL-02": {
+      "bounds": "ring-walk"
+    },
+    "CUL-06": {
+      "bounds": "dyke-walk"
+    }
+  },
+  "events": [
+    {
+      "id": "mod_example_stone",
+      "title": "The boundary stone",
+      "cond": {
+        "all": [
+          {
+            "adult": true
+          },
+          {
+            "any": [
+              {
+                "poor": true
+              },
+              {
+                "job": "farm"
+              },
+              {
+                "job": "herd"
+              }
+            ]
+          }
+        ]
+      },
+      "once": true,
+      "w": 3,
+      "text": "The stones on your strip have stood since the last {bounds}. After the spring rain you walk the line and find the third one four paces into your barley. Your neighbour's plough was out early this week. The furrow behind the stone is fresh and very straight.",
+      "choices": [
+        {
+          "t": "Carry it back yourself after dark",
+          "check": {
+            "s": "str",
+            "s2": "stealth",
+            "d": 45
+          },
+          "win": {
+            "r": "It is heavier than it looks. You set it in its old hole and tread the earth flat. In the morning your neighbour walks the line and says nothing at all.",
+            "fx": {
+              "str": 1,
+              "flag": "mod_example_stone_back"
+            }
+          },
+          "lose": {
+            "r": "You have it halfway when a dog starts up. A lamp is lit next door. You leave the stone where it fell and go home with mud to the knee.",
+            "fx": {
+              "happy": -3,
+              "flag": "mod_example_stone_lost"
+            }
+          }
+        },
+        {
+          "t": "Take it to the reeve",
+          "check": {
+            "s": "persuasion",
+            "s2": "int",
+            "d": 50
+          },
+          "win": {
+            "r": "The reeve walks the line with a rod and two witnesses. The stone goes back, and your neighbour pays the lord a fine of two hens.",
+            "fx": {
+              "honor": 2,
+              "flag": "mod_example_stone_back"
+            }
+          },
+          "lose": {
+            "r": "The reeve has eaten at your neighbour's table all winter. He finds the stone exactly where the stone is.",
+            "fx": {
+              "happy": -4,
+              "flag": "mod_example_stone_lost"
+            }
+          }
+        },
+        {
+          "t": "Let it lie and plough around it",
+          "r": "Four paces of barley a year is not much. You tell yourself so at every harvest.",
+          "fx": {
+            "happy": -2,
+            "flag": "mod_example_stone_lost"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mod_example_stone_son",
+      "title": "The neighbour's son",
+      "cond": {
+        "all": [
+          {
+            "adult": true
+          },
+          {
+            "any": [
+              {
+                "since": [
+                  "mod_example_stone_back",
+                  ">=",
+                  8
+                ]
+              },
+              {
+                "since": [
+                  "mod_example_stone_lost",
+                  ">=",
+                  8
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "once": true,
+      "w": 2,
+      "text": "Your old neighbour is buried after the thaw. At the wake his son finds you by the door with a cup in each hand. He says his father talked about the boundary stone near the end, more than he talked about the farm. He wants to know what happened.",
+      "choices": [
+        {
+          "t": "Tell him the whole of it",
+          "r": "You tell it plainly: the plough, the stone, the night after. He hears you out. Then he says his father told it differently, and drinks.",
+          "fx": {
+            "honor": 2,
+            "happy": -1
+          }
+        },
+        {
+          "t": "Say it was a long time ago",
+          "r": "He nods as if he expected that. You talk about the weather and the price of seed, and part well enough.",
+          "fx": {
+            "happy": 1
+          }
+        },
+        {
+          "t": "Ask for your four paces back",
+          "if": {
+            "flag": "mod_example_stone_lost"
+          },
+          "check": {
+            "s": "persuasion",
+            "s2": "wil",
+            "d": 40
+          },
+          "win": {
+            "r": "He walks the line with you in the morning and moves the stone himself. The four paces of barley are yours again.",
+            "fx": {
+              "coin": 6,
+              "happy": 3
+            }
+          },
+          "lose": {
+            "r": "He says his father paid for that ground with his back, whatever the stones say. He does not stay for the second cup.",
+            "fx": {
+              "happy": -3
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "mod_example_loan",
+      "title": "A friend's purse",
+      "cond": {
+        "all": [
+          {
+            "adult": true
+          },
+          {
+            "prison": false
+          }
+        ]
+      },
+      "with": [
+        "friend",
+        "bestfriend"
+      ],
+      "w": 3,
+      "cool": 12,
+      "text": "{them} comes by at dusk and stays past supper. A debt falls due at the quarter day, eleven coins, and {khe} is short every one of them. {khe} does not ask outright. {khe} talks about the harvest and the roads until it is clear that you will have to.",
+      "choices": [
+        {
+          "t": "Lend the eleven",
+          "r": "{them} counts it twice and promises it back by midsummer. You believe about half of that.",
+          "fx": {
+            "coin": -11,
+            "them": {
+              "op": 15
+            },
+            "flag": "mod_example_lent"
+          }
+        },
+        {
+          "t": "Ask what the debt is for",
+          "r": "You ask. {them} turns the cup round once before {khe} answers.",
+          "fx": {
+            "event": "mod_example_loan_why"
+          }
+        },
+        {
+          "t": "Say you have nothing to spare",
+          "r": "{them} says {khe} understands, and goes before the fire is banked.",
+          "fx": {
+            "them": {
+              "op": -10
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "mod_example_loan_why",
+      "title": "Dice, not cloth",
+      "with": [
+        "friend",
+        "bestfriend"
+      ],
+      "trigger": true,
+      "text": "It is not cloth. It is dice, in a back room by the river on market nights, and the man {khe} owes does not send letters. {them} says this was the last time. {khe} says it plainly, as if {khe} had practised it on the way over.",
+      "choices": [
+        {
+          "t": "Lend it, and say it is the last",
+          "r": "{them} takes the coins and your terms. Neither of you is sure about the terms.",
+          "fx": {
+            "coin": -11,
+            "them": {
+              "op": 8
+            },
+            "flag": "mod_example_lent"
+          }
+        },
+        {
+          "t": "Pay the dice-man yourself, face to face",
+          "check": {
+            "s": "intimidation",
+            "s2": "wil",
+            "d": 50
+          },
+          "win": {
+            "r": "You pay him in the doorway with the river at your back. He counts it, and says he will not have {them} at his table again.",
+            "fx": {
+              "coin": -11,
+              "them": {
+                "op": 20
+              },
+              "honor": 1
+            }
+          },
+          "lose": {
+            "r": "He takes the money and laughs. Next market night {them} is at the table again, and the debt starts over.",
+            "fx": {
+              "coin": -11,
+              "happy": -3
+            }
+          }
+        },
+        {
+          "t": "Refuse, and tell {khim} why",
+          "r": "You say what you think of dice. {them} hears it out and goes home one friend poorer.",
+          "fx": {
+            "them": {
+              "op": -15
+            },
+            "honor": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "mod_example_repaid",
+      "title": "A knotted cloth",
+      "cond": {
+        "all": [
+          {
+            "adult": true
+          },
+          {
+            "since": [
+              "mod_example_lent",
+              ">=",
+              2
+            ]
+          }
+        ]
+      },
+      "once": true,
+      "w": 2,
+      "text": "A boy brings a knotted cloth to your door and runs before you can ask him anything. Inside are eleven coins, two of them clipped, and no message. You know whose they are. The clipped ones are an apology, or a joke, or both.",
+      "choices": [
+        {
+          "t": "Keep the money",
+          "r": "You put it in the box under the bed. It is the same money it was before you lent it.",
+          "fx": {
+            "coin": 11
+          }
+        },
+        {
+          "t": "Send it back with a message",
+          "r": "You send the cloth back with a message: keep it, and keep away from the river.",
+          "fx": {
+            "happy": 2,
+            "honor": 1
+          }
+        },
+        {
+          "t": "Spend it on a feast for your neighbours",
+          "r": "Eleven coins buy a roast, a cask and a fiddler. Half the lane comes. Your friend does not, which says enough.",
+          "fx": {
+            "happy": 3,
+            "fame": 1
+          }
+        }
+      ]
+    }
+  ],
+  "customs": {
+    "POL-01": [
+      {
+        "id": "mod_example_ringwalk",
+        "name": "The ring-walk",
+        "kind": "year",
+        "m": 4,
+        "who": "free",
+        "rule": "In May each {w1} sends one walker to beat the bounds behind the reeve.",
+        "text": "May, and the reeve's horn at first light. Each {w1} in the village sends one walker to beat the bounds, stone to stone, with willow wands. The boys are bumped on every stone so they will remember where it stands. The reeve has your name on his list.",
+        "fx": {
+          "happy": 1,
+          "sta": 1
+        },
+        "keepT": "Walk the bounds",
+        "keep": "You walk from first light to dusk, stone to stone. Your feet ache, and you know where every stone of the parish stands.",
+        "defy": {
+          "t": "Send word that you are sick",
+          "r": "The reeve marks you down as sick. On the way back your neighbours walk slowly past your door.",
+          "fx": {
+            "honor": -2
+          }
+        },
+        "log": "You walk the bounds of the parish with every {w1}."
+      }
+    ]
+  }
+}

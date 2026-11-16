@@ -1,0 +1,26 @@
+{
+  "id": "smock",
+  "z": "dress2",
+  "mats": {"cloth": "woad", "under": "linen", "thread": "madder", "patch": "undyed"},
+  "_note": "A child's smock of woad-blue wool, handed down: a round neck with the linen undershirt showing, a running stitch in madder thread round the neck, a square patch of undyed wool sewn on the near shoulder. The cue at 46 px: blue, the white collar, the patch.",
+  "layers": [
+    {"id": "under", "role": "under.light", "d": "M 330 880 S 400 900 470 912 540 906 610 884 680 846 L 700 900 L 320 920 Z"},
+    {"id": "under_sh", "role": "under.half", "clip": "under", "d": "M 300 900 S 420 930 520 932 640 900 700 880 L 700 940 L 300 940 Z"},
+    {"id": "body", "role": "cloth.light", "d": "M 300 900 S 380 924 460 936 540 930 620 904 690 856 L 762 846 S 856 908 936 984 966 1090 976 1516 L 88 1516 S 98 1090 132 984 206 922 Z"},
+    {"id": "half", "role": "cloth.half", "clip": "body", "d": "M 620 900 S 660 980 700 1080 730 1516 L 1000 1516 L 1000 840 Z"},
+    {"id": "shadow", "role": "cloth.shadow", "clip": "body", "d": "M 740 870 S 790 960 820 1080 830 1516 L 1000 1516 L 1000 840 Z"},
+    {"id": "neck_sh", "role": "cloth.half", "clip": "body", "d": "M 300 900 S 380 924 460 936 540 930 620 904 690 856 L 690 880 S 620 930 540 956 460 960 380 948 300 924 Z"},
+    {"id": "fold1", "role": "cloth.half", "clip": "body", "d": "M 300 1000 S 330 1080 336 1150 332 1516 L 362 1516 S 360 1130 340 1050 Z"},
+    {"id": "fold2", "role": "cloth.half", "clip": "body", "d": "M 520 960 S 548 1060 560 1140 562 1516 L 590 1516 S 580 1120 552 1020 Z"},
+    {"id": "sh_far", "role": "cloth.hl", "clip": "body", "lod": 1, "d": "M 150 990 S 210 944 290 916 340 944 270 962 190 1000 Z", "alpha": 0.5},
+    {"id": "hatch", "pat": {"type": "hatch", "role": "cloth.line", "clip": "body", "box": [640, 900, 900, 1516], "ang": -1.2, "gap": 9, "len": [20, 40], "w": 2}, "alpha": 0.45},
+    {"id": "running", "pat": {"type": "stitch", "role": "thread.light", "along": "M 306 914 S 384 938 462 950 540 944 618 918 684 874", "gap": 10, "dash": 0.5, "w": 2.6}},
+    {"id": "patch", "role": "patch.light", "d": "M 760 920 L 852 952 L 828 1040 L 742 1010 Z"},
+    {"id": "patch_sh", "role": "patch.half", "clip": "patch", "d": "M 800 900 L 900 900 L 900 1060 L 820 1060 Z"},
+    {"id": "patch_line", "role": "patch.line", "lod": 0, "line": "M 760 920 L 852 952 L 828 1040 L 742 1010 L 760 920", "w": [1.6, 1.6, 1.6, 1.6, 1.6], "k": "form"},
+    {"id": "patch_st", "pat": {"type": "stitch", "role": "thread.shadow", "along": "M 766 928 L 844 956 L 822 1032 L 748 1006 L 766 928", "gap": 9, "ang": 0.9, "dash": 0.7, "w": 1.8}},
+    {"id": "line", "role": "cloth.line", "line": "M 300 900 S 380 924 460 936 540 930 620 904 690 856", "w": [2, 2.4, 2.4, 2.4, 2.4, 2], "k": "contour"},
+    {"id": "line_f", "role": "cloth.line", "line": "M 300 900 S 206 922 132 984 98 1090 88 1516", "w": [2, 3, 4, 4, 4], "k": "contour"},
+    {"id": "line_n", "role": "cloth.line", "line": "M 762 846 S 856 908 936 984 966 1090 976 1516", "w": [3, 4, 5, 5, 5], "k": "contour"}
+  ]
+}

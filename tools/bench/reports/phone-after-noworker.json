@@ -1,0 +1,474 @@
+{
+ "tag": "after-noworker",
+ "html": "../../../../../../tmp/ardan/x7/after.html",
+ "device": "Pixel 7",
+ "rates": {
+  "1": {
+   "marks": {
+    "core ran": 471,
+    "title shown": 514,
+    "title painted": 517,
+    "content ran": 1848,
+    "title world": 2172,
+    "lore unpacked": 1903,
+    "idle": 2178,
+    "continent ready (as run)": null,
+    "continent ready": null
+   },
+   "bootCpu": 1637,
+   "bootScript": 1397,
+   "longest": 383,
+   "newLife": {
+    "create": 17,
+    "life": 1393,
+    "cpu": 1346
+   },
+   "toFirstLife": 3697,
+   "builtOnBegin": 1,
+   "y0": {
+    "wall": 744,
+    "quietWall": 223,
+    "cpu": 689,
+    "engine": 339,
+    "months": 2,
+    "loadCpu": 242
+   },
+   "y50": {
+    "wall": 279,
+    "quietWall": 279,
+    "cpu": 229,
+    "engine": 173,
+    "months": 2,
+    "loadCpu": 379
+   },
+   "runs": [
+    {
+     "marks": {
+      "ardan-core decoded": 178,
+      "ardan-core unpacked": 288,
+      "core ran": 551,
+      "title shown": 619,
+      "title painted": 622,
+      "ardan-content decoded": 666,
+      "ardan-content unpacked": 765,
+      "content ran": 2032,
+      "ardan-lore decoded": 2049,
+      "ardan-lore unpacked": 2081,
+      "title world": 2344,
+      "lore unpacked": 2081,
+      "idle": 2353,
+      "continent ready": null,
+      "continent ready (as run)": null
+     },
+     "bootCpu": 1718,
+     "bootScript": 1463,
+     "bootStyle": 36,
+     "bootLayout": 8,
+     "longest": 459,
+     "newLife": {
+      "built": 1,
+      "create": 17,
+      "life": 1393,
+      "screen": "game",
+      "tab": "story",
+      "modal": false,
+      "year": 1105,
+      "cpu": 1346,
+      "script": 19,
+      "style": 13,
+      "layout": 7
+     },
+     "profile": null
+    },
+    {
+     "marks": {
+      "ardan-core decoded": 147,
+      "ardan-core unpacked": 233,
+      "core ran": 471,
+      "title shown": 514,
+      "title painted": 517,
+      "ardan-content decoded": 548,
+      "ardan-content unpacked": 633,
+      "content ran": 1848,
+      "ardan-lore decoded": 1869,
+      "ardan-lore unpacked": 1903,
+      "title world": 2172,
+      "lore unpacked": 1903,
+      "idle": 2178,
+      "continent ready": null,
+      "continent ready (as run)": null
+     },
+     "bootCpu": 1637,
+     "bootScript": 1397,
+     "bootStyle": 33,
+     "bootLayout": 5,
+     "longest": 383,
+     "newLife": {
+      "built": 1,
+      "create": 22,
+      "life": 1503,
+      "screen": "game",
+      "tab": "story",
+      "modal": false,
+      "year": 1105,
+      "cpu": 1436,
+      "script": 22,
+      "style": 17,
+      "layout": 8
+     },
+     "profile": null
+    },
+    {
+     "marks": {
+      "ardan-core decoded": 148,
+      "ardan-core unpacked": 224,
+      "core ran": 447,
+      "title shown": 501,
+      "title painted": 503,
+      "ardan-content decoded": 532,
+      "ardan-content unpacked": 627,
+      "content ran": 1774,
+      "ardan-lore decoded": 1793,
+      "ardan-lore unpacked": 1822,
+      "title world": 2122,
+      "lore unpacked": 1822,
+      "idle": 2128,
+      "continent ready": null,
+      "continent ready (as run)": null
+     },
+     "bootCpu": 1586,
+     "bootScript": 1361,
+     "bootStyle": 30,
+     "bootLayout": 5,
+     "longest": 371,
+     "newLife": {
+      "built": 1,
+      "create": 16,
+      "life": 1375,
+      "screen": "game",
+      "tab": "story",
+      "modal": false,
+      "year": 1105,
+      "cpu": 1269,
+      "script": 19,
+      "style": 13,
+      "layout": 7
+     },
+     "profile": null
+    }
+   ]
+  },
+  "4": {
+   "marks": {
+    "core ran": 2303,
+    "title shown": 2501,
+    "title painted": 2515,
+    "content ran": 6104,
+    "title world": 7289,
+    "lore unpacked": 6262,
+    "idle": 7296,
+    "continent ready (as run)": null,
+    "continent ready": null
+   },
+   "bootCpu": 7358,
+   "bootScript": 5726,
+   "longest": 1883,
+   "newLife": {
+    "create": 81,
+    "life": 5701,
+    "cpu": 5762
+   },
+   "toFirstLife": 13159,
+   "builtOnBegin": 1,
+   "y0": {
+    "wall": 2944,
+    "quietWall": 696,
+    "cpu": 3126,
+    "engine": 1407,
+    "months": 2,
+    "loadCpu": 212
+   },
+   "y50": {
+    "wall": 1145,
+    "quietWall": 1145,
+    "cpu": 1335,
+    "engine": 781,
+    "months": 2,
+    "loadCpu": 428
+   },
+   "runs": [
+    {
+     "marks": {
+      "ardan-core decoded": 681,
+      "ardan-core unpacked": 1056,
+      "core ran": 2310,
+      "title shown": 2501,
+      "title painted": 2515,
+      "ardan-content decoded": 2646,
+      "ardan-content unpacked": 2892,
+      "content ran": 6104,
+      "ardan-lore decoded": 6172,
+      "ardan-lore unpacked": 6262,
+      "title world": 7289,
+      "lore unpacked": 6262,
+      "idle": 7296,
+      "continent ready": null,
+      "continent ready (as run)": null
+     },
+     "bootCpu": 7358,
+     "bootScript": 5726,
+     "bootStyle": 142,
+     "bootLayout": 55,
+     "longest": 1883,
+     "newLife": {
+      "built": 1,
+      "create": 80,
+      "life": 5790,
+      "screen": "game",
+      "tab": "story",
+      "modal": false,
+      "year": 1105,
+      "cpu": 5784,
+      "script": 91,
+      "style": 72,
+      "layout": 50
+     },
+     "profile": null
+    },
+    {
+     "marks": {
+      "ardan-core decoded": 699,
+      "ardan-core unpacked": 1102,
+      "core ran": 2179,
+      "title shown": 2368,
+      "title painted": 2382,
+      "ardan-content decoded": 2518,
+      "ardan-content unpacked": 2823,
+      "content ran": 6009,
+      "ardan-lore decoded": 6051,
+      "ardan-lore unpacked": 6175,
+      "title world": 7090,
+      "lore unpacked": 6175,
+      "idle": 7100,
+      "continent ready": null,
+      "continent ready (as run)": null
+     },
+     "bootCpu": 7177,
+     "bootScript": 5563,
+     "bootStyle": 142,
+     "bootLayout": 47,
+     "longest": 1733,
+     "newLife": {
+      "built": 1,
+      "create": 85,
+      "life": 5701,
+      "screen": "game",
+      "tab": "story",
+      "modal": false,
+      "year": 1105,
+      "cpu": 5762,
+      "script": 111,
+      "style": 69,
+      "layout": 45
+     },
+     "profile": null
+    },
+    {
+     "marks": {
+      "ardan-core decoded": 634,
+      "ardan-core unpacked": 1029,
+      "core ran": 2303,
+      "title shown": 2511,
+      "title painted": 2530,
+      "ardan-content decoded": 2672,
+      "ardan-content unpacked": 2933,
+      "content ran": 6550,
+      "ardan-lore decoded": 6605,
+      "ardan-lore unpacked": 6731,
+      "title world": 7692,
+      "lore unpacked": 6731,
+      "idle": 7699,
+      "continent ready": null,
+      "continent ready (as run)": null
+     },
+     "bootCpu": 8004,
+     "bootScript": 6365,
+     "bootStyle": 169,
+     "bootLayout": 42,
+     "longest": 1949,
+     "newLife": {
+      "built": 1,
+      "create": 81,
+      "life": 5668,
+      "screen": "game",
+      "tab": "story",
+      "modal": false,
+      "year": 1105,
+      "cpu": 5690,
+      "script": 105,
+      "style": 74,
+      "layout": 44
+     },
+     "profile": null
+    }
+   ]
+  },
+  "6": {
+   "marks": {
+    "core ran": 3194,
+    "title shown": 3504,
+    "title painted": 3552,
+    "content ran": 8627,
+    "title world": 10148,
+    "lore unpacked": 8869,
+    "idle": 10165,
+    "continent ready (as run)": null,
+    "continent ready": null
+   },
+   "bootCpu": 10299,
+   "bootScript": 8163,
+   "longest": 2604,
+   "newLife": {
+    "create": 96,
+    "life": 8004,
+    "cpu": 7939
+   },
+   "toFirstLife": 17993,
+   "builtOnBegin": 1,
+   "y0": {
+    "wall": 3726,
+    "quietWall": 1218,
+    "cpu": 4047,
+    "engine": 1763,
+    "months": 2,
+    "loadCpu": 199
+   },
+   "y50": {
+    "wall": 1434,
+    "quietWall": 1434,
+    "cpu": 1662,
+    "engine": 826,
+    "months": 2,
+    "loadCpu": 365
+   },
+   "runs": [
+    {
+     "marks": {
+      "ardan-core decoded": 866,
+      "ardan-core unpacked": 1348,
+      "core ran": 2886,
+      "title shown": 3154,
+      "title painted": 3177,
+      "ardan-content decoded": 3374,
+      "ardan-content unpacked": 3864,
+      "content ran": 8242,
+      "ardan-lore decoded": 8306,
+      "ardan-lore unpacked": 8446,
+      "title world": 9621,
+      "lore unpacked": 8446,
+      "idle": 9646,
+      "continent ready": null,
+      "continent ready (as run)": null
+     },
+     "bootCpu": 9700,
+     "bootScript": 7648,
+     "bootStyle": 193,
+     "bootLayout": 66,
+     "longest": 2386,
+     "newLife": {
+      "built": 1,
+      "create": 96,
+      "life": 8004,
+      "screen": "game",
+      "tab": "story",
+      "modal": false,
+      "year": 1105,
+      "cpu": 7939,
+      "script": 123,
+      "style": 83,
+      "layout": 58
+     },
+     "profile": null
+    },
+    {
+     "marks": {
+      "ardan-core decoded": 959,
+      "ardan-core unpacked": 1557,
+      "core ran": 3244,
+      "title shown": 3536,
+      "title painted": 3552,
+      "ardan-content decoded": 3665,
+      "ardan-content unpacked": 4009,
+      "content ran": 8721,
+      "ardan-lore decoded": 8772,
+      "ardan-lore unpacked": 8897,
+      "title world": 10148,
+      "lore unpacked": 8897,
+      "idle": 10165,
+      "continent ready": null,
+      "continent ready (as run)": null
+     },
+     "bootCpu": 10299,
+     "bootScript": 8176,
+     "bootStyle": 226,
+     "bootLayout": 73,
+     "longest": 2685,
+     "newLife": {
+      "built": 1,
+      "create": 78,
+      "life": 7767,
+      "screen": "game",
+      "tab": "story",
+      "modal": false,
+      "year": 1105,
+      "cpu": 7744,
+      "script": 104,
+      "style": 89,
+      "layout": 68
+     },
+     "profile": null
+    },
+    {
+     "marks": {
+      "ardan-core decoded": 1039,
+      "ardan-core unpacked": 1614,
+      "core ran": 3194,
+      "title shown": 3504,
+      "ardan-content decoded": 3689,
+      "ardan-content unpacked": 4006,
+      "title painted": 4062,
+      "content ran": 8627,
+      "ardan-lore decoded": 8702,
+      "ardan-lore unpacked": 8869,
+      "title world": 10239,
+      "lore unpacked": 8869,
+      "idle": 10250,
+      "continent ready": null,
+      "continent ready (as run)": null
+     },
+     "bootCpu": 10442,
+     "bootScript": 8163,
+     "bootStyle": 234,
+     "bootLayout": 68,
+     "longest": 2604,
+     "newLife": {
+      "built": 1,
+      "create": 110,
+      "life": 8694,
+      "screen": "game",
+      "tab": "story",
+      "modal": false,
+      "year": 1105,
+      "cpu": 8719,
+      "script": 153,
+      "style": 76,
+      "layout": 91
+     },
+     "profile": null
+    }
+   ]
+  }
+ },
+ "when": "2026-11-15T01:24:13.204Z",
+ "errors": []
+}

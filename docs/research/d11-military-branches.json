@@ -1,0 +1,1009 @@
+{
+ "_about": "D11 military branches and battlefield strategy for Ardan (design notes only, nothing is built). Game-like: what beats what, terrain, timing. Fits src/war/engine/war.js (TACTICS hold/advance/charge/flank/volley/feint/withdraw, TERRAIN open/hills/forest/ford/pass, phases Skirmish/Clash/Press/Decision, ranks soldier/sergeant/captain/commander), 60-unit-drill (tactics need a drill), 9997-companies (company 200, battalion 800), and the elite orders in orders.js. Odds shown to the player as words, never percentages. strongVs/weakVs are plain ids or phrases, not a rules table.",
+ "branches": [
+  {
+   "id": "knights",
+   "name": "Knights",
+   "kind": "cavalry",
+   "subBranches": [
+    "heavy_lancers",
+    "mounted_men_at_arms",
+    "dismounted_knights"
+   ],
+   "role": "The noble heart of the army: a few hundred rich, armoured men who win battles at one moment or lose them.",
+   "strongVs": [
+    "archers",
+    "crossbowmen",
+    "levies",
+    "light_cavalry",
+    "siege_engineers"
+   ],
+   "weakVs": [
+    "spear_pike",
+    "archers_behind_stakes"
+   ],
+   "terrain": {
+    "good": [
+     "open",
+     "dry ground"
+    ],
+    "bad": [
+     "forest",
+     "marsh",
+     "pass"
+    ]
+   },
+   "ranks": [
+    {
+     "title": "Soldier",
+     "leads": "one knight in the line"
+    },
+    {
+     "title": "Sergeant",
+     "leads": "a lance of 8 knights and their squires"
+    },
+    {
+     "title": "Captain",
+     "leads": "a banner of 60 knights"
+    },
+    {
+     "title": "Commander",
+     "leads": "the whole knightly host of a realm"
+    }
+   ],
+   "training": "Wedge and charge drill; riding and lance skill; squire years first.",
+   "gear": "Plate or mail, warhorse, lance, sword, shield.",
+   "missions": [
+    "lead the charge",
+    "hold the flank",
+    "run down a routed foe",
+    "escort a lord"
+   ],
+   "careerPath": "Page, squire, knight, banner captain, marshal."
+  },
+  {
+   "id": "heavy_lancers",
+   "name": "Heavy lancers",
+   "kind": "cavalry",
+   "subBranches": [],
+   "role": "Shock cavalry: one great blow on a prepared foe, then they are spent.",
+   "strongVs": [
+    "archers",
+    "crossbowmen",
+    "levies",
+    "siege_engineers",
+    "men_at_arms_foot"
+   ],
+   "weakVs": [
+    "spear_pike",
+    "archers_behind_stakes",
+    "light_cavalry"
+   ],
+   "terrain": {
+    "good": [
+     "open",
+     "dry ground",
+     "downhill"
+    ],
+    "bad": [
+     "forest",
+     "marsh",
+     "pass",
+     "ford",
+     "uphill"
+    ]
+   },
+   "ranks": [
+    {
+     "title": "Soldier",
+     "leads": "a rider in the wedge"
+    },
+    {
+     "title": "Sergeant",
+     "leads": "a lance of 8 riders"
+    },
+    {
+     "title": "Captain",
+     "leads": "a squadron of 60"
+    },
+    {
+     "title": "Commander",
+     "leads": "all lancers of the host"
+    }
+   ],
+   "training": "Wedge and charge drill; couched lance.",
+   "gear": "Barded horse, long lance, heavy armour.",
+   "missions": [
+    "break the line",
+    "shatter a flank",
+    "pursue a rout"
+   ],
+   "careerPath": "Squire, lancer, lance leader, squadron captain, marshal of horse."
+  },
+  {
+   "id": "mounted_men_at_arms",
+   "name": "Mounted men-at-arms",
+   "kind": "cavalry",
+   "subBranches": [],
+   "role": "The all-round armoured horseman: charges, but also fights on after the lance breaks.",
+   "strongVs": [
+    "archers",
+    "crossbowmen",
+    "light_cavalry",
+    "levies"
+   ],
+   "weakVs": [
+    "spear_pike",
+    "archers_behind_stakes"
+   ],
+   "terrain": {
+    "good": [
+     "open",
+     "hills"
+    ],
+    "bad": [
+     "forest",
+     "marsh"
+    ]
+   },
+   "ranks": [
+    {
+     "title": "Soldier",
+     "leads": "a rider in the line"
+    },
+    {
+     "title": "Sergeant",
+     "leads": "a lance of 10"
+    },
+    {
+     "title": "Captain",
+     "leads": "a company of 100 to 200"
+    },
+    {
+     "title": "Commander",
+     "leads": "the horse of a division"
+    }
+   ],
+   "training": "Charge drill plus weapons drill; sword and mace.",
+   "gear": "Mail, helm, shield, sword, spear.",
+   "missions": [
+    "flank charge",
+    "relief of a broken wing",
+    "guard the baggage"
+   ],
+   "careerPath": "Sergeant-at-arms, rider, lance leader, company captain, cavalry commander."
+  },
+  {
+   "id": "dismounted_knights",
+   "name": "Dismounted knights",
+   "kind": "infantry",
+   "subBranches": [],
+   "role": "Knights who leave the horse to hold a line: strong, slow, and hard to break, with no escape.",
+   "strongVs": [
+    "men_at_arms_foot",
+    "light_cavalry",
+    "levies",
+    "heavy_lancers"
+   ],
+   "weakVs": [
+    "archers",
+    "crossbowmen"
+   ],
+   "terrain": {
+    "good": [
+     "hills",
+     "ford",
+     "pass",
+     "defensive ground"
+    ],
+    "bad": [
+     "open",
+     "plain against many archers"
+    ]
+   },
+   "ranks": [
+    {
+     "title": "Soldier",
+     "leads": "a knight in the shield line"
+    },
+    {
+     "title": "Sergeant",
+     "leads": "a knot of 8 on foot"
+    },
+    {
+     "title": "Captain",
+     "leads": "a banner of 60 on foot"
+    },
+    {
+     "title": "Commander",
+     "leads": "the foot-line of the knights"
+    }
+   ],
+   "training": "Shield-wall and weapons drill; stand and do not run.",
+   "gear": "Full plate, axe, sword, large shield; horses held behind.",
+   "missions": [
+    "hold the centre",
+    "guard the standard",
+    "the last stand"
+   ],
+   "careerPath": "Knight, banner captain on foot, marshal of the line."
+  },
+  {
+   "id": "light_cavalry",
+   "name": "Light cavalry",
+   "kind": "cavalry",
+   "subBranches": [
+    "horse_archers",
+    "raiders"
+   ],
+   "role": "Eyes and teeth of the army: scouting, harrying, chasing, cutting off supply.",
+   "strongVs": [
+    "archers",
+    "crossbowmen",
+    "siege_engineers",
+    "routed_men",
+    "supply_trains"
+   ],
+   "weakVs": [
+    "heavy_lancers",
+    "spear_pike",
+    "mounted_men_at_arms"
+   ],
+   "terrain": {
+    "good": [
+     "open",
+     "steppe",
+     "road",
+     "forest edge"
+    ],
+    "bad": [
+     "pass",
+     "siege",
+     "shield wall"
+    ]
+   },
+   "ranks": [
+    {
+     "title": "Soldier",
+     "leads": "a rider in the troop"
+    },
+    {
+     "title": "Sergeant",
+     "leads": "a troop of 12"
+    },
+    {
+     "title": "Captain",
+     "leads": "a company of 200"
+    },
+    {
+     "title": "Commander",
+     "leads": "all light horse of the host"
+    }
+   ],
+   "training": "Skirmish and feigned-flight drill; riding and bow.",
+   "gear": "Horse, javelin or bow, light mail or none.",
+   "missions": [
+    "scout",
+    "raid",
+    "harass the march",
+    "chase the broken",
+    "carry orders"
+   ],
+   "careerPath": "Rider, troop sergeant, company captain, master of scouts."
+  },
+  {
+   "id": "scout_regiment",
+   "name": "Scout Regiment",
+   "kind": "elite",
+   "subBranches": [
+    "pathfinders",
+    "night_knives",
+    "spymasters_eyes"
+   ],
+   "role": "Few, hidden, deadly to a plan: they see first, strike a man in the night, and decide where the battle is fought.",
+   "strongVs": [
+    "enemy_generals",
+    "supply_trains",
+    "pickets",
+    "messengers"
+   ],
+   "weakVs": [
+    "heavy_lancers",
+    "open_field_fight",
+    "garrisons"
+   ],
+   "terrain": {
+    "good": [
+     "forest",
+     "hills",
+     "night",
+     "marsh"
+    ],
+    "bad": [
+     "open",
+     "daylight line battle"
+    ]
+   },
+   "ranks": [
+    {
+     "title": "Soldier",
+     "leads": "a scout alone or a pair"
+    },
+    {
+     "title": "Sergeant",
+     "leads": "a patrol of 6"
+    },
+    {
+     "title": "Captain",
+     "leads": "a company of 30 to 60"
+    },
+    {
+     "title": "Commander",
+     "leads": "the realm's master of scouts"
+    }
+   ],
+   "training": "Stealth, tracking, bow and knife; oath of silence; trials fail most.",
+   "gear": "Dark cloak, short bow, knife, climbing gear, poison.",
+   "missions": [
+    "spy on the enemy host",
+    "assassinate a captain",
+    "burn stores",
+    "guide the army",
+    "cut the road",
+    "report numbers"
+   ],
+   "careerPath": "Runner, scout, patrol leader, company captain, master of scouts (court rank)."
+  },
+  {
+   "id": "spear_pike",
+   "name": "Spear and pike infantry",
+   "kind": "infantry",
+   "subBranches": [
+    "spearmen",
+    "pikemen",
+    "shield_wall"
+   ],
+   "role": "The wall that horses will not charge: cheap, solid, and the best answer to cavalry.",
+   "strongVs": [
+    "heavy_lancers",
+    "mounted_men_at_arms",
+    "light_cavalry"
+   ],
+   "weakVs": [
+    "archers",
+    "crossbowmen",
+    "flank_attack",
+    "siege_engineers"
+   ],
+   "terrain": {
+    "good": [
+     "hills",
+     "ford",
+     "pass",
+     "open on the defence"
+    ],
+    "bad": [
+     "forest",
+     "broken ground",
+     "rear attack"
+    ]
+   },
+   "ranks": [
+    {
+     "title": "Soldier",
+     "leads": "a man in the file"
+    },
+    {
+     "title": "Sergeant",
+     "leads": "a file of 12 to 20"
+    },
+    {
+     "title": "Captain",
+     "leads": "a company of 200"
+    },
+    {
+     "title": "Commander",
+     "leads": "a battalion or division of foot"
+    }
+   ],
+   "training": "Shield-wall drill; hold step and do not break.",
+   "gear": "Long spear or pike, shield, helm.",
+   "missions": [
+    "hold the centre",
+    "guard the road",
+    "take the cavalry blow",
+    "garrison a ford"
+   ],
+   "careerPath": "Levy, spearman, file leader, company captain, battalion commander."
+  },
+  {
+   "id": "men_at_arms_foot",
+   "name": "Men-at-arms on foot",
+   "kind": "infantry",
+   "subBranches": [],
+   "role": "Professional foot who win the grind: armoured, trained, hard hitting.",
+   "strongVs": [
+    "spear_pike",
+    "levies",
+    "archers",
+    "crossbowmen"
+   ],
+   "weakVs": [
+    "heavy_lancers",
+    "archers_in_mass",
+    "flank_attack"
+   ],
+   "terrain": {
+    "good": [
+     "open",
+     "hills",
+     "ford"
+    ],
+    "bad": [
+     "marsh",
+     "forest"
+    ]
+   },
+   "ranks": [
+    {
+     "title": "Soldier",
+     "leads": "a man-at-arms in the line"
+    },
+    {
+     "title": "Sergeant",
+     "leads": "a squad of 12"
+    },
+    {
+     "title": "Captain",
+     "leads": "a company of 100 to 200"
+    },
+    {
+     "title": "Commander",
+     "leads": "a division of foot"
+    }
+   ],
+   "training": "Weapons and formation drill; shield and axe.",
+   "gear": "Mail, helm, shield, axe, sword.",
+   "missions": [
+    "break a spear line",
+    "storm a breach",
+    "hold the centre"
+   ],
+   "careerPath": "Soldier, sergeant, captain, senior captain, commander of foot."
+  },
+  {
+   "id": "archers",
+   "name": "Archers",
+   "kind": "missile",
+   "subBranches": [
+    "longbowmen",
+    "skirmish_bowmen"
+   ],
+   "role": "Many arrows from afar: wear the foe down, tire his horses, and open the line.",
+   "strongVs": [
+    "spear_pike",
+    "men_at_arms_foot",
+    "levies",
+    "heavy_lancers_unstaked"
+   ],
+   "weakVs": [
+    "light_cavalry",
+    "heavy_lancers_in_open",
+    "night_raid"
+   ],
+   "terrain": {
+    "good": [
+     "hills",
+     "behind stakes",
+     "woods edge",
+     "ford",
+     "high ground"
+    ],
+    "bad": [
+     "open without cover",
+     "pass",
+     "siege"
+    ]
+   },
+   "ranks": [
+    {
+     "title": "Soldier",
+     "leads": "an archer in the line"
+    },
+    {
+     "title": "Sergeant",
+     "leads": "a file of 12 archers"
+    },
+    {
+     "title": "Captain",
+     "leads": "a company of 200"
+    },
+    {
+     "title": "Commander",
+     "leads": "a wing of bowmen"
+    }
+   ],
+   "training": "Weapons drill; volley and draw; much practice.",
+   "gear": "Bow, arrow sheaf, stakes, light armour.",
+   "missions": [
+    "volley the foe",
+    "hold the wing",
+    "cover a retreat",
+    "shoot a lord"
+   ],
+   "careerPath": "Bowman, file leader, company captain, master of archers."
+  },
+  {
+   "id": "crossbowmen",
+   "name": "Crossbowmen",
+   "kind": "missile",
+   "subBranches": [
+    "bolt_skirmishers",
+    "siege_crossbows"
+   ],
+   "role": "Slower than bows but a bolt goes through plate: the knight-killer of any man who trains for a month.",
+   "strongVs": [
+    "heavy_lancers",
+    "knights",
+    "men_at_arms_foot",
+    "siege_engineers"
+   ],
+   "weakVs": [
+    "light_cavalry",
+    "archers_in_mass",
+    "shield_line_close"
+   ],
+   "terrain": {
+    "good": [
+     "behind walls",
+     "behind stakes",
+     "pass",
+     "ford",
+     "hills"
+    ],
+    "bad": [
+     "open field",
+     "rain",
+     "close melee"
+    ]
+   },
+   "ranks": [
+    {
+     "title": "Soldier",
+     "leads": "a crossbowman"
+    },
+    {
+     "title": "Sergeant",
+     "leads": "a squad of 12"
+    },
+    {
+     "title": "Captain",
+     "leads": "a company of 200"
+    },
+    {
+     "title": "Commander",
+     "leads": "a wing of crossbows"
+    }
+   ],
+   "training": "Weapons drill; cranking and volley; a short course.",
+   "gear": "Crossbow, bolts, pavise shield, mail shirt.",
+   "missions": [
+    "hold a wall",
+    "shoot down knights",
+    "guard a pass",
+    "garrison a fort"
+   ],
+   "careerPath": "Crossbowman, squad leader, company captain, master of crossbows."
+  },
+  {
+   "id": "siege_engineers",
+   "name": "Siege engineers",
+   "kind": "support",
+   "subBranches": [
+    "sappers",
+    "catapult_crews",
+    "wall_builders"
+   ],
+   "role": "Takes walls, builds fieldworks, bridges and camps, and keeps the army moving and fed.",
+   "strongVs": [
+    "walls",
+    "gates",
+    "fields_of_stakes",
+    "bridges"
+   ],
+   "weakVs": [
+    "sallies",
+    "light_cavalry",
+    "fire",
+    "crossbowmen"
+   ],
+   "terrain": {
+    "good": [
+     "siege",
+     "river",
+     "camp",
+     "road"
+    ],
+    "bad": [
+     "open fight",
+     "forest"
+    ]
+   },
+   "ranks": [
+    {
+     "title": "Soldier",
+     "leads": "a sapper or hand"
+    },
+    {
+     "title": "Sergeant",
+     "leads": "a gang of 12"
+    },
+    {
+     "title": "Captain",
+     "leads": "a company of 100"
+    },
+    {
+     "title": "Commander",
+     "leads": "master of the siege"
+    }
+   ],
+   "training": "Siege and field works drill; craft skills and numbers.",
+   "gear": "Picks, ram, ladders, catapults, hide shields.",
+   "missions": [
+    "raise a ladder",
+    "dig a mine",
+    "build a bridge",
+    "break a gate",
+    "cut the water"
+   ],
+   "careerPath": "Hand, gang leader, engineer captain, master engineer."
+  },
+  {
+   "id": "garrisons",
+   "name": "Garrisons",
+   "kind": "infantry",
+   "subBranches": [
+    "castle_guard",
+    "town_watch",
+    "border_wardens"
+   ],
+   "role": "Men who hold a place: they are slow to move and hard to dig out.",
+   "strongVs": [
+    "siege_engineers",
+    "raiders",
+    "light_cavalry"
+   ],
+   "weakVs": [
+    "sieges_long",
+    "starvation",
+    "treachery"
+   ],
+   "terrain": {
+    "good": [
+     "castle",
+     "walls",
+     "town",
+     "pass",
+     "ford"
+    ],
+    "bad": [
+     "open field",
+     "long march"
+    ]
+   },
+   "ranks": [
+    {
+     "title": "Soldier",
+     "leads": "a guard on the wall"
+    },
+    {
+     "title": "Sergeant",
+     "leads": "a watch of 12"
+    },
+    {
+     "title": "Captain",
+     "leads": "a captain of the castle (100 to 200)"
+    },
+    {
+     "title": "Commander",
+     "leads": "castellan or marshal of the marches"
+    }
+   ],
+   "training": "Weapons and shield drill; know the place; keep watch.",
+   "gear": "Mail, spear, crossbow or bow, shield.",
+   "missions": [
+    "hold the gate",
+    "man the wall",
+    "guard the road",
+    "patrol the border"
+   ],
+   "careerPath": "Guard, watch sergeant, castle captain, castellan."
+  },
+  {
+   "id": "levies",
+   "name": "Levies",
+   "kind": "infantry",
+   "subBranches": [
+    "peasant_levy",
+    "town_militia"
+   ],
+   "role": "The mass: cheap, many, and brittle; they break first and cost the least.",
+   "strongVs": [
+    "siege_labour",
+    "broken_men"
+   ],
+   "weakVs": [
+    "cavalry",
+    "archers",
+    "men_at_arms_foot"
+   ],
+   "terrain": {
+    "good": [
+     "defence of home",
+     "behind walls",
+     "woods"
+    ],
+    "bad": [
+     "open field",
+     "long campaign"
+    ]
+   },
+   "ranks": [
+    {
+     "title": "Soldier",
+     "leads": "a farmer called to the host"
+    },
+    {
+     "title": "Sergeant",
+     "leads": "a village headman with 20"
+    },
+    {
+     "title": "Captain",
+     "leads": "a hundred of a hundred-man levy"
+    },
+    {
+     "title": "Commander",
+     "leads": "a lord's levy muster"
+    }
+   ],
+   "training": "None, or a week at the muster.",
+   "gear": "Spear, club, sling, whatever they own.",
+   "missions": [
+    "fill the line",
+    "hold a ditch",
+    "carry the baggage",
+    "dig and haul"
+   ],
+   "careerPath": "Called up, headman, levy captain; some are made soldiers."
+  },
+  {
+   "id": "mercenary_companies",
+   "name": "Mercenary companies",
+   "kind": "infantry",
+   "subBranches": [
+    "free_company",
+    "sellsword_horse",
+    "foreign_crossbows"
+   ],
+   "role": "Hired professionals: reliable while paid, risky when not.",
+   "strongVs": [
+    "levies",
+    "garrisons",
+    "raiders"
+   ],
+   "weakVs": [
+    "unpaid_muster",
+    "siege_long",
+    "elite_orders"
+   ],
+   "terrain": {
+    "good": [
+     "any, by contract"
+    ],
+    "bad": [
+     "unpaid, in plague",
+     "far from home"
+    ]
+   },
+   "ranks": [
+    {
+     "title": "Soldier",
+     "leads": "a hired sword"
+    },
+    {
+     "title": "Sergeant",
+     "leads": "a corporal of 12"
+    },
+    {
+     "title": "Captain",
+     "leads": "a company captain"
+    },
+    {
+     "title": "Commander",
+     "leads": "a captain-general of a company"
+    }
+   ],
+   "training": "Whatever the company trains; hard-learned in many wars.",
+   "gear": "Mixed; best that coin can buy.",
+   "missions": [
+    "hold a wing",
+    "storm a breach",
+    "garrison for coin",
+    "raid for pay",
+    "change sides"
+   ],
+   "careerPath": "Sellsword, corporal, company captain, captain-general; fortune or ruin."
+  },
+  {
+   "id": "elite_orders",
+   "name": "Elite orders",
+   "kind": "elite",
+   "subBranches": [
+    "knight_orders",
+    "warrior_monks",
+    "shadow_orders",
+    "steppe_orders"
+   ],
+   "role": "A few hundred sworn men who count as thousands: their arrival sways morale and the day.",
+   "strongVs": [
+    "levies",
+    "men_at_arms_foot",
+    "knights",
+    "garrisons"
+   ],
+   "weakVs": [
+    "archers_in_mass",
+    "siege_long",
+    "starvation",
+    "numbers_over_thirty"
+   ],
+   "terrain": {
+    "good": [
+     "open",
+     "hills",
+     "their patron's ground"
+    ],
+    "bad": [
+     "marsh",
+     "siege",
+     "long march"
+    ]
+   },
+   "ranks": [
+    {
+     "title": "Aspirant",
+     "leads": "himself"
+    },
+    {
+     "title": "Sworn Brother",
+     "leads": "a small band of 10"
+    },
+    {
+     "title": "Blade / Captain of the Order",
+     "leads": "a company of 30 to 60"
+    },
+    {
+     "title": "Marshal / Grand Master",
+     "leads": "the whole order (150 to 350)"
+    }
+   ],
+   "training": "Three trials; oath; a lifetime of drill.",
+   "gear": "The best gear in the realm; a mark of the order.",
+   "missions": [
+    "break the line",
+    "guard the throne",
+    "hunt a traitor",
+    "a last stand"
+   ],
+   "careerPath": "Aspirant, sworn brother, blade, captain, marshal, grand master."
+  }
+ ],
+ "tactics": [
+  {
+   "id": "couched_charge",
+   "name": "Couched lance charge",
+   "who": "heavy lancers, knights",
+   "needs": "open ground; wedge drill; a foe not behind stakes",
+   "beats": "archers, crossbows, levies, loose infantry",
+   "risk": "Stakes or a pike wall; the lancers are spent after one blow."
+  },
+  {
+   "id": "spear_wall",
+   "name": "Spear wall",
+   "who": "spear and pike infantry",
+   "needs": "shield-wall drill; hills, ford or pass; a steady captain",
+   "beats": "heavy cavalry",
+   "risk": "Archers and a flank attack; stuck in place."
+  },
+  {
+   "id": "stakes_and_volley",
+   "name": "Archers behind stakes",
+   "who": "archers, crossbowmen",
+   "needs": "stake line; high or broken ground; time to set",
+   "beats": "cavalry charges, advancing foot",
+   "risk": "Light cavalry round the back; a fast foe in the open."
+  },
+  {
+   "id": "feigned_retreat",
+   "name": "Feigned retreat",
+   "who": "light cavalry, mounted men-at-arms",
+   "needs": "feint drill; steady men; a hasty or bold foe",
+   "beats": "a charging or advancing foe",
+   "risk": "If the men truly run it is a rout."
+  },
+  {
+   "id": "flank_swing",
+   "name": "Flank swing",
+   "who": "cavalry, mobile infantry",
+   "needs": "a free flank; scouts; timing",
+   "beats": "a foe who holds the centre",
+   "risk": "The flank may be seen, or the centre may break."
+  },
+  {
+   "id": "dismount_and_hold",
+   "name": "Dismount and hold",
+   "who": "knights, men-at-arms",
+   "needs": "good ground; no escape; strong captain",
+   "beats": "cavalry, a foe who hits hard",
+   "risk": "Missiles; no way out."
+  },
+  {
+   "id": "crossbow_volley",
+   "name": "Crossbow volley at the armoured",
+   "who": "crossbowmen",
+   "needs": "walls or stakes; short range",
+   "beats": "knights, heavy lancers, men-at-arms",
+   "risk": "Closing too fast; rain; light horse."
+  },
+  {
+   "id": "scout_screen",
+   "name": "Scout screen and ambush",
+   "who": "scouts, light cavalry",
+   "needs": "forest or hills; a march in column",
+   "beats": "a column on the march; supply trains",
+   "risk": "The foe has scouts too; a big army can fight back."
+  },
+  {
+   "id": "night_knife",
+   "name": "Night knife",
+   "who": "Scout Regiment",
+   "needs": "a way in; a target; patience",
+   "beats": "an enemy captain or general; the stores",
+   "risk": "If caught the Regiment is lost and the realm is shamed."
+  },
+  {
+   "id": "siege_and_sally",
+   "name": "Siege works and sally",
+   "who": "siege engineers, garrisons",
+   "needs": "time, stores, a gate or mine",
+   "beats": "a walled foe; or a besieger by a sally",
+   "risk": "Hunger, disease, a relief army."
+  },
+  {
+   "id": "reserve_strike",
+   "name": "Hold the reserve for the decision",
+   "who": "commander",
+   "needs": "a reserve unit; a read of the field",
+   "beats": "a wavering line at the Decision phase",
+   "risk": "Spending it too early or too late."
+  },
+  {
+   "id": "rout_pursuit",
+   "name": "Pursuit of the broken",
+   "who": "light cavalry",
+   "needs": "a broken foe; fresh horses",
+   "beats": "a foe in rout (the kill count)",
+   "risk": "Pursuing into an ambush."
+  }
+ ],
+ "terrainEffects": {
+  "open": "Cavalry's best ground; archers see far but are charged; the wide front favours the side with more men.",
+  "hills": "The defender gets high ground; archers shoot further; cavalry is slowed (uphill).",
+  "forest": "Cavalry is crippled and archers are blinded; infantry and scouts rule; the front is narrow.",
+  "ford": "The defender is hard to dislodge; cavalry splashes in; archers and crossbows kill those wading.",
+  "pass": "A narrow front: numbers count for little; the defender holds with a few; the elite orders shine; cavalry is almost useless.",
+  "marsh": "Heavy men bog down; light foot and scouts live; no cavalry charge.",
+  "siege": "Engineers and crossbows count; cavalry sits idle; hunger and time decide.",
+  "night": "Scouts and knives rule; large armies are blind; an ambush is deadly."
+ }
+}

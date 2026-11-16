@@ -1,0 +1,33 @@
+{
+  "id": "cropped",
+  "_note": "Short cropped hair, grown out a month: an outline first (the mass, in the hair's shadow), then broad clumps from the crown's whorl (about 590, 250): the back and sides in half-tone, the top and fringe in the light. Only the clumps on the outline carry a contour, and their tips break it at the crown and the fringe. Front clumps cast a shadow on the forehead. Tied to the head's warp, so it fits every skull.",
+  "layers": [
+    {"id": "mass", "role": "hair.shadow", "d": "M 374 356 S 370 300 398 254 454 222 534 212 612 230 668 272 700 336 708 420 700 500 684 560 660 602 L 650 556 S 656 506 654 474 L 638 458 S 620 466 612 500 L 604 520 S 600 470 590 420 578 376 560 346 520 330 470 324 424 330 392 346 Z"},
+    {"id": "mass_line", "role": "hair.line", "line": "M 640 254 S 680 290 700 340 708 420 700 500 684 560 660 602", "w": [1, 3, 4, 4, 3, 1], "k": "contour"},
+    {"id": "sideburn_sk", "z": "face", "role": "hair.shadow", "alpha": 0.35, "clip": "head.skin", "d": "M 596 420 S 606 470 612 520 600 528 592 470 Z"},
+    {"id": "back", "ramp": "hair", "locks": [
+      {"g": "M 632 252 S 670 290 692 346 700 396", "w": [30, 32, 6], "t": "half", "edge": 1},
+      {"g": "M 640 300 S 676 350 694 410 698 460", "w": [30, 30, 6], "t": "half", "edge": 1},
+      {"g": "M 640 370 S 670 424 684 486 680 530", "w": [28, 26, 5], "t": "half", "edge": 1},
+      {"g": "M 636 446 S 660 498 668 548 660 590", "w": [24, 22, 4], "t": "half", "edge": 1},
+      {"g": "M 604 300 S 618 350 624 400 622 440", "w": [28, 26, 5], "t": "half"},
+      {"g": "M 620 360 S 636 404 642 446 638 466", "w": [22, 20, 4], "t": "half"},
+      {"g": "M 590 366 S 598 412 604 462 606 512", "w": [16, 14, 3], "t": "half"}
+    ]},
+    {"id": "crown", "ramp": "hair", "locks": [
+      {"g": "M 584 226 S 628 236 662 262 684 300", "w": [28, 30, 6], "edge": -1},
+      {"g": "M 604 238 S 556 222 504 222 458 236", "w": [30, 32, 6], "edge": -1},
+      {"g": "M 614 258 S 562 250 508 258 466 278", "w": [28, 30, 5]},
+      {"g": "M 624 286 S 576 286 530 300 492 322", "w": [26, 28, 5]},
+      {"g": "M 632 316 S 602 320 578 334 562 350", "w": [20, 20, 4]}
+    ]},
+    {"id": "fringe", "z": "front", "ramp": "hair", "cast": [7, 9], "locks": [
+      {"g": "M 484 236 S 442 254 410 288 394 334", "w": [24, 26, 3], "tip": 0.14, "edge": -1},
+      {"g": "M 524 240 S 476 258 440 290 424 326 420 344", "w": [26, 26, 3], "tip": 0.14},
+      {"g": "M 552 262 S 506 280 474 308 460 342", "w": [24, 24, 3], "tip": 0.14},
+      {"g": "M 572 288 S 536 304 512 328 504 354", "w": [22, 22, 3], "tip": 0.14},
+      {"g": "M 436 256 S 404 284 386 322 380 358", "w": [16, 18, 3], "tip": 0.14, "edge": -1},
+      {"g": "M 594 306 S 574 326 564 350 562 366", "w": [18, 16, 3], "tip": 0.16}
+    ]}
+  ]
+}

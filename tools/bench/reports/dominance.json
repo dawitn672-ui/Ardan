@@ -1,0 +1,331 @@
+{
+ "file": "index.html",
+ "lives": 6,
+ "years": 30,
+ "median": {
+  "coin": 19377,
+  "fame": 25.23382074459455,
+  "age": 48
+ },
+ "rows": [
+  {
+   "k": "run",
+   "coin": 135099.1335112704,
+   "fame": 31.020394503615137,
+   "age": 48,
+   "died": 2,
+   "done": 90,
+   "dominant": false
+  },
+  {
+   "k": "enlist",
+   "coin": 113190.6591076352,
+   "fame": 59.21545169474168,
+   "age": 48,
+   "died": 3,
+   "done": 1,
+   "dominant": false
+  },
+  {
+   "k": "study",
+   "coin": 105613,
+   "fame": 19.67669986254925,
+   "age": 48,
+   "died": 2,
+   "done": 90,
+   "dominant": false
+  },
+  {
+   "k": "make_friend",
+   "coin": 101241,
+   "fame": 16.47107323136647,
+   "age": 48,
+   "died": 3,
+   "done": 90,
+   "dominant": false
+  },
+  {
+   "k": "train_yard",
+   "coin": 98613,
+   "fame": 30.275180577309065,
+   "age": 48,
+   "died": 2,
+   "done": 90,
+   "dominant": false
+  },
+  {
+   "k": "learn_lang",
+   "coin": 96331,
+   "fame": 39.828633382013365,
+   "age": 48,
+   "died": 2,
+   "done": 63,
+   "dominant": true
+  },
+  {
+   "k": "merc",
+   "coin": 83730,
+   "fame": 59.911883497556396,
+   "age": 43,
+   "died": 5,
+   "done": 1,
+   "dominant": false
+  },
+  {
+   "k": "moneylend",
+   "coin": 71822,
+   "fame": 32.406676896062784,
+   "age": 47,
+   "died": 4,
+   "done": 81,
+   "dominant": false
+  },
+  {
+   "k": "tavern",
+   "coin": 54102.5,
+   "fame": 51.836762092939814,
+   "age": 37,
+   "died": 4,
+   "done": 57,
+   "dominant": false
+  },
+  {
+   "k": "crime_burgle",
+   "coin": 53387,
+   "fame": 32.33974585487016,
+   "age": 48,
+   "died": 2,
+   "done": 63,
+   "dominant": false
+  },
+  {
+   "k": "rest",
+   "coin": 49906,
+   "fame": 25.487045549942824,
+   "age": 48,
+   "died": 2,
+   "done": 90,
+   "dominant": false
+  },
+  {
+   "k": "crime_pick",
+   "coin": 45825.343868620796,
+   "fame": 43.53978302133155,
+   "age": 45,
+   "died": 4,
+   "done": 51,
+   "dominant": false
+  },
+  {
+   "k": "lift",
+   "coin": 40255.783880396804,
+   "fame": 21.676054273325835,
+   "age": 48,
+   "died": 2,
+   "done": 90,
+   "dominant": false
+  },
+  {
+   "k": "crime_smuggle",
+   "coin": 39768.6646525952,
+   "fame": 29.81263916615549,
+   "age": 48,
+   "died": 2,
+   "done": 29,
+   "dominant": false
+  },
+  {
+   "k": "pray",
+   "coin": 37737,
+   "fame": 26.883959871987166,
+   "age": 48,
+   "died": 3,
+   "done": 90,
+   "dominant": false
+  },
+  {
+   "k": "crime_rob",
+   "coin": 24656.5855087104,
+   "fame": 19.491415124557452,
+   "age": 48,
+   "died": 3,
+   "done": 42,
+   "dominant": false
+  },
+  {
+   "k": "school",
+   "coin": 23493,
+   "fame": 27.865387305775705,
+   "age": 48,
+   "died": 2,
+   "done": 22,
+   "dominant": false
+  },
+  {
+   "k": "practice",
+   "coin": 19377,
+   "fame": 19.111230404836128,
+   "age": 48,
+   "died": 2,
+   "done": 90,
+   "dominant": false
+  },
+  {
+   "k": "pilgrimage",
+   "coin": 16410.8438686208,
+   "fame": 27.96394123077861,
+   "age": 48,
+   "died": 3,
+   "done": 27,
+   "dominant": false
+  },
+  {
+   "k": "tournament",
+   "coin": 15632,
+   "fame": 65.73961153117885,
+   "age": 33,
+   "died": 5,
+   "done": 16,
+   "dominant": false
+  },
+  {
+   "k": "meditate",
+   "coin": 13805,
+   "fame": 19.252725350449687,
+   "age": 48,
+   "died": 3,
+   "done": 90,
+   "dominant": false
+  },
+  {
+   "k": "heal",
+   "coin": 12726.760512,
+   "fame": 7.763058059142025,
+   "age": 35,
+   "died": 4,
+   "done": 54,
+   "dominant": false
+  },
+  {
+   "k": "court_love",
+   "coin": 10340,
+   "fame": 8.85779309151002,
+   "age": 31,
+   "died": 4,
+   "done": 42,
+   "dominant": false
+  },
+  {
+   "k": "festival",
+   "coin": 9989.3482662912,
+   "fame": 13.416031275607832,
+   "age": 48,
+   "died": 3,
+   "done": 90,
+   "dominant": false
+  },
+  {
+   "k": "trade_venture",
+   "coin": 9806.5,
+   "fame": 25.23382074459455,
+   "age": 44,
+   "died": 4,
+   "done": 27,
+   "dominant": false
+  },
+  {
+   "k": "travel",
+   "coin": 9806.5,
+   "fame": 25.23382074459455,
+   "age": 44,
+   "died": 4,
+   "done": 27,
+   "dominant": false
+  },
+  {
+   "k": "none",
+   "coin": 9797.5,
+   "fame": 25.23382074459455,
+   "age": 44,
+   "died": 4,
+   "done": 0,
+   "dominant": false
+  },
+  {
+   "k": "found_company",
+   "coin": 9797.5,
+   "fame": 31.95678606073739,
+   "age": 48,
+   "died": 3,
+   "done": 1,
+   "dominant": false
+  },
+  {
+   "k": "plot_throne",
+   "coin": 9797.5,
+   "fame": 25.23382074459455,
+   "age": 44,
+   "died": 4,
+   "done": 0,
+   "dominant": false
+  },
+  {
+   "k": "hunt",
+   "coin": 8046,
+   "fame": 17.14008084780244,
+   "age": 36,
+   "died": 6,
+   "done": 55,
+   "dominant": false
+  },
+  {
+   "k": "gamble",
+   "coin": 7834.4584914944,
+   "fame": 20.616676858390843,
+   "age": 35,
+   "died": 4,
+   "done": 53,
+   "dominant": false
+  },
+  {
+   "k": "spar",
+   "coin": 4791.75,
+   "fame": 11.741698677936656,
+   "age": 24,
+   "died": 6,
+   "done": 21,
+   "dominant": false
+  },
+  {
+   "k": "explore",
+   "coin": 3162.511168,
+   "fame": 4.889247813411079,
+   "age": 24,
+   "died": 6,
+   "done": 21,
+   "dominant": false
+  },
+  {
+   "k": "beast_hunt",
+   "coin": 914.9136,
+   "fame": 6.904761904761904,
+   "age": 20,
+   "died": 6,
+   "done": 3,
+   "dominant": false
+  },
+  {
+   "k": "duel",
+   "coin": 356,
+   "fame": 1.5,
+   "age": 21,
+   "died": 6,
+   "done": 12,
+   "dominant": false
+  }
+ ],
+ "dominant": [
+  "learn_lang"
+ ],
+ "errors": []
+}
