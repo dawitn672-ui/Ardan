@@ -162,8 +162,8 @@
      "word": "expert"
     },
     {
-     "id": "the-butt-and-the-blade",
-     "name": "the butt and the blade",
+     "id": "the-grounded-butt",
+     "name": "the grounded butt",
      "word": "expert"
     },
     {
@@ -243,8 +243,8 @@
      "word": "expert"
     },
     {
-     "id": "the-opening-shield",
-     "name": "the opening shield",
+     "id": "the-gap-held",
+     "name": "the gap held",
      "word": "master"
     },
     {
@@ -338,8 +338,8 @@
      "word": "master"
     },
     {
-     "id": "the-arrow-before-the-thought",
-     "name": "the arrow before the thought",
+     "id": "the-forearm-remembers",
+     "name": "the forearm remembers",
      "word": "grandmaster"
     },
     {
@@ -497,8 +497,8 @@
      "word": "master"
     },
     {
-     "id": "the-turn-on-the-haunch",
-     "name": "the turn on the haunch",
+     "id": "the-two-waves",
+     "name": "the two waves",
      "word": "master"
     },
     {
@@ -507,8 +507,8 @@
      "word": "grandmaster"
     },
     {
-     "id": "the-charge-held",
-     "name": "the charge held",
+     "id": "the-line-that-is-still-a-line",
+     "name": "the line that is still a line",
      "word": "grandmaster"
     },
     {
@@ -631,8 +631,8 @@
      "word": "intermediate"
     },
     {
-     "id": "the-grip",
-     "name": "the grip",
+     "id": "the-belt",
+     "name": "the belt",
      "word": "advanced"
     },
     {
@@ -641,8 +641,8 @@
      "word": "expert"
     },
     {
-     "id": "the-balance-broken",
-     "name": "the balance broken",
+     "id": "his-strength",
+     "name": "his strength",
      "word": "expert"
     },
     {
@@ -728,8 +728,8 @@
      "word": "master"
     },
     {
-     "id": "the-order-not-given",
-     "name": "the order not given",
+     "id": "the-count-is-wrong",
+     "name": "the count is wrong",
      "word": "master"
     },
     {
@@ -738,8 +738,8 @@
      "word": "grandmaster"
     },
     {
-     "id": "the-trust",
-     "name": "the trust",
+     "id": "the-ten-who-trust-one-another",
+     "name": "the ten who trust one another",
      "word": "grandmaster"
     },
     {
@@ -818,8 +818,8 @@
      "word": "grandmaster"
     },
     {
-     "id": "the-siege-s-patience",
-     "name": "the siege's patience",
+     "id": "the-wall-is-a-sum",
+     "name": "the wall is a sum",
      "word": "grandmaster"
     },
     {
@@ -2269,10 +2269,6 @@
   "the-stillness": [
    "sword",
    "survival"
-  ],
-  "the-grip": [
-   "spear",
-   "unarmed"
   ],
   "the-press": [
    "shield",

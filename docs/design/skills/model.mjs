@@ -52,7 +52,7 @@ export function stream(seed) { let a = hash(seed); return () => { a = (a + 0x6D2
 // Passing into a word needs that word's concepts grasped. A person's NEED for a concept is his own: the number of
 // months of insight it takes him, from "at once" (1) to "never" (a blind spot). It is a hash, so it costs no save data.
 export const NEED = [0, 2, 4, 10, 18, 28, 40];                     // by the concept's word (1 Intermediate .. 6 Legend), for an ordinary mind
-export const NEED_SPREAD = 1.5;                                   // need = NEED x 2^(1.5 z): one man in six needs three times as long, one in forty eight times
+export const NEED_SPREAD = 1.5;                                   // need = NEED x 2^(1.5 z): one man in seven needs three times as long, one in forty-four eight times
 export const BLIND = { F: 0.20, E: 0.12, D: 0.08, C: 0.05, B: 0.035, A: 0.02, S: 0.01, SSS: 0 };   // the chance a concept never comes, by talent
 export const BLIND_WORD = [0, 0.2, 0.4, 1, 1.2, 1.5, 2];          // ...scaled by the concept's word: the high concepts are the ones men never see
 export const conceptsOf = (k, w) => SKILL[k].concepts.filter(c => DATA.words.indexOf(c.word) === w);
