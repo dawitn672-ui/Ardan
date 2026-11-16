@@ -31,6 +31,12 @@
     const host = isHost(d), rank = host ? 6 : 5, title = host ? 'General' : 'Commander';
     const p = d.cmd ? A.P(d.cmd) : null;
     if (live(p)) return { pid: p.id, name: A.fullName(p, false), rank, title, by: d.elite ? 'order' : 'post' };
+    // W1-3: a great lord's first host is led by him by right, else by the General he names (A.CMD.general)
+    const C = A.CMD && A.CMD.houseOf ? A.CMD.houseOf(d) : null;
+    if (C && host) {
+      const c = A.CMD.house(C), first = A.CMD.firstOf(c);
+      if (first === d) { const G = A.CMD.general(c); if (G) return { pid: G.pid, name: G.name, rank, title, by: G.by === 'right' ? 'lord' : 'named', house: C.id }; }
+    }
     const a = armyOf(d.army), g = a && a.gen ? A.P(a.gen) : null;
     if (a && live(g)) {
       const hs = H.armyHosts(a);
@@ -39,7 +45,7 @@
         return { pid: g.id, name: A.fullName(g, false), rank, title, by: 'army' };
     }
     const s = A.oobLeader ? A.oobLeader(d.r, 'H:' + d.id, rank) : { name: 'an officer' };
-    return { pid: null, name: s.name, rank, title, by: 'seed' };
+    return { pid: null, name: s.name, rank, title, by: 'seed', house: C ? C.id : null };
   };
 
   // the hosts and columns of realm rid: [{ div, name, men, army, host, first, order, general }]
@@ -64,6 +70,10 @@
     if (!a) return null;
     const hosts = H.armyHosts(a), g = a.gen ? A.P(a.gen) : null, r = A.realm ? A.realm(a.realm) : null;
     const king = live(g) && r && r.ruler === g.id;
+    // W1-3: the king's word over the army (A.CMD.armyBy): in person, a commission, or a council of war
+    const by = A.CMD && A.CMD.armyBy ? A.CMD.armyBy(a) : null;
+    if (by === 'king') return { id: a.id, name: a.name, men: A.armyMen ? A.armyMen(a) : 0, hosts: hosts.length, commander: a.king, as: 'king' };
+    if (by === 'council') return { id: a.id, name: a.name, men: A.armyMen ? A.armyMen(a) : 0, hosts: hosts.length, commander: null, as: 'council of war' };
     return {
       id: a.id, name: a.name, men: A.armyMen ? A.armyMen(a) : 0, hosts: hosts.length,
       commander: live(g) ? g.id : null,

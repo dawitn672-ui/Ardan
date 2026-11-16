@@ -1112,8 +1112,12 @@ A.wsGeneralFor = function (rid) {
   const hs = Object.values(A.S.houses).filter(
     h => h.realm === rid && !h.extinct && (h.military || ["N01", "N02", "N03", "N04", "N05"].includes(h.rung)),
   );
-  if (hs.length && A.chance(0.7)) {
-    const h = A.pick(hs),
+  // [W1-3] the crown chooses for reasons (A.WHY.decide through A.CMD.generalChoice: a great house's standing, the king's
+  // kin, merit, the house's loyalty, a lord who leads his own command), against raising a man of no house for it.
+  // Before: a great house in 7 of 10 (A.chance(0.7)), any of them (A.pick).
+  const ch = hs.length && A.CMD && A.CMD.generalChoice ? A.CMD.generalChoice(rid, hs, busy) : null;
+  if (ch) {
+    const h = ch,
       p2 = A.houseHead(h.id);
     // [A2 posts] a councillor or a child leads no army: one post a person, of age (W1-1: nor the senior General, whose
     // place is his own host)
@@ -1193,6 +1197,9 @@ A.wsRaise = function (w) {
   const S = A.S;
   S.armies = S.armies || [];
   for (const rid of w.att.concat(w.def)) A.wsMobilize(rid);
+  // [W1-3] contingents kept whole, then the king's word over each army of two hosts or more (in person, a commission, or
+  // a council of war: A.CMD.chooseCommand, 9999951-commands)
+  if (A.CMD && A.CMD.onRaise) A.CMD.onRaise(w);
   A.wsAttachPC();
 };
 
@@ -1218,7 +1225,8 @@ const wsMobilizeNow = function (rid) {
   if (!r || !r.alive) return;
   A.F(r);
   A.forcesReconcile(r);
-  const free = r.forces.divs.filter(d => !d.army || !A.army(d.army));
+  // [W1-3] a lord's hosts held back by his answer to the summons (refused, sent coin, part, not yet come) stay at home
+  const free = r.forces.divs.filter(d => (!d.army || !A.army(d.army)) && !(A.CMD && A.CMD.held && A.CMD.held(d)));
   if (!free.length) return;
   for (const d of free)
     if (d.loc == null || !A.S.prov[d.loc]) {
