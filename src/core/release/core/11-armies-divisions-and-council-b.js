@@ -401,7 +401,9 @@ const nobleYearNow = function (pc) {
     ru = r ? A.P(r.ruler) : null;
   if (
     (ru && ru.id !== pc.id && !pc.rel[ru.id] && A.link(pc, ru, "lord", A.ri(10, 40), "acquaint"),
-    r && A.atWar(r.id).length && n.rung >= 2 && !pc.mil && !pc.company && A.isAdult(pc))
+    r && A.atWar(r.id).length && n.rung >= 2 && !pc.mil && !pc.company && A.isAdult(pc) &&
+    // [W1-3] a lord summoned for this war (A.CMD's six answers, 9999951-commands) is not summoned twice
+    !(A.CMD && A.CMD.summonedPc && A.CMD.summonedPc(pc, A.atWar(r.id)[0])))
   ) {
     const w = A.atWar(r.id)[0],
       en = A.pick(A.warSide(w, r.id) === "att" ? w.def : w.att);

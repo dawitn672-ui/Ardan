@@ -325,8 +325,9 @@ A.makeSuperior = function (pc) {
   // [A2 posts] above a General stands a real person: the crown (W1-1: General is the highest rank; no Marshal, and the
   // senior General commands no other General). Before, a "Marshal of <realm>" was made up for every High General.
   if (A.POSTS && pc.mil && !pc.mil.merc && pc.mil.rank >= 6) {
+    // [W1-3] a General whose host is in a great lord's command answers to that lord, who named him (A.CMD.chiefOf)
     const r = A.realm(pc.mil.realm),
-      b = r && A.P(r.ruler);
+      b = (A.CMD && A.CMD.chiefOf && A.CMD.chiefOf(pc)) || (r && A.P(r.ruler));
     if (b && b.alive && b.id !== pc.id) {
       pc.mil.cmdr = b.id;
       if (!pc.rel[b.id]) A.link(pc, b, "superior", 10, "subordinate");
@@ -348,7 +349,8 @@ A.makeSuperior = function (pc) {
     b.skills.command = A.ri(20 + rk * 6, 40 + rk * 7);
     b.skills.tactics = A.ri(15 + rk * 5, 35 + rk * 6);
     b.skills.melee = A.ri(30, 70);
-    b.occ = `${GD.MIL[rk].title}${pc.mil.merc ? " of " + (pc.mil.company || "the company") : " of " + A.realmShort(pc.mil.realm)}`;
+    // [W1-3] an officer of a great lord's host is that lord's man (A.CMD.occOf)
+    b.occ = `${GD.MIL[rk].title}${pc.mil.merc ? " of " + (pc.mil.company || "the company") : A.CMD && A.CMD.occOf ? A.CMD.occOf(pc) : " of " + A.realmShort(pc.mil.realm)}`;
     pc.mil.cmdr = b.id;
   } else if (pc.job) {
     const C = GD.CAREERS[pc.job.c],
@@ -382,8 +384,9 @@ A.needsNewSuperior = function (pc) {
     const b = A.P(pc.mil.cmdr);
     // [A2 posts] a General's superior is the crown (W1-1)
     if (A.POSTS && !pc.mil.merc && pc.mil.rank >= 6) {
-      const r = A.realm(pc.mil.realm);
-      return !b || !b.alive || b.id !== (r && r.ruler);
+      const r = A.realm(pc.mil.realm),
+        chief = A.CMD && A.CMD.chiefOf ? A.CMD.chiefOf(pc) : null;
+      return !b || !b.alive || b.id !== (chief ? chief.id : r && r.ruler);
     }
     return pc.mil.merc && pc.mil.rank >= 7
       ? false

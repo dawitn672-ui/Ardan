@@ -173,7 +173,8 @@ POL.musterCall = function (w) {
     if (A.EV.po_muster && !A.S.queue.some(q => q.ev === 'po_muster')) A.queue({ type: 'event', ev: 'po_muster', ctx });
   } catch (e) { console.error('[po] muster', e); }
 };
-A.on && A.on('warStart', w => POL.musterCall(w));
+// W1-3: with the commands built (9999951-commands), the summons has six answers and is A.CMD.pcSummons, on the same warStart
+A.on && A.on('warStart', w => { if (!(A.CMD && A.CMD.on)) POL.musterCall(w); });
 // PO-CEDE: the player's home passes to another crown at a peace (A.polOnTransfer emits provTransfer)
 A.on && A.on('provTransfer', function (prov, from, to) {
   try {

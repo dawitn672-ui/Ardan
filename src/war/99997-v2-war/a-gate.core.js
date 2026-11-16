@@ -26,6 +26,8 @@
       return pc.mil.contract || null;
     }
     if (pc.company && pc.company.contract) return pc.company.contract;
+    // W1-3: a lord who rode to the muster with his men is in his crown's war until it ends or he goes home (A.CMD.ridesWith)
+    if (A.CMD && A.CMD.ridesWith) { const rid = A.CMD.ridesWith(pc); if (rid) return rid; }
     if (A.S && A.S.armies && A.S.armies.some(a => a && a.gen === pc.id)) { const a = A.S.armies.find(x => x && x.gen === pc.id); return a.realm || null; }
     return null;
   };

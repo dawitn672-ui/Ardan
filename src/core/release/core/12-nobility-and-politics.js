@@ -73,10 +73,11 @@ Object.assign(A.CHOICE_FN, {
     if (ru) A.addOp(pc, ru, -25);
     pc.honor = A.clamp(pc.honor - 12, 0, 100);
     A.log("You ignore the summons. The crown will remember.", "bad");
-    if (A.chance(0.25)) {
-      pc.noble.rung = Math.max(0, pc.noble.rung - 1);
-      A.log(`The crown strips you of a rung: you are now ${A.nobleTitle(pc) || "landless"}.`, "bad");
-    }
+    // [W1-3] the crown decides how far it dares punish a refusal, for reasons (A.CMD.pcJudge: the ladder of fine,
+    // hostages, a rung stripped, forsworn, attainder, as far as its strength reaches; D-081). Before: a rung in 1 of 4.
+    const was = pc.noble.rung;
+    if (A.CMD && A.CMD.pcJudge) A.CMD.pcJudge(pc);
+    if (pc.noble && pc.noble.rung < was) A.log(`The crown strips you of a rung: you are now ${A.nobleTitle(pc) || "landless"}.`, "bad");
   },
 });
 
