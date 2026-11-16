@@ -5,6 +5,18 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **No Marshal; five ranks.** The army has five ranks on every screen: soldier, sergeant, captain, commander and General.
+  General is the highest; there is no Marshal and no High General. A sergeant leads a section of about twelve, a captain
+  a company of about two hundred, a commander a wing of several companies, and a General a host (a division on the war
+  map). A rank with two steps says so: "Captain (second step)".
+- **One General to each host.** A realm has as many Generals as it fields hosts; a division worn below three thousand
+  men is a column under a commander. An army of several hosts is led by one General given it by the king's written word
+  for that war, and the order of battle names him the commanding General.
+- **The senior General.** The General of the crown's first host speaks for the army at the king's council, does the
+  council's yearly work for the army, and commands no other General. A General may be named to it; a captain may not.
+- **Old saves:** a Marshal becomes his realm's senior General, and a player who was Marshal is a General holding the
+  first host and the army's place at council. Old rank words in names and styles read as the five ranks.
+
 ## v2.1.0-alpha.9 (2026-11-15 21:24 ET) · Dress that tells who you are, and cards that tell the truth
 
 - **Cards say what you are, and where.** No one calls you "my lord" or "your men" unless you are a lord or lead men, a home-town scene
