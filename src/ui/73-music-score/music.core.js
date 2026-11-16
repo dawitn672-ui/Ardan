@@ -448,8 +448,7 @@
   };
   SC.start = function () {
     if (RT || !UI.set.music || typeof window === 'undefined') return false;
-    const C = window.AudioContext || window.webkitAudioContext; if (!C) return false;
-    let c; try { c = new C({ latencyHint: 'playback' }); } catch (e) { return false; }
+    const c = UI.AUDIO && UI.AUDIO.ctx(); if (!c) return false;   // the page's one context (60-audio-context), shared with the sound effects
     RT = mkRT(c); RT.t0 = performance.now();
     if (c.state === 'suspended') c.resume().catch(() => {});
     RT.g.master.gain.setTargetAtTime(vol(), c.currentTime, 0.6);
@@ -462,7 +461,7 @@
     const rt = RT; if (!rt) return; RT = null; SC.last = rt;
     clearInterval(rt.timer);
     try { rt.g.master.gain.setTargetAtTime(0, rt.ctx.currentTime, 0.04); } catch (e) {}
-    setTimeout(() => { for (const n of rt.live) { try { n.onended = null; n.stop(); } catch (e) {} } rt.live.clear(); try { rt.ctx.close(); } catch (e) {} }, 220);
+    setTimeout(() => { for (const n of rt.live) { try { n.onended = null; n.stop(); } catch (e) {} } rt.live.clear(); try { rt.g.lim.disconnect(); bufs.delete(rt.ctx); } catch (e) {} }, 220);   // the context stays open: the effects share it
   };
   SC.volume = function () { if (RT) RT.g.master.gain.setTargetAtTime(RT.hidden ? 0 : vol(), RT.ctx.currentTime, 0.08); };
   SC.peek = () => RT;

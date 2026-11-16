@@ -11,6 +11,7 @@ export default {
   async scoreSilentUntilAsked(pg) {
     const r = await pg.evaluate(async () => {
       const made = { rt: 0, off: 0 }, AC = window.AudioContext, OC = window.OfflineAudioContext;
+      UI.AUDIO.reset();   // the page's one shared context (60-audio-context): start from none
       window.AudioContext = function (o) { made.rt++; return new AC(o); };
       window.OfflineAudioContext = function (a, b, c) { made.off++; return new OC(a, b, c); };
       A.newGame({ seed: 7301, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 });
@@ -27,13 +28,16 @@ export default {
       const waiting = made.rt === 0;
       document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
       const touched = made.rt;
+      UI.SCORE.stop();
+      await new Promise(res => setTimeout(res, 400));
+      const state = UI.SCORE.stats().state;   // the shared context stays open for the effects
+      UI.SCORE.start(); const again = made.rt;   // turned on again: no new context
       UI.SCORE.stop(); UI.set.music = false;
       window.AudioContext = AC; window.OfflineAudioContext = OC;
-      await new Promise(res => setTimeout(res, 400));
-      return { menu, before, idle, waiting, touched, closed: UI.SCORE.stats().state };
+      return { menu, before, idle, waiting, touched, closed: state, again };
     });
-    const ok = r.menu && r.before === 0 && r.idle && r.waiting && r.touched === 1 && r.closed === 'closed';
-    return { ok, detail: `a year played, every tab drawn, the menu opened, a click and a key with the music off: ${r.before} audio contexts; saved on, none until a touch (${r.waiting}), then ${r.touched}; turned off it is ${r.closed}` };
+    const ok = r.menu && r.before === 0 && r.idle && r.waiting && r.touched === 1 && r.again === 1 && r.closed !== 'closed';
+    return { ok, detail: `a year played, every tab drawn, the menu opened, a click and a key with the music off: ${r.before} audio contexts; saved on, none until a touch (${r.waiting}), then ${r.touched}; turned off the shared context is ${r.closed} and turning it on again made ${r.again}` };
   },
 
   // the same place and date compose the same piece; other places and dates compose others; the pieces have the shape

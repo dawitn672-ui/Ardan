@@ -145,7 +145,7 @@
   let ctx = null;
   const ac = () => {
     if (!UI.set.sound) return null;
-    try { if (!ctx) { const C = window.AudioContext || window.webkitAudioContext; if (!C) return null; ctx = new C(); } if (ctx.state === 'suspended') ctx.resume(); return ctx; } catch (e) { return null; }
+    try { ctx = UI.AUDIO ? UI.AUDIO.ctx() : null; return ctx; } catch (e) { return null; }   // the page's one context (60-audio-context)
   };
   // a burst of filtered noise (quill, paper, wax)
   const noise = (c, dur, freq, q, gain, t0 = 0) => {
