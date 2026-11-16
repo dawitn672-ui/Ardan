@@ -35,8 +35,10 @@ built on top of it: **features** that add code and events, the **v2 engine** (pl
 - **One holder per post.** Every title, office and command has exactly one holder at a time. A promotion hands over
   the real command, men and powers and takes the old post away; leaving a post has consequences.
 - **Time moves by Next month or Next year** (D-008, D-019, D-026), two buttons in fixed places that never become a stop
-  control. Only notable things stop a year (a card that needs a real answer, a battle or call to war, an illness or wound, a
-  death or birth in the household, coming of age, a deadline); talk and the day's small happenings wait for the step's end.
+  control. Only notable things stop a step midway (a card that needs a real answer, a battle, a duel, a call to arms, a
+  deadline), and once the card or chain of cards is answered **the same step carries on to its end** (order 54, D-062
+  addendum); a wound, an illness, a death or birth in the household and coming of age go into the year's digest. Only Esc,
+  death or being put on campaign end a step early. Talk and the day's small happenings wait for the step's end.
   No initiative pool: overtraining has its own consequences. See `src/ui/999995-next-year/README.md`.
 - **Deterministic from the seed.** The same seed and the same choices give the same world, always.
 - **No war screens unless you are in the war,** at your rank, on a mission or deployed.
@@ -229,7 +231,7 @@ A.defEvents([{
 }]);
 ```
 
-**Condition helpers.** `C.` age, adult, child, teen, young, old, ageAdj, noble, rich, poor, unfree, soldier, atWar, ruler, married, hasKids, job(p,k), race(p,...), realm(p,"POL-01",...), cult, faith, terr(p,"hills",...), coast, town, blood, trait(p,t), flag(p,f), prison, male, female, stat(p,s), skill(p,k), hasRel(p,"friend",...), parentsAlive, fame, literate, prof(p,k,min), apt, gear, family, famKind, famHead, atSchool, jobRank, rep, ownShop, myRealm, faction, allies, office, superior, favors, owes, sworn, letter, ambition.
+**Condition helpers.** `C.` age, adult, child, teen, young, old, ageAdj, noble, rich, poor, unfree, soldier, atWar, ruler, married, hasKids, job(p,k), race(p,...), realm(p,"POL-01",...), cult, faith, terr(p,"hills",...), coast, town, blood, trait(p,t), flag(p,f), prison, male, female, stat(p,s), skill(p,k), hasRel(p,"friend",...), parentsAlive, fame, literate, prof(p,k,min), apt, gear, family, famKind, famHead, atSchool, jobRank, rep, ownShop, myRealm, faction, allies, office, superior, favors, owes, sworn, letter, ambition (what the player seeks of his own will: his plan's aim, his chosen training, his post; `A.SEEK`, 9989-what-you-seek; nothing is handed, order 54).
 
 Using these helpers matters, because `A.CX_RX` classifies events by matching them in the source (`C.ruler(`, `C.noble(`, `C.poor(`, `C.soldier(`, `C.child(`, `.job`). The text classifiers in `A.EV_RX` (tavern, street, master/overseer, favour asked by a lord) can hide an event from the wrong class.
 

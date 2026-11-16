@@ -34,4 +34,28 @@ export default {
     return { ok, detail: `${SAVES_LIST.length} saves: ` + res.map(r => `${r.f} ${r.ok ? 'ok' : 'FAILED'} (format ${r.ver}, ${r.year0} -> ${r.year1}${r.err ? ', ' + r.err : ''}` +
       `${(r.bad0 || []).length || (r.bad1 || []).length ? ', broken: ' + [...(r.bad0 || []), ...(r.bad1 || [])].slice(0, 3).join('; ') : ''})`).join('; ') };
   },
+  // P3 (order 54, D-062): once a life is saved, "Start a new life" from the menu (or Begin on the title screen) must
+  // start a different life. The confirm's yes used to clear its pass before the deferred start ran, so the question
+  // came back for ever, and the menu stayed open over the creation screen. Real clicks, so the deferred start runs.
+  async newLifeAfterSave(pg) {
+    const born = () => pg.evaluate(() => { const b = document.querySelector('[data-a=crQuick][data-v=born]') || document.querySelector('[data-a=startLife]'); return b ? (b.dataset.v ? '[data-a=crQuick][data-v=born]' : '[data-a=startLife]') : null; });
+    const wait = (f, a) => pg.waitForFunction(f, a, { timeout: 60000 });
+    await pg.evaluate(() => { UI.screen = 'title'; UI.render(); });
+    await pg.click('[data-a=newLife]');
+    await pg.click(await born());
+    await wait(() => UI.screen === 'game' && A.S && A.pc() && A.pc().alive);
+    const first = await pg.evaluate(async () => { A.advance(40); A.S.queue.length = 0; await UI.save(true); await SAVES.init(); return { seed: A.S.seed, id: A.S.pc, name: A.pc().given, saved: (SAVES.listCache || []).some(x => x.slot === 'cur' && x.meta && x.meta.alive) }; });
+    // the menu's "Start a new life": the menu closes, the creation screen is free to use
+    await pg.evaluate(() => { UI.ov = { type: 'menu' }; UI.renderModal(); });
+    await pg.click('#modal [data-a=newLife]');
+    const menuGone = await pg.evaluate(() => UI.screen === 'create' && !UI.ov && !document.querySelector('#modal'));
+    await pg.click(await born());
+    await wait(() => UI.ov && UI.ov.type === 'confirm');
+    await pg.click('#modal [data-a=cfYes]');
+    let started = true;
+    try { await wait(s => UI.screen === 'game' && A.S && A.S.seed !== s && A.pc() && A.pc().alive, first.seed); } catch (e) { started = false; }
+    const second = await pg.evaluate(() => ({ seed: A.S.seed, name: A.pc() && A.pc().given, ov: UI.ov && UI.ov.type, screen: UI.screen }));
+    const ok = first.saved && menuGone && started && second.seed !== first.seed && !second.ov;
+    return { ok, detail: `first ${first.name} (seed ${first.seed}, saved ${first.saved}); menu closed on the creation screen: ${menuGone}; after "Start the new life": ${second.screen}, ${second.name} (seed ${second.seed})${second.ov ? ', a ' + second.ov + ' box still open' : ''}` };
+  },
 };

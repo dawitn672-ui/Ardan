@@ -55,7 +55,9 @@ Seven problems a new player meets in a first life, each fixed with a rule a play
 
 **Measured by** `lfHints`: a life begun at birth in 1105, at 16 in 1121, gets the initiative hint on the Life tab and the People tab's hint. Before, both were off (the year was past 1115).
 
-## 3. A chosen ambition (`c-ambition.core.js`, `ambition.events.js`)
+## 3. A chosen ambition (`c-ambition.core.js`, `ambition.events.js`): RETIRED
+
+> **Retired by owner order 54 (P3, D-062 addendum):** "remove the ambitions feature ... not a single thing should be handed to you without you seeking it out." Both files, the tests `lfAmbition`, `lfAfterTheTop` and `lfWhatNowSystems` (What now's pointers, `LF.whatMore` and the ruler's desk, lived in `c-ambition.core.js`) are in `archive/p3-ambitions/`. The `pa_*` scenes now come to a life that seeks the thing of its own will (`src/people/9989-what-you-seek`). What follows is the record of what it was.
 
 **Why.** The release dropped its ambitions (`A.migrateV10` deletes `p.amb` from saves older than version 11 and nothing set it again). `C.ambition` always said no, and the 30 scenes written for ambitions (26 of them not retired by 58-event-cut), among them `pa_freedom_buy`, `pa_freedom_kind_master`, `pa_expand_petition`, `pa_golden_harvest` and `pa_web_marriage`, could never fire. Restoring it is sound: the migration only touches old saves, and the field is the one the scenes already read.
 

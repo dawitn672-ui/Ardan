@@ -1042,3 +1042,39 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Left open:** the owner's verdict and the seven choices in the gate note; the other twenty peoples; children, the old,
   wounds; the face code feeding the new head; tests for the layer; building it into 93-figures and the Profile tab.
 - **Undo:** remove `src/ui/engine/figure/manhwa/`, `docs/design/demo-2d/c8d/`, `docs/design/c8d-gate1.md` (branch `c8d-gate1`).
+
+### H-068 · 2026-11-16 04:00 ET · P3: the owner's playtest fixes (order 54, D-062 addendum)
+Branch `p3-playtest` from `v2-integration` at `2aaf1ba`; one commit a fix; not pushed.
+- **Fix 1, "Start a new life" (`e54b20f`).** The confirm's yes cleared its pass in a `finally` before 999999's deferred start
+  ran, so "Start the new life" asked again for ever; the menu also stayed open over the creation screen. The yes hands a
+  one-use pass `UI.startLife` spends; `UI.A.newLife` closes its box. Test `newLifeAfterSave` (real clicks; fails on the
+  build before).
+- **Fix 5, a step completes after its cards (`c6fb716`).** 84's `UI.stepGo` no longer ends a year once its card is
+  settled; 99992's battle/duel stop ends a step only when it put you on campaign; 999995's happenings (wound, illness,
+  death or birth in the household, coming of age, a call to war) go into the digest (`sum.met`) instead of ending the year.
+  Test `nyYearGoesOn` replaces `nyEarlyStops`.
+- **Fix 2, free will (`82bd806`).** Retired to `archive/p3-ambitions/` (97's `c-ambition.core.js`, `ambition.events.js`;
+  tests `lfAmbition`, `lfAfterTheTop`, `lfWhatNowSystems`) and `archive/p3-chapters/` (9993-life-chapters whole; v2-time's
+  `v2tChapterPanel`, `v2tChapters`). **Last commit that built them: `c6fb716`.** Goal stack rewritten (debts, favours owed,
+  promises only); `C.ambition` reads `A.SEEK` (new `src/people/9989-what-you-seek`); hint and help texts.
+- **Fix 3, crimes against a ruler (`d1eb73d`).** New `src/nobility/999993-crown-crimes` (reach, discovery with reasons, the
+  record, the sentence by law and nature, the block, forgiveness, regicide's aftermath: the realm, the inquiry, kin
+  vengeance, the price, avengers); 39-schemes routes a king's murder through it. Tests `ccReach`, `ccAttempts`,
+  `ccRegicide`, `ccForgive`.
+- **Fix 4, the first mission (`ea699f4`).** New `src/war/99972-unit-work` (monthly unit work by war, post and officer; a
+  recruit's first within ~100 days); `A.milYear`'s yearly mission waits when the unit had work in 90 days. Test
+  `uwFirstMission`. `tests/stages-baseline.json` 356 -> 355.
+- **Checks:** lint-events and lint-choices clean for the touched features, lint-kin clean, lint-stages ok, coherency quick:
+  no contradiction, no check rose.
+- **Undo:** revert the five commits, newest first; to bring the ambitions or chapters back, move their folders from
+  `archive/` into `src/events/` and restore their manifest stages.
+
+### H-066 · 2026-11-16 · The old Ardan Codex reviewed (research only)
+- **Asked:** the owner uploaded an old, outdated Codex (the Far Lands, 1105) and asked what in it is useful.
+- **Docs:** `docs/research/codex-review.md` (what it is, what matches, contradicts or is gone, 12 useful items by work item,
+  recommendations); `docs/research/codex/reasons-and-cracks.md` and `docs/research/codex/martial-concepts.md` (plain lifts, no
+  code); the file itself as `docs/research/ardan-codex-old.html`. `docs/README.md` indexes them.
+- **Found:** its data is already in `archive/` (99-far-lands, 990 to 993, retired in H-001); it adds prose, quarrels, money and
+  chokepoint tables, realm secrets. Outdated: military templates, Marshal, levies (the war score is not in it).
+- **Game:** nothing. No code, data or test changed.
+- **Undo:** revert the branch `codex-review` commits.

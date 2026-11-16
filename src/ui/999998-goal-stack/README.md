@@ -1,5 +1,14 @@
 # 999998-goal-stack: one ordered stack of goals
 
+> **P3 (owner order 54, D-062 addendum): only what the player took on.** "Not a single thing should be handed to you
+> without you seeking it out." The stack no longer reads What now's suggestions, the ambition or the chapter (both
+> retired to `archive/`), or the realm's customs and feast days. Its sources are `debt` (what you owe the moneylenders;
+> the crown's debt when the crown is yours), `favour` (a favour you owe someone, `pc.owes`) and `promise` (Coming up's
+> labelled returns: a loan due to you, a venture, a wedding agreed, an apprenticeship's end). The card is titled "What you
+> have taken on" and is not drawn when there is nothing. `A.whatNow` stays as an engine function (the bots and hints read
+> it) but is never shown as goals. Tests `gsOneCard`, `gsSources` were rewritten to that. What follows is the earlier
+> design.
+
 **Aspect:** UI and UX, declutter (round 2 B5 part 2, CRITIQUE U20; D-055) · **Kind:** one readable core file (`a-goals.core.js`), test.
 
 **Why.** A life had goals in five places that never agreed: What now (the release's three suggestions and 97's more), the ambition card (97), the chapter's aims (9993), Coming up (996: the promises made, the customs due, the next feast) and the Path's next step. They competed for the top of the Life page, said the same thing twice, and ordered themselves by nothing.

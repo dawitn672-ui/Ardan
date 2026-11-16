@@ -37,9 +37,11 @@ the same training.
 **The standard (§3), in eight rules.**
 1. **Every change has a reason you can read.** Each gain or loss is written with its cause (who taught you, which fight,
    which wound, your age, years unused), and the season's line and the Records tab say it in words.
-2. **The curve.** The same month of practice is worth about thirty times more to a Beginner than to a Master. An ordinary
-   talent working full time reaches Intermediate in a year, Advanced in four, Expert in about twelve, Master in about
-   twenty-seven; a gifted one sooner, a poor one perhaps never.
+2. **The curve, and no timetable (order 59, §3.16).** The same month of practice is worth about thirty times more to a
+   Beginner than to a Master, but **no number of years makes a master.** Each skill has *concepts* a person must grasp to
+   pass a word, and *breakthroughs* that leap him forward; who grasps what, and when, turns on discipline, insight and
+   chance, each with its reason. One reaches Master in five years of discipline and profound breakthroughs; another, as
+   hard-working, is stuck all his life behind one concept he never grasps.
 3. **What kind of effort.** Routine work teaches at half pace and stops once you can do what the work asks. Practice
    alone teaches; a drill with a teacher teaches more; a task above your level under real stakes teaches most, and a
    failure at one teaches more than a success.
@@ -666,6 +668,48 @@ captain of fifty is better than one of thirty, but not by twice; an old smith's 
 master's pupils sit one word under him. Pure, hashed, ten microseconds, never saved (as growth.md §2.7).
 
 ---
+
+### 3.16 No timetable: concepts, grasp, discipline and breakthroughs (order 59, D-070; recorded 2026-11-15 23:12 ET)
+
+The owner: "i dont like the idea of results being so predictable that anyone can become a master with that much
+training... one might get it in 5 years of discipline and profound breakthroughs whilst one might be stuck behind his
+entire life due to not grasping one concept." This section **overrides** the timetable in §3.2 to §3.3 and the worked
+lives' tables (§3.14); the curve R(level) stays as the pace *between* the turns described here, not as a promise.
+
+- **Concepts.** Each skill has a few named concepts at each word from Intermediate up (swordsmanship: *the measure*,
+  *the tempo*, *the feint read*; smithing: *the colour of the heat*, *the temper*; letters: *the old grammar*, *the
+  argument from authority*; command: *the reserve*, *the ground*). Passing a word needs its concepts grasped. Effort
+  without the grasp piles up (the stored effort of §3.9, with no cap below the word's edge) but does not cross.
+- **Grasp is a person's, not a clock's.** At birth (seeded, so the same seed gives the same person) each person gets,
+  per skill, a hidden *grasp* for each concept: from "comes to him at once" to "never comes". Most are ordinary; a few
+  are blind spots; a rare person has many concepts that come easily (the prodigy). Talent (the letter) moves the odds;
+  it does not settle them. A blind spot can be **lifelong**: a man with every other gift can stay Expert all his life,
+  and the record says why ("You have never grasped the measure; the best men you fight know it").
+- **Each month of real effort is a chance to grasp,** never a sure step. The chance rises with **discipline** (the
+  person's own: will, temperament, steady practice over years, not one hard month), the **quality** of the effort
+  (§3.4: a stretch under stakes, a failure looked at honestly), a **teacher who holds the concept and can show it**,
+  **variety** (a new opponent, a new material, a new land), and **reflection** (rest, prayer, a quiet winter), and falls
+  with routine, fatigue, pride (a proud man who will not be shown) and despair.
+- **Breakthroughs** are the leaps. A grasp can come as a slow dawn (the concept is simply there one season) or as an
+  *breakthrough*: a sudden insight tied to a moment that names it (a master's single word, a defeat that shows you the
+  thing, watching a rival, a near death, a sermon, a dream after long work). A breakthrough crosses the concept at once,
+  releases the stored effort (a leap of several points, possibly a whole word), and sometimes opens a neighbouring
+  concept. Rare, never on schedule, always with its moment in the record ("At Harl's Ford, flat on your back under his
+  blade, you finally saw the measure"). Some lives have three; most have one or none.
+- **So the spread is wide, as in life.** With the same training: the disciplined prodigy with a good master reaches
+  Master in **about five years**; an ordinary disciplined worker in fifteen to thirty, or never; a talented but
+  undisciplined man flares and stalls; a man with one blind spot stops at the word below it for life, however hard he
+  works. The world's census (ten Grandmasters, one Legend, growth.md §2.2) still caps the top.
+- **Nothing without reason (rule 18).** Every grasp, breakthrough and lifelong stall has its stated cause in the ledger;
+  chance chooses only *whether this month* it comes, among the reasons present. The player can work on the reasons (a
+  better teacher, a new land, humility, rest), never buy the outcome.
+- **What the player sees, in words, no percentages:** "You have not yet grasped the tempo", "Something in the feint is
+  clearer to you this winter" (close), and the breakthrough's line. A blind spot is not named as permanent until late in
+  life or by a great teacher ("Master Ilse says some men never see it. She does not say you are one").
+- **For the builders:** per person per skill, a seeded grasp table (a few bytes each, made lazily the first time a skill
+  passes Beginner); a monthly roll per *active* skill only (cost fits §4.4); concepts listed per skill in `data/`;
+  tests: over 200 seeded lives with identical training, the years to Master spread from about 5 to never (some never),
+  every crossing has a grasp or breakthrough record, and no breakthrough without a named moment.
 
 ## 4 · For the builders
 

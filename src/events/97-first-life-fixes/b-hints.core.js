@@ -48,7 +48,8 @@
   // the texts, for the steps (none names Play, Space or Next)
   const TEXT = {
     clock: stepWords,
-    whatnow: () => '<b>What now</b>, just above, lists the three things most worth doing. One click does each.',
+    // P3 (order 54, D-062): nothing is handed to the player; the card above keeps only what he took on
+    whatnow: () => '<b>What you have taken on</b>, just above, keeps your debts and your promises. Nothing else is set for you: what you seek is yours to choose.',
     plan: () => 'Your <b>plan</b>, just above, decides what your free hours build. Pick a training focus: it grows a little every day.',
     initiative: () => 'Each activity below takes some of your days. Do as many as you like, but do not wear yourself out. Try one.',
     tips: () => `Underlined words explain themselves. ${coarse() ? 'Tap' : 'Click'} your <b>fighting worth</b> (on a phone: Life → You) to see where it comes from.`,
@@ -191,7 +192,7 @@
         '<li>When something happens, read it and pick a choice. Each one shows its odds.</li>' +
         '<li>Press <b>Continue</b>, then step on.</li>' +
         '<li>Try an activity on the Life page: make a friend, train, look for love. Do too much too fast and you tire.</li>' +
-        '<li>Not sure? <b>What now</b>, at the top of Life, lists the three things most worth doing.</li>' +
+        '<li>Nothing is set for you: the Path, your plan, the people you know and the Decisions page are where a life is made. What you have taken on (debts, promises) is kept at the top of Life.</li>' +
         '<li>When you die, you go on as your heir.</li></ol></section>';
       body.innerHTML = first + '<h3 class="help-more-h">More, by subject</h3>' + fold;
       return t.innerHTML;
