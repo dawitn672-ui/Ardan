@@ -708,6 +708,8 @@
   // for it (A.wsGeneralFor). Engine only (it may make a person with the game's dice); a player ruler names his own.
   P.fillGenerals = function () {
     const pc = A.pc(), want = new Map();
+    // an army in the field left without a general (an old save's Marshal took the first host on load) gets one now
+    for (const a of (A.S.armies || [])) if (a && a.id && !a.gen) deputyArmy(a.id);
     for (const r of realmsAlive()) {
       if (r.landless || (r.isRebel && !r.isNew) || !r.ruler || (pc && pc.ruler === r.id)) continue;
       const d = fixFirstHost(r);
@@ -922,7 +924,7 @@
       if (!res.ok) continue;
       n++;
       p.milRank = Math.max(p.milRank || 0, 6);
-      for (const f of res.freed || []) if (f.startsWith('army:')) deputyArmy(P.parse(f).id);
+      // an army he leaves gets its general at the month's pass (P.fillGenerals): a load draws nothing from the stream
       if (isPC(p.id) && p.mil) {
         p.mil.div = d.id;
         if (d.army) p.mil.army = d.army; else p.mil.army = null;
