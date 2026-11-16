@@ -2,7 +2,7 @@
 
 What Ardan looks like with unlimited time, money and people, set against what it is today and what this round of work changed.
 
-The detail behind each row is in the matching document in [docs/benchmarks](../benchmarks/README.md). Measured numbers come from `reports/scorecard.md`.
+The detail behind each row is in the matching document in [docs/benchmarks](../benchmarks/README.md). Measured numbers come from `tools/bench/reports/scorecard.md`.
 
 ## The one line
 
@@ -52,7 +52,7 @@ The code work is tractable and mostly specified in the benchmark documents.
    - Honest duel odds.
    - The accessibility pass (target sizes and landmarks).
    - After-action reports.
-   Each one already has a spec in the feature workflow and an acceptance metric in `bench/rubric.mjs`.
+   Each one already has a spec in the feature workflow and an acceptance metric in `tools/bench/rubric.mjs`.
 2. **Run the 12-player playtest** with Playtest mode. That is the only way to raise UI, Character and Uniqueness above their measured caps.
 3. **Merge the progression systems down to four** and invert growth toward use.
 4. **Rebuild the economy** around production, stock and caravans.

@@ -1,0 +1,34 @@
+1: royal - gold crown, ermine collar, long cloak, gem clasp
+2: royal - gold crown, jewelled red-and-gold cape over a white robe, long hair
+3: merchant - fur-trimmed collar, buttoned brown tunic, purse and keys at the belt
+4: knight or noble - fur collar, green cloak, blue tunic, sword, no crown
+5: royal - gold crown, ermine collar, purple gown, jewelled collar
+6: knight or noble - gold collar, sword, red sash over a white tunic, tall hat, no crown
+7: soldier - kettle helmet, quilted padded sleeves, round shield, plain parti-coloured tunic
+8: peasant - plain orange tunic, simple sash, no trim, no tools
+9: knight or noble - plate arm harness, gorget, heraldic blue-and-gold surcoat, shield
+10: noble - draped orange sash, gold bead necklace, white tunic, tall cap. This is a guess, perhaps merchant.
+11: noble - purple gown, fur collar, gold chain, gold-trimmed sleeves, pointed hat
+12: noble - purple gown with gold trim, gold collar, white veil, jewel
+13: peasant - plain red dress, plain belt, no ornament. Could be a better-off peasant.
+14: soldier - kettle helmet, padded sleeves, gorget, shield
+15: artisan - leather apron, hammer in hand, teal sleeves, fur collar
+16: merchant - fur collar, blue gown, purse and keys, studded belt
+17: serf - bare coarse sleeveless shift, rope belt, no trim
+18: clergy - brown hooded habit, white stole with a cross, tonsure
+19: clergy - black hooded habit, rope cord, small medallion
+20: soldier - steel helmet, bow and arrows, gorget, teal tunic over padded sleeves
+21: serf - undyed rough tunic, rope belt, long loose hair, no trim
+22: artisan - leather apron, tool loop at the belt, green dress
+23: serf - undyed rough tunic, rope cord, crossed wrap
+24: merchant - red striped coat, white turban with gold band, purse and key at the belt
+25: serf - undyed hooded shift, rope belt, simple wimple-like hood. Could be peasant.
+26: clergy - white vestments with a red stole, pectoral cross, tonsure
+27: royal - gold crown, teal-and-gold cape, red draped tunic, jewelled collar
+28: artisan - leather apron, knives at the belt, bead necklace, green top
+29: peasant - plain blue tunic, simple belt, blue neckerchief, no tools or trim
+30: artisan - leather apron, hammer, orange sleeves, braid
+31: clergy - brown hooded habit, rope cord, medallion, tonsure
+32: merchant - bead necklaces, teal sash, purse and keys, fine pale gown
+
+The hardest split was serf versus peasant. Both wear plain, undyed or single-colour tunics with rope or cloth belts. I separated them mainly by cloth. Rough, bleached, shapeless shifts went to serf (17, 21, 23, 25). Dyed, better-cut tunics went to peasant (8, 13, 29). Those calls are weak. Knight or noble was also hard to separate from royal and merchant. Crown and ermine made royalty easy. But 6 and 10 wear similar draped, gold-trimmed clothes, which could be noble or wealthy merchant. Merchants and nobles share fur collars, so I used the purse and keys to mark merchants (3, 16, 24, 32). Soldier versus knight depended on plate armour and heraldry (9) against padded sleeves and an open kettle helmet (7, 14, 20). Clergy were easy because of the habits and stoles.

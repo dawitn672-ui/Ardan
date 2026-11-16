@@ -76,7 +76,7 @@ The world is drawn deep and simulated shallow.
     - a border goal (the Upper Plain, the lake islands, the Lamp's hills);
     - the lore's walls and ground for the defender;
     - a peace that moves at most two or three provinces.
-  - In `09-scale` (`world.core.js`), give each far land a grace period of 12 to 18 months before `A.aiWarCheck` may start new far wars, the lore's three aside.
+  - In `09-engine-at-scale` (`world.core.js`), give each far land a grace period of 12 to 18 months before `A.aiWarCheck` may start new far wars, the lore's three aside.
 - **Size M · Impact 5.**
 
 ### B3. The Twin Rivers trade provinces by the score, and small realms explode
@@ -91,7 +91,7 @@ The world is drawn deep and simulated shallow.
   - The Twin Rivers' provinces are small, seeded by people, so a "province" there is a district. A peace that takes "everything occupied" moves a kingdom.
 - **Why it matters.** The two ledger empires, the lore's anchors of the east, read like dice. A player in Venshai sees his empire halved and doubled within ten years, with no story to explain it.
 - **Fix.**
-  - In the release's peace terms, via `68-casus-belli` or `09-scale`: cap a peace by the share of the loser's land or people (say 15%) rather than by province count, and weight war score by province area.
+  - In the release's peace terms, via `68-reasons-for-war` or `09-engine-at-scale`: cap a peace by the share of the loser's land or people (say 15%) rather than by province count, and weight war score by province area.
   - In `99-far-lands` `realms.mjs`, give Seuvan land in proportion to its lore army (180,000 km²), or cut its army to the land it got.
 - **Size M · Impact 4.**
 
@@ -124,7 +124,7 @@ The world is drawn deep and simulated shallow.
   - **Over seed 4242's 30 years:** "The Salt War" three times, "The Grey War" three times, "The Red War" twice.
   - **Plural realms with singular verbs** in history and news: "Frost Riders wins", "The Ouro Hunters is no more", "Ridges wins", "Sand Clans wins; Sabra pays tribute".
 - **Why it matters.** The chronicle and the History list become unreadable lists of the same three names. A continent of 153 realms needs more names than the Known World's 35.
-- **Fix.** In the war-naming code (the release's war namer, reachable from `68-casus-belli` or `57-world-chronicle`):
+- **Fix.** In the war-naming code (the release's war namer, reachable from `68-reasons-for-war` or `57-world-chronicle`):
   - never reuse a live or recorded name: add the place ("the Salt War of the Ogo Grass") or an ordinal ("the Second Salt War");
   - draw far wars' names from their land's own words (990's culture words).
   - For the verbs, mark plural realm short names (Riders, Clans, Hunters, Ridges, Houses) and pick the verb by that.
@@ -156,8 +156,8 @@ The world is drawn deep and simulated shallow.
 - **Size S to M · Impact 3.**
 
 ### B9. The 1105 far wars reach a western player on the first day
-- **Seen.** An Aldmark player's news on 1 January 1105 holds "In the far lands: The Busimo–Nkara War...", and the same for Vahra–Kethra and Taulen–Black Lamp (`snap-a.json`, news). Everything else from the east arrives months late as "Word from the east (of 1107)", which is 09-scale's own rule and works.
-- **Fix.** In `991-far-war` `c-life.core.js` (line 191, `A.news(...)`): issue the lines after the player's home is set, so that `09-scale`'s `W.farOf` delays them, or send them through `A.WORLD1`'s queue directly.
+- **Seen.** An Aldmark player's news on 1 January 1105 holds "In the far lands: The Busimo–Nkara War...", and the same for Vahra–Kethra and Taulen–Black Lamp (`snap-a.json`, news). Everything else from the east arrives months late as "Word from the east (of 1107)", which is 09-engine-at-scale's own rule and works.
+- **Fix.** In `991-far-war` `c-life.core.js` (line 191, `A.news(...)`): issue the lines after the player's home is set, so that `09-engine-at-scale`'s `W.farOf` delays them, or send them through `A.WORLD1`'s queue directly.
 - **Size S · Impact 2.**
 
 ---
@@ -205,7 +205,7 @@ The world is drawn deep and simulated shallow.
   - **Seed 99:** Taulen reaches 49 M in 20 years while its army falls to 52k, and Vahra goes from 1.6 M to 52 M.
   - **The Known World:** treasuries grow about ×10 too (Aldmark 455k → 4.5 M). The eastern empires grow ×17 to ×30.
 - **Lore.** Taulen's notes pass at 60 in 100, the army eats two thirds of the revenue, and the Chancellery borrows against next year's silk.
-- **Fix.** In `56-realm-inside` (treasury), on far ledger states: army upkeep at the lore's share, half-note inflation as a yearly loss, and a debt that the Delta guilds call. Spending on armies when rich would also stop the 52k army on a 49 M purse.
+- **Fix.** In `56-court-and-treasury` (treasury), on far ledger states: army upkeep at the lore's share, half-note inflation as a yearly loss, and a debt that the Delta guilds call. Spending on armies when rich would also stop the 52k army on a 49 M purse.
 - **Size M · Impact 3.**
 
 ### I4. Far life still speaks the Known World's institutions in places
@@ -229,9 +229,9 @@ The world is drawn deep and simulated shallow.
   - the full province list ("takes Ngav, Tukatuk, Nivkh, Tuktuk, Inulan...");
   - the cause of death ("a wound gone bad");
   - the ruler's temper ("Jade King Vijdar Marastvi is cruel and impetuous").
-  - The lore's rule for writers: anything the west hears is a year old, has passed a broker, and is wrong in some way that matters. 26-belief-truth's rumours touch only battle numbers.
+  - The lore's rule for writers: anything the west hears is a year old, has passed a broker, and is wrong in some way that matters. 26-belief-versus-truth's rumours touch only battle numbers.
   - The 240-day cap also makes Venshai's news reach the Middle Sea in 8 months, where the lore says 2 to 3 years.
-- **Fix.** In `09-scale` (`W.deliver`), for lines from beyond 5,000 km:
+- **Fix.** In `09-engine-at-scale` (`W.deliver`), for lines from beyond 5,000 km:
   - raise the cap to 2 years;
   - compress a province list to "lands in the north";
   - one time in three, change one detail (cause, winner, name), seeded from the text's hash;

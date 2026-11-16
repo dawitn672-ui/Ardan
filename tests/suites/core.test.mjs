@@ -1,4 +1,6 @@
 // Whole-game tests that belong to no single feature.
+// the long lives: more than the runner's default limit when the machine is loaded
+export const limits = { lives: 2400 };
 export default {
   async boot(pg, errs) {
     const r = await pg.evaluate(() => ({ events: Object.keys(A.EV).length, build: window.ARDAN_BUILD }));
@@ -58,21 +60,27 @@ export default {
       for (const s of subs) { await pg.click(`#tabs [data-a="tab"][data-v="${s}"]`).catch(() => {}); await pg.waitForTimeout(120); seen.push(s); }
     }
     const person = await pg.$('[data-a="ov"]');
-    // the mouse is parked first: a hover tooltip under it would take the first Escape (WCAG 1.4.13), not the person view
-    // a hover tip opened while the pointer rested on the view closes TT.HOVER_CLOSE (320 ms) after it leaves; until then
-    // it takes the first Escape, so wait for the tips to close rather than for a fixed time (a slow runner: CI run 73)
+    // a tip that a press opened takes the first Escape, not the person view (WCAG 1.4.13); since round 2 B4 nothing
+    // opens on hover, so the mouse only needs to be out of the way, and the test waits for any tip to be closed
     if (person) {
       await person.click().catch(() => {}); await pg.waitForTimeout(200); await pg.mouse.move(1, 1);
       await pg.waitForFunction(() => !(UI.TT && UI.TT.stack && UI.TT.stack.length), null, { timeout: 5000 }).catch(() => {});
       await pg.keyboard.press('Escape');
       await pg.waitForFunction(() => !UI.ov, null, { timeout: 5000 }).catch(() => {});
     }
-    await pg.click('button:has-text("Play")');
-    await pg.waitForTimeout(3000);
-    // pause by the control itself (its label is an icon at laptop widths), then wait for the clock to stop: on the Great
-    // Continent a month's turn is one long day, and a click sent mid-turn waits for it (seconds on a slow runner)
-    await pg.click('[data-a="clkPlay"]').catch(() => {});
-    await pg.waitForFunction(() => !UI.clk.run, null, { timeout: 60000 }).catch(() => {});
+    // v2 (99992-v2-time): Play and its speeds are gone; the one control that moves time is Next month (when
+    // 99992 is not in the build, the release's Play). Press it and wait for the month to end or stop at a card.
+    if (await pg.$('[data-a="v2Next"]')) {
+      await pg.click('[data-a="v2Next"]');
+      await pg.waitForFunction(() => !(UI.stepper && UI.stepper.run) || UI.stepper.wait, null, { timeout: 60000 }).catch(() => {});
+    } else {
+      await pg.click('button:has-text("Play")');
+      await pg.waitForTimeout(3000);
+      // pause by the control itself (its label is an icon at laptop widths), then wait for the clock to stop: on the Great
+      // Continent a month's turn is one long day, and a click sent mid-turn waits for it (seconds on a slow runner)
+      await pg.click('[data-a="clkPlay"]').catch(() => {});
+      await pg.waitForFunction(() => !UI.clk.run, null, { timeout: 60000 }).catch(() => {});
+    }
     // a scene that came up while the clock ran is a modal over the top bar, as in play: answer it first (92 tests the card)
     await pg.evaluate(() => {
       for (let i = 0; i < 10; i++) {

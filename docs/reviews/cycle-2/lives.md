@@ -5,13 +5,13 @@ Reviewer: **lives**. Angle: what a whole life feels like to a player of 13 to 23
 ## How I played
 
 - **Build.** `index.html` at commit 89dfb45, copied to `/tmp/ardan/cycle2/lives/`. For the A/B checks I built three private copies: without 9996 and 9997 (`nopol.html`), without 9997 (`noco.html`), and without 9996 (`nopo.html`).
-- **Runner.** `/tmp/ardan/cycle2/lives/life.mjs` started from cycle 1's runner. It plays through the engine's own queue (`A.advance`, `eventView`/`eventChoose`, `duelAuto`, `battleAuto`, `missionAuto`). Each life's JSON logs every scene: year, age, status, id, title, the full text, every choice with its odds or fight badge, the pick, the result line, and the person named. It also logs the whole game log, yearly samples, trait changes with their source, and opinion change by source (the measure 55-bonds' test uses).
+- **Runner.** `/tmp/ardan/cycle2/lives/long-life-audit.mjs` started from cycle 1's runner. It plays through the engine's own queue (`A.advance`, `eventView`/`eventChoose`, `duelAuto`, `battleAuto`, `missionAuto`). Each life's JSON logs every scene: year, age, status, id, title, the full text, every choice with its odds or fight badge, the pick, the result line, and the person named. It also logs the whole game log, yearly samples, trait changes with their source, and opinion change by source (the measure 55-bonds' test uses).
 - **How the bot plays.**
   - It picks the best odds, and breaks ties at random. Two lives use a "bold" pick and one a random pick.
   - It spends initiative on a plan for its path. Every fourth month it takes the game's own top What-now action.
   - Like an engaged player, some lives seek an office once a year from the Politics view (`POL.seek`). Rulers and councillors bring and argue bills (`UI.A.poPropose`, `poVoice`). Three lives take a long journey (`A.travelTo(..., 'visit')`).
 - **One menu pass.** `ui.cjs` played a Great Continent merchant through the real screens. It took screenshots of every tab, a scene and the *Keep this* card: `/tmp/ardan/cycle2/lives/ui/`.
-- **World bench.** `features/9996-polity/bench.mjs`, 8 Known World worlds × 40 years, with and without the Polity.
+- **World bench.** `src/nobility/9996-polity/bench.mjs`, 8 Known World worlds × 40 years, with and without the Polity.
 
 | Life | World, realm | Start | Years | End | Ending |
 | --- | --- | --- | --- | --- | --- |
@@ -64,11 +64,11 @@ The new systems also seldom reach a player who plays from What now:
 | # | Item | Impact | Size | Owner |
 | --- | --- | --- | --- | --- |
 | B1 | Offices stack without limit: 15 at once, 90% odds a year | 5 | S | 9996-polity |
-| B2 | A ruler who loses the crown gets no scene; the usurper becomes his patron | 5 | M | 994-careers, 56-realm-inside |
+| B2 | A ruler who loses the crown gets no scene; the usurper becomes his patron | 5 | M | 994-careers, 56-court-and-treasury |
 | B3 | Musters read the rank table backwards: a knight owes 4,000 men, a baron 375 | 4 | S | 9996-polity |
 | F1 | Money explodes worse than cycle 1 (1.65 M merchant, 499k soldier) | 4 | M | 45-economy, 9995, 9996 |
-| F2 | The new systems don't reach the life: What now never names them | 4 | M | 97-life-fixes, 9995–9997, 9992 |
-| F3 | Tier gates stop at ruler and general: a Marshal and a Chancellor get village scenes | 4 | S | 97-life-fixes |
+| F2 | The new systems don't reach the life: What now never names them | 4 | M | 97-first-life-fixes, 9995–9997, 9992 |
+| F3 | Tier gates stop at ruler and general: a Marshal and a Chancellor get village scenes | 4 | S | 97-first-life-fixes |
 | B4 | Raw creature ids in scenes ("A CRE-35 has been killing stock") | 3 | S | 03-engine-fixes, 992-far-beasts |
 | F4 | Old age starts at 50 and fills 19–42% of the rest of the life, in a villager's voice | 3 | M | 74-old-age |
 | F5 | Trait drift converges: zealous in 8 of 10 lives, greedy in 7; thoughts drive a third of it | 3 | S | 9992-identity, 49-body-mind |
@@ -76,7 +76,7 @@ The new systems also seldom reach a player who plays from What now:
 | F7 | The Polity halves civil wars, the lives' biggest moments | 3 | M | 9996-polity |
 | F8 | The memories' share fell because the memories pull less, not because the Polity adds opinion change | 2 | M | 55-bonds |
 | B5 | Missions other than bandit hunts still log "Enemy dead: 1,611. Your losses: 0" | 2 | S | 994-careers |
-| F9 | Chapters: the same unmet aim five chapters running; an elf's youth chapter idles 19 years | 2 | S | 9993-chapters |
+| F9 | Chapters: the same unmet aim five chapters running; an elf's youth chapter idles 19 years | 2 | S | 9993-life-chapters |
 | B6 | Small text faults: "the bill for high (obligations)", "a soldier has no use for mills" to a courtier, names ×4 | 2 | S | 9996, 994, 97 |
 
 The cycle 1 status table is at the end, after the findings.
@@ -97,7 +97,7 @@ The cycle 1 status table is at the end, after the findings.
 
 The odds are 0.9 almost every year once the life has some renown. The log reads like a list: "You are named Magistrate of Varenna… of Vitia… of Vitina… of Calena… of Venina" (1105–1111). G1's coin went from 151,002 to 498,619 in seven years once the offices stacked.
 
-The cause is `POL.seekable` in `features/9996-polity/d-player.core.js`. It skips only the office the player already holds (`if (o.pid === pc.id) continue;`). Nothing counts the offices the player holds elsewhere. The README says "a person may hold two offices of one realm", which is not what happens.
+The cause is `POL.seekable` in `src/nobility/9996-polity/d-player.core.js`. It skips only the office the player already holds (`if (o.pid === pc.id) continue;`). Nothing counts the offices the player holds elsewhere. The README says "a person may hold two offices of one realm", which is not what happens.
 
 **Why it matters.** The Politics view is where a curious player goes first. With a 90% button that pays every year, the political game is solved on the first visit. It also empties the realm's offices of the named people the feature exists to show.
 
@@ -122,7 +122,7 @@ Cycle 1's B1 (a failed coup with no cost) is fixed in code by `994-careers`' `cr
 - When a war of succession or a faction's victory takes the PC's throne, queue a fate scene, the same shape as `cr_coup_fate`: flee to a friendly court, kneel to the new ruler (with terms), take the cell, or raise a claim of your own. Set `pc.flags.deposed` and a claim.
 - The patron pick (21 or 41) should skip the person who took your throne.
 - A ruler whose capital is sacked gets a ruler's version of `sg_sacked` (`36-sieges`): escape with the household, be taken, or die on the stair.
-- Owners: `994-careers` for the fate scene; `56-realm-inside` or the release's claimant war for the hook. Measure it as "a lost crown always has a scene".
+- Owners: `994-careers` for the fate scene; `56-court-and-treasury` or the release's claimant war for the hook. Measure it as "a lost crown always has a scene".
 
 ### B3. The muster reads the rank table backwards (impact 4, size S)
 
@@ -179,7 +179,7 @@ In a Known World game, `A.ctxTokens(pc, {beast: 'CRE-21'}).beast` returns `"CRE-
 | `oa_life_ruler_told` | "The court chronicler reads you his account of your reign", in the year G4 was first elected (1140), and in G2's first chapter of age | 74 |
 | `po_election_day` | "The electors of Red Hide file out of the shrine… 2 votes of 2… across the nave", for orc clans | 9996 |
 | 49's trait log | "You have become proud: in 1120." with no reason, 14 times in 10 lives: every trait a ripened thought gives (F5) | 9992 (`ID.ripen` should set 49's `BM.cur`) |
-| 67's weave | "You were last in a tavern in 1140, when you bought the corrody"; "The last time you were at court, in 1107, you told it bigger still" (a battle tale, not court) | 67-memory-weave |
+| 67's weave | "You were last in a tavern in 1140, when you bought the corrody"; "The last time you were at court, in 1107, you told it bigger still" (a battle tale, not court) | 67-choice-memories |
 
 ---
 
@@ -210,7 +210,7 @@ At the other end, the queen of G2 had 2,000 to 5,000 suns of her own for 46 year
 - Find where G3's money comes from (moneylending, 168 times, is the first suspect) and add a yearly income line to the log (cycle 1's I4 fix, not done).
 - Cap or tax moneylending interest above about 20,000 suns (45-economy).
 - Let the chapter aim for coin be a step (×1.5, at most +50,000), not a jump to a precise seven-figure number.
-- Pay a ruler a privy purse from the treasury (56-realm-inside), so a queen is never "in want".
+- Pay a ruler a privy purse from the treasury (56-court-and-treasury), so a queen is never "in want".
 - Treasury growth on the Great Continent is the ×10 already open (lane E's `A.TRADE.ledgerYear`).
 
 ### F2. The new systems don't reach a player who plays from What now (impact 4, size M)
@@ -244,7 +244,7 @@ What each system did in a life, without my bot's extra pushes:
 
 **Why it matters.** Cycle 1's I5 found that "a system the game never brings to you doesn't exist" for this player. The same holds for nearly all of cycle 1's growth.
 
-**Fix.** Extend `LF.whatMore` (97-life-fixes) with one pointer per system, each pure:
+**Fix.** Extend `LF.whatMore` (97-first-life-fixes) with one pointer per system, each pure:
 - "An office is open to you: Reeve of X, 62%" (9996, when `POL.seekable` has an unbarred office at 40% or more);
 - "Your cargo would fetch more in Qadir" (9995, when `TR.vOptions` has a gain);
 - "You have never seen the sea / another realm" (9990, from the chapter's travel aim);
@@ -254,7 +254,7 @@ What each system did in a life, without my bot's extra pushes:
 
 ### F3. Tier gates stop at ruler and general (impact 4, size S)
 
-**What I saw.** `A.lfTop` (`97-life-fixes/h-words.core.js`) is `p.ruler || A.lfRank(p) >= 6`. A councillor, a lord or a retired commander passes as a villager.
+**What I saw.** `A.lfTop` (`97-first-life-fixes/h-words.core.js`) is `p.ruler || A.lfRank(p) >= 6`. A councillor, a lord or a retired commander passes as a villager.
 
 - **K1, Marshal of Aldmark's council from 47** (he left the army, so his rank is gone), with 118k to 169k suns:
   - `av_road_sellsword_offer`: "You're wasted here. Twenty-five a month";
@@ -360,9 +360,9 @@ Elections take the place of many of the fights. In the lives, the civil wars tha
 
 **Fix.**
 - Let a contested election bring the scenes a civil war would: a candidate player can lose and refuse the result (a claim), and an elector can be pressed by both sides.
-- Give a war of succession a minimum length like 09-scale's `W.MIN_WAR_DAYS`, so the PC can join a side.
+- Give a war of succession a minimum length like 09-engine-at-scale's `W.MIN_WAR_DAYS`, so the PC can join a side.
 - Measure "lives with a civil war in the realm" per 50 years in the bench.
-- Owner: `9996-polity` with `09-scale`.
+- Owner: `9996-polity` with `09-engine-at-scale`.
 
 ### F8. Why the memories' share of opinion change fell (impact 2, size M)
 
@@ -402,7 +402,7 @@ The problems:
 - Don't repeat an aim that failed in the last chapter unless the player picks it.
 - When all three aims are met, open the next chapter within a year, whatever the stage.
 - Round coin targets.
-- Owner: `9993-chapters`.
+- Owner: `9993-life-chapters`.
 
 ---
 

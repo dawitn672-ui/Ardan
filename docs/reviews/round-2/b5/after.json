@@ -1,0 +1,2246 @@
+{
+ "desk/peasant/life": {
+  "words": 231,
+  "controls": 44,
+  "elements": 93,
+  "dom": 323,
+  "chips": 5,
+  "infos": 5,
+  "folds": 1,
+  "foldsClosed": 0,
+  "screens": 1,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 32,
+    "controls": 13
+   },
+   "side": {
+    "words": 186,
+    "controls": 24
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "life"
+ },
+ "desk/peasant/story": {
+  "words": 231,
+  "controls": 44,
+  "elements": 93,
+  "dom": 323,
+  "chips": 5,
+  "infos": 5,
+  "folds": 1,
+  "foldsClosed": 0,
+  "screens": 1,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 32,
+    "controls": 13
+   },
+   "side": {
+    "words": 186,
+    "controls": 24
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "life"
+ },
+ "desk/peasant/decisions": {
+  "words": 94,
+  "controls": 30,
+  "elements": 16,
+  "dom": 168,
+  "chips": 7,
+  "infos": 7,
+  "folds": 3,
+  "foldsClosed": 1,
+  "screens": 1,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 32,
+    "controls": 13
+   },
+   "side": {
+    "words": 49,
+    "controls": 10
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "goals"
+ },
+ "desk/peasant/you": {
+  "words": 231,
+  "controls": 44,
+  "elements": 93,
+  "dom": 323,
+  "chips": 5,
+  "infos": 5,
+  "folds": 1,
+  "foldsClosed": 0,
+  "screens": 1,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 32,
+    "controls": 13
+   },
+   "side": {
+    "words": 186,
+    "controls": 24
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "life"
+ },
+ "desk/peasant/path": {
+  "words": 224,
+  "controls": 43,
+  "elements": 87,
+  "dom": 360,
+  "chips": 3,
+  "infos": 130,
+  "folds": 3,
+  "foldsClosed": 3,
+  "screens": 1.12,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 32,
+    "controls": 13
+   },
+   "side": {
+    "words": 179,
+    "controls": 23
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "path"
+ },
+ "desk/peasant/holdings": {
+  "words": 129,
+  "controls": 38,
+  "elements": 78,
+  "dom": 1040,
+  "chips": 24,
+  "infos": 379,
+  "folds": 5,
+  "foldsClosed": 4,
+  "screens": 1,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 32,
+    "controls": 13
+   },
+   "side": {
+    "words": 84,
+    "controls": 18
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "holdings"
+ },
+ "desk/peasant/arms": {
+  "words": 149,
+  "controls": 32,
+  "elements": 25,
+  "dom": 247,
+  "chips": 17,
+  "infos": 21,
+  "folds": 2,
+  "foldsClosed": 0,
+  "screens": 1,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 32,
+    "controls": 13
+   },
+   "side": {
+    "words": 104,
+    "controls": 12
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "war"
+ },
+ "desk/peasant/people": {
+  "words": 219,
+  "controls": 42,
+  "elements": 136,
+  "dom": 403,
+  "chips": 45,
+  "infos": 46,
+  "folds": 4,
+  "foldsClosed": 1,
+  "screens": 1.94,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 32,
+    "controls": 13
+   },
+   "side": {
+    "words": 174,
+    "controls": 22
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "people"
+ },
+ "desk/peasant/dynasty": {
+  "words": 159,
+  "controls": 34,
+  "elements": 37,
+  "dom": 233,
+  "chips": 1,
+  "infos": 41,
+  "folds": 4,
+  "foldsClosed": 2,
+  "screens": 1,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 32,
+    "controls": 13
+   },
+   "side": {
+    "words": 114,
+    "controls": 14
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "legacy"
+ },
+ "desk/peasant/realm": {
+  "words": 128,
+  "controls": 36,
+  "elements": 56,
+  "dom": 286,
+  "chips": 1,
+  "infos": 26,
+  "folds": 3,
+  "foldsClosed": 3,
+  "screens": 1,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 32,
+    "controls": 13
+   },
+   "side": {
+    "words": 83,
+    "controls": 16
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "realm"
+ },
+ "desk/peasant/world": {
+  "words": 70,
+  "controls": 44,
+  "elements": 22,
+  "dom": 23,
+  "chips": 0,
+  "infos": 0,
+  "folds": 0,
+  "foldsClosed": 0,
+  "screens": 1.33,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 32,
+    "controls": 13
+   },
+   "side": {
+    "words": 25,
+    "controls": 24
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "world"
+ },
+ "desk/peasant/book": {
+  "words": 360,
+  "controls": 31,
+  "elements": 36,
+  "dom": 36,
+  "chips": 0,
+  "infos": 0,
+  "folds": 0,
+  "foldsClosed": 0,
+  "screens": 1.27,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 32,
+    "controls": 13
+   },
+   "side": {
+    "words": 315,
+    "controls": 11
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "book"
+ },
+ "desk/noble/life": {
+  "words": 230,
+  "controls": 45,
+  "elements": 95,
+  "dom": 311,
+  "chips": 5,
+  "infos": 4,
+  "folds": 1,
+  "foldsClosed": 0,
+  "screens": 1,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 33,
+    "controls": 14
+   },
+   "side": {
+    "words": 184,
+    "controls": 24
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "life"
+ },
+ "desk/noble/story": {
+  "words": 230,
+  "controls": 45,
+  "elements": 95,
+  "dom": 311,
+  "chips": 5,
+  "infos": 4,
+  "folds": 1,
+  "foldsClosed": 0,
+  "screens": 1,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 33,
+    "controls": 14
+   },
+   "side": {
+    "words": 184,
+    "controls": 24
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "life"
+ },
+ "desk/noble/decisions": {
+  "words": 211,
+  "controls": 38,
+  "elements": 59,
+  "dom": 185,
+  "chips": 10,
+  "infos": 5,
+  "folds": 3,
+  "foldsClosed": 1,
+  "screens": 1.04,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 33,
+    "controls": 14
+   },
+   "side": {
+    "words": 165,
+    "controls": 17
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "goals"
+ },
+ "desk/noble/you": {
+  "words": 230,
+  "controls": 45,
+  "elements": 95,
+  "dom": 311,
+  "chips": 5,
+  "infos": 4,
+  "folds": 1,
+  "foldsClosed": 0,
+  "screens": 1,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 33,
+    "controls": 14
+   },
+   "side": {
+    "words": 184,
+    "controls": 24
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "life"
+ },
+ "desk/noble/path": {
+  "words": 243,
+  "controls": 43,
+  "elements": 109,
+  "dom": 400,
+  "chips": 3,
+  "infos": 142,
+  "folds": 3,
+  "foldsClosed": 3,
+  "screens": 1.39,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 33,
+    "controls": 14
+   },
+   "side": {
+    "words": 197,
+    "controls": 22
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "path"
+ },
+ "desk/noble/holdings": {
+  "words": 147,
+  "controls": 46,
+  "elements": 85,
+  "dom": 1043,
+  "chips": 24,
+  "infos": 381,
+  "folds": 5,
+  "foldsClosed": 4,
+  "screens": 1,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 33,
+    "controls": 14
+   },
+   "side": {
+    "words": 101,
+    "controls": 25
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "holdings"
+ },
+ "desk/noble/arms": {
+  "words": 130,
+  "controls": 33,
+  "elements": 24,
+  "dom": 248,
+  "chips": 19,
+  "infos": 21,
+  "folds": 2,
+  "foldsClosed": 0,
+  "screens": 1,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 33,
+    "controls": 14
+   },
+   "side": {
+    "words": 84,
+    "controls": 12
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "war"
+ },
+ "desk/noble/people": {
+  "words": 229,
+  "controls": 43,
+  "elements": 130,
+  "dom": 383,
+  "chips": 42,
+  "infos": 43,
+  "folds": 4,
+  "foldsClosed": 1,
+  "screens": 2.04,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 33,
+    "controls": 14
+   },
+   "side": {
+    "words": 183,
+    "controls": 22
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "people"
+ },
+ "desk/noble/dynasty": {
+  "words": 161,
+  "controls": 35,
+  "elements": 37,
+  "dom": 233,
+  "chips": 1,
+  "infos": 41,
+  "folds": 4,
+  "foldsClosed": 2,
+  "screens": 1,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 33,
+    "controls": 14
+   },
+   "side": {
+    "words": 115,
+    "controls": 14
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "legacy"
+ },
+ "desk/noble/realm": {
+  "words": 150,
+  "controls": 41,
+  "elements": 67,
+  "dom": 314,
+  "chips": 1,
+  "infos": 27,
+  "folds": 3,
+  "foldsClosed": 3,
+  "screens": 1,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 33,
+    "controls": 14
+   },
+   "side": {
+    "words": 104,
+    "controls": 20
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "realm"
+ },
+ "desk/noble/world": {
+  "words": 71,
+  "controls": 45,
+  "elements": 22,
+  "dom": 23,
+  "chips": 0,
+  "infos": 0,
+  "folds": 0,
+  "foldsClosed": 0,
+  "screens": 1.33,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 33,
+    "controls": 14
+   },
+   "side": {
+    "words": 25,
+    "controls": 24
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "world"
+ },
+ "desk/noble/book": {
+  "words": 373,
+  "controls": 32,
+  "elements": 37,
+  "dom": 37,
+  "chips": 0,
+  "infos": 0,
+  "folds": 0,
+  "foldsClosed": 0,
+  "screens": 1.31,
+  "zones": {
+   "topbar": {
+    "words": 13,
+    "controls": 7
+   },
+   "profile": {
+    "words": 33,
+    "controls": 14
+   },
+   "side": {
+    "words": 327,
+    "controls": 11
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "book"
+ },
+ "desk/ruler/life": {
+  "words": 223,
+  "controls": 46,
+  "elements": 106,
+  "dom": 332,
+  "chips": 3,
+  "infos": 4,
+  "folds": 1,
+  "foldsClosed": 0,
+  "screens": 1.09,
+  "zones": {
+   "topbar": {
+    "words": 14,
+    "controls": 7
+   },
+   "profile": {
+    "words": 34,
+    "controls": 14
+   },
+   "side": {
+    "words": 175,
+    "controls": 25
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "life"
+ },
+ "desk/ruler/story": {
+  "words": 223,
+  "controls": 46,
+  "elements": 106,
+  "dom": 332,
+  "chips": 3,
+  "infos": 4,
+  "folds": 1,
+  "foldsClosed": 0,
+  "screens": 1.09,
+  "zones": {
+   "topbar": {
+    "words": 14,
+    "controls": 7
+   },
+   "profile": {
+    "words": 34,
+    "controls": 14
+   },
+   "side": {
+    "words": 175,
+    "controls": 25
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "life"
+ },
+ "desk/ruler/decisions": {
+  "words": 270,
+  "controls": 38,
+  "elements": 66,
+  "dom": 184,
+  "chips": 12,
+  "infos": 7,
+  "folds": 3,
+  "foldsClosed": 1,
+  "screens": 1,
+  "zones": {
+   "topbar": {
+    "words": 14,
+    "controls": 7
+   },
+   "profile": {
+    "words": 34,
+    "controls": 14
+   },
+   "side": {
+    "words": 222,
+    "controls": 17
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "goals"
+ },
+ "desk/ruler/you": {
+  "words": 223,
+  "controls": 46,
+  "elements": 106,
+  "dom": 332,
+  "chips": 3,
+  "infos": 4,
+  "folds": 1,
+  "foldsClosed": 0,
+  "screens": 1.09,
+  "zones": {
+   "topbar": {
+    "words": 14,
+    "controls": 7
+   },
+   "profile": {
+    "words": 34,
+    "controls": 14
+   },
+   "side": {
+    "words": 175,
+    "controls": 25
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "life"
+ },
+ "desk/ruler/path": {
+  "words": 107,
+  "controls": 33,
+  "elements": 20,
+  "dom": 46,
+  "chips": 2,
+  "infos": 6,
+  "folds": 2,
+  "foldsClosed": 2,
+  "screens": 1,
+  "zones": {
+   "topbar": {
+    "words": 14,
+    "controls": 7
+   },
+   "profile": {
+    "words": 34,
+    "controls": 14
+   },
+   "side": {
+    "words": 59,
+    "controls": 12
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "path"
+ },
+ "desk/ruler/holdings": {
+  "words": 150,
+  "controls": 46,
+  "elements": 85,
+  "dom": 1041,
+  "chips": 25,
+  "infos": 378,
+  "folds": 5,
+  "foldsClosed": 4,
+  "screens": 1,
+  "zones": {
+   "topbar": {
+    "words": 14,
+    "controls": 7
+   },
+   "profile": {
+    "words": 34,
+    "controls": 14
+   },
+   "side": {
+    "words": 102,
+    "controls": 25
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "holdings"
+ },
+ "desk/ruler/arms": {
+  "words": 260,
+  "controls": 37,
+  "elements": 95,
+  "dom": 392,
+  "chips": 19,
+  "infos": 24,
+  "folds": 2,
+  "foldsClosed": 0,
+  "screens": 1.56,
+  "zones": {
+   "topbar": {
+    "words": 14,
+    "controls": 7
+   },
+   "profile": {
+    "words": 34,
+    "controls": 14
+   },
+   "side": {
+    "words": 212,
+    "controls": 16
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "war"
+ },
+ "desk/ruler/people": {
+  "words": 252,
+  "controls": 41,
+  "elements": 191,
+  "dom": 626,
+  "chips": 77,
+  "infos": 75,
+  "folds": 4,
+  "foldsClosed": 1,
+  "screens": 2.34,
+  "zones": {
+   "topbar": {
+    "words": 14,
+    "controls": 7
+   },
+   "profile": {
+    "words": 34,
+    "controls": 14
+   },
+   "side": {
+    "words": 204,
+    "controls": 20
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "people"
+ },
+ "desk/ruler/dynasty": {
+  "words": 164,
+  "controls": 36,
+  "elements": 37,
+  "dom": 233,
+  "chips": 1,
+  "infos": 41,
+  "folds": 4,
+  "foldsClosed": 2,
+  "screens": 1,
+  "zones": {
+   "topbar": {
+    "words": 14,
+    "controls": 7
+   },
+   "profile": {
+    "words": 34,
+    "controls": 14
+   },
+   "side": {
+    "words": 116,
+    "controls": 15
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "legacy"
+ },
+ "desk/ruler/realm": {
+  "words": 171,
+  "controls": 40,
+  "elements": 77,
+  "dom": 232,
+  "chips": 0,
+  "infos": 12,
+  "folds": 2,
+  "foldsClosed": 2,
+  "screens": 1,
+  "zones": {
+   "topbar": {
+    "words": 14,
+    "controls": 7
+   },
+   "profile": {
+    "words": 34,
+    "controls": 14
+   },
+   "side": {
+    "words": 123,
+    "controls": 19
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "realm"
+ },
+ "desk/ruler/world": {
+  "words": 76,
+  "controls": 46,
+  "elements": 22,
+  "dom": 23,
+  "chips": 0,
+  "infos": 0,
+  "folds": 0,
+  "foldsClosed": 0,
+  "screens": 1.33,
+  "zones": {
+   "topbar": {
+    "words": 14,
+    "controls": 7
+   },
+   "profile": {
+    "words": 34,
+    "controls": 14
+   },
+   "side": {
+    "words": 28,
+    "controls": 25
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "world"
+ },
+ "desk/ruler/book": {
+  "words": 473,
+  "controls": 33,
+  "elements": 37,
+  "dom": 37,
+  "chips": 0,
+  "infos": 0,
+  "folds": 0,
+  "foldsClosed": 0,
+  "screens": 1.38,
+  "zones": {
+   "topbar": {
+    "words": 14,
+    "controls": 7
+   },
+   "profile": {
+    "words": 34,
+    "controls": 14
+   },
+   "side": {
+    "words": 425,
+    "controls": 12
+   }
+  },
+  "pageShare": 0.81,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "book"
+ },
+ "phone/peasant/life": {
+  "words": 102,
+  "controls": 25,
+  "elements": 64,
+  "dom": 317,
+  "chips": 5,
+  "infos": 7,
+  "folds": 1,
+  "foldsClosed": 0,
+  "screens": 1.01,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 87,
+    "controls": 15
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "life"
+ },
+ "phone/peasant/story": {
+  "words": 192,
+  "controls": 15,
+  "elements": 33,
+  "dom": 33,
+  "chips": 0,
+  "infos": 0,
+  "folds": 0,
+  "foldsClosed": 0,
+  "screens": 1.47,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 177,
+    "controls": 5
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "story"
+ },
+ "phone/peasant/decisions": {
+  "words": 75,
+  "controls": 19,
+  "elements": 26,
+  "dom": 178,
+  "chips": 7,
+  "infos": 7,
+  "folds": 3,
+  "foldsClosed": 1,
+  "screens": 1.01,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 60,
+    "controls": 9
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "goals"
+ },
+ "phone/peasant/you": {
+  "words": 67,
+  "controls": 31,
+  "elements": 183,
+  "dom": 183,
+  "chips": 8,
+  "infos": 41,
+  "folds": 0,
+  "foldsClosed": 0,
+  "screens": 2.31,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 14,
+    "controls": 8
+   },
+   "phone-profile": {
+    "words": 38,
+    "controls": 13
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "you"
+ },
+ "phone/peasant/path": {
+  "words": 117,
+  "controls": 25,
+  "elements": 93,
+  "dom": 366,
+  "chips": 4,
+  "infos": 130,
+  "folds": 3,
+  "foldsClosed": 3,
+  "screens": 1.67,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 102,
+    "controls": 15
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "path"
+ },
+ "phone/peasant/holdings": {
+  "words": 102,
+  "controls": 26,
+  "elements": 85,
+  "dom": 1047,
+  "chips": 25,
+  "infos": 379,
+  "folds": 5,
+  "foldsClosed": 4,
+  "screens": 1.33,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 87,
+    "controls": 16
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "holdings"
+ },
+ "phone/peasant/arms": {
+  "words": 145,
+  "controls": 19,
+  "elements": 25,
+  "dom": 247,
+  "chips": 17,
+  "infos": 21,
+  "folds": 2,
+  "foldsClosed": 0,
+  "screens": 1.01,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 130,
+    "controls": 9
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "war"
+ },
+ "phone/peasant/people": {
+  "words": 128,
+  "controls": 22,
+  "elements": 122,
+  "dom": 410,
+  "chips": 46,
+  "infos": 46,
+  "folds": 4,
+  "foldsClosed": 1,
+  "screens": 1.9,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 113,
+    "controls": 12
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "people"
+ },
+ "phone/peasant/dynasty": {
+  "words": 118,
+  "controls": 21,
+  "elements": 44,
+  "dom": 240,
+  "chips": 2,
+  "infos": 41,
+  "folds": 4,
+  "foldsClosed": 2,
+  "screens": 1.08,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 103,
+    "controls": 11
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "legacy"
+ },
+ "phone/peasant/realm": {
+  "words": 96,
+  "controls": 22,
+  "elements": 63,
+  "dom": 293,
+  "chips": 2,
+  "infos": 26,
+  "folds": 3,
+  "foldsClosed": 3,
+  "screens": 1.19,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 81,
+    "controls": 12
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "realm"
+ },
+ "phone/peasant/world": {
+  "words": 58,
+  "controls": 31,
+  "elements": 22,
+  "dom": 23,
+  "chips": 0,
+  "infos": 0,
+  "folds": 0,
+  "foldsClosed": 0,
+  "screens": 1.01,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 43,
+    "controls": 21
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "world"
+ },
+ "phone/peasant/book": {
+  "words": 186,
+  "controls": 17,
+  "elements": 36,
+  "dom": 36,
+  "chips": 0,
+  "infos": 0,
+  "folds": 0,
+  "foldsClosed": 0,
+  "screens": 1.84,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 171,
+    "controls": 7
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "book"
+ },
+ "phone/noble/life": {
+  "words": 98,
+  "controls": 25,
+  "elements": 64,
+  "dom": 303,
+  "chips": 5,
+  "infos": 6,
+  "folds": 1,
+  "foldsClosed": 0,
+  "screens": 1.01,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 83,
+    "controls": 15
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "life"
+ },
+ "phone/noble/story": {
+  "words": 199,
+  "controls": 15,
+  "elements": 35,
+  "dom": 35,
+  "chips": 0,
+  "infos": 0,
+  "folds": 0,
+  "foldsClosed": 0,
+  "screens": 1.65,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 184,
+    "controls": 5
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "story"
+ },
+ "phone/noble/decisions": {
+  "words": 108,
+  "controls": 20,
+  "elements": 71,
+  "dom": 197,
+  "chips": 10,
+  "infos": 5,
+  "folds": 3,
+  "foldsClosed": 1,
+  "screens": 1.76,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 93,
+    "controls": 10
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "goals"
+ },
+ "phone/noble/you": {
+  "words": 62,
+  "controls": 32,
+  "elements": 186,
+  "dom": 186,
+  "chips": 11,
+  "infos": 43,
+  "folds": 0,
+  "foldsClosed": 0,
+  "screens": 2.36,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 14,
+    "controls": 8
+   },
+   "phone-profile": {
+    "words": 33,
+    "controls": 14
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "you"
+ },
+ "phone/noble/path": {
+  "words": 118,
+  "controls": 25,
+  "elements": 116,
+  "dom": 407,
+  "chips": 4,
+  "infos": 142,
+  "folds": 3,
+  "foldsClosed": 3,
+  "screens": 2.21,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 103,
+    "controls": 15
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "path"
+ },
+ "phone/noble/holdings": {
+  "words": 110,
+  "controls": 30,
+  "elements": 92,
+  "dom": 1050,
+  "chips": 25,
+  "infos": 381,
+  "folds": 5,
+  "foldsClosed": 4,
+  "screens": 1.36,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 95,
+    "controls": 20
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "holdings"
+ },
+ "phone/noble/arms": {
+  "words": 125,
+  "controls": 19,
+  "elements": 24,
+  "dom": 248,
+  "chips": 19,
+  "infos": 21,
+  "folds": 2,
+  "foldsClosed": 0,
+  "screens": 1.01,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 110,
+    "controls": 9
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "war"
+ },
+ "phone/noble/people": {
+  "words": 138,
+  "controls": 22,
+  "elements": 116,
+  "dom": 390,
+  "chips": 43,
+  "infos": 43,
+  "folds": 4,
+  "foldsClosed": 1,
+  "screens": 1.9,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 123,
+    "controls": 12
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "people"
+ },
+ "phone/noble/dynasty": {
+  "words": 120,
+  "controls": 21,
+  "elements": 44,
+  "dom": 240,
+  "chips": 2,
+  "infos": 41,
+  "folds": 4,
+  "foldsClosed": 2,
+  "screens": 1.08,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 105,
+    "controls": 11
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "legacy"
+ },
+ "phone/noble/realm": {
+  "words": 99,
+  "controls": 21,
+  "elements": 74,
+  "dom": 321,
+  "chips": 2,
+  "infos": 27,
+  "folds": 3,
+  "foldsClosed": 3,
+  "screens": 1.4,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 84,
+    "controls": 11
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "realm"
+ },
+ "phone/noble/world": {
+  "words": 58,
+  "controls": 31,
+  "elements": 22,
+  "dom": 23,
+  "chips": 0,
+  "infos": 0,
+  "folds": 0,
+  "foldsClosed": 0,
+  "screens": 1.01,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 43,
+    "controls": 21
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "world"
+ },
+ "phone/noble/book": {
+  "words": 175,
+  "controls": 17,
+  "elements": 37,
+  "dom": 37,
+  "chips": 0,
+  "infos": 0,
+  "folds": 0,
+  "foldsClosed": 0,
+  "screens": 1.94,
+  "zones": {
+   "topbar": {
+    "words": 11,
+    "controls": 6
+   },
+   "side": {
+    "words": 160,
+    "controls": 7
+   },
+   "bnav": {
+    "words": 4,
+    "controls": 4
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "book"
+ },
+ "phone/ruler/life": {
+  "words": 111,
+  "controls": 28,
+  "elements": 64,
+  "dom": 277,
+  "chips": 3,
+  "infos": 6,
+  "folds": 1,
+  "foldsClosed": 0,
+  "screens": 1.01,
+  "zones": {
+   "topbar": {
+    "words": 17,
+    "controls": 8
+   },
+   "side": {
+    "words": 88,
+    "controls": 15
+   },
+   "bnav": {
+    "words": 6,
+    "controls": 5
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "life"
+ },
+ "phone/ruler/story": {
+  "words": 225,
+  "controls": 18,
+  "elements": 32,
+  "dom": 32,
+  "chips": 0,
+  "infos": 0,
+  "folds": 0,
+  "foldsClosed": 0,
+  "screens": 1.87,
+  "zones": {
+   "topbar": {
+    "words": 17,
+    "controls": 8
+   },
+   "side": {
+    "words": 202,
+    "controls": 5
+   },
+   "bnav": {
+    "words": 6,
+    "controls": 5
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "story"
+ },
+ "phone/ruler/decisions": {
+  "words": 100,
+  "controls": 22,
+  "elements": 78,
+  "dom": 196,
+  "chips": 12,
+  "infos": 7,
+  "folds": 3,
+  "foldsClosed": 1,
+  "screens": 2.01,
+  "zones": {
+   "topbar": {
+    "words": 17,
+    "controls": 8
+   },
+   "side": {
+    "words": 77,
+    "controls": 9
+   },
+   "bnav": {
+    "words": 6,
+    "controls": 5
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "goals"
+ },
+ "phone/ruler/you": {
+  "words": 67,
+  "controls": 33,
+  "elements": 188,
+  "dom": 188,
+  "chips": 11,
+  "infos": 43,
+  "folds": 0,
+  "foldsClosed": 0,
+  "screens": 2.38,
+  "zones": {
+   "topbar": {
+    "words": 17,
+    "controls": 8
+   },
+   "side": {
+    "words": 13,
+    "controls": 7
+   },
+   "phone-profile": {
+    "words": 31,
+    "controls": 13
+   },
+   "bnav": {
+    "words": 6,
+    "controls": 5
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "you"
+ },
+ "phone/ruler/path": {
+  "words": 77,
+  "controls": 21,
+  "elements": 20,
+  "dom": 46,
+  "chips": 2,
+  "infos": 6,
+  "folds": 2,
+  "foldsClosed": 2,
+  "screens": 1.01,
+  "zones": {
+   "topbar": {
+    "words": 17,
+    "controls": 8
+   },
+   "side": {
+    "words": 54,
+    "controls": 8
+   },
+   "bnav": {
+    "words": 6,
+    "controls": 5
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "path"
+ },
+ "phone/ruler/holdings": {
+  "words": 108,
+  "controls": 29,
+  "elements": 92,
+  "dom": 1048,
+  "chips": 26,
+  "infos": 378,
+  "folds": 5,
+  "foldsClosed": 4,
+  "screens": 1.36,
+  "zones": {
+   "topbar": {
+    "words": 17,
+    "controls": 8
+   },
+   "side": {
+    "words": 85,
+    "controls": 16
+   },
+   "bnav": {
+    "words": 6,
+    "controls": 5
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "holdings"
+ },
+ "phone/ruler/arms": {
+  "words": 148,
+  "controls": 21,
+  "elements": 85,
+  "dom": 346,
+  "chips": 19,
+  "infos": 24,
+  "folds": 2,
+  "foldsClosed": 0,
+  "screens": 1.75,
+  "zones": {
+   "topbar": {
+    "words": 17,
+    "controls": 8
+   },
+   "side": {
+    "words": 125,
+    "controls": 8
+   },
+   "bnav": {
+    "words": 6,
+    "controls": 5
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "war"
+ },
+ "phone/ruler/people": {
+  "words": 141,
+  "controls": 23,
+  "elements": 197,
+  "dom": 632,
+  "chips": 78,
+  "infos": 75,
+  "folds": 4,
+  "foldsClosed": 1,
+  "screens": 2.69,
+  "zones": {
+   "topbar": {
+    "words": 17,
+    "controls": 8
+   },
+   "side": {
+    "words": 118,
+    "controls": 10
+   },
+   "bnav": {
+    "words": 6,
+    "controls": 5
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "people"
+ },
+ "phone/ruler/dynasty": {
+  "words": 114,
+  "controls": 23,
+  "elements": 44,
+  "dom": 240,
+  "chips": 2,
+  "infos": 41,
+  "folds": 4,
+  "foldsClosed": 2,
+  "screens": 1.08,
+  "zones": {
+   "topbar": {
+    "words": 17,
+    "controls": 8
+   },
+   "side": {
+    "words": 91,
+    "controls": 10
+   },
+   "bnav": {
+    "words": 6,
+    "controls": 5
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "legacy"
+ },
+ "phone/ruler/realm": {
+  "words": 99,
+  "controls": 25,
+  "elements": 77,
+  "dom": 232,
+  "chips": 0,
+  "infos": 12,
+  "folds": 2,
+  "foldsClosed": 2,
+  "screens": 1.22,
+  "zones": {
+   "topbar": {
+    "words": 17,
+    "controls": 8
+   },
+   "side": {
+    "words": 76,
+    "controls": 12
+   },
+   "bnav": {
+    "words": 6,
+    "controls": 5
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "realm"
+ },
+ "phone/ruler/world": {
+  "words": 67,
+  "controls": 34,
+  "elements": 22,
+  "dom": 23,
+  "chips": 0,
+  "infos": 0,
+  "folds": 0,
+  "foldsClosed": 0,
+  "screens": 1.01,
+  "zones": {
+   "topbar": {
+    "words": 17,
+    "controls": 8
+   },
+   "side": {
+    "words": 44,
+    "controls": 21
+   },
+   "bnav": {
+    "words": 6,
+    "controls": 5
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "world"
+ },
+ "phone/ruler/book": {
+  "words": 248,
+  "controls": 20,
+  "elements": 37,
+  "dom": 37,
+  "chips": 0,
+  "infos": 0,
+  "folds": 0,
+  "foldsClosed": 0,
+  "screens": 2.17,
+  "zones": {
+   "topbar": {
+    "words": 17,
+    "controls": 8
+   },
+   "side": {
+    "words": 225,
+    "controls": 7
+   },
+   "bnav": {
+    "words": 6,
+    "controls": 5
+   }
+  },
+  "pageShare": 1,
+  "hscroll": 0,
+  "sticksOut": [],
+  "nOut": 0,
+  "hover": 0,
+  "tab": "book"
+ }
+}

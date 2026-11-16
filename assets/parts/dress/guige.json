@@ -1,0 +1,28 @@
+{
+  "id": "guige",
+  "z": "dress3",
+  "mats": {"leather": "leather", "metal": "brass"},
+  "_note": "A shield's carrying strap over the near shoulder and across the chest: oiled leather, stitched along both edges, riveted down the middle, buckled with a brass buckle and a keeper. Casts a shadow on the mail.",
+  "layers": [
+    {"id": "cast", "role": "shade", "alpha": 0.5, "clip": "hauberk.body", "line": "M 852 916 S 748 986 618 1074 488 1162 410 1226", "w": [46, 46, 46, 46, 46], "k": "tone"},
+    {"id": "strap", "role": "leather.light", "line": "M 842 901 S 738 971 608 1059 478 1147 400 1214", "w": [44, 44, 44, 44, 44], "k": "tone"},
+    {"id": "low", "role": "leather.half", "clip": "strap", "line": "M 854 923 S 750 993 620 1081 490 1169 412 1234", "w": [20, 20, 20, 20, 20], "k": "tone"},
+    {"id": "near", "role": "leather.shadow", "clip": "strap", "d": "M 760 872 L 900 872 L 900 982 L 800 982 Z"},
+    {"id": "hl", "role": "leather.hl", "clip": "strap", "lod": 1, "line": "M 828 887 S 726 956 596 1044 466 1132 390 1198", "w": [0.5, 3, 3, 3, 0.5], "k": "tone"},
+    {"id": "stitch_a", "pat": {"type": "stitch", "role": "leather.deep", "along": "M 830 891 S 727 960 597 1048 467 1136 392 1202", "gap": 9, "w": 1.6}},
+    {"id": "stitch_b", "pat": {"type": "stitch", "role": "leather.deep", "along": "M 854 910 S 750 982 620 1070 490 1158 410 1224", "gap": 9, "w": 1.6}},
+    {"id": "rivets", "pat": {"type": "rivets", "metal": "metal", "along": "M 800 929 S 738 971 690 1004", "gap": 34, "r": 4.5}},
+    {"id": "rivets2", "pat": {"type": "rivets", "metal": "metal", "along": "M 560 1092 S 478 1147 420 1196", "gap": 34, "r": 4.5}},
+    {"id": "edge_a", "role": "leather.line", "line": "M 830 881 S 727 949 597 1037 467 1125 389 1194", "w": [2, 2.4, 2.4, 2.4, 2], "k": "contour"},
+    {"id": "edge_b", "role": "leather.line", "line": "M 854 920 S 750 993 620 1081 490 1169 412 1234", "w": [2.6, 3, 3, 3, 2.6], "k": "contour"},
+    {"id": "keeper", "role": "leather.half", "line": "M 597 1026 S 610 1057 626 1085", "w": [12, 12, 12], "k": "tone"},
+    {"id": "keeper_line", "role": "leather.line", "line": "M 591 1029 S 604 1060 620 1089", "w": [1.5, 2, 1.5], "k": "form"},
+    {"id": "buckle_sh", "role": "shade", "alpha": 0.55, "d": "M 646 1083 L 615 1027 L 644 1008 L 675 1064 Z M 648 1074 L 667 1062 L 642 1017 L 623 1029 Z", "rule": "evenodd"},
+    {"id": "buckle", "role": "metal.light", "d": "M 641 1077 L 610 1020 L 639 1002 L 670 1058 Z M 643 1068 L 662 1056 L 637 1011 L 618 1023 Z", "rule": "evenodd"},
+    {"id": "buckle_hl", "role": "metal.hl", "lod": 1, "line": "M 612 1018 L 637 1003", "w": [1, 2.4, 1], "k": "tone"},
+    {"id": "buckle_dark", "role": "metal.shadow", "lod": 1, "line": "M 643 1074 L 668 1059", "w": [1, 2.4, 1], "k": "tone"},
+    {"id": "buckle_line", "role": "metal.line", "line": "M 641 1077 L 610 1020 L 639 1002 L 670 1058 L 641 1077", "w": [1.6, 1.6, 1.6, 1.6, 1.6], "k": "form"},
+    {"id": "tongue", "role": "metal.light", "line": "M 652 1033 L 626 1050", "w": [3.5, 2.5], "k": "tone"},
+    {"id": "tongue_line", "role": "metal.line", "lod": 1, "line": "M 652 1036 L 627 1054", "w": [1, 1], "k": "form"}
+  ]
+}

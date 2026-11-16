@@ -1,0 +1,325 @@
+{
+  "_note": "characters.md \u00a71: each ramp is five hand-picked values and a line colour (hl, light, half, shadow, deep, line); none is computed. Shadows cool toward indigo #3a2f6b. Gate-1 subset: 4 skins, 5 hair colours, 4 irises and the materials of the four portraits. Moves to data/palettes.json when the owner approves.",
+  "skin": {
+    "fair": {
+      "hl": "#fbe6d6",
+      "light": "#f1cdb3",
+      "half": "#dfab93",
+      "shadow": "#b98380",
+      "deep": "#835b6c",
+      "line": "#6b3f4b",
+      "blush": "#e58f80",
+      "lip": {
+        "hl": "#f0b3a2",
+        "light": "#d98b80",
+        "half": "#c4726d",
+        "shadow": "#9b5560",
+        "deep": "#6d3a4c",
+        "line": "#5c2c3c"
+      },
+      "scar": {
+        "hl": "#fff1e6",
+        "light": "#f6ddd0",
+        "shadow": "#c99a98",
+        "red": "#e59b93",
+        "redDeep": "#b8616a"
+      }
+    },
+    "rosy": {
+      "hl": "#fde7d4",
+      "light": "#f4cfb0",
+      "half": "#e4ad8c",
+      "shadow": "#bf857b",
+      "deep": "#8b5c68",
+      "line": "#6f404a",
+      "blush": "#ef8a76",
+      "lip": {
+        "hl": "#f5b8a0",
+        "light": "#e3907e",
+        "half": "#cd766c",
+        "shadow": "#a5575f",
+        "deep": "#743b4b",
+        "line": "#60303d"
+      },
+      "scar": {
+        "hl": "#fff2e4",
+        "light": "#f8dfcd",
+        "shadow": "#cb9b94",
+        "red": "#ea9c8c",
+        "redDeep": "#bc6066"
+      }
+    },
+    "weathered": {
+      "hl": "#f3cfaf",
+      "light": "#dfaa85",
+      "half": "#c78c6c",
+      "shadow": "#9a6869",
+      "deep": "#6a475e",
+      "line": "#552f3c",
+      "blush": "#d06e5a",
+      "lip": {
+        "hl": "#e0a089",
+        "light": "#c47c6b",
+        "half": "#ac665d",
+        "shadow": "#874b55",
+        "deep": "#5e3245",
+        "line": "#4c2534"
+      },
+      "scar": {
+        "hl": "#fbe3cf",
+        "light": "#ecc8ae",
+        "shadow": "#b88a80",
+        "red": "#dc8f80",
+        "redDeep": "#a9545a"
+      }
+    },
+    "aged": {
+      "hl": "#f6dccb",
+      "light": "#e6bea6",
+      "half": "#cf9d88",
+      "shadow": "#a27a7c",
+      "deep": "#6d5266",
+      "line": "#573845",
+      "blush": "#d98679",
+      "lip": {
+        "hl": "#e2aa9b",
+        "light": "#c88a80",
+        "half": "#b07471",
+        "shadow": "#8b5862",
+        "deep": "#613c4e",
+        "line": "#4f2d3d"
+      },
+      "scar": {
+        "hl": "#fff4ec",
+        "light": "#f5e2d7",
+        "shadow": "#c4a09e",
+        "red": "#e09d93",
+        "redDeep": "#b0626a"
+      }
+    }
+  },
+  "hair": {
+    "darkbrown": {
+      "hl": "#9a7a5e",
+      "light": "#664836",
+      "half": "#4c3429",
+      "shadow": "#33232a",
+      "deep": "#221922",
+      "line": "#150e17"
+    },
+    "chestnut": {
+      "hl": "#e0a067",
+      "light": "#a8592e",
+      "half": "#864127",
+      "shadow": "#5f2d29",
+      "deep": "#3f1e24",
+      "line": "#2a1219"
+    },
+    "flaxen": {
+      "hl": "#fbecb8",
+      "light": "#e2bd73",
+      "half": "#c39654",
+      "shadow": "#93694a",
+      "deep": "#654737",
+      "line": "#4a3128"
+    },
+    "black": {
+      "hl": "#6d6a80",
+      "light": "#3a3442",
+      "half": "#2a2532",
+      "shadow": "#1d1a26",
+      "deep": "#14121b",
+      "line": "#0b0a10"
+    },
+    "grey": {
+      "hl": "#f3f0ea",
+      "light": "#e2ded7",
+      "half": "#c9c4be",
+      "shadow": "#a7a2a6",
+      "deep": "#837e88",
+      "line": "#5d5866"
+    }
+  },
+  "eye": {
+    "hl": "#ffffff",
+    "light": "#efe7e1",
+    "half": "#d6c9c7",
+    "shadow": "#b4a2a8",
+    "deep": "#7d6a78",
+    "line": "#1b1730",
+    "pink": "#dc8e86"
+  },
+  "iris": {
+    "grey-blue": {
+      "hl": "#d7e6ef",
+      "light": "#7e9cb2",
+      "half": "#5d7d97",
+      "shadow": "#3d566f",
+      "deep": "#25344a",
+      "line": "#1b1f30"
+    },
+    "brown": {
+      "hl": "#d7a46a",
+      "light": "#8a5a33",
+      "half": "#6c4227",
+      "shadow": "#4b2c20",
+      "deep": "#2d1a18",
+      "line": "#1b1213"
+    },
+    "hazel": {
+      "hl": "#d9c77c",
+      "light": "#8f7e44",
+      "half": "#6f5f34",
+      "shadow": "#4d4128",
+      "deep": "#2f281d",
+      "line": "#1d1914"
+    },
+    "green": {
+      "hl": "#c9dca1",
+      "light": "#6f8c5c",
+      "half": "#557149",
+      "shadow": "#3b5039",
+      "deep": "#243225",
+      "line": "#161e18"
+    }
+  },
+  "mats": {
+    "linen": {
+      "hl": "#fbf6ea",
+      "light": "#e9e0cc",
+      "half": "#cfc2a8",
+      "shadow": "#a3998f",
+      "deep": "#716a73",
+      "line": "#504957"
+    },
+    "undyed": {
+      "hl": "#efe4cf",
+      "light": "#d4c4a6",
+      "half": "#b6a487",
+      "shadow": "#8b7c71",
+      "deep": "#5f5560",
+      "line": "#443c48"
+    },
+    "russet": {
+      "hl": "#cc7a56",
+      "light": "#a2513a",
+      "half": "#86412f",
+      "shadow": "#5f2d2f",
+      "deep": "#3f1d27",
+      "line": "#2c121b"
+    },
+    "woad": {
+      "hl": "#9fb7cb",
+      "light": "#5f7e9a",
+      "half": "#4a6682",
+      "shadow": "#344863",
+      "deep": "#232f46",
+      "line": "#171d30"
+    },
+    "madder": {
+      "hl": "#d88a7a",
+      "light": "#b0503f",
+      "half": "#8f3c33",
+      "shadow": "#652a31",
+      "deep": "#421b26",
+      "line": "#2d1019"
+    },
+    "moss": {
+      "hl": "#a5a874",
+      "light": "#717548",
+      "half": "#5a5e3b",
+      "shadow": "#3f4231",
+      "deep": "#292c24",
+      "line": "#1a1c17"
+    },
+    "forest": {
+      "hl": "#6f9178",
+      "light": "#355b48",
+      "half": "#28483b",
+      "shadow": "#1c3330",
+      "deep": "#132224",
+      "line": "#0c1618"
+    },
+    "crimson": {
+      "hl": "#e0828a",
+      "light": "#9c2734",
+      "half": "#7d1f2d",
+      "shadow": "#561729",
+      "deep": "#36101f",
+      "line": "#250a15"
+    },
+    "ochre": {
+      "hl": "#efd9a2",
+      "light": "#cfb071",
+      "half": "#b0915a",
+      "shadow": "#81674d",
+      "deep": "#56443e",
+      "line": "#3d2f30"
+    },
+    "leather": {
+      "hl": "#c79466",
+      "light": "#8b5a37",
+      "half": "#70462d",
+      "shadow": "#4d3026",
+      "deep": "#311e1d",
+      "line": "#1f1214"
+    },
+    "steel": {
+      "hl": "#ffffff",
+      "light": "#b7bcc4",
+      "half": "#8a909b",
+      "shadow": "#5b6070",
+      "deep": "#323645",
+      "line": "#1d1f2a"
+    },
+    "brass": {
+      "hl": "#fff4c6",
+      "light": "#d6ab4c",
+      "half": "#ad8332",
+      "shadow": "#76552a",
+      "deep": "#4b351e",
+      "line": "#332214"
+    },
+    "gold": {
+      "hl": "#fffbe0",
+      "light": "#e8c45a",
+      "half": "#c3973a",
+      "shadow": "#85612b",
+      "deep": "#553c1f",
+      "line": "#3a2714"
+    },
+    "marten": {
+      "hl": "#c9a682",
+      "light": "#8d6747",
+      "half": "#715036",
+      "shadow": "#4e3628",
+      "deep": "#33231d",
+      "line": "#211612"
+    },
+    "vair": {
+      "hl": "#f4f2f2",
+      "light": "#cfcfd6",
+      "half": "#a8a8b6",
+      "shadow": "#787a8e",
+      "deep": "#4e5064",
+      "line": "#33354a"
+    },
+    "garnet": {
+      "hl": "#ffd0d6",
+      "light": "#b3243d",
+      "half": "#8a1830",
+      "shadow": "#5c1024",
+      "deep": "#3a0918",
+      "line": "#24050f"
+    },
+    "wood": {
+      "hl": "#d9b07a",
+      "light": "#9a6c42",
+      "half": "#7c5534",
+      "shadow": "#573b28",
+      "deep": "#38261d",
+      "line": "#241812"
+    },
+    "shade": "#3a2f6b"
+  }
+}

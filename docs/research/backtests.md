@@ -4,14 +4,14 @@
 
 ## How this was made
 
-- **Read:** `CLAUDE.md`, `docs/plan/Compounding.md`, the five cycle 1 reviews (`docs/reviews/cycle-1/`), `docs/design/brief.md` §6 (motion), and the READMEs of every feature that touches politics, war, the body, the mind, the UI and motion (09, 20, 21, 23, 34–39, 41, 44, 45, 47–49, 54–56, 58–64, 66, 68, 69, 72, 75, 84, 85, 89, 91–96, 99, 990–999, plus the two lanes in progress, 9992-identity and 9995-trade-roads).
+- **Read:** `CLAUDE.md`, `docs/plan/compounding.md`, the five cycle 1 reviews (`docs/reviews/cycle-1/`), `docs/design/brief.md` §6 (motion), and the READMEs of every feature that touches politics, war, the body, the mind, the UI and motion (09, 20, 21, 23, 34–39, 41, 44, 45, 47–49, 54–56, 58–64, 66, 68, 69, 72, 75, 84, 85, 89, 91–96, 99, 990–999, plus the two lanes in progress, 9992-identity and 9995-trade-roads).
 - **Code checked, not assumed:** the fix layer in `.build/ardan-core.js`, read with `tools/show.mjs` (`A.tplDefaults`, `GD.BN`, `A.buildUnits`, `A.newBattle`, `A.moraleCheck`, `A.divMaxOrg`, `A.wsSetOrder`, `A.lineSet`, `A.factionsYear`, `A.vassalYear`, `A.electRuler`, `A.pickHeir`, `GD.NOBLE_RUNGS`, `GD.WOUNDS`, `GD.PERKS`, `GD.CAREERS`). Where a status below says "Has", there is a function or a feature that does it.
 - **Games:** web search (sources at the end) plus what is known of them. Exact numbers that vary between versions carry "≈".
 - **Status words:**
   - **Has:** it exists and works.
   - **Partly:** a piece exists; the gap is named.
   - **Lacks:** nothing like it.
-  - **Queued:** a lane is building it now (9992-identity, 9995-trade-roads), or `Compounding.md` names it as the next piece (9990–9994).
+  - **Queued:** a lane is building it now (9992-identity, 9995-trade-roads), or `compounding.md` names it as the next piece (9990–9994).
 
 ## The answer in brief
 
@@ -38,18 +38,18 @@ Ranked by impact over size (S = 1, M = 2, L = 4, XL = 6). The owner's three asks
 
 | # | Transplant | From | Size | Folder |
 |---|---|---|---|---|
-| 1 | **The Polity:** offices, laws as bills, councils with tasks, estates, factions with thresholds, elections, vassal contracts, legitimacy with parts | CK3, EU4, Vic3, Bannerlord | XL | `features/9996-polity/` |
-| 2 | **Companies:** battalions and companies with names, captains, persistent morale, food and pay, formations, orders by courier, the line battle built from the real division | Bannerlord, TW3K, HoI4 | XL | `features/9997-companies/` |
+| 1 | **The Polity:** offices, laws as bills, councils with tasks, estates, factions with thresholds, elections, vassal contracts, legitimacy with parts | CK3, EU4, Vic3, Bannerlord | XL | `src/nobility/9996-polity/` |
+| 2 | **Companies:** battalions and companies with names, captains, persistent morale, food and pay, formations, orders by courier, the line battle built from the real division | Bannerlord, TW3K, HoI4 | XL | `src/war/9997-companies/` |
 | 3 | **Motion:** one choreography runtime, scene-card beats, the seal stamp on a roll, the battle in motion, the war map's fronts and arrows, ticking numbers | Persona 5, Hades, StS, HoI4, Genshin | L | `features/9998-motion/` |
 | 4 | **The ring speaks:** two or three named councillors or kin advise on every big decision, in their own bias | King of Dragon Pass | S–M | `features/9999-ring/` |
-| 5 | **Readable stakes:** Reigns dots on every choice (what it touches, how much); Slay the Spire intents on foes | Reigns, Slay the Spire | S | extends `92-scene-card` and the duel in `48-fight-ladder` |
+| 5 | **Readable stakes:** Reigns dots on every choice (what it touches, how much); Slay the Spire intents on foes | Reigns, Slay the Spire | S | extends `92-scene-card` and the duel in `48-event-fight-rules` |
 | 6 | **White and red checks:** retry after you grow; one-shot checks marked; passive checks | Disco Elysium | S | extends `75-fair-checks` |
 | 7 | **Vows and the weekly seed:** opt-in hardships that raise the Hall's score; one shared seed a week | Hades, Slay the Spire, BitLife | S–M | extends `995-hall-of-lives` |
 | 8 | **Moodlets and breaking points:** mood as a list of named, dated thoughts; stress from acting against your nature; a break at the bottom | RimWorld, CK3 | M | extends `35-moods` |
 | 9 | **House renown and legacies:** a house earns renown; at each succession its heir buys one perk on one of five tracks | CK3, Rogue Legacy | M | `features/99990-legacy/` |
 | 10 | **The inquest:** a time-boxed investigation over 64's true-and-false claims, ending in a judgement with no sure answer | Pentiment | M | `features/99991-inquest/` |
 | 11 | **A focus for each chapter:** choose a lifestyle focus; three trees each, ending in an earned trait | CK3 lifestyles | M | `features/99992-focus/` |
-| 12 | **Wounds where the blow lands:** the duel and the battle hit a part; parts can fail; a hook or a wooden leg wins some of it back | Kenshi, RimWorld, Dwarf Fortress | M | extends `49-body-mind` and `48-fight-ladder` |
+| 12 | **Wounds where the blow lands:** the duel and the battle hit a part; parts can fail; a hook or a wooden leg wins some of it back | Kenshi, RimWorld, Dwarf Fortress | M | extends `49-body-mind` and `48-event-fight-rules` |
 
 Folder numbers: `build.mjs` sorts folder names as strings, so `9996-` to `9999-` come after `9995-trade-roads`, and `99990-` sorts after `9999-` (`-` sorts before `0`). Each lands after everything it builds on.
 
@@ -207,7 +207,7 @@ Each mechanism has three parts:
 - **Ardan: Lacks.**
   - Wars are declared outright.
   - The lives review (B8) found rulers saw no war scene in 37–53 years of rule.
-- **Take (backlog, M, `68-casus-belli`):** a 30-day standoff before an AI war on the player's realm, or one the player declares.
+- **Take (backlog, M, `68-reasons-for-war`):** a 30-day standoff before an AI war on the player's realm, or one the player declares.
   - The demands come from 68's casus.
   - Allies and debts (68's `CS.owes`) declare for a side.
   - A ruler or councillor gets a scene: yield a province, buy off one ally, or stand.
@@ -636,17 +636,17 @@ Ardan's gaps cluster in three places, which are the owner's three asks:
 **Lane P.** Size XL: about six readable core files, four or five small patches, about 40 events (prefix `po_`), a test file and a bench.
 
 **Builds on:**
-- 56-realm-inside: the court, pushes, `RI.lean`, the ledger and custom (`r.riLaw0`);
+- 56-court-and-treasury: the court, pushes, `RI.lean`, the ledger and custom (`r.riLaw0`);
 - 20-ai-personality: `A.rulerPersona`, `A.personPersona`;
-- 68-casus-belli: debts and `CS.owes`;
+- 68-reasons-for-war: debts and `CS.owes`;
 - 990-far-peoples: the powers table and `A.FARP_POWERS_NAME`;
-- 54-voices: the council's local word;
+- 54-character-voices: the council's local word;
 - 994-careers: knighting, fiefs, the coup's fate;
 - 55-bonds: feuds and the ledger;
 - 39-schemes;
 - 21-npc-initiative's move budget;
 - 996-coming-up;
-- 59-tooltips.
+- 59-descriptions.
 
 **What it must prove.** Before and after numbers, from `bench.mjs` (10 worlds × 100 years, plus the 24-life bot league):
 
@@ -1239,7 +1239,7 @@ Each item gives what it is, its size and folder, what it compounds with, and two
 ### 1. The Polity
 
 - **Size:** XL.
-- **Folder:** `features/9996-polity/` (lane P).
+- **Folder:** `src/nobility/9996-polity/` (lane P).
 - **Compounds with:** 56, 20, 68, 990, 54, 994, 55, 39, 21, 996, 59, 62. It feeds #2 (the host estate, officers' houses), #4 (the council speaks), #9 (houses earn renown from offices), and 9994 share cards ("elected by four votes to three").
 - **Spec:** [Priority design 1](#priority-design-1-the-polity-9996-polity).
 - **Tests:**
@@ -1250,7 +1250,7 @@ Each item gives what it is, its size and folder, what it compounds with, and two
 ### 2. Companies
 
 - **Size:** XL.
-- **Folder:** `features/9997-companies/` (lane WD).
+- **Folder:** `src/war/9997-companies/` (lane WD).
 - **Compounds with:** the release's war map and line battle; 23, 34, 37, 38, 44, 60, 72, 85, 991; 45 and 66 (grain); 56 (pay); #1 (estates and defection); #3 (arrows, couriers). It gives 57 honours, 21 a pool of people with history (old captains), and 74 old soldiers to visit.
 - **Spec:** [Priority design 2](#priority-design-2-companies-9997-companies).
 - **Tests:**
@@ -1322,7 +1322,7 @@ Each item gives what it is, its size and folder, what it compounds with, and two
 ### 7. Vows and the weekly seed (Hades, Slay the Spire, BitLife)
 
 - **Size:** S–M.
-- **Folder:** extends `995-hall-of-lives` (with 29-starts for the start).
+- **Folder:** extends `995-hall-of-lives` (with 29-starting-stories for the start).
 - **Vows.** At creation, take 0–5 vows from 12, each with a score multiplier, the sum shown as "Weight". Unlock is Slay the Spire's: each vow opens after one life ended with the previous one.
   - Born to nothing: no inheritance.
   - Plague years: disease rolls ×1.5.
@@ -1410,7 +1410,7 @@ Each item gives what it is, its size and folder, what it compounds with, and two
 ### 12. Wounds where the blow lands (Kenshi, RimWorld, Dwarf Fortress)
 
 - **Size:** M.
-- **Folder:** extends `49-body-mind`, with `48-fight-ladder` for the duel.
+- **Folder:** extends `49-body-mind`, with `48-event-fight-rules` for the duel.
 - **Duel blows** carry a part: head, body, the arms or the legs, from the move. A cut aims high, a grapple at the body, a low sweep at the legs. 48's damage lands on that part's bar as well as Blood. Below zero the part fails:
   - an arm drops its weapon (the duel switches to "unarmed", 69);
   - a leg ends movement moves;
@@ -1436,7 +1436,7 @@ Each item gives what it is, its size and folder, what it compounds with, and two
 
 | Item | From | Size | Home |
 |---|---|---|---|
-| The standoff before a war: demands, sides, a backdown | Victoria 3 | M | 68-casus-belli |
+| The standoff before a war: demands, sides, a backdown | Victoria 3 | M | 68-reasons-for-war |
 | NPC-against-NPC plots, seeded as 64 claims | CK3, RimWorld | M | 39-schemes |
 | Generals earn traits from how they fight | Hearts of Iron IV | S | 38-orders |
 | The lore's pre-1105 chronicle as dated records | Dwarf Fortress | S | 57-world-chronicle |

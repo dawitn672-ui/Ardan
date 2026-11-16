@@ -207,7 +207,7 @@ First what the code does today, then the table that sets each metric against the
 1. **Ruler traits are read nowhere.** Static count on the fix layer:
    - 17 AI functions (`diploAI`, `aiWarCheck`, `interest`, `checkPeace`, `queueAiOffer`, `rulerAction`, `forcesAI` and 10 more) contain **0** reads of `traits`.
    - War appetite is `A.AGGRO`, one fixed number for 19 of 34 realms; the other 15 get 1.0.
-   - The bench's trait test reads 0.9: rulers with aggressive traits declare war 0.9 times as often as peaceful ones (`reports/fixes.json`). The release's 1.5 was noise.
+   - The bench's trait test reads 0.9: rulers with aggressive traits declare war 0.9 times as often as peaceful ones (`tools/bench/reports/fixes.json`). The release's 1.5 was noise.
 2. **Every offer is a lottery.** An offer's chance is `clamp(base + interest/100 + chancellor/400, 2%, 95%)`, then rolled.
    - Across 3,639 offers open to three player rulers over 5 years, a player who reads the shown odds perfectly and always bets on the likelier answer is right only **78%** of the time.
    - **37%** of offers sit between 30% and 70%, which is a coin flip.
@@ -260,7 +260,7 @@ First what the code does today, then the table that sets each metric against the
    - A greedy trade bot made 34 to 42 runs in 10 years and was robbed 5 to 8 times.
    - Its gain over a do-nothing twin ranged from +2,000 to +77,000, because the twin's career diverged. **Career wages swamp trade.** The plan's exploit test cannot be run fairly until wages stop being printed.
 6. **No one else trades.** There are 0 NPC merchants and 0 caravans. Trade pacts are a flag that adds up to +16% to a realm's income.
-7. **The bench's Economy score of 7 out of 10 (`reports/scorecard.md`) is a false positive.** Its two metrics (no buy-and-sell-back loop, a 1.5 to 3× spread) are both met by a static price list.
+7. **The bench's Economy score of 7 out of 10 (`tools/bench/reports/scorecard.md`) is a false positive.** Its two metrics (no buy-and-sell-back loop, a 1.5 to 3× spread) are both met by a static price list.
 
 ### The table
 
@@ -269,7 +269,7 @@ First what the code does today, then the table that sets each metric against the
 | # | Metric | Reference game | Ardan today | Target for a 10 | How to measure in Ardan |
 | --- | --- | --- | --- | --- | --- |
 | D1 | AI decision code that reads ruler character | CK3: 9 AI values on every trait; `ai_accept` adds honor directly. EU4: war chance ×0.5 (careful) to ×1.75 (conqueror) | **0 of 17** functions read `traits`; one `A.AGGRO` number for 19 of 34 realms | Every AI decision type reads at least one persona axis | Static analysis: list the AI functions, grep for persona reads |
-| D2 | Rulers act in line with their traits | CK3 ambitious `ai_war_chance` +1, content −0.25; Stellaris NAP acceptance −100 to +25 by personality | War ratio aggressive/peaceful **0.9** (`reports/fixes.json`); other decisions unmeasured | ≥ 80% of (decision type × trait) pairs move the declared way by ≥ 1.5×; war ratio ≥ 2× | Bot: 10 seeds × 100 years, every AI act logged with the ruler's traits; compare rates per trait-year |
+| D2 | Rulers act in line with their traits | CK3 ambitious `ai_war_chance` +1, content −0.25; Stellaris NAP acceptance −100 to +25 by personality | War ratio aggressive/peaceful **0.9** (`tools/bench/reports/fixes.json`); other decisions unmeasured | ≥ 80% of (decision type × trait) pairs move the declared way by ≥ 1.5×; war ratio ≥ 2× | Bot: 10 seeds × 100 years, every AI act logged with the ruler's traits; compare rates per trait-year |
 | D3 | AI decisions logged with reasons | CK3: every acceptance term has a `desc`. EU4: `custom_ai_explanation` | **0%** | 100% of AI acts in a log with top 3 reasons, and readable in the UI | Bot counts acts vs log entries; browser test opens the log |
 | D4 | The "why" list matches what really moves opinion | CK3: the shown sum is the decision | Shown total vs next year's change: **r = 0.08**; shown ±7.6 a year, real ±1.3 | r ≥ 0.95, magnitude within ±10% | Bot: per realm pair per year, shown total vs Δ base relation |
 | D5 | A reader of the breakdown can predict the answer | Victoria 3: accept if > 0, roll only when opted in. CK3: yes / no / maybe headers | Best possible guess **78%**; **37%** of offers between 30 and 70% | A bot that reads only the sign of the breakdown predicts ≥ 95%; ≤ 10% of offers in a "maybe" band | Bot: 3 rulers × 5 years × all realms × all offers |
@@ -377,7 +377,7 @@ Ranked by score gained per week of work, dependencies first. "Code" means `*.cor
 | 7 | **Holdings tied to markets, with diminishing returns** | Economy +0.5 | M | Code | Bot: farm income correlates ≥ 0.8 with local grain price; the 20th fishing boat in one market earns < 25% of the first; the estate bot owns < 60 holdings after 10 years (today 652) |
 | 8 | **Crisis demand: famine, siege, armies** | Economy +0.5 | S (after 5) | Code + content | Bot: in realms at war, arms and horses average ≥ 1.5× their peace median and grain ≥ 1.3×; each famine or siege event sets a flag the price reads; ≥ 5 events read the new flags |
 | 9 | **NPC caravans** | Economy +0.7 | L | Code (map art later) | Bot: ≥ 1 caravan per active trade pact; when a war closes a route, the two markets' price gap widens ≥ 30% within 6 months; raids destroy caravans and log news |
-| 10 | **Economy bench metrics and the fair exploit bot** | Economy +0.3 | M | Code (`bench/`) | `bench/run.mjs` reports E1, E2, E5, E6, E8 and E9; the exploit bot freezes careers and events; the scorecard fails if the best loop is > 1.5× the estate at equal risk |
+| 10 | **Economy bench metrics and the fair exploit bot** | Economy +0.3 | M | Code (`tools/bench/`) | `tools/bench/run.mjs` reports E1, E2, E5, E6, E8 and E9; the exploit bot freezes careers and events; the scorecard fails if the best loop is > 1.5× the estate at equal risk |
 | 11 | **Trade runs take calendar days** | Economy +0.3 | M | Code | Browser test: a 50-day run moves the date 50 days and lets the month's events fire on the road; runs per year are capped by days, not initiative |
 | 12 | **Three production chains** | Economy +0.5 | L | Code + content | Static: 3 chains of ≥ 3 links in data. Bot: a smithy owner's margin moves with iron and arms prices (correlation ≥ 0.6) |
 | 13 | **A court of people** | Diplomacy +0.7 | XL | Code + writing | Bot: ≥ 50% of faction demands and civil wars name a house leader whose traits and want are logged as a reason; council traits enter ≥ 3 decision types |
@@ -385,7 +385,7 @@ Ranked by score gained per week of work, dependencies first. "Code" means `*.cor
 
 **1. Spend, don't delete.** In `A.forcesAI`, replace the 85% deletion with a spending ladder: debt, then army to target, then paid buildings (`A.indQueue` charging gold), then subsidies to friends at war, then bribes to the realm's worst faction (lowers discontent), then mercenaries in war. Cap the reserve at 3 years of income as now, but spend the excess. Weight the ladder by persona once feature 2 lands: greedy rulers keep a bigger reserve, generous ones subsidize. Watch for an arms race: the acceptance test bounds wars per realm-year.
 
-**2. Trait-weighted AI.** `features/20-ai-personality` is mostly built and marked `.wip`. Its own test asks for a war ratio above 1.5. Raise it to 2× and add the per-decision consistency score from D2. Its "why" for each act should become the Chancery's log (section 4).
+**2. Trait-weighted AI.** `src/diplomacy/20-ai-personality` is mostly built and marked `.wip`. Its own test asks for a war ratio above 1.5. Raise it to 2× and add the per-decision consistency score from D2. Its "why" for each act should become the Chancery's log (section 4).
 
 **3. Make the pull list real.** Show the 6 terms that `politicsYearNow` actually adds each year at their real size, plus the memories. Feature 2's `A.aiPullParts` does this; land it first, because a list that lies costs trust everywhere else.
 
@@ -410,7 +410,7 @@ Ranked by score gained per week of work, dependencies first. "Code" means `*.cor
 
 **9. NPC caravans.** One caravan per trade pact, running between capitals along the road graph the supply system already uses. Each visit moves stock and prices a few percent; start at 4%, which is where Warband's designers ended up. Bandit and war events can destroy one.
 
-**10. Bench.** Add the metrics from the section 3 table to `bench/run.mjs` and `bench/rubric.mjs`. Drop the "hoarding" idea and replace Economy's two current metrics, which a static price list already passes.
+**10. Bench.** Add the metrics from the section 3 table to `tools/bench/run.mjs` and `tools/bench/rubric.mjs`. Drop the "hoarding" idea and replace Economy's two current metrics, which a static price list already passes.
 
 **11. Trade runs take days.** `A.tradeRun` advances the clock by the run's days (or queues the player away from home). It gives the merchant life the road the plan imagines.
 
@@ -465,9 +465,9 @@ Ranked by score gained per week of work, dependencies first. "Code" means `*.cor
 - Production rates, upkeep, needs per resident: https://github.com/NiHoel/Anno1800Calculator/blob/master/js/params.js
 
 **Ardan**
-- `docs/plan/Ardan The Road to Ten.md`, `docs/reviews/Ardan Road to 100.md`, `docs/reviews/Ardan Deep Analysis.md`
-- `reports/fixes.json`, `reports/scorecard.md` (bench values quoted as such)
-- `features/20-ai-personality/` (work in progress, not measured here)
+- `docs/plan/road-to-ten.md`, `docs/reviews/road-to-100.md`, `docs/reviews/deep-analysis.md`
+- `tools/bench/reports/fixes.json`, `tools/bench/reports/scorecard.md` (bench values quoted as such)
+- `src/diplomacy/20-ai-personality/` (work in progress, not measured here)
 
 ## Appendix: how the Ardan numbers were measured
 

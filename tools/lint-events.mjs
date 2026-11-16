@@ -10,19 +10,20 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { featureDirs, featurePath } from './lib/features.mjs';
 
 const require = createRequire(import.meta.url);
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const arg = k => { const a = process.argv.find(x => x.startsWith(`--${k}=`)); return a ? a.slice(k.length + 3) : null; };
 const feature = arg('feature');
 if (!feature) { console.error('usage: --feature=name [--html=path]'); process.exit(2); }
-const dir = fs.readdirSync(path.join(root, 'features')).find(d => d.replace(/^\d+-/, '') === feature);
+const dir = featureDirs().find(d => d.replace(/^\d+-/, '') === feature);
 if (!dir) { console.error('no feature ' + feature); process.exit(2); }
 const html = path.resolve(root, arg('html') || 'index.html');
 const FX = 'str spd ins sta int wil health happy looks fame honor piety coin coinPct family skill rep masterwork promote style styleXp apt trait untrait wound flag unflag rel them newRel lover die prison punish free merit patronOp rulerOp realmStab realmGold armyXp secret epithet deed ach job perf lang literate gear asset duel beast event stability treasury legit realmRel favor mission cause why infamy authority houseOp factionDisc owed oweThem letter bossOp sworn claim pact ally warOn'.split(' ');
 // effect keys a feature adds to A.applyFx, declared in its core code as (A.FX_EXTRA = A.FX_EXTRA || []).push('key')
-for (const d of fs.readdirSync(path.join(root, 'features'))) {
-  const dir = path.join(root, 'features', d);
+for (const d of featureDirs()) {
+  const dir = featurePath(d);
   if (!fs.statSync(dir).isDirectory()) continue;
   for (const f of fs.readdirSync(dir).filter(f => f.endsWith('.core.js')))
     for (const m of fs.readFileSync(path.join(dir, f), 'utf8').matchAll(/FX_EXTRA\s*\|\|\s*\[\]\)\.push\(([^)]*)\)/g))
@@ -34,9 +35,9 @@ const errors = [], warns = [];
 // ---- static
 const stub = () => new Proxy(function () {}, { get: (t, k) => k === Symbol.toPrimitive ? () => '' : stub(), apply: () => stub() });
 const events = [];
-for (const f of fs.readdirSync(path.join(root, 'features', dir)).filter(f => f.endsWith('.events.js'))) {
+for (const f of fs.readdirSync(featurePath(dir)).filter(f => f.endsWith('.events.js'))) {
   const A = new Proxy({ defEvents: list => { for (const e of list) events.push(Object.assign(e, { _file: f })); } }, { get: (t, k) => k in t ? t[k] : stub() });
-  try { vm.runInNewContext(fs.readFileSync(path.join(root, 'features', dir, f), 'utf8'), { A, GD: stub(), LORE: stub(), console }, { filename: f }); }
+  try { vm.runInNewContext(fs.readFileSync(featurePath(dir, f), 'utf8'), { A, GD: stub(), LORE: stub(), console }, { filename: f }); }
   catch (e) { errors.push(`${f}: does not load: ${e.message}`); }
 }
 const ids = new Set();

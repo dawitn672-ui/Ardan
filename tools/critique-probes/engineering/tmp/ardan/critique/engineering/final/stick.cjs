@@ -1,0 +1,44 @@
+// Deciding critic: is the whole-document restyle sticky once a hint has been drawn?
+const fs = require('fs');
+const { chromium } = require('/opt/node-tools/node_modules/playwright');
+const pressSrc = fs.readFileSync(__dirname + '/press.cjs', 'utf8');
+const INSTALL = eval('(' + pressSrc.slice(pressSrc.indexOf('const INSTALL = ') + 16, pressSrc.indexOf('\n(async () => {')).replace(/;\s*$/, '') + ')');
+const STATE = process.argv[2] || '/tmp/ardan/critique/engineering/out/noble-y50-state.json';
+(async () => {
+  const browser = await chromium.launch();
+  const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, deviceScaleFactor: 1 });
+  const page = await ctx.newPage(); page.setDefaultTimeout(3600000);
+  const cdp = await ctx.newCDPSession(page);
+  await cdp.send('Performance.enable', { timeDomain: 'threadTicks' });
+  const metrics = async () => Object.fromEntries((await cdp.send('Performance.getMetrics')).metrics.map(x => [x.name, x.value]));
+  await page.goto('file:///tmp/ardan/snap/index.html');
+  await page.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 3600000 });
+  const s = fs.readFileSync(STATE, 'utf8');
+  await page.evaluate(s => { UI.set.hints = false; A.deserialize(JSON.parse(s)); UI.screen = 'game'; UI.tab = 'life'; UI.ov = null; UI.render(); }, s);
+  await page.evaluate(INSTALL, true);
+  const out = [];
+  const probe = async label => {
+    await page.evaluate(() => new Promise(r => setTimeout(r, 300)));
+    const one = async where => { const a = await metrics(); await page.evaluate(where => { const tb = where === 'body' ? document.body : document.getElementById('tabbody'); for (let i = 0; i < 12; i++) { const sp = document.createElement(where === 'body' ? 'div' : 'span'); tb.appendChild(sp); void tb.offsetHeight; sp.remove(); void tb.offsetHeight; } }, where); const b = await metrics(); return +(((b.RecalcStyleDuration - a.RecalcStyleDuration) * 1000) / Math.max(1, b.RecalcStyleCount - a.RecalcStyleCount)).toFixed(2); };
+    const r = { label, tabInsertMs: await one('tab'), bodyInsertMs: await one('body'), hints: await page.evaluate(() => document.querySelectorAll('.hint').length) };
+    console.log(JSON.stringify(r)); out.push(r);
+  };
+  const presses = async (n, label) => { let cpu = 0, cards = 0; for (let i = 0; i < n; i++) { const a = await metrics(); const r = await page.evaluate(() => __P.press()); await page.evaluate(() => new Promise(r => setTimeout(r, 250))); const b = await metrics(); cpu += (b.ThreadTime - a.ThreadTime) * 1000; cards += r.cards; } console.log(JSON.stringify({ label, presses: n, cards, cpuPerPress: Math.round(cpu / n) })); out.push({ label, presses: n, cards, cpuPerPress: Math.round(cpu / n) }); };
+  await probe('1. hints off since the page loaded');
+  await presses(3, '1. three presses');
+  await probe('1b. after them');
+  await page.evaluate(() => { UI.set.hints = true; UI.refresh(); });
+  await probe('2. hints on, redrawn');
+  await presses(3, '2. three presses');
+  await probe('2b. after them');
+  await page.evaluate(() => { UI.set.hints = false; UI.refresh(); });
+  await probe('3. hints off again (UI.refresh)');
+  await presses(3, '3. three presses');
+  await probe('3b. after them');
+  await page.evaluate(() => { UI.render(); });
+  await probe('4. after a full UI.render()');
+  await presses(3, '4. three presses');
+  await probe('4b. after them');
+  fs.writeFileSync('/tmp/ardan/critique/engineering/final/out/stick.json', JSON.stringify(out, null, 1));
+  await browser.close();
+})().catch(e => { console.error('FATAL', e.stack || e); process.exit(1); });

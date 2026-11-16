@@ -1,0 +1,308 @@
+// Browser tests for 09-engine-at-scale. Each test gets (page, pageErrors, {browser, file}).
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { unpack } from '../../../tools/blob-pack.mjs';
+
+const here = path.dirname(fileURLToPath(import.meta.url));
+const CLONE = fs.readFileSync(path.join(here, 'clone.js'), 'utf8');
+
+// play a game on each path, both ways, in the same page; the scale path with or without its check mode
+const playBoth = (pg, starts, years, checkOn, months) => pg.evaluate(([starts, years, checkOn, months]) => {
+  const SC = A.WSCALE, out = [];
+  const playDays = n => {
+    const d0 = A.S.year * 365 + (A.S.warClock || 0);
+    for (let g = 0; g < 4000 && A.S.year * 365 + (A.S.warClock || 0) - d0 < n; g++) {
+      const r = A.advance(n);
+      let h, k = 0;
+      while ((h = A.headReady()) && k++ < 500) { if (h.type === 'event') A.eventAuto(); else A.S.queue.shift(); }
+      if (r.why === 'dead' || !A.pc() || !A.pc().alive) return 'dead';
+    }
+    return 'ok';
+  };
+  const run = (o, off, chk) => {
+    A.SCALE_OFF = off; A.SCALE_CHECK = chk;
+    try {
+      T.enter(o);
+      const t = performance.now(), how = months ? playDays(30 * months) : T.play(years);
+      return { h: T.hash(A.S), rng: A.rngState, year: A.S.year, how, ms: Math.round(performance.now() - t) };
+    } finally { A.SCALE_OFF = false; A.SCALE_CHECK = false; }
+  };
+  for (const o of starts) {
+    const c0 = SC.stats.checks, m0 = SC.stats.missed, b0 = SC.bad.length, by0 = Object.assign({}, SC.stats.by);
+    const ref = run(o, true, false), fast = run(o, false, checkOn);
+    const by = {}; for (const k in SC.stats.by) if (SC.stats.by[k] - (by0[k] || 0)) by[k] = SC.stats.by[k] - (by0[k] || 0);
+    out.push({ seed: o.seed, ref, fast, same: ref.h === fast.h && ref.rng === fast.rng, span: months ? `${months} months` : `${years} years`, checks: SC.stats.checks - c0, by, missed: SC.stats.missed - m0, bad: SC.bad.slice(b0, b0 + 3) });
+  }
+  return out;
+}, [starts, years, checkOn, months || 0]);
+const report = res => res.map(r => `seed ${r.seed}: ${r.same ? 'identical' : `DIFFERENT (${r.ref.h}/${r.ref.rng} vs ${r.fast.h}/${r.fast.rng})`} after ${r.span}${r.fast.how === 'dead' ? ' (the life ended)' : ''}` +
+  ` (${(r.ref.ms / 1000).toFixed(1)}s off, ${(r.fast.ms / 1000).toFixed(1)}s on${r.checks ? `, ${r.checks} answers checked` : ''}${r.missed ? `, ${r.missed} MISSED` : ''})${r.bad.length ? ' ' + r.bad.join(' | ') : ''}`).join('; ');
+
+// the world K times over (docs/plan/world-expansion-architecture.md, appendix A), then months of play, timed by the
+// wall clock and by the page's main-thread CPU time (Chrome's ThreadTime: what a loaded machine inflates least)
+async function timeWorld(pg, K, months) {
+  let cdp = null;
+  try { cdp = await pg.context().newCDPSession(pg); await cdp.send('Performance.enable', { timeDomain: 'threadTicks' }); } catch (e) { cdp = null; }
+  // null where the browser does not report thread time (the bounds then fall back to the wall clock)
+  const cpu = async () => { if (!cdp) return null; const t = (await cdp.send('Performance.getMetrics')).metrics.find(m => m.name === 'ThreadTime'); return t ? t.value * 1000 : null; };
+  const setup = await pg.evaluate(K => {
+    __CLONE(K);
+    const t0 = performance.now();
+    A.newGame({ seed: 1234, race: 'human', realm: 'POL-01', status: 'peasant', startAge: 16 });
+    window.__scaleMonth = () => {
+      const d0 = A.S.year * 365 + (A.S.warClock || 0), y0 = A.S.year, t = performance.now();
+      for (let g = 0; g < 400 && A.S.year * 365 + (A.S.warClock || 0) - d0 < 30; g++) {
+        const r = A.advance(30);
+        let h, k = 0;
+        while ((h = A.headReady()) && k++ < 500) { if (h.type === 'event') A.eventAuto(); else A.S.queue.shift(); }
+        if (r.why === 'dead' || !A.pc() || !A.pc().alive) return { ms: performance.now() - t, dead: true };
+      }
+      return { ms: performance.now() - t, year: A.S.year !== y0 };
+    };
+    return { provs: A.S.prov.length, realms: Object.keys(A.S.realms).length, ng: Math.round(performance.now() - t0) };
+  }, K);
+  const plain = [], plainC = [], year = [], yearC = [];
+  for (let m = 0; m < months; m++) {
+    const c0 = await cpu(), r = await pg.evaluate(() => __scaleMonth()), c1 = await cpu();
+    if (m > 0) { (r.year ? year : plain).push(r.ms); if (c0 != null && c1 != null) (r.year ? yearC : plainC).push(c1 - c0); }   // the first month builds roads once
+    if (r.dead) break;
+  }
+  const med = a => { const s = a.slice().sort((x, y) => x - y); return s.length ? Math.round(s[Math.floor(s.length / 2)]) : null; };
+  const end = await pg.evaluate(() => ({ bad: A.WSCALE.bad.slice(0, 3), missed: A.WSCALE.stats.missed }));
+  return { ...setup, month: med(plain), monthCpu: med(plainC), year: med(year), yearCpu: med(yearC), months: plain.length + year.length, ...end };
+}
+
+// v2: the Far Lands are out of the build (the owner's decision of Nov 1, docs/v2/LANES.md: 99-far-lands and its kin carry
+// .wip), and every world is the generated continent of about 35 realms, which plays as one world under the release's
+// rules. scaleFarPeace and scaleOneWorld used to return a pass with nothing checked there. What they guard on the v2
+// build is that world.core.js stays out of it (every rule there is gated on A.WORLD1.great()) and that the world it
+// plays stays sound; the Great Continent checks still run whenever 99-far-lands is built (A.FAR present).
+// a lost war on the continent: the release's peace, not the Far Lands' 15% cap or nine-month wait; no far news held
+const farPeaceV2 = async pg => {
+  const r = await pg.evaluate(() => {
+    const W = A.WORLD1;
+    A.newGame({ seed: 9091, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16 });
+    const S = A.S, out = { great: W.great() };
+    let capped = 0; const cap0 = W.capTreaty; W.capTreaty = function () { capped++; return cap0.apply(this, arguments); };
+    try {
+      out.firstDay = S.news.filter(x => /^Word from the /.test(x.t || '')).length;
+      out.held = (S.newsFar || []).length + (S.newsPre || []).length;
+      // a realm of four provinces or more, not the player's, beaten by a neighbour at peace
+      const vic = Object.keys(S.realms).find(id => S.realms[id].alive && id !== A.pc().realm && A.realmProvs(id).length >= 4 && A.neighbors(id).some(n => S.realms[n] && S.realms[n].alive));
+      const foe = A.neighbors(vic).find(id => S.realms[id] && S.realms[id].alive && !A.atWar(id).length) || A.neighbors(vic)[0];
+      S.wars.filter(w => w.att.concat(w.def).includes(vic)).forEach(w => A.endWar(w, 'white'));
+      const rv = S.realms[vic], w = A.startWar(foe, vic, 'The Test War', 'conquest', { noAllies: true, silent: true });
+      const mine = A.realmProvs(vic), pop0 = mine.reduce((a, p) => a + p.pop, 0), n0 = mine.length;
+      for (const p of mine) if (p.id !== rv.capitalProv) p.occ = foe;
+      w.score = 100;
+      A.settleWar(w, 'att');
+      const left = A.realmProvs(vic), pop1 = left.reduce((a, p) => a + p.pop, 0);
+      Object.assign(out, { vic: A.realm(vic).short || vic, foe: A.realm(foe).short || foe, cap: A.warCapFull(), reach: A.outOfReach(foe, vic), soon: S.wars.includes(w), peace: [n0, n0 - left.length, 1 - pop1 / pop0], capped });
+    } finally { W.capTreaty = cap0; }
+    return out;
+  });
+  const ok = !r.great && r.cap === null && r.reach === false && r.firstDay === 0 && r.held === 0 && !r.soon && r.capped === 0 && r.peace[1] >= 1;
+  return { ok, detail: `v2, no Far Lands: the Great Continent's rules ${r.great ? 'ON' : 'off'} (war cap ${r.cap}, out of reach ${r.reach}); first-day far lines ${r.firstDay}, held ${r.held}; ` +
+    `${r.foe} beats ${r.vic} at once: settled ${!r.soon}, the far peace cap asked ${r.capped} times, ${r.peace[1]} of ${r.peace[0]} provinces taken (${Math.round(r.peace[2] * 100)}% of its people, the release's terms)` };
+};
+// ten years of the continent: the one-world rules stay off every day, no far news, and the realms, treasuries and wars
+// stay sound (the old bar's far realms are now every realm; the lore's 53 Far Lands tributes went with them)
+const oneWorldV2 = async pg => {
+  const r = await pg.evaluate(() => {
+    const W = A.WORLD1;
+    A.newGame({ seed: 9090, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16 });
+    const S0 = A.S, ids = Object.keys(S0.realms).filter(id => S0.realms[id].alive), stats0 = JSON.stringify(W.stats);
+    let greatDays = 0, capDays = 0, reach = 0;
+    A.onDay.push(() => { if (A.S !== S0) return; if (W.great()) greatDays++; if (A.warCapFull() !== null) capDays++; });
+    const startY = A.S.year;
+    // the bar is ten years of the world, not of one life: T.play stops when the player dies, and on seed 9090 the
+    // merged v2 world (CI run 90) has him killed by a horse at 23, in the seventh year. A death ends a life, not the
+    // world, so the game goes on as his eldest living child (or other living kin), as a player would (A.continueAs)
+    let heirs = 0;
+    for (let k = 0; k < 6 && A.S.year < startY + 10; k++) {
+      if (T.play(startY + 10 - A.S.year) !== 'dead') break;
+      const pc = A.pc(), kin = A.heirsOf(pc).concat(Object.keys(pc.rel || {}).map(A.P).filter(p => p && p.alive && p.id !== pc.id));
+      if (!kin.length || !A.continueAs(kin[0].id)) break;
+      heirs++;
+    }
+    for (const a of ids) for (const b of ids) if (a < b && A.outOfReach(a, b)) reach++;
+    const alive = ids.filter(id => A.realm(id) && A.realm(id).alive).length;
+    const tr = Object.values(A.S.realms).filter(x => x && x.alive).map(x => x.treasury / Math.max(1, x.income || 1)).sort((a, b) => a - b);
+    const oldWars = A.S.wars.filter(w => A.S.year - w.start > 8 && w.cb !== 'throne').length;
+    return { years: A.S.year - startY, heirs, n: ids.length, alive, greatDays, capDays, reach, word: A.S.news.filter(n => /^Word from the /.test(n.t || '')).length,
+      held: (A.S.newsFar || []).length + (A.S.newsPre || []).length, stats: JSON.stringify(W.stats) === stats0, trMed: tr[Math.floor(tr.length / 2)], trMax: tr[tr.length - 1], oldWars };
+  });
+  const ok = r.years >= 10 && !r.greatDays && !r.capDays && !r.reach && !r.word && !r.held && r.stats && r.alive >= r.n * 0.85 && r.trMax < 200 && r.oldWars === 0;
+  return { ok, detail: `v2, no Far Lands: ${r.years} years of the continent (${r.heirs} heir${r.heirs === 1 ? '' : 's'} played on); days under the Great Continent's rules ${r.greatDays}, with its war cap ${r.capDays}; realm pairs out of reach ${r.reach}; ` +
+    `far news ${r.word} told, ${r.held} held, its counters untouched ${r.stats}; ${r.alive} of ${r.n} realms standing; treasury against a year's income: median ${r.trMed && r.trMed.toFixed(1)}, highest ${r.trMax && r.trMax.toFixed(1)}; wars older than 8 years: ${r.oldWars}` };
+};
+
+export default {
+  async scaleIdentical(pg) {
+    // the same seed reaches the same world, bit for bit, with the scale path on and off
+    const starts = [
+      { seed: 1234, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16 },
+      { seed: 777, race: 'human', realm: 'POL-03', status: 'noble', sex: 'F', startAge: 18 },
+      { seed: 90210, race: 'human', realm: 'POL-02', status: 'royal', sex: 'M', startAge: 20 },
+    ];
+    const res = await playBoth(pg, starts, 10, false);
+    return { ok: res.every(r => r.same && !r.missed && !r.bad.length), detail: report(res) };
+  },
+
+  async scaleCheckMode(pg) {
+    // every memoised answer worked out again the original way: none may differ, and no write may go unnoticed
+    const starts = [
+      { seed: 4242, race: 'human', realm: 'POL-05', status: 'merchant', sex: 'M', startAge: 17 },
+      { seed: 31337, race: 'dwarf', realm: 'POL-10', status: 'artisan', sex: 'F', startAge: 20 },
+    ];
+    const res = await playBoth(pg, starts, 5, true);
+    // and a world ten times as large, for a season: more realms, more wars, more of every path
+    await pg.evaluate(CLONE);
+    await pg.evaluate(() => __CLONE(10));
+    res.push(...await playBoth(pg, [{ seed: 2024, race: 'human', realm: 'POL-04', status: 'noble', sex: 'M', startAge: 22 }], 0, true, 4));
+    const kinds = {}; for (const r of res) for (const k in r.by) kinds[k] = (kinds[k] || 0) + r.by[k];
+    return { ok: res.every(r => r.same && !r.missed && !r.bad.length && r.checks > 1000), detail: report(res) + '; checked: ' + Object.entries(kinds).map(([k, n]) => `${k} ${n}`).join(', ') };
+  },
+
+  async scaleSites(pg, errs, { file }) {
+    // every place in the built game that writes a province's owner, or puts a house into S.houses, must tell the
+    // indexes (A.scaleLand / A.scaleHouse), or be one of the world-building writes the indexes never see
+    const core = unpack(fs.readFileSync(file, 'utf8'))['ardan-core'], content = unpack(fs.readFileSync(file, 'utf8'))['ardan-content'];
+    const BUILD_TIME = [
+      [/T\.owner = win; T\.occ = null;/, '43 W.vary, inside A.initWorld'],
+      [/P\.owner = nid; P\.occ = null;/, '70 FR.make, inside A.initWorld'],
+      // (the release's own sites are matched in its readable source, src/core/release/, since X1)
+      [/S\.houses\[id\] = Object\.assign\(\s*\{\s*op: A\.ri\(30, 70\)/, 'A.initWorld'],
+      [/S\.houses\[id\] = \{\s*id,\s*name: F\.name/, 'A.initFamilies, inside A.initWorld'],
+      [/S\.houses\[id\] = r;\s*\} else S\.houses\[id\] = o;\s*\}\s*delete S\.packed/, 'A.unpackState, on load'],
+      [/S\.houses\[id\] = o;\s*\}\s*delete S\.packed/, 'A.unpackState, on load'],
+      [/S\.houses\[hid\] = \{ id: hid, name: \/\^\(of /, '70 FR.make (a new house for a fresh realm), inside A.initWorld'],
+      [/A\.S\.houses\[hid\] = \{\s*id: hid,\s*name: houseName,\s*realm: null,\s*kind: "royal"/, 'the player founds a realm: a royal house never counts in A.realmHouses, and its realm is set (and told) two statements on'],
+      // v2 map lane: the generated continent's adjacency is written into the new provinces inside A.initWorld, before
+      // any index is built (99991-v2-map, patch V2MAP-PROV)
+      [/p\.adj = q\.adj\.slice\(\); p\.sea = q\.sea\.slice\(\);/, '99991 A.V2MAP.onProv, inside A.initWorld'],
+    ];
+    const bad = [], seen = { owner: 0, house: 0, adj: 0 };
+    const scan = (src, re, kind, told) => {
+      let m;
+      while ((m = re.exec(src))) {
+        seen[kind]++;
+        const at = src.slice(Math.max(0, m.index - 160), m.index + 200);
+        if (told && told.test(src.slice(m.index, m.index + 1200))) continue;
+        if (BUILD_TIME.some(([r]) => r.test(at))) continue;
+        bad.push(`${kind}: …${src.slice(Math.max(0, m.index - 60), m.index + 60).replace(/\s+/g, ' ')}…`);
+      }
+    };
+    for (const src of [core, content]) {
+      // told: on the same statement, or (in the release's readable source) on the next one, `if (A.scaleLand) A.scaleLand();`
+      scan(src, /\.owner\s*=(?![=>])/g, 'owner', /^[^;{}]*?A\.scaleLand\(\)|^\.owner = [^;{}]*;\s*(?:\/\/[^\n]*\n\s*)*if \(A\.scaleLand\) A\.scaleLand\(\);/);
+      // v2: 99995-v2-nobility's newHouse (a court house, raised at the world's start and again when a vacant title
+      // finds no heir in play) writes one object literal and tells the index on the next statement
+      scan(src, /houses\[[^\]]+\]\s*=(?![=>])/g, 'house', /^houses\[hid\] = \{\s*id: hid,\s*name: "House " \+ sur,[^;]*?members: \[pc\.id\],?\s*\};\s*if \(A\.scaleHouse\) A\.scaleHouse\(\);|^houses\[id\] = \{[^;]*?v2court: rid,\s*\};\s*(?:\/\/[^\n]*\n\s*)*if \(A\.scaleHouse\) A\.scaleHouse\(\);/);
+      scan(src, /\.adj\s*=(?![=>])|\.(adj|sea)\.(push|splice|unshift)\(/g, 'adj', null);
+    }
+    // ctx.owner in events is a token, not a province; AK.adj is a helper
+    const real = bad.filter(b => !/ctx\.owner|AK\.adj/.test(b));
+    return { ok: !real.length, detail: real.length ? real.slice(0, 4).join(' || ') : `${seen.owner} owner writes, ${seen.house} house writes, ${seen.adj} adjacency writes: all accounted for` };
+  },
+
+  async scaleTiming(pg) {
+    // a world ten times as large: 3,060 provinces, about 340 realms. On this project's 4-core machine (Oct 2026, loaded)
+    // the month took about 800 ms of CPU (1.1-2.3 s wall) and the month holding the New Year about 1.6 s of CPU
+    // (2.3-5 s wall), against 1.2-1.5 s and 15-20 s of CPU without 09-engine-at-scale. The bounds are three times that, so they
+    // hold on a slow CI runner and still catch the year turn going quadratic again.
+    // v2 (Nov 2026): the New Year month does real new work in every realm (99995's courts of about 900 nobles, 99996's
+    // diplomacy, 99994's families), 3.6-3.8 s of CPU on this machine and on a quick CI runner (run 92), 5.6-6.4 s on a
+    // slow one (run 93, where every test in the shard ran about 1.5x slower). The year bound is three times the v2 cost
+    // again, held under 10 s so a quadratic year turn (15-20 s in v1, far more with v2's courts) still fails it.
+    await pg.evaluate(CLONE);
+    const r = await timeWorld(pg, 10, 14);
+    const cpuOk = r.monthCpu != null ? r.monthCpu <= 2400 && r.yearCpu <= 10000 : r.month <= 6000 && r.year <= 15000;
+    const ok = r.provs === 3060 && r.month != null && r.year != null && cpuOk && !r.bad.length && !r.missed;
+    const c = v => v == null ? 'n/a' : Math.round(v);
+    return { ok, detail: `10x world (${r.provs} provinces, ${r.realms} realms): new game ${r.ng} ms; month median ${r.month} ms wall, ${c(r.monthCpu)} ms CPU;` +
+      ` year-turn month ${r.year} ms wall, ${c(r.yearCpu)} ms CPU, over ${r.months} months${r.bad.length ? '; ' + r.bad.join(' | ') : ''}`, data: r };
+  },
+
+  // cycle 1 (world review B2, B3, B9, I5; lives review B8): no far realm starts a war of its own in its land's first
+  // 12 to 18 months; a peace a far realm loses takes at most 15% of its people and land (before: the whole budget, 15 to
+  // 22 Twin Rivers districts, a median of 40% of the loser's people); a far war is not settled with terms inside nine
+  // months; word of the far east is told only once the player has a home (the 1105 wars came on the first day) and
+  // comes up to two years late, its province lists blurred and one line in three wrong in a detail, mended later
+  async scaleFarPeace(pg) {
+    // v2: without the Far Lands (A.FAR missing, every v2 build) this was a pass with nothing checked; it now checks the
+    // continent's peace and news keep to the release's rules (farPeaceV2 above). The Great Continent body runs with 99.
+    if (!(await pg.evaluate(() => typeof A.FAR !== 'undefined' && !!A.FAR))) return farPeaceV2(pg);
+    const r = await pg.evaluate(() => {
+      const W = A.WORLD1;
+      A.newGame({ seed: 9091, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16, lands: 'great' });
+      const S = A.S, out = {};
+      out.firstDay = S.news.filter(x => /far lands|Taulen|Vahra|Busimo/.test(x.t || '')).length;
+      out.heldPre = (S.newsFar || []).filter(x => /far lands/.test(x.t)).length + (S.newsPre || []).length;
+      const cap = A.warCapFull(), rv = S.realms['POL-37'], rk = S.realms['POL-01'];
+      out.grace = [cap(rv), W.GRACE('R')];
+      // a war Hesh loses to a neighbour with every province of Hesh held and a score of 100
+      const foe = A.neighbors('POL-37').find(id => A.FAR.D.realms[id] && !A.atWar(id).length) || A.neighbors('POL-37')[0];
+      S.wars.filter(w => w.att.concat(w.def).includes('POL-37')).forEach(w => A.endWar(w, 'white'));
+      const w = A.startWar(foe, 'POL-37', 'The Test War', 'conquest', { noAllies: true, silent: true });
+      const mine = A.realmProvs('POL-37'), pop0 = mine.reduce((a, p) => a + p.pop, 0), n0 = mine.length;
+      for (const p of mine) if (p.id !== rv.capitalProv) p.occ = foe;
+      w.score = 100;
+      A.settleWar(w, 'att');
+      out.soon = S.wars.includes(w);
+      w.d0 -= 400;
+      A.settleWar(w, 'att');
+      const left = A.realmProvs('POL-37'), pop1 = left.reduce((a, p) => a + p.pop, 0);
+      out.peace = [n0, n0 - left.length, (1 - pop1 / pop0)];
+      out.alive = rv.alive;
+      const g = W.garble('The Salt War ends: Vahra wins and takes Ana, Bel, Cor, Dun from Kethra.');
+      out.garble = g.t;
+      return out;
+    });
+    const ok = r.firstDay === 0 && r.heldPre >= 3 && r.grace[0] === true && r.soon && r.peace[1] >= 1 && r.peace[2] <= 0.16 && r.alive && !/Ana/.test(r.garble);
+    return { ok, detail: `first-day far lines ${r.firstDay}, held ${r.heldPre}; Hesh in its ${r.grace[1]}-month grace: cap full ${r.grace[0]}; a peace inside nine months refused ${r.soon}; ` +
+      `then Hesh loses ${r.peace[1]} of ${r.peace[0]} provinces (${Math.round(r.peace[2] * 100)}% of its people); "${r.garble}"` };
+  },
+
+  async scaleOneWorld(pg) {
+    // v2: without the Far Lands (A.FAR missing, every v2 build) this was a pass with nothing checked; it now plays ten
+    // years of the continent (oneWorldV2 above). The Great Continent body runs with 99.
+    if (!(await pg.evaluate(() => typeof A.FAR !== 'undefined' && !!A.FAR))) return oneWorldV2(pg);
+    // the Great Continent for ten years (world.core.js): wars are joined only within reach, each land keeps to its
+    // share of the war cap, the lore's tributes are made and hold, far news comes late and seldom; and the far world
+    // stays plausible: realms survive, treasuries do not run away, wars end
+    const r = await pg.evaluate(() => {
+      const W = A.WORLD1;
+      A.newGame({ seed: 9090, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16, lands: 'great' });
+      const S0 = A.S, far = Object.keys(A.FAR.D.realms), ties0 = Object.keys(S0.loreTies || {}).length;
+      const tie = id => S0.loreTies[id];
+      const outReach = [], overCap = [];
+      // after every war day: no side holds a realm out of reach of the other side's leader
+      const seen = new Set();
+      A.onDay.push(() => {
+        for (const w of A.S.wars) for (const [side, foe] of [['att', w.leadD], ['def', w.leadA]]) for (const x of w[side]) {
+          const k = w.id + side + x; if (seen.has(k)) continue; seen.add(k);
+          if (x !== foe && A.realm(x) && A.realm(foe) && W.reachKm(x, foe) > W.REACH && x !== w.leadA && x !== w.leadD) outReach.push(`${x} in ${w.name} (${Math.round(W.reachKm(x, foe))} km)`);
+        }
+      });
+      const startY = A.S.year; let farNews = 0, nearNews = 0, lateOk = true;
+      T.play(5);
+      const tiesHeld5 = Object.entries(S0.loreTies || {}).filter(([id, t]) => A.realm(id) && A.realm(id).alive && A.realm(t.o) && A.realm(t.o).alive && A.realm(id).overlord === t.o).length;
+      const tiesAlive5 = Object.entries(S0.loreTies || {}).filter(([id, t]) => A.realm(id) && A.realm(id).alive && A.realm(t.o) && A.realm(t.o).alive).length;
+      T.play(5);
+      for (const n of A.S.news) /^Word from the /.test(n.t) ? farNews++ : nearNews++;
+      const alive = far.filter(id => A.realm(id) && A.realm(id).alive).length;
+      const tr = far.map(id => A.realm(id)).filter(r => r && r.alive).map(r => r.treasury / Math.max(1, r.income || 1)).sort((a, b) => a - b);
+      const oldWars = A.S.wars.filter(w => A.S.year - w.start > 8 && w.cb !== 'throne').length;
+      return { ties0, tiesHeld5, tiesAlive5, outReach: outReach.slice(0, 5), nOut: outReach.length, farNews, nearNews, years: A.S.year - startY, alive, nFar: far.length,
+        trMed: tr[Math.floor(tr.length / 2)], trMax: tr[tr.length - 1], oldWars, stats: W.stats, ended: (A.S.history || []).length };
+    });
+    const ok = r.ties0 >= 40 && r.tiesHeld5 >= r.tiesAlive5 * 0.9 && r.nOut === 0 && r.farNews <= 30 * 3 && r.stats.dropped > r.stats.held &&
+      r.alive >= r.nFar * 0.85 && r.trMax < 200 && r.oldWars === 0;
+    return { ok, detail: `${r.years} years: ${r.ties0} lore tributes made, ${r.tiesHeld5} of ${r.tiesAlive5} standing pairs still paying at year 5; ` +
+      `${r.nOut} realms at war out of reach${r.nOut ? ' (' + r.outReach.join('; ') + ')' : ''}; news kept ${r.nearNews} near and ${r.farNews} far lines (far: ${r.stats.held} held, ${r.stats.told} told, ${r.stats.dropped} not heard of); ` +
+      `${r.alive} of ${r.nFar} far realms standing; treasury against a year's income: median ${r.trMed && r.trMed.toFixed(1)}, highest ${r.trMax && r.trMax.toFixed(1)}; wars older than 8 years: ${r.oldWars}` };
+  },
+};
+

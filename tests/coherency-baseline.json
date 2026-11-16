@@ -1,0 +1,18 @@
+{
+  "about": "Known contradictions, counted per coherency check (src/core/08-coherency-checks), that round 2 must remove. Counts may only shrink: tests/suites/coherency.test.mjs fails in CI when a 'quick' count rises, tools/coherency.mjs --baseline=nightly fails the nightly run when a 'nightly' count rises. Lower a count when a step removes contradictions (node tools/coherency.mjs --baseline=<section> --write); never raise one without a line in docs/DECISIONS.md. Empty when round 2 ends (CRITIQUE A3a). Owners: what remains is A2 stage 2 and C6.",
+  "quick": {
+    "seeds": 1,
+    "lives": 4,
+    "years": 16,
+    "every": 4,
+    "counts": {}
+  },
+  "nightly": {
+    "seeds": 1,
+    "years": 60,
+    "every": 5,
+    "counts": {
+      "family links agree": 10
+    }
+  }
+}

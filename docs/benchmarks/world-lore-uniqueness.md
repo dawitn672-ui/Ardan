@@ -365,5 +365,5 @@ Ranked by score gain for the effort. Sizes: S ≤2 days, M ≤2 weeks, L ≤2 mo
 - https://gamemakersnotebook.libsyn.com/balancing-procedural-and-intimate-storytelling-in-wildermyth
 
 **Ardan (this repo)**
-- `docs/plan/Ardan The Road to Ten.md`, `docs/reviews/Ardan Road to 100.md`, `docs/reviews/Ardan Deep Analysis.md`
+- `docs/plan/road-to-ten.md`, `docs/reviews/road-to-100.md`, `docs/reviews/deep-analysis.md`
 - Engine reads: `A.LAW`, `A.lawOf`, `punishNow`, `A.news` (220-line cap), `A.worldYear`, `A.branchYear`, `UI.codexBasic`, `UI.worldTabBasic` (via `node tools/build.mjs --unpack` and `node tools/show.mjs`)

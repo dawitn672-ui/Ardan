@@ -1,0 +1,34 @@
+{
+  "id": "eye_f",
+  "_note": "The far eye, drawn as itself (not a copy of the near one): turned away, so narrower, the iris an upright oval near the inner corner (right, toward the nose), the lash line heaviest at the outer corner against the temple.",
+  "layers": [
+    {"id": "socket", "role": "skin.half", "d": "M 22 -6 S 12 -26 -4 -31 -20 -27 -28 -12 -26 -2 -20 -6 -10 -15 4 -18 16 -13 Z", "alpha": 0.55},
+    {"id": "nook", "role": "skin.half", "lod": 1, "d": "M 20 -4 S 30 -10 34 4 26 14 18 8 Z", "alpha": 0.75},
+    {"id": "under", "role": "skin.half", "lod": 1, "d": "M 20 6 S 6 15 -10 14 -22 2 -18 12 -4 21 12 20 Z", "alpha": 0.55},
+    {"id": "bag1", "role": "skin.shadow", "age": [44, 74], "line": "M 16 17 S 2 25 -12 22 -20 12", "w": [0.3, 1.6, 1.6, 0.3], "k": "form"},
+    {"id": "crow1", "role": "skin.shadow", "age": [36, 66], "line": "M -24 -3 S -29 -6 -32 -9", "w": [0.3, 1.2, 0.3], "k": "form", "lod": 1},
+    {"id": "white", "role": "eye.light", "d": "M 20 3 S 13 -6.5 1 -10 -11 -8.5 -20 -2 S -12 6 0 9 11 7 Z"},
+    {"id": "white_turn", "role": "eye.half", "clip": "white", "d": "M -8 -20 S -16 -6 -12 12 L -30 12 L -30 -20 Z"},
+    {"id": "iris", "role": "iris.half", "clip": "white", "e": [4, 0.5, 8, 11.5]},
+    {"id": "iris_lo", "role": "iris.light", "clip": ["white", "iris"], "lod": 1, "d": "M -5 4 S 4 13 13 4 10 14 2 15 -4 10 Z"},
+    {"id": "lid_cast", "role": "iris.deep", "clip": ["white", "iris"], "d": "M -8 -16 L 16 -16 L 16 -5 S 8 -2 0 -2 -8 -5 Z", "alpha": 0.75},
+    {"id": "white_cast", "role": "eye.shadow", "clip": "white", "d": "M 20 3 S 13 -6.5 1 -10 -11 -8.5 -20 -2 S -10 -4 2 -5 14 -1 Z"},
+    {"id": "iris_ring", "role": "iris.deep", "clip": "white", "e": [4, 0.5, 8, 11.5], "stroke": 1.5, "k": "form"},
+    {"id": "pupil", "role": "ink", "clip": "white", "e": [4.5, 0.5, 3.1, 4.3]},
+    {"id": "catch", "role": "eye.hl", "e": [1, -3.5, 2.1, 1.9]},
+    {"id": "caruncle", "role": "eye.pink", "lod": 1, "e": [17, 3, 2.4, 2, 10]},
+    {"id": "crease", "role": "skin.shadow", "line": "M 17 -8 S 8 -17 -6 -19 -18 -14 -25 -5", "w": [0.3, 1.4, 1.7, 1.4, 0.3], "k": "form"},
+    {"id": "lid_hl", "role": "skin.hl", "lod": 1, "line": "M 12 -13 S 2 -18 -8 -16", "w": [0.4, 1.8, 0.4], "k": "tone"},
+    {"id": "lower", "role": "skin.line", "line": "M 20 4 S 10 8.5 -2 9.5 -12 7 -20 0", "w": [0.3, 1.2, 1.4, 1.4, 1.6], "k": "form"},
+    {"id": "lash", "role": "ink", "line": "M 21 4 S 13 -6.5 1 -10 -11 -8.5 -20 -2 -25 -4", "w": [0.8, 2, 3, 3.6, 4.2, 0.6], "k": "contour"},
+    {"id": "lashes", "role": "ink", "lod": 2, "d": "M -19 -4 S -23 -8 -28 -9 S -24 -5 -20 -1 Z M -13 -9 S -16 -14 -20 -16 S -17 -10 -14 -7 Z"},
+    {"id": "lashes_f", "role": "ink", "lod": 1, "when": {"sex": "F", "minAge": 12}, "line": "M -14 -6 S -20 -4 -26 -3 -30 -5", "w": [0.4, 2, 1.6, 0.3], "k": "form"}
+  ],
+  "masters": {
+    "lids-": {"warp": [[0, -13, 0, 3.5, 20], [-6, -22, 0, 5, 22]]},
+    "lids+": {"warp": [[0, -13, 0, -2.5, 20], [-6, -22, 0, -4, 22]]},
+    "child": {"warp": [[0, -13, 0, -2.5, 18], [0, 9, 0, 2.5, 16]]},
+    "female": {"warp": [[-6, -22, 0, -3, 22]]},
+    "elder": {"warp": [[-18, -16, 0, 5, 14], [-20, -2, 0, 2, 10]]}
+  }
+}

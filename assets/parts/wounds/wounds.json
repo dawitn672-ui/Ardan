@@ -1,0 +1,20 @@
+{
+  "id": "wounds",
+  "_note": "Skin layers of wounds (characters.md §7). A cut is one of five profiles (straight, bowed, S, hooked, ragged: points along u, offset v as a share of the length), placed at one of the head's places with a length, angle (degrees) and width. It is drawn as a pale ribbon with a thin shadow on one lip and a highlight on the other, so it reads as a trough; red while fresh, pale by the third year, never gone; puckered where it healed. Brow and beard hairs rooted in its band give way. Forms that change (a broken nose, a notched lid) are masters of their own parts.",
+  "profiles": [
+    [[0, 0], [0.25, 0.006], [0.5, 0.01], [0.75, 0.006], [1, 0]],
+    [[0, 0], [0.25, 0.05], [0.5, 0.07], [0.75, 0.05], [1, 0]],
+    [[0, 0], [0.25, 0.04], [0.5, 0], [0.75, -0.04], [1, 0]],
+    [[0, 0], [0.3, 0.01], [0.6, 0.02], [0.85, 0.06], [1, 0.12]],
+    [[0, 0], [0.2, 0.025], [0.4, -0.015], [0.6, 0.02], [0.8, -0.01], [1, 0.01]]
+  ],
+  "cuts": {
+    "cheek_f": {"at": [386, 532], "len": 64, "ang": 62, "wid": 6},
+    "cheek_n": {"at": [520, 556], "len": 70, "ang": 70, "wid": 6},
+    "brow_n": {"at": [546, 468], "len": 132, "ang": 78, "wid": 7},
+    "brow_f": {"at": [384, 448], "len": 70, "ang": 70, "wid": 6},
+    "chin": {"at": [440, 690], "len": 44, "ang": 20, "wid": 5},
+    "forehead": {"at": [460, 360], "len": 90, "ang": 15, "wid": 6},
+    "lip": {"at": [460, 620], "len": 40, "ang": 80, "wid": 5}
+  }
+}

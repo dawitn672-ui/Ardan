@@ -1,0 +1,12 @@
+A.newGame({ seed: 11, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 0 });
+const pc = A.pc(), P = id => A.S.people[id];
+const o = {};
+const ids = Object.keys(pc.rel).slice(0, 30);
+o.kin = ids.map(id => { const q = P(id); let k = null, l = null; try { k = A.V2F.kinOf(pc, q); } catch (e) { k = 'ERR ' + e.message; } try { l = A.V2F.label(pc, q); } catch (e) { l = 'ERR'; } return { id, type: pc.rel[id].type, name: A.fullName(q), age: A.S.year - q.born, kin: k, label: l && (l.text || l), parents: (q.parents || []).map(x => P(x) ? A.fullName(P(x)) + ' b' + P(x).born : x) }; });
+const r = A.S.realms['POL-01'];
+o.polOff = ((r.pol && r.pol.off) || []).slice(0, 6);
+o.nPolOff = ((r.pol && r.pol.off) || []).length;
+o.courtTitle = (A.S.court.realms['POL-01'].titles || []).slice(0, 12).map(t => ({ k: t.k, rank: t.rank, name: t.name, pid: t.pid, parent: t.parent, keys: Object.keys(t).join(',') }));
+o.pcn = (() => { const t = A.S.court.realms['POL-01'].titles.find(t => t.name === 'County of Northmoor'); const p = t && P(t.pid); return { t, noble: p && p.noble }; })();
+o.rulerP = Object.keys(P(r.ruler)).filter(k => /ruler|title|office/.test(k)).map(k => k + '=' + JSON.stringify(P(r.ruler)[k]));
+return o;

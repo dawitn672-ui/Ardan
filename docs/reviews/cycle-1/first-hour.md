@@ -70,7 +70,7 @@ On the Known World only, a month takes about 0.2 s on the phone emulation. Nothi
 
 **Why it matters:** the biggest thing the game has is undersold on its first screen.
 
-**Fix:** in `UI.renderTitle` (99-far-lands or 86-title-fold), read the count from the default lands ("A hundred and fifty realms…") and use the Great Continent strip when it is the default.
+**Fix:** in `UI.renderTitle` (99-far-lands or 86-title-screen-in-view), read the count from the default lands ("A hundred and fifty realms…") and use the Great Continent strip when it is the default.
 
 ### B4. How to play is out of date and runs to 998 words. Size S, impact 3
 
@@ -115,9 +115,9 @@ On the Known World only, a month takes about 0.2 s on the phone emulation. Nothi
 
 ### B8. Smaller copy bugs seen in the first hour. Size S, impact 1 or 2
 
-- "Costs 1 suns" (`s/nb2` run, `wc_bread_since` preview). Pluralise in the choice-preview formatter (24-honest-odds or 33-choices).
+- "Costs 1 suns" (`s/nb2` run, `wc_bread_since` preview). Pluralise in the choice-preview formatter (24-honest-duel-odds or 33-no-obvious-choices).
 - The drop cap makes the text read "Abig drunk", "T hree shepherds" to `innerText` and screen readers (92-scene-card). Mark the drop-cap letter `aria-hidden` and keep the full word in the text.
-- "Pay the mark" costs 2 suns but shows no cost chip, while other choices show "Costs N suns" (`s/ph2-d-event0.png`; 47-realm-bible's `req: p => p.coin >= 2` choice has `fx.coin` and still no chip).
+- "Pay the mark" costs 2 suns but shows no cost chip, while other choices show "Costs N suns" (`s/ph2-d-event0.png`; 47-realm-customs's `req: p => p.coin >= 2` choice has `fx.coin` and still no chip).
 - The Codex line "You see a **Bactrian** Wild Camel" puts a real-world place name in Ardan (`s/coa-step15.png`; 992-far-beasts).
 - A Month step ends on the **2nd** ("2 February", "2 March"). Players will read that as "the month skipped a day". Show the 1st, or label the step "February begins".
 
@@ -167,7 +167,7 @@ On the Known World only, a month takes about 0.2 s on the phone emulation. Nothi
 - Reigns has no setup at all.
 - BitLife is one screen: name, sex, country, Go.
 
-**Fix (`UI.renderCreate`, 29-starts):**
+**Fix (`UI.renderCreate`, 29-starting-stories):**
 - Open with one screen: three big buttons ("Be born", "Start at 16", "Pick a story") with Lands and Difficulty underneath, and "Customise everything" leading to today's steps.
 - Show "Begin from a story" open, with two or three suggested stories as cards. Today it is a collapsed one-line `<summary>`.
 - Explain the score multiplier once, in a tooltip.
@@ -190,7 +190,7 @@ On the Known World only, a month takes about 0.2 s on the phone emulation. Nothi
 - BitLife's Activities is a menu of about 10 that opens on demand.
 - Slay the Spire's first floor gives three choices.
 
-**Fix (`UI.renderActs`, 41-circles' filters):**
+**Fix (`UI.renderActs`, 41-friend-circles' filters):**
 - On a first life, show the 6 most fitting activities (`A.whatNow` already scores them) and "More…".
 - Answer each activity *in place*: a toast or result card where the player clicked.
 - Hide ruler-only and criminal-heavy tiles until a flag, a skill or an ambition points that way.
@@ -206,7 +206,7 @@ On the Known World only, a month takes about 0.2 s on the phone emulation. Nothi
 
 **Fix:**
 - Hold the beast-hunt trigger back for the first 3 months of a life (`firstHour` guard in 79-beast-scenes or 76-beast-habitats).
-- Let a story's opening (29-starts) suppress unrelated triggered events for 2 weeks.
+- Let a story's opening (29-starting-stories) suppress unrelated triggered events for 2 weeks.
 
 ### I7. "What you want", the life's ambition, looks like any other event. Size S, impact 3
 
@@ -235,9 +235,9 @@ On the Known World only, a month takes about 0.2 s on the phone emulation. Nothi
 - "7.0 /7 full", "⧗", "training is fair" and "Push for advan…" (cut off).
 - "Score multiplier".
 
-Several have tooltips on hover (59-tooltips), but none on the phone without a long press. "Push for advancement" is cut at 1366 px (`s/coa-born.png`).
+Several have tooltips on hover (59-descriptions), but none on the phone without a long press. "Push for advancement" is cut at 1366 px (`s/coa-born.png`).
 
-**Fix (59-tooltips, 84-top-bar):**
+**Fix (59-descriptions, 84-top-bar):**
 - On the phone, make each of these tap to explain.
 - Hide the speed (×2) and early-years notes unless Play is running. They describe a mode the first-hour player isn't in.
 
@@ -249,7 +249,7 @@ Several have tooltips on hover (59-tooltips), but none on the phone without a lo
 
 On a 50 to 90 word card, the extra line is the one a 15-year-old skips, and it dilutes the story's own opening.
 
-**Fix:** in 57-world-chronicle `b-cite.core.js` and 87-echoes, never append an echo to an opening (`once` or `S.story` events), and only when the echo's subject appears in the card (realm, war, place).
+**Fix:** in 57-world-chronicle `b-cite.core.js` and 87-echo-scenes, never append an echo to an opening (`once` or `S.story` events), and only when the echo's subject appears in the card (realm, war, place).
 
 ---
 
@@ -282,9 +282,9 @@ What would turn that into a habit:
 2. **I1:** A newborn (the default start) waits up to 16 empty Months for a first event. Step faster under 3, or default to 16 (82-early-years, `step.core.js`). M, impact 5.
 3. **B2:** `!C.child(p)` lets 7 adult events reach infants (36-sieges, 57-world-chronicle); add a lint rule. S, impact 4.
 4. **I2:** The Week step almost never holds an event. Roll events weekly or give a week summary (`step.core.js`). M, impact 4.
-5. **I3:** Creation is about 12,500 px on a phone, with age and Lands on the last step. Add a one-screen quick start (`UI.renderCreate`, 29-starts). M, impact 4.
+5. **I3:** Creation is about 12,500 px on a phone, with age and Lands on the last step. Add a one-screen quick start (`UI.renderCreate`, 29-starting-stories). M, impact 4.
 6. **I5:** 31 activities on day one with off-screen feedback. Show 6, answer in place (`UI.renderActs`). M, impact 4.
 7. **B5 + B3:** Lands sits after Realm, so picking the Known World silently drops a far realm, and the title still says "Thirty-four realms" (99-far-lands, `UI.renderTitle`). S, impact 3.
 8. **B6:** Far lives get "spring" on 2 January, churches and manor courts in a broker city, a doubled festival name, and "tax goes to Khaganate" (990-far-peoples, 57 `b-cite.core.js`). M, impact 3.
 9. **I4:** On the phone the life opens on an empty Now, and the birth story is hidden under Story (71-phone). S, impact 3.
-10. **B4 + I6:** How to play is a 998-word wall that never names Week or Month, and week one can cripple you with a beast hunt that contradicts your story start (help, 79-beast-scenes, 29-starts). S, impact 3.
+10. **B4 + I6:** How to play is a 998-word wall that never names Week or Month, and week one can cripple you with a beast hunt that contradicts your story start (help, 79-beast-scenes, 29-starting-stories). S, impact 3.

@@ -8,27 +8,27 @@
 
 | Section | Status | Notes |
 | --- | --- | --- |
-| §1.1 Surfaces and ink | Done | 91-look, both themes; `tokensContrast` holds every text token at 4.5:1 (worst 5.13 by night, 4.84 by day) |
-| §1.2 Accent and status | Done | 91-look |
+| §1.1 Surfaces and ink | Done | 91-visual-style, both themes; `tokensContrast` holds every text token at 4.5:1 (worst 5.13 by night, 4.84 by day) |
+| §1.2 Accent and status | Done | 91-visual-style |
 | §1.3 The six stats | Done | rail tiles, check chips, delta chips, tooltips; 95's icons |
 | §1.4 Odds bands | Done | 92's odds badge: percentage, band word, four pips, band tint |
 | §1.5 Rarity tiers | Done (this round) | gear quality, achievements, fighting tier, once-in-a-life events, the Codex's beasts |
 | §1.6 Realm and house colours | Partial (this round) | `UI.realmInk`; 118 far realms given distinct accents (`UI.realmHex`); the map and the release's own chips still read the raw colour (lane L2, the lead) |
-| §2 Typography | Done | 77-offline-fonts and 91-look: Literata, Atkinson Hyperlegible Next, Cinzel, Dela Gothic One; the scale; 68ch |
+| §2 Typography | Done | 77-offline-fonts and 91-visual-style: Literata, Atkinson Hyperlegible Next, Cinzel, Dela Gothic One; the scale; 68ch |
 | §3 Space, shape, depth | Done | tokens, radii, cut corner on `::before`, elevation, glow, star field and washi ground |
 | §4.1 1366×768 | Done | `fitsOneScreen`: rail 698/698, panel 615/615, the page does not scroll |
 | §4.2 1920×1080 | Done, one difference | Activities in 3 columns, not 4 (at 4, 140 px tiles cut a third of their labels) |
 | §4.3 761–1099 | Done | identity strip and the Stats sheet |
 | §4.4 Phone | Done, one difference | Activities in 3 columns, not 2 (2 made the page 1.45 screens); the event sheet now fits a 375×667 phone with the first-run hint showing (this round) |
 | §4.5 Other tabs as small multiples | Partial (this round) | People rows, the Realm header band, gear rows on Holdings and war strength bars built; the ladder track and the Realm band's sparklines built; holdings' income sparklines are missing |
-| §5.1 Buttons | Done | 91-look |
+| §5.1 Buttons | Done | 91-visual-style |
 | §5.2 Tabs | Done | the release's tablist already moves by arrow keys (`UI.tabKeys`); badges are the release's |
-| §5.3 Expanders | Done, one difference | 90-fold; the open state is kept in the browser (`ardan_fold_v1`), not in `UI.set.open` |
+| §5.3 Expanders | Done, one difference | 90-collapsible-sections; the open state is kept in the browser (`ardan_fold_v1`), not in `UI.set.open` |
 | §5.4 Stat bars and tiles | Done (this round) | bars, tiles, the rail's delta flash and the 1920 sparklines (sampled while drawn) |
 | §5.5 Chips | Done (this round) | trait, status, rarity, "+N", and the realm chip (swatch dot, name in realm ink) in People rows, tooltips, a person's Realm row and the Realm band |
 | §5.6 Cards and tiles | Done | one card level; activity tiles with icon, cost and tooltip |
 | §5.7 Modals and sheets | Done (this round) | the release's modal restyled; the close button's glyph now fills its button |
-| §5.8 Tooltips | Done (this round) | 59-tooltips with 91's look; a pinned tooltip now shows a gold top edge and a pin |
+| §5.8 Tooltips | Done (this round) | 59-descriptions with 91's look; a pinned tooltip now shows a gold top edge and a pin |
 | §5.9 Event scene card | Done | 92-scene-card |
 | §5.10 Toasts and cut-ins | Done (this round) | toasts now stack (at most three, newest on top, kinds, pause on hover); cut-ins by 96 |
 | §6 Motion | Done | tokens; the Motion setting (Follow system, Full, Reduced, Off) |
@@ -43,7 +43,7 @@
 
 ### §1.1 Surfaces and ink: done
 
-91-look defines both sets and maps the release's names (`--surface-1`, `--text-1`, `--bad` and the rest) onto them. The vellum page of the Chronicle keeps its values. `tokensContrast` checks 396 text/surface pairs in both themes.
+91-visual-style defines both sets and maps the release's names (`--surface-1`, `--text-1`, `--bad` and the rest) onto them. The vellum page of the Chronicle keeps its values. `tokensContrast` checks 396 text/surface pairs in both themes.
 
 ### §1.2 Accent and status: done
 
@@ -62,7 +62,7 @@ One colour and one icon per stat on the profile's tiles, the check chip, the del
 | Where | Status |
 | --- | --- |
 | Gear quality | **Done.** `UI.qualChip` gives Fine the uncommon tier (◆) and Masterwork the epic tier (◆◆◆): tier border, gem, tier text. A gear card on Holdings takes its piece's tier as a 2 px edge, with the glow by night. `LOOK.gearTier` also lifts a people's own make (`rare`), a master's piece (`masterOnly`) and a famed one (`fame`). |
-| Fighting tier | **Done** (91-look's rail chip; the People rows keep the release's tier chip). |
+| Fighting tier | **Done** (91-visual-style's rail chip; the People rows keep the release's tier chip). |
 | Once-in-a-life events | **Done** (92: ◆◆ ONCE IN A LIFE). |
 | Deeds and achievements | **Done.** The 37 achievements of the Dynasty tab each have a tier, from First Blood (common) to Legend (mythic), with gem, edge and tier word; locked ones keep the gem, muted. |
 | Legendary beasts | **Done** (this round). In the Codex's bestiary an animal is common, a great beast rare, a titan legendary and a legend mythic (gem, edge, glow). A scene about a great beast or a titan carries its tier tag beside the title (92). |
@@ -79,7 +79,7 @@ One colour and one icon per stat on the profile's tiles, the check chip, the del
 
 ## §2 Typography: done
 
-77-offline-fonts embeds the four families. 91-look sets the scale, multiplied by the text-size setting: 15 px prose and 14 px UI, tabular numbers, 68ch prose. The phone keeps 71-phone's 14 px floor; its caps are 14, not 13. Dela Gothic One is used by 96's cut-ins and the obituary's score.
+77-offline-fonts embeds the four families. 91-visual-style sets the scale, multiplied by the text-size setting: 15 px prose and 14 px UI, tabular numbers, 68ch prose. The phone keeps 71-phone's 14 px floor; its caps are 14, not 13. Dela Gothic One is used by 96's cut-ins and the obituary's score.
 
 ## §3 Space, shape, depth: done
 
@@ -93,7 +93,7 @@ One colour and one icon per stat on the profile's tiles, the check chip, the del
 
 ### §4.1 1366×768: done
 
-`fitsOneScreen`: rail 698/698 and panel 615/615 px, the page does not scroll, Your days folded. 27 of 31 activity tiles are in sight; the rest scroll inside Activities, because 97-life-fixes' ambition card takes a row.
+`fitsOneScreen`: rail 698/698 and panel 615/615 px, the page does not scroll, Your days folded. 27 of 31 activity tiles are in sight; the rest scroll inside Activities, because 97-first-life-fixes' ambition card takes a row.
 
 ### §4.2 1920×1080: done, one difference
 
@@ -116,14 +116,14 @@ A 64 px identity strip, and a Stats button that opens the rail as a sheet.
 | --- | --- |
 | **People** | **Done.** Each person is a row of about 26 px: a 22 px bust, the name, the relation, age and post (ellipsized), the bond chip, and a 48 px opinion bar. About twenty fit in the panel. The same rows serve the court on the Realm tab and person lists in dialogs. On touch, rows are 44 px. |
 | **Realm** | **Done** (this round). A header band with the realm's tint and its accent edge, the coat of arms, the name in the realm's ink, the ruler's title and name, the ruler's bust, and four headline numbers (treasury, army, stability, provinces), each with a 60×16 sparkline. The game keeps no history of these numbers, so the look samples them once a game month while the game is drawn; a line covers up to ten years since the session or load began. The council and lords are rows. |
-| **Holdings** | **Partial** (this round in part). 90-fold folds it from 5.9 to 2.4 screens (`foldFits`, a peasant). What you carry is one row per slot: the slot, the piece and its tier, what it does, and Sell. The armourer's rows are denser, and only the item's name is a tooltip target. Missing: the 60×16 income sparkline per holding, which needs an income history kept as UI state. |
+| **Holdings** | **Partial** (this round in part). 90-collapsible-sections folds it from 5.9 to 2.4 screens (`foldFits`, a peasant). What you carry is one row per slot: the slot, the piece and its tier, what it does, and Sell. The armourer's rows are denser, and only the item's name is a tooltip target. Missing: the 60×16 income sparkline per holding, which needs an income history kept as UI state. |
 | **Path & War** | **Partial** (this round). Each war of your realm carries a strength bar of us against them: the standing armies of each side's realms, ours in `--ok` from the left and theirs in `--danger`, with both numbers. The career ladder is now one horizontal track: a dot per rank, the ranks behind you in gold, yours a larger gold dot. |
 
 ## §5 Components
 
 ### §5.1 Buttons: done
 
-Primary, secondary, ghost and danger, each with hover, pressed, focus and disabled states. The reasons on disabled buttons come from 97-life-fixes.
+Primary, secondary, ghost and danger, each with hover, pressed, focus and disabled states. The reasons on disabled buttons come from 97-first-life-fixes.
 
 ### §5.2 Tabs: done
 
@@ -131,7 +131,7 @@ Icon over cap label; the selected tab has a gold bar with a cut corner. The rele
 
 ### §5.3 Expanders: done, one difference
 
-90-fold supplies the chevron, the count pill, the summary when closed, the defaults and "Open every section". The open state is kept in the browser (`ardan_fold_v1`), not in `UI.set.open`. It is still never saved in `A.S`.
+90-collapsible-sections supplies the chevron, the count pill, the summary when closed, the defaults and "Open every section". The open state is kept in the browser (`ardan_fold_v1`), not in `UI.set.open`. It is still never saved in `A.S`.
 
 ### §5.4 Stat bars and stat tiles: partial
 
@@ -162,7 +162,7 @@ Icon over cap label; the selected tab has a gold bar with a cut corner. The rele
 
 ### §5.10 Toasts and cut-ins: done (this round for toasts)
 
-**Toasts** (this round, `96-moments/toasts.core.js`):
+**Toasts** (this round, `96-big-moments/toasts.core.js`):
 
 - They stack: at most three, newest on top. `#toast` stays the newest and the live region; older ones move into `#toast-stack`, which is `aria-hidden`.
 - An icon and a 3 px edge in the toast's kind:
