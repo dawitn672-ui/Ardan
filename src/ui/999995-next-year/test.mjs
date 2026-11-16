@@ -40,7 +40,7 @@ const DRIVE = () => {
   window.__nyWait = async () => { for (let i = 0; i < 80 && Object.keys(A.EV).length < 2000; i++) await new Promise(r => setTimeout(r, 100)); };
 };
 
-export const limits = { nyChildhood: 1500, nyOneRedraw: 900, nyYearSameWorld: 900, nyEarlyStops: 900 };
+export const limits = { nyChildhood: 1500, nyOneRedraw: 900, nyYearSameWorld: 900, nyYearGoesOn: 900 };
 
 export default {
   // two buttons in fixed places at both widths; the running one is not a stop button; the year leads in childhood
@@ -146,8 +146,10 @@ export default {
     return { ok: quiet.length >= 2 && same, detail: `${quiet.length} quiet years of ${r.length} compared (seeds ${quiet.map(t => t.seed).join(', ')}): twelve Next month presses and one Next year press ${same ? 'reach the same world' : 'DIFFER'}` };
   },
 
-  // the year ends early, in one line, for what matters
-  async nyEarlyStops(pg) {
+  // P3 (order 54, D-062): what matters stops the year midway; once its card (or chain of cards) is answered the year
+  // carries on to its end. A wound, an illness, a death or a birth in the household and coming of age go into the
+  // year's digest with their month, and the year goes on.
+  async nyYearGoesOn(pg) {
     await pg.evaluate(DRIVE);
     const r = await pg.evaluate(async () => {
       const out = {};
@@ -158,23 +160,34 @@ export default {
         A.onDay.push(f);
         let s;
         try { s = await __nyPress(act || 'v2Year', { hold: true }); } finally { A.onDay.splice(A.onDay.indexOf(f), 1); }
-        out[name] = { why: s.why, d: s.d1 - s.d0, err: f.err || '', sumWhy: s.sum && s.sum.why, early: !!(s.sum && s.sum.early) };
+        out[name] = { why: s.why, d: s.d1 - s.d0, err: f.err || '', met: (s.sum && s.sum.met || []).join(' / '), early: !!(s.sum && s.sum.early), waited: s.waited, cards: s.cards, full: s.full };
       };
       const base = { race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M' };
       await withHook('wound', Object.assign({ seed: 9521, startAge: 30 }, base), pc => A.addWound(pc, 'broken_nose'));
       await withHook('illness', Object.assign({ seed: 9522, startAge: 30 }, base), pc => { pc.ill = { k: 'flux', name: 'summer flux', m: 2, tot: 2, dmg: 0, y: A.S.year, t: '' }; });
       await withHook('death', Object.assign({ seed: 9523, startAge: 9 }, base), pc => { const p = A.P((pc.parents || [])[0]); if (p) p.alive = false; else throw new Error('no parent'); });
       await withHook('birth', Object.assign({ seed: 9524, startAge: 9 }, base), pc => { const par = A.P((pc.parents || [])[0]); if (!par) throw new Error('no parent'); A.S.people.ny_baby = { id: 'ny_baby', given: 'Baby', alive: true, born: A.S.year, race: 'human', sex: 'F', parents: [par.id] }; par.children = (par.children || []).concat('ny_baby'); });
-      await withHook('card', Object.assign({ seed: 9525, startAge: 30 }, base), pc => { __nyEv('ny_weighty', { wound: 'deep_cut' }); A.schedule({ type: 'event', ev: 'ny_weighty', forced: true }, 3); });
+      // a chain: a weighty card whose answer queues a second; the year waits at each, then goes on to its end
+      await withHook('card', Object.assign({ seed: 9525, startAge: 30 }, base), pc => {
+        __nyEv('ny_weighty2', { wound: 'deep_cut' });
+        __nyEv('ny_weighty', { wound: 'deep_cut', event: 'ny_weighty2' }, { choices: [{ t: 'Go on', r: 'It passes.', fx: { wound: 'deep_cut', event: 'ny_weighty2' } }, { t: 'Leave it', r: 'It passes.', fx: { event: 'ny_weighty2' } }] });
+        A.schedule({ type: 'event', ev: 'ny_weighty', forced: true }, 3);
+      });
+      // and a month waits at its card and goes on too
+      __nyEnter(Object.assign({ seed: 9527, startAge: 30 }, base)); __nyEv('ny_weighty3', { wound: 'deep_cut' }); A.schedule({ type: 'event', ev: 'ny_weighty3', forced: true }, 6);
+      { const s = await __nyPress('v2Next', { hold: true }); out.month = { why: s.why, d: s.d1 - s.d0, waited: s.waited, cards: s.cards }; }
       // coming of age: age 15 becomes 16 at the year's turn
       __nyEnter(Object.assign({ seed: 9526, startAge: 15 }, base));
       const s = await __nyPress('v2Year', { hold: true }); out.age = { why: s.why, age: s.age, d: s.d1 - s.d0 };
       return out;
     });
-    const w = r.wound, i = r.illness, d = r.death, b = r.birth, c = r.card, a = r.age;
-    const ok = /wound/i.test(w.why) && w.d < 300 && /illness/i.test(i.why) && /death/i.test(d.why) && /birth/i.test(b.why) && /Test ny_weighty/.test(c.why) && /cannot wait/.test(c.why) && /come of age|coming of age/i.test(a.why) &&
-      [w, i, d, b, c].every(x => x.d < 300 && !x.err && x.early);
-    return { ok, detail: `wound "${w.why}" after ${w.d} days; illness "${i.why}"; death "${d.why}" ${d.err}; birth "${b.why}" ${b.err}; card "${c.why}"; age 15: "${a.why}" (now ${a.age})` };
+    const w = r.wound, i = r.illness, d = r.death, b = r.birth, c = r.card, m = r.month, a = r.age;
+    const full = x => x.d > 330 && !x.early && !x.why && !x.err;
+    const ok = full(w) && /wound/i.test(w.met) && full(i) && /illness/i.test(i.met) && full(d) && /death/i.test(d.met) && full(b) && /birth/i.test(b.met) &&
+      full(c) && c.waited && c.cards >= 2 && /Test ny_weighty/.test(c.met) && /cannot wait|weight/i.test(c.met) && c.full <= 3 &&
+      m.waited && m.cards >= 1 && m.d > 20 && !m.why && a.age >= 16 && !a.why;
+    return { ok, detail: `wound: ${w.d} days, "${w.met}"; illness: ${i.d} days, "${i.met}"; death: ${d.d} days, "${d.met}" ${d.err}; birth: ${b.d} days, "${b.met}" ${b.err}; ` +
+      `a chain of ${c.cards} cards: waited ${c.waited}, ${c.d} days, ${c.full} full redraws, "${c.met}"; a month at a card: ${m.d} days, waited ${m.waited}; age 15: ${a.d} days, now ${a.age}${a.why ? ', ended: ' + a.why : ''}` };
   },
 
   // small matters never stop a month or a year; they wait for its end and come one at a time; more than a year keeps pass

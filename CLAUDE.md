@@ -35,8 +35,10 @@ built on top of it: **features** that add code and events, the **v2 engine** (pl
 - **One holder per post.** Every title, office and command has exactly one holder at a time. A promotion hands over
   the real command, men and powers and takes the old post away; leaving a post has consequences.
 - **Time moves by Next month or Next year** (D-008, D-019, D-026), two buttons in fixed places that never become a stop
-  control. Only notable things stop a year (a card that needs a real answer, a battle or call to war, an illness or wound, a
-  death or birth in the household, coming of age, a deadline); talk and the day's small happenings wait for the step's end.
+  control. Only notable things stop a step midway (a card that needs a real answer, a battle, a duel, a call to arms, a
+  deadline), and once the card or chain of cards is answered **the same step carries on to its end** (order 54, D-062
+  addendum); a wound, an illness, a death or birth in the household and coming of age go into the year's digest. Only Esc,
+  death or being put on campaign end a step early. Talk and the day's small happenings wait for the step's end.
   No initiative pool: overtraining has its own consequences. See `src/ui/999995-next-year/README.md`.
 - **Deterministic from the seed.** The same seed and the same choices give the same world, always.
 - **No war screens unless you are in the war,** at your rank, on a mission or deployed.
