@@ -311,6 +311,9 @@
     if (d.pay > 0) parts.push([`Pay ${d.pay} month${d.pay > 1 ? 's' : ''} behind`, -5 * Math.min(4, d.pay)]);
     if (d.food != null && d.food <= 0) parts.push(['No bread', -10]);
     if (d.loc === b.h) parts.push(['Fighting at home', 5]);
+    // [D11-2] the player's role in this company: the colours, the horn, the pot, the horse lines (A.UNITS.roleMorale)
+    const rm = A.UNITS && A.UNITS.roleMorale ? A.UNITS.roleMorale(d, i) : 0;
+    if (rm) parts.push([`Your work as its ${(A.MUSTER.R(A.UNITS.roleAt(d, i)) || {}).name || 'man'}`, rm]);
     const total = parts.reduce((a, p) => a + p[1], 0);
     return { total: clamp(total, 5, 100), parts: parts.map(([l, v]) => [l, r1(v)]) };
   };
@@ -334,6 +337,7 @@
     if (d.pay > 0) v -= 5 * Math.min(4, d.pay);
     if (d.food != null && d.food <= 0) v -= 10;
     if (d.loc === b.h) v += 5;
+    if (A.UNITS && A.UNITS.roleMorale) v += A.UNITS.roleMorale(d, i);   // [D11-2] the player's role (D-120)
     return clamp(v, 5, 100);
   };
   const DRF = { foot: 'shields', horse: 'charge', missile: 'weapons', beast: 'formation' };
@@ -447,7 +451,8 @@
         const lost = loseSpread(d, n, why);
         CO.stats.lost += n;
         if (why === 'fight' || why === 'battle') {
-          for (const [i, , m] of lost) d.bs[i].wd += m * K.WOUNDED;
+          // [D11-2] a surgeon's mate's battalion keeps more of its wounded (A.UNITS.woundF, D-120)
+          for (const [i, , m] of lost) d.bs[i].wd += m * K.WOUNDED * (A.UNITS && A.UNITS.woundF ? A.UNITS.woundF(d, i) : 1);
           const F = FIGHT && (FIGHT.F || (FIGHT.F = A.S.fights && A.S.fights[FIGHT.pid]));
           if (F) { const L = (F.coL = F.coL || {}), row = (L[d.id] = L[d.id] || []); for (const [i, , m] of lost) row[i] = (row[i] || 0) + m; }
         }
@@ -626,6 +631,8 @@
           }
         }
         if (frac >= K.HONOUR_LOSS) CO.capsInDanger(d, i, frac, !won, 'map');
+        // [D11-2] what the fight did to the company goes into its ledger of tendencies (A.UNITS.afterFight)
+        if (A.UNITS && A.UNITS.afterFight) A.UNITS.afterFight(d, i, { won, frac, P, F, atk: F.aIds.includes(id) });
       }
       CO.mean(d);
     }
@@ -677,10 +684,15 @@
     if (!d) { if (pc.mil.co) clearMe(pc); return null; }
     CO.ensure(d);
     let m = pc.mil.co;
-    if (!m || m.div !== d.id || !d.bs[m.b] || isSup(d.bs[m.b].c)) {
+    // [D11-2] a scout, an engineer, a man of the train or the guard stands in the support company his branch mans
+    // (A.UNITS.supFor; a soldier, sergeant or captain), D-117
+    const sup = A.UNITS && A.UNITS.supFor ? A.UNITS.supFor(pc) : null;
+    const supOk = c => !isSup(c) || !!(sup && sup.includes(c));
+    if (!m || m.div !== d.id || !d.bs[m.b] || !supOk(d.bs[m.b].c) || (sup && !sup.includes(d.bs[m.b].c) && d.bs.some(x => sup.includes(x.c)))) {
       if (m) clearMe(pc);
       const want = pc.mil.troop;
-      let b = d.bs.findIndex(x => x.c === want);
+      let b = sup ? d.bs.findIndex(x => sup.includes(x.c)) : -1;
+      if (b < 0) b = d.bs.findIndex(x => x.c === want);
       if (b < 0) b = d.bs.findIndex(x => !isSup(x.c) && GD.BN[x.c].cat === 'foot');
       if (b < 0) b = d.bs.findIndex(x => !isSup(x.c));
       if (b < 0) return null;
@@ -711,7 +723,7 @@
     // one name for the unit everywhere: the release's own unit name (the oath, the Path card) is the battalion's
     pc.mil.unit = CO.bnName(d, m.b);
     if (rank <= 2) CO.person(d, m.b, m.i);
-    if (rank <= 4) CO.person(d, m.b, 4);
+    if (rank <= 4 && !isSup(rec.c)) CO.person(d, m.b, 4);
     return m;
   };
   function clearMe(pc) {
@@ -901,7 +913,8 @@
       if (!CO.ok(d)) CO.ensure(d);
       const t = A.tplOf(d), cap = t && (t.sup || []).includes('train') ? K.FOOD_TRAIN : K.FOOD_CAP, sr = d.sr != null ? d.sr : 1;
       if (d.food == null) d.food = K.FOOD0;
-      d.food = r1(clamp(d.food - 1 + 2 * sr * CO.breadF(d, S.prov[d.loc]), 0, cap));
+      // [D11-2] the train, and a clerk who keeps the stores, stretch the day's bread (A.UNITS.eatF, D-120)
+      d.food = r1(clamp(d.food - (A.UNITS && A.UNITS.eatF ? A.UNITS.eatF(d) : 1) + 2 * sr * CO.breadF(d, S.prov[d.loc]), 0, cap));
       const P = S.prov[d.loc];
       if (d.food < K.FORAGE_AT && P && (!d.coFor || S.warClock - d.coFor >= K.FORAGE_EVERY)) CO.forage(d, P);
       const fighting = d.atk != null || (S.fights && S.fights[d.loc]);
@@ -961,8 +974,10 @@
   CO.forage = function (d, P) {
     const S = A.S;
     d.coFor = S.warClock;
-    d.food = r1(d.food + K.FORAGE_DAYS);
-    P.unrest = clamp((P.unrest || 0) + K.FORAGE_UNREST, 0, 100);
+    // [D11-2] a forager in the division brings in more and angers the land less (A.UNITS.forageF, D-120)
+    const U = A.UNITS;
+    d.food = r1(d.food + K.FORAGE_DAYS * (U && U.forageF ? U.forageF(d) : 1));
+    P.unrest = clamp((P.unrest || 0) + K.FORAGE_UNREST * (U && U.forageUnrestF ? U.forageUnrestF(d) : 1), 0, 100);
     CO.stats.foraged++;
     S.coForY = S.coForY || {};
     if (S.coForY[P.id] !== S.year) {

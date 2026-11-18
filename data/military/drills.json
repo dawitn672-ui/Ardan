@@ -1,0 +1,522 @@
+{
+ "about": "D11-2, the drills (docs/design/war.md \u00a714.2; D-116). About forty drills in eight families; each names the branches it belongs to (no unit is offered a drill its branch has no use for), the war-map drill it feeds (60-unit-drill's GD.DRILLS key, read in battle), the ground it needs (open, forest, wall, river, coast), the skill its teacher must know, the tendency it mends and the task it prepares. Read by src/war/9999956-units (A.UNITS).",
+ "drills": [
+  {
+   "id": "lock_wall",
+   "name": "Lock the wall",
+   "family": "standing",
+   "branches": [
+    "spears",
+    "foot_men_at_arms",
+    "conscripts",
+    "garrison",
+    "ships",
+    "household"
+   ],
+   "feeds": "shields",
+   "teacher": "shield",
+   "desc": "Shields overlapped, the rank shoulder to shoulder, and nobody steps out of it."
+  },
+  {
+   "id": "ground_butts",
+   "name": "Ground the butts",
+   "family": "standing",
+   "branches": [
+    "spears",
+    "conscripts",
+    "garrison"
+   ],
+   "feeds": "shields",
+   "teacher": "spear",
+   "desc": "Spear butts set in the earth and the points low, so a horse runs onto them."
+  },
+  {
+   "id": "receive_horse",
+   "name": "Receive horse",
+   "family": "standing",
+   "branches": [
+    "spears",
+    "foot_men_at_arms",
+    "conscripts",
+    "garrison"
+   ],
+   "feeds": "shields",
+   "teacher": "spear",
+   "remedy": "shy_horse",
+   "task": "horse",
+   "desc": "Standing when the horses come: the one drill a foot company cannot learn on the day."
+  },
+  {
+   "id": "relieve_front",
+   "name": "Relieve the front rank",
+   "family": "standing",
+   "branches": [
+    "spears",
+    "foot_men_at_arms",
+    "household",
+    "ships"
+   ],
+   "feeds": "formation",
+   "teacher": "command",
+   "desc": "The second rank steps through and the first falls back to breathe, without a gap opening."
+  },
+  {
+   "id": "wedge",
+   "name": "The wedge",
+   "family": "shock",
+   "branches": [
+    "lances",
+    "household"
+   ],
+   "feeds": "charge",
+   "teacher": "riding",
+   "desc": "Riders in a point, the best at the front, the rest knee to knee behind."
+  },
+  {
+   "id": "knee_to_knee",
+   "name": "Charge knee to knee",
+   "family": "shock",
+   "branches": [
+    "lances",
+    "household"
+   ],
+   "feeds": "charge",
+   "ground": "open",
+   "teacher": "riding",
+   "task": "battle",
+   "desc": "A charge that arrives together, at one moment, not in a string."
+  },
+  {
+   "id": "rally_charge",
+   "name": "Rally after the charge",
+   "family": "shock",
+   "branches": [
+    "lances",
+    "household",
+    "light_horse"
+   ],
+   "feeds": "charge",
+   "teacher": "command",
+   "remedy": "chases",
+   "desc": "Coming back to the banner after the blow, while the enemy is still reeling."
+  },
+  {
+   "id": "dismount_hold",
+   "name": "Dismount and hold",
+   "family": "shock",
+   "branches": [
+    "lances",
+    "household"
+   ],
+   "feeds": "shields",
+   "teacher": "sword",
+   "desc": "Knights on foot in a line, when the ground is wrong for horses."
+  },
+  {
+   "id": "hold_pursuit",
+   "name": "Hold the pursuit",
+   "family": "shock",
+   "branches": [
+    "lances",
+    "light_horse",
+    "household",
+    "foot_men_at_arms"
+   ],
+   "feeds": "formation",
+   "teacher": "command",
+   "remedy": "chases",
+   "desc": "Stopping at the trumpet, however good the chase looks."
+  },
+  {
+   "id": "screen",
+   "name": "The screen",
+   "family": "loose",
+   "branches": [
+    "light_horse",
+    "scouts",
+    "archers"
+   ],
+   "feeds": "skirmish",
+   "teacher": "riding",
+   "task": "march",
+   "desc": "A thin line ahead of the column that sees and is not caught."
+  },
+  {
+   "id": "harry",
+   "name": "Harry the column",
+   "family": "loose",
+   "branches": [
+    "light_horse",
+    "scouts"
+   ],
+   "feeds": "skirmish",
+   "teacher": "riding",
+   "task": "war",
+   "desc": "Ride in, loose, ride off: the enemy's march made slow and angry."
+  },
+  {
+   "id": "feigned_flight",
+   "name": "Feigned flight",
+   "family": "loose",
+   "branches": [
+    "light_horse",
+    "scouts"
+   ],
+   "feeds": "feint",
+   "ground": "open",
+   "teacher": "riding",
+   "desc": "Running away on purpose, and turning on the trumpet."
+  },
+  {
+   "id": "pairs",
+   "name": "Fight in pairs",
+   "family": "loose",
+   "branches": [
+    "scouts",
+    "light_horse",
+    "hired"
+   ],
+   "feeds": "skirmish",
+   "teacher": "melee",
+   "desc": "Two men who cover each other, in broken ground or a wood."
+  },
+  {
+   "id": "volley_horn",
+   "name": "The volley on the horn",
+   "family": "shot",
+   "branches": [
+    "archers",
+    "crossbows",
+    "garrison"
+   ],
+   "feeds": "weapons",
+   "teacher": "bow",
+   "task": "battle",
+   "desc": "Every bow loosed at one call, so the arrows fall together."
+  },
+  {
+   "id": "ranging",
+   "name": "Ranging",
+   "family": "shot",
+   "branches": [
+    "archers",
+    "crossbows"
+   ],
+   "feeds": "weapons",
+   "ground": "open",
+   "teacher": "bow",
+   "desc": "Learning the long shot: where the arrows fall at two hundred paces, and three."
+  },
+  {
+   "id": "plant_stakes",
+   "name": "Plant stakes",
+   "family": "shot",
+   "branches": [
+    "archers",
+    "crossbows"
+   ],
+   "feeds": "siege",
+   "teacher": "craft",
+   "remedy": "shy_horse",
+   "task": "horse",
+   "desc": "Sharpened stakes driven in before the line, which horses will not cross."
+  },
+  {
+   "id": "fall_back",
+   "name": "Fall back behind the spears",
+   "family": "shot",
+   "branches": [
+    "archers",
+    "crossbows"
+   ],
+   "feeds": "formation",
+   "teacher": "command",
+   "desc": "Bowmen who come back through the spear wall in order, not in a crowd."
+  },
+  {
+   "id": "pavise",
+   "name": "Pavise and reload",
+   "family": "shot",
+   "branches": [
+    "crossbows",
+    "garrison"
+   ],
+   "feeds": "weapons",
+   "teacher": "bow",
+   "desc": "Behind the big shield, winding the bow, and out again to shoot."
+  },
+  {
+   "id": "silent_march",
+   "name": "The silent march",
+   "family": "fieldcraft",
+   "branches": [
+    "scouts",
+    "light_horse"
+   ],
+   "feeds": "skirmish",
+   "teacher": "stealth",
+   "desc": "A night's march with no sound: muffled harness, no fire, no word."
+  },
+  {
+   "id": "hides",
+   "name": "Hides",
+   "family": "fieldcraft",
+   "branches": [
+    "scouts"
+   ],
+   "feeds": "skirmish",
+   "ground": "forest",
+   "teacher": "survival",
+   "desc": "Lying up a day in a ditch or a thicket, watching the road."
+  },
+  {
+   "id": "read_tracks",
+   "name": "Reading tracks",
+   "family": "fieldcraft",
+   "branches": [
+    "scouts",
+    "light_horse"
+   ],
+   "feeds": "skirmish",
+   "teacher": "tracking",
+   "task": "war",
+   "desc": "How many passed, how long ago, horse or foot, and how tired."
+  },
+  {
+   "id": "night_knife",
+   "name": "The night knife",
+   "family": "fieldcraft",
+   "branches": [
+    "scouts"
+   ],
+   "feeds": "skirmish",
+   "teacher": "stealth",
+   "desc": "Taking a sentry, or a prisoner, without waking the camp."
+  },
+  {
+   "id": "draw_ground",
+   "name": "Drawing the ground",
+   "family": "fieldcraft",
+   "branches": [
+    "scouts",
+    "engineers"
+   ],
+   "feeds": "skirmish",
+   "teacher": "learning",
+   "desc": "Bringing back the ground on paper: the fords, the woods, the high places."
+  },
+  {
+   "id": "ladder",
+   "name": "The ladder",
+   "family": "works",
+   "branches": [
+    "engineers",
+    "foot_men_at_arms",
+    "conscripts"
+   ],
+   "feeds": "siege",
+   "ground": "wall",
+   "teacher": "craft",
+   "task": "siege",
+   "desc": "Carrying a ladder to a wall under arrows, and up it."
+  },
+  {
+   "id": "sap",
+   "name": "The sap",
+   "family": "works",
+   "branches": [
+    "engineers"
+   ],
+   "feeds": "siege",
+   "teacher": "craft",
+   "task": "siege",
+   "desc": "A trench dug forward to the wall, and a mine under it."
+  },
+  {
+   "id": "ram_tower",
+   "name": "The ram and the tower",
+   "family": "works",
+   "branches": [
+    "engineers"
+   ],
+   "feeds": "siege",
+   "ground": "wall",
+   "teacher": "craft",
+   "task": "siege",
+   "desc": "Building and pushing the great engines up to a gate."
+  },
+  {
+   "id": "bridging",
+   "name": "Bridging",
+   "family": "works",
+   "branches": [
+    "engineers",
+    "train"
+   ],
+   "feeds": "march",
+   "ground": "river",
+   "teacher": "craft",
+   "task": "march",
+   "desc": "A river crossed in a day: boats lashed, planks laid, the carts over."
+  },
+  {
+   "id": "camp_ditch",
+   "name": "Camp and ditch",
+   "family": "works",
+   "branches": [
+    "engineers",
+    "spears",
+    "conscripts",
+    "garrison",
+    "foot_men_at_arms"
+   ],
+   "feeds": "siege",
+   "teacher": "craft",
+   "desc": "A ditch and a bank round the camp every night, dug in an hour."
+  },
+  {
+   "id": "pace_intervals",
+   "name": "Pace and intervals",
+   "family": "march",
+   "branches": [
+    "lances",
+    "light_horse",
+    "scouts",
+    "spears",
+    "foot_men_at_arms",
+    "archers",
+    "crossbows",
+    "engineers",
+    "garrison",
+    "train",
+    "ships",
+    "household",
+    "conscripts",
+    "orders",
+    "hired"
+   ],
+   "feeds": "march",
+   "teacher": "command",
+   "remedy": "slow",
+   "desc": "Marching at one pace with the gaps kept, so the column does not bunch and string out."
+  },
+  {
+   "id": "forced_march",
+   "name": "The forced march",
+   "family": "march",
+   "branches": [
+    "lances",
+    "light_horse",
+    "scouts",
+    "spears",
+    "foot_men_at_arms",
+    "archers",
+    "crossbows",
+    "engineers",
+    "garrison",
+    "train",
+    "ships",
+    "household",
+    "conscripts",
+    "orders",
+    "hired"
+   ],
+   "feeds": "march",
+   "teacher": "athletics",
+   "task": "war",
+   "desc": "Thirty miles in a day, and fit to fight at the end of it."
+  },
+  {
+   "id": "form_quick",
+   "name": "Form from the march",
+   "family": "march",
+   "branches": [
+    "lances",
+    "light_horse",
+    "scouts",
+    "spears",
+    "foot_men_at_arms",
+    "archers",
+    "crossbows",
+    "engineers",
+    "garrison",
+    "train",
+    "ships",
+    "household",
+    "conscripts",
+    "orders",
+    "hired"
+   ],
+   "feeds": "formation",
+   "teacher": "command",
+   "remedy": "slow",
+   "task": "battle",
+   "desc": "Out of the column and into the line before the enemy is on you."
+  },
+  {
+   "id": "foraging",
+   "name": "Foraging",
+   "family": "march",
+   "branches": [
+    "train",
+    "light_horse",
+    "scouts",
+    "spears",
+    "hired"
+   ],
+   "feeds": "march",
+   "teacher": "survival",
+   "task": "war",
+   "desc": "Finding bread and fodder in a land that hides them."
+  },
+  {
+   "id": "wagon_line",
+   "name": "Loading and the wagon line",
+   "family": "march",
+   "branches": [
+    "train"
+   ],
+   "feeds": "march",
+   "teacher": "stewardship",
+   "task": "march",
+   "desc": "Wagons loaded right, the line kept, nothing left behind."
+  },
+  {
+   "id": "boarding",
+   "name": "Boarding",
+   "family": "sea",
+   "branches": [
+    "ships"
+   ],
+   "feeds": "formation",
+   "ground": "coast",
+   "teacher": "sea",
+   "desc": "Over the rail with grapnel and axe."
+  },
+  {
+   "id": "stroke",
+   "name": "Rowing in stroke",
+   "family": "sea",
+   "branches": [
+    "ships"
+   ],
+   "feeds": "march",
+   "ground": "coast",
+   "teacher": "sea",
+   "desc": "Oars together, so the galley answers."
+  },
+  {
+   "id": "landing",
+   "name": "The landing",
+   "family": "sea",
+   "branches": [
+    "ships"
+   ],
+   "feeds": "formation",
+   "ground": "coast",
+   "teacher": "sea",
+   "task": "war",
+   "desc": "Out of the boats and formed on the shore before the enemy comes down."
+  }
+ ]
+}

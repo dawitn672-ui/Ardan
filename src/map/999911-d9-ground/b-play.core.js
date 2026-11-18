@@ -18,8 +18,10 @@
     const by = new Map(), names = new Map(); let men = 0, sum = 0;
     for (const d of divs) {
       const r = d && d.loc !== pid ? D9.attack(d.loc, pid) : null, n = Math.max(1, d.men || 1);
-      men += n; sum += n * (r ? r.f : 1);
-      if (r) { by.set(d, r.f); names.set(r.name, (names.get(r.name) || 0) + n); }
+      // D11-2: a division with the player's carpenter or engineers comes over the river at less cost (A.UNITS.crossF)
+      const f = r ? (A.UNITS && A.UNITS.crossF ? A.UNITS.crossF(d, r.f) : r.f) : 1;
+      men += n; sum += n * f;
+      if (r) { by.set(d, f); names.set(r.name, (names.get(r.name) || 0) + n); }
     }
     if (!by.size) return null;
     let name = null, best = -1; for (const [k, v] of [...names].sort((x, y) => (x[0] < y[0] ? -1 : 1))) if (v > best) { best = v; name = k; }
