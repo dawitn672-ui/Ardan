@@ -183,11 +183,6 @@ export default {
     const r = await pg.evaluate(async () => {
       T.enter({ seed: 38, startAge: 16 });
       const found = [], tick = () => new Promise(res => setTimeout(res, 0));
-      // (CI 143: a person's row on the People tab is "bond · age · post", and 99994-v2-family words a subordinate's bond
-      // "Under your command": "Under your command · 54 · Soldier" is a man of 54, not a command of 54. Seed 38's world
-      // gives the life a subordinate on a page the test reads since the market fix shifted the stream. The bond word is read
-      // apart from the age that follows it.)
-      const ROW = l => l.replace(/^under your command · \d{1,3} · /i, '');
       const scan = async where => {
         await tick();
         const t = document.body.innerText;
