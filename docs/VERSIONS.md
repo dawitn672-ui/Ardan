@@ -51,6 +51,7 @@ Tag a commit whose CI is green, or the end of a step the owner asked for. Say in
 | v2.1.0-alpha.7 | 2026-11-15 | `0e0996a` | C6: households at birth, how you met, no kin minted, one house resolver, parish faces, nine-month births; CI 121 green |
 | v2.1.0-alpha.8 | 2026-11-15 | `d5abc55` | C7: names and cultures (plain English names with each realm's lean, far peoples' own pools, names mixed along borders and trade, no twins, fiefs in their own tongue, four realms named for their governments); CI 124 green |
 | v2.1.0-alpha.9 | 2026-11-16 | `2aaf1ba` | C8c dress, class and regalia; X3 part 2 honest cards (station words, place, counsel by letter, children, pronouns, previews, a fatal illness arc); CI 129 green on 7aee21c |
+| v2.1.0-alpha.10 | 2026-11-18 | `b8a779a` | W1-1 no Marshal (five ranks, hosts, senior General); W1-2 A.WHY (every decision with reasons, temper and feelings); P3 playtest fixes (new life, free will, crown crimes, first mission, steps finish); S1 skills with levels, experience, concepts and breakthroughs (proficiencies retired); R2 every relationship needs a base; D9 the map's ground (roads, fords, passes, names; travel, supply, crossings); honest duel odds; the designs for war (D12a-2), growth (G0) and the iPhone route; CI 145 and long 15 green |
 <!-- versions:end -->
 
 v1.0.0 is the release file as uploaded; from v1.1.0 on, every version's `index.html` is built from that commit's

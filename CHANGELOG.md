@@ -5,6 +5,8 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+## v2.1.0-alpha.10 (2026-11-18 06:39 ET) · Reasons for everything: no Marshal, minds that decide, skills that grow like people, doors that open by standing, and a map with roads
+
 - **The Dynasty tab explains its figures.** An ending found in an earlier life says how many lives found it, and the
   inheritance card's purse, lands, renown and friends each open what passes to your heir and why.
 - **A friend's next rank reads in words even after a quarrel.** When more wrong than kindness lies between you, the
