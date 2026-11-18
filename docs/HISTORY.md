@@ -1596,3 +1596,12 @@ After `fa1e665` (ci-2599 merged; long run 14 green) the quick tier failed three 
 - **Checks:** the three tests (b5Budget and scPhone in both browsers), `scPhoneFit`.
 - **Commits:** `3752182`, `0023746`, `4d9ed03`, then this entry and `index.html`.
 - **Undo:** revert them; only `0023746` changes what the player reads.
+
+### H-074 addendum · 2026-11-18 · I1-2 merged with v2.1.0-alpha.10
+- Merged `origin/v2-integration` (S1 skills page, R2 reach, D9 map, W1-2) into `i1-2`; conflicts only in `CHANGELOG.md`
+  and `docs/HISTORY.md` (both sides kept) and `index.html` (rebuilt). Tap probe on the merged build: **0 of 454 controls under
+  44 points** (before the merge's last fix 4: the profile's `li.pf-sk` skill rows, now 44 tall in `9990-tap-targets`). The new
+  `.skrow` rows, the skills sheet, the person view and R2's "out of reach" line were already 44 or more; the probe
+  (`tap-probe.mjs`) and `tapTargets44` now visit the skills sheet and a person met, and the S1b exception is dropped.
+  Tests (merged build, `--workers=2`): the 10 core tests and 16 feature tests (profile, audio, tap, scene card, folds, title,
+  endings, mods) 26 of 26 pass.
