@@ -1726,3 +1726,22 @@ choose that path"); `docs/design/war.md` §10 and §16; D-064 points 7 and 8; de
   d9-map's: a merge, not a conflict.)
 - **Undo:** revert `w1-4`'s commits (base `26e0068`, W1-3's rebuild); the levy's code is in `archive/w1-4-levies/` and in
   `26e0068`.
+- **Addendum, 2026-11-18: merged with `origin/v2-integration` at `65eb7ba`** (v2.1.0-alpha.10, I1-2, R2, D9, S1b's fixes,
+  the speed fix, the market hash, CI fixes). Conflicts only in `CHANGELOG.md` (both kept: W1-3 and W1-4 in Unreleased with
+  the iPhone entry, then alpha.10), `docs/HISTORY.md` (both kept: the CI addenda and H-077 to H-080 before H-075/H-076)
+  and `index.html` (rebuilt). D9's edits to `10-companies-and-war-staff-b.js` and `11-armies-divisions-and-council-a.js`
+  (supply and marches by road, river crossings) merged beside W1-4's without overlap; the ledger's hunger reads the war
+  map's supply ratio, which D9's roads now shape. `A.WHY.courtW` (the court's multipliers as log-odds) is W1-2's war
+  council's and is not used by W1-4's decisions. No new use of the old word came in (`w4NoLevyLint`).
+  Two faults the merged world met, fixed:
+  - **`coherencyBaseline`** rose by one ("one ruler per realm": seed 7103, Tessaria in 1117, its ruler dead). Livia
+    Tessaran ruled Tessaria and was made ruler of Prince Andros's Tessaria as its heir; `A.makeRuler` set her to the new
+    crown but left the old realm pointing at her, so when she died there, Tessaria kept a dead ruler. **Fix**
+    (`03-engine-base.js`, `A.makeRuler`): a ruler crowned in a second realm leaves his first throne to its heir (else
+    the old ruler's line, else a new noble), with a line of news. One holder per post.
+  - **`riGoldGetsUsed`** found one hoarding flag (seed 606, Hrimfell in 1116: a treasury of 38,269 on an income of 1,095).
+    W1-3's fine for a refused summons was a count's full strength × 9 (36,000), whatever the realm had left.
+    **Fix** (`9999951-commands/b-summons.core.js`, `A.CMD.collect`): a fine or shield money is the sum the law sets, but
+    no more than a year of the house's rents nor twice the crown's yearly income.
+  Tests on the merged build (`--workers=2`): the core suites with the men, commands, five-ranks and why features (47: every `w4*`, `cm*`, quick `w1*` and `why*` test, `coherencyBaseline`, `savesStillLoad`), then `renderRng`, `replayWithRender`, `poMusterRung`, `poMusterAsBefore`, `riGoldGetsUsed`, `riCourtInTheWorld`, `v2svOldCycle2`: 54 of 54 pass. `lint-reasons` 62, `lint-stages` ok, `--check-tiers` ok (60 long of 896), lint-events and lint-choices (men) clean, `node --test tests/v2` 118/118. Tap targets: `docs/research/ios/tap-probe.mjs` 0 of 450 controls under 44 points;
+  W1-4's own views at 375 by 667 (the lot, the proclamation, the release, the War tab's card): 0 under 44.

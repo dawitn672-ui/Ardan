@@ -175,6 +175,14 @@
     return { rec, e, F, divs };
   };
 
+  // what a crown can actually take from a lord (shield money, a fine): the sum the law sets, but no more than a year of
+  // his house's rents, nor more than the crown's writ can gather (twice its own yearly income). A realm that has lost
+  // most of its land keeps its lords' full strength on paper, and was paid fines and shield money many times its income
+  // (W1-4 merge: riGoldGetsUsed's hoarding flag, Hrimfell in 1116 fining a count 36,000 on an income of 1,095)
+  CM.collect = function (r, h, sum) {
+    const i = h ? CM.rungIdx(h.rung) : -1, rents = i >= 0 ? (GD.NOBLE_RUNGS[i].income || 0) : sum;
+    return Math.max(0, Math.round(Math.min(sum, rents || sum, Math.max(200, (r.income || 0) * 2))));
+  };
   // the contingent follows the answer: part holds half (rounded up), late holds all till the day, coin and refusal all
   CM.apply = function (e, h, r, w, divs) {
     const n = divs.length;
@@ -182,7 +190,7 @@
     else if (e.a === 'late') { e.arr = now() + clamp(Math.round(30 + (e.dist || 0) / 15), 30, 90); divs.forEach(d => hold(d, w, e.arr)); }
     else if (e.a === 'coin' || e.a === 'refuse' || e.a === 'ask') divs.forEach(d => hold(d, w, null));
     else divs.forEach(d => { if (d.hold && d.hold.w === w.id) delete d.hold; });
-    if (e.a === 'coin') { const c = Math.round(e.n * CM.T.scutPerMan); r.treasury = (r.treasury || 0) + c; e.c = c; }
+    if (e.a === 'coin') { const c = CM.collect(r, h, e.n * CM.T.scutPerMan); r.treasury = (r.treasury || 0) + c; e.c = c; }
     if (e.a === 'full') h.op = clamp((h.op != null ? h.op : 50) + 2, 0, 100);
     if (e.a === 'refuse') {
       const L = h.cmRef = Array.isArray(h.cmRef) ? h.cmRef : [];
@@ -431,7 +439,7 @@
     if (req && rho < req) { e.unf = 1; r.stability = clamp((r.stability || 50) - 2, 0, 100); CM.grieve(h, 'defied', 'a sentence the crown could not enforce'); return rec; }
     const op = d => { h.op = clamp((h.op != null ? h.op : 50) + d, 0, 100); };
     if (e.sen === 'accept') { r.stability = clamp((r.stability || 50) - .5, 0, 100); }
-    if (e.sen === 'fine') { const f = Math.round(CM.full(h) * CM.T.scutPerMan * 1.5); r.treasury = (r.treasury || 0) + f; e.fine = f; op(-6); }
+    if (e.sen === 'fine') { const f = CM.collect(r, h, CM.full(h) * CM.T.scutPerMan * 1.5); r.treasury = (r.treasury || 0) + f; e.fine = f; op(-6); }
     if (e.sen === 'hostages') { h.cmHost = A.S.year; op(-10); }
     if (e.sen === 'strip') { const d = CM.firstOf(CM.house(h)) || CM.divs(CM.house(h))[0]; if (d) delete d.own; op(-15); }
     if (e.sen === 'forsworn') { h.cmForsworn = A.S.year; op(-25); }
