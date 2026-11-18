@@ -4,7 +4,7 @@ export default {
     // every clickable thing is reachable by keyboard, Enter opens it, and focus survives the running clock
     await pg.evaluate(() => { UI.screen = 'title'; UI.render(); });
     await pg.click('text=Random life');
-    // (H-081: the life is waited for, not a fixed 300 ms a loaded runner can outrun)
+    // (H-082: the life is waited for, not a fixed 300 ms a loaded runner can outrun)
     await pg.waitForFunction(() => UI.screen === 'game' && A.S && A.pc() && document.querySelector('#tabbody'), null, { timeout: 30000 }).catch(() => {});
     await pg.evaluate(() => { UI.tab = 'people'; UI.refresh(); });
     await pg.waitForTimeout(100);

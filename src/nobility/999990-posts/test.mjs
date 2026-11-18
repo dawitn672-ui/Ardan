@@ -291,7 +291,7 @@ export default {
   // death vacates every post at once (R6): a councillor, a shire officer and a general, each left with no dead holder
   async postsDeathVacates(pg) {
     const r = await pg.evaluate('(' + SETUP.toString() + ')();(' + (() => {
-      // (H-081: the three to kill (a councillor, an officer, an army's general, three different living men) are the world's
+      // (H-082: the three to kill (a councillor, an officer, an army's general, three different living men) are the world's
       // to have; a world without all three is read again on the next seed, up to six)
       let r, seatK, cId, off, army, seed;
       for (seed = 37; seed < 43; seed++) {

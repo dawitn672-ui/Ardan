@@ -58,7 +58,7 @@ export default {
         const E = A.ECON, hv = E.HARVESTS.reduce((a, h) => a + h[0] * h[1], 0), self = r => (A.mkt(r.id).pr.grain || 0) * hv / Math.max(1, E.demand(r).grain || 0);
         return ECT.live().filter(r => A.mkt(r.id).ex.includes('grain')).sort((a, b) => self(b) - self(a) || (a.id < b.id ? -1 : 1))[0].id;
       };
-      // (H-081: the four importers were named realms, but whether a realm ships grain out is its world's draw; a named realm
+      // (H-082: the four importers were named realms, but whether a realm ships grain out is its world's draw; a named realm
       // that exports in its world now gives way to the first living realm by id there that does not, with neighbours to
       // trade with, so the median is always of four importers)
       const importer = rid0 => {

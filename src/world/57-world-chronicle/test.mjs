@@ -224,7 +224,7 @@ export default {
       const empty = view().v.skip;
       A.S.queue.shift(); delete A.WC._canon;
       A.WC.canon = canon;
-      // (H-081: a war near the player in 25 years is the world's draw. A world with none to cite drops the probe, rightly;
+      // (H-082: a war near the player in 25 years is the world's draw. A world with none to cite drops the probe, rightly;
       // the text and result are then read in the next world, up to four, which has one)
       let q, v, res, pc, cs, near, war, seed = 31;
       for (; seed < 35; seed++) {
@@ -345,7 +345,7 @@ export default {
       const realms = Object.values(A.S.realms).filter(x => !x.isRebel).length;
       // force one into the player's home: the scene comes
       const pc = A.pc(), chance = A.WC.plagueChance;
-      // (H-081: the player is struck at home, so he must be there. A shifted world's forty years made her a soldier whose
+      // (H-082: the player is struck at home, so he must be there. A shifted world's forty years made her a soldier whose
       // division stood elsewhere, and a scene that names the home town is not shown to one away from it (99999-x3-honest-
       // cards' X3.homeBreach, as it should be): the scene was queued every month and dropped every month. She leaves the
       // army for the strike; the life's other draws are the world's)
@@ -361,7 +361,7 @@ export default {
       // A.advance stops on them before the epidemic's month comes (80-orphan-flag-callbacks' events were enough to do it)
       const clearOthers = () => { A.S.queue = A.S.queue.filter(q => q.ev === 'wc_sickness_comes'); };
       clearOthers();
-      // (H-081: by the calendar, five months, not six steps. In a busy month (a shifted world's soldier met five prompts in
+      // (H-082: by the calendar, five months, not six steps. In a busy month (a shifted world's soldier met five prompts in
       // 33 days) the month's cap of scenes (99992-v2-time's V2T.MAX) holds the scene to the next month, as it holds any
       // rolled scene, and six short steps ended before it came back)
       const strike = () => { const d0 = A.absDay(); let got = false; for (let i = 0; i < 80 && !got && A.absDay() - d0 < 150; i++) { A.advance(31); got = A.S.queue.some(q => q.ev === 'wc_sickness_comes'); if (!got) clearOthers(); } return got; };

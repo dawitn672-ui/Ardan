@@ -209,7 +209,7 @@ export default {
     });
     // (H-082: six pairs were one world's luck. Measured: 17 of 36 pairs a word apart on the build of b8a779a (sets of six
     // read 3, 4, 1, 3, 3, 3) and 19 of 36 on a shifted world (2, 4, 3, 4, 3, 3): about half, so a bar of three of six
-    // failed one world in six. Eighteen pairs, and the bar is six (merge of H-081 and H-082): a spread of half reads under six about one world in
+    // failed one world in six. Eighteen pairs, and the bar is six (merge of H-082 and H-082): a spread of half reads under six about one world in
     // forty, and levels that keep a timetable (a word apart in a pair in seven or fewer) fail nine times in ten. That
     // the spread sits at the design's "at least half" itself (docs/design/skills.md) is the design's to judge, not this test's.)
     const apart = r.filter(x => x[2] >= 1).length;

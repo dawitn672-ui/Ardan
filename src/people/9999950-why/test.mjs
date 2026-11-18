@@ -69,7 +69,7 @@ export default {
       // crowns all waited (23 short of nerve, 18 for want of reasons) and declared no war in ten years, while seeds 6, 7,
       // 11, 12 and 13 declared 7, 5, 10, 4 and 8, each with its record (before the fix seed 5 declared 2, the others
       // 3 to 9: the pace did not change). So the test reads the next world when one keeps the peace (H-079).
-      // (H-081: up to eight worlds, not three. A decade of peace is one world's draw, about one in six on the readings above;
+      // (H-082: up to eight worlds, not three. A decade of peace is one world's draw, about one in six on the readings above;
       // eight in a row would be the crowns' war-making broken, and the test then fails naming the worlds read.)
       const declared = [];
       A.on('warStart', w => { if (w.why) declared.push(w.id); });

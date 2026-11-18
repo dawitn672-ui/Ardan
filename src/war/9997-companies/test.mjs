@@ -94,7 +94,7 @@ export default {
       const duty0 = A.UNITWORK && A.UNITWORK.onDuty; if (A.UNITWORK) A.UNITWORK.onDuty = () => false;
       let lived = null, payLines = 0;
       try {
-        // (H-081: the sixteen years are the test's frame, not the soldier's luck. A world where he dies or his realm falls
+        // (H-082: the sixteen years are the test's frame, not the soldier's luck. A world where he dies or his realm falls
         // inside them (both are the world's draws) is played again on the next seed, up to six; the pay day and the
         // spacing of the company's scenes are then read on a life that served the whole time.)
         lived = T.trySeeds([9742, 9744, 9745, 9746, 9749, 9750], seed => {

@@ -379,7 +379,7 @@ export default {
     // one story arc runs at a time (46-life-arcs): since B6 lifted the pool of initiative (D-019) the engaged bots act
     // about twice as often and, most likely, reach the skill and wealth other paths' arcs ask for, which then take the one place more
     // often, so 7 of 12 long lives met a kin arc before and 5 of 12 after. The bar follows the no-pool game (D-027)
-    // (H-081: bars from the readings, not from one world's. Twelve long lives are few: over the builds the same code read
+    // (H-082: bars from the readings, not from one world's. Twelve long lives are few: over the builds the same code read
     // 9, 7, 6, 5 and 5 of 12 meeting a kin arc, 17 and 10 arcs finished, 11 and 7 kinds, and CI 108 "6, 4, 4 kinds"
     // (H-015, H-037, H-048, D-027, H-079): a spread of two lives either side, so a bar of 40% failed on a quiet world often. The bars are a quarter of
     // the long lives, four finished and four kinds: under every reading, and still failed at once by arcs that stopped

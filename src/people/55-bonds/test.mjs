@@ -469,7 +469,7 @@ export default {
     // decision and A.WHY.warOdds a share of a logistic choice, which saturates; and since CI 140 the court's reasons (68's
     // memory of a wrong among them) weigh as the multipliers they were, so a pair with an old wrong starts high (0.65 with the
     // ledger ignored, 0.86 with it read: the chance x1.32, the odds x3.3)
-    // (H-081: A.WHY.warOdds is null when the crown does not weigh a war on that neighbour at all: relations too good and no
+    // (H-082: A.WHY.warOdds is null when the crown does not weigh a war on that neighbour at all: relations too good and no
     // feud hot. The pair is the world's (the first realm with a neighbour of three provinces), and on a shifted world the
     // ledger ignored left this pair at null, the grudge read at 0.0001: the ledger alone made the war thinkable, the most a
     // grudge can move it. Both runs share every other gate (not at war, no truce, not allies), so null is the odds of 0.)

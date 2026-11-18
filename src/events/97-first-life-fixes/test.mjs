@@ -77,7 +77,7 @@ export default {
       }
       if (pc.alive) break;
       }
-      out.seed = seed; out.lived = pc.alive;   // (H-081: no priest of six worlds living through the months is a fault, said so)
+      out.seed = seed; out.lived = pc.alive;   // (H-082: no priest of six worlds living through the months is a fault, said so)
       // a duty seen twice is held back for the rest of the life; the policy is read straight
       const duty = A.EV.du_ch_tithe, n0 = LF.n(pc, duty.id);
       pc.evN = pc.evN || {}; pc.flags.ev = pc.flags.ev || {};
