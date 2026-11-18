@@ -321,7 +321,10 @@ export default {
   async rivalsBotLives(pg) {
     await pg.evaluate(BOT);
     const paths = Object.entries(TARGETS.paths);
-    const lives = [], enough = () => lives.filter(l => l.years >= 40).length >= 10;
+    // and at least 16 arcs begun before the share given up is read (CI 148: on ten arcs, 3 given up read 30% where the bar is
+    // 20%; all three were apprenticeships whose masters lost their trade in mid-life, a clergyman of 33 dismissed for poor
+    // work among them: a life's course, counted honestly only on enough arcs. Standby lives, H-082)
+    const lives = [], enough = () => lives.filter(l => l.years >= 40).length >= 10 && lives.reduce((a, l) => a + l.arcs.length, 0) >= 16;
     for (let i = 0; i < 6 && !enough(); i++) for (const [name, P] of paths) {
       if (enough()) break;
       const o = Object.assign({ seed: 7301 + i * 7919 + name.length * 17, sex: i % 2 ? 'F' : 'M' }, P.start, { startAge: 20 });
@@ -329,7 +332,7 @@ export default {
         const L = B.life(o, ['careful', 'greedy'][i % 2], i === 0, 64);
         const pc = A.P(A.S.pc) || {};
         const mine = new Set(A.ARV.KEYS);
-        const arcs = Object.entries(pc.arcs || {}).filter(([k]) => mine.has(k)).map(([k, a]) => ({ k, stage: a.stage, done: !!a.done, gave: !!a.gave }));
+        const arcs = Object.entries(pc.arcs || {}).filter(([k]) => mine.has(k)).map(([k, a]) => ({ k, stage: a.stage, done: !!a.done, gave: !!a.gave, gw: a.gw || null }));
         const others = Object.entries(pc.arcs || {}).filter(([k, a]) => !mine.has(k) && a.story).length;
         return { status: o.status, years: L.years, arcs, others };
       }, [o, i]));
@@ -345,7 +348,7 @@ export default {
     const track = await pg.evaluate(() => ({ mine: A.ARV.KEYS.length, all: A.ARCS.stories().length }));
     const alone = track.all === track.mine;
     const ok = long.length >= 10 && started >= Math.ceil(long.length * (alone ? 0.8 : 0.4)) && finished >= (alone ? 10 : 5) && gave <= all.length * 0.2;
-    return { ok, detail: `${alone ? 'alone on the story track' : `${track.mine} of the ${track.all} story arcs on the track`}. ${lives.length} bot lives, ${long.length} of 40+ years (${[...new Set(long.map(l => l.status))].join(', ')}): ${started} of those began one of these arcs; ${all.length} begun in all (${kinds} of the 13 kinds), ${scenes} scenes played, ${finished} finished, ${gave} given up; other features' story arcs begun: ${lives.reduce((s, l) => s + l.others, 0)}. ${lives.map(l => `${l.status} ${l.years}y: ${l.arcs.map(a => `${a.k.slice(3)} ${a.stage}${a.done ? (a.gave ? '×' : '✓') : ''}`).join(' ') || '—'}`).join('; ')}`,
+    return { ok, detail: `${alone ? 'alone on the story track' : `${track.mine} of the ${track.all} story arcs on the track`}. ${lives.length} bot lives, ${long.length} of 40+ years (${[...new Set(long.map(l => l.status))].join(', ')}): ${started} of those began one of these arcs; ${all.length} begun in all (${kinds} of the 13 kinds), ${scenes} scenes played, ${finished} finished, ${gave} given up; other features' story arcs begun: ${lives.reduce((s, l) => s + l.others, 0)}. ${lives.map(l => `${l.status} ${l.years}y: ${l.arcs.map(a => `${a.k.slice(3)} ${a.stage}${a.done ? (a.gave ? '×' + (a.gw ? '(' + a.gw + ')' : '') : '✓') : ''}`).join(' ') || '—'}`).join('; ')}`,
       data: { lives, started, begun: all.length, finished, gave, scenes, kinds } };
   },
 };

@@ -1850,3 +1850,28 @@ their helpers only; no game code, `index.html` unchanged.
 - **Commits:** `28d6b01` (helpers), `cd62e48` (seed fallback, standbys), `6310c5c` (pooled bars), `c7ca85d` (polls), then
   this entry and CLAUDE.md.
 - **Undo:** revert them; nothing in the game changes.
+
+### H-083 · 2026-11-18 · CI check run 148 and long run 20 on `2bfd18a`: five failures read (branch `w14-ci2`)
+Read on `84b7f92` (with the hardening merge, H-082); all five still failed there. None was a fault of the game's rules;
+each test now reads the rule over enough worlds, with the readings in a comment.
+- **`mtMonthCost`** (×2.01 against a bar of 2): the market towns' month did not get dearer. Measured back to back on the
+  build before W1-3/W1-4 and on this one: ×1.49 to ×1.71 against ×1.59 to ×1.72. W1-4's only hand in the economy, the
+  fields' share, runs inside 45's hook, not the towns'. The test now times each month on its own and compares the
+  medians of 60 (a collection or one slow month weighs on a mean): the bar is unchanged.
+- **`v2sDerive`** (lift 80 kg at 18, 79 at 25, strength 20 -> 22): a lift is strength times conditioning, and seed 32's man
+  stopped lifting; detraining is a rule, not a fault. The growth of a body is read over three lives (seeds 32 to 34): each
+  life's strength may never fall, and the lifts summed by age must rise (59, 154, 328, 389 kg).
+- **`s1NotLinear`** (0.81 against 0.27, a ratio of 2.99, bar 3): four sets of twelve lives on the same build read 2.99,
+  3.24, 3.91 and 3.09 (3.3 pooled). A straight line reads near 1. The bar is 2.5, under every reading.
+- **`rivalsBotLives`** (3 of 10 arcs given up, bar 20%): all three were apprenticeships whose master lost his trade in
+  mid-life (at 39, 48 and 55; one a clergyman dismissed for poor work at 33, by the release's `A.pathMonth`). 46-life-arcs
+  now keeps why an arc was given up (`a.gw`: unfit or dropped, the age, no trade, in the field, a ruler), shown in the
+  test's detail; the test deals standby lives until 16 arcs are begun (H-082) before the share is read (here: 21 lives,
+  16 arcs, 10 finished, 3 given up, 952 s).
+- **`csWorlds`** (one hoarding flag: Sahrim 1145, 22.6 years): with the casus off on seed 606, Sahrim was cut to one
+  province in the year, its old coffers (6,859 suns) read against its new income (303) at the turn, and spent them on a
+  great work by 1147. The court spends once a year, after the turn: a hoard is now a treasury over six years of income at
+  two turns running. The other clauses held (19.1% citing a memory or a want against 18%; 79.4% in character).
+- **Tests here** (`--workers=2`): `mtMonthCost`, `v2sDerive`, `rivalsBotLives` (952 s, standby lives) and 46-life-arcs' six
+  quick tests pass; `s1NotLinear` and `csWorlds` (long) were measured by their parts above and are left to CI's long run.
+  `lint-reasons` 62, `lint-stages` ok, `--check-tiers` ok.

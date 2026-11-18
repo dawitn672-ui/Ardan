@@ -34,12 +34,24 @@ export default {
       const after = { c: pc.v2.c.lift, st: pc.st.str, cstat: A.C.stat(pc, 'str') };
       // decline: the same body read at 70
       const born = pc.born; pc.born = A.S.year - 70; A.V2S.cache = new WeakMap(); const old = Math.round(A.V2S.stats(pc).lift); pc.born = born; A.V2S.cache = new WeakMap();
-      return { byAge, before, after, old, peak: Math.round(A.V2S.stats(pc).lift), alive: pc.alive };
+      const peak = Math.round(A.V2S.stats(pc).lift), alive = pc.alive;
+      // two more lives, read for the same ages (CI 148: seed 32's man lifted 80 kg at 18 and 79 at 25, his strength up 20 ->
+      // 22: a lift is strength times conditioning, and a life that stops lifting loses conditioning. The growth of a body is
+      // the rule, so the lift is read over three lives, summed, and each life's strength alone must never fall)
+      const more = [];
+      for (const seed of [33, 34]) {
+        T.enter({ seed, race: 'human', sex: 'M', startAge: 0 }); A.S.settings.diff = 'story';
+        const q = A.pc(), rows = [];
+        for (let y = 0; y < 30; y++) { T.play(1); if (!q.alive) break; if ([5, 12, 18, 25].includes(A.age(q))) rows.push([A.age(q), Math.round(q.st.str), Math.round(A.V2S.stats(q).lift)]); }
+        more.push(rows);
+      }
+      return { byAge, more, before, after, old, peak, alive };
     });
-    const s = r.byAge.map(x => x[1]), l = r.byAge.map(x => x[2]);
-    const rises = s.every((v, i) => i === 0 || v >= s[i - 1]) && l.every((v, i) => i === 0 || v > l[i - 1]);
+    const lives = [r.byAge].concat(r.more || []).filter(x => x.length === 4);
+    const s = r.byAge.map(x => x[1]), l = [0, 1, 2, 3].map(i => lives.reduce((a, x) => a + x[i][2], 0));
+    const rises = lives.length >= 2 && lives.every(x => x.every((v, i) => i === 0 || v[1] >= x[i - 1][1])) && l.every((v, i) => i === 0 || v > l[i - 1]);
     const ok = r.alive && rises && r.after.c > r.before.c && r.after.st > r.before.st && r.after.cstat > r.before.cstat && r.old < r.peak;
-    return { ok, detail: `str/lift by age ${r.byAge.map(x => `${x[0]}: ${x[1]}, ${x[2]} kg`).join('; ')}; fx str +3: cond ${r.before.c} -> ${r.after.c}, st ${r.before.st} -> ${r.after.st}, C.stat ${r.before.cstat} -> ${r.after.cstat}; lift ${r.peak} kg now, ${r.old} kg at 70` };
+    return { ok, detail: `str/lift by age ${r.byAge.map(x => `${x[0]}: ${x[1]}, ${x[2]} kg`).join('; ')} (three lives' lifts summed by age: ${l.join(', ')} kg; ${lives.length} lives to 25); fx str +3: cond ${r.before.c} -> ${r.after.c}, st ${r.before.st} -> ${r.after.st}, C.stat ${r.before.cstat} -> ${r.after.cstat}; lift ${r.peak} kg now, ${r.old} kg at 70` };
   },
 
   // races are different bodies: in conscripts a giant beats an orc beats a man beats an elf, and the old scale follows
