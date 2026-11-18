@@ -75,7 +75,8 @@ export default {
     // W1-1, before W1-2) and 8 and 8 (CI 134). The plan's 10 to 20 is a pooled figure, the bench's
     // (tools/bench/rank-battle-effect.mjs over 300); this test guards that each layer moves the fight at all and never the
     // wrong way, which a result that stopped mattering (0 to 2 points) fails at once.
-    // (H-081: 7 sat inside that spread. The readings fell from 19 to 7 with the world, and a count of 8 on 100 (spread 2.7)
+    // (H-081: 7 sat inside that spread. The readings went from 19 to 7 with the world (and 18 and 16 on a world shifted by
+    // one draw), and a count of 8 on 100 (spread 2.7)
     // reads under 7 about one world in three, for each layer. The bar is now 3 points: under every reading so far, held to the
     // test's own words, a layer that stopped mattering (0 to 2) fails, and a true 8 reads under 3 about one world in eighty.)
     const ok = r.n >= 90 && wrong <= Math.floor(r.n * 0.02) && pts(line) >= 3 && pts(part) >= 3;

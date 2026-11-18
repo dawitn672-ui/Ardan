@@ -1545,3 +1545,75 @@ After `fa1e665` (ci-2599 merged; long run 14 green) the quick tier failed three 
 - **Checks:** the three tests (b5Budget and scPhone in both browsers), `scPhoneFit`.
 - **Commits:** `3752182`, `0023746`, `4d9ed03`, then this entry and `index.html`.
 - **Undo:** revert them; only `0023746` changes what the player reads.
+
+### H-081 · 2026-11-18 · Tests that hold in any world (test-hardening round)
+
+Every merge that moves the random stream failed about ten browser tests written around one seeded world (H-061 to
+H-080). This round makes the tests read the rule, not one world's luck, without loosening what they check. Tests and
+their helpers only; no game code, `index.html` unchanged.
+
+- **How the fragile ones were found:** the history's failures, then the whole quick tier (820 tests) run on a throwaway
+  build whose `A.newState` draws one extra `A.rand()` after `A.seed(seed)` (every world shifted at once; never
+  committed), then the changed tests on two and three extra draws. Long tests read from the history.
+- **The patterns** (now in CLAUDE.md, "The net"): `T.trySeeds(seeds, fn)` and `T.seedRun(from, n)` in `tests/helpers.mjs`
+  try worlds in turn, the world read named in the detail; standby lives play only while a count falls short; pooled
+  counts with bars set from the readings, written beside the bar; a poll for a state instead of a fixed wait.
+- **Seed fallback and standby lives:**
+  - `whyRecordsKept`: up to eight worlds (was three) for a decade with a war; fails naming them if none.
+  - `coRoutineOnce`: the sixteen years are read on a soldier who lived them in a standing realm (up to six worlds), the
+    honour scene on one with a company (up to three); the pay-day lines are the first life's.
+  - `wcTokens`: the probe's text and result read in the first of four worlds with a war near the player.
+  - `postsDeathVacates`: the first of six worlds with a councillor, an officer and a general to kill.
+  - `lfDoors`: says so when no priest of the six worlds lives the eighty months.
+  - `x3PreviewReplay400`: six more standby lives (two were one world's margin).
+  - `v2sPlaytest2Body`: a boy who dies before 17 is followed by the next seed's (up to four).
+  - `uwFirstMission`: standby recruits (up to eight) while fewer than four of five lived the two years.
+  - `famineTriplesGrain`: a named importer that ships grain out in its world gives way to the first realm there that
+    does not, so the median is always of four importers.
+- **Found by the shifted world** (originals failed there, the reasons read):
+  - `wcEpidemic`: two causes. In a busy month the month's cap of scenes (99992-v2-time) holds the epidemic's scene to
+    the next, and six short steps of 2 to 12 days ended first: the strike runs five months by the calendar. And the
+    forty years made the player a soldier whose division stood elsewhere, so X3's home guard dropped a scene naming the
+    home town every month, rightly: the player leaves the army for the strike.
+  - `bondsFeudInherited`: on the shifted world's pair, with the ledger ignored, `A.WHY.warOdds` was null (no war weighed:
+    relations too good, no feud hot), and 0.0001 with it read. Null is the odds of 0 (every other gate is shared).
+  - `v2sOddsShape`: read `A.S.rngState` into an unused name and threw when the test ran before the title's world was made
+    (menuStartsVaried's race); the world is made first.
+  - `s1TwoLives`: six pairs, "at least half a word apart": 17 of 36 pairs on this build (sets of six: 3, 4, 1, 3, 3, 3),
+    19 of 36 shifted (2, 4, 3, 4, 3, 3). Eighteen pairs, bar five (a spread of half reads under five one world in
+    seventy; a timetable fails nine times in ten). The spread sits at the design's own "at least half" (skills.md).
+- **Bars from the readings** (long tier, read from the history): `kinBotLives` (9, 7, 6, 5, 5 of 12 met a kin arc; bar a
+  quarter, four finished, four kinds; run here alone on one extra draw: 10 of 12, 16 began, 13 finished, 9 kinds, 738 s:
+  the same code reads 5 or 10 by the world), `rankMovesTheFight` (19 to 7 points; bar 3: "a layer that stopped mattering fails"
+  holds, a true 8 reads under 3 one world in eighty; run here alone on one extra draw: 18 and 16 points, 1 wrong way,
+  pass, 960 s in this container). `c6NineMonths` reads at least five births (up to six lives).
+- **Polls:** `keyboard` and `uiSmoke` wait for the new life (`waitForFunction`), not 300 and 500 ms; `keyboard` waits up
+  to 3 s for Enter to open the card.
+- **Proof** (this container, the changed quick tests: 16):
+
+  | Build | Originals pass | Hardened pass |
+  |---|---|---|
+  | b8a779a as built | 16 (CI) | 16 |
+  | one extra draw | 12 | 16 |
+  | two extra draws | 14 | 16 |
+  | three extra draws | 15 | 16 |
+
+  The whole quick tier on one extra draw: 6 real failures of 817 (the four above, and the two below), apart from tests
+  that cannot run from a bare export (axe, the vendor file), which pass in the repository.
+- **Real faults the shifted worlds show (not fixed here; the tests are right and unchanged):**
+  - `ttPhone2`: the skill popover on a 375 × 740 phone has no height cap. On this build it runs 35 to 736 px (4 px to
+    spare); on one and three extra draws the merchant's longer skill text takes it to 12 to 807 px, past the screen.
+  - `cutPoolsKeepFloor`: a child of eight keeps 56 to 61% of the events he could draw after the cut (36 or 37 of 61 to
+    64), under the stated 60% floor in 15 of 16 worlds read (8 seeds, two builds); it passes only by the test's slack of
+    two events, and fails when a world gives 64 before and 36 after. Two or three more child events would clear it.
+  - `kinBotLives` (passes): on the shifted world two lives began "blood" (`ak_blood`) and gave it up at stage 0, the
+    shape of the `ak_inherit` gap H-079 closed: the arc may begin without asking whether the tree holds the dead aunt its
+    first scene needs (`kinRealTree`: one world in six has one). Worth the same look.
+  - `flBeastOdds` (passes, measured): over ten worlds the duel screen shows 66 to 68 for the 60-74 bin against beasts
+    and the beasts are beaten 55 to 65 times in a hundred (pooled 60.6): the refit of `GD.BEAST_DUEL` noted at CI 139.
+    Two worlds pooled keep it inside the test's 3.5 standard errors.
+- **Runtime:** `s1TwoLives` 28 s to about 60 s (in `tests/test-times.json`); the others cost more only on a world that
+  needs a standby (`c6NineMonths` up to half again). No test changes tier; `--check-tiers` ok.
+- **Commits:** `28d6b01` (helpers), `cd62e48` (seed fallback, standbys), `6310c5c` (pooled bars), `c7ca85d` (polls), then
+  this entry and CLAUDE.md.
+- **Undo:** revert them; nothing in the game changes.
