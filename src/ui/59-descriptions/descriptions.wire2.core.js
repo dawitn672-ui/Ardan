@@ -390,6 +390,10 @@
       .replace(/<div class="group-h">Achievements \(([^)]*)\)<\/div>/, (m, t) => `<div class="group-h">Achievements (${N('achs', '', t, { focus: true })})</div>`);
     const keys = Object.keys(GD.ACH); let i = 0;
     h = TT.within(h, '<div class="group-h">Achievements', null, seg => seg.replace(/<div class="card ach( lock)?"><b>/g, (m, l) => { const k = keys[i++]; return k ? `<div class="card ach${l || ''}"${UI.ttAttrs('ach', k)}><b>` : m; }));
+    // the inheritance card: a row's figure (the purse, the lands, the renown, the friends) opens what passes and why;
+    // the captured words are the page's, escaped once already, so they go into data-note as they are (H-079)
+    h = h.replace(/<div class="inh-row ([^"]*)"><b>([^<]*)<\/b><span>([^<]*\d[^<]*)<\/span><div class="tiny muted">([^<]*)<\/div>/g,
+      (m, c, nm, v, why) => `<div class="inh-row ${c}"><b>${nm}</b><span data-note="${nm}: ${why}">${v}</span><div class="tiny muted">${why}</div>`);
     // children: each one's age
     h = h.replace(/<div class="card person( sel)?"><div class="pp click" data-a="ov" data-v="person:([^"]+)">([\s\S]*?)<div class="sub">(\d+) · /g, (m, s2, id, mid, a) => `<div class="card person${s2 || ''}"><div class="pp click" data-a="ov" data-v="person:${id}">${mid}<div class="sub">${N('age', id, a)} · `);
     return TT.wireCosts(h);
