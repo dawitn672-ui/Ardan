@@ -16,15 +16,20 @@
   const L = A.LADDER, U = A.UNITS, MU = A.MUSTER;
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   L.T.npc = true;
-  const IDS = () => MU.roles().map(r => r.id);
-  const bit = k => { const i = IDS().indexOf(k); return i < 0 ? 0 : 1 << i; };
+  // the roles' bits, built once from the data (no allocation in the daily pass)
+  let IDL = null, BITS = null;
+  const IDS = () => IDL || (IDL = MU.roles().map(r => r.id));
+  const bit = k => { if (!BITS) { BITS = {}; IDS().forEach((id, j) => { BITS[id] = 1 << j; }); } return BITS[k] || 0; };
   const tplHas = (d, s) => { const t = A.tplOf ? A.tplOf(d) : null; return !!(t && (t.sup || []).includes(s)); };
   // the player's role, where it is: { div, b, ci, k } or null (read each call: a lookup, no allocation when he has none)
+  let PR = { r: null, co: '', k: '', v: null };
   const pcRole = () => {
     const pc = A.pc && A.pc(), r = pc && pc.alive && pc.mil && !pc.mil.merc ? pc.mil.role : null;
     if (!r || !r.co) return null;
+    if (r === PR.r && r.co === PR.co && r.k === PR.k) return PR.v;
     const p = r.co.split(':');
-    return { div: p[0], b: +p[1], ci: +p[2], k: r.k };
+    PR = { r, co: r.co, k: r.k, v: { div: p[0], b: +p[1], ci: +p[2], k: r.k } };
+    return PR.v;
   };
   // ---------------------------------------------------------------- the roles of a battalion's companies
   const MASKS = new WeakMap();
@@ -45,7 +50,20 @@
   };
   L.has = (d, i, ci, k) => !!(L.masks(d, i)[ci] & bit(k));
   L.share = (d, i, k) => { const m = L.masks(d, i); if (!m.length) return 0; const b = bit(k); let n = 0; for (const x of m) if (x & b) n++; return n / m.length; };
-  L.divShare = (d, k) => { if (!d || !Array.isArray(d.bs) || !d.bs.length) return 0; let s = 0; for (let i = 0; i < d.bs.length; i++) s += L.share(d, i, k); return s / d.bs.length; };
+  // a division's share of companies holding a role: kept beside the division (its battalions' count and the player's
+  // role key are the inputs), so the daily bread and the ledger read it without walking the companies
+  const DIVS = new WeakMap();
+  L.divShare = function (d, k) {
+    if (!d || !Array.isArray(d.bs) || !d.bs.length) return 0;
+    const P = pcRole(), pk = P && P.div === d.id ? P.b + ':' + P.ci + ':' + P.k : '', n = d.bs.length;
+    let c = DIVS.get(d);
+    if (!c || c.n !== n || c.pk !== pk || c.id !== d.id) { c = { n, pk, id: d.id, v: {} }; DIVS.set(d, c); }
+    if (c.v[k] == null) {
+      if (k[0] === '#') c.v[k] = tplHas(d, k.slice(1)) ? 1 : 0;   // a support company of the template
+      else { let s = 0; for (let i = 0; i < n; i++) s += L.share(d, i, k); c.v[k] = s / n; }
+    }
+    return c.v[k];
+  };
   // a key for 9997's resting-value cache: what of the player's role touches this battalion
   U.roleKey = function (d, i) { const P = pcRole(); return P && P.div === d.id && P.b === i ? P.ci + ':' + P.k : ''; };
 
@@ -53,13 +71,31 @@
   const MORALE = { bearer: 4, signaller: 3, cook: 2 };
   const own = {};
   for (const k of ['roleMorale', 'woundF', 'forageF', 'forageUnrestF', 'eatF', 'ledgerHolds', 'crossF']) own[k] = U[k];
+  const morOf = (d, i, mk) => {
+    if (!mk) return 0;
+    let v = 0;
+    if (mk & bit('bearer')) v += MORALE.bearer;
+    if (mk & bit('signaller')) v += MORALE.signaller;
+    if (mk & bit('cook')) v += MORALE.cook;
+    if (mk & bit('farrier') && GD.BN[d.bs[i].c] && GD.BN[d.bs[i].c].cat === 'horse') v += 3;
+    return v;
+  };
   U.roleMorale = function (d, i, ci) {
     if (!L.T.npc) return own.roleMorale(d, i);
     if (ci == null) ci = 0;
+    // the seed men's part, kept with the record's masks; the player's battalion worked out each time
+    const P = pcRole();
+    if (!P || P.div !== d.id || P.b !== i) {
+      let c = MASKS.get(d.bs[i]);
+      if (!c || c.id !== d.id || c.i !== i || c.n !== d.bs[i].k.length) { L.masks(d, i); c = MASKS.get(d.bs[i]); }
+      if (c) { if (!c.mor) c.mor = c.m.map(mk => morOf(d, i, mk)); return c.mor[ci] || 0; }
+    }
     const mk = L.masks(d, i)[ci] || 0;
     if (!mk) return 0;
     let v = 0;
-    for (const k in MORALE) if (mk & bit(k)) v += MORALE[k];
+    if (mk & bit('bearer')) v += MORALE.bearer;
+    if (mk & bit('signaller')) v += MORALE.signaller;
+    if (mk & bit('cook')) v += MORALE.cook;
     if (mk & bit('farrier') && GD.BN[d.bs[i].c] && GD.BN[d.bs[i].c].cat === 'horse') v += 3;
     return v;
   };
@@ -68,7 +104,7 @@
   U.forageUnrestF = d => (L.T.npc ? 1 - .4 * L.divShare(d, 'forager') : own.forageUnrestF(d));
   U.eatF = function (d) {
     if (!L.T.npc) return own.eatF(d);
-    return (tplHas(d, 'quart') ? .9 : 1) * (1 - .1 * L.divShare(d, 'clerk'));
+    return (L.divShare(d, '#quart') ? .9 : 1) * (1 - .1 * L.divShare(d, 'clerk'));
   };
   U.ledgerHolds = function (d) {
     if (!L.T.npc) return own.ledgerHolds(d);
