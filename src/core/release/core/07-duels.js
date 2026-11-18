@@ -2043,24 +2043,24 @@ A.UNIT_NAMES = ["Foot", "Spears", "Shields", "Bows", "Guard", "Watch", "Muster",
 
 A.milTitle = p => (p.mil ? GD.MIL[p.mil.rank].title : "");
 
+// [D11-1, R14] the unit a grade stands in, in the one glossary of five ranks (W1-1, war.md §9.1): a soldier and a
+// sergeant a section, a captain a company, a commander a wing, a General a host, the second step an army. The release
+// said "file", "hundred", "regiment" and "battle", which no rank leads any more.
 A.milUnitWord = rank =>
+  rank <= 2 ? "section" : rank <= 4 ? "company" : rank <= 5 ? "wing" : rank <= 6 ? "host" : "army";
+// [D11-1, R14] what a grade leads, in words (a promotion's line says it so, as the glossary does)
+A.milUnitPhrase = rank =>
   rank <= 0
-    ? "mess"
-    : rank <= 1
-      ? "file"
-      : rank <= 2
-        ? "section"
-        : rank <= 3
-          ? "hundred"
-          : rank <= 4
-            ? "company"
-            : rank <= 5
-              ? "wing"
-              : rank <= 6
-                ? "regiment"
-                : rank <= 7
-                  ? "battle"
-                  : "army";
+    ? "yourself"
+    : rank <= 2
+      ? "a section of about 12"
+      : rank <= 4
+        ? "a company of about 200"
+        : rank <= 5
+          ? "a wing of 600 to 3,000"
+          : rank <= 6
+            ? "a host of 3,000 to 12,000"
+            : "an army of one host or several";
 
 A.troopFor = function (pc, realm) {
   const d = GD.DOCTRINE[realm] || GD.DOCTRINE.unclaimed,
@@ -2084,13 +2084,14 @@ A.troopFor = function (pc, realm) {
   return pick ? pick[0] : "SP";
 };
 
-A.enlist = function (pc, merc) {
-  const res = enlistNow(pc, merc);
+// [D11-1] a third argument: { branch, cmd, company } chosen at the muster (src/war/9999955-muster, D-110)
+A.enlist = function (pc, merc, opts) {
+  const res = enlistNow(pc, merc, opts);
   if (pc && pc.mil && pc.mil.rankSince == null) pc.mil.rankSince = A.absDay();
   return res;
 };
 
-const enlistNow = function (pc, merc) {
+const enlistNow = function (pc, merc, opts) {
   const why = A.roleBlock(pc, merc ? "company" : "army");
   if (why)
     return {
@@ -2120,8 +2121,10 @@ const enlistNow = function (pc, merc) {
       ok: false,
       msg: "There is no realm army here to join.",
     };
-  const company = merc ? A.pick(A.COMPANY_NAMES) : null,
-    troop = A.troopFor(pc, realm || "unclaimed");
+  // [D11-1] the company named at its table, and the troop of the branch chosen at the muster (or the muster-master's
+  // own choice, through A.WHY: A.MUSTER.troopFor); the release's weighted pick only in a build without the muster
+  const company = merc ? (opts && opts.company) || A.pick(A.COMPANY_NAMES) : null,
+    troop = A.MUSTER && A.MUSTER.troopFor ? A.MUSTER.troopFor(pc, realm, merc, opts) : A.troopFor(pc, realm || "unclaimed");
   let rank = 0;
   if (!merc) {
     if (pc.status === "gentry" || (pc.noble && pc.noble.rung >= 2)) rank = 1;
@@ -2167,6 +2170,8 @@ const enlistNow = function (pc, merc) {
     joined: A.S.year,
   };
   if (merc) pc.mil.realm = null;
+  // [D11-1] the branch, its arm of service, the muster's command and a host of it (A.MUSTER.onEnlist)
+  if (A.MUSTER && A.MUSTER.onEnlist) A.MUSTER.onEnlist(pc, merc, opts);
   const g = GD.TROOP_GEAR[troop] || GD.TROOP_GEAR.SP,
     issue = (slot, k) => {
       if (
