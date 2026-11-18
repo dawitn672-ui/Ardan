@@ -111,12 +111,15 @@
   // the real kin a scene names, by role (read once, kept on the arc like anyone it makes)
   AK.KIN = {
     // a parent's brother who never married, living or lately dead, who holds nothing; else one written into the tree
+    isUnwedUncle(s) {
+      return s.sex !== 'F' && !AK.everWed(s) && !(s.children || []).length && !s.vows && holdsNothing(s)
+        && A.isAdult(s) && (s.alive || (s.died != null && A.S.year - s.died <= 1));
+    },
     unwedUncle(p) {
       const sides = [AK.parent(p, 'M'), AK.parent(p, 'F')].filter(Boolean);
       if (sides.length > 1 && A.chance(0.5)) sides.reverse();
       for (const par of sides) {
-        const u = AK.sibs(par).find(s => s.sex !== 'F' && !AK.everWed(s) && !(s.children || []).length && !s.vows && holdsNothing(s)
-          && A.isAdult(s) && (s.alive || (s.died != null && A.S.year - s.died <= 1)));
+        const u = AK.sibs(par).find(s => AK.KIN.isUnwedUncle(s));
         if (u) return u;
       }
       return sides.length ? AK.sibOf(p, sides[0], { sex: 'M', age: AK.adj(sides[0]) + A.ri(-5, 5) }) : null;
@@ -309,9 +312,15 @@
   S('ak_secret', { title: 'A child you did not know', lasting: 'bond', gap: [1, 3],
     stages: ['ak_secret_1', 'ak_secret_2', 'ak_secret_3', 'ak_secret_4', 'ak_secret_5'],
     start: (p, C) => C.adult(p) && adj(p) >= 30 && adj(p) <= 62 && (C.married(p) || AK.loves(p).length > 0) });
+  // (CI 143, H-079: since C6 (D-057) the first scene names only a real unwed uncle and a real grown cousin, and drops
+  // itself when the tree has none, but the arc began without asking, took the one story place and was given up at its
+  // first stage: 2 of the 4 arcs given up in long run 13's bot lives. It begins only when the tree can carry it; the
+  // reading draws nothing)
+  const millKin = p => [AK.parent(p, 'M'), AK.parent(p, 'F')].some(par => par && AK.sibs(par).some(s => AK.KIN.isUnwedUncle(s)))
+    && (AK.KIN.cousins(p).some(q => q.alive && A.isAdult(q)) || A.relsOf(p, ['cousin']).some(x => x.p && x.p.alive && A.isAdult(x.p)));
   S('ak_inherit', { title: "Your uncle's mill", lasting: 'wealth', gap: [1, 2],
     stages: ['ak_inherit_1', 'ak_inherit_2', 'ak_inherit_3', 'ak_inherit_4'],
-    start: (p, C) => C.adult(p) && adj(p) >= 20 && adj(p) <= 64 && !C.ruler(p) });
+    start: (p, C) => C.adult(p) && adj(p) >= 20 && adj(p) <= 64 && !C.ruler(p) && millKin(p) });
   S('ak_sibling', { title: 'The one who came back', lasting: 'bond', gap: [1, 3],
     stages: ['ak_sibling_1', 'ak_sibling_2', 'ak_sibling_3', 'ak_sibling_4', 'ak_sibling_5'],
     start: (p, C) => C.adult(p) && adj(p) >= 20 && adj(p) <= 52 });
