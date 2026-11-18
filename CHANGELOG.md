@@ -27,6 +27,20 @@ What changed for the player, in plain words, one section per version (newest fir
   busy life, and once you are ready for a new word the chance to prove it comes to you within a year.
 - **Old saves:** every skill becomes the level under its old number (no word is lost; the rest goes on the bar), the
   folded skills become specialisms, and gifts become talent letters.
+- **Every relationship needs a base.** A king will not get to know a peasant, and most lords will not look at one. Who
+  lets you near follows the gap between you, his pride and his temper, his own birth (a baron risen from the plough
+  sympathises; a duke born to gold does not), what he needs of you (your sword in a war, your skill, your silence, your
+  coin, your voice in council) and what you share (you serve him, stood in his line, shared his cell or his lessons).
+  You shift the scales by knighthood and a good name, mastery, renown, wealth, a deed, and a friend who knows you both.
+  What is out of reach is not offered, and a note says why; what is within reach but not sure is an attempt, and he
+  answers with his reason ("Lord Aymer will hear you now: a knight of your name is worth an hour"). A refusal stands for
+  the year. Patrons, a great house's match for your child and your friends' circles follow the same base.
+- **The map has roads, fords and passes.** High roads and tracks join the towns, most of which now stand on a river or the shore;
+  every road meets a river at a ford or a bridge, and mountain roads go over named passes. Woods, marsh, tributaries and the
+  names of seas, ranges, rivers and forests are on the map, and no two neighbouring realms share a colour.
+- **The ground matters.** You travel and armies march faster on the roads, supply runs along roads and rivers, and an attack
+  across a river or through a pass costs the attacker, as the battle report says. Oases lie in dry country, and hills no longer
+  cover half the land.
 - **Kings and lords decide for reasons you can read.** A crown goes to war, a great house joins or leaves a faction, and
   the king names his first host's General by weighing named reasons (an insult, bad blood, a cause, his Generals' count
   of the enemy's spears, an old wrong, a debt, his temper), never by a roll of the dice alone. The news of a war now ends

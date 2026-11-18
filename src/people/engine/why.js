@@ -41,6 +41,9 @@ export const KINDS = {
   ambition: T => 1 + .8 * ax(T, 'ambition'),
   want: T => 1 + .4 * ax(T, 'ambition'),
   claim: T => 1 + .3 * ax(T, 'pride') + .3 * ax(T, 'ambition'),
+  // R2 (rule 19, D-080): pride of place weighs against letting a lower man near; warmth and humility for him
+  station: T => 1 + .8 * ax(T, 'pride') - .4 * ax(T, 'warmth'),
+  sympathy: T => 1 + .6 * ax(T, 'warmth') - .3 * ax(T, 'pride'),
   merit: () => 1,
   temper: () => 1,
   feeling: () => 1,

@@ -274,6 +274,8 @@
     t.dead += dA + dD;
     if (mods.terr && mods.terr !== 1) t.ground += dD * (1 - 1 / mods.terr);
     if (mods.winter && mods.winter !== 1) t.winter += dD * (1 - 1 / mods.winter);
+    // D9 (999911-d9-ground): the attack came over a river or through a pass, and the report names where
+    if (mods.cross && mods.cross !== 1) { t.cross = (t.cross || 0) + dD * (1 - 1 / mods.cross); if (mods.crossN) t.crossN = mods.crossN; }
     if (mods.fort) { const fm = 1 - 0.08 * mods.fort * (1 - (m ? m.fortIgnore : 0)); if (fm > 0 && fm < 1) t.walls -= dD * (1 / fm - 1); }
     if (m) {
       const aMul = m.aDmg * m.casD, dMul = m.dDmg * m.casA;
@@ -302,6 +304,7 @@
     const add = (label, kv, note) => { const pct = rnd(100 * sg * kv / t.dead); if (pct) all.push({ label, pct, note: note || '' }); };
     const P = A.S.prov[F.loc] || {};
     add('The ground', t.ground, P.terr);
+    if (t.cross) add(t.crossN ? t.crossN[0].toUpperCase() + t.crossN.slice(1) : 'The crossing', t.cross);
     add('Winter', t.winter);
     add('The walls', t.walls);
     add('Drill, kit and experience', t.qual);

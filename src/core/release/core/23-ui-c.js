@@ -1131,28 +1131,15 @@ UI.gmDraw = function () {
     pc = A.pc(),
     focus = UI.mapFocus ? UI.mapFocus() : null,
     zoom = 7e3 / v.w;
-  // [X1 baked patch map/62-inked-map IM-GROUND-VIEW] The zoomable maps (the full map UI.gmDraw and the war room
-  // UI.drawWarBasic) ask MAP.ground for the inked ground of their view rectangle v before falling back to the relief
-  // picture.
-  if (
-    !(MAP.ground && MAP.ground(ctx, W, H, v)) &&
-    ((ctx.fillStyle = "#1d3b57"), ctx.fillRect(0, 0, W, H), MAP.img && MAP.img.complete && MAP.img.naturalWidth)
-  ) {
-    const iw = MAP.img.naturalWidth,
-      ih = MAP.img.naturalHeight;
-    ctx.drawImage(MAP.img, (v.x0 / 7e3) * iw, (v.y0 / 4500) * ih, (v.w / 7e3) * iw, (v.h / 4500) * ih, 0, 0, W, H);
-  }
-  const sx = (v.x0 / 7e3) * MAP.gw,
-    sy = (v.y0 / 4500) * MAP.gh,
-    sw = (v.w / 7e3) * MAP.gw,
-    sh = (v.h / 4500) * MAP.gh;
-  ctx.imageSmoothingEnabled = zoom > 1.4;
-  ctx.drawImage(MAP.overlay(UI.mapMode || "political", UI.mapHl || null, focus), sx, sy, sw, sh, 0, 0, W, H);
-  if (S.wars.length && focus && A.atWar(focus).length) ctx.drawImage(MAP.front(focus), sx, sy, sw, sh, 0, 0, W, H);
-  // [X1 baked patch map/62-inked-map IM-LINES] Right after each map lays its realm colours (MAP.draw, the full map,
-  // the war room), MAP.inkLines inks the borders, towns and keeps over them, so the wash never greys the line work.
-  ctx.imageSmoothingEnabled = true;
-  if (MAP.inkLines) MAP.inkLines(ctx, W, H, v);
+  // [D9] the map's layers, as every map lays them (MAP.paint, 21-map.js)
+  MAP.paint(
+    ctx,
+    W,
+    H,
+    v,
+    MAP.overlay(UI.mapMode || "political", UI.mapHl || null, focus),
+    S.wars.length && focus && A.atWar(focus).length ? MAP.front(focus) : null,
+  );
   const P = (kx, ky) => [((kx - v.x0) / v.w) * W, ((ky - v.y0) / v.h) * H];
   if (UI.gm.sel != null) {
     const p = A.prov(UI.gm.sel);

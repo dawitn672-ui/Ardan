@@ -28,6 +28,7 @@ var __ARDAN_V2_MAKE = (() => {
     face: () => face_exports,
     figure: () => figure_exports,
     game: () => game_exports,
+    ground: () => ground_exports,
     growth: () => growth_exports,
     kin: () => kin_exports,
     names: () => names_exports,
@@ -36,6 +37,7 @@ var __ARDAN_V2_MAKE = (() => {
     odds: () => odds_exports,
     orders: () => orders_exports,
     races: () => races_exports,
+    reach: () => reach_exports,
     render: () => render_exports,
     renown: () => renown_exports,
     rng: () => rng_exports,
@@ -296,7 +298,7 @@ var __ARDAN_V2_MAKE = (() => {
     giantArms: { name: "giant-forged maul and hide", mult: 1.5 }
   };
   function makeGenes(rng, race, sex, parents = null) {
-    const R2 = RACES[race];
+    const R3 = RACES[race];
     const g2 = {};
     const inherit3 = (key, sd) => {
       if (parents && parents[0] && parents[1]) {
@@ -307,7 +309,7 @@ var __ARDAN_V2_MAKE = (() => {
     };
     for (const k of PHYS) g2[k] = clamp(inherit3(k, 0.12), 0.6, 1.6);
     for (const k of PHYS) g2[k + "Ceil"] = clamp(inherit3(k + "Ceil", 0.1), 0.7, 1.5);
-    const [hm, hs] = R2.height[sex];
+    const [hm, hs] = R3.height[sex];
     if (parents && parents[0] && parents[1]) {
       const pz = parents.map((p) => p.genes.heightZ ?? 0);
       g2.heightZ = (pz[0] + pz[1]) / 2 * 0.65 + rng.normal(0, 0.75);
@@ -315,7 +317,7 @@ var __ARDAN_V2_MAKE = (() => {
     g2.adultHeight = hm + g2.heightZ * hs;
     g2.build = clamp(1 + rng.normal(0, 0.08), 0.8, 1.3);
     for (const k of MENTAL) {
-      const base = R2.mental[k];
+      const base = R3.mental[k];
       if (parents && parents[0] && parents[1]) g2[k] = (parents[0].genes[k] + parents[1].genes[k]) / 2 * 0.5 + base * 0.5 + rng.normal(0, 11);
       else g2[k] = base + rng.normal(0, 15);
     }
@@ -339,28 +341,28 @@ var __ARDAN_V2_MAKE = (() => {
     return NATURAL_MAX[attr] * person2.genes[attr + "Ceil"] * person2.body.ceilBoost[attr];
   }
   function stats(person2, age = person2.age) {
-    const R2 = RACES[person2.race], g2 = person2.genes, b = person2.body, sex = person2.sex;
+    const R3 = RACES[person2.race], g2 = person2.genes, b = person2.body, sex = person2.sex;
     const mat = physicalMaturity(person2.race, age);
-    const sf = sex === "female" ? R2.sexFactor : { lift: 1, sprint: 1, march: 1, toughness: 1 };
+    const sf = sex === "female" ? R3.sexFactor : { lift: 1, sprint: 1, march: 1, toughness: 1 };
     const woundMult = woundFactor(b.wounds);
     const height = g2.adultHeight * heightFraction(person2.race, sex, age);
-    const bmiAge = age < R2.adultAge ? R2.bmi * (0.72 + 0.28 * Math.min(1, age / R2.adultAge)) : R2.bmi;
+    const bmiAge = age < R3.adultAge ? R3.bmi * (0.72 + 0.28 * Math.min(1, age / R3.adultAge)) : R3.bmi;
     const weight = bmiAge * g2.build * (height / 100) ** 2 * (1 + (b.cond.lift - 1) * 0.08);
     const c = b.cond;
     const s = {
       height: Math.round(height),
       weight: Math.round(weight),
-      lift: R2.base.lift * sf.lift * g2.lift * mat * c.lift * woundMult.lift,
-      sprint: R2.base.sprint * sf.sprint * g2.sprint * Math.sqrt(mat) * (1 + (c.sprint - 1)) * woundMult.speed,
-      march: R2.base.march * sf.march * g2.march * mat * c.march * woundMult.speed,
-      reaction: R2.base.reaction / (g2.reaction * c.reaction) * reactionAgeFactor(person2.race, age),
-      toughness: R2.base.toughness * sf.toughness * g2.toughness * (0.3 + 0.7 * mat) * c.toughness
+      lift: R3.base.lift * sf.lift * g2.lift * mat * c.lift * woundMult.lift,
+      sprint: R3.base.sprint * sf.sprint * g2.sprint * Math.sqrt(mat) * (1 + (c.sprint - 1)) * woundMult.speed,
+      march: R3.base.march * sf.march * g2.march * mat * c.march * woundMult.speed,
+      reaction: R3.base.reaction / (g2.reaction * c.reaction) * reactionAgeFactor(person2.race, age),
+      toughness: R3.base.toughness * sf.toughness * g2.toughness * (0.3 + 0.7 * mat) * c.toughness
     };
-    s.lift = Math.min(s.lift, R2.limit.lift);
-    s.sprint = Math.min(s.sprint, R2.limit.sprint);
-    s.march = Math.min(s.march, R2.limit.march);
-    s.reaction = Math.max(s.reaction, R2.limit.reaction);
-    s.toughness = Math.min(s.toughness, R2.limit.toughness);
+    s.lift = Math.min(s.lift, R3.limit.lift);
+    s.sprint = Math.min(s.sprint, R3.limit.sprint);
+    s.march = Math.min(s.march, R3.limit.march);
+    s.reaction = Math.max(s.reaction, R3.limit.reaction);
+    s.toughness = Math.min(s.toughness, R3.limit.toughness);
     const mm = mentalMaturity(person2.race, age);
     for (const k of MENTAL) s[k] = g2[k] * (k === "judgment" ? 1 : mm) + (k === "judgment" ? judgmentAgeBonus(person2.race, age) : 0) + (person2.mentalXp?.[k] ?? 0);
     return s;
@@ -474,8 +476,8 @@ var __ARDAN_V2_MAKE = (() => {
     return PEER[attr][peerBand(r)];
   }
   function describe(person2) {
-    const s = stats(person2), R2 = RACES[person2.race];
-    const age = person2.realAge ?? person2.age, minor = age < R2.adultAge;
+    const s = stats(person2), R3 = RACES[person2.race];
+    const age = person2.realAge ?? person2.age, minor = age < R3.adultAge;
     const pick = (ref, v) => {
       let r = ref[0][1];
       for (const [t, w] of ref) if (v >= t) r = w;
@@ -508,7 +510,7 @@ var __ARDAN_V2_MAKE = (() => {
       const v = !minor ? s[k] : k === "judgment" ? s[k] - judgmentAgeBonus(person2.race, age) : s[k] / Math.max(0.05, mm);
       out[k] = mindWords(v, k, minor);
     }
-    out.raceNote = R2.name;
+    out.raceNote = R3.name;
     return out;
   }
   var BASE_ADULT_MALE_HUMAN = { lift: 130, sprint: 7.2, march: 28, reaction: 1 / 250, toughness: 1 };
@@ -541,8 +543,8 @@ var __ARDAN_V2_MAKE = (() => {
   }
   function oneIn(z) {
     const p = 0.5 * erfc(z / Math.SQRT2);
-    const n = 1 / p;
-    return n < 20 ? Math.round(n) : n < 1e3 ? Math.round(n / 10) * 10 : n < 1e4 ? Math.round(n / 100) * 100 : "ten thousand";
+    const n3 = 1 / p;
+    return n3 < 20 ? Math.round(n3) : n3 < 1e3 ? Math.round(n3 / 10) * 10 : n3 < 1e4 ? Math.round(n3 / 100) * 100 : "ten thousand";
   }
   function erfc(x) {
     const t = 1 / (1 + 0.5 * Math.abs(x));
@@ -613,10 +615,10 @@ var __ARDAN_V2_MAKE = (() => {
     const deedWeight = success ? Math.exp(Math.max(0, -edge) * 0.9) * (tier === "triumph" ? 1.6 : 1) : 0;
     return { success, tier, perf, edge, blundered, surged, strain, breakthrough: breakthrough2, deedWeight, reasons: reasons2, label };
   }
-  function expectedChance(rng, args, n = 4e3) {
+  function expectedChance(rng, args, n3 = 4e3) {
     let s = 0;
-    for (let i = 0; i < n; i++) s += attempt(rng, args).success ? 1 : 0;
-    return s / n;
+    for (let i = 0; i < n3; i++) s += attempt(rng, args).success ? 1 : 0;
+    return s / n3;
   }
 
   // src/family/engine/kin.js
@@ -711,8 +713,8 @@ var __ARDAN_V2_MAKE = (() => {
       const base = g(other, "uncle", "aunt");
       return { term: da === 2 ? base : da === 3 ? "great-" + base : "great-".repeat(da - 3) + "grand" + base, degree: da, line: "parent-sibling" };
     }
-    const n = Math.min(da, db) - 1, removed = Math.abs(da - db);
-    return { term: `${ORD[n] ?? n + "th"} cousin${removed ? " " + (REMOVED[removed] ?? removed + " times removed") : ""}`, degree: da + db - 1, line: "cousin" };
+    const n3 = Math.min(da, db) - 1, removed = Math.abs(da - db);
+    return { term: `${ORD[n3] ?? n3 + "th"} cousin${removed ? " " + (REMOVED[removed] ?? removed + " times removed") : ""}`, degree: da + db - 1, line: "cousin" };
   }
   function affinalTerm(people, me, other) {
     if (me.spouseIds.includes(other.id)) return { term: g(other, "husband", "wife"), degree: 0.5, line: "spouse" };
@@ -970,7 +972,7 @@ var __ARDAN_V2_MAKE = (() => {
     const ahead = r.line.slice(0, i).map((e) => e.person.name).join(", ");
     return { place: i + 1, text: `You are ${ordinal(i + 1)} in line. Ahead of you: ${ahead}.`, ...r };
   }
-  var ordinal = (n) => n + (["th", "st", "nd", "rd"][(n % 100 - 20) % 10] || ["th", "st", "nd", "rd"][n % 100] || "th");
+  var ordinal = (n3) => n3 + (["th", "st", "nd", "rd"][(n3 % 100 - 20) % 10] || ["th", "st", "nd", "rd"][n3 % 100] || "th");
 
   // src/people/engine/renown.js
   var renown_exports = {};
@@ -1239,18 +1241,18 @@ var __ARDAN_V2_MAKE = (() => {
     const memo2 = p.needMemo, mk = memo2 ? k + "|" + c.id : null;
     if (memo2 && memo2.has(mk)) return memo2.get(mk);
     const w = conceptWord(k, c), t = p.talent && p.talent[k] || "C", key = `${p.seed}|${p.id}|${k}|${c.id}`;
-    let n;
-    if (unit(key + "|blind") < BLIND[t] * BLIND_WORD[w]) n = Infinity;
+    let n3;
+    if (unit(key + "|blind") < BLIND[t] * BLIND_WORD[w]) n3 = Infinity;
     else {
       const gift = p.gift && p.gift[k] != null ? p.gift[k] : normal(`${p.seed}|${p.id}|${k}|gift`);
       const z = 0.65 * gift + 0.75 * normal(key);
-      n = Math.max(1, Math.round(NEED[w] * Math.pow(2, NEED_SPREAD * z) / TALENT[t][0]));
+      n3 = Math.max(1, Math.round(NEED[w] * Math.pow(2, NEED_SPREAD * z) / TALENT[t][0]));
     }
     if (memo2) {
       if (memo2.size > 600) memo2.clear();
-      memo2.set(mk, n);
+      memo2.set(mk, n3);
     }
-    return n;
+    return n3;
   }
   function graspWord(ins, nd, years) {
     if (ins >= nd) return "grasped";
@@ -1480,27 +1482,27 @@ var __ARDAN_V2_MAKE = (() => {
       s.xp += x;
       s.used = age;
       led(p, age, k, x, a.why, tags);
-      const T3 = touched[k] || (touched[k] = { q: 0, why: a.why, x: 0, trig: [], teacherHolds: false });
+      const T5 = touched[k] || (touched[k] = { q: 0, why: a.why, x: 0, trig: [], teacherHolds: false });
       const iq = a.q === "stretch" ? a.failed ? p.proud ? INSIGHT.quality.failed * INSIGHT.proudFail : INSIGHT.quality.failed : INSIGHT.quality.stretch : a.q === "work" ? q <= 0.1 ? INSIGHT.quality.workPast : INSIGHT.quality.work : INSIGHT.quality[a.q];
-      if (iq > T3.q) T3.q = iq;
-      if (x >= T3.x) {
-        T3.x = x;
-        T3.why = a.why;
+      if (iq > T5.q) T5.q = iq;
+      if (x >= T5.x) {
+        T5.x = x;
+        T5.why = a.why;
       }
-      if (a.trigger) T3.trig.push([a.trigger, a.why]);
+      if (a.trigger) T5.trig.push([a.trigger, a.why]);
       if (a.teacher != null) {
-        T3.teacher = Math.max(T3.teacher || 0, a.teacher);
-        T3.who = a.who;
-        if (a.holds === false) T3.noHold = true;
+        T5.teacher = Math.max(T5.teacher || 0, a.teacher);
+        T5.who = a.who;
+        if (a.holds === false) T5.noHold = true;
       }
       if (a.q === "stretch" && !a.failed && atEdge(s) && (a.d ?? 0) >= s.lv + 1 - (p.proofSlack || 0)) {
         s.proved = true;
         s.proofWhy = a.why;
       }
-      let n = 0;
+      let n3 = 0;
       for (const j in SKILL[k].kin) {
         const o = p.sk[j];
-        if (!o || o.lv === 0 || o.lv >= s.lv || atEdge(o) || n++ >= DYN.kinMax) continue;
+        if (!o || o.lv === 0 || o.lv >= s.lv || atEdge(o) || n3++ >= DYN.kinMax) continue;
         const spill = x * SKILL[k].kin[j];
         if (spill > 0.05) {
           o.xp += spill;
@@ -1525,15 +1527,15 @@ var __ARDAN_V2_MAKE = (() => {
       }
     }
     for (const k of Object.keys(touched).sort()) {
-      const T3 = touched[k], s = sk(p, k);
-      if (T3.kinOnly) {
-        settle(p, k, age, T3.why);
+      const T5 = touched[k], s = sk(p, k);
+      if (T5.kinOnly) {
+        settle(p, k, age, T5.why);
         continue;
       }
       const open = openConcepts(p, k);
       if (open.length) {
-        const w = wordOf(s.lv) + 1, holds = T3.teacher != null && !T3.noHold && wordOf(T3.teacher) >= w;
-        let pr = INSIGHT.base * band(INSIGHT.streak, s.streak) * T3.q;
+        const w = wordOf(s.lv) + 1, holds = T5.teacher != null && !T5.noHold && wordOf(T5.teacher) >= w;
+        let pr = INSIGHT.base * band(INSIGHT.streak, s.streak) * T5.q;
         if (holds) pr *= p.proud ? INSIGHT.teacherHoldsProud : INSIGHT.teacherHolds;
         if (s.fresh > age) pr *= INSIGHT.fresh;
         if (ctx.quiet) pr *= INSIGHT.quiet;
@@ -1547,10 +1549,10 @@ var __ARDAN_V2_MAKE = (() => {
           const nd = need(p, k, c), roll = p.rng();
           if (nd === Infinity || roll >= pr) continue;
           s.ins[c.id] = (s.ins[c.id] || 0) + 1;
-          if (s.ins[c.id] >= nd) grasp(p, k, c, age, "grasp", `${SKILL[k].name}: you have ${c.name} now (${nd <= 1 ? "it came at once" : "a slow dawn"}; ${holds ? (T3.who || "your teacher") + " showed it" : T3.why})`);
+          if (s.ins[c.id] >= nd) grasp(p, k, c, age, "grasp", `${SKILL[k].name}: you have ${c.name} now (${nd <= 1 ? "it came at once" : "a slow dawn"}; ${holds ? (T5.who || "your teacher") + " showed it" : T5.why})`);
         }
-        const moments = T3.trig.slice();
-        if (holds) moments.push(["word", `a word from ${T3.who || "your teacher"}`]);
+        const moments = T5.trig.slice();
+        if (holds) moments.push(["word", `a word from ${T5.who || "your teacher"}`]);
         if (ctx.quiet && s.streak >= 24) moments.push(["quiet", "a quiet season after long work"]);
         for (const [trig, what] of moments) {
           const left = openConcepts(p, k);
@@ -1568,7 +1570,7 @@ var __ARDAN_V2_MAKE = (() => {
           break;
         }
       }
-      settle(p, k, age, T3.why);
+      settle(p, k, age, T5.why);
     }
     return touched;
   }
@@ -1578,7 +1580,7 @@ var __ARDAN_V2_MAKE = (() => {
       if (!s.lv || s.used == null) continue;
       const idle = age - s.used, grace = graceYears(k, value(s.best), p.memory);
       if (idle <= grace) continue;
-      const n = Math.floor(idle - grace), step = RUST_STEP[Math.min(RUST_STEP.length - 1, n)];
+      const n3 = Math.floor(idle - grace), step = RUST_STEP[Math.min(RUST_STEP.length - 1, n3)];
       const bw = wordOf(s.best), floor = Math.max(1, EDGE[Math.max(0, bw - 1)], value(s.best) - 15);
       const loss = Math.max(0, Math.min(step, reads(p, k) - floor));
       if (loss <= 0) continue;
@@ -1678,29 +1680,32 @@ var __ARDAN_V2_MAKE = (() => {
   var AXES = ["pride", "wrath", "caution", "patience", "honor", "greed", "warmth", "zeal", "social", "ambition"];
   var clamp2 = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
   var r2 = (x) => Math.round(x * 100) / 100;
-  var ax = (T3, k) => T3 && isFinite(T3[k]) ? clamp2(+T3[k], -1, 1) : 0;
+  var ax = (T5, k) => T5 && isFinite(T5[k]) ? clamp2(+T5[k], -1, 1) : 0;
   var KINDS = {
-    insult: (T3) => 1 + ax(T3, "pride"),
-    grudge: (T3) => 1 + 0.5 * ax(T3, "wrath") + 0.25 * ax(T3, "pride"),
-    reckoning: (T3) => 1 + 0.6 * ax(T3, "caution"),
-    fear: (T3) => 1 + 0.6 * ax(T3, "caution"),
-    cost: (T3) => 1 + 0.4 * ax(T3, "caution") - 0.3 * ax(T3, "ambition"),
-    coin: (T3) => 1 + 0.8 * ax(T3, "greed"),
-    duty: (T3) => 1 + 0.6 * ax(T3, "honor"),
-    debt: (T3) => 1 + 0.6 * ax(T3, "honor"),
-    loyalty: (T3) => 1 + 0.6 * ax(T3, "honor"),
-    kin: (T3) => 1 + 0.6 * ax(T3, "warmth"),
-    faith: (T3) => 1 + 0.8 * ax(T3, "zeal"),
-    ambition: (T3) => 1 + 0.8 * ax(T3, "ambition"),
-    want: (T3) => 1 + 0.4 * ax(T3, "ambition"),
-    claim: (T3) => 1 + 0.3 * ax(T3, "pride") + 0.3 * ax(T3, "ambition"),
+    insult: (T5) => 1 + ax(T5, "pride"),
+    grudge: (T5) => 1 + 0.5 * ax(T5, "wrath") + 0.25 * ax(T5, "pride"),
+    reckoning: (T5) => 1 + 0.6 * ax(T5, "caution"),
+    fear: (T5) => 1 + 0.6 * ax(T5, "caution"),
+    cost: (T5) => 1 + 0.4 * ax(T5, "caution") - 0.3 * ax(T5, "ambition"),
+    coin: (T5) => 1 + 0.8 * ax(T5, "greed"),
+    duty: (T5) => 1 + 0.6 * ax(T5, "honor"),
+    debt: (T5) => 1 + 0.6 * ax(T5, "honor"),
+    loyalty: (T5) => 1 + 0.6 * ax(T5, "honor"),
+    kin: (T5) => 1 + 0.6 * ax(T5, "warmth"),
+    faith: (T5) => 1 + 0.8 * ax(T5, "zeal"),
+    ambition: (T5) => 1 + 0.8 * ax(T5, "ambition"),
+    want: (T5) => 1 + 0.4 * ax(T5, "ambition"),
+    claim: (T5) => 1 + 0.3 * ax(T5, "pride") + 0.3 * ax(T5, "ambition"),
+    // R2 (rule 19, D-080): pride of place weighs against letting a lower man near; warmth and humility for him
+    station: (T5) => 1 + 0.8 * ax(T5, "pride") - 0.4 * ax(T5, "warmth"),
+    sympathy: (T5) => 1 + 0.6 * ax(T5, "warmth") - 0.3 * ax(T5, "pride"),
     merit: () => 1,
     temper: () => 1,
     feeling: () => 1,
     chance: () => 1
   };
-  var bend = (kind, T3) => clamp2((KINDS[kind] || KINDS.temper)(T3), 0.1, 2.5);
-  var hotness = (T3) => clamp2(0.35 + 0.45 * ax(T3, "wrath") + 0.3 * ax(T3, "pride") - 0.45 * ax(T3, "patience") - 0.25 * ax(T3, "caution"), 0, 1);
+  var bend = (kind, T5) => clamp2((KINDS[kind] || KINDS.temper)(T5), 0.1, 2.5);
+  var hotness = (T5) => clamp2(0.35 + 0.45 * ax(T5, "wrath") + 0.3 * ax(T5, "pride") - 0.45 * ax(T5, "patience") - 0.25 * ax(T5, "caution"), 0, 1);
   var FEELINGS = {
     pride: { axis: "pride", cool: 0.07, wrong: true, word: "wounded pride" },
     anger: { axis: "wrath", cool: 0.12, wrong: true, word: "anger" },
@@ -1779,8 +1784,8 @@ var __ARDAN_V2_MAKE = (() => {
     s = String(s || "");
     return s.charAt(0).toUpperCase() + s.slice(1);
   };
-  function decide(mind, kind, options, opts = {}) {
-    const list = (options || []).filter((o) => o && o.id != null);
+  function decide(mind, kind, options2, opts = {}) {
+    const list = (options2 || []).filter((o) => o && o.id != null);
     if (!list.length) return null;
     const scored = list.map((o) => weigh(mind, o, opts));
     let best = scored[0];
@@ -1821,8 +1826,8 @@ var __ARDAN_V2_MAKE = (() => {
       form: lean2 > 0.1 ? 1 : lean2 < -0.1 ? -1 : 0
     };
   }
-  function odds(mind, options, opts = {}) {
-    const scored = (options || []).filter((o) => o && o.id != null).map((o) => weigh(mind, o, opts));
+  function odds(mind, options2, opts = {}) {
+    const scored = (options2 || []).filter((o) => o && o.id != null).map((o) => weigh(mind, o, opts));
     if (!scored.length) return null;
     const best = Math.max(...scored.map((s) => s.score)), band2 = opts.band != null ? opts.band : T.band;
     const ws = scored.map((s) => Math.exp(s.score - best)), tot = ws.reduce((a, b) => a + b, 0), out = { inBand: [] };
@@ -1880,6 +1885,91 @@ var __ARDAN_V2_MAKE = (() => {
     s = String(s || "");
     return /^[A-Z][a-z]/.test(s) && !/^(I|The [A-Z])/.test(s) ? s.charAt(0).toLowerCase() + s.slice(1) : s;
   };
+
+  // src/people/engine/reach.js
+  var reach_exports = {};
+  __export(reach_exports, {
+    ACTS: () => ACTS,
+    T: () => T2,
+    judge: () => judge,
+    options: () => options,
+    say: () => say
+  });
+  var ACTS = {
+    know: { k: 0.9, will: "know you", wont: "know you" },
+    befriend: { k: 1, will: "make a friend of you", wont: "make a friend of you" },
+    audience: { k: 0.8, will: "hear you now", wont: "hear you" },
+    favour: { k: 1, will: "hear what you ask", wont: "grant what you ask" },
+    court: { k: 1.15, will: "let you court {him}", wont: "let you court {him}" },
+    wed: { k: 1.4, will: "hear your suit", wont: "hear your suit" },
+    patron: { k: 0.85, will: "take you up", wont: "take you up" }
+  };
+  var T2 = {
+    step: 0.6,
+    // log-odds per step of standing beyond the first, before the act and his pride
+    near: 1,
+    // a gap of this or less is near-equals: no decision (what works for them is kept)
+    band: 1.5,
+    // options within this of the best go to the draw (why.js's default)
+    gold: 0.4,
+    // born to gold: against
+    cruel: 0.4,
+    // a cruel man likes to refuse
+    shy: 0.3,
+    // a shy man keeps to himself
+    risen: 1.3,
+    // risen from below himself, and you are where he was: for
+    kind: 0.6,
+    humble: 0.6,
+    gregarious: 0.5,
+    curious: 0.5,
+    opPer: 25,
+    opMax: 3
+    // his opinion of you: op / 25, at most 3, for (or against when below zero)
+  };
+  var n = (x) => isFinite(x) ? +x : 0;
+  var an = (w) => (/^[aeiou]/i.test(String(w)) ? "an " : "a ") + w;
+  var R2 = (kind, weight, label, source, pub) => ({ kind, weight, label, source: source || null, pub: pub ? 1 : 0 });
+  var her = (s) => String(s).replace(/\bhimself\b/g, "herself").replace(/\bhe\b/g, "she").replace(/\bHe\b/g, "She").replace(/\bhis\b/g, "her").replace(/\bhim\b/g, "her");
+  function options(c) {
+    const act = ACTS[c.act] || ACTS.know, tr = c.traits || [], has = (t) => tr.includes(t);
+    const yes = [], no = [];
+    const gap = Math.max(0, n(c.gap) - T2.near);
+    if (gap > 0) no.push(R2("station", act.k * T2.step * gap, `${an(c.lowWord || "commoner")} is far beneath ${an(c.highWord || "lord")}`, { t: "gap", g: n(c.gap) }, 1));
+    if (c.born === "gold") no.push(R2("station", T2.gold, "born to gold, he has never had to look down", { t: "born" }, 1));
+    if (c.born === "low") yes.push(R2("sympathy", T2.risen, `he was born ${c.origWord || "low"} himself`, { t: "born" }, 1));
+    if (has("cruel")) no.push(R2("station", T2.cruel, "he likes to see a man refused", { t: "trait", k: "cruel" }));
+    if (has("shy")) no.push(R2("temper", T2.shy, "he keeps to himself", { t: "trait", k: "shy" }));
+    if (has("kind")) yes.push(R2("sympathy", T2.kind, "he is a kindly man", { t: "trait", k: "kind" }, 1));
+    if (has("humble")) yes.push(R2("sympathy", T2.humble, "he holds himself no higher than he must", { t: "trait", k: "humble" }, 1));
+    if (has("gregarious")) yes.push(R2("temper", T2.gregarious, "he likes company", { t: "trait", k: "gregarious" }));
+    if (has("curious")) yes.push(R2("want", T2.curious, "he is curious about you", { t: "trait", k: "curious" }));
+    const op = n(c.op);
+    if (op > 5) yes.push(R2("loyalty", Math.min(T2.opMax, op / T2.opPer), "he already thinks well of you", { t: "op", v: op }));
+    else if (op < -5) no.push(R2("grudge", Math.min(T2.opMax, -op / T2.opPer), "he thinks ill of you", { t: "op", v: op }));
+    for (const r of c.yes || []) if (r && isFinite(r.weight) && r.weight) yes.push(R2(r.kind || "merit", r.weight, r.label, r.source, r.pub));
+    for (const r of c.no || []) if (r && isFinite(r.weight) && r.weight) no.push(R2(r.kind || "station", r.weight, r.label, r.source, r.pub));
+    if (c.she) for (const r of yes.concat(no)) r.label = her(r.label);
+    return [{ id: "yes", reasons: yes }, { id: "no", reasons: no.length ? no : [R2("temper", 0, "he has no reason to", null)] }];
+  }
+  function judge(mind, c, opts = {}) {
+    if (c && c.kin) return { state: "kin", yes: 1 };
+    if (!c || n(c.gap) <= T2.near) return { state: "equal", yes: 1 };
+    const ops = options(c), band2 = opts.band != null ? opts.band : T2.band;
+    const o = odds(mind, ops, { band: band2, at: opts.at });
+    const inY = o.inBand.includes("yes"), inN = o.inBand.includes("no");
+    const state = inY && !inN ? "open" : inY ? "try" : "closed";
+    const top = (id, sign) => {
+      const rs = ops.find((x) => x.id === id).reasons.filter((r) => r.weight * sign > 0).sort((a, b) => b.weight - a.weight);
+      return rs.length ? rs[0].label : null;
+    };
+    return { state, yes: o.yes, top: top("yes", 1), nay: top("no", 1), options: ops };
+  }
+  function say(name, act, ok, label, him = "him") {
+    const A_ = ACTS[act] || ACTS.know;
+    const verb = (ok ? A_.will : A_.wont).replace("{him}", him);
+    return `${name} will ${ok ? "" : "not "}${verb}${label ? ": " + label : ""}.`;
+  }
 
   // src/nobility/engine/nobility.js
   var nobility_exports = {};
@@ -1944,16 +2034,16 @@ var __ARDAN_V2_MAKE = (() => {
     if (!v) {
       const all = st.pool[field] || [];
       const cPct = st.common ? 60 : 100, rPct = st.common ? 80 : 85;
-      v = all.filter((n) => hash32(`${n}|${st.id}`) % 100 < cPct && (!realm || hash32(`${n}|${realm}`) % 100 < rPct));
+      v = all.filter((n3) => hash32(`${n3}|${st.id}`) % 100 < cPct && (!realm || hash32(`${n3}|${realm}`) % 100 < rPct));
       if (v.length < 40) v = all;
       CACHE.set(k, v);
     }
     return v;
   }
   function draw(rng, list, avoid, tries = 6) {
-    let n = rng.pick(list);
-    for (let t = 0; t < tries && avoid && avoid.has(n); t++) n = rng.pick(list);
-    return n;
+    let n3 = rng.pick(list);
+    for (let t = 0; t < tries && avoid && avoid.has(n3); t++) n3 = rng.pick(list);
+    return n3;
   }
   var LEAN_P = 0.28;
   var ACCENT_P = 0.12;
@@ -2084,7 +2174,7 @@ var __ARDAN_V2_MAKE = (() => {
     };
     const king = add2("king", realm.name, null, counties.slice());
     const taken = /* @__PURE__ */ new Set();
-    const demesne = [realm.capital, ...provs[realm.capital].neighbors.filter((n) => counties.includes(n)).slice(0, rng.int(1, 3))];
+    const demesne = [realm.capital, ...provs[realm.capital].neighbors.filter((n3) => counties.includes(n3)).slice(0, rng.int(1, 3))];
     demesne.forEach((c) => taken.add(c));
     const grow = (start, size) => {
       const out = [start];
@@ -2251,19 +2341,19 @@ var __ARDAN_V2_MAKE = (() => {
         events.push({ kind: "marriage", a: i, b: j, year: year2, month: month2, text: `A royal marriage joins ${A.name} and ${B.name}` });
       }
     }
-    for (const R2 of realms) if (rng.chance(1 / (12 * 22))) {
-      const old = R2.ruler.traits[0];
-      R2.ruler = { traits: [rng.pick(["ambitious", "cautious", "honourable", "greedy", "pious", "paranoid"])] };
-      events.push({ kind: "new-ruler", a: R2.id, b: -1, year: year2, month: month2, text: `The ruler of ${R2.name} dies; the heir is said to be ${R2.ruler.traits[0]}` });
+    for (const R3 of realms) if (rng.chance(1 / (12 * 22))) {
+      const old = R3.ruler.traits[0];
+      R3.ruler = { traits: [rng.pick(["ambitious", "cautious", "honourable", "greedy", "pious", "paranoid"])] };
+      events.push({ kind: "new-ruler", a: R3.id, b: -1, year: year2, month: month2, text: `The ruler of ${R3.name} dies; the heir is said to be ${R3.ruler.traits[0]}` });
     }
     d.log.push(...events);
     return events;
   }
   function sharedBorder(world, A, B) {
     const provs = world.map.provinces.list, ro = world.realmOf;
-    let n = 0;
-    for (const p of A.provinces) for (const nb of provs[p].neighbors) if (ro[nb] === B.id) n++;
-    return n;
+    let n3 = 0;
+    for (const p of A.provinces) for (const nb of provs[p].neighbors) if (ro[nb] === B.id) n3++;
+    return n3;
   }
   function newsFor(event, playerRealmId, rng) {
     if (event.a === playerRealmId || event.b === playerRealmId) return { heard: true, text: event.text, certain: true };
@@ -2429,7 +2519,7 @@ var __ARDAN_V2_MAKE = (() => {
     return { terrain: terrainKey, phase: 0, over: false, winner: null, contrib: { terrain: 0, tactics: 0, numbers: 0, quality: 0, elites: 0, morale: 0, player: 0, fatigue: 0 }, log: [] };
   }
   function battlePhase(rng, camp, orders = {}) {
-    const b = camp.battle, T3 = TERRAIN[b.terrain];
+    const b = camp.battle, T5 = TERRAIN[b.terrain];
     const [A, B] = camp.armies;
     A.tactic = orders.armyTactic?.[0] ?? A.tactic;
     B.tactic = orders.armyTactic?.[1] ?? aiTactic(rng, B, A, b);
@@ -2438,7 +2528,7 @@ var __ARDAN_V2_MAKE = (() => {
     const power = (me, foe, side) => {
       const alive = me.units.filter((u) => !u.routed && u.count > 0);
       const men = alive.reduce((s, u) => s + u.count, 0) || 1;
-      const front = Math.min(1, T3.frontage / men);
+      const front = Math.min(1, T5.frontage / men);
       let p = 0;
       const parts = [];
       for (const u of alive) {
@@ -2446,11 +2536,11 @@ var __ARDAN_V2_MAKE = (() => {
         const foeTac = foe.tactic;
         const t = TACTICS[tac];
         let mod = t.atk * (COUNTER[tac]?.[foeTac] ?? 1);
-        if (u.cavalry) mod *= T3.cavalry;
-        if (u.ranged) mod *= T3.ranged * (b.phase === 0 ? 1.6 : 0.7);
+        if (u.cavalry) mod *= T5.cavalry;
+        if (u.ranged) mod *= T5.ranged * (b.phase === 0 ? 1.6 : 0.7);
         if (!u.ranged && b.phase === 0) mod *= 0.35;
         if (u.drill?.[tac]) mod *= 1 + u.drill[tac];
-        const defender = side === 1 && T3.defenderBonus ? T3.defenderBonus : 1;
+        const defender = side === 1 && T5.defenderBonus ? T5.defenderBonus : 1;
         const engaged = u.count * (u.count < 400 ? Math.max(front, 0.9) : front);
         const morale = 0.5 + u.morale * 0.7, fat = 1 - u.fatigue * 0.35;
         const up = engaged * u.worth * mod * morale * fat * defender;
@@ -2504,7 +2594,7 @@ var __ARDAN_V2_MAKE = (() => {
     const ratio = Math.log((pa.p + 1) / (pb.p + 1));
     b.contrib.numbers += Math.log((armyMen(A) + 1) / (armyMen(B) + 1)) * 0.3;
     b.contrib.tactics += Math.log((COUNTER[A.tactic]?.[B.tactic] ?? 1) / (COUNTER[B.tactic]?.[A.tactic] ?? 1));
-    b.contrib.terrain += T3.defenderBonus ? -Math.log(T3.defenderBonus) * 0.5 : 0;
+    b.contrib.terrain += T5.defenderBonus ? -Math.log(T5.defenderBonus) * 0.5 : 0;
     b.contrib.elites += (A.units.filter((u) => u.terror).length - B.units.filter((u) => u.terror).length) * 0.3;
     b.contrib.quality += Math.log(avgWorth(A) / avgWorth(B)) * 0.6;
     if (pl) b.contrib.player += Math.log(pl.armyMult) + pl.moraleBoost * 3;
@@ -2687,14 +2777,14 @@ var __ARDAN_V2_MAKE = (() => {
       return n00 + u * (n10 - n00) + v * (n01 + u * (n11 - n01) - (n00 + u * (n10 - n00)));
     }
     function fbm(x, y, oct = 6, lac = 2, gain = 0.5) {
-      let a = 1, f = 1, s = 0, n = 0;
+      let a = 1, f = 1, s = 0, n3 = 0;
       for (let i = 0; i < oct; i++) {
         s += a * noise(x * f + i * 17.3, y * f - i * 9.1);
-        n += a;
+        n3 += a;
         a *= gain;
         f *= lac;
       }
-      return s / n;
+      return s / n3;
     }
     function ridged(x, y, oct = 5) {
       let a = 0.5, f = 1, s = 0, w = 1;
@@ -2742,8 +2832,8 @@ var __ARDAN_V2_MAKE = (() => {
     const rng = makeRng(seed);
     const N = makeNoise(seed + ":n");
     const N2 = makeNoise(seed + ":m");
-    const n = W * H;
-    const elev = new Float32Array(n);
+    const n3 = W * H;
+    const elev = new Float32Array(n3);
     const idx = (x, y) => y * W + x;
     const plateCount = opts.plates ?? 11;
     const plates = [];
@@ -2766,9 +2856,9 @@ var __ARDAN_V2_MAKE = (() => {
     plates.forEach((p) => {
       p.base = p.continental ? rng.float(0.25, 0.45) : rng.float(-0.55, -0.35);
     });
-    const plateOf = new Int16Array(n);
-    const boundary = new Float32Array(n);
-    const converge = new Float32Array(n);
+    const plateOf = new Int16Array(n3);
+    const boundary = new Float32Array(n3);
+    const converge = new Float32Array(n3);
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
       const [wx, wy] = N.warp(x / W * 3, y / H * 3, 0.55, 1.2);
       const px = wx / 3 * W, py = wy / 3 * H;
@@ -2796,7 +2886,7 @@ var __ARDAN_V2_MAKE = (() => {
       ny /= nl;
       converge[k] = ((a.dx - b.dx) * nx + (a.dy - b.dy) * ny) * 0.5;
     }
-    for (let k = 0; k < n; k++) elev[k] = plates[plateOf[k]].base;
+    for (let k = 0; k < n3; k++) elev[k] = plates[plateOf[k]].base;
     blur(elev, W, H, Math.round(W * 0.05), 3);
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
       const [fx, fy] = N2.warp(x / W * 2.5, y / H * 2.5, 0.35, 1.3);
@@ -2821,9 +2911,9 @@ var __ARDAN_V2_MAKE = (() => {
       elev[k] = h;
     }
     normalize(elev);
-    erode(elev, W, H, rng, opts.droplets ?? Math.round(n * 0.9));
+    erode(elev, W, H, rng, opts.droplets ?? Math.round(n3 * 0.9));
     let sea = quantile(elev, 1 - landFraction);
-    for (let k = 0; k < n; k++) elev[k] -= sea;
+    for (let k = 0; k < n3; k++) elev[k] -= sea;
     const band2 = Math.max(3, Math.round(Math.min(W, H) * 0.02));
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
       const d = Math.min(x, y, W - 1 - x, H - 1 - y);
@@ -2839,7 +2929,7 @@ var __ARDAN_V2_MAKE = (() => {
     let removed = 0, keptIslands = 0;
     for (const c of comps.list) {
       if (c.id === mainId) continue;
-      const tiny = c.size < n * 12e-4;
+      const tiny = c.size < n3 * 12e-4;
       if (tiny && keptIslands < (opts.maxIslands ?? 14)) {
         keptIslands++;
         continue;
@@ -2848,10 +2938,10 @@ var __ARDAN_V2_MAKE = (() => {
       removed++;
     }
     let maxE = 0;
-    for (let k = 0; k < n; k++) if (elev[k] > maxE) maxE = elev[k];
-    for (let k = 0; k < n; k++) if (elev[k] > 0) elev[k] = 0.62 * Math.pow(elev[k] / maxE, 1.7);
+    for (let k = 0; k < n3; k++) if (elev[k] > maxE) maxE = elev[k];
+    for (let k = 0; k < n3; k++) if (elev[k] > 0) elev[k] = 0.62 * Math.pow(elev[k] / maxE, 1.7);
     const ocean = oceanMask(elev, W, H);
-    const temp = new Float32Array(n), moist = new Float32Array(n);
+    const temp = new Float32Array(n3), moist = new Float32Array(n3);
     for (let y = 0; y < H; y++) {
       const lat = latTop + (latBottom - latTop) * (y / (H - 1));
       for (let x = 0; x < W; x++) {
@@ -2878,11 +2968,11 @@ var __ARDAN_V2_MAKE = (() => {
     }
     blur(moist, W, H, 4, 2);
     const coastDist = distanceToWater(elev, W, H);
-    for (let k = 0; k < n; k++) if (elev[k] > 0) moist[k] = clamp(moist[k] * 0.92 + 0.15 * Math.exp(-coastDist[k] / 25), 0, 1.4);
+    for (let k = 0; k < n3; k++) if (elev[k] > 0) moist[k] = clamp(moist[k] * 0.92 + 0.15 * Math.exp(-coastDist[k] / 25), 0, 1.4);
     const { flowTo, acc } = rivers(elev, moist, W, H);
-    const biome = new Uint8Array(n);
+    const biome = new Uint8Array(n3);
     const shelf = 0.06;
-    for (let k = 0; k < n; k++) {
+    for (let k = 0; k < n3; k++) {
       const e = elev[k], t = temp[k], m = moist[k];
       if (e <= 0) {
         biome[k] = ocean[k] ? e > -shelf ? BIOME.SHALLOW : BIOME.OCEAN : BIOME.LAKE;
@@ -3040,10 +3130,10 @@ var __ARDAN_V2_MAKE = (() => {
     }
   }
   function components(elev, W, H) {
-    const n = W * H, comp = new Int32Array(n).fill(-1), list = [];
+    const n3 = W * H, comp = new Int32Array(n3).fill(-1), list = [];
     let largest = -1, best = 0;
     const stack = [];
-    for (let s = 0; s < n; s++) {
+    for (let s = 0; s < n3; s++) {
       if (elev[s] <= 0 || comp[s] >= 0) continue;
       const id = list.length, cells = [];
       comp[s] = id;
@@ -3078,7 +3168,7 @@ var __ARDAN_V2_MAKE = (() => {
     return { comp, list, largest };
   }
   function oceanMask(elev, W, H) {
-    const n = W * H, o = new Uint8Array(n), q = [];
+    const n3 = W * H, o = new Uint8Array(n3), q = [];
     for (let x = 0; x < W; x++) {
       q.push(x, (H - 1) * W + x);
     }
@@ -3098,8 +3188,8 @@ var __ARDAN_V2_MAKE = (() => {
     return o;
   }
   function distanceToWater(elev, W, H) {
-    const n = W * H, d = new Float32Array(n).fill(1e9), q = [];
-    for (let k = 0; k < n; k++) if (elev[k] <= 0) {
+    const n3 = W * H, d = new Float32Array(n3).fill(1e9), q = [];
+    for (let k = 0; k < n3; k++) if (elev[k] <= 0) {
       d[k] = 0;
       q.push(k);
     }
@@ -3145,18 +3235,18 @@ var __ARDAN_V2_MAKE = (() => {
     pop() {
       const K2 = this.k, V = this.v;
       const top = V[0], tk = K2[0];
-      const n = --this.n;
-      if (n > 0) {
-        const lk = K2[n], lv = V[n];
+      const n3 = --this.n;
+      if (n3 > 0) {
+        const lk = K2[n3], lv = V[n3];
         let i = 0;
         for (; ; ) {
           const l = 2 * i + 1, r = l + 1;
           let m = -1, mk = lk;
-          if (l < n && K2[l] < mk) {
+          if (l < n3 && K2[l] < mk) {
             m = l;
             mk = K2[l];
           }
-          if (r < n && K2[r] < mk) {
+          if (r < n3 && K2[r] < mk) {
             m = r;
             mk = K2[r];
           }
@@ -3176,32 +3266,32 @@ var __ARDAN_V2_MAKE = (() => {
     }
   };
   function rivers(elev, moist, W, H) {
-    const n = W * H, filled = Float32Array.from(elev), done = new Uint8Array(n), flowTo = new Int32Array(n).fill(-1);
-    const heap = new MinHeap();
-    for (let k = 0; k < n; k++) if (elev[k] <= 0) {
+    const n3 = W * H, filled = Float32Array.from(elev), done = new Uint8Array(n3), flowTo = new Int32Array(n3).fill(-1);
+    const heap2 = new MinHeap();
+    for (let k = 0; k < n3; k++) if (elev[k] <= 0) {
       done[k] = 1;
-      heap.push(filled[k], k);
+      heap2.push(filled[k], k);
     }
     const order = [];
     const D = [-1, 1, -W, W, -W - 1, -W + 1, W - 1, W + 1];
-    while (heap.size) {
-      const k = heap.pop();
+    while (heap2.size) {
+      const k = heap2.pop();
       order.push(k);
       const x = k % W;
       for (const d of D) {
         const kk = k + d;
-        if (kk < 0 || kk >= n) continue;
+        if (kk < 0 || kk >= n3) continue;
         const xx = kk % W;
         if (Math.abs(xx - x) > 1) continue;
         if (done[kk]) continue;
         done[kk] = 1;
         filled[kk] = Math.max(filled[kk], filled[k] + 1e-6);
         flowTo[kk] = k;
-        heap.push(filled[kk], kk);
+        heap2.push(filled[kk], kk);
       }
     }
-    const acc = new Float32Array(n);
-    for (let k = 0; k < n; k++) acc[k] = elev[k] > 0 ? 0.2 + moist[k] : 0;
+    const acc = new Float32Array(n3);
+    for (let k = 0; k < n3; k++) acc[k] = elev[k] > 0 ? 0.2 + moist[k] : 0;
     for (let i = order.length - 1; i >= 0; i--) {
       const k = order[i];
       const t = flowTo[k];
@@ -3210,9 +3300,9 @@ var __ARDAN_V2_MAKE = (() => {
     return { flowTo, acc };
   }
   function makeProvinces(map, rng, count) {
-    const { W, H, elev, acc } = map, n = W * H;
+    const { W, H, elev, acc } = map, n3 = W * H;
     const land = [];
-    for (let k = 0; k < n; k++) if (elev[k] > 0 && elev[k] < 0.4) land.push(k);
+    for (let k = 0; k < n3; k++) if (elev[k] > 0 && elev[k] < 0.4) land.push(k);
     const seeds = [];
     const minD = Math.sqrt(land.length / count) * 0.8;
     let tries = 0;
@@ -3220,21 +3310,21 @@ var __ARDAN_V2_MAKE = (() => {
       const k = rng.pick(land), x = k % W, y = k / W | 0;
       if (seeds.every((s) => Math.hypot(s.x - x, s.y - y) > minD)) seeds.push({ k, x, y });
     }
-    const owner = new Int16Array(n).fill(-1), cost2 = new Float64Array(n).fill(Infinity);
-    const heap = new MinHeap();
+    const owner = new Int16Array(n3).fill(-1), cost2 = new Float64Array(n3).fill(Infinity);
+    const heap2 = new MinHeap();
     seeds.forEach((s, i) => {
       cost2[s.k] = 0;
-      heap.push(0, s.k);
+      heap2.push(0, s.k);
       owner[s.k] = i;
     });
-    while (heap.size) {
-      const k = heap.pop();
-      const c = heap.lastKey;
+    while (heap2.size) {
+      const k = heap2.pop();
+      const c = heap2.lastKey;
       if (c > cost2[k]) continue;
       const x = k % W;
       for (const d of [-1, 1, -W, W]) {
         const kk = k + d;
-        if (kk < 0 || kk >= n) continue;
+        if (kk < 0 || kk >= n3) continue;
         if (Math.abs(kk % W - x) > 1) continue;
         if (elev[kk] <= 0) continue;
         const step = 1 + Math.abs(elev[kk] - elev[k]) * 400 + (acc[kk] > 400 ? 6 : 0) + elev[kk] * 8;
@@ -3242,12 +3332,12 @@ var __ARDAN_V2_MAKE = (() => {
         if (nc < cost2[kk]) {
           cost2[kk] = nc;
           owner[kk] = owner[k];
-          heap.push(nc, kk);
+          heap2.push(nc, kk);
         }
       }
     }
     const provs = seeds.map((s, i) => ({ id: i, x: s.x, y: s.y, cells: 0, neighbors: /* @__PURE__ */ new Set() }));
-    for (let k = 0; k < n; k++) {
+    for (let k = 0; k < n3; k++) {
       const o = owner[k];
       if (o < 0) continue;
       provs[o].cells++;
@@ -3256,7 +3346,7 @@ var __ARDAN_V2_MAKE = (() => {
         provs[o].neighbors.add(owner[r]);
         provs[owner[r]].neighbors.add(o);
       }
-      if (b < n && owner[b] >= 0 && owner[b] !== o) {
+      if (b < n3 && owner[b] >= 0 && owner[b] !== o) {
         provs[o].neighbors.add(owner[b]);
         provs[owner[b]].neighbors.add(o);
       }
@@ -3268,15 +3358,15 @@ var __ARDAN_V2_MAKE = (() => {
   }
   function riverPaths(map, threshold = 260) {
     const { W, elev, acc, flowTo } = map;
-    const n = elev.length, isRiver = new Uint8Array(n), upstream = new Int32Array(n);
-    for (let k = 0; k < n; k++) if (elev[k] > 0 && acc[k] > threshold) {
+    const n3 = elev.length, isRiver = new Uint8Array(n3), upstream = new Int32Array(n3);
+    for (let k = 0; k < n3; k++) if (elev[k] > 0 && acc[k] > threshold) {
       isRiver[k] = 1;
       const t = flowTo[k];
       if (t >= 0) upstream[t]++;
     }
     const paths = [];
-    const visited = new Uint8Array(n);
-    for (let k = 0; k < n; k++) {
+    const visited = new Uint8Array(n3);
+    for (let k = 0; k < n3; k++) {
       if (!isRiver[k]) continue;
       let hasUp = false;
       if (upstream[k] > 0) {
@@ -3398,10 +3488,10 @@ var __ARDAN_V2_MAKE = (() => {
     } else if (estate === "gentry") {
       pgf.titles.push("Lord of a village (knight)");
     }
-    const kids = (f, m, house, n, around) => {
+    const kids = (f, m, house, n3, around) => {
       const out = [];
       let by = around;
-      for (let i = 0; i < n; i++) {
+      for (let i = 0; i < n3; i++) {
         const c = uniq(newPerson(world, { sex: rng.chance(0.5) ? "male" : "female", culture, race, birthYear: by, house, father: f, mother: m }));
         out.push(c);
         by += rng.int(1, 4);
@@ -3854,8 +3944,8 @@ var __ARDAN_V2_MAKE = (() => {
     cards.push(...familyMonth(g2));
     const evs = monthTick(W.diplomacy, W, g2.rng, W.year, W.month);
     for (const e of evs) {
-      const n3 = newsFor(e, me.realm, g2.rng);
-      if (n3.heard && me.age >= 6) cards.push({ kind: "news", text: n3.text, certain: n3.certain });
+      const n4 = newsFor(e, me.realm, g2.rng);
+      if (n4.heard && me.age >= 6) cards.push({ kind: "news", text: n4.text, certain: n4.certain });
       if (e.kind === "war" && (e.a === me.realm || e.b === me.realm) && me.age >= 16 && me.deathYear == null) {
         const enemy = W.realms[e.a === me.realm ? e.b : e.a].name;
         const ev = EVENTS.find((x) => x.id === "muster");
@@ -3879,9 +3969,9 @@ var __ARDAN_V2_MAKE = (() => {
     const pool = EVENTS.filter((e) => eligible(ctx, e));
     const season = [0.7, 0.8, 1, 1.1, 1.2, 1.3, 1.2, 1.4, 1.3, 1, 0.8, 0.7][W.month - 1];
     const roll = g2.rng.next() / season;
-    const n = !pool.length ? 0 : roll < 0.12 ? 3 : roll < 0.32 ? 2 : roll < 0.62 ? 1 : 0;
+    const n3 = !pool.length ? 0 : roll < 0.12 ? 3 : roll < 0.32 ? 2 : roll < 0.62 ? 1 : 0;
     const used = /* @__PURE__ */ new Set();
-    for (let i = 0; i < n; i++) {
+    for (let i = 0; i < n3; i++) {
       const ev = g2.rng.weighted(pool.filter((e) => !used.has(e.id)), (e) => e.weight);
       if (!ev) break;
       used.add(ev.id);
@@ -4305,8 +4395,8 @@ var __ARDAN_V2_MAKE = (() => {
       const steps = Math.ceil(Math.hypot(x1 - x0, y1 - y0) * scale * 2) + 1;
       for (let s = 0; s <= steps; s++) {
         const cx = (x0 + (x1 - x0) * s / steps) * scale, cy = (y0 + (y1 - y0) * s / steps) * scale;
-        const R2 = Math.ceil(wdt + 1);
-        for (let dy = -R2; dy <= R2; dy++) for (let dx = -R2; dx <= R2; dx++) {
+        const R3 = Math.ceil(wdt + 1);
+        for (let dy = -R3; dy <= R3; dy++) for (let dx = -R3; dx <= R3; dx++) {
           const px = Math.round(cx + dx), py = Math.round(cy + dy);
           if (px < 0 || py < 0 || px >= width || py >= height) continue;
           const d = Math.hypot(px - cx, py - cy);
@@ -4320,6 +4410,500 @@ var __ARDAN_V2_MAKE = (() => {
       }
     }
     return img;
+  }
+
+  // src/map/engine/ground.js
+  var ground_exports = {};
+  __export(ground_exports, {
+    COVER: () => COVER,
+    DEFAULTS: () => DEFAULTS,
+    GROUND_V: () => GROUND_V,
+    RANK: () => RANK,
+    buildGround: () => buildGround,
+    edgeIndex: () => edgeIndex
+  });
+  var GROUND_V = 1;
+  var COVER = { OPEN: 0, WOOD: 1, MARSH: 2 };
+  var RANK = { NONE: 0, HIGH: 1, TRACK: 2 };
+  var DEFAULTS = {
+    STREAM_T: 40,
+    // flow where a stream begins (a road over one has a ford)
+    RIVER_T: 120,
+    // flow where a river begins (it stops an army but at a crossing; the battle names it)
+    BRIDGE_T: 700,
+    // a river this big has no ford: every crossing of it is a bridge
+    NAV_T: 300,
+    // a river this big carries barges (supply)
+    PASS_M: 1e3,
+    // a road's highest point is a pass when it stands this high (m)...
+    PASS_RISE: 300,
+    // ...and this far above the higher of its two ends
+    TRACK_MAX: 3.4,
+    // a way that costs more than this per cell of straight distance is no road (cross-country only)
+    RANGE_M: 1800,
+    // mountains to name: land this high (m), in pieces of at least RANGE_MIN cells (a long range by stretches)
+    RANGE_MIN: 60,
+    WOOD_MIN: 160,
+    // forests to name: woods of at least this many cells
+    RIVER_NAME: 300,
+    // rivers to name: this much flow at the mouth, and at least RIVER_KM long
+    RIVER_KM: 200,
+    CLEAR_R: 2,
+    // fields round a town: woods cleared within this many cells of its site
+    SHARE: 0.5
+    // a cell a road already runs on costs this share to the next road (roads share corridors)
+  };
+  function heap() {
+    let K2 = new Float64Array(1024), V = new Int32Array(1024), n3 = 0;
+    return {
+      get n() {
+        return n3;
+      },
+      key: 0,
+      clear() {
+        n3 = 0;
+      },
+      push(k, v) {
+        if (n3 === K2.length) {
+          const K22 = new Float64Array(n3 * 2), V2 = new Int32Array(n3 * 2);
+          K22.set(K2);
+          V2.set(V);
+          K2 = K22;
+          V = V2;
+        }
+        let i = n3++;
+        while (i > 0) {
+          const p = i - 1 >> 1;
+          if (K2[p] < k || K2[p] === k && V[p] <= v) break;
+          K2[i] = K2[p];
+          V[i] = V[p];
+          i = p;
+        }
+        K2[i] = k;
+        V[i] = v;
+      },
+      pop() {
+        const top = V[0];
+        this.key = K2[0];
+        const m = --n3;
+        if (m > 0) {
+          const lk = K2[m], lv = V[m];
+          let i = 0;
+          for (; ; ) {
+            const l = 2 * i + 1, r = l + 1;
+            let c = -1, ck = lk, cv = lv;
+            if (l < m && (K2[l] < ck || K2[l] === ck && V[l] < cv)) {
+              c = l;
+              ck = K2[l];
+              cv = V[l];
+            }
+            if (r < m && (K2[r] < ck || K2[r] === ck && V[r] < cv)) {
+              c = r;
+              ck = K2[r];
+              cv = V[r];
+            }
+            if (c < 0) break;
+            K2[i] = K2[c];
+            V[i] = V[c];
+            i = c;
+          }
+          K2[i] = lk;
+          V[i] = lv;
+        }
+        return top;
+      }
+    };
+  }
+  function buildGround(w, o = {}) {
+    const C = Object.assign({}, DEFAULTS, o.params || {});
+    const gw = w.gw, gh = w.gh, N = gw * gh, grid = w.grid, gen = w.gen, gi = o.gi, riv = w.riv, ocean = w.ocean;
+    const prov = w.prov, M = prov.length, places = o.places || [];
+    const hm = new Float32Array(N);
+    for (let k = 0; k < N; k++) hm[k] = grid[k] >= 0 ? Math.max(0, o.elev[k]) * (o.metres || 8e3) : 0;
+    const siteOf = (p) => Math.min(gh - 1, Math.floor(p.sy / 10)) * gw + Math.min(gw - 1, Math.floor(p.sx / 10));
+    const sites = prov.map(siteOf);
+    const nz = makeNoise(String(w.seed) + ":d9-cover"), cover = new Uint8Array(N);
+    for (let k = 0; k < N; k++) {
+      if (grid[k] < 0) continue;
+      const g2 = gi[k], b = gen.biome[g2], x = k % gw, y = k / gw | 0, n3 = nz.fbm(x / 16, y / 16, 3);
+      if (b === BIOME.WETLAND || riv[k] >= 400 && hm[k] < 90 && gen.moist[g2] > 0.7) cover[k] = COVER.MARSH;
+      else if (b === BIOME.TEMPERATE_FOREST || b === BIOME.BOREAL_FOREST || b === BIOME.RAINFOREST) cover[k] = n3 < -0.16 ? COVER.OPEN : COVER.WOOD;
+      else if ((b === BIOME.GRASSLAND || b === BIOME.SCRUB) && n3 > 0.3) cover[k] = COVER.WOOD;
+    }
+    for (const s of sites) {
+      const x0 = s % gw, y0 = s / gw | 0, R3 = C.CLEAR_R;
+      for (let y = Math.max(0, y0 - R3); y <= Math.min(gh - 1, y0 + R3); y++) for (let x = Math.max(0, x0 - R3); x <= Math.min(gw - 1, x0 + R3); x++)
+        if ((x - x0) ** 2 + (y - y0) ** 2 <= R3 * R3 + 1 && cover[y * gw + x] === COVER.WOOD) cover[y * gw + x] = COVER.OPEN;
+    }
+    const dist = new Float64Array(N), prev = new Int32Array(N), stamp = new Int32Array(N), done = new Int32Array(N), H = heap();
+    let tick = 0;
+    const DX = [1, -1, 0, 0, 1, 1, -1, -1], DY = [0, 0, 1, -1, 1, -1, 1, -1];
+    const used = new Uint8Array(N);
+    const stepCost = (k, j, diag) => {
+      const sl = Math.abs(hm[j] - hm[k]) / (diag ? 1.414 : 1);
+      let c = 1 + sl / 70 + (cover[j] === COVER.WOOD ? 0.5 : cover[j] === COVER.MARSH ? 1.8 : 0) + (hm[j] > 1800 ? 0.6 : 0);
+      c *= (diag ? 1.414 : 1) * (used[j] ? C.SHARE : 1);
+      if (riv[j] >= C.STREAM_T && riv[k] < C.STREAM_T) c += riv[j] >= C.RIVER_T ? 5 + Math.log(riv[j] / C.RIVER_T) : 1.2;
+      return c;
+    };
+    function way(a, b) {
+      const s = sites[a], t = sites[b], tx = t % gw, ty = t / gw | 0;
+      tick++;
+      H.clear();
+      dist[s] = 0;
+      prev[s] = -1;
+      stamp[s] = tick;
+      H.push(Math.hypot(s % gw - tx, (s / gw | 0) - ty), s);
+      while (H.n) {
+        const k = H.pop();
+        if (done[k] === tick) continue;
+        done[k] = tick;
+        if (k === t) break;
+        const x = k % gw, y = k / gw | 0, dk = dist[k];
+        for (let d = 0; d < 8; d++) {
+          const xx = x + DX[d], yy = y + DY[d];
+          if (xx < 0 || yy < 0 || xx >= gw || yy >= gh) continue;
+          const j = yy * gw + xx, g2 = grid[j];
+          if (g2 !== a && g2 !== b) continue;
+          if (d >= 4 && grid[y * gw + xx] < 0 && grid[yy * gw + x] < 0) continue;
+          const nd = dk + stepCost(k, j, d >= 4);
+          if (stamp[j] !== tick || nd < dist[j]) {
+            stamp[j] = tick;
+            dist[j] = nd;
+            prev[j] = k;
+            H.push(nd + Math.hypot(xx - tx, yy - ty), j);
+          }
+        }
+      }
+      if (done[t] !== tick) return null;
+      const path = [];
+      for (let k = t; k >= 0; k = prev[k]) path.push(k);
+      path.reverse();
+      let km = 0;
+      for (let i = 1; i < path.length; i++) {
+        const p = path[i - 1], q2 = path[i];
+        km += p % gw !== q2 % gw && (p / gw | 0) !== (q2 / gw | 0) ? 14.14 : 10;
+      }
+      return { path: Int32Array.from(path), cost: dist[t], km, straight: Math.hypot(s % gw - tx, (s / gw | 0) - ty) };
+    }
+    const edges = [];
+    for (let a = 0; a < M; a++) for (const b of prov[a].adj) {
+      if (b <= a) continue;
+      const r = way(a, b);
+      if (!r) continue;
+      const diff = r.cost / Math.max(1, r.straight);
+      if (diff <= C.TRACK_MAX) for (const k of r.path) used[k] = 1;
+      edges.push({ a, b, rank: diff <= C.TRACK_MAX ? RANK.TRACK : RANK.NONE, km: Math.round(r.km), cost: Math.round(r.cost * 10) / 10, diff: Math.round(diff * 100) / 100, path: r.path, cross: [], pass: -1, wet: 0 });
+    }
+    const nbE = Array.from({ length: M }, () => []);
+    edges.forEach((e, i) => {
+      if (e.rank) {
+        nbE[e.a].push(i);
+        nbE[e.b].push(i);
+      }
+    });
+    const seatOf = {}, realmOf = (i) => places[i] && places[i].realm || null;
+    for (let i = 0; i < M; i++) {
+      const pl = places[i];
+      if (pl && pl.type === "capital city" && pl.realm && pl.realm !== "unclaimed" && !(pl.realm in seatOf)) seatOf[pl.realm] = i;
+    }
+    const tree = (from) => {
+      const d = new Float64Array(M).fill(Infinity), pe = new Int32Array(M).fill(-1), Q = heap();
+      d[from] = 0;
+      Q.push(0, from);
+      while (Q.n) {
+        const u = Q.pop(), du = Q.key;
+        if (du > d[u]) continue;
+        for (const ei of nbE[u]) {
+          const e = edges[ei], v = e.a === u ? e.b : e.a, nd = du + e.cost;
+          if (nd < d[v] - 1e-9) {
+            d[v] = nd;
+            pe[v] = ei;
+            Q.push(nd, v);
+          }
+        }
+      }
+      return { d, pe };
+    };
+    const mark = (T5, from, to) => {
+      if (!isFinite(T5.d[to])) return;
+      for (let v = to; v !== from && T5.pe[v] >= 0; ) {
+        const e = edges[T5.pe[v]];
+        e.rank = RANK.HIGH;
+        v = e.a === v ? e.b : e.a;
+      }
+    };
+    const realmNb = {};
+    for (const e of edges) {
+      const ra = realmOf(e.a), rb = realmOf(e.b);
+      if (ra && rb && ra !== rb && ra !== "unclaimed" && rb !== "unclaimed") {
+        (realmNb[ra] = realmNb[ra] || /* @__PURE__ */ new Set()).add(rb);
+      }
+    }
+    for (const rid of Object.keys(seatOf).sort()) {
+      const s = seatOf[rid], T5 = tree(s);
+      for (let i = 0; i < M; i++) {
+        const pl = places[i];
+        if (pl && pl.realm === rid && i !== s && (pl.type === "city" || pl.type === "market town" || pl.type === "capital city")) mark(T5, s, i);
+      }
+      for (const ob of [...realmNb[rid] || []].sort()) if (seatOf[ob] != null && ob > rid) mark(T5, s, seatOf[ob]);
+    }
+    const rivId = new Int32Array(N).fill(-1), rivF = new Float32Array(N);
+    const rivers2 = w.rivers || [];
+    rivers2.forEach((a, r) => {
+      for (let i = 0; i + 5 < a.length; i += 3) {
+        const x0 = a[i] / 10, y0 = a[i + 1] / 10, x1 = a[i + 3] / 10, y1 = a[i + 4] / 10, f = Math.min(a[i + 2], a[i + 5]);
+        const n3 = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0) * 2));
+        for (let s = 0; s <= n3; s++) {
+          const x = Math.floor(x0 + (x1 - x0) * s / n3), y = Math.floor(y0 + (y1 - y0) * s / n3);
+          if (x < 0 || y < 0 || x >= gw || y >= gh) continue;
+          const k = y * gw + x;
+          if (f > rivF[k]) {
+            rivF[k] = f;
+            rivId[k] = r;
+          }
+        }
+      }
+    });
+    const crossings = [], crossAt = /* @__PURE__ */ new Map();
+    const isSite = new Uint8Array(N);
+    for (const s of sites) isSite[s] = 1;
+    edges.forEach((e, ei) => {
+      const p = e.path;
+      if (!e.rank) {
+        for (let i = 1; i < p.length - 1; i++) if (riv[p[i]] > e.wet) e.wet = Math.round(riv[p[i]]);
+        return;
+      }
+      for (let i = 0; i < p.length; i++) {
+        if (riv[p[i]] < C.STREAM_T) continue;
+        let j = i, best = p[i], town = false;
+        while (j + 1 < p.length && riv[p[j + 1]] >= C.STREAM_T) j++;
+        for (let q2 = i; q2 <= j; q2++) {
+          if (riv[p[q2]] > riv[best]) best = p[q2];
+          if (isSite[p[q2]]) town = true;
+        }
+        const ends = i === 0 || j === p.length - 1;
+        i = j;
+        if (ends) continue;
+        const f = riv[best];
+        let ci = -1;
+        for (const dk of [0, -1, 1, -gw, gw, -gw - 1, -gw + 1, gw - 1, gw + 1]) {
+          const c2 = crossAt.get(best + dk);
+          if (c2 != null && crossings[c2].river === rivId[best]) {
+            ci = c2;
+            break;
+          }
+        }
+        const kind = f >= C.BRIDGE_T || town || e.rank === RANK.HIGH && f >= C.RIVER_T * 2 ? "bridge" : "ford";
+        if (ci < 0) {
+          ci = crossings.length;
+          crossings.push({ k: best, x: best % gw * 10 + 5, y: (best / gw | 0) * 10 + 5, kind, flow: Math.round(f), river: rivId[best], town, prov: grid[best], edges: [] });
+          crossAt.set(best, ci);
+        } else if (kind === "bridge") crossings[ci].kind = "bridge";
+        const c = crossings[ci];
+        if (!c.edges.includes(ei)) c.edges.push(ei);
+        e.cross.push(ci);
+        if (f > e.wet) e.wet = Math.round(f);
+      }
+    });
+    const passes = [];
+    edges.forEach((e, ei) => {
+      if (!e.rank) return;
+      const p = e.path;
+      let top = p[0];
+      for (let i = 1; i < p.length; i++) if (hm[p[i]] > hm[top]) top = p[i];
+      const ends = Math.max(hm[p[0]], hm[p[p.length - 1]]);
+      if (hm[top] < C.PASS_M || hm[top] - ends < C.PASS_RISE) return;
+      let pi = passes.findIndex((q2) => Math.abs(q2.k % gw - top % gw) <= 4 && Math.abs((q2.k / gw | 0) - (top / gw | 0)) <= 4);
+      if (pi < 0) {
+        pi = passes.length;
+        passes.push({ k: top, x: top % gw * 10 + 5, y: (top / gw | 0) * 10 + 5, m: Math.round(hm[top]), prov: grid[top], edges: [] });
+      }
+      passes[pi].edges.push(ei);
+      e.pass = pi;
+    });
+    const links = /* @__PURE__ */ new Map();
+    rivers2.forEach((a) => {
+      let last = -1;
+      for (let i = 0; i < a.length; i += 3) {
+        const f = a[i + 2];
+        const x = Math.floor(a[i] / 10), y = Math.floor(a[i + 1] / 10);
+        if (x < 0 || y < 0 || x >= gw || y >= gh) continue;
+        const g2 = grid[y * gw + x];
+        if (g2 < 0) {
+          last = -1;
+          continue;
+        }
+        if (f >= C.NAV_T && last >= 0 && g2 !== last && prov[last].adj.includes(g2)) {
+          const key = Math.min(g2, last) * 4096 + Math.max(g2, last);
+          links.set(key, Math.max(links.get(key) || 0, Math.round(f)));
+        }
+        last = f >= C.NAV_T ? g2 : -1;
+      }
+    });
+    const riverLinks = [...links.keys()].sort((x, y) => x - y).map((key) => [Math.floor(key / 4096), key % 4096, links.get(key)]);
+    const nearProv = (x, y) => {
+      const k = Math.min(gh - 1, Math.max(0, Math.round(y))) * gw + Math.min(gw - 1, Math.max(0, Math.round(x)));
+      if (grid[k] >= 0) return grid[k];
+      let best = -1, bd = Infinity;
+      for (let i = 0; i < M; i++) {
+        const d = (sites[i] % gw - x) ** 2 + ((sites[i] / gw | 0) - y) ** 2;
+        if (d < bd) {
+          bd = d;
+          best = i;
+        }
+      }
+      return best;
+    };
+    const named = [];
+    rivers2.forEach((a, r) => {
+      const n3 = a.length / 3;
+      if (n3 < 4) return;
+      const mouth = a[a.length - 1];
+      if (mouth < C.RIVER_NAME) return;
+      let km = 0;
+      for (let i = 3; i < a.length; i += 3) km += Math.hypot(a[i] - a[i - 3], a[i + 1] - a[i - 2]);
+      if (km < C.RIVER_KM) return;
+      const m = Math.floor(n3 * 0.55) * 3, m2 = Math.min(a.length - 3, m + 9);
+      named.push({ r, flow: Math.round(mouth), km: Math.round(km), x: a[m], y: a[m + 1], ang: Math.atan2(a[m2 + 1] - a[m + 1], a[m2] - a[m]), prov: nearProv(a[m] / 10, a[m + 1] / 10) });
+    });
+    named.sort((p, q2) => q2.flow * q2.km - p.flow * p.km || p.r - q2.r);
+    const riverNames = named.slice(0, 28);
+    const pieces = (ok, min, B) => {
+      const lab = new Int32Array(N).fill(-1), groups = [];
+      let comp = 0;
+      for (let s = 0; s < N; s++) {
+        if (lab[s] >= 0 || !ok(s)) continue;
+        const st = [s], all = [];
+        lab[s] = 1;
+        while (st.length) {
+          const k = st.pop();
+          all.push(k);
+          const x = k % gw;
+          for (const j of [x > 0 ? k - 1 : -1, x < gw - 1 ? k + 1 : -1, k - gw, k + gw]) if (j >= 0 && j < N && lab[j] < 0 && ok(j)) {
+            lab[j] = 1;
+            st.push(j);
+          }
+        }
+        if (all.length < min) continue;
+        const g2 = comp++;
+        if (all.length <= B * B * 0.6) {
+          groups.push({ cells: all, g: g2, all: all.length });
+          continue;
+        }
+        const blk = /* @__PURE__ */ new Map();
+        for (const k of all) {
+          const b = Math.floor(k % gw / B) * 1e3 + Math.floor((k / gw | 0) / B);
+          let gg = blk.get(b);
+          if (!gg) blk.set(b, gg = []);
+          gg.push(k);
+        }
+        for (const b of [...blk.keys()].sort((x, y) => x - y)) if (blk.get(b).length >= min) groups.push({ cells: blk.get(b), g: g2, all: all.length });
+      }
+      const out = [];
+      for (const { cells, g: g2, all } of groups) {
+        let sx = 0, sy = 0;
+        for (const k of cells) {
+          sx += k % gw;
+          sy += k / gw | 0;
+        }
+        const cx = sx / cells.length, cy = sy / cells.length;
+        let xx = 0, yy = 0, xy = 0, peak = 0;
+        for (const k of cells) {
+          const dx = k % gw - cx, dy = (k / gw | 0) - cy;
+          xx += dx * dx;
+          yy += dy * dy;
+          xy += dx * dy;
+          if (hm[k] > peak) peak = hm[k];
+        }
+        let ang = 0.5 * Math.atan2(2 * xy, xx - yy);
+        if (ang > Math.PI / 2) ang -= Math.PI;
+        if (ang < -Math.PI / 2) ang += Math.PI;
+        let lk = cells[0], ld = Infinity;
+        for (const k of cells) {
+          const d = (k % gw - cx) ** 2 + ((k / gw | 0) - cy) ** 2;
+          if (d < ld) {
+            ld = d;
+            lk = k;
+          }
+        }
+        const span = Math.sqrt(Math.max(xx, yy) / cells.length) * 2;
+        out.push({ n: cells.length, g: g2, whole: all, x: lk % gw * 10 + 5, y: (lk / gw | 0) * 10 + 5, ang: Math.round(ang * 100) / 100, span: Math.round(span * 10), peak: Math.round(peak), prov: nearProv(lk % gw, lk / gw | 0) });
+      }
+      return out.sort((p, q2) => q2.whole - p.whole || p.g - q2.g || q2.n - p.n || p.x - q2.x || p.y - q2.y);
+    };
+    const ranges = pieces((k) => grid[k] >= 0 && hm[k] >= C.RANGE_M, C.RANGE_MIN, 45).slice(0, 32);
+    const forests = pieces((k) => grid[k] >= 0 && cover[k] === COVER.WOOD, C.WOOD_MIN, 40).slice(0, 40);
+    let lx = 0, ly = 0, ln = 0;
+    for (let k = 0; k < N; k++) if (grid[k] >= 0) {
+      lx += k % gw;
+      ly += k / gw | 0;
+      ln++;
+    }
+    lx /= Math.max(1, ln);
+    ly /= Math.max(1, ln);
+    const toLand = new Int32Array(N).fill(1e9), q = [];
+    for (let k = 0; k < N; k++) if (grid[k] >= 0) {
+      toLand[k] = 0;
+      q.push(k);
+    }
+    for (let h = 0; h < q.length; h++) {
+      const k = q[h], x = k % gw;
+      for (const j of [x > 0 ? k - 1 : -1, x < gw - 1 ? k + 1 : -1, k - gw, k + gw]) if (j >= 0 && j < N && toLand[j] > toLand[k] + 1) {
+        toLand[j] = toLand[k] + 1;
+        q.push(j);
+      }
+    }
+    const SECT = 8, acc = Array.from({ length: SECT }, () => ({ n: 0, x: 0, y: 0, coast: /* @__PURE__ */ new Map() }));
+    for (let k = 0; k < N; k++) {
+      if (!ocean[k] || toLand[k] < 6 || toLand[k] > 16) continue;
+      const x = k % gw, y = k / gw | 0, s = Math.floor((Math.atan2(y - ly, x - lx) + Math.PI) / (2 * Math.PI) * SECT) % SECT;
+      acc[s].n++;
+      acc[s].x += x;
+      acc[s].y += y;
+    }
+    const seas = [];
+    acc.forEach((a, s) => {
+      if (a.n < 200) return;
+      const cx = a.x / a.n, cy = a.y / a.n;
+      let lk = -1, ld = Infinity;
+      for (let k = 0; k < N; k++) {
+        if (!ocean[k] || toLand[k] < 5 || toLand[k] > 18) continue;
+        const x = k % gw, y = k / gw | 0;
+        if (Math.floor((Math.atan2(y - ly, x - lx) + Math.PI) / (2 * Math.PI) * SECT) % SECT !== s) continue;
+        const d = (x - cx) ** 2 + (y - cy) ** 2;
+        if (d < ld) {
+          ld = d;
+          lk = k;
+        }
+      }
+      if (lk < 0) return;
+      seas.push({ s, n: a.n, x: lk % gw * 10 + 5, y: (lk / gw | 0) * 10 + 5, prov: nearProv(lk % gw, lk / gw | 0) });
+    });
+    return {
+      v: GROUND_V,
+      cover,
+      rivId,
+      edges: edges.map((e) => ({ a: e.a, b: e.b, rank: e.rank, km: e.km, cost: e.cost, diff: e.diff, path: e.path, cross: e.cross, pass: e.pass, wet: e.wet })),
+      crossings,
+      passes,
+      riverLinks,
+      rivers: riverNames,
+      ranges,
+      forests,
+      seas
+    };
+  }
+  function edgeIndex(G) {
+    const m = /* @__PURE__ */ new Map();
+    G.edges.forEach((e, i) => {
+      m.set(e.a * 4096 + e.b, i);
+      m.set(e.b * 4096 + e.a, i);
+    });
+    return (a, b) => {
+      const i = m.get(a * 4096 + b);
+      return i == null ? null : G.edges[i];
+    };
   }
 
   // src/people/engine/face.js
@@ -4399,8 +4983,8 @@ var __ARDAN_V2_MAKE = (() => {
   function pack(g2) {
     const bits = [];
     for (const [k, s] of FEATURES) {
-      const n = bitsOf(s), v = toStep(g2[k] ?? 0, s);
-      for (let b = n - 1; b >= 0; b--) bits.push(v >> b & 1);
+      const n3 = bitsOf(s), v = toStep(g2[k] ?? 0, s);
+      for (let b = n3 - 1; b >= 0; b--) bits.push(v >> b & 1);
     }
     while (bits.length % 6) bits.push(0);
     let out = "";
@@ -4422,9 +5006,9 @@ var __ARDAN_V2_MAKE = (() => {
     const g2 = {};
     let p = 0;
     for (const [k, s] of FEATURES) {
-      const n = bitsOf(s);
+      const n3 = bitsOf(s);
       let v = 0;
-      for (let b = 0; b < n; b++) v = v * 2 + bits[p++];
+      for (let b = 0; b < n3; b++) v = v * 2 + bits[p++];
       if (v > s - 1) return null;
       g2[k] = fromStep(v, s);
     }
@@ -4458,10 +5042,10 @@ var __ARDAN_V2_MAKE = (() => {
   function make(id, o = {}) {
     const r = streamOf(id, "face"), mean = o.mean || {}, g2 = {};
     for (const k of KEYS) g2[k] = Math.max(-1, Math.min(1, (mean[k] || 0) + 0.4 * gauss(r)));
-    const n = 3 + Math.floor(r() * 3), looks = o.looks ?? 50;
+    const n3 = 3 + Math.floor(r() * 3), looks = o.looks ?? 50;
     const pool = looks >= 70 ? [...FLATTER, ...FACE27] : looks <= 30 ? [...HARD, ...FACE27] : FACE27;
     const used = /* @__PURE__ */ new Set();
-    for (let i = 0; i < n; i++) {
+    for (let i = 0; i < n3; i++) {
       let k;
       do
         k = pool[Math.floor(r() * pool.length)];
@@ -4482,9 +5066,9 @@ var __ARDAN_V2_MAKE = (() => {
     return s / keys.length;
   }
   function clearlyDiffer(a, b, keys = FACE27) {
-    let n = 0;
-    for (const k of keys) if (Math.abs((a[k] || 0) - (b[k] || 0)) >= 0.5) n++;
-    return n;
+    let n3 = 0;
+    for (const k of keys) if (Math.abs((a[k] || 0) - (b[k] || 0)) >= 0.5) n3++;
+    return n3;
   }
   function inherit2(father, mother, id, o = {}) {
     const r = streamOf(id, "inherit"), mean = o.mean || {}, g2 = {}, from = {};
@@ -4632,11 +5216,11 @@ var __ARDAN_V2_MAKE = (() => {
   var pt = (p) => n1(p[0]) + " " + n1(p[1]);
   var join = (pts) => {
     if (!STEP) return pts.map(pt).join("L");
-    const n = pts.length;
+    const n3 = pts.length;
     let out = pt(pts[0]), lx = pts[0][0], ly = pts[0][1];
-    for (let i = 1; i < n; i++) {
+    for (let i = 1; i < n3; i++) {
       const p = pts[i];
-      if (i < n - 1 && Math.abs(p[0] - lx) + Math.abs(p[1] - ly) < STEP) continue;
+      if (i < n3 - 1 && Math.abs(p[0] - lx) + Math.abs(p[1] - ly) < STEP) continue;
       out += "L" + pt(p);
       lx = p[0];
       ly = p[1];
@@ -4665,13 +5249,13 @@ var __ARDAN_V2_MAKE = (() => {
     return r;
   }
   function crSegs(pts, closed, t) {
-    const n = pts.length, T3 = (i) => Array.isArray(t) ? t[i] ?? 1 : t;
-    const P = (i) => closed ? pts[(i + n) % n] : pts[clamp3(i, 0, n - 1)];
+    const n3 = pts.length, T5 = (i) => Array.isArray(t) ? t[i] ?? 1 : t;
+    const P = (i) => closed ? pts[(i + n3) % n3] : pts[clamp3(i, 0, n3 - 1)];
     const tan = (i) => {
-      const a = P(i - 1), b = P(i + 1), k = T3((i % n + n) % n) / 6;
+      const a = P(i - 1), b = P(i + 1), k = T5((i % n3 + n3) % n3) / 6;
       return [(b[0] - a[0]) * k, (b[1] - a[1]) * k];
     };
-    const segs = [], m = closed ? n : n - 1;
+    const segs = [], m = closed ? n3 : n3 - 1;
     for (let i = 0; i < m; i++) {
       const p0 = P(i), p1 = P(i + 1), t0 = tan(i), t1 = tan(i + 1);
       segs.push([p0, [p0[0] + t0[0], p0[1] + t0[1]], [p1[0] - t1[0], p1[1] - t1[1]], p1]);
@@ -4695,31 +5279,31 @@ var __ARDAN_V2_MAKE = (() => {
     return out;
   }
   function poly(pts, k = 1, closed = true) {
-    const n = pts.length;
-    if (n < 2) return "";
+    const n3 = pts.length;
+    if (n3 < 2) return "";
     const K2 = (i) => clamp3(Array.isArray(k) ? k[i] ?? 1 : k, 0, 1) / 2;
     if (closed) {
       let d2 = "";
-      for (let i = 0; i < n; i++) {
-        const a = pts[(i + n - 1) % n], b = pts[i], c = pts[(i + 1) % n], kk = K2(i);
+      for (let i = 0; i < n3; i++) {
+        const a = pts[(i + n3 - 1) % n3], b = pts[i], c = pts[(i + 1) % n3], kk = K2(i);
         d2 += (i ? "L" : "M") + pt(mix2(b, a, kk)) + (kk > 0 ? "Q" + pt(b) + " " + pt(mix2(b, c, kk)) : "");
       }
       return d2 + "Z";
     }
     let d = "M" + pt(pts[0]);
-    for (let i = 1; i < n - 1; i++) {
+    for (let i = 1; i < n3 - 1; i++) {
       const a = pts[i - 1], b = pts[i], c = pts[i + 1], kk = K2(i);
       d += "L" + pt(mix2(b, a, kk)) + (kk > 0 ? "Q" + pt(b) + " " + pt(mix2(b, c, kk)) : "");
     }
-    return d + "L" + pt(pts[n - 1]);
+    return d + "L" + pt(pts[n3 - 1]);
   }
   var polyline = (pts, closed = false) => "M" + join(pts) + (closed ? "Z" : "");
   function polyPts(pts, k = 1, closed = true, per = 5) {
-    const n = pts.length, out = [], K2 = (i) => clamp3(Array.isArray(k) ? k[i] ?? 1 : k, 0, 1) / 2;
-    const i0 = closed ? 0 : 1, i1 = closed ? n : n - 1;
+    const n3 = pts.length, out = [], K2 = (i) => clamp3(Array.isArray(k) ? k[i] ?? 1 : k, 0, 1) / 2;
+    const i0 = closed ? 0 : 1, i1 = closed ? n3 : n3 - 1;
     if (!closed) out.push(pts[0]);
     for (let i = i0; i < i1; i++) {
-      const a = pts[(i + n - 1) % n], b = pts[i], c = pts[(i + 1) % n], kk = K2(i);
+      const a = pts[(i + n3 - 1) % n3], b = pts[i], c = pts[(i + 1) % n3], kk = K2(i);
       if (kk <= 0) {
         out.push(b);
         continue;
@@ -4730,24 +5314,24 @@ var __ARDAN_V2_MAKE = (() => {
         out.push([u * u * e[0] + 2 * u * s * b[0] + s * s * x[0], u * u * e[1] + 2 * u * s * b[1] + s * s * x[1]]);
       }
     }
-    if (!closed) out.push(pts[n - 1]);
+    if (!closed) out.push(pts[n3 - 1]);
     return out;
   }
-  var circle = (c, r, n = 12) => {
+  var circle = (c, r, n3 = 12) => {
     const o = [];
-    for (let i = 0; i < n; i++) {
-      const a = i / n * 2 * Math.PI;
+    for (let i = 0; i < n3; i++) {
+      const a = i / n3 * 2 * Math.PI;
       o.push([c[0] + r * Math.cos(a), c[1] + r * Math.sin(a)]);
     }
     return o;
   };
-  var ellPts = (c, rx, ry, a = 0, n = 12) => circle([0, 0], 1, n).map((p) => add(c, rot([p[0] * rx, p[1] * ry], a)));
+  var ellPts = (c, rx, ry, a = 0, n3 = 12) => circle([0, 0], 1, n3).map((p) => add(c, rot([p[0] * rx, p[1] * ry], a)));
   var ell = (c, rx, ry, a = 0) => spl(ellPts(c, rx, ry, a, 8), true);
   function offset(pts, d) {
-    const n = pts.length, out = [];
-    for (let i = 0; i < n; i++) {
-      const a = pts[Math.max(0, i - 1)], b = pts[Math.min(n - 1, i + 1)], t = norm(sub(b, a));
-      const w = typeof d === "function" ? d(i / (n - 1)) : d;
+    const n3 = pts.length, out = [];
+    for (let i = 0; i < n3; i++) {
+      const a = pts[Math.max(0, i - 1)], b = pts[Math.min(n3 - 1, i + 1)], t = norm(sub(b, a));
+      const w = typeof d === "function" ? d(i / (n3 - 1)) : d;
       out.push([pts[i][0] + t[1] * w, pts[i][1] - t[0] * w]);
     }
     return out;
@@ -4757,24 +5341,24 @@ var __ARDAN_V2_MAKE = (() => {
   var fade = (w, from = 0) => (t) => w * (from ? clamp3(t * 4) : 1) * Math.sqrt(clamp3(1 - t));
   function ink(pts, w) {
     const wf = typeof w === "function" ? w : Array.isArray(w) ? ((t) => t < 0.5 ? lerp2(w[0], w[1], t * 2) : lerp2(w[1], w[2], t * 2 - 1)) : taper(w);
-    const L = offset(pts, (t) => wf(t) / 2), R2 = offset(pts, (t) => -wf(t) / 2).reverse();
-    return "M" + join(L) + "L" + join(R2) + "Z";
+    const L = offset(pts, (t) => wf(t) / 2), R3 = offset(pts, (t) => -wf(t) / 2).reverse();
+    return "M" + join(L) + "L" + join(R3) + "Z";
   }
   var along = (pts, t) => {
     const x = clamp3(t) * (pts.length - 1), i = Math.min(pts.length - 2, Math.floor(x));
     return mix2(pts[i], pts[i + 1], x - i);
   };
-  var part = (pts, t0, t1, n = 10) => {
+  var part = (pts, t0, t1, n3 = 10) => {
     const o = [];
-    for (let i = 0; i <= n; i++) o.push(along(pts, lerp2(t0, t1, i / n)));
+    for (let i = 0; i <= n3; i++) o.push(along(pts, lerp2(t0, t1, i / n3)));
     return o;
   };
   function blade(root, tip, w, bend2 = 0, belly = 0.4) {
-    const ax2 = sub(tip, root), n = norm(perp(ax2)), l = len(ax2);
-    const c = add(mix2(root, tip, belly), mul(n, bend2 * l));
-    const a = add(root, mul(n, w / 2)), b = sub(root, mul(n, w / 2));
-    const ca = add(c, mul(n, w * 0.55)), cb = sub(c, mul(n, w * 0.55));
-    return { d: "M" + pt(a) + "Q" + pt(ca) + " " + pt(tip) + "Q" + pt(cb) + " " + pt(b) + "Z", e: "M" + pt(a) + "Q" + pt(ca) + " " + pt(tip) + "Q" + pt(cb) + " " + pt(b), mid: c, n, a, b, tip };
+    const ax2 = sub(tip, root), n3 = norm(perp(ax2)), l = len(ax2);
+    const c = add(mix2(root, tip, belly), mul(n3, bend2 * l));
+    const a = add(root, mul(n3, w / 2)), b = sub(root, mul(n3, w / 2));
+    const ca = add(c, mul(n3, w * 0.55)), cb = sub(c, mul(n3, w * 0.55));
+    return { d: "M" + pt(a) + "Q" + pt(ca) + " " + pt(tip) + "Q" + pt(cb) + " " + pt(b) + "Z", e: "M" + pt(a) + "Q" + pt(ca) + " " + pt(tip) + "Q" + pt(cb) + " " + pt(b), mid: c, n: n3, a, b, tip };
   }
   var hex2rgb = (h) => {
     const x = parseInt(h.slice(1), 16);
@@ -4872,8 +5456,8 @@ var __ARDAN_V2_MAKE = (() => {
       const v = this.view;
       if (!v) return false;
       let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9, cmd = "", k = 0, px = 0, rel = false;
-      const n = d.length;
-      for (let i = 0; i < n; ) {
+      const n3 = d.length;
+      for (let i = 0; i < n3; ) {
         const c = d.charCodeAt(i);
         if (c === 32 || c === 44) {
           i++;
@@ -4888,7 +5472,7 @@ var __ARDAN_V2_MAKE = (() => {
           continue;
         }
         let j = i + 1;
-        while (j < n) {
+        while (j < n3) {
           const e = d.charCodeAt(j);
           if (e >= 48 && e <= 57 || e === 46) j++;
           else break;
@@ -5240,10 +5824,10 @@ var __ARDAN_V2_MAKE = (() => {
     const wideA = (P.wide + (male ? 0 : -0.012)) * H * (1 + 0.1 * mu);
     F.leg = side.map((s, i) => {
       const free = (sway >= 0 ? -1 : 1) === s ? Math.abs(sway) : 0;
-      const an = [s * wideA / 2 + cx * 0.35 + s * free * H * 0.012, y.ankle], hip = F.hipJ[i];
-      const kn = add(mix2(hip, an, 0.5), [s * H * (4e-3 + 0.015 * free), -B * 0.012 + free * H * 5e-3]);
+      const an2 = [s * wideA / 2 + cx * 0.35 + s * free * H * 0.012, y.ankle], hip = F.hipJ[i];
+      const kn = add(mix2(hip, an2, 0.5), [s * H * (4e-3 + 0.015 * free), -B * 0.012 + free * H * 5e-3]);
       const toe = rad(s * (16 + 16 * free + (male ? 4 : -4)));
-      return { hip, kn, an, toe, free, s };
+      return { hip, kn, an: an2, toe, free, s };
     });
     F.arm = side.map((s, i) => {
       const A = P.arm[i], S = F.shJ[i], fs = A.fs || [1, 1], L1 = F.armL[0] * fs[0], L2 = F.armL[1] * fs[1];
@@ -5253,15 +5837,15 @@ var __ARDAN_V2_MAKE = (() => {
         el = add(S, mul(dir(s * a), L1));
         wr = add(el, mul(dir(s * (a - b)), L2));
       } else {
-        const T3 = A.to(F), v = sub(T3, S), d0 = len(v), d = clamp3(d0, Math.abs(L1 - L2) + 2, L1 + L2 - 2), u = norm(v);
-        const a = (L1 * L1 - L2 * L2 + d * d) / (2 * d), h = Math.sqrt(Math.max(0, L1 * L1 - a * a)), n = perp(u);
-        const e1 = add(S, add(mul(u, a), mul(n, h))), e2 = add(S, add(mul(u, a), mul(n, -h)));
+        const T5 = A.to(F), v = sub(T5, S), d0 = len(v), d = clamp3(d0, Math.abs(L1 - L2) + 2, L1 + L2 - 2), u = norm(v);
+        const a = (L1 * L1 - L2 * L2 + d * d) / (2 * d), h = Math.sqrt(Math.max(0, L1 * L1 - a * a)), n3 = perp(u);
+        const e1 = add(S, add(mul(u, a), mul(n3, h))), e2 = add(S, add(mul(u, a), mul(n3, -h)));
         const sc = (e) => e[1] + 0.6 * (e[0] - S[0]) * s;
         el = sc(e1) > sc(e2) ? e1 : e2;
         wr = add(S, mul(u, d));
         if (A.el) {
           el = A.el(F, i, s);
-          wr = T3;
+          wr = T5;
         }
       }
       return { sh: S, el, wr, s, back: !!A.back, staff: !!A.staff, hang: !!A.hang, hand: P.hand[i], dirF: norm(sub(wr, el)) };
@@ -5435,12 +6019,12 @@ var __ARDAN_V2_MAKE = (() => {
       [sg * (lerp2(D.gon, D.chinW, 0.56) + D.jowl * 3), lerp2(D.gonV, D.chinV, 0.6) + D.jowl * 2.5, 46],
       [sg * D.chinW, D.chinV - 3.4, 76]
     ];
-    const R2 = side(1), L = side(-1), tens = (a) => a.map((p, i) => i === a.length - 3 ? D.jawK : i === a.length - 1 ? 0.75 : 1);
-    const ring = [[0, D.crown, -8], ...R2, [0, D.chinV, 80], ...L.slice().reverse()];
-    const tn = [1, ...tens(R2), 0.9, ...tens(L).reverse()];
+    const R3 = side(1), L = side(-1), tens = (a) => a.map((p, i) => i === a.length - 3 ? D.jawK : i === a.length - 1 ? 0.75 : 1);
+    const ring = [[0, D.crown, -8], ...R3, [0, D.chinV, 80], ...L.slice().reverse()];
+    const tn = [1, ...tens(R3), 0.9, ...tens(L).reverse()];
     const pts = ring.map((p) => hp(p[0], p[1], p[2]));
     const out = spl(pts, true, tn), outPts = splPts(pts, true, tn, 6);
-    const nR = R2.length, jaw = splPts([...R2.slice(nR - 5).map((p) => hp(...p)), hp(0, D.chinV, 80), ...L.slice(L.length - 5).reverse().map((p) => hp(...p))], false, [1, 1, D.jawK, 1, 0.75, 0.9, 0.75, 1, D.jawK, 1, 1], 6);
+    const nR = R3.length, jaw = splPts([...R3.slice(nR - 5).map((p) => hp(...p)), hp(0, D.chinV, 80), ...L.slice(L.length - 5).reverse().map((p) => hp(...p))], false, [1, 1, D.jawK, 1, 0.75, 0.9, 0.75, 1, D.jawK, 1, 1], 6);
     const nw = F.neckHalf / s;
     return { D, s, hp, P, fw, yawD, far, out, outPts, jaw, O, nw, male: D.male, neckTop: [hp(-nw, D.gonV - 16, -6), hp(nw, D.gonV - 16, -6)] };
   }
@@ -5465,18 +6049,18 @@ var __ARDAN_V2_MAKE = (() => {
     if (D.old > 0.3) for (const k of [0, 1]) S.fill(ink(splPts([hp(-Hd.nw * 0.5, D.chinV + 14 + k * 9, 30), hp(0, D.chinV + 18 + k * 9, 36), hp(Hd.nw * 0.55, D.chinV + 13 + k * 9, 30)]), S.lw(0.9)), sk2.k, { op: 0.35 * D.old });
   }
   function drawEar(S, Hd, sk2, sg) {
-    const { D, hp } = Hd, u0 = D.zyg + 1, T3 = D.earT, Bv = D.earB, e = D.earS, o = D.earOut, h = Bv - T3;
-    const Pe = (du, v, w) => hp(sg * (u0 + du * o * e), T3 + (v - T3) * 1, w);
-    const pts = [Pe(-2 / o / e, T3 + h * 0.08, 2), Pe(5, T3 - 1 - D.earPoint * 5, -8), Pe(12.5, T3 + h * 0.1 - D.earPoint * 3, -19), Pe(14.5, T3 + h * 0.38, -21), Pe(10.5, T3 + h * 0.7, -15), Pe(5, T3 + h * (0.98 + 0.08 * D.lobe), -7), Pe(-1.5 / o / e, T3 + h * (0.84 + 0.05 * D.lobe), 0)];
+    const { D, hp } = Hd, u0 = D.zyg + 1, T5 = D.earT, Bv = D.earB, e = D.earS, o = D.earOut, h = Bv - T5;
+    const Pe = (du, v, w) => hp(sg * (u0 + du * o * e), T5 + (v - T5) * 1, w);
+    const pts = [Pe(-2 / o / e, T5 + h * 0.08, 2), Pe(5, T5 - 1 - D.earPoint * 5, -8), Pe(12.5, T5 + h * 0.1 - D.earPoint * 3, -19), Pe(14.5, T5 + h * 0.38, -21), Pe(10.5, T5 + h * 0.7, -15), Pe(5, T5 + h * (0.98 + 0.08 * D.lobe), -7), Pe(-1.5 / o / e, T5 + h * (0.84 + 0.05 * D.lobe), 0)];
     const d = spl(pts, true, [0.6, 1, 1, 1, 1, 1, 0.6]);
     S.both(d, sk2.b, sk2.k, 1.05);
     S.within(d, () => {
-      S.fill(spl([Pe(2, T3 + h * 0.3, -4), Pe(8.5, T3 + h * 0.22, -14), Pe(10, T3 + h * 0.45, -16), Pe(6, T3 + h * 0.68, -10), Pe(3, T3 + h * 0.55, -5)], true), sk2.s);
+      S.fill(spl([Pe(2, T5 + h * 0.3, -4), Pe(8.5, T5 + h * 0.22, -14), Pe(10, T5 + h * 0.45, -16), Pe(6, T5 + h * 0.68, -10), Pe(3, T5 + h * 0.55, -5)], true), sk2.s);
       S.fill(d, sk2.blush, { op: 0.16 });
     });
     if (S.lod > 0) {
-      S.fill(ink(splPts([Pe(1.5, T3 + h * 0.2, -2), Pe(6, T3 + h * 0.08, -9), Pe(11.5, T3 + h * 0.2, -18), Pe(12, T3 + h * 0.45, -19), Pe(8.5, T3 + h * 0.66, -13)]), S.lw(0.9)), sk2.k, { op: 0.7 });
-      S.fill(ink(splPts([Pe(4, T3 + h * 0.34, -6), Pe(7.5, T3 + h * 0.4, -11), Pe(5.5, T3 + h * 0.62, -8)]), S.lw(0.8)), sk2.k, { op: 0.6 });
+      S.fill(ink(splPts([Pe(1.5, T5 + h * 0.2, -2), Pe(6, T5 + h * 0.08, -9), Pe(11.5, T5 + h * 0.2, -18), Pe(12, T5 + h * 0.45, -19), Pe(8.5, T5 + h * 0.66, -13)]), S.lw(0.9)), sk2.k, { op: 0.7 });
+      S.fill(ink(splPts([Pe(4, T5 + h * 0.34, -6), Pe(7.5, T5 + h * 0.4, -11), Pe(5.5, T5 + h * 0.62, -8)]), S.lw(0.8)), sk2.k, { op: 0.6 });
     }
   }
   function drawHead(S, Hd, F, look, sk2, hairShadow = []) {
@@ -5552,16 +6136,16 @@ var __ARDAN_V2_MAKE = (() => {
         S.fill(ink(offset(part(upPts, 0.22, 0.82, 10), (0.9 + D.eyeH * 0.06) * s), S.lw(1.5)), sk2.l, { op: 0.4 });
       }
       const wing = E(ew / 2 + 2.6 + D.lash * 0.5, G.O[1] + (D.male ? 0.5 : -1.1) - D.tilt * 0.6);
-      const T3 = D.lash * s, lp = [...upPts, wing];
-      S.fill(ink(offset(lp, (t) => T3 * 0.32 * Math.min(1, t * 3)), swell(T3 * 0.3, T3, 0.8)), lash);
+      const T5 = D.lash * s, lp = [...upPts, wing];
+      S.fill(ink(offset(lp, (t) => T5 * 0.32 * Math.min(1, t * 3)), swell(T5 * 0.3, T5, 0.8)), lash);
       if (!D.male && lod > 0) for (const k of [0, 1, 2]) {
         const a = along(upPts, 0.8 + k * 0.08), b = add(a, mul(norm([sg * (1.2 + k * 0.5), -1.3 + k * 0.3]), (3 + D.lash * 0.7) * s));
-        S.fill(ink([a, mix2(a, b, 0.5), b], fade(T3 * 0.5)), lash);
+        S.fill(ink([a, mix2(a, b, 0.5), b], fade(T5 * 0.5)), lash);
       }
       S.fill(ink(part(loPts, 0.02, 0.42), S.lw(D.male ? 0.95 : 0.85)), sk2.k, { op: 0.8 });
       if (lod > 1 && !D.male) for (const k of [0, 1, 2]) {
         const a = along(loPts, 0.1 + k * 0.07), b = add(a, mul(norm([sg * (1 + k * 0.2), 1.1]), (1.5 + D.lash * 0.3) * s));
-        S.fill(ink([a, mix2(a, b, 0.5), b], fade(T3 * 0.32)), lash, { op: 0.8 });
+        S.fill(ink([a, mix2(a, b, 0.5), b], fade(T5 * 0.32)), lash, { op: 0.8 });
       }
       if (lod > 0) {
         const cr = offset(part(upPts, 0.1, 0.9, 12), (1.6 + D.eyeH * 0.13 + (D.male ? 0 : 0.5)) * s * (1 - 0.3 * D.old));
@@ -5643,9 +6227,9 @@ var __ARDAN_V2_MAKE = (() => {
     drawMarks(S, Hd, look, sk2, rnd);
     const fr = Math.max(0, ((look.g || {}).freckles ?? -1) + 1) / 2;
     if (fr > 0 && lod > 0) {
-      const r22 = stream2(look.id || "x", "freckles"), n = Math.round(70 * fr), col = mixc(sk2.s, "#9a5a34", 0.55);
+      const r22 = stream2(look.id || "x", "freckles"), n3 = Math.round(70 * fr), col = mixc(sk2.s, "#9a5a34", 0.55);
       let d = "";
-      for (let i = 0; i < n; i++) {
+      for (let i = 0; i < n3; i++) {
         const u = r22.s() * 46, v = D.noseV * 0.62 + r22.s() * 15 - Math.abs(u) * 0.12, p = P(u, v), q = (0.5 + r22() * 0.6) * s;
         d += `M${n1(p[0] - q)} ${n1(p[1])}a${n1(q)} ${n1(q)} 0 1 0 ${n1(2 * q)} 0a${n1(q)} ${n1(q)} 0 1 0 ${n1(-2 * q)} 0`;
       }
@@ -5679,8 +6263,8 @@ var __ARDAN_V2_MAKE = (() => {
       S.fill(ink(offset(c, 0.7 * s), taper(w * 1.1 * s, 0.4)), sk2.d, { op: 0.7 });
       S.fill(ink(c, taper(w * s, 0.4)), pale);
       if (S.lod > 0) for (let i = 1; i < 6; i++) {
-        const p = along(c, i / 6), q = along(c, i / 6 + 0.01), n = mul(norm(perp(sub(q, p))), w * 1.25 * s);
-        S.stroke(polyline([sub(p, n), add(p, n)]), fresh ? "#7a2428" : sk2.d, 0.8, { op: fresh ? 0.9 : 0.55 });
+        const p = along(c, i / 6), q = along(c, i / 6 + 0.01), n3 = mul(norm(perp(sub(q, p))), w * 1.25 * s);
+        S.stroke(polyline([sub(p, n3), add(p, n3)]), fresh ? "#7a2428" : sk2.d, 0.8, { op: fresh ? 0.9 : 0.55 });
       }
     };
     for (const sc of look.scars || []) {
@@ -5790,9 +6374,9 @@ var __ARDAN_V2_MAKE = (() => {
     };
     const f = st.fringe;
     if (f) {
-      const n = f.n, rootV = hv - 26, idx = [...Array(n).keys()], order = [...idx.filter((i) => i % 2), ...idx.filter((i) => !(i % 2))];
+      const n3 = f.n, rootV = hv - 26, idx = [...Array(n3).keys()], order = [...idx.filter((i) => i % 2), ...idx.filter((i) => !(i % 2))];
       for (const i of order) {
-        const t = n === 1 ? 0.5 : i / (n - 1), q = 2 * t - 1, tu = lerp2(-f.span, f.span, t) + r.s() * 3 + (f.sweep || 0) * 16;
+        const t = n3 === 1 ? 0.5 : i / (n3 - 1), q = 2 * t - 1, tu = lerp2(-f.span, f.span, t) + r.s() * 3 + (f.sweep || 0) * 16;
         const tv = f.v + (i % 2 ? 1 : -1) * f.zig * (0.4 + 0.6 * r()) + (f.edge || 0) * q * q - 7 * rec2;
         const root = [pu + (tu - pu) * f.root - (f.sweep || 0) * 18, rootV + q * q * 10];
         L(root, [tu, tv], lerp2(f.w[0], f.w[1], r()), (f.sweep ? -Math.sign(f.sweep) : tu > pu ? -1 : 1) * f.bend * (0.7 + 0.6 * r()), "locks", 4, true);
@@ -5856,9 +6440,9 @@ var __ARDAN_V2_MAKE = (() => {
       H[z].push({ d: ink(c2, (q) => w * (q < 0.1 ? lerp2(0.6, 1, q / 0.1) : Math.sqrt(clamp3(1.03 - q)))), c: c2, w });
     };
     const plait = (pts, w, z) => {
-      const c2 = splPts(pts, false, 1, 6), n = Math.max(5, Math.round(len(sub(pts[0], pts[pts.length - 1])) / (w * 0.62)));
-      for (let i = 0; i < n; i++) {
-        const a = along(c2, i / n), b = along(c2, (i + 1.25) / n), sg = i % 2 ? 1 : -1, nn = norm(perp(sub(b, a))), k = 1 - 0.35 * (i / n);
+      const c2 = splPts(pts, false, 1, 6), n3 = Math.max(5, Math.round(len(sub(pts[0], pts[pts.length - 1])) / (w * 0.62)));
+      for (let i = 0; i < n3; i++) {
+        const a = along(c2, i / n3), b = along(c2, (i + 1.25) / n3), sg = i % 2 ? 1 : -1, nn = norm(perp(sub(b, a))), k = 1 - 0.35 * (i / n3);
         H[z].push({ d: spl([add(a, mul(nn, sg * w * 0.08 * k)), add(mix2(a, b, 0.35), mul(nn, sg * w * 0.55 * k)), add(b, mul(nn, sg * w * 0.2 * k)), add(mix2(a, b, 0.6), mul(nn, -sg * w * 0.12 * k))], true), braid: 1 });
       }
       const e = along(c2, 1);
@@ -5949,8 +6533,8 @@ var __ARDAN_V2_MAKE = (() => {
       S.stroke(polyline(offset(H.band, w * 0.5)), hc.k, 1);
       S.stroke(polyline(offset(H.band, -w * 0.5)), hc.k, 1);
       for (let i = 1; i < 14; i++) {
-        const a = along(H.band, i / 14), n = norm(perp(sub(along(H.band, i / 14 + 0.01), a)));
-        S.stroke(polyline([add(a, mul(n, w * 0.45)), add(a, add(mul(n, -w * 0.45), [5 * s * (i > 7 ? 1 : -1), 0]))]), hc.k, 0.8, { op: 0.7 });
+        const a = along(H.band, i / 14), n3 = norm(perp(sub(along(H.band, i / 14 + 0.01), a)));
+        S.stroke(polyline([add(a, mul(n3, w * 0.45)), add(a, add(mul(n3, -w * 0.45), [5 * s * (i > 7 ? 1 : -1), 0]))]), hc.k, 0.8, { op: 0.7 });
       }
     }
     for (const b of H.locks) {
@@ -5976,8 +6560,8 @@ var __ARDAN_V2_MAKE = (() => {
           S.fill(ink(offset(part(b.c, 0.3, 0.96), -b.w * 0.2), fade(S.lw(0.7))), hc.k, { op: 0.4 });
         }
         if (b.rope && lod > 0) for (let i = 2; i < 12; i++) {
-          const a = along(b.c, i / 12), n = norm(perp(sub(along(b.c, i / 12 + 0.01), a)));
-          S.stroke(polyline([add(a, mul(n, b.w * 0.4)), add(a, mul(n, -b.w * 0.4))]), hc.k, 0.7, { op: 0.5 });
+          const a = along(b.c, i / 12), n3 = norm(perp(sub(along(b.c, i / 12 + 0.01), a)));
+          S.stroke(polyline([add(a, mul(n3, b.w * 0.4)), add(a, mul(n3, -b.w * 0.4))]), hc.k, 0.7, { op: 0.5 });
         }
       }
     }
@@ -6016,9 +6600,9 @@ var __ARDAN_V2_MAKE = (() => {
         S.within(d, () => S.fill(d, S.lin(P(0, MV), P(0, D.chinV + e + (bd.hang || 0)), [[0, hc.s, 0], [1, hc.s, 0.85]])));
       }
       for (const sg of [-1, 1]) {
-        const edge = splPts(bot(sg).map((p) => P(p[0], p[1])), false, 1, 6), n = Math.round(7 + bd.lock * 0.3);
-        for (let i = 1; i <= n; i++) {
-          const t = i / n, a = along(edge, t * 0.98), ln = (bd.lock * (0.7 + 0.6 * r()) + (bd.hang || 0) * sstep(0.55, 1, t) * (0.5 + 0.5 * r()) + (bd.fork || 0) * sstep(0.75, 1, t) * (0.6 + 0.4 * r())) * s, ang = rad(sg * (26 * (1 - t) + (bd.fork ? 10 * sstep(0.7, 1, t) : 0)) + r.s() * 8), b = blade(add(a, [0, -3 * s]), add(a, mul(dir(ang), ln)), (7 + bd.lock * 0.25) * s, r.s() * 0.12);
+        const edge = splPts(bot(sg).map((p) => P(p[0], p[1])), false, 1, 6), n3 = Math.round(7 + bd.lock * 0.3);
+        for (let i = 1; i <= n3; i++) {
+          const t = i / n3, a = along(edge, t * 0.98), ln = (bd.lock * (0.7 + 0.6 * r()) + (bd.hang || 0) * sstep(0.55, 1, t) * (0.5 + 0.5 * r()) + (bd.fork || 0) * sstep(0.75, 1, t) * (0.6 + 0.4 * r())) * s, ang = rad(sg * (26 * (1 - t) + (bd.fork ? 10 * sstep(0.7, 1, t) : 0)) + r.s() * 8), b = blade(add(a, [0, -3 * s]), add(a, mul(dir(ang), ln)), (7 + bd.lock * 0.25) * s, r.s() * 0.12);
           S.fill(b.d, grey > 0 && r() < grey ? mixc(hc.b, "#c4c4ca", 0.75) : col);
           S.stroke(b.e, hc.k, 0.95);
         }
@@ -6049,19 +6633,19 @@ var __ARDAN_V2_MAKE = (() => {
     if (o.sky) S.fill(d, S.lin(o.sky[0], o.sky[1], [[0, m.hi, 0.5], [0.4, m.hi, 0], [1, m.d, 0.45]]));
   }
   function scrolls(S, pts, size, col, op = 0.9) {
-    const n = Math.max(2, Math.round(len(sub(pts[0], pts[pts.length - 1])) / (size * 2.2)));
+    const n3 = Math.max(2, Math.round(len(sub(pts[0], pts[pts.length - 1])) / (size * 2.2)));
     let d = "";
-    for (let i = 0; i < n; i++) {
-      const t = (i + 0.5) / n, p = along(pts, t), tg = norm(sub(along(pts, Math.min(1, t + 0.02)), along(pts, Math.max(0, t - 0.02)))), nn = perp(tg), sg = i % 2 ? 1 : -1;
+    for (let i = 0; i < n3; i++) {
+      const t = (i + 0.5) / n3, p = along(pts, t), tg = norm(sub(along(pts, Math.min(1, t + 0.02)), along(pts, Math.max(0, t - 0.02)))), nn = perp(tg), sg = i % 2 ? 1 : -1;
       const a = add(p, mul(tg, -size)), b = add(p, mul(tg, size)), c1 = add(p, add(mul(tg, -size * 0.2), mul(nn, sg * size * 1.1))), c2 = add(p, add(mul(tg, size * 0.9), mul(nn, sg * size * 0.9))), e = add(p, add(mul(tg, size * 0.35), mul(nn, sg * size * 0.25)));
       d += `M${n1(a[0])} ${n1(a[1])}Q${n1(c1[0])} ${n1(c1[1])} ${n1(b[0])} ${n1(b[1])}Q${n1(c2[0])} ${n1(c2[1])} ${n1(e[0])} ${n1(e[1])}`;
     }
     S.stroke(d, col, 0.9, { op });
   }
-  var rivets = (S, pts, n, r, m) => {
+  var rivets = (S, pts, n3, r, m) => {
     let d = "";
-    for (let i = 0; i < n; i++) {
-      const p = along(pts, (i + 0.5) / n);
+    for (let i = 0; i < n3; i++) {
+      const p = along(pts, (i + 0.5) / n3);
       d += `M${n1(p[0] - r)} ${n1(p[1])}a${n1(r)} ${n1(r)} 0 1 0 ${n1(2 * r)} 0a${n1(r)} ${n1(r)} 0 1 0 ${n1(-2 * r)} 0`;
     }
     S.fill(d, m.l);
@@ -6161,7 +6745,7 @@ var __ARDAN_V2_MAKE = (() => {
   var swordLen = (o) => ON_BODY[formOf("sword", o)] || 0.41;
   var swordHilt = (o) => BLADES[formOf("sword", o)].grip + 0.056;
   function blade2(S, F, L, w, f, M) {
-    const { st, fit, q, r } = M, ts = f.t || T4, B = f.B, E = f.E || B, n = ts.length;
+    const { st, fit, q, r } = M, ts = f.t || T4, B = f.B, E = f.E || B, n3 = ts.length;
     const up = ts.map((t, i) => [L * t, -w * B[i]]), dn = ts.map((t, i) => [L * t, w * E[i]]), tp = [L * (f.tip ? f.tip[0] : 1), w * (f.tip ? f.tip[1] : 0)], tb = (f.tipB || []).map((p) => [L * p[0], w * p[1]]);
     const kk = ts.map((t, i) => i ? 0.7 : 0);
     if (f.lugs) {
@@ -6216,7 +6800,7 @@ var __ARDAN_V2_MAKE = (() => {
       }
       if (q === 0) {
         for (const t of [0.2, 0.46, 0.63, 0.8]) {
-          const sg = r0() < 0.5 ? -1 : 1, e = sg < 0 ? B : E, k = e[Math.min(n - 1, Math.round(t * (n - 1)))];
+          const sg = r0() < 0.5 ? -1 : 1, e = sg < 0 ? B : E, k = e[Math.min(n3 - 1, Math.round(t * (n3 - 1)))];
           S.fill(polyline(F.P([[L * t, sg * w * k * 1.1], [L * (t + 0.012), sg * w * k * 0.56], [L * (t + 0.03), sg * w * k * 1.1]]), true), st.k, { op: 0.8 });
         }
         if (see(S, w * 0.6)) for (let i = 0; i < 3; i++) S.fill(ell(F.W(L * (0.12 + r0() * 0.7), w * (r0() - 0.5)), w * (0.3 + r0() * 0.3), w * 0.22, F.a), st.d, { op: 0.35 });
@@ -6236,12 +6820,12 @@ var __ARDAN_V2_MAKE = (() => {
       const x = t * (ts.length - 1), i = Math.min(ts.length - 2, Math.floor(x));
       return (w * (f.one ? lerp2(E[i], E[i + 1], x - i) : Math.min(wide, lerp2(E[i], E[i + 1], x - i) + 0.08)) + g2) * (t > 0.86 ? lerp2(1, 0.74, (t - 0.86) / 0.14) : 1);
     };
-    const T3 = [0.012, 0.2, 0.4, 0.6, 0.8, 0.92], tipV = f.tip ? w * f.tip[1] * 0.5 : 0, end = [L * 1.035, tipV];
-    const body = part2(S, F, [...T3.map((t) => [L * t, bk(t)]), end, ...T3.slice().reverse().map((t) => [L * t, ed(t)])], lea, { k: [0, 0.6, 0.6, 0.6, 0.6, 0.6, 0.7, 0.6, 0.6, 0.6, 0.6, 0.6, 0], in: () => {
+    const T5 = [0.012, 0.2, 0.4, 0.6, 0.8, 0.92], tipV = f.tip ? w * f.tip[1] * 0.5 : 0, end = [L * 1.035, tipV];
+    const body = part2(S, F, [...T5.map((t) => [L * t, bk(t)]), end, ...T5.slice().reverse().map((t) => [L * t, ed(t)])], lea, { k: [0, 0.6, 0.6, 0.6, 0.6, 0.6, 0.7, 0.6, 0.6, 0.6, 0.6, 0.6, 0], in: () => {
       if (!see(S, w)) return;
-      if (q < 2) S.stroke(polyline(F.P(T3.map((t) => [L * t, bk(t) * 0.62]))), lea.l, 0.7, { op: 0.6, dash: "2.6 2.4" });
+      if (q < 2) S.stroke(polyline(F.P(T5.map((t) => [L * t, bk(t) * 0.62]))), lea.l, 0.7, { op: 0.6, dash: "2.6 2.4" });
       else {
-        S.stroke(polyline(F.P(T3.map((t) => [L * t, bk(t) * 0.7]))) + polyline(F.P(T3.map((t) => [L * t, ed(t) * 0.7]))), lea.l, 0.7, { op: 0.5 });
+        S.stroke(polyline(F.P(T5.map((t) => [L * t, bk(t) * 0.7]))) + polyline(F.P(T5.map((t) => [L * t, ed(t) * 0.7]))), lea.l, 0.7, { op: 0.5 });
         if (q > 2 && see(S, w * 0.5)) {
           let dz = "";
           for (let i = 0; i < 7; i++) {
@@ -6285,10 +6869,10 @@ var __ARDAN_V2_MAKE = (() => {
     const scale = f.scale ? cloth(sty === "orc" ? "#d9cdb4" : WOODS[Math.min(3, q + 1)]) : null;
     part2(S, F, [[-gw * 0.5, -gh], [-grip * 0.5, -gh * (f.two ? 1.04 : 1.1)], [-grip, -gh * 0.8], [-grip, gh * 0.8], [-grip * 0.5, gh * (f.two ? 1.04 : 1.1)], [-gw * 0.5, gh]], scale || (q === 0 ? cloth("hemp") : lea), { k: [0.1, 0.8, 0.2, 0.2, 0.8, 0.1], in: () => {
       if (!big) return;
-      const u0 = -gw * 0.6, span = grip - gw * 0.6, wire = q > 1 ? fit.l : lea.k, turn = (n, sl, col, px, op) => {
+      const u0 = -gw * 0.6, span = grip - gw * 0.6, wire = q > 1 ? fit.l : lea.k, turn = (n3, sl, col, px, op) => {
         let d = "";
-        for (let i = 1; i < n; i++) {
-          const u = u0 - span * i / n;
+        for (let i = 1; i < n3; i++) {
+          const u = u0 - span * i / n3;
           d += seg(F, [u + sl, -gh * 1.2], [u - sl, gh * 1.2]);
         }
         S.stroke(d, col, px, { op });
@@ -6402,7 +6986,7 @@ var __ARDAN_V2_MAKE = (() => {
     const form = HAFT_LEN[o.form] ? o.form : "spear", pole = POLE.has(form), M = mats({ q, r: o.r }), { st, fit, r } = M, F0 = frame(G, a);
     const F = o.flip ? { ...F0, W: (u, v = 0) => F0.W(u, -v), P: (pts) => pts.map((p) => F0.W(p[0], -p[1])), lit: -F0.lit } : F0;
     if (gone(S, F, -80, L + 480, 240)) return;
-    const hw = form === "lance" ? 12 : pole ? 15.5 : form === "hand" ? 11.5 : 13.5, wd = cloth(o.wood || WOODS[q]), fm = q > 1 ? fit : st, r0 = stream2("haft" + form + q, "w"), big = see(S, hw * 1.4), T3 = L;
+    const hw = form === "lance" ? 12 : pole ? 15.5 : form === "hand" ? 11.5 : 13.5, wd = cloth(o.wood || WOODS[q]), fm = q > 1 ? fit : st, r0 = stream2("haft" + form + q, "w"), big = see(S, hw * 1.4), T5 = L;
     const kink = q === 0 ? hw * 0.4 : 0, sw = pole ? 1 : 1.22;
     const shaft = form === "club" ? [[0, -hw * 0.9], [L * 0.5, -hw * 1.1 + kink], [L * 0.84, -hw * 2.1], [L * 0.97, -hw * 1.9], [L, -hw], [L, hw], [L * 0.97, hw * 1.9], [L * 0.84, hw * 2.1], [L * 0.5, hw * 1.1 + kink], [0, hw * 0.9]] : form === "lance" ? [[0, -hw * 0.8], [L * 0.1, -hw * 1.5], [L * 0.27, -hw * 1.75], [L * 0.29, -hw * 1.05], [L * 0.36, -hw * 1.05], [L * 0.38, -hw * 1.7], [L, -hw * 0.62], [L, hw * 0.62], [L * 0.38, hw * 1.7], [L * 0.36, hw * 1.05], [L * 0.29, hw * 1.05], [L * 0.27, hw * 1.75], [L * 0.1, hw * 1.5], [0, hw * 0.8]] : [[0, -hw * sw], [L * 0.12, -hw], [L * 0.5, -hw + kink], [L, -hw * 0.92], [L, hw * 0.92], [L * 0.5, hw + kink], [L * 0.12, hw], [0, hw * sw]];
     part2(S, F, shaft, wd, { k: form === "club" ? 0.8 : form === "lance" ? 0.5 : [0.4, 0.5, 0.8, 0.1, 0.1, 0.8, 0.5, 0.4], in: () => {
@@ -6424,9 +7008,9 @@ var __ARDAN_V2_MAKE = (() => {
         part2(S, F, [[u0, -hw * 1.1], [u1, -hw * 1.1], [u1, hw * 1.1], [u0, hw * 1.1]], lea, { k: 0.2, in: () => {
           if (!big) return;
           let d = "";
-          const n = Math.round((u1 - u0) / (hw * 0.7));
-          for (let i = 1; i < n; i++) {
-            const u = u0 + (u1 - u0) * i / n;
+          const n3 = Math.round((u1 - u0) / (hw * 0.7));
+          for (let i = 1; i < n3; i++) {
+            const u = u0 + (u1 - u0) * i / n3;
             d += seg(F, [u - hw * 0.3, -hw * 1.2], [u + hw * 0.3, hw * 1.2]);
           }
           S.stroke(d, q > 2 ? fit.l : lea.k, 0.7, { op: q > 2 ? 0.9 : 0.5 });
@@ -6450,8 +7034,8 @@ var __ARDAN_V2_MAKE = (() => {
     }
     const langets = (ll, w2 = 3.6) => {
       if (!big) return;
-      for (const sg of [-1, 1]) part2(S, F, [[T3 - ll, sg * (hw - 2.4)], [T3 + 4, sg * (hw - 2.4)], [T3 + 4, sg * (hw + w2)], [T3 - ll, sg * (hw + w2)]], st, { k: 0.2, flat: 1 });
-      studs(S, F, [0.2, 0.5, 0.8].map((t) => [T3 - ll * t, 0]), hw * 0.2, st);
+      for (const sg of [-1, 1]) part2(S, F, [[T5 - ll, sg * (hw - 2.4)], [T5 + 4, sg * (hw - 2.4)], [T5 + 4, sg * (hw + w2)], [T5 - ll, sg * (hw + w2)]], st, { k: 0.2, flat: 1 });
+      studs(S, F, [0.2, 0.5, 0.8].map((t) => [T5 - ll * t, 0]), hw * 0.2, st);
     };
     const lash = (u0, u1) => {
       let d = "";
@@ -6459,16 +7043,16 @@ var __ARDAN_V2_MAKE = (() => {
       S.stroke(d, cloth("hemp").k, 3.4, { units: 1 });
       S.stroke(d, cloth("hemp").b, 2.2, { units: 1 });
     };
-    const E = (pts, m, oo = {}) => head(S, F, pts.map((p) => [T3 + p[0], p[1]]), m, { q, ...oo, mid: oo.mid ? oo.mid.map((p) => [T3 + p[0], p[1]]) : null, bev: oo.bev ? oo.bev.map((p) => [T3 + p[0], p[1]]) : null });
+    const E = (pts, m, oo = {}) => head(S, F, pts.map((p) => [T5 + p[0], p[1]]), m, { q, ...oo, mid: oo.mid ? oo.mid.map((p) => [T5 + p[0], p[1]]) : null, bev: oo.bev ? oo.bev.map((p) => [T5 + p[0], p[1]]) : null });
     const tassel = (u) => {
       if (q < 3 || !big) return;
       const dye = cloth(o.pennon || "crimson");
-      part2(S, F, [[T3 + u, -hw * 1.1], [T3 + u - 70, -hw * 2.3], [T3 + u - 78, 0], [T3 + u - 70, hw * 2.3], [T3 + u, hw * 1.1]], dye, { k: [0.2, 0.5, 0.8, 0.5, 0.2], in: () => {
+      part2(S, F, [[T5 + u, -hw * 1.1], [T5 + u - 70, -hw * 2.3], [T5 + u - 78, 0], [T5 + u - 70, hw * 2.3], [T5 + u, hw * 1.1]], dye, { k: [0.2, 0.5, 0.8, 0.5, 0.2], in: () => {
         let d = "";
-        for (let i = -3; i <= 3; i++) d += seg(F, [T3 + u - 4, i * hw * 0.3], [T3 + u - 74, i * hw * 0.68]);
+        for (let i = -3; i <= 3; i++) d += seg(F, [T5 + u - 4, i * hw * 0.3], [T5 + u - 74, i * hw * 0.68]);
         S.stroke(d, dye.k, 0.6, { op: 0.5 });
       } });
-      ring(T3 + u - 4, 8, fit, 1.2);
+      ring(T5 + u - 4, 8, fit, 1.2);
     };
     if (form === "axe" || form === "hand" || form === "great") {
       const z = form === "hand" ? 0.66 : 1, gr = form === "great", B = (gr ? [[-12, hw], [44, hw + 44], [116, 152], [8, 192], [-124, 182], [-218, 140], [-142, 66], [-106, hw]] : [[-8, hw], [14, hw + 30], [38, 104], [-36, 120], [-116, 106], [-156, 90], [-116, 48], [-82, hw]]).map((p) => [p[0] * z, p[1] === hw ? hw : p[1] * z]);
@@ -6478,65 +7062,65 @@ var __ARDAN_V2_MAKE = (() => {
         langets(gr ? 300 : 190);
       }
       E(B, st, { k: [0.2, 0.6, 0.2, 0.85, 0.85, 0.15, 0.7, 0.2], from: hw, to: 130 * z, bev: [...B.slice(2, 6), ...inset], in: () => {
-        if (q < 2) S.stroke(spl(F.P(inset.map((p, i) => [T3 + p[0] + (i % 2 ? 4 : -4) * z, p[1] - 12 * z]))), st.d, 0.9, { op: 0.5 });
+        if (q < 2) S.stroke(spl(F.P(inset.map((p, i) => [T5 + p[0] + (i % 2 ? 4 : -4) * z, p[1] - 12 * z]))), st.d, 0.9, { op: 0.5 });
         else {
-          S.stroke(spl(F.P(inset.map((p) => [T3 + p[0], p[1] - 5 * z]))), fit.l, 0.9, { op: 0.9 });
-          if (q > 2) scrolls(S, [F.W(T3 + (gr ? -100 : -84) * z, 56 * z), F.W(T3 + (gr ? 30 : 0) * z, 70 * z)], 9 * z, fit.k, 0.8);
+          S.stroke(spl(F.P(inset.map((p) => [T5 + p[0], p[1] - 5 * z]))), fit.l, 0.9, { op: 0.9 });
+          if (q > 2) scrolls(S, [F.W(T5 + (gr ? -100 : -84) * z, 56 * z), F.W(T5 + (gr ? 30 : 0) * z, 70 * z)], 9 * z, fit.k, 0.8);
         }
         if (q === 0) for (const t of [0.25, 0.6]) {
           const p = mix2(B[3], B[4], t);
-          S.fill(polyline(F.P([[T3 + p[0] - 8, p[1] + 3], [T3 + p[0], p[1] - 9], [T3 + p[0] + 8, p[1] + 3]]), true), st.k, { op: 0.8 });
+          S.fill(polyline(F.P([[T5 + p[0] - 8, p[1] + 3], [T5 + p[0], p[1] - 9], [T5 + p[0] + 8, p[1] + 3]]), true), st.k, { op: 0.8 });
         }
       } });
-      if (q === 0) lash(T3 - 96 * z, T3 - 4);
+      if (q === 0) lash(T5 - 96 * z, T5 - 4);
       else {
-        part2(S, F, [[T3 - 90 * z, -hw - 5], [T3 - 2, -hw - 5], [T3 - 2, hw + 5], [T3 - 90 * z, hw + 5]], st, { k: 0.2 });
-        if (q > 1) part2(S, F, [[T3 - 70 * z, -hw - 4], [T3 - 48 * z, -hw - 66 * z], [T3 - 26 * z, -hw - 4]], st, { k: [0.2, 0.05, 0.2], flat: 1 });
-        else part2(S, F, [[T3 - 76 * z, -hw - 4], [T3 - 76 * z, -hw - 19], [T3 - 16 * z, -hw - 19], [T3 - 16 * z, -hw - 4]], st, { k: 0.3, flat: 1 });
+        part2(S, F, [[T5 - 90 * z, -hw - 5], [T5 - 2, -hw - 5], [T5 - 2, hw + 5], [T5 - 90 * z, hw + 5]], st, { k: 0.2 });
+        if (q > 1) part2(S, F, [[T5 - 70 * z, -hw - 4], [T5 - 48 * z, -hw - 66 * z], [T5 - 26 * z, -hw - 4]], st, { k: [0.2, 0.05, 0.2], flat: 1 });
+        else part2(S, F, [[T5 - 76 * z, -hw - 4], [T5 - 76 * z, -hw - 19], [T5 - 16 * z, -hw - 19], [T5 - 16 * z, -hw - 4]], st, { k: 0.3, flat: 1 });
       }
     } else if (form === "cleaver") {
       E([[40, hw], [56, 150], [-150, 176], [-250, 128], [-262, 60], [-220, hw]], st, { k: [0.2, 0.3, 0.5, 0.7, 0.5, 0.2], from: hw, to: 170, bev: [[56, 150], [-150, 176], [-250, 128], [-236, 116], [-146, 158], [44, 134]], in: () => {
         if (!big) return;
-        S.both(ell(F.W(T3 + 6, 110), 13, 13), wd.k, st.k, 0.8);
-        if (q > 1) S.stroke(seg(F, [T3 - 206, hw + 17], [T3 + 38, hw + 17]), st.d, 1, { op: 0.7 });
-        if (q > 2) scrolls(S, [F.W(T3 - 196, 62), F.W(T3 - 50, 70)], 9, fit.k, 0.8);
+        S.both(ell(F.W(T5 + 6, 110), 13, 13), wd.k, st.k, 0.8);
+        if (q > 1) S.stroke(seg(F, [T5 - 206, hw + 17], [T5 + 38, hw + 17]), st.d, 1, { op: 0.7 });
+        if (q > 2) scrolls(S, [F.W(T5 - 196, 62), F.W(T5 - 50, 70)], 9, fit.k, 0.8);
       } });
-      if (q === 0) lash(T3 - 200, T3 + 30);
+      if (q === 0) lash(T5 - 200, T5 + 30);
       else {
-        ring(T3 - 216, 22, st, 1.25);
-        ring(T3 + 10, 22, st, 1.25);
+        ring(T5 - 216, 22, st, 1.25);
+        ring(T5 + 10, 22, st, 1.25);
       }
     } else if (form === "mace") {
       if (q > 0) {
-        ring(T3 - 150, 160, st, 0.82);
+        ring(T5 - 150, 160, st, 0.82);
         if (q > 1) langets(120, 3);
       }
       if (q === 0) {
-        const c = F.W(T3 - 44, 0);
+        const c = F.W(T5 - 44, 0);
         S.both(ell(c, 40, 37), st.b, st.k, 1.05);
         if (big) {
           S.fill(ell(add(c, mul(LIGHT, 12)), 16, 12), st.l, { op: 0.6 });
-          studs(S, F, [[T3 - 70, -20], [T3 - 44, -30], [T3 - 18, -18], [T3 - 66, 16], [T3 - 36, 6], [T3 - 16, 24], [T3 - 46, 30]], 6.5, st);
+          studs(S, F, [[T5 - 70, -20], [T5 - 44, -30], [T5 - 18, -18], [T5 - 66, 16], [T5 - 36, 6], [T5 - 16, 24], [T5 - 46, 30]], 6.5, st);
         }
-        lash(T3 - 130, T3 - 84);
+        lash(T5 - 130, T5 - 84);
       } else {
         for (const sg of [-1, 1]) E([[-132, sg * hw * 0.8], [-118, sg * 36], [-88, sg * 54], [-40, sg * 44], [-10, sg * hw * 0.8]], st, { k: [0.2, 0.3, 0.2, 0.4, 0.2], from: 0, to: sg * 54, in: () => {
-          S.stroke(seg(F, [T3 - 120, sg * 20], [T3 - 86, sg * 30]) + seg(F, [T3 - 86, sg * 30], [T3 - 22, sg * 22]), st.k, 0.9, { op: 0.6 });
-          if (q > 2) S.fill(ell(F.W(T3 - 80, sg * 40), 5, 5), st.k, { op: 0.85 });
+          S.stroke(seg(F, [T5 - 120, sg * 20], [T5 - 86, sg * 30]) + seg(F, [T5 - 86, sg * 30], [T5 - 22, sg * 22]), st.k, 0.9, { op: 0.6 });
+          if (q > 2) S.fill(ell(F.W(T5 - 80, sg * 40), 5, 5), st.k, { op: 0.85 });
         } });
-        part2(S, F, [[T3 - 126, -4.5], [T3 - 12, -4.5], [T3 - 12, 4.5], [T3 - 126, 4.5]], st, { k: 0.3, flat: 1, in: () => S.fill(polyline(F.P([[T3 - 126, -4.5], [T3 - 12, -4.5], [T3 - 12, 0], [T3 - 126, 0]]), true), st.hi, { op: 0.8 }) });
-        part2(S, F, q > 2 ? [[T3 - 6, -9], [T3 + 10, -11], [T3 + 44, 0], [T3 + 10, 11], [T3 - 6, 9]] : [[T3 - 6, -9], [T3 + 10, -11], [T3 + 22, 0], [T3 + 10, 11], [T3 - 6, 9]], q > 1 ? fit : st, { k: [0.2, 0.7, 0.3, 0.7, 0.2] });
+        part2(S, F, [[T5 - 126, -4.5], [T5 - 12, -4.5], [T5 - 12, 4.5], [T5 - 126, 4.5]], st, { k: 0.3, flat: 1, in: () => S.fill(polyline(F.P([[T5 - 126, -4.5], [T5 - 12, -4.5], [T5 - 12, 0], [T5 - 126, 0]]), true), st.hi, { op: 0.8 }) });
+        part2(S, F, q > 2 ? [[T5 - 6, -9], [T5 + 10, -11], [T5 + 44, 0], [T5 + 10, 11], [T5 - 6, 9]] : [[T5 - 6, -9], [T5 + 10, -11], [T5 + 22, 0], [T5 + 10, 11], [T5 - 6, 9]], q > 1 ? fit : st, { k: [0.2, 0.7, 0.3, 0.7, 0.2] });
         if (q > 1) {
-          ring(T3 - 146, 9, fit, 1.05);
-          ring(T3 - 16, 7, fit, 1);
+          ring(T5 - 146, 9, fit, 1.05);
+          ring(T5 - 16, 7, fit, 1);
         }
       }
     } else if (form === "star" || form === "flail") {
-      let c = [T3 - 46, 0];
+      let c = [T5 - 46, 0];
       if (form === "flail") {
         const gu = F0.x[1], gv = (o.flip ? -1 : 1) * F0.y[1], n22 = Math.hypot(0.5 + gu * 0.8, gv * 0.8) || 1, du = (0.5 + gu * 0.8) / n22, dv = gv * 0.8 / n22;
-        ring(T3 - 14, 18, fm, 1.2);
-        let p = [T3 + 10, 0];
+        ring(T5 - 14, 18, fm, 1.2);
+        let p = [T5 + 10, 0];
         for (let i = 0; i < 5; i++) {
           const q2 = [p[0] + du * 26, p[1] + dv * 26];
           if (big) {
@@ -6547,15 +7131,15 @@ var __ARDAN_V2_MAKE = (() => {
           p = q2;
         }
         c = [p[0] + du * 30, p[1] + dv * 30];
-        if (!big) S.stroke(seg(F, [T3 + 10, 0], c), st.k, 2);
+        if (!big) S.stroke(seg(F, [T5 + 10, 0], c), st.k, 2);
       } else if (q > 0) {
-        ring(T3 - 120, 120, st, 1.16);
+        ring(T5 - 120, 120, st, 1.16);
         if (q > 1) langets(150);
-      } else lash(T3 - 120, T3 - 84);
+      } else lash(T5 - 120, T5 - 84);
       const R0 = form === "flail" ? 34 : 42, cc = F.W(c[0], c[1]), n3 = 8;
       let sp = "";
       for (let i = 0; i < n3; i++) {
-        const an = i / n3 * Math.PI * 2 + 0.2, ca = Math.cos(an), sa = Math.sin(an), w2 = q === 0 ? 4 : 8, len2 = R0 * (q === 0 ? 1.5 : 1.75);
+        const an2 = i / n3 * Math.PI * 2 + 0.2, ca = Math.cos(an2), sa = Math.sin(an2), w2 = q === 0 ? 4 : 8, len2 = R0 * (q === 0 ? 1.5 : 1.75);
         sp += polyline(F.P([[c[0] + ca * R0 * 0.8 - sa * w2, c[1] + sa * R0 * 0.8 + ca * w2], [c[0] + ca * len2, c[1] + sa * len2], [c[0] + ca * R0 * 0.8 + sa * w2, c[1] + sa * R0 * 0.8 - ca * w2]]), true);
       }
       S.both(sp, st.l, st.k, 0.9);
@@ -6572,46 +7156,46 @@ var __ARDAN_V2_MAKE = (() => {
     } else if (form === "hammer" || form === "pick") {
       const pk = form === "pick";
       if (q > 0) langets(pk ? 150 : 190);
-      else lash(T3 - 110, T3 - 80);
+      else lash(T5 - 110, T5 - 80);
       E(pk ? [[-20, hw + 3], [-30, hw + 66], [-70, hw + 178], [-72, hw + 70], [-74, hw + 3]] : [[-22, -hw - 3], [-30, -hw - 50], [-60, -hw - 120], [-66, -hw - 52], [-76, -hw - 3]], st, { k: [0.2, 0.7, 0.05, 0.7, 0.2], mid: pk ? [[-48, hw], [-70, hw + 176]] : [[-48, -hw], [-60, -hw - 118]] });
       const sg = pk ? -1 : 1, hf = pk ? 0.7 : 1;
-      part2(S, F, [[T3 - 80, sg * (hw + 3)], [T3 - 80, sg * (hw + 40 * hf)], [T3 - 73, sg * (hw + 52 * hf)], [T3 - 23, sg * (hw + 52 * hf)], [T3 - 16, sg * (hw + 40 * hf)], [T3 - 16, sg * (hw + 3)]], st, { k: 0.16, al: 1, in: () => {
-        if (big && q > 1) S.stroke(seg(F, [T3 - 76, sg * (hw + 40 * hf)], [T3 - 20, sg * (hw + 40 * hf)]), q > 2 ? fit.l : st.k, 1, { op: 0.8 });
+      part2(S, F, [[T5 - 80, sg * (hw + 3)], [T5 - 80, sg * (hw + 40 * hf)], [T5 - 73, sg * (hw + 52 * hf)], [T5 - 23, sg * (hw + 52 * hf)], [T5 - 16, sg * (hw + 40 * hf)], [T5 - 16, sg * (hw + 3)]], st, { k: 0.16, al: 1, in: () => {
+        if (big && q > 1) S.stroke(seg(F, [T5 - 76, sg * (hw + 40 * hf)], [T5 - 20, sg * (hw + 40 * hf)]), q > 2 ? fit.l : st.k, 1, { op: 0.8 });
       } });
-      if (q > 2 && !pk) for (const u of [-70, -57, -44, -31]) part2(S, F, [[T3 + u - 5, sg * (hw + 51)], [T3 + u, sg * (hw + 66)], [T3 + u + 5, sg * (hw + 51)]], st, { k: 0.1, flat: 1 });
-      part2(S, F, [[T3 - 96, -hw - 4.5], [T3 + 4, -hw - 4.5], [T3 + 4, hw + 4.5], [T3 - 96, hw + 4.5]], st, { k: 0.16, in: () => {
-        if (M.scroll && big) scrolls(S, [F.W(T3 - 86, 0), F.W(T3 - 6, 0)], 7, fit.l, 0.9);
+      if (q > 2 && !pk) for (const u of [-70, -57, -44, -31]) part2(S, F, [[T5 + u - 5, sg * (hw + 51)], [T5 + u, sg * (hw + 66)], [T5 + u + 5, sg * (hw + 51)]], st, { k: 0.1, flat: 1 });
+      part2(S, F, [[T5 - 96, -hw - 4.5], [T5 + 4, -hw - 4.5], [T5 + 4, hw + 4.5], [T5 - 96, hw + 4.5]], st, { k: 0.16, in: () => {
+        if (M.scroll && big) scrolls(S, [F.W(T5 - 86, 0), F.W(T5 - 6, 0)], 7, fit.l, 0.9);
       } });
-      if (q > 0) part2(S, F, [[T3 + 2, -8], [T3 + (q > 1 ? 70 : 44), 0], [T3 + 2, 8]], st, { k: [0.2, 0.05, 0.2], flat: 1 });
+      if (q > 0) part2(S, F, [[T5 + 2, -8], [T5 + (q > 1 ? 70 : 44), 0], [T5 + 2, 8]], st, { k: [0.2, 0.05, 0.2], flat: 1 });
       if (q > 1) {
-        ring(T3 - 104, 8, fit, 1.36);
-        ring(T3 - 2, 6, fit, 0.9);
+        ring(T5 - 104, 8, fit, 1.36);
+        ring(T5 - 2, 6, fit, 0.9);
       }
     } else if (form === "maul") {
       const hm = q > 1 ? st : cloth(WOODS[2]);
-      part2(S, F, [[T3 - 176, -80], [T3 - 14, -80], [T3 - 6, -70], [T3 - 6, 70], [T3 - 14, 80], [T3 - 176, 80], [T3 - 184, 70], [T3 - 184, -70]], hm, { k: 0.14, al: q > 1, in: () => {
+      part2(S, F, [[T5 - 176, -80], [T5 - 14, -80], [T5 - 6, -70], [T5 - 6, 70], [T5 - 14, 80], [T5 - 176, 80], [T5 - 184, 70], [T5 - 184, -70]], hm, { k: 0.14, al: q > 1, in: () => {
         if (!big) return;
         if (q < 2) {
           let d = "";
-          for (const v of [-50, -20, 12, 44]) d += seg(F, [T3 - 180, v], [T3 - 10, v + 4]);
+          for (const v of [-50, -20, 12, 44]) d += seg(F, [T5 - 180, v], [T5 - 10, v + 4]);
           S.stroke(d, hm.k, 0.6, { op: 0.35 });
         }
       } });
-      for (const sg of [-1, 1]) part2(S, F, [[T3 - 186, sg * 50], [T3 - 4, sg * 50], [T3 - 4, sg * 72], [T3 - 186, sg * 72]], q > 2 ? fit : q === 0 ? dull(metal("iron")) : st, { k: 0.1, flat: q < 1 });
-      part2(S, F, [[T3 - 6, -hw * 0.9], [T3 + 14, -hw * 0.8], [T3 + 14, hw * 0.8], [T3 - 6, hw * 0.9]], wd, { k: 0.2, flat: 1 });
+      for (const sg of [-1, 1]) part2(S, F, [[T5 - 186, sg * 50], [T5 - 4, sg * 50], [T5 - 4, sg * 72], [T5 - 186, sg * 72]], q > 2 ? fit : q === 0 ? dull(metal("iron")) : st, { k: 0.1, flat: q < 1 });
+      part2(S, F, [[T5 - 6, -hw * 0.9], [T5 + 14, -hw * 0.8], [T5 + 14, hw * 0.8], [T5 - 6, hw * 0.9]], wd, { k: 0.2, flat: 1 });
     } else if (form === "club") {
       if (q > 1) {
         ring(L * 0.74, 16, fm, 2.1);
         ring(L * 0.9, 16, fm, 2.05);
-        part2(S, F, [[T3 - 4, -9], [T3 + 70, 0], [T3 - 4, 9]], fm, { k: [0.2, 0.05, 0.2], flat: 1 });
+        part2(S, F, [[T5 - 4, -9], [T5 + 70, 0], [T5 - 4, 9]], fm, { k: [0.2, 0.05, 0.2], flat: 1 });
       }
     } else if (form !== "staff") {
       const sock = (len2 = 74, tip2 = 40) => {
-        part2(S, F, [[T3 - len2, -hw - 1.6], [T3 + tip2, -9], [T3 + tip2, 9], [T3 - len2, hw + 1.6]], st, { k: 0.15 });
-        studs(S, F, [[T3 - len2 * 0.5, 0]], hw * 0.22, st);
+        part2(S, F, [[T5 - len2, -hw - 1.6], [T5 + tip2, -9], [T5 + tip2, 9], [T5 - len2, hw + 1.6]], st, { k: 0.15 });
+        studs(S, F, [[T5 - len2 * 0.5, 0]], hw * 0.22, st);
         if (q > 1) {
-          ring(T3 - len2 - 4, 8, fit, 1.2);
-          ring(T3 + tip2 - 6, 7, fit, 0.78);
+          ring(T5 - len2 - 4, 8, fit, 1.2);
+          ring(T5 + tip2 - 6, 7, fit, 0.78);
         }
       };
       const bevOf = (pts, k = 0.8) => [...pts, ...pts.slice().reverse().map((p) => [p[0], p[1] * k])];
@@ -6622,11 +7206,11 @@ var __ARDAN_V2_MAKE = (() => {
         tassel(-80);
         if (o.pennon && form === "lance" && q > 0) {
           const pm = cloth(o.pennon);
-          part2(S, F, [[T3 - 30, hw], [T3 - 20, 190], [T3 - 90, 120], [T3 - 150, 196], [T3 - 170, hw]], pm, { k: [0, 0.2, 0.4, 0.2, 0], flat: 1, in: () => S.fill(polyline(F.P([[T3 - 30, 60], [T3 - 170, 60], [T3 - 170, 100], [T3 - 30, 100]]), true), pm.s, { op: 0.5 }) });
+          part2(S, F, [[T5 - 30, hw], [T5 - 20, 190], [T5 - 90, 120], [T5 - 150, 196], [T5 - 170, hw]], pm, { k: [0, 0.2, 0.4, 0.2, 0], flat: 1, in: () => S.fill(polyline(F.P([[T5 - 30, 60], [T5 - 170, 60], [T5 - 170, 100], [T5 - 30, 100]]), true), pm.s, { op: 0.5 }) });
         }
         if (form === "lance" && q > 1) part2(S, F, [[L * 0.385, -24], [L * 0.398, -70], [L * 0.404, -70], [L * 0.404, 70], [L * 0.398, 70], [L * 0.385, 24]], st, { k: 0.2, al: 1 });
         sock(form === "lance" ? 60 : 78);
-        if (form === "boar" || form === "spear" && q > 0 && (o.st || "north") === "north") for (const sg of [-1, 1]) part2(S, F, form === "boar" ? [[T3 + 2, sg * 9], [T3 + 6, sg * 62], [T3 + 22, sg * 62], [T3 + 28, sg * 9]] : [[T3 + 4, sg * 9], [T3 + 12, sg * 40], [T3 + 30, sg * 9]], st, { k: form === "boar" ? 0.3 : [0.2, 0.1, 0.2], flat: 1 });
+        if (form === "boar" || form === "spear" && q > 0 && (o.st || "north") === "north") for (const sg of [-1, 1]) part2(S, F, form === "boar" ? [[T5 + 2, sg * 9], [T5 + 6, sg * 62], [T5 + 22, sg * 62], [T5 + 28, sg * 9]] : [[T5 + 4, sg * 9], [T5 + 12, sg * 40], [T5 + 30, sg * 9]], st, { k: form === "boar" ? 0.3 : [0.2, 0.1, 0.2], flat: 1 });
         const ed = [[u0, -9], [u0 + Lb * 0.16, -wb], [u0 + Lb * 0.46, -wb * 0.88], [u0 + Lb, 0]];
         E([...ed, ...ed.slice(0, 3).reverse().map((p) => [p[0], -p[1]])], st, { k: [0.2, 0.7, 0.8, 0.05, 0.8, 0.7, 0.2], mid: [[u0, 0], [u0 + Lb, 0]], bev: q > 0 ? [...bevOf(ed, 0.76), ...bevOf(ed, 0.76).map((p) => [p[0], -p[1]])] : null });
       } else if (form === "glaive") {
@@ -6634,7 +7218,7 @@ var __ARDAN_V2_MAKE = (() => {
         tassel(-84);
         sock(80, 30);
         const back = [[26, -12], [90, -17], [340, -30], [470, -6]], edge = [[430, 36], [290, 62], [110, 58], [34, 34], [26, 12]];
-        if (q > 0) part2(S, F, [[T3 + 150, -20], [T3 + 186, -66], [T3 + 214, -23]], st, { k: [0.2, 0.05, 0.2], flat: 1 });
+        if (q > 0) part2(S, F, [[T5 + 150, -20], [T5 + 186, -66], [T5 + 214, -23]], st, { k: [0.2, 0.05, 0.2], flat: 1 });
         E([...back, ...edge], st, { k: [0.2, 0.7, 0.8, 0.05, 0.7, 0.8, 0.8, 0.6, 0.2], mid: [[26, -4], [460, -8]], bev: [[470, -6], ...edge.slice(0, 4), [44, 22], [110, 44], [290, 48], [424, 26]] });
       } else if (form === "halberd") {
         langets(q > 1 ? 420 : 240);
@@ -6644,46 +7228,46 @@ var __ARDAN_V2_MAKE = (() => {
         const B = [[22, hw], [36, 58], [88, 134], [-6, 118], [-104, 140], [-60, 60], [-58, hw]];
         E(B, st, { k: [0.2, 0.6, 0.15, 0.7, 0.15, 0.6, 0.2], from: hw, to: 140, bev: [B[2], B[3], B[4], [-92, 122], [-6, 102], [76, 116]], in: () => {
           if (!big) return;
-          if (q > 2) scrolls(S, [F.W(T3 - 50, 98), F.W(T3 + 40, 102)], 8, fit.k, 0.8);
-          if (q > 1) S.fill(dotsAt(F, [[T3 - 6, 50], [T3 - 17, 68], [T3 + 5, 68]], 6), st.k, { op: 0.75 });
-          else if (q > 0) S.fill(ell(F.W(T3 - 6, 62), 7, 7), st.k, { op: 0.7 });
+          if (q > 2) scrolls(S, [F.W(T5 - 50, 98), F.W(T5 + 40, 102)], 8, fit.k, 0.8);
+          if (q > 1) S.fill(dotsAt(F, [[T5 - 6, 50], [T5 - 17, 68], [T5 + 5, 68]], 6), st.k, { op: 0.75 });
+          else if (q > 0) S.fill(ell(F.W(T5 - 6, 62), 7, 7), st.k, { op: 0.7 });
         } });
-        part2(S, F, [[T3 - 66, -hw - 4], [T3 + 44, -hw - 2], [T3 + 44, hw + 2], [T3 - 66, hw + 4]], st, { k: 0.16 });
+        part2(S, F, [[T5 - 66, -hw - 4], [T5 + 44, -hw - 2], [T5 + 44, hw + 2], [T5 - 66, hw + 4]], st, { k: 0.16 });
       } else if (form === "bill") {
         if (q > 0) langets(260);
-        else lash(T3 - 120, T3 - 20);
+        else lash(T5 - 120, T5 - 20);
         const B = [[-30, hw], [10, 46], [150, 54], [234, 62], [262, 112], [246, 152], [302, 124], [324, 62], [318, 20], [446, -2], [300, -16], [190, -18], [176, -80], [150, -18], [-30, -hw]];
         E(B, st, { k: [0.2, 0.6, 0.8, 0.5, 0.8, 0.05, 0.8, 0.8, 0.5, 0.05, 0.6, 0.3, 0.05, 0.3, 0.2], from: -hw, to: 120, bev: [[10, 46], [150, 54], [234, 62], [262, 112], [246, 152], [252, 112], [226, 74], [150, 43], [14, 35]], in: () => {
           if (!big || q < 2) return;
-          const c = [T3 + 40, 14];
+          const c = [T5 + 40, 14];
           S.stroke(ell(F.W(c[0], c[1]), 6, 6) + seg(F, [c[0] - 10, c[1]], [c[0] + 10, c[1]]) + seg(F, [c[0], c[1] - 10], [c[0], c[1] + 10]), q > 2 ? fit.l : st.k, 0.9, { op: 0.85 });
-          if (q > 2) scrolls(S, [F.W(T3 + 70, 16), F.W(T3 + 220, 22)], 8, fit.k, 0.8);
+          if (q > 2) scrolls(S, [F.W(T5 + 70, 16), F.W(T5 + 220, 22)], 8, fit.k, 0.8);
         } });
-        part2(S, F, [[T3 - 70, -hw - 3.5], [T3 - 20, -hw - 2.5], [T3 - 20, hw + 2.5], [T3 - 70, hw + 3.5]], st, { k: 0.16 });
-        if (q > 1) ring(T3 - 80, 8, fit, 1.3);
+        part2(S, F, [[T5 - 70, -hw - 3.5], [T5 - 20, -hw - 2.5], [T5 - 20, hw + 2.5], [T5 - 70, hw + 3.5]], st, { k: 0.16 });
+        if (q > 1) ring(T5 - 80, 8, fit, 1.3);
       } else if (form === "poleaxe") {
         langets(520);
-        if (q > 1) part2(S, F, [[T3 - 560, -44], [T3 - 548, -44], [T3 - 548, 44], [T3 - 560, 44]], st, { k: 0.4, al: 1 });
+        if (q > 1) part2(S, F, [[T5 - 560, -44], [T5 - 548, -44], [T5 - 548, 44], [T5 - 560, 44]], st, { k: 0.4, al: 1 });
         E([[100, -9], [330, 0], [100, 9]], st, { k: [0.2, 0.05, 0.2], mid: [[100, 0], [330, 0]] });
         const B = [[96, -hw], [120, -70], [152, -134], [60, -120], [-30, -134], [0, -70], [22, -hw]];
         E(B, st, { k: [0.2, 0.6, 0.15, 0.7, 0.15, 0.6, 0.2], from: -hw, to: -134, bev: [B[2], B[3], B[4], [-18, -118], [60, -104], [140, -118]] });
-        part2(S, F, [[T3 + 30, hw + 2], [T3 + 30, hw + 48], [T3 + 38, hw + 58], [T3 + 84, hw + 58], [T3 + 92, hw + 48], [T3 + 92, hw + 2]], st, { k: 0.16, al: 1 });
-        if (q > 1) for (const u of [40, 54, 68, 82]) part2(S, F, [[T3 + u - 5, hw + 57], [T3 + u, hw + 70], [T3 + u + 5, hw + 57]], st, { k: 0.1, flat: 1 });
-        part2(S, F, [[T3 - 16, -hw - 4.5], [T3 + 112, -hw - 4.5], [T3 + 112, hw + 4.5], [T3 - 16, hw + 4.5]], st, { k: 0.16, in: () => {
-          if (M.scroll && big) scrolls(S, [F.W(T3, 0), F.W(T3 + 100, 0)], 7, fit.l, 0.9);
+        part2(S, F, [[T5 + 30, hw + 2], [T5 + 30, hw + 48], [T5 + 38, hw + 58], [T5 + 84, hw + 58], [T5 + 92, hw + 48], [T5 + 92, hw + 2]], st, { k: 0.16, al: 1 });
+        if (q > 1) for (const u of [40, 54, 68, 82]) part2(S, F, [[T5 + u - 5, hw + 57], [T5 + u, hw + 70], [T5 + u + 5, hw + 57]], st, { k: 0.1, flat: 1 });
+        part2(S, F, [[T5 - 16, -hw - 4.5], [T5 + 112, -hw - 4.5], [T5 + 112, hw + 4.5], [T5 - 16, hw + 4.5]], st, { k: 0.16, in: () => {
+          if (M.scroll && big) scrolls(S, [F.W(T5, 0), F.W(T5 + 100, 0)], 7, fit.l, 0.9);
         } });
         if (q > 1) {
-          ring(T3 - 24, 8, fit, 1.36);
-          ring(T3 + 110, 7, fit, 1.1);
+          ring(T5 - 24, 8, fit, 1.36);
+          ring(T5 + 110, 7, fit, 1.1);
         }
       } else if (form === "partisan") {
         if (q > 0) langets(200, 3);
         tassel(-84);
         sock(80, 30);
-        for (const sg of [-1, 1]) part2(S, F, [[T3 + 26, sg * 12], [T3 + 40, sg * 84], [T3 + 96, sg * 100], [T3 + 70, sg * 60], [T3 + 60, sg * 26]], st, { k: [0.2, 0.7, 0.05, 0.7, 0.3], flat: 1 });
+        for (const sg of [-1, 1]) part2(S, F, [[T5 + 26, sg * 12], [T5 + 40, sg * 84], [T5 + 96, sg * 100], [T5 + 70, sg * 60], [T5 + 60, sg * 26]], st, { k: [0.2, 0.7, 0.05, 0.7, 0.3], flat: 1 });
         const ed = [[26, -12], [56, -52], [100, -58], [400, 0]];
         E([...ed, ...ed.slice(0, 3).reverse().map((p) => [p[0], -p[1]])], st, { k: [0.2, 0.7, 0.8, 0.05, 0.8, 0.7, 0.2], mid: [[26, 0], [400, 0]], bev: [...bevOf(ed, 0.8), ...bevOf(ed, 0.8).map((p) => [p[0], -p[1]])], in: () => {
-          if (q > 2) scrolls(S, [F.W(T3 + 60, 0), F.W(T3 + 230, 0)], 9, fit.k, 0.8);
+          if (q > 2) scrolls(S, [F.W(T5 + 60, 0), F.W(T5 + 230, 0)], 9, fit.k, 0.8);
         } });
       }
     }
@@ -6694,9 +7278,9 @@ var __ARDAN_V2_MAKE = (() => {
     const form = BOW_LEN[o.form] ? o.form : "long", M = mats({ q, r: o.r }), { fit, r } = M, F0 = frame(G, a), rec2 = form === "recurve";
     const F = o.flip ? { ...F0, W: (u, v = 0) => F0.W(u, -v), P: (pts) => pts.map((p) => F0.W(p[0], -p[1])), lit: -F0.lit } : F0;
     if (gone(S, F, -L * 0.52, L * 0.52, L * 0.16)) return;
-    const sag = L * 0.085, h0 = rec2 ? 15 : form === "long" ? 15.5 : 13, big = see(S, h0 * 1.3), n = 12, C = [];
-    for (let i = -n; i <= n; i++) {
-      const t = i / n * 0.5, at = Math.abs(t);
+    const sag = L * 0.085, h0 = rec2 ? 15 : form === "long" ? 15.5 : 13, big = see(S, h0 * 1.3), n3 = 12, C = [];
+    for (let i = -n3; i <= n3; i++) {
+      const t = i / n3 * 0.5, at = Math.abs(t);
       let v;
       if (rec2) {
         let k = 1;
@@ -6730,14 +7314,14 @@ var __ARDAN_V2_MAKE = (() => {
       if (rec2) {
         let w2 = "";
         for (const t of [-0.4, -0.3, -0.2, -0.13, 0.13, 0.2, 0.3, 0.4]) {
-          const i = Math.round((t + 0.5) * 2 * n), p = C[i];
+          const i = Math.round((t + 0.5) * 2 * n3), p = C[i];
           w2 += seg(F, [p[0] - 9, p[1] - p[2] * 1.1], [p[0] - 9, p[1] + p[2] * 1.1]) + seg(F, [p[0] + 9, p[1] - p[2] * 1.1], [p[0] + 9, p[1] + p[2] * 1.1]);
         }
         S.stroke(w2, q > 1 ? fit.b : cloth("tan").b, 2.2, { units: 1, op: 0.9 });
         if (q > 1) {
           let z = "";
           for (const sg of [-1, 1]) for (let t = 0.15; t < 0.29; t += 0.02) {
-            const i = Math.round((sg * t + 0.5) * 2 * n), p = C[i];
+            const i = Math.round((sg * t + 0.5) * 2 * n3), p = C[i];
             z += polyline(F.P([[p[0] - 8, p[1] - 5], [p[0], p[1] + 5], [p[0] + 8, p[1] - 5]]));
           }
           S.stroke(z, cloth(q > 2 ? "crimson" : "ochre").b, 1.3, { units: 1, op: 0.9 });
@@ -6763,7 +7347,7 @@ var __ARDAN_V2_MAKE = (() => {
       for (const u of [-gl - 5, gl + (q > 2 ? 38 : 0)]) if (q > 2) part2(S, F, [[u, -gh * 1.02], [u + 5, -gh * 1.02], [u + 5, gh * 1.02], [u, gh * 1.02]], fit, { k: 0.2 });
     }
     for (const sg of [-1, 1]) {
-      const p = sg < 0 ? C[0] : C[C.length - 1], p1 = sg < 0 ? C[1] : C[C.length - 2], T3 = norm(sub([p[0], p[1]], [p1[0], p1[1]])), N = [-T3[1], T3[0]], at = (x, y) => [p[0] + T3[0] * x + N[0] * y, p[1] + T3[1] * x + N[1] * y], w2 = p[2];
+      const p = sg < 0 ? C[0] : C[C.length - 1], p1 = sg < 0 ? C[1] : C[C.length - 2], T5 = norm(sub([p[0], p[1]], [p1[0], p1[1]])), N = [-T5[1], T5[0]], at = (x, y) => [p[0] + T5[0] * x + N[0] * y, p[1] + T5[1] * x + N[1] * y], w2 = p[2];
       if (q > 0) part2(S, F, [at(-22, -w2 * 1.1), at(4, -w2 * 0.95), at(22, -w2 * 0.2), at(22, w2 * 0.2), at(4, w2 * 0.95), at(-22, w2 * 1.1)], q > 1 || rec2 ? BONE : HORN, { k: [0.2, 0.6, 0.6, 0.6, 0.6, 0.2], flat: !big });
       if (big) S.stroke(seg(F, at(q > 0 ? 4 : -8, -w2 * 1.2), at(q > 0 ? 2 : -10, w2 * 0.3)), "#1c120a", 1.6, { units: 1 });
       if (q > 2 && big) part2(S, F, [at(-30, -w2 * 1.16), at(-23, -w2 * 1.16), at(-23, w2 * 1.16), at(-30, w2 * 1.16)], fit, { k: 0.2 });
@@ -6772,12 +7356,12 @@ var __ARDAN_V2_MAKE = (() => {
   function quiverArt(S, G, a, L, q = 1, o = {}) {
     const M = mats({ q, r: o.r }), { fit, r } = M, F = frame(G, a), w0 = L * 0.075, w1 = L * (q === 0 ? 0.12 : 0.1);
     if (gone(S, F, -20, L * 1.4, L * 0.2)) return;
-    const lea = cloth(q === 0 ? "hemp" : o.leather || LEATHERS[r][q]), big = see(S, w0), n = [4, 5, 7, 8][q], fl = [["#8f8a80", "#6f6a60"], ["#b9b4a8", "#e6e2d8"], ["#efece4", "#d9d5cc"], ["#a02a2e", "#efece4"]][q];
-    for (let i = 0; i < n; i++) {
-      const k = n === 1 ? 0 : i / (n - 1) * 2 - 1, v0 = k * (w1 - 9), up = L * (0.24 + 0.08 * (1 - Math.abs(k)) + 0.03 * (i * 7 % 3 - 1)), sl = k * L * 0.05, p0 = [L - 10, v0], p1 = [L + up, v0 + sl];
+    const lea = cloth(q === 0 ? "hemp" : o.leather || LEATHERS[r][q]), big = see(S, w0), n3 = [4, 5, 7, 8][q], fl = [["#8f8a80", "#6f6a60"], ["#b9b4a8", "#e6e2d8"], ["#efece4", "#d9d5cc"], ["#a02a2e", "#efece4"]][q];
+    for (let i = 0; i < n3; i++) {
+      const k = n3 === 1 ? 0 : i / (n3 - 1) * 2 - 1, v0 = k * (w1 - 9), up = L * (0.24 + 0.08 * (1 - Math.abs(k)) + 0.03 * (i * 7 % 3 - 1)), sl = k * L * 0.05, p0 = [L - 10, v0], p1 = [L + up, v0 + sl];
       S.stroke(seg(F, p0, p1), "#4a3a1c", Math.max(1.2, 5 * S.px));
       S.stroke(seg(F, p0, p1), "#d8c7a0", Math.max(0.6, 3.4 * S.px));
-      const T3 = norm(sub(p1, p0)), N = [-T3[1], T3[0]], at = (x, y) => [p0[0] + T3[0] * x + N[0] * y, p0[1] + T3[1] * x + N[1] * y], f0 = Math.hypot(p1[0] - p0[0], p1[1] - p0[1]) - L * 0.2, fh = L * 0.022, fL = L * 0.17;
+      const T5 = norm(sub(p1, p0)), N = [-T5[1], T5[0]], at = (x, y) => [p0[0] + T5[0] * x + N[0] * y, p0[1] + T5[1] * x + N[1] * y], f0 = Math.hypot(p1[0] - p0[0], p1[1] - p0[1]) - L * 0.2, fh = L * 0.022, fL = L * 0.17;
       for (const sg of [-1, 1]) S.both(poly(F.P([at(f0, sg * 1), at(f0 + fL * 0.16, sg * fh), at(f0 + fL * 0.9, sg * fh * 0.9), at(f0 + fL, sg * 1)]), [0.1, 0.7, 0.6, 0.1]), fl[(i + (sg > 0 ? 1 : 0)) % 2], "#4c4032", 0.7);
     }
     part2(S, F, [[0, -w0], [L * 0.5, -lerp2(w0, w1, 0.55)], [L, -w1], [L, w1], [L * 0.5, lerp2(w0, w1, 0.55)], [0, w0], [-L * 0.03, 0]], lea, { k: [0.5, 0.9, 0.15, 0.15, 0.9, 0.5, 0.9], in: () => {
@@ -6865,11 +7449,11 @@ var __ARDAN_V2_MAKE = (() => {
   }
   var SHIELD_H = { heater: 760, kite: 1080, round: 820, targe: 540, buckler: 330, pavise: 1250 };
   var SHIELD_W = { heater: 0.68, kite: 0.5, round: 1, targe: 1, buckler: 1, pavise: 0.54 };
-  function shieldArt(S, T3, h, q = 1, o = {}) {
-    const form = SHIELD_H[o.form] ? o.form : "heater", M = mats({ q, r: o.r }), { st, fit, r } = M, w = h * (o.wr || SHIELD_W[form]), W = (u, v) => [T3[0] + u * w / 2, T3[1] + v * h];
+  function shieldArt(S, T5, h, q = 1, o = {}) {
+    const form = SHIELD_H[o.form] ? o.form : "heater", M = mats({ q, r: o.r }), { st, fit, r } = M, w = h * (o.wr || SHIELD_W[form]), W = (u, v) => [T5[0] + u * w / 2, T5[1] + v * h];
     {
       const vw = S.view;
-      if (vw && (T3[0] + w / 2 < vw[0] || T3[0] - w / 2 > vw[0] + vw[2] || T3[1] + h < vw[1] || T3[1] > vw[1] + vw[3])) return w;
+      if (vw && (T5[0] + w / 2 < vw[0] || T5[0] - w / 2 > vw[0] + vw[2] || T5[1] + h < vw[1] || T5[1] > vw[1] + vw[3])) return w;
     }
     const disc = form === "round" || form === "targe" || form === "buckler", c = W(0, 0.5), big = see(S, w * 0.08), rm = q > 1 ? fit : st;
     const m = cloth(form === "targe" ? q > 2 ? LEATHERS[r][3] : "brown" : o.field || "white"), m2 = cloth(o.pale || "blue"), bare = form === "buckler" || q === 0 && form !== "targe";
@@ -6972,18 +7556,18 @@ var __ARDAN_V2_MAKE = (() => {
     const A = offset(c, (t) => rAt(t)), B = offset(c, (t) => -rAt(t));
     return { c, A, B, rAt, d: polyline([...A, ...B.slice().reverse()], true) };
   }
-  var across = (T3) => leftRight(along(T3.A, 0.5), along(T3.B, 0.5));
+  var across = (T5) => leftRight(along(T5.A, 0.5), along(T5.B, 0.5));
   function furEdge(S, r, pts, m, o = {}) {
-    const n = o.n || 16, L = o.len || 22, w = o.w || 12;
-    for (let i = 0; i < n; i++) {
-      const t = (i + r() * 0.8) / n, p = along(pts, t), tg = norm(sub(along(pts, Math.min(1, t + 0.03)), along(pts, Math.max(0, t - 0.03)))), o2 = rot(perp(tg), (o.side || 1) > 0 ? 0 : Math.PI), d2 = norm(add(o2, mul(tg, r.s() * 0.7))), b = blade(sub(p, mul(o2, w * 0.3)), add(p, mul(d2, L * (0.6 + 0.7 * r()))), w, r.s() * 0.2);
+    const n3 = o.n || 16, L = o.len || 22, w = o.w || 12;
+    for (let i = 0; i < n3; i++) {
+      const t = (i + r() * 0.8) / n3, p = along(pts, t), tg = norm(sub(along(pts, Math.min(1, t + 0.03)), along(pts, Math.max(0, t - 0.03)))), o2 = rot(perp(tg), (o.side || 1) > 0 ? 0 : Math.PI), d2 = norm(add(o2, mul(tg, r.s() * 0.7))), b = blade(sub(p, mul(o2, w * 0.3)), add(p, mul(d2, L * (0.6 + 0.7 * r()))), w, r.s() * 0.2);
       S.fill(b.d, i % 3 === 0 ? m.s : m.b);
       S.stroke(b.e, m.k, 0.8, { op: 0.8 });
     }
   }
   function drape(S, r, a, b, c, d, m, o = {}) {
-    const n = o.n ?? 5, wave = o.wave ?? 9, sag = o.sag ?? 6, fs = [];
-    for (let i = 0; i < n; i++) fs.push((i + 0.5 + r.s() * 0.26) / n);
+    const n3 = o.n ?? 5, wave = o.wave ?? 9, sag = o.sag ?? 6, fs = [];
+    for (let i = 0; i < n3; i++) fs.push((i + 0.5 + r.s() * 0.26) / n3);
     const hemAt = (t) => add(mix2(c, d, t), [0, Math.sin(Math.PI * t) * sag + (o.point ? (1 - Math.abs(2 * t - 1)) * o.point : 0)]), topAt = (t) => mix2(a, b, t);
     const hem = [c];
     for (const f of fs) {
@@ -7000,8 +7584,8 @@ var __ARDAN_V2_MAKE = (() => {
       tone(S, path, m, lit[0], lit[1], { sh: 0.85 });
       fs.forEach((f, i) => {
         const p = hemAt(f), st = starts[i];
-        S.fill(polyline([st, add(p, [wave * 0.35, -wave * 0.4]), add(hemAt(Math.min(1, f + 0.55 / n)), [0, 10])], true), m.s, { op: 0.62 });
-        S.fill(polyline([st, add(hemAt(Math.max(0, f - 0.4 / n)), [0, 10]), add(p, [-wave * 0.5, wave * 0.45])], true), m.l, { op: 0.3 });
+        S.fill(polyline([st, add(p, [wave * 0.35, -wave * 0.4]), add(hemAt(Math.min(1, f + 0.55 / n3)), [0, 10])], true), m.s, { op: 0.62 });
+        S.fill(polyline([st, add(hemAt(Math.max(0, f - 0.4 / n3)), [0, 10]), add(p, [-wave * 0.5, wave * 0.45])], true), m.l, { op: 0.3 });
       });
       if (o.inside) o.inside(path);
       if (o.trim) {
@@ -7018,65 +7602,65 @@ var __ARDAN_V2_MAKE = (() => {
     S.stroke(path, m.k, 1.1);
     return { path, hem, hemAt };
   }
-  function creases(S, r, T3, at, m, n = 3) {
-    for (let i = 0; i < n; i++) {
-      const t = at + (i - (n - 1) / 2) * 0.055 + r.s() * 0.012, a = along(T3.A, t), b = along(T3.B, t + r.s() * 0.05), sw = r() < 0.5;
+  function creases(S, r, T5, at, m, n3 = 3) {
+    for (let i = 0; i < n3; i++) {
+      const t = at + (i - (n3 - 1) / 2) * 0.055 + r.s() * 0.012, a = along(T5.A, t), b = along(T5.B, t + r.s() * 0.05), sw = r() < 0.5;
       const p0 = sw ? a : b, p1 = mix2(sw ? a : b, sw ? b : a, 0.5 + r() * 0.3);
       S.fill(ink(splPts([p0, add(mix2(p0, p1, 0.5), [0, 3]), p1], false, 1, 4), fade(S.lw(1.15))), m.k, { op: 0.8 });
     }
   }
-  function lame(S, T3, t, m) {
-    const a = along(T3.A, t), b = along(T3.B, t), c = add(mix2(a, b, 0.5), mul(norm(sub(along(T3.c, Math.min(1, t + 0.05)), along(T3.c, Math.max(0, t - 0.05)))), len(sub(a, b)) * 0.12));
+  function lame(S, T5, t, m) {
+    const a = along(T5.A, t), b = along(T5.B, t), c = add(mix2(a, b, 0.5), mul(norm(sub(along(T5.c, Math.min(1, t + 0.05)), along(T5.c, Math.max(0, t - 0.05)))), len(sub(a, b)) * 0.12));
     S.stroke(spl([a, c, b]), m.k, 1, { op: 0.8 });
     S.stroke(spl([add(a, [0, 2.4]), add(c, [0, 2.4]), add(b, [0, 2.4])]), m.hi, 0.8, { op: 0.5 });
   }
-  function hinges(S, T3, m, fit, ts = [0.3, 0.7]) {
-    const E = T3.A[0][0] > T3.B[0][0] ? T3.A : T3.B;
+  function hinges(S, T5, m, fit, ts = [0.3, 0.7]) {
+    const E = T5.A[0][0] > T5.B[0][0] ? T5.A : T5.B;
     for (const t of ts) {
-      const p = along(E, t), q = along(E, Math.min(1, t + 0.07)), n = mul(norm(perp(sub(q, p))), 5.5), d = polyline([sub(p, n), add(p, n), add(q, n), sub(q, n)], true);
+      const p = along(E, t), q = along(E, Math.min(1, t + 0.07)), n3 = mul(norm(perp(sub(q, p))), 5.5), d = polyline([sub(p, n3), add(p, n3), add(q, n3), sub(q, n3)], true);
       S.both(d, fit.b, m.k, 0.7);
     }
   }
   var onSh = (F, i, t) => t < 0.4 ? mix2(F.nb[i], F.trap[i], t / 0.4) : mix2(F.trap[i], F.sh[i], (t - 0.4) / 0.6);
   var SG = [-1, 1];
   function armTube(F, i, e = 0, cuff = 0, to = 1) {
-    const A = F.arm[i], R2 = F.armR, fore = mix2(A.el, A.wr, 0.25);
-    if (to < 1) return tube([A.sh, mix2(A.sh, A.el, to * 2)], [R2[0] + e, lerp2(R2[0], R2[1], to * 2) + e]);
-    return tube([A.sh, A.el, fore, A.wr], [R2[0] + e, R2[1] + e * 0.9, R2[2] + e * 0.9, R2[3] + e * 0.7 + cuff]);
+    const A = F.arm[i], R3 = F.armR, fore = mix2(A.el, A.wr, 0.25);
+    if (to < 1) return tube([A.sh, mix2(A.sh, A.el, to * 2)], [R3[0] + e, lerp2(R3[0], R3[1], to * 2) + e]);
+    return tube([A.sh, A.el, fore, A.wr], [R3[0] + e, R3[1] + e * 0.9, R3[2] + e * 0.9, R3[3] + e * 0.7 + cuff]);
   }
   function shoulderBall(S, F, i, m, e = 0) {
-    const A = F.arm[i], R2 = F.armR[0] + e, u = norm(sub(A.el, A.sh)), n0 = perp(u), n = n0[0] * A.s > -n0[0] * A.s ? n0 : mul(n0, -1);
-    const a0 = Math.atan2(-0.9, -A.s * 0.5), a1 = Math.atan2(n[1], n[0]);
+    const A = F.arm[i], R3 = F.armR[0] + e, u = norm(sub(A.el, A.sh)), n0 = perp(u), n3 = n0[0] * A.s > -n0[0] * A.s ? n0 : mul(n0, -1);
+    const a0 = Math.atan2(-0.9, -A.s * 0.5), a1 = Math.atan2(n3[1], n3[0]);
     let da = a1 - a0;
     while (da > Math.PI) da -= 2 * Math.PI;
     while (da < -Math.PI) da += 2 * Math.PI;
     const arc = [];
     for (let k = 0; k <= 8; k++) {
       const a = a0 + da * k / 8;
-      arc.push([A.sh[0] + Math.cos(a) * R2, A.sh[1] + Math.sin(a) * R2]);
+      arc.push([A.sh[0] + Math.cos(a) * R3, A.sh[1] + Math.sin(a) * R3]);
     }
-    const bd = ell(A.sh, R2, R2);
+    const bd = ell(A.sh, R3, R3);
     S.fill(bd, m.b);
-    tone(S, bd, m, [A.sh[0] - R2, A.sh[1]], [A.sh[0] + R2, A.sh[1]]);
+    tone(S, bd, m, [A.sh[0] - R3, A.sh[1]], [A.sh[0] + R3, A.sh[1]]);
     return arc;
   }
   function legTube(F, i, e = 0, from = 0, to = 1) {
-    const G = F.leg[i], R2 = F.legR, calf = mix2(G.kn, G.an, 0.3), pts = [G.hip, G.kn, calf, G.an], rr = [R2[0] + e, R2[1] + e * 0.8, R2[2] + e * 0.8, R2[3] + e * 0.6];
+    const G = F.leg[i], R3 = F.legR, calf = mix2(G.kn, G.an, 0.3), pts = [G.hip, G.kn, calf, G.an], rr = [R3[0] + e, R3[1] + e * 0.8, R3[2] + e * 0.8, R3[3] + e * 0.6];
     if (from === 0 && to === 1) return tube(pts, rr);
-    const full = tube(pts, rr, 8), n = full.c.length - 1, i0 = Math.round(from * n), i1 = Math.round(to * n), c = full.c.slice(i0, i1 + 1);
+    const full = tube(pts, rr, 8), n3 = full.c.length - 1, i0 = Math.round(from * n3), i1 = Math.round(to * n3), c = full.c.slice(i0, i1 + 1);
     const A = full.A.slice(i0, i1 + 1), B = full.B.slice(i0, i1 + 1);
     return { c, A, B, d: polyline([...A, ...B.slice().reverse()], true) };
   }
-  function limbFill(S, T3, m, o = {}) {
-    S.fill(T3.d, m.b);
-    const [a, b] = across(T3);
-    S.within(T3.d, () => {
-      o.metal ? steel(S, T3.d, m, a, b) : tone(S, T3.d, m, a, b);
+  function limbFill(S, T5, m, o = {}) {
+    S.fill(T5.d, m.b);
+    const [a, b] = across(T5);
+    S.within(T5.d, () => {
+      o.metal ? steel(S, T5.d, m, a, b) : tone(S, T5.d, m, a, b);
       o.inside && o.inside(a, b);
     });
-    S.stroke(polyline(T3.A), m.k, 1.1);
-    S.stroke(polyline(T3.B), m.k, 1.1);
-    if (o.cap !== false) S.stroke(polyline([T3.A[T3.A.length - 1], T3.B[T3.B.length - 1]]), m.k, 1.1);
+    S.stroke(polyline(T5.A), m.k, 1.1);
+    S.stroke(polyline(T5.B), m.k, 1.1);
+    if (o.cap !== false) S.stroke(polyline([T5.A[T5.A.length - 1], T5.B[T5.B.length - 1]]), m.k, 1.1);
   }
   var HAND2 = {
     relaxed: { main: [[0, -0.2], [0.3, -0.26], [0.55, -0.25], [0.8, -0.19], [0.97, -0.08], [1, 0.04], [0.9, 0.1], [0.72, 0.08], [0.55, 0.1], [0.45, 0.18], [0.3, 0.2], [0, 0.2]], thumb: [[0.14, 0.1], [0.34, 0.17], [0.5, 0.22], [0.6, 0.3], [0.57, 0.37], [0.44, 0.33], [0.28, 0.28], [0.12, 0.22]], lines: [[[0.58, -0.17], [0.97, -0.05]], [[0.6, -0.09], [0.99, 0.01]], [[0.6, -0.01], [0.93, 0.07]]] },
@@ -7146,15 +7730,15 @@ var __ARDAN_V2_MAKE = (() => {
     S.fill(d, m.b);
     S.stroke(d, m.k, 0.8);
   }
-  function pauldronArt(S, c, R2, sg, q = 1, o = {}) {
-    const M = mats({ ...o, q }), { st, fit } = M, W = (p) => [c[0] + sg * p[0] * R2, c[1] + p[1] * R2];
+  function pauldronArt(S, c, R3, sg, q = 1, o = {}) {
+    const M = mats({ ...o, q }), { st, fit } = M, W = (p) => [c[0] + sg * p[0] * R3, c[1] + p[1] * R3];
     for (let j = 2; j >= 0; j--) {
       const pts = [[-0.95, 0.08 + 0.06 * j], [-0.62, -0.5 + 0.05 * j], [0.1, -0.64 + 0.12 * j], [0.78 + 0.07 * j, -0.3 + 0.22 * j], [1.02 + 0.09 * j, 0.36 + 0.44 * j], [0.55, 0.64 + 0.47 * j], [-0.2, 0.5 + 0.44 * j], [-0.82, 0.38 + 0.3 * j]].map(W);
       const d = poly(pts, [0.7, 0.9, 0.9, 0.9, M.r === 2 ? 0.15 : 0.5, 0.8, 0.8, 0.6]), lr = leftRight(W([-0.9, 0]), W([1, 0.3]));
       S.both(d, st.b, st.k, 1.1);
       S.within(d, () => {
         steel(S, d, st, lr[0], lr[1], { sky: [W([0, -0.6]), W([0, 0.9 + 0.4 * j])] });
-        if (M.q === 0) for (const p of [[-0.3, 0.1 + 0.4 * j], [0.4, 0.2 + 0.4 * j]]) S.fill(ell(W(p), R2 * 0.08, R2 * 0.05, 0.4), st.d, { op: 0.6 });
+        if (M.q === 0) for (const p of [[-0.3, 0.1 + 0.4 * j], [0.4, 0.2 + 0.4 * j]]) S.fill(ell(W(p), R3 * 0.08, R3 * 0.05, 0.4), st.d, { op: 0.6 });
       });
       const low = polyPts([pts[4], pts[5], pts[6], pts[7]], 0.8, false, 4);
       if (M.edge) {
@@ -7165,15 +7749,15 @@ var __ARDAN_V2_MAKE = (() => {
         });
         S.stroke(d, st.k, 1.1);
       }
-      if (M.rivet) rivets(S, low.map((p) => [p[0], p[1] - R2 * 0.09]), 4, R2 * 0.028, st);
+      if (M.rivet) rivets(S, low.map((p) => [p[0], p[1] - R3 * 0.09]), 4, R3 * 0.028, st);
       if (M.r > 1 && j === 0) for (const u of [-0.35, 0, 0.35]) S.stroke(spl([W([-0.1 + u * 0.5, -0.56]), W([u * 1.1, -0.1]), W([0.1 + u * 1.5, 0.34])]), st.k, 0.8, { op: 0.45 });
-      if (M.scroll && j === 0) scrolls(S, [W([-0.5, -0.1]), W([0.1, -0.28]), W([0.7, 0.1])], R2 * 0.09, fit.b);
-      if (M.scroll && j > 0) scrolls(S, low.map((p) => [p[0], p[1] - R2 * 0.15]), R2 * 0.05, fit.b, 0.8);
+      if (M.scroll && j === 0) scrolls(S, [W([-0.5, -0.1]), W([0.1, -0.28]), W([0.7, 0.1])], R3 * 0.09, fit.b);
+      if (M.scroll && j > 0) scrolls(S, low.map((p) => [p[0], p[1] - R3 * 0.15]), R3 * 0.05, fit.b, 0.8);
     }
     if (M.edge) {
       const b = W([-0.5, -0.22]);
-      S.both(ell(b, R2 * 0.1, R2 * 0.1), M.r > 1 ? GEM[M.r] : fit.b, fit.k, 0.9);
-      S.fill(ell(add(b, [-R2 * 0.03, -R2 * 0.03]), R2 * 0.035, R2 * 0.03), fit.hi);
+      S.both(ell(b, R3 * 0.1, R3 * 0.1), M.r > 1 ? GEM[M.r] : fit.b, fit.k, 0.9);
+      S.fill(ell(add(b, [-R3 * 0.03, -R3 * 0.03]), R3 * 0.035, R3 * 0.03), fit.hi);
     }
   }
   var ITEMS = {
@@ -7184,12 +7768,12 @@ var __ARDAN_V2_MAKE = (() => {
       const hips = poly([F.hi[0], F.belt[0], F.belt[1], F.hi[1], add(F.leg[1].hip, [F.legR[0], 60]), add(F.crotch, [0, 26]), add(F.leg[0].hip, [-F.legR[0], 60])], 0.5);
       S.both(hips, m.b, m.k, 1.1);
       for (const i of [0, 1]) {
-        const T3 = legTube(F, i, o.loose ? 9 : 2);
-        limbFill(S, T3, m, { cap: false });
+        const T5 = legTube(F, i, o.loose ? 9 : 2);
+        limbFill(S, T5, m, { cap: false });
         if (o.loose) {
-          creases(S, C.r, T3, 0.5, m, 3);
-          creases(S, C.r, T3, 0.93, m, 2);
-        } else creases(S, C.r, T3, 0.5, m, 2);
+          creases(S, C.r, T5, 0.5, m, 3);
+          creases(S, C.r, T5, 0.93, m, 2);
+        } else creases(S, C.r, T5, 0.5, m, 2);
       }
       S.stroke(polyline([add(F.crotch, [0, 4]), add(F.crotch, [0, 30])]), m.k, 1);
     },
@@ -7197,17 +7781,17 @@ var __ARDAN_V2_MAKE = (() => {
       const { S, F, sk: sk2 } = C;
       S.layer("legs");
       for (const i of [0, 1]) {
-        const T3 = legTube(F, i, 0, o.from ?? 0.45, 1);
-        limbFill(S, T3, sk2, { cap: false });
+        const T5 = legTube(F, i, 0, o.from ?? 0.45, 1);
+        limbFill(S, T5, sk2, { cap: false });
       }
     },
     wraps(C, o) {
       const { S, F } = C, m = cloth(o.dye || "hemp");
       S.layer("legs");
       for (const i of [0, 1]) {
-        const T3 = legTube(F, i, 3, 0.56, 1);
-        limbFill(S, T3, m, { cap: false });
-        for (let k = 1; k < 8; k++) S.stroke(polyline([along(T3.A, k / 8), along(T3.B, k / 8 + 0.07)]), m.k, 0.9, { op: 0.75 });
+        const T5 = legTube(F, i, 3, 0.56, 1);
+        limbFill(S, T5, m, { cap: false });
+        for (let k = 1; k < 8; k++) S.stroke(polyline([along(T5.A, k / 8), along(T5.B, k / 8 + 0.07)]), m.k, 0.9, { op: 0.75 });
       }
     },
     shoes(C, o) {
@@ -7215,16 +7799,16 @@ var __ARDAN_V2_MAKE = (() => {
       S.layer("legs");
       for (const i of [0, 1]) {
         if (kind === "boot" || kind === "ankle") {
-          const T3 = legTube(F, i, kind === "boot" ? 7 : 5, kind === "boot" ? o.high ? 0.46 : 0.58 : 0.86, 1);
+          const T5 = legTube(F, i, kind === "boot" ? 7 : 5, kind === "boot" ? o.high ? 0.46 : 0.58 : 0.86, 1);
           foot(S, F, i, m, "boot");
-          limbFill(S, T3, m);
-          S.stroke(polyline([T3.A[0], T3.B[0]]), m.k, 1.1);
-          creases(S, C.r, T3, 0.85, m, 2);
+          limbFill(S, T5, m);
+          S.stroke(polyline([T5.A[0], T5.B[0]]), m.k, 1.1);
+          creases(S, C.r, T5, 0.85, m, 2);
           if (o.cuff) {
-            const cf = polyline([add(T3.A[0], [0, -3]), add(T3.B[0], [0, -3]), T3.B[2], T3.A[2]], true);
+            const cf = polyline([add(T5.A[0], [0, -3]), add(T5.B[0], [0, -3]), T5.B[2], T5.A[2]], true);
             S.both(cf, cloth(o.cuff).b, m.k, 1);
           }
-          if (kind === "boot") S.fill(ink(part(T3.c, 0.1, 0.8), S.lw(0.9)), m.k, { op: 0.4 });
+          if (kind === "boot") S.fill(ink(part(T5.c, 0.1, 0.8), S.lw(0.9)), m.k, { op: 0.4 });
         } else if (kind === "sabaton") foot(S, F, i, m, "sabaton", { metal: 1, inside: (W) => {
           for (const u of [0.2, 0.4, 0.6, 0.8]) S.stroke(spl([W([u, -0.56]), W([u + 0.09, -0.1]), W([u + 0.04, 0.22])]), m.k, 0.9);
           if (M.edge) for (const u of [0.2, 0.6]) S.stroke(spl([W([u + 0.03, -0.56]), W([u + 0.12, -0.1]), W([u + 0.07, 0.22])]), M.fit.b, 1.6);
@@ -7242,10 +7826,10 @@ var __ARDAN_V2_MAKE = (() => {
         return [F.arm[i].sh[0] + SG[i] * R0 * 0.74, F.arm[i].sh[1] - R0 * 0.68];
       };
       const side = (i) => [SLv(i), add(F.ax[i], [SG[i] * e, 0]), ...male ? [] : [add(F.ch[i], [SG[i] * (e + F.H * 6e-3 * (1 - F.kid) * F.grown), F.B * 0.012])], add(F.wa[i], [SG[i] * e * (o.fitted ? 0.5 : 1.5), 0]), add(F.belt[i], [SG[i] * e * (o.fitted ? 0.5 : 1.1), 0])];
-      const L = side(0), R2 = side(1), ks = L.map((_, j) => j === 0 ? 0.7 : j === L.length - 1 ? 0.15 : 0.85);
-      const body = poly([NL, ...L, ...R2.slice().reverse(), NR, NB], [0.3, ...ks, ...ks.slice().reverse(), 0.3, o.neck === "v" || o.neck === "laced" ? 0.35 : 0.95]);
+      const L = side(0), R3 = side(1), ks = L.map((_, j) => j === 0 ? 0.7 : j === L.length - 1 ? 0.15 : 0.85);
+      const body = poly([NL, ...L, ...R3.slice().reverse(), NR, NB], [0.3, ...ks, ...ks.slice().reverse(), 0.3, o.neck === "v" || o.neck === "laced" ? 0.35 : 0.95]);
       const len2 = o.len ?? 0.3, hy = lerp2(F.y.hip, F.y.ankle, len2), fl = (o.flare ?? 26) * (1 + len2 * 1.6) + F.hipHalf * 0.08;
-      const bl = L[L.length - 1], br = R2[R2.length - 1];
+      const bl = L[L.length - 1], br = R3[R3.length - 1];
       const tm = trim || { b: m.l, k: m.k }, sw = F.chestHalf * 0.085, cb = mix2(bl, br, 0.5), x0 = F.cx - F.hipHalf - fl, x1 = F.cx + F.hipHalf + fl;
       const skirtIn = () => {
         if (o.stripes) {
@@ -7301,8 +7885,8 @@ var __ARDAN_V2_MAKE = (() => {
       C.st.hem = hy;
       C.st.skirt = sk2;
       if (o.hemPat) S.within(sk2.path, () => {
-        const pm = cloth(o.hemPat), up = (o.trimHem ? o.trimW || 13 : 0) + 14, n = Math.max(6, Math.round((x1 - x0) / 30)), zz = [];
-        for (let i = 0; i <= n; i++) zz.push(add(along(sk2.hem, i / n), [0, -(up + (o.hemKind === "stripe" ? 0 : i % 2 ? 22 : 0))]));
+        const pm = cloth(o.hemPat), up = (o.trimHem ? o.trimW || 13 : 0) + 14, n3 = Math.max(6, Math.round((x1 - x0) / 30)), zz = [];
+        for (let i = 0; i <= n3; i++) zz.push(add(along(sk2.hem, i / n3), [0, -(up + (o.hemKind === "stripe" ? 0 : i % 2 ? 22 : 0))]));
         S.stroke(polyline(zz), pm.b, 6, { units: 1 });
         if (o.hemKind === "stripe") S.stroke(polyline(zz.map((p) => [p[0], p[1] - 16])), pm.b, 6, { units: 1 });
       });
@@ -7398,12 +7982,12 @@ var __ARDAN_V2_MAKE = (() => {
         S.layer(A.back ? "armsBack" : "arms");
         const wide = cut === "wide" ? 34 : cut === "bell" ? 20 : 0, toEl = cut === "short" || cut === "rolled";
         if (toEl) {
-          const arc = shoulderBall(S, F, i, m, e), T3 = armTube(F, i, e, 0, cut === "rolled" ? 0.52 : 0.4);
-          limbFill(S, T3, m);
+          const arc = shoulderBall(S, F, i, m, e), T5 = armTube(F, i, e, 0, cut === "rolled" ? 0.52 : 0.4);
+          limbFill(S, T5, m);
           S.stroke(polyline(arc), m.k, 1.1);
           if (cut === "rolled") {
-            const a = T3.A[T3.A.length - 1], b = T3.B[T3.B.length - 1], n = mul(norm(sub(a, b)), 4), dn = mul(norm(sub(A.el, A.sh)), 16);
-            const cf = poly([add(a, n), sub(b, n), sub(add(b, dn), n), add(add(a, dn), n)], 0.5);
+            const a = T5.A[T5.A.length - 1], b = T5.B[T5.B.length - 1], n3 = mul(norm(sub(a, b)), 4), dn = mul(norm(sub(A.el, A.sh)), 16);
+            const cf = poly([add(a, n3), sub(b, n3), sub(add(b, dn), n3), add(add(a, dn), n3)], 0.5);
             S.both(cf, m.l, m.k, 1);
           }
           if (!A.back) {
@@ -7420,26 +8004,26 @@ var __ARDAN_V2_MAKE = (() => {
             if (F.mu > 0.3) S.fill(ink(part(U.c, 0.3, 0.7), S.lw(1)), sk3.k, { op: 0.4 });
           }
         } else {
-          const arc = shoulderBall(S, F, i, m, e), T3 = armTube(F, i, e, wide);
-          limbFill(S, T3, m, { inside: () => {
-            if (o.mail) S.fill(T3.d, mailPat(S));
+          const arc = shoulderBall(S, F, i, m, e), T5 = armTube(F, i, e, wide);
+          limbFill(S, T5, m, { inside: () => {
+            if (o.mail) S.fill(T5.d, mailPat(S));
           } });
           S.stroke(polyline(arc), m.k, 1.1);
-          creases(S, r, T3, 0.5, m, A.hang ? 3 : 5);
-          creases(S, r, T3, 0.9, m, 2);
-          if (o.quilt > 1 && !A.back) for (const t of [0.2, 0.34, 0.48, 0.62, 0.76, 0.9]) S.stroke(polyline([along(T3.A, t), along(T3.B, t)]), m.k, 0.9, { op: 0.6 });
+          creases(S, r, T5, 0.5, m, A.hang ? 3 : 5);
+          creases(S, r, T5, 0.9, m, 2);
+          if (o.quilt > 1 && !A.back) for (const t of [0.2, 0.34, 0.48, 0.62, 0.76, 0.9]) S.stroke(polyline([along(T5.A, t), along(T5.B, t)]), m.k, 0.9, { op: 0.6 });
           if (o.armband && i === 1 && !A.back) {
-            const am = cloth(o.armband), bd = polyline([along(T3.A, 0.26), along(T3.B, 0.26), along(T3.B, 0.38), along(T3.A, 0.38)], true);
+            const am = cloth(o.armband), bd = polyline([along(T5.A, 0.26), along(T5.B, 0.26), along(T5.B, 0.38), along(T5.A, 0.38)], true);
             S.both(bd, am.b, am.k, 0.9);
           }
-          S.fill(ink(part(offset(T3.c, A.s * (F.armR[0] + e) * 0.34), 0.1, 0.4), fade(S.lw(1.05))), m.k, { op: 0.55 });
-          S.fill(ink(part(offset(T3.c, -A.s * (F.armR[1] + e) * 0.3), 0.56, 0.82), fade(S.lw(1))), m.k, { op: 0.5 });
+          S.fill(ink(part(offset(T5.c, A.s * (F.armR[0] + e) * 0.34), 0.1, 0.4), fade(S.lw(1.05))), m.k, { op: 0.55 });
+          S.fill(ink(part(offset(T5.c, -A.s * (F.armR[1] + e) * 0.3), 0.56, 0.82), fade(S.lw(1))), m.k, { op: 0.5 });
           if (trim && cut !== "wide") {
-            const a = T3.A[T3.A.length - 1], b = T3.B[T3.B.length - 1], up = mul(norm(sub(A.el, A.wr)), 12);
+            const a = T5.A[T5.A.length - 1], b = T5.B[T5.B.length - 1], up = mul(norm(sub(A.el, A.wr)), 12);
             S.both(polyline([a, b, add(b, up), add(a, up)], true), trim.b, trim.k, 0.8);
           }
           if (wide) {
-            const a = T3.A[T3.A.length - 1], b = T3.B[T3.B.length - 1], lo = a[1] > b[1] ? a : b, hang = poly([a, b, add(lo, [SG[i] * -6, wide * 2.2]), add(lo, [SG[i] * 10, wide * 1.6])], [0.2, 0.2, 0.6, 0.7]);
+            const a = T5.A[T5.A.length - 1], b = T5.B[T5.B.length - 1], lo = a[1] > b[1] ? a : b, hang = poly([a, b, add(lo, [SG[i] * -6, wide * 2.2]), add(lo, [SG[i] * 10, wide * 1.6])], [0.2, 0.2, 0.6, 0.7]);
             S.both(hang, m.b, m.k, 1.1);
             S.within(hang, () => S.fill(hang, m.s, { op: 0.5 }));
             if (trim) S.stroke(polyline([add(lo, [SG[i] * -6, wide * 2.2]), add(lo, [SG[i] * 10, wide * 1.6])]), trim.b, 3);
@@ -7588,7 +8172,7 @@ var __ARDAN_V2_MAKE = (() => {
       drape(S, r, tl, tr, [F.cx - F.hipHalf - out * 1.9, hy], [F.cx + F.hipHalf + out * 1.9, hy], { ...lin, b: lin.s, s: lin.d, l: lin.b }, { n: 8, wave: 13, bow: out * 0.9, sag: 10, gather: 0.9, from: 0.25 });
       for (const i of [0, 1]) {
         const sg = SG[i], a = add(F.sh[i], [sg * F.armR[0] * 0.95, 0]), w = F.H * 0.035;
-        const R2 = drape(S, r, add(a, [-sg * w * 0.3, 0]), add(a, [sg * w * 0.5, 4]), [F.cx + sg * (F.hipHalf + out * 1.9) - sg * w * 1.3, hy + 2], [F.cx + sg * (F.hipHalf + out * 1.9) + sg * w * 0.1, hy - 6], m, { n: 2, wave: 7, bow: sg * out * 0.4, sag: 2, from: 0.3, trim: trim ? { b: trim.b, k: trim.k, l: trim.hi } : null, trimW: 11 });
+        const R22 = drape(S, r, add(a, [-sg * w * 0.3, 0]), add(a, [sg * w * 0.5, 4]), [F.cx + sg * (F.hipHalf + out * 1.9) - sg * w * 1.3, hy + 2], [F.cx + sg * (F.hipHalf + out * 1.9) + sg * w * 0.1, hy - 6], m, { n: 2, wave: 7, bow: sg * out * 0.4, sag: 2, from: 0.3, trim: trim ? { b: trim.b, k: trim.k, l: trim.hi } : null, trimW: 11 });
         if (trim) {
           S.stroke(polyline([add(a, [-sg * w * 0.3, 0]), [F.cx + sg * (F.hipHalf + out * 1.9) - sg * w * 1.3, hy + 2]]), trim.k, 4.4);
           S.stroke(polyline([add(a, [-sg * w * 0.3, 0]), [F.cx + sg * (F.hipHalf + out * 1.9) - sg * w * 1.3, hy + 2]]), trim.b, 3);
@@ -7656,16 +8240,16 @@ var __ARDAN_V2_MAKE = (() => {
         const A = F.arm[i];
         if (A.back) continue;
         S.layer("arms");
-        const T3 = tube([mix2(A.el, A.wr, 0.3), mix2(A.el, A.wr, 0.97)], [F.armR[2] * 1.1 + 3, F.armR[3] * 1.22 + 3]);
-        limbFill(S, T3, m);
-        S.stroke(polyline([T3.A[0], T3.B[0]]), m.k, 1.1);
+        const T5 = tube([mix2(A.el, A.wr, 0.3), mix2(A.el, A.wr, 0.97)], [F.armR[2] * 1.1 + 3, F.armR[3] * 1.22 + 3]);
+        limbFill(S, T5, m);
+        S.stroke(polyline([T5.A[0], T5.B[0]]), m.k, 1.1);
         for (const t of [0.08, 0.92]) {
-          S.stroke(polyline([along(T3.A, t), along(T3.B, t)]), m.k, 3.6);
-          S.stroke(polyline([along(T3.A, t), along(T3.B, t)]), m.l, 1.6);
+          S.stroke(polyline([along(T5.A, t), along(T5.B, t)]), m.k, 3.6);
+          S.stroke(polyline([along(T5.A, t), along(T5.B, t)]), m.l, 1.6);
         }
         let d = "";
         for (let k = 2; k < 8; k++) {
-          const p = along(T3.c, k / 9), q = 3.4;
+          const p = along(T5.c, k / 9), q = 3.4;
           d += `M${n1(p[0] - q)} ${n1(p[1] - q)}l${n1(2 * q)} ${n1(2 * q)}m${n1(-2 * q)} 0l${n1(2 * q)} ${n1(-2 * q)}`;
         }
         S.stroke(d, o.studs ? g2.l : m.l, 0.9, { op: 0.85 });
@@ -7674,13 +8258,13 @@ var __ARDAN_V2_MAKE = (() => {
     baldric(C, o) {
       const { S, F } = C, m = cloth(o.leather || "brown"), g2 = metal(o.metal || "iron"), i = o.from ?? 0, a = onSh(F, i, 0.42), b = add(F.belt[1 - i], [(i ? -1 : 1) * 4, 6]), w = o.w || 22;
       S.layer("belt");
-      const n = mul(norm(perp(sub(b, a))), w / 2), d = polyline([add(a, n), add(b, n), sub(b, n), sub(a, n)], true);
+      const n3 = mul(norm(perp(sub(b, a))), w / 2), d = polyline([add(a, n3), add(b, n3), sub(b, n3), sub(a, n3)], true);
       S.both(d, m.b, m.k, 1.05);
       S.within(d, () => {
         tone(S, d, m, F.ax[0], F.ax[1]);
-        for (const k of [-0.62, 0.62]) S.stroke(polyline([add(a, mul(n, k)), add(b, mul(n, k))]), m.l, 0.7, { dash: "2.6 2.4", op: 0.6 });
+        for (const k of [-0.62, 0.62]) S.stroke(polyline([add(a, mul(n3, k)), add(b, mul(n3, k))]), m.l, 0.7, { dash: "2.6 2.4", op: 0.6 });
       });
-      const c = mix2(a, b, o.at ?? 0.42), t = norm(sub(b, a)), fr = polyline([add(add(c, mul(t, -w * 0.5)), mul(n, 1.25)), add(add(c, mul(t, w * 0.5)), mul(n, 1.25)), add(add(c, mul(t, w * 0.5)), mul(n, -1.25)), add(add(c, mul(t, -w * 0.5)), mul(n, -1.25))], true);
+      const c = mix2(a, b, o.at ?? 0.42), t = norm(sub(b, a)), fr = polyline([add(add(c, mul(t, -w * 0.5)), mul(n3, 1.25)), add(add(c, mul(t, w * 0.5)), mul(n3, 1.25)), add(add(c, mul(t, w * 0.5)), mul(n3, -1.25)), add(add(c, mul(t, -w * 0.5)), mul(n3, -1.25))], true);
       S.stroke(fr, g2.k, 5.6);
       S.stroke(fr, g2.b, 3.8);
       S.stroke(fr, g2.hi, 0.9, { op: 0.8 });
@@ -7694,8 +8278,8 @@ var __ARDAN_V2_MAKE = (() => {
     tabard(C, o) {
       const { S, F, r } = C, m = cloth(o.field || "white"), m2 = cloth(o.pale || "blue"), g2 = metal(o.trim || "gold"), e = 5;
       const top = (i) => onSh(F, i, 0.3), sh2 = (i) => onSh(F, i, 0.8), side = (i) => [sh2(i), add(F.ax[i], [-SG[i] * 10, 26]), add(F.wa[i], [SG[i] * e, 0]), add(F.belt[i], [SG[i] * e, 0])];
-      const L = side(0), R2 = side(1), NB = [F.cxS, F.pit[1] + F.Hh * 0.12], body = poly([top(0), ...L, ...R2.slice().reverse(), top(1), NB], [0.3, 0.5, 0.9, 0.8, 0.1, 0.1, 0.8, 0.9, 0.5, 0.3, 0.7]);
-      const hy = lerp2(F.y.hip, F.y.ankle, o.len ?? 0.5), bl = L[3], br = R2[3], hw = F.hipHalf * (o.w ?? 0.92);
+      const L = side(0), R3 = side(1), NB = [F.cxS, F.pit[1] + F.Hh * 0.12], body = poly([top(0), ...L, ...R3.slice().reverse(), top(1), NB], [0.3, 0.5, 0.9, 0.8, 0.1, 0.1, 0.8, 0.9, 0.5, 0.3, 0.7]);
+      const hy = lerp2(F.y.hip, F.y.ankle, o.len ?? 0.5), bl = L[3], br = R3[3], hw = F.hipHalf * (o.w ?? 0.92);
       S.layer("skirt");
       const pale = (path) => {
         if (o.plain) return;
@@ -7716,7 +8300,7 @@ var __ARDAN_V2_MAKE = (() => {
       S.both(body, m.b, m.k, 1.1);
       S.within(body, () => {
         pale(body);
-        tone(S, body, m, L[1], R2[1], { sh: 0.7 });
+        tone(S, body, m, L[1], R3[1], { sh: 0.7 });
         S.fill(ell(mix2(bl, br, 0.5), F.waistHalf * 1.3, F.B * 0.028), m.s, { op: 0.5, filter: S.blur(6) });
         const nk = poly([top(0), NB, top(1)], [0, 0.7, 0], false);
         S.stroke(nk, g2.k, 10);
@@ -7756,11 +8340,11 @@ var __ARDAN_V2_MAKE = (() => {
     breastplate(C, o) {
       const { S, F } = C, M = mats(o), { st, fit } = M;
       S.layer("torso");
-      const side = (i) => [onSh(F, i, 0.7), add(F.ax[i], [-SG[i] * 14, 20]), add(F.ch[i], [SG[i] * 4, F.B * 0.02]), add(F.wa[i], [SG[i] * 6, -6])], L = side(0), R2 = side(1), NB = [F.cxS, F.pit[1] + F.Hh * 0.1];
-      const d = poly([onSh(F, 0, 0.28), ...L, [F.cx, F.y.waist + F.B * 0.02], ...R2.slice().reverse(), onSh(F, 1, 0.28), NB], [0.3, 0.5, 0.9, 0.9, 0.4, 0.5, 0.4, 0.9, 0.9, 0.5, 0.3, 0.8]);
+      const side = (i) => [onSh(F, i, 0.7), add(F.ax[i], [-SG[i] * 14, 20]), add(F.ch[i], [SG[i] * 4, F.B * 0.02]), add(F.wa[i], [SG[i] * 6, -6])], L = side(0), R3 = side(1), NB = [F.cxS, F.pit[1] + F.Hh * 0.1];
+      const d = poly([onSh(F, 0, 0.28), ...L, [F.cx, F.y.waist + F.B * 0.02], ...R3.slice().reverse(), onSh(F, 1, 0.28), NB], [0.3, 0.5, 0.9, 0.9, 0.4, 0.5, 0.4, 0.9, 0.9, 0.5, 0.3, 0.8]);
       S.both(d, st.b, st.k, 1.1);
       S.within(d, () => {
-        steel(S, d, st, L[2], R2[2], { sky: [NB, [F.cx, F.y.waist]] });
+        steel(S, d, st, L[2], R3[2], { sky: [NB, [F.cx, F.y.waist]] });
         S.fill(ell([F.cxS - F.chestHalf * 0.35, F.y.chest - F.B * 0.01], F.chestHalf * 0.3, F.B * 0.05), st.hi, { op: M.q ? 0.6 : 0.2, filter: S.blur(5) });
         if (M.edge) {
           S.stroke(d, fit.k, 8);
@@ -7770,13 +8354,13 @@ var __ARDAN_V2_MAKE = (() => {
       S.stroke(d, st.k, 1.1);
       S.stroke(polyline([NB, [F.cx, F.y.waist + F.B * 0.015]]), st.k, 1, { op: 0.7 });
       S.stroke(polyline([add(NB, [-3, 6]), [F.cx - 3, F.y.waist]]), st.hi, 1, { op: 0.7 });
-      const pk = [add(L[3], [10, -F.B * 0.035]), [lerp2(L[3][0], F.cx, 0.55), F.y.waist - F.B * 0.06], [F.cx, F.y.waist - F.B * 0.1], [lerp2(R2[3][0], F.cx, 0.55), F.y.waist - F.B * 0.06], add(R2[3], [-10, -F.B * 0.035])];
+      const pk = [add(L[3], [10, -F.B * 0.035]), [lerp2(L[3][0], F.cx, 0.55), F.y.waist - F.B * 0.06], [F.cx, F.y.waist - F.B * 0.1], [lerp2(R3[3][0], F.cx, 0.55), F.y.waist - F.B * 0.06], add(R3[3], [-10, -F.B * 0.035])];
       S.stroke(spl(pk, false, [1, 1, 0.2, 1, 1]), st.k, 1.1, { op: 0.85 });
       S.stroke(spl(pk.map((p) => [p[0], p[1] + 3]), false, [1, 1, 0.2, 1, 1]), st.hi, 0.9, { op: 0.55 });
       rivets(S, polyPts([onSh(F, 0, 0.34), add(NB, [0, 9]), onSh(F, 1, 0.34)], 0.7, false, 6), 7, 1.9, M.edge ? fit : st);
       if (M.r > 1) for (const sg of SG) for (const k of [0.3, 0.55]) S.stroke(spl([[F.cxS + sg * F.chestHalf * k, F.pit[1] + F.Hh * 0.2], [F.cx + sg * F.waistHalf * k * 0.8, F.y.chest + F.B * 0.04], [F.cx + sg * F.waistHalf * k * 0.5, F.y.waist - 4]]), st.k, 0.8, { op: 0.4 });
       if (M.scroll) for (const sg of SG) scrolls(S, [[F.cxS + sg * F.chestHalf * 0.2, F.y.chest - F.B * 0.03], [F.cxS + sg * F.chestHalf * 0.7, F.y.chest + F.B * 0.01]], 7, fit.b);
-      if (M.rivet) for (const X of [L, R2]) rivets(S, [add(X[1], [X === L ? 10 : -10, 0]), add(X[3], [X === L ? 8 : -8, 0])], 4, 2.6, st);
+      if (M.rivet) for (const X of [L, R3]) rivets(S, [add(X[1], [X === L ? 10 : -10, 0]), add(X[3], [X === L ? 8 : -8, 0])], 4, 2.6, st);
     },
     fauld(C, o) {
       const { S, F } = C, M = mats(o), { st, fit } = M;
@@ -7821,15 +8405,15 @@ var __ARDAN_V2_MAKE = (() => {
       const { S, F } = C, M = mats(o), { st, fit } = M;
       S.layer("legs");
       for (const i of [0, 1]) {
-        const T3 = legTube(F, i, 8, 0.2, 0.46);
-        limbFill(S, T3, st, { metal: 1 });
-        S.stroke(polyline(offset(part(T3.c, 0.1, 0.9), 3)), st.hi, 0.9, { op: 0.5 });
-        lame(S, T3, 0.2, st);
-        lame(S, T3, 0.82, st);
-        hinges(S, T3, st, M.edge ? fit : st, [0.4]);
-        if (M.edge) S.stroke(polyline([T3.A[T3.A.length - 1], T3.B[T3.B.length - 1]]), fit.b, 3);
-        if (M.rivet) S.stroke(polyline([along(T3.A, 0.4), along(T3.B, 0.4)]), cloth("dark").b, 4.4);
-        if (M.scroll) scrolls(S, part(offset(T3.c, F.legR[0] * 0.5), 0.2, 0.85), 6, fit.b, 0.8);
+        const T5 = legTube(F, i, 8, 0.2, 0.46);
+        limbFill(S, T5, st, { metal: 1 });
+        S.stroke(polyline(offset(part(T5.c, 0.1, 0.9), 3)), st.hi, 0.9, { op: 0.5 });
+        lame(S, T5, 0.2, st);
+        lame(S, T5, 0.82, st);
+        hinges(S, T5, st, M.edge ? fit : st, [0.4]);
+        if (M.edge) S.stroke(polyline([T5.A[T5.A.length - 1], T5.B[T5.B.length - 1]]), fit.b, 3);
+        if (M.rivet) S.stroke(polyline([along(T5.A, 0.4), along(T5.B, 0.4)]), cloth("dark").b, 4.4);
+        if (M.scroll) scrolls(S, part(offset(T5.c, F.legR[0] * 0.5), 0.2, 0.85), 6, fit.b, 0.8);
       }
     },
     greaves(C, o) {
@@ -7851,25 +8435,25 @@ var __ARDAN_V2_MAKE = (() => {
       const { S, F } = C, M = mats(o), { st, fit } = M;
       S.layer("legs");
       for (const i of [0, 1]) {
-        const G = F.leg[i], sg = SG[i], kc = add(G.kn, [0, F.B * 0.012]), R2 = F.legR[1] * 1.2 + 5;
-        const wing = poly([add(kc, [sg * R2 * 0.6, -R2 * 0.7]), add(kc, [sg * R2 * 1.5, -R2 * 0.1]), add(kc, [sg * R2 * 0.6, R2 * 0.7])], 0.75);
+        const G = F.leg[i], sg = SG[i], kc = add(G.kn, [0, F.B * 0.012]), R3 = F.legR[1] * 1.2 + 5;
+        const wing = poly([add(kc, [sg * R3 * 0.6, -R3 * 0.7]), add(kc, [sg * R3 * 1.5, -R3 * 0.1]), add(kc, [sg * R3 * 0.6, R3 * 0.7])], 0.75);
         S.both(wing, st.s, st.k, 1);
         if (M.edge) S.stroke(wing, fit.b, 1.8);
         for (const dy of [-1, 1]) {
-          const lm = poly([add(kc, [-R2 * 0.78, dy * R2 * 0.9]), add(kc, [R2 * 0.78, dy * R2 * 0.9]), add(kc, [R2 * 0.66, dy * R2 * 1.5]), add(kc, [-R2 * 0.66, dy * R2 * 1.5])], 0.4);
+          const lm = poly([add(kc, [-R3 * 0.78, dy * R3 * 0.9]), add(kc, [R3 * 0.78, dy * R3 * 0.9]), add(kc, [R3 * 0.66, dy * R3 * 1.5]), add(kc, [-R3 * 0.66, dy * R3 * 1.5])], 0.4);
           S.both(lm, st.s, st.k, 1);
         }
-        const cop = poly([add(kc, [0, -R2 * 1.25]), add(kc, [R2, -R2 * 0.35]), add(kc, [R2 * 0.8, R2 * 0.7]), add(kc, [0, R2 * 1.2]), add(kc, [-R2 * 0.8, R2 * 0.7]), add(kc, [-R2, -R2 * 0.35])], [0.5, 0.9, 0.8, 0.5, 0.8, 0.9]);
+        const cop = poly([add(kc, [0, -R3 * 1.25]), add(kc, [R3, -R3 * 0.35]), add(kc, [R3 * 0.8, R3 * 0.7]), add(kc, [0, R3 * 1.2]), add(kc, [-R3 * 0.8, R3 * 0.7]), add(kc, [-R3, -R3 * 0.35])], [0.5, 0.9, 0.8, 0.5, 0.8, 0.9]);
         S.both(cop, st.b, st.k, 1.1);
         S.within(cop, () => {
-          steel(S, cop, st, add(kc, [-R2, -R2 * 0.3]), add(kc, [R2, R2 * 0.3]), { sky: [add(kc, [0, -R2]), add(kc, [0, R2 * 1.2])] });
+          steel(S, cop, st, add(kc, [-R3, -R3 * 0.3]), add(kc, [R3, R3 * 0.3]), { sky: [add(kc, [0, -R3]), add(kc, [0, R3 * 1.2])] });
           if (M.edge) {
             S.stroke(cop, fit.k, 6);
             S.stroke(cop, fit.b, 4.4);
           }
         });
         S.stroke(cop, st.k, 1.1);
-        S.stroke(polyline([add(kc, [0, -R2 * 1.2]), add(kc, [0, R2 * 1.15])]), st.k, 0.9, { op: 0.6 });
+        S.stroke(polyline([add(kc, [0, -R3 * 1.2]), add(kc, [0, R3 * 1.15])]), st.k, 0.9, { op: 0.6 });
       }
     },
     sabatons(C, o) {
@@ -7910,13 +8494,13 @@ var __ARDAN_V2_MAKE = (() => {
         const A = F.arm[i];
         if (A.back) continue;
         S.layer("arms");
-        const ec = A.el, R2 = F.armR[1] * 1.22 + 2, fan = poly([add(ec, [SG[i] * R2 * 0.7, -R2 * 0.7]), add(ec, [SG[i] * R2 * 1.7, 0]), add(ec, [SG[i] * R2 * 0.7, R2 * 0.7])], 0.7), cop = poly(ellPts(ec, R2, R2 * 1.18, 0, 8), 0.9);
+        const ec = A.el, R3 = F.armR[1] * 1.22 + 2, fan = poly([add(ec, [SG[i] * R3 * 0.7, -R3 * 0.7]), add(ec, [SG[i] * R3 * 1.7, 0]), add(ec, [SG[i] * R3 * 0.7, R3 * 0.7])], 0.7), cop = poly(ellPts(ec, R3, R3 * 1.18, 0, 8), 0.9);
         S.both(fan, st.s, st.k, 1);
         S.both(cop, st.b, st.k, 1.1);
-        S.within(cop, () => steel(S, cop, st, add(ec, [-R2, -R2 * 0.4]), add(ec, [R2, R2 * 0.4])));
+        S.within(cop, () => steel(S, cop, st, add(ec, [-R3, -R3 * 0.4]), add(ec, [R3, R3 * 0.4])));
         if (M.edge) S.stroke(cop, fit.b, 2.2);
         S.stroke(cop, st.k, 1.1);
-        if (M.rivet) S.both(ell(ec, R2 * 0.14, R2 * 0.14), st.l, st.k, 0.6);
+        if (M.rivet) S.both(ell(ec, R3 * 0.14, R3 * 0.14), st.l, st.k, 0.6);
       }
     },
     gauntlets(C, o) {
@@ -7970,18 +8554,18 @@ var __ARDAN_V2_MAKE = (() => {
       const { S, F } = C, M = mats(o), { st, fit } = M;
       S.layer("shoulder");
       for (const i of [0, 1]) {
-        const c = add(F.ax[i], [-SG[i] * F.armR[0] * 0.1, -F.B * 0.012]), R2 = F.armR[0] * 0.62, d = ell(c, R2, R2);
+        const c = add(F.ax[i], [-SG[i] * F.armR[0] * 0.1, -F.B * 0.012]), R3 = F.armR[0] * 0.62, d = ell(c, R3, R3);
         S.both(d, st.b, st.k, 1.1);
         S.within(d, () => {
-          steel(S, d, st, add(c, [-R2, -R2 * 0.3]), add(c, [R2, R2 * 0.3]));
+          steel(S, d, st, add(c, [-R3, -R3 * 0.3]), add(c, [R3, R3 * 0.3]));
           if (M.edge) {
             S.stroke(d, fit.k, 5);
             S.stroke(d, fit.b, 3.4);
           }
         });
         S.stroke(d, st.k, 1.1);
-        S.both(ell(c, R2 * 0.2, R2 * 0.2), M.edge ? fit.b : st.l, st.k, 0.8);
-        if (M.scroll) S.stroke(ell(c, R2 * 0.58, R2 * 0.58), fit.b, 0.9, { dash: "2 2.4", op: 0.9 });
+        S.both(ell(c, R3 * 0.2, R3 * 0.2), M.edge ? fit.b : st.l, st.k, 0.8);
+        if (M.scroll) S.stroke(ell(c, R3 * 0.58, R3 * 0.58), fit.b, 0.9, { dash: "2 2.4", op: 0.9 });
       }
     },
     spurs(C, o) {
@@ -7993,8 +8577,8 @@ var __ARDAN_V2_MAKE = (() => {
         S.stroke(polyline([add(G.an, [sg * F.legR[3] * 0.8, F.footL * 0.12]), a, b]), g2.b, 2);
         let d = "";
         for (let k = 0; k < 6; k++) {
-          const an = k * Math.PI / 3, q = F.footL * 0.05;
-          d += `M${n1(b[0])} ${n1(b[1])}l${n1(Math.cos(an) * q)} ${n1(Math.sin(an) * q)}`;
+          const an2 = k * Math.PI / 3, q = F.footL * 0.05;
+          d += `M${n1(b[0])} ${n1(b[1])}l${n1(Math.cos(an2) * q)} ${n1(Math.sin(an2) * q)}`;
         }
         S.stroke(d, g2.k, 1.6);
         S.stroke(d, g2.l, 0.8);
@@ -8179,9 +8763,9 @@ var __ARDAN_V2_MAKE = (() => {
           S.stroke(ln, edge.k, w + 5, { units: 1 });
           S.stroke(ln, edge.b, w, { units: 1 });
           if (o.pat) {
-            const pm = cloth(o.patDye || "cream"), n = 9, zz = [];
-            for (let k = 0; k <= n; k++) {
-              const p = mix2(a0, far, k / n), nn = mul(norm(perp(sub(far, a0))), -sg * (o.pat === "zig" ? k % 2 ? 3 : 11 : 7));
+            const pm = cloth(o.patDye || "cream"), n3 = 9, zz = [];
+            for (let k = 0; k <= n3; k++) {
+              const p = mix2(a0, far, k / n3), nn = mul(norm(perp(sub(far, a0))), -sg * (o.pat === "zig" ? k % 2 ? 3 : 11 : 7));
               zz.push(add(p, nn));
             }
             S.stroke(polyline(zz), pm.b, 4.5, { units: 1, ...o.pat === "stripe" ? {} : o.pat === "dots" ? { dash: "1 14" } : {} });
@@ -8711,13 +9295,13 @@ var __ARDAN_V2_MAKE = (() => {
     if (!gear.some((g2) => g2.id === "tunic" && (g2.sleeves || "long") !== "none")) for (const i of C.armOrder) {
       const A = F.arm[i];
       S.layer(A.back ? "armsBack" : "arms");
-      const arc = shoulderBall(S, F, i, sk2, 0), T3 = armTube(F, i, 0);
-      limbFill(S, T3, sk2, { cap: false });
+      const arc = shoulderBall(S, F, i, sk2, 0), T5 = armTube(F, i, 0);
+      limbFill(S, T5, sk2, { cap: false });
       S.stroke(polyline(arc), sk2.k, 1.1);
       if (F.mu > 0.2) {
-        S.fill(ink(part(offset(T3.c, A.s * F.armR[0] * 0.3), 0.1, 0.36), fade(S.lw(1.1))), sk2.k, { op: 0.5 });
-        S.fill(ink(part(offset(T3.c, -A.s * F.armR[0] * 0.25), 0.22, 0.44), fade(S.lw(1))), sk2.k, { op: 0.4 });
-        S.fill(ink(part(offset(T3.c, -A.s * F.armR[2] * 0.25), 0.56, 0.8), fade(S.lw(1))), sk2.k, { op: 0.4 });
+        S.fill(ink(part(offset(T5.c, A.s * F.armR[0] * 0.3), 0.1, 0.36), fade(S.lw(1.1))), sk2.k, { op: 0.5 });
+        S.fill(ink(part(offset(T5.c, -A.s * F.armR[0] * 0.25), 0.22, 0.44), fade(S.lw(1))), sk2.k, { op: 0.4 });
+        S.fill(ink(part(offset(T5.c, -A.s * F.armR[2] * 0.25), 0.56, 0.8), fade(S.lw(1))), sk2.k, { op: 0.4 });
       }
     }
     for (const g2 of gear) {
@@ -8974,8 +9558,8 @@ var __ARDAN_V2_MAKE = (() => {
     if (!it || !it.id) return null;
     const row = Object.prototype.hasOwnProperty.call(GEAR_ART, it.id) ? GEAR_ART[it.id] : KIND_ART[it.kind] ? { art: KIND_ART[it.kind] } : null;
     if (!row) return null;
-    const n = (v) => Number.isFinite(+v) ? clamp3(Math.round(+v), 0, 3) : null;
-    return { ...row, q: n(it.make) ?? row.q ?? q0, r: n(it.rarity) ?? row.r ?? 0 };
+    const n3 = (v) => Number.isFinite(+v) ? clamp3(Math.round(+v), 0, 3) : null;
+    return { ...row, q: n3(it.make) ?? row.q ?? q0, r: n3(it.rarity) ?? row.r ?? 0 };
   }
   var DYE = {
     poor: ["undyed", "hemp", "undyed", "cream", "brown", "hemp"],
@@ -9028,7 +9612,7 @@ var __ARDAN_V2_MAKE = (() => {
     }
     return h >>> 0;
   };
-  var T2 = (o) => ({ id: "tunic", ...o });
+  var T3 = (o) => ({ id: "tunic", ...o });
   var hash2 = (s) => {
     let h = 5381;
     s = String(s);
@@ -9088,7 +9672,7 @@ var __ARDAN_V2_MAKE = (() => {
     const gem = () => pick(["#2f5fa8", "#9c1f2c", "#2f7a4a", "#6a3a8c"]);
     const badge = liv ? { id: "badge", field: liv.field, pale: liv.charge, device: liv.device, trim: g2 >= 4 ? "gold" : "bronze" } : null;
     if (age < 3) {
-      gear = [{ id: "barelegs", from: 0.12 }, { id: "shoes", kind: "bare" }, T2({ dye: pick(["linen", "cream", "undyed"]), len: 0.6, ease: 14, neck: "round", sleeves: "long", flare: 30 })];
+      gear = [{ id: "barelegs", from: 0.12 }, { id: "shoes", kind: "bare" }, T3({ dye: pick(["linen", "cream", "undyed"]), len: 0.6, ease: 14, neck: "round", sleeves: "long", flare: 30 })];
       poses = ["ease"];
     } else if (harness) {
       const q = armour.q, rr = armour.r, own2 = !liv && device && (est === "noble" || royal), lv = liveryOf(liv ? liv.field : realm);
@@ -9096,9 +9680,9 @@ var __ARDAN_V2_MAKE = (() => {
       const legs = [{ id: "hose", dye: pick(["charcoal", "walnut", "brown"]) }, { id: "shoes", kind: "boot", leather: "dark", high: 1 }];
       const pad = { id: "padding", dye: pick(["cream", "undyed", "hemp"]), quilt: 2 };
       if (harness === "padded") gear = [...legs, { ...pad, len: 0.4 }, ...rank >= 1 ? [{ id: "mailcollar" }] : [], { ...tab3, len: 0.3, point: 0 }, { id: "belt", leather: "dark", w: 28, metal: "iron" }, ...rank >= 2 ? [{ id: "baldric", leather: "brown", from: 0, metal: "iron" }] : []];
-      else if (harness === "leather") gear = [{ id: "hose", dye: pick(["forest", "walnut", "brown"]), loose: 1 }, { id: "shoes", kind: "boot", leather: "brown", high: 1 }, sh.mil || liv ? { id: "padding", dye: liv ? liv.field : realm, quilt: 2, len: 0.22, ease: 9 } : T2({ dye: dyeOf("peasant"), len: 0.22, ease: 9, neck: "slit", sleeves: "long" }), T2({ dye: pick(["brown", "dark", "tan"]), len: 0.16, ease: 11, neck: "v", sleeves: "none" }), { id: "belt", leather: "dark", w: 30, metal: "bronze" }, { id: "baldric", leather: "dark", from: 0, metal: "bronze", studs: 1 }, { id: "bracers", leather: "dark", studs: q > 0 ? 1 : 0 }];
+      else if (harness === "leather") gear = [{ id: "hose", dye: pick(["forest", "walnut", "brown"]), loose: 1 }, { id: "shoes", kind: "boot", leather: "brown", high: 1 }, sh.mil || liv ? { id: "padding", dye: liv ? liv.field : realm, quilt: 2, len: 0.22, ease: 9 } : T3({ dye: dyeOf("peasant"), len: 0.22, ease: 9, neck: "slit", sleeves: "long" }), T3({ dye: pick(["brown", "dark", "tan"]), len: 0.16, ease: 11, neck: "v", sleeves: "none" }), { id: "belt", leather: "dark", w: 30, metal: "bronze" }, { id: "baldric", leather: "dark", from: 0, metal: "bronze", studs: 1 }, { id: "bracers", leather: "dark", studs: q > 0 ? 1 : 0 }];
       else if (harness === "mail") gear = [...legs, ...set2({ q: Math.min(q, 1) }, "greaves", "poleyns"), pad, { id: "mail" }, { id: "mailcollar" }, { ...tab3, len: 0.32, point: 0 }, { id: "belt", leather: "dark", w: 30, metal: q > 1 ? "bronze" : "iron" }, ...rank !== null && rank < 3 && !liv ? [{ id: "bracers", leather: "dark" }] : set2({ q, r: rr }, "vambraces", "couters"), { id: "gloves", leather: "dark" }];
-      else if (harness === "plates") gear = [...legs, ...set2({ q, r: rr }, "greaves", "poleyns"), T2({ dye: own2 ? field : liv ? liv.field : realm, len: 0.3, ease: 9, fitted: 1, neck: "high", sleeves: "long", quilt: 1, trimHem: "dark", trim: "dark" }), T2({ dye: "dark", len: 0.12, ease: 11, neck: "v", sleeves: "none" }), { id: "mailcollar" }, { id: "belt", leather: "dark", w: 30, metal: "bronze" }, { id: "baldric", leather: "brown", from: 0, metal: "bronze" }, { id: "bracers", leather: "brown", studs: 1, metal: "bronze" }, { id: "pauldrons", q, r: rr, z: 1.35 }];
+      else if (harness === "plates") gear = [...legs, ...set2({ q, r: rr }, "greaves", "poleyns"), T3({ dye: own2 ? field : liv ? liv.field : realm, len: 0.3, ease: 9, fitted: 1, neck: "high", sleeves: "long", quilt: 1, trimHem: "dark", trim: "dark" }), T3({ dye: "dark", len: 0.12, ease: 11, neck: "v", sleeves: "none" }), { id: "mailcollar" }, { id: "belt", leather: "dark", w: 30, metal: "bronze" }, { id: "baldric", leather: "brown", from: 0, metal: "bronze" }, { id: "bracers", leather: "brown", studs: 1, metal: "bronze" }, { id: "pauldrons", q, r: rr, z: 1.35 }];
       else if (harness === "cuirass") gear = [...legs, ...set2({ q, r: rr }, "cuisses", "greaves", "poleyns"), { id: "mail", sleeves: "long", len: 0.3 }, { id: "mailcollar" }, ...set2({ q, r: rr }, "breastplate", "fauld"), { id: "belt", leather: "dark", w: 30, metal: "bronze" }, ...set2({ q, r: rr }, "rerebraces", "vambraces", "couters", "gauntlets", "besagews", "pauldrons", "gorget")];
       else {
         gear = [
@@ -9121,15 +9705,15 @@ var __ARDAN_V2_MAKE = (() => {
       poses = shield0 && rank !== null && rank < 4 ? ["ease"] : sword ? ["pommel", "pommel", "belt", "ease", "folded"] : ["ease", "belt", "folded", "hip"];
     } else if (kid) {
       const rich = g2 >= 3 && est !== "priest", kc = cut === "kaftan" ? { wrap: 1, neck: "v", trim: second } : cut === "drape" ? { sleeves: "short" } : {};
-      if (rich && male) gear = [{ id: "hose", dye: pick(["navy", "charcoal", "walnut"]) }, { id: "shoes", kind: "ankle", leather: "brown" }, T2({ dye: main, len: cut === "robe" ? 0.7 : 0.22, ease: 8, neck: "high", sleeves: "long", trim: "cream", buttons: "bronze", fitted: 1, ...kc }), cut === "tunic" ? { id: "belt", leather: "dark", w: 20, metal: "bronze" } : { id: "sash", dye: second, w: 30, hang: 0.6 }];
-      else if (rich) gear = [{ id: "shoes", kind: "turn", leather: "red" }, T2({ dye: main, len: 0.96, ease: 6, fitted: 1, neck: "round", sleeves: "long", trim: "mustard", flare: 50, folds: 7, ...kc }), cut === "tunic" ? { id: "belt", leather: "red", w: 14, metal: "bronze" } : { id: "sash", dye: second, w: 28, hang: 0.6 }];
-      else gear = [{ id: "barelegs", from: 0.12 }, { id: "shoes", kind: g2 === 0 || ch(0.4) ? "bare" : "turn", leather: "brown" }, T2({ dye: g2 === 0 ? dyeOf("poor") : main, len: male ? 0.42 : 0.6, ease: 12, neck: "round", sleeves: "long", patch: ch(0.5) ? "undyed" : null, flare: 34, ...kc })];
+      if (rich && male) gear = [{ id: "hose", dye: pick(["navy", "charcoal", "walnut"]) }, { id: "shoes", kind: "ankle", leather: "brown" }, T3({ dye: main, len: cut === "robe" ? 0.7 : 0.22, ease: 8, neck: "high", sleeves: "long", trim: "cream", buttons: "bronze", fitted: 1, ...kc }), cut === "tunic" ? { id: "belt", leather: "dark", w: 20, metal: "bronze" } : { id: "sash", dye: second, w: 30, hang: 0.6 }];
+      else if (rich) gear = [{ id: "shoes", kind: "turn", leather: "red" }, T3({ dye: main, len: 0.96, ease: 6, fitted: 1, neck: "round", sleeves: "long", trim: "mustard", flare: 50, folds: 7, ...kc }), cut === "tunic" ? { id: "belt", leather: "red", w: 14, metal: "bronze" } : { id: "sash", dye: second, w: 28, hang: 0.6 }];
+      else gear = [{ id: "barelegs", from: 0.12 }, { id: "shoes", kind: g2 === 0 || ch(0.4) ? "bare" : "turn", leather: "brown" }, T3({ dye: g2 === 0 ? dyeOf("poor") : main, len: male ? 0.42 : 0.6, ease: 12, neck: "round", sleeves: "long", patch: ch(0.5) ? "undyed" : null, flare: 34, ...kc })];
       poses = ["ease", "behind", "hip", "ease"];
     } else if (est === "priest") {
       const high = sh.rung >= 3, mid = sh.rung === 2 || !high && fine, d = high ? pick(["white", "cream"]) : mourn ? "charcoal" : pick(["walnut", "charcoal", "brown", "undyed", "grey"]);
       gear = [
         { id: "shoes", kind: "turn", leather: "tan" },
-        T2({ dye: d, len: 0.96, ease: 18, neck: "round", sleeves: "wide", flare: 30, folds: 6, trimHem: high ? "mustard" : null }),
+        T3({ dye: d, len: 0.96, ease: 18, neck: "round", sleeves: "wide", flare: 30, folds: 6, trimHem: high ? "mustard" : null }),
         { id: "belt", rope: 1, leather: "linen", w: 15 },
         ...high || mid ? [{ id: "stole", dye: high ? pick(["crimson", "purple", "mustard"]) : pick(["white", "cream", "sage"]), trim: high ? "mustard" : "walnut", len: high ? 0.34 : 0.2 }] : [],
         ...cut === "tunic" || !high ? [{ id: "hood", dye: d, cape: high ? 0.4 : 0.5 }] : [],
@@ -9144,13 +9728,13 @@ var __ARDAN_V2_MAKE = (() => {
       staff = high ? "crozier" : "staff";
     } else if (role === "tutor" || (job === "scribe" || job === "healer") && g2 <= 4 && !work) {
       const d = mourn ? "black" : pick(["black", "walnut", "navy", "charcoal", "murrey"]);
-      gear = [{ id: "shoes", kind: "turn", leather: "dark" }, T2({ dye: d, len: 0.95, ease: 15, neck: "high", sleeves: "wide", flare: 34, folds: 7, trim: ch(0.5) ? "cream" : null, buttons: ch(0.4) ? "bronze" : null }), { id: "belt", leather: "dark", w: 20, metal: "bronze" }, { id: "pouch", side: -1, leather: "dark" }, ...badge ? [badge] : []];
+      gear = [{ id: "shoes", kind: "turn", leather: "dark" }, T3({ dye: d, len: 0.95, ease: 15, neck: "high", sleeves: "wide", flare: 34, folds: 7, trim: ch(0.5) ? "cream" : null, buttons: ch(0.4) ? "bronze" : null }), { id: "belt", leather: "dark", w: 20, metal: "bronze" }, { id: "pouch", side: -1, leather: "dark" }, ...badge ? [badge] : []];
       headwear = ch(0.7) ? "cap" : "none";
       headwearOpts = { dye: ch(0.6) ? d : "black" };
       poses = ["clasped", "sleeves", "behind", "ease"];
     } else if (cut === "robe") {
       const len2 = g2 === 0 ? male ? 0.62 : 0.9 : 0.95, sashD = liv ? liv.charge : second;
-      const base = T2({ dye: liv ? liv.field : main, len: len2, ease: g2 >= 5 ? 12 : 14, neck: g2 >= 4 ? "round" : "slit", sleeves: g2 >= 3 ? "wide" : g2 === 2 && !fine ? "rolled" : "long", flare: 34, folds: 7 });
+      const base = T3({ dye: liv ? liv.field : main, len: len2, ease: g2 >= 5 ? 12 : 14, neck: g2 >= 4 ? "round" : "slit", sleeves: g2 >= 3 ? "wide" : g2 === 2 && !fine ? "rolled" : "long", flare: 34, folds: 7 });
       const feet = { id: "shoes", kind: g2 === 0 ? "bare" : "turn", leather: g2 >= 5 ? "red" : "tan" };
       if (g2 === 0) gear = [feet, { ...base, dye: dyeOf("poor"), wave: 15, patch: "walnut", patch2: "brown", sleeves: ch(0.6) ? "short" : "rolled" }, { id: "belt", rope: 1, leather: "hemp", w: 15 }];
       else if (g2 === 1) gear = [feet, { ...base, trim: fine || ch(0.4) ? second : null }, { id: "sash", dye: liv ? sashD : pick(["hemp", "undyed", second]), w: 26, hang: 0.45 }, ...work || ch(0.3) ? [] : [{ id: "neckcloth", dye: shade(pick(DYE.peasant)) }], ...ch(0.4) ? [{ id: "pouch", side: 1 }] : []];
@@ -9166,7 +9750,7 @@ var __ARDAN_V2_MAKE = (() => {
       poses = g2 <= 1 ? male ? ["ease", "behind", "belt", "hip"] : ["clasped", "ease", "hip"] : g2 === 2 ? ["folded", "hip", "ease", "belt"] : male ? ["clasped", "belt", "sleeves", "ease"] : ["clasped", "sleeves", "ease"];
     } else if (cut === "kaftan") {
       const long = g2 >= 3 || !male, len2 = long ? g2 >= 3 ? 0.84 : 0.88 : g2 === 0 ? 0.4 : 0.52, tr = g2 === 0 ? null : g2 >= 5 ? "mustard" : g2 >= 3 ? "ochre" : liv ? liv.charge : second;
-      const base = T2({ dye: liv ? liv.field : g2 === 0 ? dyeOf("poor") : main, len: len2, ease: 11, neck: "v", wrap: 1, sleeves: g2 === 2 && !fine ? "rolled" : "long", flare: 30, folds: long ? 7 : 5, trim: tr });
+      const base = T3({ dye: liv ? liv.field : g2 === 0 ? dyeOf("poor") : main, len: len2, ease: 11, neck: "v", wrap: 1, sleeves: g2 === 2 && !fine ? "rolled" : "long", flare: 30, folds: long ? 7 : 5, trim: tr });
       const legs = g2 === 0 ? [{ id: "barelegs", from: 0.12 }, { id: "wraps", dye: "hemp" }, { id: "shoes", kind: "turn", leather: "dark" }] : [{ id: "hose", dye: pick(["walnut", "brown", "charcoal", "hemp"]), loose: 1 }, { id: "shoes", kind: "boot", leather: g2 >= 4 ? "red" : "brown", high: 1, ...g2 >= 3 ? { cuff: "bear" } : {} }];
       if (g2 === 0) gear = [...legs, { ...base, wave: 15, patch: "walnut", patch2: "brown", sleeves: ch(0.6) ? "short" : "rolled" }, { id: "belt", rope: 1, leather: "hemp", w: 15 }];
       else if (g2 === 1) gear = [...legs, base, ch(0.6) ? { id: "sash", dye: liv ? liv.charge : second, w: 28, hang: 0.45 } : { id: "belt", leather: "brown", w: 26 }, ...ch(0.4) ? [{ id: "pouch", side: 1 }] : []];
@@ -9184,7 +9768,7 @@ var __ARDAN_V2_MAKE = (() => {
       poses = g2 <= 1 ? male ? ["ease", "hip", "belt", "folded", "behind"] : ["clasped", "hip", "ease"] : g2 === 2 ? ["folded", "belt", "hip", "ease"] : male ? sword ? ["pommel", "belt", "hip"] : ["belt", "hip", "ease", "clasped"] : ["clasped", "ease", "sleeves"];
     } else if (cut === "drape") {
       const long = !male || g2 >= 3, len2 = long ? 0.93 : g2 === 0 ? 0.36 : 0.46, pale = () => pick(["undyed", "cream", "linen"]), edge = g2 >= 5 ? "mustard" : g2 >= 3 ? "ochre" : liv ? liv.charge : second;
-      const shift = T2({
+      const shift = T3({
         dye: g2 === 0 ? dyeOf("poor") : g2 === 2 ? liv ? liv.field : main : g2 >= 5 ? "white" : pale(),
         len: len2,
         ease: 8,
@@ -9196,7 +9780,7 @@ var __ARDAN_V2_MAKE = (() => {
       });
       const wrap = { id: "wrapcloth", dye: liv ? liv.field : main, from: ch(0.5) ? 0 : 1, edge: g2 >= 2 || liv ? edge : ch(0.5) ? second : null, edgeW: g2 >= 5 ? 40 : 30, pat: g2 >= 3 ? cult.pat === "stripe" ? "stripe" : "zig" : g2 === 1 && cult.pat ? "dots" : null, patDye: g2 >= 5 ? "crimson" : "cream", knot: g2 >= 5 ? "gold" : g2 >= 4 ? "bronze" : null };
       const legs = long ? [{ id: "shoes", kind: g2 === 0 ? "bare" : "turn", leather: g2 >= 5 ? "red" : "tan" }] : [{ id: "barelegs", from: 0.12 }, { id: "shoes", kind: g2 <= 1 && ch(0.6) ? "bare" : "turn", leather: "tan" }];
-      const bd = (n) => ({ id: "beads", rows: n, dyes: g2 <= 2 ? [pick(["cream", "walnut", "madder"]), pick(["walnut", "cream", "brown"]), "cream"] : [pick(["ochre", "madder", "white"]), pick(["teal", "cream", "scarlet"]), "white"] });
+      const bd = (n3) => ({ id: "beads", rows: n3, dyes: g2 <= 2 ? [pick(["cream", "walnut", "madder"]), pick(["walnut", "cream", "brown"]), "cream"] : [pick(["ochre", "madder", "white"]), pick(["teal", "cream", "scarlet"]), "white"] });
       if (g2 === 0) gear = [...legs, { ...shift, wave: 15, patch: "walnut", patch2: "brown" }, { id: "belt", rope: 1, leather: "hemp", w: 15 }];
       else if (g2 === 1) gear = [...legs, shift, ...work ? [] : [wrap], { id: "belt", leather: pick(["tan", "brown"]), w: 20 }, ...ch(0.3) ? [bd(1)] : []];
       else if (g2 === 2) gear = [...legs, shift, ...clean ? [wrap] : [{ id: "apron", leather: pick(["brown", "tan", "linen"]), len: 0.5 }], { id: "belt", leather: "dark", w: 28, metal: "iron" }, { id: "tool", kind: ch(0.5) ? "hammer" : "knife", side: 1 }, bd(1)];
@@ -9206,31 +9790,31 @@ var __ARDAN_V2_MAKE = (() => {
       poses = g2 <= 1 ? male ? ["ease", "hip", "behind", "folded"] : ["clasped", "hip", "ease"] : g2 === 2 ? ["folded", "hip", "ease", "belt"] : male ? ["clasped", "belt", "hip", "ease"] : ["clasped", "ease", "hip"];
     } else if (g2 === 0) {
       const bare = est !== "serf";
-      if (male) gear = [{ id: "barelegs", from: 0.12 }, ...bare ? [] : [{ id: "wraps", dye: "hemp" }], { id: "shoes", kind: bare ? "bare" : "turn", leather: "dark" }, T2({ dye: dyeOf("poor"), len: 0.34, ease: 14, neck: "slit", sleeves: ch(0.7) ? "short" : "rolled", patch: "walnut", patch2: "brown", wave: 15 }), ...est === "prisoner" ? [] : [{ id: "belt", rope: 1, leather: "hemp", w: 16 }]];
-      else gear = [{ id: "shoes", kind: bare ? "bare" : "turn", leather: "dark" }, T2({ dye: dyeOf("poor"), len: 0.9, ease: 10, neck: "round", sleeves: ch(0.6) ? "short" : "rolled", patch: "walnut", patch2: "brown", flare: 40, folds: 6, wave: 14 }), { id: "belt", rope: 1, leather: "hemp", w: 14 }, ...est === "serf" && ch(0.4) ? [{ id: "apron", leather: "undyed", len: 0.6 }] : []];
+      if (male) gear = [{ id: "barelegs", from: 0.12 }, ...bare ? [] : [{ id: "wraps", dye: "hemp" }], { id: "shoes", kind: bare ? "bare" : "turn", leather: "dark" }, T3({ dye: dyeOf("poor"), len: 0.34, ease: 14, neck: "slit", sleeves: ch(0.7) ? "short" : "rolled", patch: "walnut", patch2: "brown", wave: 15 }), ...est === "prisoner" ? [] : [{ id: "belt", rope: 1, leather: "hemp", w: 16 }]];
+      else gear = [{ id: "shoes", kind: bare ? "bare" : "turn", leather: "dark" }, T3({ dye: dyeOf("poor"), len: 0.9, ease: 10, neck: "round", sleeves: ch(0.6) ? "short" : "rolled", patch: "walnut", patch2: "brown", flare: 40, folds: 6, wave: 14 }), { id: "belt", rope: 1, leather: "hemp", w: 14 }, ...est === "serf" && ch(0.4) ? [{ id: "apron", leather: "undyed", len: 0.6 }] : []];
       if (est === "serf" && (work || where === "out" ? ch(0.6) : ch(0.25))) headwear = male ? pick(["strawhat", "coif"]) : "kerchief";
       headwearOpts = { dye: "undyed" };
       poses = male ? ["ease", "behind", "belt", "hip"] : ["clasped", "ease", "hip"];
     } else if (royal) {
       const robe = shade(pick(field === realm ? ["crimson", "purple", "blue", "murrey"] : [field, field, "crimson", "purple"]));
-      if (male) gear = [{ id: "shoes", kind: "poulaine", leather: "red" }, T2({ dye: mourn ? "black" : robe, len: 0.97, ease: 15, neck: "round", sleeves: "bell", trim: "mustard", trimHem: "mustard", trimW: 22, flare: 40, folds: 7, buttons: "gold" }), { id: "belt", leather: "dark", w: 30, metal: "gold", plaques: 1 }, { id: "cloak", dye: realm, lining: "ermine", trim: "gold", len: 1, q: 3, clasp: "gold", mantle: 0.5, spread: 0.075 }, { id: "furcollar", fur: "ermine", z: 0.34 }, { id: "chain", metal: "gold", gem: gem() }];
-      else gear = [{ id: "shoes", kind: "poulaine", leather: "red" }, T2({ dye: mourn ? "black" : robe, len: 1, ease: 4, fitted: 1, neck: "wide", sleeves: "wide", trim: "mustard", trimHem: "mustard", flare: 70, folds: 9 }), { id: "belt", leather: "red", w: 20, metal: "gold", plaques: 1, hang: 240, at: 0.5 }, { id: "cloak", dye: realm, lining: "ermine", trim: "gold", len: 0.98, q: 3, clasp: "gold", mantle: 0.5, spread: 0.07 }, { id: "furcollar", fur: "ermine", z: 0.26 }, { id: "chain", metal: "gold", gem: gem() }];
+      if (male) gear = [{ id: "shoes", kind: "poulaine", leather: "red" }, T3({ dye: mourn ? "black" : robe, len: 0.97, ease: 15, neck: "round", sleeves: "bell", trim: "mustard", trimHem: "mustard", trimW: 22, flare: 40, folds: 7, buttons: "gold" }), { id: "belt", leather: "dark", w: 30, metal: "gold", plaques: 1 }, { id: "cloak", dye: realm, lining: "ermine", trim: "gold", len: 1, q: 3, clasp: "gold", mantle: 0.5, spread: 0.075 }, { id: "furcollar", fur: "ermine", z: 0.34 }, { id: "chain", metal: "gold", gem: gem() }];
+      else gear = [{ id: "shoes", kind: "poulaine", leather: "red" }, T3({ dye: mourn ? "black" : robe, len: 1, ease: 4, fitted: 1, neck: "wide", sleeves: "wide", trim: "mustard", trimHem: "mustard", flare: 70, folds: 9 }), { id: "belt", leather: "red", w: 20, metal: "gold", plaques: 1, hang: 240, at: 0.5 }, { id: "cloak", dye: realm, lining: "ermine", trim: "gold", len: 0.98, q: 3, clasp: "gold", mantle: 0.5, spread: 0.07 }, { id: "furcollar", fur: "ermine", z: 0.26 }, { id: "chain", metal: "gold", gem: gem() }];
       poses = male ? sword ? ["sword", "pommel", "belt"] : ["belt", "ease", "behind"] : ["clasped", "ease", "sleeves"];
     } else if (g2 === 5) {
       const jewel = sh.rung >= 5 || fine ? { id: "chain", metal: "gold", gem: gem() } : { id: "brooch", metal: "gold", throat: 1, gem: gem() }, hc = mourn ? "charcoal" : field, v = Math.floor(r() * 3);
-      if (work && male) gear = [{ id: "hose", dye: pick(["forest", "walnut", "brown"]), loose: 1 }, { id: "shoes", kind: "boot", leather: "brown", high: 1 }, T2({ dye: main, len: 0.26, ease: 9, neck: "slit", sleeves: "long", trim: "ochre" }), T2({ dye: pick(["brown", "tan", "dark"]), len: 0.2, ease: 11, neck: "v", sleeves: "none" }), { id: "belt", leather: "dark", w: 30, metal: "bronze", plaques: 1 }, { id: "bracers", leather: "brown", studs: 1, metal: "bronze" }];
-      else if (male && v === 1) gear = [{ id: "shoes", kind: "poulaine", leather: "dark" }, T2({ dye: main, len: 0.9, ease: 14, neck: "high", sleeves: "bell", trim: "mustard", trimHem: pick(["sable", "fox", "mustard"]), trimW: 22, flare: 40, folds: 7, buttons: "gold" }), { id: "belt", leather: "dark", w: 28, metal: "gold", plaques: 1 }, { id: "chain", metal: "gold", gem: sh.rung >= 5 || fine ? gem() : null }, ...fine || ch(0.4) ? [{ id: "furcollar", fur: pick(["sable", "wolf", "fox"]), z: 0.2 }] : []];
+      if (work && male) gear = [{ id: "hose", dye: pick(["forest", "walnut", "brown"]), loose: 1 }, { id: "shoes", kind: "boot", leather: "brown", high: 1 }, T3({ dye: main, len: 0.26, ease: 9, neck: "slit", sleeves: "long", trim: "ochre" }), T3({ dye: pick(["brown", "tan", "dark"]), len: 0.2, ease: 11, neck: "v", sleeves: "none" }), { id: "belt", leather: "dark", w: 30, metal: "bronze", plaques: 1 }, { id: "bracers", leather: "brown", studs: 1, metal: "bronze" }];
+      else if (male && v === 1) gear = [{ id: "shoes", kind: "poulaine", leather: "dark" }, T3({ dye: main, len: 0.9, ease: 14, neck: "high", sleeves: "bell", trim: "mustard", trimHem: pick(["sable", "fox", "mustard"]), trimW: 22, flare: 40, folds: 7, buttons: "gold" }), { id: "belt", leather: "dark", w: 28, metal: "gold", plaques: 1 }, { id: "chain", metal: "gold", gem: sh.rung >= 5 || fine ? gem() : null }, ...fine || ch(0.4) ? [{ id: "furcollar", fur: pick(["sable", "wolf", "fox"]), z: 0.2 }] : []];
       else if (male) gear = [
         { id: "hose", dye: v ? hc : pick(["charcoal", "navy", "walnut"]) },
         { id: "shoes", kind: "boot", leather: "dark", high: 1 },
-        T2({ dye: main, len: 0.34, ease: 8, fitted: 1, neck: "high", sleeves: "long", trim: "mustard", trimHem: "mustard", trimW: 14, buttons: "gold", flare: 30 }),
+        T3({ dye: main, len: 0.34, ease: 8, fitted: 1, neck: "high", sleeves: "long", trim: "mustard", trimHem: "mustard", trimW: 14, buttons: "gold", flare: 30 }),
         { id: "belt", leather: "dark", w: 30, metal: "gold", plaques: 1 },
         ...fine || road || ch(0.6) ? [{ id: "cloak", dye: v ? shade(pick(DYE.noble)) : hc, lining: v ? hc : "charcoal", trim: "gold", len: v ? 0.5 : 0.78, q: 2, clasp: "gold", mantle: 0.46 }, ...v ? [] : [{ id: "furcollar", fur: pick(["sable", "wolf", "fox"]), z: 0.22 }], ...fine ? [jewel] : []] : [jewel]
       ];
       else gear = [
         { id: "shoes", kind: "poulaine", leather: "red" },
-        T2({ dye: v === 1 ? second : main, len: 1, ease: 4, fitted: 1, neck: "wide", sleeves: v === 2 ? "bell" : "wide", trim: "mustard", trimHem: "mustard", flare: 70, folds: 9 }),
-        ...v === 1 ? [T2({ dye: main, len: 0.98, ease: 9, neck: "v", sleeves: "none", trim: "mustard", trimHem: pick(["ermine", "sable", "mustard"]), flare: 66, folds: 8 })] : [],
+        T3({ dye: v === 1 ? second : main, len: 1, ease: 4, fitted: 1, neck: "wide", sleeves: v === 2 ? "bell" : "wide", trim: "mustard", trimHem: "mustard", flare: 70, folds: 9 }),
+        ...v === 1 ? [T3({ dye: main, len: 0.98, ease: 9, neck: "v", sleeves: "none", trim: "mustard", trimHem: pick(["ermine", "sable", "mustard"]), flare: 66, folds: 8 })] : [],
         { id: "belt", leather: "red", w: 20, metal: "gold", plaques: 1, hang: 240, at: 0.5 },
         jewel,
         ...!mourn && !work ? [{ id: "furcollar", fur: pick(["ermine", "sable", "fox"]), z: 0.17 }] : [],
@@ -9244,20 +9828,20 @@ var __ARDAN_V2_MAKE = (() => {
       if (male) gear = [
         { id: "hose", dye: liv ? liv.charge : pick(["navy", "charcoal", "walnut", "forest"]) },
         { id: "shoes", kind: ch(0.5) ? "boot" : "ankle", leather: "brown", high: 1 },
-        T2({ dye: lc, len: ch(0.5) ? 0.24 : 0.32, ease: 7, neck: "high", sleeves: "long", trim: liv ? liv.charge : "cream", trimHem: ch(0.4) ? "cream" : null, buttons: "bronze", fitted: 1 }),
+        T3({ dye: lc, len: ch(0.5) ? 0.24 : 0.32, ease: 7, neck: "high", sleeves: "long", trim: liv ? liv.charge : "cream", trimHem: ch(0.4) ? "cream" : null, buttons: "bronze", fitted: 1 }),
         { id: "belt", leather: "dark", w: 26, metal: "bronze", plaques: fine ? 1 : 0 },
         ...sword ? [] : [{ id: "tool", kind: "knife", side: 1 }],
         ...fine || road || ch(0.3) ? [{ id: "cloak", dye: shade(pick(DYE.gentry)), len: 0.5, q: 1, clasp: "bronze", mantle: 0.42 }] : [{ id: "brooch", metal: "silver", throat: 1 }]
       ];
-      else gear = [{ id: "shoes", kind: "turn", leather: "red" }, T2({ dye: lc, len: 1, ease: 5, fitted: 1, neck: "wide", sleeves: "long", trim: "cream", trimHem: "cream", flare: 60, folds: 8 }), { id: "belt", leather: "tan", w: 18, metal: "bronze", hang: 160, at: 0.5 }, { id: "brooch", metal: "silver", throat: 1, gem: fine ? gem() : null }, ...ch(0.3) ? [{ id: "shawl", dye: second, cape: 0.6, edge: "cream" }] : []];
+      else gear = [{ id: "shoes", kind: "turn", leather: "red" }, T3({ dye: lc, len: 1, ease: 5, fitted: 1, neck: "wide", sleeves: "long", trim: "cream", trimHem: "cream", flare: 60, folds: 8 }), { id: "belt", leather: "tan", w: 18, metal: "bronze", hang: 160, at: 0.5 }, { id: "brooch", metal: "silver", throat: 1, gem: fine ? gem() : null }, ...ch(0.3) ? [{ id: "shawl", dye: second, cape: 0.6, edge: "cream" }] : []];
       if (badge) gear.push(badge);
       headwear = male ? ch(0.4) ? "cap" : "none" : sh.married && ch(0.5) ? "veil" : "none";
       headwearOpts = male ? { dye: shade(pick(DYE.gentry)), feather: ch(0.6) ? pick(["white", "cream", "russet"]) : null, badge: "bronze" } : { dye: mourn ? "black" : "white" };
       poses = male ? sword ? ["pommel", "belt", "hip"] : ["belt", "hip", "ease", "behind"] : ["clasped", "ease", "hip"];
     } else if (g2 === 3) {
       const d = main;
-      if (male) gear = [{ id: "shoes", kind: "turn", leather: "dark" }, T2({ dye: d, len: 0.93, ease: 16, neck: "v", sleeves: "bell", trim: "ochre", trimHem: pick(["bear", "fox", "sable"]), trimW: 30, flare: 44, folds: 7, buttons: "bronze" }), { id: "belt", leather: "red", w: 26, metal: "bronze", plaques: 1 }, { id: "pouch", side: -1, z: 1.4, keys: 1, leather: "red" }, ...fine ? [{ id: "furcollar", fur: pick(["bear", "fox", "wolf"]), z: 0.2 }, { id: "chain", metal: "silver" }] : []];
-      else gear = [{ id: "shoes", kind: "turn", leather: "dark" }, T2({ dye: d, len: 0.97, ease: 8, fitted: 1, neck: "round", sleeves: "bell", trim: "ochre", trimHem: "ochre", flare: 56, folds: 8 }), { id: "belt", leather: "red", w: 20, metal: "bronze", plaques: 1 }, { id: "pouch", side: -1, z: 1.3, keys: 1, leather: "red" }, ...fine ? [{ id: "furcollar", fur: pick(["bear", "fox"]), z: 0.16 }, { id: "chain", metal: "silver" }] : []];
+      if (male) gear = [{ id: "shoes", kind: "turn", leather: "dark" }, T3({ dye: d, len: 0.93, ease: 16, neck: "v", sleeves: "bell", trim: "ochre", trimHem: pick(["bear", "fox", "sable"]), trimW: 30, flare: 44, folds: 7, buttons: "bronze" }), { id: "belt", leather: "red", w: 26, metal: "bronze", plaques: 1 }, { id: "pouch", side: -1, z: 1.4, keys: 1, leather: "red" }, ...fine ? [{ id: "furcollar", fur: pick(["bear", "fox", "wolf"]), z: 0.2 }, { id: "chain", metal: "silver" }] : []];
+      else gear = [{ id: "shoes", kind: "turn", leather: "dark" }, T3({ dye: d, len: 0.97, ease: 8, fitted: 1, neck: "round", sleeves: "bell", trim: "ochre", trimHem: "ochre", flare: 56, folds: 8 }), { id: "belt", leather: "red", w: 20, metal: "bronze", plaques: 1 }, { id: "pouch", side: -1, z: 1.3, keys: 1, leather: "red" }, ...fine ? [{ id: "furcollar", fur: pick(["bear", "fox"]), z: 0.16 }, { id: "chain", metal: "silver" }] : []];
       headwear = male ? pick(["chaperon", "chaperon", "cap"]) : ch(0.6) ? "veil" : "none";
       headwearOpts = male ? { dye: shade(pick(DYE.merchant)), badge: headwear === "cap" ? "bronze" : 1 } : { dye: mourn ? "black" : "white" };
       poses = male ? ["clasped", "belt", "folded", "ease"] : ["clasped", "ease", "sleeves"];
@@ -9266,13 +9850,13 @@ var __ARDAN_V2_MAKE = (() => {
       if (male) gear = [
         { id: "hose", dye: pick(["walnut", "brown", "charcoal"]) },
         { id: "shoes", kind: "boot", leather: "dark" },
-        T2({ dye: !liv && !fine && ch(0.4) && !chosen ? shade("cream") : lc, len: 0.28, ease: 9, neck: "slit", sleeves: fine ? "long" : ch(0.6) ? "rolled" : "long", trim: fine ? second : null }),
+        T3({ dye: !liv && !fine && ch(0.4) && !chosen ? shade("cream") : lc, len: 0.28, ease: 9, neck: "slit", sleeves: fine ? "long" : ch(0.6) ? "rolled" : "long", trim: fine ? second : null }),
         ...clean ? [] : heavy || ch(0.75) ? [{ id: "apron", leather: heavy ? pick(["brown", "dark"]) : pick(["brown", "tan", "dark", "linen"]), len: 0.5 }] : [],
         { id: "belt", leather: "dark", w: 32, metal: "iron" },
         { id: "tool", kind: heavy || ch(0.5) ? "hammer" : "knife", side: 1 },
         ...ch(0.5) ? [{ id: "pouch", side: -1 }] : []
       ];
-      else gear = [{ id: "shoes", kind: "turn", leather: "brown" }, T2({ dye: lc, len: 0.97, ease: 5, fitted: 1, neck: "laced", sleeves: fine ? "long" : ch(0.4) ? "rolled" : "long", flare: 60, folds: 8, trimHem: fine ? second : null }), ...clean ? [] : [{ id: "apron", leather: pick(["linen", "linen", "cream", "tan"]), len: 0.7 }], { id: "belt", leather: "tan", w: 18 }, { id: "pouch", side: -1 }, ...ch(0.4) ? [{ id: "tool", kind: "knife", side: 1 }] : []];
+      else gear = [{ id: "shoes", kind: "turn", leather: "brown" }, T3({ dye: lc, len: 0.97, ease: 5, fitted: 1, neck: "laced", sleeves: fine ? "long" : ch(0.4) ? "rolled" : "long", flare: 60, folds: 8, trimHem: fine ? second : null }), ...clean ? [] : [{ id: "apron", leather: pick(["linen", "linen", "cream", "tan"]), len: 0.7 }], { id: "belt", leather: "tan", w: 18 }, { id: "pouch", side: -1 }, ...ch(0.4) ? [{ id: "tool", kind: "knife", side: 1 }] : []];
       if (badge) gear.push(badge);
       headwear = male ? ch(0.5) ? pick(["coif", "cap", "cap"]) : "none" : ch(0.6) ? pick(["kerchief", "coif"]) : "none";
       headwearOpts = { dye: male ? shade(pick(DYE.artisan)) : pick(["linen", "white", "cream"]) };
@@ -9282,15 +9866,15 @@ var __ARDAN_V2_MAKE = (() => {
       if (male) gear = [
         { id: "hose", dye: liv ? liv.charge : pick(["brown", "walnut", "grey", "hemp"]) },
         { id: "shoes", kind: job === "hunter" || job === "herd" ? "boot" : "ankle", leather: "dark" },
-        T2({ dye: lc, len: 0.36, ease: 12, neck: ch(0.5) ? "round" : "slit", sleeves: work && ch(0.6) ? "rolled" : "long", trim: liv ? liv.charge : fine || ch(0.4) ? second : null }),
-        ...liv ? [] : job === "hunter" || v === 1 ? [T2({ dye: job === "hunter" ? pick(["brown", "tan", "dark"]) : second, len: 0.3, ease: 14, neck: "v", sleeves: "none" })] : [],
+        T3({ dye: lc, len: 0.36, ease: 12, neck: ch(0.5) ? "round" : "slit", sleeves: work && ch(0.6) ? "rolled" : "long", trim: liv ? liv.charge : fine || ch(0.4) ? second : null }),
+        ...liv ? [] : job === "hunter" || v === 1 ? [T3({ dye: job === "hunter" ? pick(["brown", "tan", "dark"]) : second, len: 0.3, ease: 14, neck: "v", sleeves: "none" })] : [],
         { id: "belt", leather: "brown", w: 26 },
         ...ch(0.5) ? [{ id: "pouch", side: -1 }] : [],
         ...job === "sailor" || job === "pirate" || job === "fish" || v === 2 ? [{ id: "neckcloth", dye: shade(pick(["madder", "woad", "ochre", "cream"])) }] : v === 3 && ch(0.4) ? [{ id: "hood", dye: shade(pick(DYE.hood)) }] : []
       ];
       else gear = [
         { id: "shoes", kind: "turn", leather: "brown" },
-        T2({ dye: lc, len: 0.97, ease: 5, fitted: 1, neck: ch(0.6) ? "laced" : "round", sleeves: work && ch(0.5) ? "rolled" : "long", flare: 60, folds: 8, trimHem: fine ? second : null }),
+        T3({ dye: lc, len: 0.97, ease: 5, fitted: 1, neck: ch(0.6) ? "laced" : "round", sleeves: work && ch(0.5) ? "rolled" : "long", flare: 60, folds: 8, trimHem: fine ? second : null }),
         ...!clean && (maid || work || ch(0.5)) ? [{ id: "apron", leather: "linen", len: 0.7 }] : [],
         { id: "belt", leather: "tan", w: 18 },
         ...!maid && v >= 2 ? [{ id: "shawl", dye: second, cape: 0.62, fringe: ch(0.5) ? 1 : 0 }] : []
@@ -9459,13 +10043,13 @@ var __ARDAN_V2_MAKE = (() => {
   var FACE_EXTRA = EXTRA.slice(0, 11).map((e) => e[0]);
   var BUILD = EXTRA.slice(11).map((e) => e[0]);
   var B642 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-  var bitsOf2 = (n) => Math.ceil(Math.log2(n));
+  var bitsOf2 = (n3) => Math.ceil(Math.log2(n3));
   var BITS2 = EXTRA.reduce((s, e) => s + bitsOf2(e[1]), 0);
   var CODE2_LEN = Math.ceil(BITS2 / 6);
   function pack2(x) {
     const bits = [];
-    for (const [k, n] of EXTRA) {
-      const b = bitsOf2(n), v = toStep(x[k] ?? 0, n);
+    for (const [k, n3] of EXTRA) {
+      const b = bitsOf2(n3), v = toStep(x[k] ?? 0, n3);
       for (let i = b - 1; i >= 0; i--) bits.push(v >> i & 1);
     }
     while (bits.length % 6) bits.push(0);
@@ -9487,12 +10071,12 @@ var __ARDAN_V2_MAKE = (() => {
     }
     const x = {};
     let p = 0;
-    for (const [k, n] of EXTRA) {
-      const b = bitsOf2(n);
+    for (const [k, n3] of EXTRA) {
+      const b = bitsOf2(n3);
       let v = 0;
       for (let i = 0; i < b; i++) v = v * 2 + bits[p++];
-      if (v > n - 1) return null;
-      x[k] = fromStep(v, n);
+      if (v > n3 - 1) return null;
+      x[k] = fromStep(v, n3);
     }
     return x;
   }

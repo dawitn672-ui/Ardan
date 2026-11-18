@@ -1508,3 +1508,74 @@ seats, posts and pay compare the player with people rolled on the old scale (cou
 5. The Profile's skills panel shows the best four (a level is two words where a tier was one; the page's word budget).
 **Not done:** the world's rolls (councillors, mentors, order masters at 70 to 96) are left on the old scale; holding them
 to what their years allow (the closed form) is the fuller answer and touches the legend ladder and war; for the owner.
+
+### D-080 · R2: every relationship needs a base, as a decision of the higher man's (2026-11-16; order 55, rule 19, D-065; over D-069)
+D-065 set the four parts (the gap in standing; his pride, personality and origins; need; circumstance) and the scales
+(knighthood and honour, mastery and renown, fame, wealth, connections). Chosen in building it:
+1. **A base is an `A.WHY` decision of the higher man's**, `A.WHY.decide(hi, 'reach', [yes, no])`, with the four parts and
+   the scales as named reasons (`src/people/engine/reach.js`, pure and unit-tested; the wiring `src/people/9999960-reach`,
+   `A.REACH`). *Why:* rule 18 (D-069) asks every figure's choice to go through it; the reason he gives the player is
+   then the reason used, and the temper (pride against warmth) bends the gap with no new machinery. Two reason kinds
+   were added to why.js: `station` (1 + .8 pride − .4 warmth) and `sympathy` (1 + .6 warmth − .3 pride).
+2. **Near-equals decide nothing.** A gap of one step of standing or none (a peasant and a craftsman, a knight and a
+   gentleman) keeps what already worked: no decision, no draw, no record; kin likewise. *Why:* the order is about the
+   wide gap; every existing first meeting, scene and test among equals stays as it was.
+3. **Five answers, three shown.** `equal`, `kin`, `open` (no draw), `try` (a seeded draw among the reasons, A.rand only
+   then), `closed` (no option but "no" within the band: never chosen). A closed act is **not offered** (the button shut,
+   or left out of the actions) with a click-to-open note saying why in plain words; a `try` act is **offered as an
+   attempt** that he answers with his reason. A refusal stands for the year (`pc.reachNo`, at most 40).
+4. **The scale.** Standing is A.classOf's steps (peasant 2, craftsman 3, knight 4, lord 5, a baron's rung 5.5, a count's
+   6.5, a duke's 7, a crown 9). The gap weighs 0.6 a step beyond the first, by the act: know 0.9, befriend 1, audience
+   0.8, favour 1, court 1.15, wed 1.4, patron 0.85. Set so that a peasant is shut out from a king or a proud duke, a
+   knight of good name, a peasant of the realm's best renown or one introduced by a friend at court is an attempt that
+   succeeds about one time in five, and a baron risen from the plough hears a peasant about four times in ten against
+   one in ten for a baron born noble (tests: `reachScalesShift`, `reachRisenAndBorn`).
+5. **Origin is the estate of birth, `p.status`.** The game lays a knighthood or a lordship over it (`p.noble`) and
+   changes it only when a crown makes a man royal; `A.makeRuler` and founding a realm stamp `p.orig` before. *Why:* no
+   new field for the many, and old saves need nothing.
+6. **What is gated:** get to know (the release and 30's scene), the befriending, audience, favour and courting
+   interactions, an event's close bond with someone far above (the scene counts as a circumstance of weight 2), a patron,
+   a great house's match for the player's child, and an NPC newcomer's friend in the player's circle (weighted by the
+   pull, no draw of its own). **Not gated:** insults, quarrels, duels, family matters, favours already owed, the court
+   actions of the nobility (a gentleman is of the court), and the release's `newRel` and `lover`, whose people
+   (`A.makeAcquaintance`, `A.makeLoveInterest`) are near-equals by construction; NPC marriages are made within one
+   estate by the release and v2 already.
+**Conflict recorded:** none with an order. The owner's "a baron who used to be a commoner might sympathize" needs a
+birth station that the release never kept apart from the current one for a crowned man: point 5.
+**Not decided here:** the share of NPC friendships across a wide gap (0.32 of the pull across a narrow one in the test
+world) is left as the reasons give it; a road, a ship and a guard duty shared have no record in the game yet to read.
+
+### D-061 · D9: the ground the game can read; roads in two ranks; map version 3; the ground is made again from the seed (2026-11-16 ET; CRITIQUE §17, M1 to M9, P18; D-016)
+**Chosen:**
+1. **One ground, from the continent.** `src/map/engine/ground.js` (`A.V2.ground.buildGround`) runs at the end of
+   `A.V2MAP.build`, on the page or in X7's worker, and puts on the world its cover (open, wood, marsh per 10 km cell), roads in
+   two ranks (a track between neighbouring towns where the ground allows one, high roads from each seat to its cities, market
+   towns and neighbouring seats), a ford or bridge at every water a road crosses, passes, river links and the features to name.
+   The same data is drawn and played: journeys (x1.25 high road, x1.05 track, x0.8 none), the march and an army's way (x1.3,
+   x1.12, x0.85), supply (high road and navigable river carry more), and an attack over a river or through a pass (ford x0.82,
+   bridge x0.87, no crossing x0.75, pass x0.8), named among the after-action causes.
+2. **Saves keep only the seed** (as 99991 already did). The ground is never saved: it is made again from the seed with the
+   world on load (`A.D9.ctx` builds the world if a load has not drawn the map yet). A state with no generated map reads no ground
+   and every factor is 1.
+3. **Map version 3** for new lives: towns stand on water (a site moves within 180 km of its seed to a river, a stream, a lake shore
+   or the sea), the dry realms (half or more of their release land desert, steppe or savanna) are seated on dry land and their
+   oases on it, and terrain words are read from each province's ground in a fixed order (mountains by the release's quota; sand,
+   marsh, ice; hills by relief, high flat land staying open; wood unless settled lowland, which is cleared farmland; dry grass;
+   plains), with no word on more than 31% of the provinces (past it, the weakest claims take their next word). **A version 2
+   save rebuilds as version 2**, exactly (checked to the bit on three seeds): its provinces keep the terrain words they were saved
+   with, and get roads and the rest of the ground over them.
+4. **An oasis the land left off dry ground is no oasis.** CRITIQUE M4 asked to "name and type a place from its ground": such a
+   place becomes a town named for its water ("Grakzag Oasis" -> "Grakzag Ford", "Haven", "Mere", "Wood", "Hill" or "Field"),
+   keeping its old name as `oname`; 76-beast-habitats reads either name. 0 to 11 of the 22 oases a seed (mean 6).
+5. **The map's look stays the current one** (D-016's inked map over v2's satellite ground): the ways and names are ink laid into
+   62's kept picture of the lines; roads are solid and warm (a high road red-brown in a pale casing, a track thin brown), where
+   borders are dashed or dotted ink. The ground's look was not restyled.
+6. **One map component**: `MAP.paint` (release, `21-map.js`) lays ground, colours, front, ways and ink for the world tab, the full
+   map, the war room and the atlas; each adds only its own marks.
+7. **Realm colours on a generated map** are 36 (twelve hues in three steps), one a realm, neighbours furthest apart; they replace
+   the release's colours on the map and in every row that asks `UI.realmHex`.
+**Conflict recorded:** "70% of towns on water" against "keep the generator's geography": moving the town, not the province,
+keeps both (the province's shape is the same as version 2 would give it, save for the dry realms). **Not chosen:** a quota for
+hills (the old way, 41%), and moving rivers to towns.
+**Left for D12b (the owner answered the war questions in D-064, `docs/design/war.md` part two):** seasons on roads and passes, sea lanes on the route graph,
+`fieldAt(site)`, the burn.

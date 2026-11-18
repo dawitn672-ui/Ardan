@@ -387,7 +387,16 @@
       b.clip(LP, 'evenodd');
       const inner = [], outer = [];
       for (const o of prov) { const pa = S.prov[o.a], pb = S.prov[o.b]; ((pa && pb && pa.owner === pb.owner) ? inner : outer).push(o); }
-      if (inner.length && L >= 0) { b.setLineDash([1.1 * up / lp, 2.9 * up / lp]); b.strokeStyle = 'rgba(43,29,16,.55)'; b.lineWidth = 0.85 * up / lp; b.stroke(pathOf(inner)); }
+      // D9 (999911-d9-ground): province bounds are round dots, pale with a dark edge, never warm and never solid, so a
+      // stranger does not take them for the roads (solid and cased) laid over the same picture
+      // (round 2: pale dots alone vanished on brown ground; each dot now has a hairline dark edge, so it reads on every tint)
+      if (inner.length && L >= 0) {
+        const sat = IM.groundElsewhere && IM.groundElsewhere(), IP = pathOf(inner);
+        b.setLineDash([0.01 * up / lp, 3.6 * up / lp]);
+        b.strokeStyle = 'rgba(18,16,22,.8)'; b.lineWidth = 3.3 * up / lp; b.stroke(IP);
+        b.strokeStyle = sat ? 'rgba(244,247,252,1)' : 'rgba(150,162,178,.95)'; b.lineWidth = 2.1 * up / lp; b.stroke(IP);
+        b.setLineDash([]);
+      }
       if (outer.length) {
         const OP = pathOf(outer);
         b.setLineDash([]); b.strokeStyle = 'rgba(236,224,196,.75)'; b.lineWidth = 3.4 * up / lp; b.stroke(OP);
@@ -505,7 +514,9 @@
       const K = iconK(ctx, W, !v || !!v.whole), tk = K.toFixed(2) + ':' + Object.values(A.S.realms).map(r => r.alive ? r.capitalProv : '').join(',');
       // (X1 baked patch map/9991-atlas-of-known-places AT-VEIL) after the towns, MAP.veil lays the fog of the unknown over the
       // kept picture, under the names; MAP.veilKey(canvas) joins the key so it is laid again when what the player knows changes
-      drawTiles(ctx, W, H, wholeView(W, H, v), 'b', (c, d) => { IM.towns(c, d.W, d.H, d.vx, d.vy, d.sx, d.sy, d.zoom, K); if (MAP.veil) MAP.veil(c, d.W, d.H, { x0: d.vx, y0: d.vy, w: d.W / d.sx, h: d.H / d.sy }, ctx.canvas); }, tk + (MAP.veilKey ? MAP.veilKey(ctx.canvas) : ''));
+      // (D9, 999911-d9-ground) IM.under lays the ways (woods and marsh, roads, crossings, passes) into the same kept picture,
+      // over the borders and under the towns, so a still or panning map costs one copy for both; IM.underKey joins the key
+      drawTiles(ctx, W, H, wholeView(W, H, v), 'b', (c, d) => { if (IM.under) { try { IM.under(c, d, ctx.canvas); } catch (e) { console.error('ways', e); } } IM.towns(c, d.W, d.H, d.vx, d.vy, d.sx, d.sy, d.zoom, K); if (MAP.veil) MAP.veil(c, d.W, d.H, { x0: d.vx, y0: d.vy, w: d.W / d.sx, h: d.H / d.sy }, ctx.canvas); }, tk + (IM.underKey ? IM.underKey(ctx.canvas) : '') + (MAP.veilKey ? MAP.veilKey(ctx.canvas) : ''));
       try { IM.selGlow(ctx, W, H, wholeView(W, H, v)); } catch (e) {}
       try { IM.moveArrows(ctx, W, H, wholeView(W, H, v)); } catch (e) {}
       return true;

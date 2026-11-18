@@ -212,6 +212,8 @@ LOOK.TIERS = { common: '◇', uncommon: '◆', rare: '◆◆', epic: '◆◆◆'
   }
   UI.realmHex = function (r) {
     const id = typeof r === 'string' ? r : r && r.id;
+    // D9 (999911-d9-ground): on a generated map a realm's colour is the map's (neighbours never share one)
+    if (UI.mapRealmHex) { try { const h = UI.mapRealmHex(id); if (h) return h; } catch (e) {} }
     if (farPal === null) { try { farPal = buildFar(); } catch (e) { farPal = {}; } }
     if (id && farPal[id]) return farPal[id];
     const real = typeof r === 'string' ? (A.S && A.S.realms && A.S.realms[r]) : r;

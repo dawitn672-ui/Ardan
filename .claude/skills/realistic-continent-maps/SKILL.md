@@ -28,6 +28,25 @@ This method is proven in Ardan v2 (`src/map/noise.js`, `continent.js`, `render.j
 11. **Provinces.** Use Dijkstra from seeds, where the cost rises with slope (×400), big rivers (+6) and altitude. **Use a Float64Array for costs.** With Float32, the popped key is greater than the stored cost, every node is skipped, and only about 20% of the land is assigned. Find neighbours from adjacent cells.
 12. **Realms.** Grow realms from spread-out capitals (minimum spacing 0.5·W/√count) with weighted round-robin credit, so sizes differ.
 
+## Ground the game can read (Ardan D9, `src/map/engine/ground.js`)
+A map a game plays on needs more than heights and rivers. From the finished continent and its provinces:
+- **Cover per cell** (open, wood, marsh): the forest biomes broken by clearings (seeded noise), copses in dry grass, the fields
+  round every town cleared, marsh in wetlands and on big lowland rivers.
+- **Roads in two ranks.** A track between each two neighbouring towns: the cheapest 8-way path inside the two provinces (cost
+  1 + slope/70 m, +0.5 wood, +1.8 marsh, +0.6 above 1,800 m, and a price for stepping into water), dropped when it costs more than
+  3.4 times its straight length. High roads are the tracks on the cheapest ways from each capital to its cities and to the
+  neighbouring capitals.
+- **A crossing at every water a road crosses inside its course** (a ford; a bridge on a big river, at a town or on a high road);
+  **passes** at a road's highest point when it is high and well above both ends.
+- **Towns on water:** move each town to its province's nearest river, stream, lake or sea cell, not its seed (70%+ is easy this
+  way, and it keeps the provinces' shapes). Extract rivers from a stream's flow (here 40) so towns and tributaries have water.
+- **Terrain words from the ground,** not by quota: hills by relief (a high flat plateau is open land), settled wooded lowland
+  as cleared fields, and a cap per word with the weakest claims moved to their next word.
+- **Neighbouring realms never share a colour:** give every realm its own of 36 (12 hues x 3 lightnesses), neighbours furthest
+  apart in OKLab, the biggest first.
+- Draw roads solid and cased (a red line in a pale casing; a pale line in a dark casing), never dashed or dotted, which belong to
+  borders. Lay them into a cached picture of the view, not every frame (drawn directly they tripled a frame's cost).
+
 ## Rendering, satellite style
 - **Land colour is a continuous palette** over temperature × moisture, interpolated bilinearly. Discrete biome colours make hard blobs. The palette rows run from cold to hot, with dry, mid and wet columns of muted albedos (for example temperate wet = 60, 90, 50 and hot dry = 212, 184, 134).
 - Mottle the colour with fBm (±16%) plus fine fBm when zoomed in. Add bare rock on steep high ground and snow above a temperature-dependent snow line.
