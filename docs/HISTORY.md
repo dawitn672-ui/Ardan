@@ -1919,3 +1919,65 @@ D-064 point 10; decisions D-091 to D-096. Branch `w1-5`, from `origin/v2-integra
   and ransoms (D12b-3); the crown's acceptance of counsel for war, an alliance or a pact (still a roll, not counted by the
   lint); `A.startWar`'s dead ally branch (r1-audit).
 - **Undo:** revert the branch's commits; the archive holds the retired code.
+
+### H-085 · 2026-11-18 · W1-6: the realm's peace
+Order 54 and rule 18 ("coups, rebellions and factions follow a kingdom's stability, the king's relations with each noble,
+and their own ambitions, desires and circumstances"); `docs/design/war.md` §13, §9.4, §11.3 point 6 and §16; decisions
+D-097 to D-103. Branch `w1-6`, from `origin/v2-integration` at `67bca05`. New feature `src/nobility/9999954-realm-peace`
+(`A.PAX`: `a-press`, `b-factions`, `c-risings`, `d-coups`, `e-disputes`, `f-hooks`, `g-player`, `pe.events.js`,
+README, tests).
+- **Built:** stability as a reading of named pressures, with the AI's ±3 of luck and the player's gone (D-097); a house's
+  loyalty from named terms, the random walks gone; each lord's stance; factions by §13.3's test and a ladder of
+  decisions (D-098); claimants, a lord's rising, the commons' rising with a voice, sides in a rising, a neighbour backing a
+  side in a war of succession (D-099); coups with an opening, access and a motive, approaches, the watch, the night
+  counted and the king's judgment (D-100); private wars, border wars and the army's quarrel as ladders (D-101); the
+  council's counsel of war, an alliance or a pact and the other crown's answer, a ruler made to yield through W1-5's new
+  `A.WAR.askHooks` (D-102); `pe_coup` and `pe_judge`, news by rank, the coherency check "an unreasoned upheaval" (D-103).
+- **Release files edited:** `03-engine-base.js` (`A.startWar`'s dead ally rolls retired), `04-realms-and-war-years-a.js`
+  (`A.rulerDies`' contested succession, `A.worldYear`'s stability pull and breaking-realm claimant, `A.successionWar`'s
+  backers and a claimant leaving his posts), `11-armies-divisions-and-council-a.js` (`A.rulerYear`'s luck and commons'
+  rising, `A.vassalYear`), `13-factions-and-decisions.js` (`A.factionsYear`, `A.factionDemand`, `A.factionConcede`'s
+  peace reasons, `facBribe`, `facRefuse`, the purge), `17-careers-and-event-engine-a.js` (`A.councilPropose`).
+  **Features edited:** 9999950-why (`A.WHY.factionChoice` takes extra reasons; README), 9999951-commands (the army's
+  quarrel from `CM.chooseCommand`), 9999953-surrender (`A.WAR.askHooks` in `A.WAR.yieldQ`; `WAR.ask` logs the reasons of
+  an ask made for the crown), 20-ai-personality (`A.aiPressClaim` asks `A.PAX`; `A.aiFactionAnswer`, `A.aiRevolt`
+  retired), 56-court-and-treasury (`RI.deal`, `RI.session`'s push, `RI.joinFactions`), 9996-polity (`FW.election`),
+  59-descriptions (stability, loyalty, a league's anger and power in words and reasons), 01-stages (the `realm-peace`
+  stage of `A.applyFx`), 9997-companies (below), `tools/lint-reasons.mjs` (counsel and proposals, feuds, the staff).
+- **Retired** to `archive/w1-6-faction-dice/` (last commit with it live `67bca05`): 20's `A.aiFactionAnswer` and
+  `A.aiRevolt`; `A.startWar`'s two ally rolls (dead). The release's replaced rolls are in `67bca05`'s copies of the files.
+- **Measured** (two worlds of 25 years, seeds 11 and 12; three of 20 in the test): see D-097 point 3 for stability and
+  loyalty (after the last tuning: stability p10/median/p90 33-43/54-59/70-74; loyalty 40-44/46-49 at the quartile/52-55/
+  67-69). Upheavals pooled over seeds 9811 to 9813 (20 years, `peUpheavalsReasoned`, three runs): leagues raised 137 to
+  179, petitions 32 to 68, private complaints 169 to 186, plots and claims pressed 9 to 13, every one with two reasons or
+  more. Wars begun in 25 years (seeds 12, 13, 14, after the last tuning): wars of succession 6, 2, 0 and liberty revolts
+  1, 0, 0 (the release on seeds 11 to 13: about 1 to 2 and 2 to 4), other wars 16, 20, 11 (release 12 to 14): about as
+  many upheavals, more of them claims and fewer leagues rising, since a crown now refuses or buys a league by its
+  reasons and a league rises only on its own. The realm's month (`A.PAX.month`: feuds, border, coups, plots, and the
+  wars they start) 0.9 to 2.2 ms a month in-page on this machine (load 4 to 16 on 4 cores, so about 3 to 4 times CI's);
+  the yearly passes (`housesYear`, `target`, `factionTurn`) 5 to 11 ms a year. Nothing loops over all people.
+- **Calibration, first pass:** border raids and kings backing them were far too many (384 raids and 292 wars in 25 years
+  in one world, a cascade into breaking realms, 106 plots, 47 wars of succession); the raid now needs opinion under -50
+  and no truce, the king's peace weighs 2.4, and backing a raid is weighed as his war council weighs a war
+  (`A.WHY.warOdds`); a plot weighs the oath 2.8 and the block 1.6 and counts ambition only from 0.3; a claimant's oath
+  2.2. After: see above.
+- **Found and fixed on the way:** 68-reasons-for-war already had an `A.PEACE` (its peace's land cap); W1-6's namespace
+  first merged into it and its `cap` was overwritten by a string helper (`peaceFitsWar` failed), so W1-6's is `A.PAX`. 9997-companies made a captain of a longer-lived people (an elf of 25) under his people's
+  age of majority when a world shifted (`coherencyBaseline`'s one-holder fault: "held by ... (under age)"); his age is
+  now reckoned by his people. W1-5's `WAR.ask` logged an ask made for the crown (a peace league granted) with no reasons
+  (`aiPersonalityReasons`); it now logs the reasons given. A claimant who held a seat or command of the crown he rises
+  against now leaves it (one holder per post).
+- **Tests** (this container, `/tmp/ardan/w16/x.html`, four workers on four loaded cores): the new `peStabilityReasons`,
+  `peUpheavalsReasoned`, `peFactionLab`, `peCoupLab`, `pePrivateWar`, `peForcedSurrender`, `peCounselAndClaims`,
+  `pePlayerCards`, `peDeterministic`, `peOldSaves`, with the core suites and the quick tests of why, commands, surrender,
+  ai-personality, court-and-treasury, polity, descriptions, men, five-ranks, posts, crown-crimes, reasons-for-war,
+  v2-diplomacy, companies and stages: 159 of 159 (the earlier run's failures are named above, with their fixes, and
+  passed when re-run; nine more were a browser lost when a run was stopped). `coherency --baseline=quick`: no
+  contradiction, no check rose. lint-reasons 42 (baseline lowered from 58), lint-stages ok, lint-kin ok, lint-skills ok,
+  lint-events (realm-peace) no errors or warnings, lint-choices (realm-peace) 0 obviously best, `--check-tiers` ok. No
+  engine module touched (`tests/v2` not re-run). No long test added. Not run here: the long tier and the balance league
+  (CI's), a playtest by agents (the player's two cards are held by `pePlayerCards` at 375 x 667).
+- **Left:** the divide answer to a league; an AI realm's commons' rising; §13.7's rank correlation across realms as a
+  test; stability's pressures stored with fades; a private war as a war of hosts (D12b-1); the alliance, pact and
+  appointment rolls of the r1-audit (diplomacy, R1's next pass).
+- **Undo:** revert the branch's commits; the archive holds the retired code.

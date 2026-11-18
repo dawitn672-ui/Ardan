@@ -1916,7 +1916,8 @@ then he weighs the facts as they stand.
 3. **Measured** (two worlds of 25 years, seeds 11 and 12, before → after): stability of living realms p10/median/p90
    39-43/54-59/71-77 → 36-41/59-60/73; houses' loyalty p10/median/p90 34/53/77-81 → 41-42/52-54/67, under 22 3.6% →
    0.1%. The spread of loyalty is narrower without the walk, so fewer houses fall deep enough to want independence; the
-   upheavals now come from named grievances.
+   upheavals now come from named grievances. Wars of succession and liberty revolts together over three worlds of 25 years:
+   about 12 in the release, 9 after W1-6 (more claims, fewer leagues rising: H-085).
 
 ### D-098 · W1-6: factions by §13.3's test and a ladder of decisions (2026-11-18; war.md §13.3; D-069)
 1. **Joining** stays W1-2's `A.WHY.factionChoice` with two more reasons (`A.PAX.joinExtra`): a tie to the houses sworn
@@ -1930,7 +1931,8 @@ then he weighs the facts as they stand.
    the throne's firmness; against, the danger of petitioning under a heavy crown, a league still new); the crown grants,
    buys (pensions and offices: the old bribe's price), arrests (needs high authority and a spymaster of 30) or refuses
    (kind `facanswer`: the league's swords against the rest, the throne, the cost of what is asked, the chest, the
-   precedent, pride); refused or arrested, the league backs down, waits, withholds its taxes and men (half its share of
+   precedent, pride, and against a liberty, independence or claimant league the crown's right not to be bargained away,
+   0.8); refused or arrested, the league backs down, waits, withholds its taxes and men (half its share of
    the realm's income, stability -3) or rises (kind `facrise`: its swords, anger, the throne, a foreign backer, an arrest
    attempted, castles to rise from). An arrested leader flees or is taken (kind `arrest`). *Divide* (setting members
    against each other through their feuds) is not built: no feud between houses of one league is kept yet (left).
@@ -1943,7 +1945,9 @@ then he weighs the facts as they stand.
 ### D-099 · W1-6: risings are decisions of named people; the claimant is the eldest, not a random one (2026-11-18; war.md §13.4)
 1. **A claimant presses or kneels** (kind `claim`, `A.PAX.claimQ`): his blood (a brother or child of the old ruler), a
    great house's name, the crown's doubted right, the realm shaking, lords sore enough to back him, a child heir, his
-   ambition; against, his oath and the realm's peace (2.2) and the crown's hosts. Asked at a ruler's death in place of the
+   ambition; against, his oath and the realm's peace (2.2), the crown's hosts, and a claim to this crown fought within
+   eight years (1.5; without it a breaking realm saw a war of succession every year, 13 in one world of 25 years); the
+   realm's shaking weighs at most 1.5, and no lords to back him -1. Asked at a ruler's death in place of the
    release's contested-succession roll (`0.12 + (100 - stability) / 500` for a child heir, smaller for a grown one) and
    20's persona roll; each year in a breaking realm (stability under 18) in place of the 1-in-20 roll; and by 20's
    `A.aiPressClaim`, which now asks it.
