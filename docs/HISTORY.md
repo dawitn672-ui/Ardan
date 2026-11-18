@@ -1875,3 +1875,47 @@ each test now reads the rule over enough worlds, with the readings in a comment.
 - **Tests here** (`--workers=2`): `mtMonthCost`, `v2sDerive`, `rivalsBotLives` (952 s, standby lives) and 46-life-arcs' six
   quick tests pass; `s1NotLinear` and `csWorlds` (long) were measured by their parts above and are left to CI's long run.
   `lint-reasons` 62, `lint-stages` ok, `--check-tiers` ok.
+### H-084 · 2026-11-18 · W1-5: surrender or defeat
+Order 54, answer 6 ("They end when one side surrenders or is defeated"); `docs/design/war.md` §11.3, §11.4 and §16;
+D-064 point 10; decisions D-091 to D-096. Branch `w1-5`, from `origin/v2-integration` at `84b7f92`. New engine module
+`src/war/engine/surrender.js` (`A.V2.surrender`) and feature `src/war/9999953-surrender` (`A.WAR`, README).
+- **Retired** to `archive/w1-5-war-score-and-peace/` (README; last commit with it live `84b7f92`): `w.score` and
+  `w.bscore` with every writer (`A.wsScore`, the war map's battles, sieges, line battles, missions, the campaign, the
+  branch year, three event effects in `22-pl.js`), `A.checkPeace`, `A.peaceOdds`, the old `A.settleWar`, `A.warYear`,
+  `A.warFront`, `A.wsOfferPeace`'s and `A.rulerAction`'s rolls against the score, the AI's sue/demand/white-peace offers,
+  the old peace table and `UI.peacePanel`, 20-ai-personality's `A.aiNotePeace`, `A.aiWhite`, `A.aiPeaceWill`,
+  `A.aiWillParts` and `UI.aiWillWhy`, 68's forced mark, 09-engine-at-scale's nine-month floor. lint-reasons 62 → 58;
+  lint-stages' names defined more than once 349 → 346.
+- **Built:** the two pans (`E.will`) and defeat (`E.defeated`) read monthly where `A.checkPeace` was and after a great
+  battle, a siege's fall or a campaign's end; the decisions `yield` and `terms` through `A.WHY`; envoys on the road
+  (`A.WAR.day`, from `A.wsDay`); terms of real things (`A.WAR.terms`; `A.wsTreatyProvinces` sized by the demand);
+  `A.WAR.settle` through the game's own writers; `w.end` on every ending (`A.WAR.endOf`, from the release's
+  `endWarNow`) and `A.S.warEnds`; blows; news by rank; the peace table in words and a tipped scale, the War Room's
+  buttons and the council's counsel through envoys, and the ruler's cards; 57's chronicle line says who asked or who
+  could fight no more; 994-careers reads a claimant who asked as one who knelt. Events that set the score strike blows;
+  the events that made a white peace name who asked.
+- **Calibration** (scratch probe, four worlds × thirty years, two seed sets): the release ended wars in a median of 5
+  months (p25 2 to 3, p75 6 to 9, p90 11 to 15). First weighing: a median of 2. After the weights of D-092 (and the
+  young war's reason): a median of 3, p25 2, p75 7, p90 12 to 13; 53 → 68 and 77 → 74 to 93 wars ended in the two sets.
+  Endings by kind (four worlds): about four in five surrenders; pathways mostly 1 (the lost battle), 2 (exhaustion) and 3
+  (the capital taken), with 4, 5, 6, 7 and 8 present. Offers by the stronger (pathway 7) are rare among AI crowns.
+- **Cost:** reading one war's two sides (facts, defeat, both pans' odds) 0.18 ms (in-page, seed 7 at year 8); a month of
+  the world's wars well under W1's 2 ms; `A.WAR.day` costs nothing measurable when no envoys ride. State per war: a few
+  numbers, at most six blows and one embassy; `A.S.warEnds` 40 records.
+- **Found and fixed on the way:** the release's `A.absDay` reads a year ahead while the year turns (wars begun in
+  `A.worldYear` were stamped a year late), so `A.WAR` brings such stamps back; W1-2's `A.S.why` could drop a war's record
+  when the kinds' shares together pass the whole cap (W1-5 adds two kinds), so the whole cap now drops the oldest
+  non-war records first (`whyRecordsKept`); a ruler's age is read as a man's years (an elf of two hundred is not old).
+- **Tests** (this container, `/tmp/ardan/w15/x.html`): `node --test tests/v2` 124 of 124 (the new `surrender.test.js`: the
+  cautious king asks in 50 of 50 seeded months, the proud in 0; a victor demanding everything fights longer in 10 of 10
+  seeds); the core suites with this feature (quick tier) 31 of 31; the quick tests of why, commands, men,
+  reasons-for-war, ai-personality, court-and-treasury, engine-at-scale, world-chronicle, scope, goal-stack, v2-stats,
+  v2-diplomacy, careers, polity, five-ranks, after-action, v2-war, posts, crown-crimes, descriptions and companies 209 of
+  210 (the one, `whyRecordsKept`, fixed above and passing); `coherency --baseline=quick` no check rose; lint-reasons 58,
+  lint-stages ok, lint-kin ok, lint-skills ok, lint-choices (all features, 0 obviously best), `--check-tiers` ok (61 long
+  of 905). The long `w5TwoCenturies` once (640 s): four worlds of 200 years, 385 endings, every one with its record and none scored; surrenders 254, defeats 131; every pathway met (8, conquest, five times); war lengths a median of 4 to 5 months, nine in ten within 10 to 16; no war left open.
+- **Left for W1-6 and later:** lords refusing service, a council's vote or a coup forcing a surrender (W1-6); a truce as a
+  pause (D12b-6, the seasons); what a decider has been told instead of the facts (D12b-3, reports); captives, hostages
+  and ransoms (D12b-3); the crown's acceptance of counsel for war, an alliance or a pact (still a roll, not counted by the
+  lint); `A.startWar`'s dead ally branch (r1-audit).
+- **Undo:** revert the branch's commits; the archive holds the retired code.

@@ -1180,13 +1180,10 @@ A.battleClose = function () {
     A.realm(enR) && !fromCamp && A.applyLosses([enR], B.dead[theirs]),
     w)
   ) {
-    const side = A.warSide(w, myR) || "att",
-      scale = A.clamp((B.sides.A.men0 + B.sides.B.men0) / 8e3, 0.3, 3),
-      d = (won ? 1 : lost ? -1 : 0) * A.ri(6, 14) * scale;
+    // W1-5 (D-091): no war score; the battle is a fact in the war's record, and its loser weighs it at once
+    const side = A.warSide(w, myR) || "att";
     if (
-      (fromCamp ||
-        ((w.bscore = A.clamp((w.bscore || 0) + (side === "att" ? d : -d) * 0.6, -45, 45)),
-        (w.score = A.clamp(w.score + (side === "att" ? d : -d), -100, 100))),
+      (A.WAR && A.WAR.stir(w),
       w.battles.push({
         y: A.S.year,
         name: B.title,
@@ -1488,9 +1485,8 @@ A.campEndTurn = function () {
       p.siege = 0;
       const lead = a.side === "att" ? w.leadA : w.leadD;
       p.occ = sideRealms(a.side).includes(p.owner) ? null : a.realm || lead;
-      const r = A.realm(p.owner),
-        capBonus = r && r.capitalProv === p.id ? 25 : 8;
-      w.score = A.clamp(w.score + (a.side === "att" ? capBonus : -capBonus), -100, 100);
+      // W1-5 (D-091): the fall is a fact (the province held, its capital most of all), read by the deciders; no score
+      if (A.WAR) A.WAR.stir(w);
       C.log.push(`${p.name} falls to ${a.player ? "you" : A.realmShort(a.realm)}!`);
       if (a.player) {
         C.captured.push(p.name);
@@ -1602,7 +1598,11 @@ A.campAutoBattle = function (C, p, att, def) {
     if (back != null) a.prov = back;
   }
   const w = A.S.wars.find(x => x.id === C.war);
-  if (w) w.score = A.clamp(w.score + (winSide === "att" ? 8 : -8), -100, 100);
+  // W1-5 (D-091): a battle of the campaign is a fact in the war's record (no score)
+  if (w) {
+    w.battles.push({ y: A.S.year, name: "Battle at " + A.prov(p).name, win: winSide, lossW: 0, lossL: 0 });
+    if (A.WAR) A.WAR.stir(w);
+  }
   C.log.push(`Battle at ${A.prov(p).name}: ${A.realmShort(winners[0].realm)} beat ${A.realmShort(losers[0].realm)}.`);
 };
 
@@ -1679,10 +1679,8 @@ A.campClose = function () {
     pc.mil.warsCommanded[C.war] = true;
     A.promoCheck(pc);
   }
-  if (w) {
-    w.manualPeace = false;
-    A.checkPeace(w);
-  }
+  // W1-5 (D-091): the campaign's end is read at once by both sides' deciders (A.WAR.month), as after any great battle
+  if (w && A.WAR) A.WAR.month(w);
 };
 
 A.campAuto = function () {

@@ -68,7 +68,8 @@
     try {
       pc = A.pc();
       if (!CAR.OFF && w && w.cb === 'throne' && pc && pc.alive && w.claimant === pc.id && A.S.wars.includes(w) && !w.end)
-        fate = result === 'def' ? 'crushed' : result === 'att' ? 'won' : /kneels/.test(String(text || '')) ? 'knelt' : 'split';
+        // W1-5 (D-091): a claimant who asked for terms and gave up his claim knelt (the record of the ending says who asked)
+        fate = result === 'def' ? (w._end && w._end.kind === 'surrender' && w._end.by === 'att' ? 'knelt' : 'crushed') : result === 'att' ? 'won' : /kneels/.test(String(text || '')) ? 'knelt' : 'split';
     } catch (e) { fate = null; }
     const r = endWar0.apply(this, arguments);
     if (fate) { try { CAR.coupEnd(pc, w, fate); } catch (e) { console.error('careers coup', e); } }

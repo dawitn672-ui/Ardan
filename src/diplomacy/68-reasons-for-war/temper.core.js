@@ -12,8 +12,8 @@
 //   - calls to arms (A.aiCallAdj, honour and caution): four times as strong;
 //   - declaring war (A.aiWarHaz): a peaceable ruler's odds fall as e^(8 warLog) instead of e^(5 warLog);
 //   - the purse: a ruler with a strong temper steers 56-court-and-treasury's spending ladder by it.
-// A surrender forced by a war score of 80 or more is no one's choice, so its log entry is marked forced (bench and
-// test leave it out). Nothing here draws; it only changes odds the engine already rolled.
+// (A surrender forced by a war score of 80 or more was marked forced in the log; W1-5 retired the score, and every
+// surrender is now its decider's own choice, D-091.) Nothing here draws; it only changes odds the engine already rolled.
 (function () {
   const CS = A.CASUS;
   if (!CS) return;
@@ -67,16 +67,6 @@
       const keep = r.riPri;
       r.riPri = { k: own, y: A.S.year, ruler: 1 };
       try { return sp.apply(this, arguments); } finally { if (keep === undefined) delete r.riPri; else r.riPri = keep; }
-    };
-  }
-  // a surrender at a war score of 80 or more is the engine's, not the ruler's
-  if (typeof A.aiNotePeace === 'function') {
-    const np = A.aiNotePeace;
-    A.aiNotePeace = function (w, res) {
-      const top = A.S && A.S.aiLog && A.S.aiLog[0];
-      const out = np.apply(this, arguments);
-      try { const e = A.S.aiLog && A.S.aiLog[0]; if (e && e !== top && e.k === 'yield' && Math.abs(w.score || 0) >= 80) e.forced = 1; } catch (x) {}
-      return out;
     };
   }
 })();

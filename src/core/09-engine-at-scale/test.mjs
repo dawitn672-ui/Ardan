@@ -95,7 +95,7 @@ const farPeaceV2 = async pg => {
       const rv = S.realms[vic], w = A.startWar(foe, vic, 'The Test War', 'conquest', { noAllies: true, silent: true });
       const mine = A.realmProvs(vic), pop0 = mine.reduce((a, p) => a + p.pop, 0), n0 = mine.length;
       for (const p of mine) if (p.id !== rv.capitalProv) p.occ = foe;
-      w.score = 100;
+      // (W1-5: no war score; the victor names his terms from what his soldiers hold)
       A.settleWar(w, 'att');
       const left = A.realmProvs(vic), pop1 = left.reduce((a, p) => a + p.pop, 0);
       Object.assign(out, { vic: A.realm(vic).short || vic, foe: A.realm(foe).short || foe, cap: A.warCapFull(), reach: A.outOfReach(foe, vic), soon: S.wars.includes(w), peace: [n0, n0 - left.length, 1 - pop1 / pop0], capped });
@@ -248,7 +248,7 @@ export default {
       const w = A.startWar(foe, 'POL-37', 'The Test War', 'conquest', { noAllies: true, silent: true });
       const mine = A.realmProvs('POL-37'), pop0 = mine.reduce((a, p) => a + p.pop, 0), n0 = mine.length;
       for (const p of mine) if (p.id !== rv.capitalProv) p.occ = foe;
-      w.score = 100;
+      // (W1-5: no war score; the victor names his terms from what his soldiers hold)
       A.settleWar(w, 'att');
       out.soon = S.wars.includes(w);
       w.d0 -= 400;

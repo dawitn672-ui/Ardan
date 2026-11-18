@@ -1504,9 +1504,10 @@ A.atWar = function (rid) {
 
 A.warSide = (w, rid) => (w.att.includes(rid) ? "att" : w.def.includes(rid) ? "def" : null);
 
-// W0 (D-052): the war score is no longer shown (owner order 34: no war score, no army templates). w.score stays the
-// engine's own reckoning (AI peace, the terms a foe accepts); the player reads how a war stands as facts instead: the
-// provinces each side holds of the other's, and the great battles each side won. Reads state only.
+// W0 (D-052): the war score is no longer shown (owner order 34: no war score, no army templates); W1-5 (D-091) removed it
+// from the engine too: a war ends by surrender or defeat, decided from facts (src/war/9999953-surrender). The player reads
+// how a war stands as facts: the provinces each side holds of the other's, and the great battles each side won. Reads
+// state only.
 A.warFacts = function (w, rid) {
   const S = A.S,
     side = A.warSide(w, rid) || "att",
@@ -2122,7 +2123,8 @@ A.startWar = function (att, def, name, cb, opts = {}) {
     leadA: att,
     leadD: def,
     start: opts.start || S.year,
-    score: 0,
+    // W1-5 (D-091): no war score; the war's first day (its months at war are read from it)
+    d0: opts.start ? opts.start * 365 : A.absDay(),
     cb: cb || "conquest",
     battles: [],
     claimant: opts.claimant || null,

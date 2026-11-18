@@ -960,7 +960,11 @@ A.councilPropose = function (kind, tid) {
   }
   if (kind === "ally") ch += A.relBetween(r.id, t.id) / 150 - (r.allies.length >= 3 ? 0.3 : 0);
   if (kind === "nap") ch += 0.15;
-  const yes = A.chance(A.clamp(ch, 0.03, 0.9));
+  // W1-5 (D-095): counsel to make peace is weighed by the ruler with his own will to fight: your counsel (your standing
+  // with him and your skill) is one reason among his (A.WAR.counsel, through A.WHY), not a roll
+  // (counsel for war, an alliance or a pact is still the release's roll on ch: W1-6's, docs/design/r1-audit.md)
+  const counselRec = kind === "peace" && A.WAR && A.WAR.counsel ? A.WAR.counsel(r, t, pc, ch) : null,
+    yes = counselRec ? counselRec.chose === "ask" : A.chance(A.clamp(ch, 0.03, 0.9));
   if ((ru && A.addOp(ru, pc, yes ? 2 : -2), !yes)) {
     A.log("The council hears you out. The crown decides against it.", "warn");
     return {
@@ -977,10 +981,13 @@ A.councilPropose = function (kind, tid) {
       x => (x.att.includes(r.id) && x.def.includes(t.id)) || (x.def.includes(r.id) && x.att.includes(t.id)),
     );
     if (w) {
-      const side = A.warSide(w, r.id),
-        my = side === "att" ? w.score : -w.score;
-      A.settleWar(w, my >= 25 ? side : my <= -40 ? (side === "att" ? "def" : "att") : "white");
-      A.log("On your counsel the crown makes peace.", "peace");
+      // W1-5 (D-095): on your counsel the crown asks for terms; its envoys ride, and the other crown names what it will
+      // take (A.WAR.ask), as any asking crown's do. The crown that asks is the one that yields.
+      const side = A.warSide(w, r.id);
+      if (A.WAR && A.WAR.ask && !w.ask) {
+        A.WAR.ask(w, side, counselRec, null, { path: 7 });
+        A.log("On your counsel the crown sends envoys to ask for terms.", "peace");
+      } else A.log("Envoys are already on the road; the crown waits on their answer.", "peace");
     }
   }
   if (kind === "ally") {

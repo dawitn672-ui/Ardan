@@ -4,7 +4,7 @@
 // A.frontProvs, A.wsFrontProvs, A.provDefPow, A.armyEnemy, A.armyThink, A.wsOrderDiv, A.divSpeed, A.divMove,
 // A.occupy, A.wsWinter, A.WTAC, A.WTAC_KEYS, A.sideMake, A.sideRecon, A.pcTacFor, A.tacDay, A.TAC_NOTE, A.fightDay,
 // A.divRetreat, A.fightEnd, A.wsPCBattle, A.wsQueuePCBattles, A.wsPCFightStart, A.CHOICE_FN, A.CHOICE_FN (+),
-// A.wsNudge, A.BATTLE_END, A.BATTLE_END.wsPart, A.wsSupplyDay, A.wsSupplyDayRun, A.wsSiegeDay, A.wsScore,
+// A.wsNudge, A.BATTLE_END, A.BATTLE_END.wsPart, A.wsSupplyDay, A.wsSupplyDayRun, A.wsSiegeDay, A.wsWeary,
 // A.wsTreatyProvinces, A.wsCanCommand, A.wsCanDiv, A.wsCommandable, A.wsSetOrder, A.wsDivOrder, A.wsDivRaid,
 // A.wsDivHold, A.wsDivRejoin, A.wsSetStance, A.wsPlayerOrder, A.wsSplit, A.wsMerge, A.wsTransferDiv, A.wsTroopsFor,
 // A.wsRecruit, A.wsOfferPeace, A.wrOpen, A.wrClose, A.wrAuto, A.wsLeadBattle, and 23 more.
@@ -236,11 +236,14 @@ A.wsDay = function () {
     const r = S.realms[id];
     if (r.alive && r.forces && A.atWar(id).length) A.forcesSync(r);
   }
+  // W1-5 (D-091): each week the war wears on the realms in it; each four weeks each side's decider re-reads his will to
+  // fight (A.WAR.month: defeat, a fact; surrender, a decision); every day the envoys between the courts ride on
   if (S.warClock % 7 === 0)
     for (const w of S.wars.slice()) {
-      A.wsScore(w);
-      if (S.wars.includes(w) && S.warClock % 28 === 0) A.checkPeace(w);
+      A.wsWeary(w);
+      if (A.WAR && S.wars.includes(w) && S.warClock % 28 === 0) A.WAR.month(w);
     }
+  if (A.WAR) A.WAR.day();
 };
 
 A.wsRunDays = function (n) {
@@ -1526,10 +1529,11 @@ A.fightEnd = function (pid, winner) {
     } else d.losses = (d.losses || 0) + 1;
   }
   if ((w && (w.nb = (w.nb || 0) + 1), w && big >= 3e3 && F.days >= 1)) {
-    const side = A.warSide(w, W),
-      d = A.clamp(Math.round(2 + big / 9e3 + dead / 3e3), 2, 14);
-    w.bscore = A.clamp((w.bscore || 0) + (side === "att" ? d : -d), -45, 45);
+    const side = A.warSide(w, W);
+    // W1-5 (D-091): no battle score; a great battle is a fact in the war's record, and its loser re-reads his will to
+    // fight at once (A.WAR.stir), not at the month's end
     if (big >= 9e3 || F.days >= 3) {
+      if (A.WAR) A.WAR.stir(w);
       w.battles.push({
         y: S.year,
         name: "Battle of " + P.name,
@@ -1900,36 +1904,27 @@ A.wsSiegeDay = function (live) {
     }
 };
 
-A.wsScore = function (w) {
-  const S = A.S;
-  let attVal = 0,
-    defVal = 0,
-    attTot = 1,
-    defTot = 1;
-  for (const p of S.prov) {
-    if (w.def.includes(p.owner)) {
-      defTot += p.pop;
-      if (p.occ && w.att.includes(p.occ))
-        attVal += p.pop * (A.realm(p.owner) && A.realm(p.owner).capitalProv === p.id ? 2 : 1);
-    }
-    if (w.att.includes(p.owner)) {
-      attTot += p.pop;
-      if (p.occ && w.def.includes(p.occ))
-        defVal += p.pop * (A.realm(p.owner) && A.realm(p.owner).capitalProv === p.id ? 2 : 1);
-    }
-  }
-  w.score = A.clamp(Math.round((attVal / defTot) * 110 - (defVal / attTot) * 110 + (w.bscore || 0)), -100, 100);
+// W1-5 (D-091): the weekly score is gone (archive/w1-5-war-score-and-peace); what stays is the war's weight on the realms
+// in it, a fact their deciders read (war-weariness)
+A.wsWeary = function (w) {
   for (const rid of w.att.concat(w.def)) {
     const r = A.realm(rid);
     if (r) r.exhaustion = A.clamp(r.exhaustion + 0.12, 0, 100);
   }
 };
 
-A.wsTreatyProvinces = function (w, res) {
+// The land a peace may pass from the losers to the side res, from what its soldiers hold, in a chain from its own land,
+// the most people first. W1-5 (D-091): sized by the victor's demand, not a score: want 'casus' is the land his cause
+// named (his realm's claims among it, or in a war of conquest the land he holds), anything else every held province;
+// 68-reasons-for-war's cap (a peace takes a handful) and the one world's cap still apply over it.
+A.wsTreatyProvinces = function (w, res, want) {
   const S = A.S,
     winners = res === "att" ? w.att : w.def,
-    losers = res === "att" ? w.def : w.att;
-  let budget = Math.abs(w.score) * 1.3 + 20;
+    losers = res === "att" ? w.def : w.att,
+    lead = A.realm(res === "att" ? w.leadA : w.leadD),
+    claims = (lead && lead.claims) || {},
+    named = want === "casus" && !["conquest", "rivalry"].includes(w.cb);
+  let budget = Infinity;
   const loserPop = S.prov.filter(p => losers.includes(p.owner)).reduce((a, p) => a + p.pop, 0) || 1,
     held = S.prov.filter(p => losers.includes(p.owner) && winners.includes(p.occ)),
     winLand = new Set(S.prov.filter(p => winners.includes(p.owner)).map(p => p.id)),
@@ -1937,7 +1932,9 @@ A.wsTreatyProvinces = function (w, res) {
   let changed = true;
   for (; changed; ) {
     changed = false;
-    const cand = held.filter(p => !taken.includes(p) && p.adj.concat(p.sea || []).some(j => winLand.has(j)));
+    const cand = held.filter(
+      p => !taken.includes(p) && (!named || claims[p.id] != null) && p.adj.concat(p.sea || []).some(j => winLand.has(j)),
+    );
     cand.sort((a, b) => b.pop - a.pop);
     for (const p of cand) {
       const cost = 6 + (70 * p.pop) / loserPop;
@@ -2137,37 +2134,31 @@ A.wsRecruit = function () {
   };
 };
 
+// The War Room's three peace buttons (W1-5, D-095): each sends the ruler's envoys with set terms (A.WAR.send): "White
+// peace" asks to end it with nothing changing hands, "Demand what you hold" asks for the land your soldiers hold,
+// "Concede" offers the land theirs hold and silver. The other crown answers when the envoys arrive, from its own reasons.
 A.wsOfferPeace = function (wid, kind) {
-  const S = A.S,
-    pc = A.pc(),
-    w = S.wars.find(x => x.id === wid);
+  const pc = A.pc(),
+    w = A.S.wars.find(x => x.id === wid);
   if (!w || !pc || !pc.ruler)
     return {
       ok: false,
       msg: "Only a ruler can make peace.",
     };
-  const side = A.warSide(w, pc.ruler),
-    my = side === "att" ? w.score : -w.score,
-    enemyLead = A.realm(side === "att" ? w.leadD : w.leadA),
-    ex = enemyLead ? enemyLead.exhaustion : 50;
-  let accept;
-  if (kind === "white") accept = A.chance(A.clamp(0.25 + my / 100 + ex / 200, 0.05, 0.95));
-  else {
-    if (kind === "demand") accept = my >= 25 && A.chance(A.clamp((my - 20) / 60 + ex / 250, 0.05, 0.95));
-    else accept = A.chance(A.clamp(0.6 - my / 100, 0.1, 0.98));
-  }
-  return accept
-    ? ((w.manualPeace = false),
-      A.settleWar(w, kind === "white" ? "white" : kind === "demand" ? side : side === "att" ? "def" : "att"),
-      {
-        ok: true,
-        msg: "Peace is signed.",
-      })
-    : (A.log(`${enemyLead ? enemyLead.name : "The enemy"} rejects your offer.`, "war"),
-      {
-        ok: false,
-        msg: "They refuse.",
-      });
+  if (!A.WAR || !A.WAR.table)
+    return {
+      ok: false,
+      msg: "No envoys can be sent.",
+    };
+  const T = A.WAR.table(w, pc.ruler),
+    picks = !T
+      ? []
+      : kind === "demand"
+        ? T.terms.filter(t => t.k.startsWith("take:")).map(t => t.k)
+        : kind === "concede"
+          ? T.terms.filter(t => t.k.startsWith("cede:") || t.k === "pay").map(t => t.k)
+          : [];
+  return A.WAR.send(wid, picks);
 };
 
 A.wrOpen = function (q) {

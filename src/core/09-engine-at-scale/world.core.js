@@ -148,32 +148,13 @@
     try { if (great() && w && Array.isArray(t)) return W.capTreaty(w, res, t); } catch (e) { console.error('peace cap', e); }
     return t;
   };
-  // the crushing peace (a war score of 90 with every province held) annexes the whole realm; a far realm too large
-  // for one peace's share (more than a handful of provinces) is not swallowed so: the score is held under 90 for it
-  // a far war is not settled (by any road: the AI's offers, a faction's peace, the war clock) before W.MIN_WAR_DAYS,
-  // nor a border war (w.fwLimit) before its own day, unless a capital has fallen or a player's realm makes the peace
-  W.tooSoon = function (w, res) {
-    if (!w || w.d0 == null) return false;
-    const la = A.realm(w.leadA), ld = A.realm(w.leadD);
-    if (!la || !ld || !la.alive || !ld.alive || la.playerRun || ld.playerRun || w.cb === 'throne') return false;
-    const lim = w.fwLimit && w.fwLimit.until || 0;
-    const until = Math.max(lim, res !== 'white' && (farLoser(w.leadA) || farLoser(w.leadD)) ? w.d0 + W.MIN_WAR_DAYS : 0);
-    if (A.absDay() >= until) return false;
-    const capFallen = (r, by) => { const P = r.capitalProv != null ? A.prov(r.capitalProv) : null; return !!(P && by.includes(P.occ)); };
-    // a border war (w.fwLimit) runs its course even past a fallen capital: its peace cannot take the realm anyway
-    return !!lim && A.absDay() < lim || !(capFallen(ld, w.att) || capFallen(la, w.def));
-  };
-  // the crushing peace (a war score of 90 with every province held) annexes the whole realm; a far realm too large
-  // for one peace's share (more than a handful of provinces) is not swallowed so: the score is held under 90 for it
-  const sw = A.settleWar;
-  if (typeof sw === 'function') A.settleWar = function (w, res) {
-    if (!great() || !w) return sw.apply(this, arguments);
-    try { if (W.tooSoon(w, res)) { W.stats.held_peace = (W.stats.held_peace || 0) + 1; return; } } catch (e) { console.error('peace floor', e); }
-    if (res !== 'att' && res !== 'def') return sw.apply(this, arguments);
-    const lose = res === 'att' ? w.leadD : w.leadA, big = farLoser(lose) && A.realmProvs(lose).length > 4;
-    if (!(big || (w.fwLimit && w.fwLimit.max)) || Math.abs(w.score) < 90) return sw.apply(this, arguments);
-    const sc = w.score; w.score = sc > 0 ? 89 : -89;
-    try { return sw.apply(this, arguments); } finally { w.score = sc; }
+  // W1-5 (D-091): the crushing peace at a war score of 90 and the nine-month floor on a far war's peace are retired with
+  // the score (a peace by a date or a number is no one's decision; archive/w1-5-war-score-and-peace). What stays is a
+  // reason: a far realm too large for one peace (more than a handful of provinces) is too far and too large to swallow,
+  // weighed against taking the whole of a beaten realm (A.WAR.want, src/war/9999953-surrender).
+  W.noSwallow = function (w, lose) {
+    if (!great() || !lose) return null;
+    return farLoser(lose) && A.realmProvs(lose).length > 4 ? 'A far realm too large to swallow in one peace' : null;
   };
   const sw0 = A.startWar;
   if (typeof sw0 === 'function') A.startWar = function () {

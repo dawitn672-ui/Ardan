@@ -17,8 +17,12 @@ with file and line. Line numbers below are as of the W1-2 merge with `v2-integra
 | **W1-3:** the crown's judgment on an ignored summons | `12-nobility-and-politics.js` `ignoreSummons`, `A.CMD.pcJudge` / `A.CMD.sentence` | the law and refusals before, the king's anger and pride, a true excuse, the crown's strength against the lord's |
 | **W1-3:** a league member joins a war on a conqueror | `17-careers-and-event-engine-a.js` `A.callExtra`, `A.CMD.leagueJoins` | the league's oath, the conqueror's infamy; against the cost and the realm's weariness |
 | **W1-3 (new):** the summons, the king's command, the seasons, the lord's answer, the border | `src/war/9999951-commands` | see its README |
+| **W1-5:** a war's end: a side asks for terms, the victor names them, the asker takes them or refuses, the stronger offers, a councillor's counsel of peace | `src/war/9999953-surrender` (`A.WAR.yieldQ`, `want`, `answer`, `takeCounter`, `offerQ`, `counsel`) | the two pans of war.md §11.3: the cause, pride, a young war, the count of spears, allies, land and capital held or lost, battles, hosts lost, weariness, the chest, years, the realm at home, the decider himself, blows, the terms he would be asked, his temper; feelings at the foe. Retired with the score: the old `A.settleWar`'s two rolls, `A.rulerAction`'s peace roll and `A.peaceOffer`'s (lint-reasons 62 → 58) |
 
 ## What is left, by kind, and the reasons each should use
+
+*(W1-5, 2026-11-18: the three war-ending rows below are gone, routed above. Still a roll and not counted by the lint's
+heuristic: the crown's acceptance of a councillor's counsel of war, an alliance or a pact in `A.councilPropose`, for W1-6.)*
 
 The reasons named are those the game already holds (the record that would be the source). "Dice within reasons" means
 the roll already reads named reasons and needs only to become a decision with a record. The research in
@@ -31,9 +35,6 @@ their cracks; the ten quarrels; the four causal chains) is the catalogue for the
 |---|---|---|
 | `03-engine-base.js:2161`, `:2171` `A.startWar` | an ally joins the defence (0.55) or the attack (0.3) | the pact sworn (duty, honour), the ally's opinion of each side, its own wars and weariness, its strength beside the enemy's, a debt (68), a grudge (55). 20's `A.aiAnswerCall` already holds most: route it. *W1-3 found this branch dead: it runs only when `A.callToArms` is missing, and `callToArmsNow` answers every call; W1-5 may retire it* |
 | `04-realms-and-war-years-a.js:564`, `:569` `A.successionWar` | a meddling neighbour backs a claimant (0.35), a friend backs the crown (0.4) | the claimant's blood and backers, the neighbour's want or grudge, marriage ties, opinion |
-| `04-realms-and-war-years-a.js:297`, `:384` `A.settleWar` | a rebel claimant takes the throne (0.65), a crushed realm is annexed (0.7) | the victor's appetite (68), the land's people and faith, infamy |
-| `11-armies-divisions-and-council-b.js:173` `A.rulerAction` | an AI ruler accepts peace (0.25 + score) | W1-5's surrender: the two pans read monthly on what he has been told |
-| `13-factions-and-decisions.js:698` `A.peaceOffer` | an AI accepts the player's peace offer | the same pans; the terms against the casus |
 | `src/diplomacy/engine/diplomacy.js:72`, `:76` `monthTick` | v2's hostile month names a war (0.03 / 0.02); a war turns to truce (0.03) | the occasion: an incident, a council, a summons; the truce is W1-5's (a pause asked for, with a price) |
 | `src/map/70-fresh-realms-and-tensions/fresh.core.js:327` `FR.split` | a realm born of a split goes to war with its parent (`FR.WAR_P`) | the parent's claim and pride, the new realm's backers |
 

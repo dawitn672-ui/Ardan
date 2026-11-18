@@ -1773,3 +1773,120 @@ keeps both (the province's shape is the same as version 2 would give it, save fo
 hills (the old way, 41%), and moving rivers to towns.
 **Left for D12b (the owner answered the war questions in D-064, `docs/design/war.md` part two):** seasons on roads and passes, sea lanes on the route graph,
 `fieldAt(site)`, the burn.
+
+### D-091 · W1-5: a war ends only by surrender or defeat; the score, A.checkPeace and A.peaceOdds are gone (2026-11-18; order 54 answer 6; D-064 point 10; war.md §11.3, §11.4)
+1. **Where it lives.** The pure logic is a v2 engine module, `src/war/engine/surrender.js` (`A.V2.surrender`: the two
+   pans from a side's facts, defeat's five conditions, what a term costs, the pathway), unit-tested under `node --test`
+   (`tests/v2/surrender.test.js`, with the labs); the wiring is a readable feature, `src/war/9999953-surrender`
+   (`A.WAR`), as W1-2 split `why.js` from `A.WHY` (D-069). *Why:* the labs need no browser; the game's state and dice
+   stay in the game's layer.
+2. **Retired, to `archive/w1-5-war-score-and-peace`:** `w.score` and `w.bscore` (every writer: the weekly `A.wsScore`,
+   battles, sieges, missions, the campaign, the branch year, three event effects), `A.checkPeace`, `A.peaceOdds`, the old
+   `A.settleWar`'s score-sized terms and its two rolls, `A.warYear` and `A.warFront` (called by nothing), the AI's
+   sue/demand/white-peace offers read from the score, 20-ai-personality's `A.aiNotePeace`, `A.aiWhite`,
+   `A.aiPeaceWill` and peace-offer wrapper, 68's forced-surrender mark, 09-engine-at-scale's nine-month floor and its
+   hold on the crushing peace. The weekly weariness stays (`A.wsWeary`).
+3. **Defeat is a fact, surrender a decision.** Defeat: no realm left on a side; its leader gone with no one to take up the
+   war (a fallen leader's side passes to its next living realm first); its capital fallen and its host under a tenth of
+   its largest; every host under one in sixteen with half its people under enemy soldiers; a rising whose leader is
+   dead. Surrender: each side's decider (the ruler of its leading realm) weighs "fight" against "ask" through
+   `A.WHY.decide` (kind `yield`) every four weeks of the war clock, where `A.checkPeace` was called, and after a great
+   battle, a siege's fall or a campaign's end (`A.WAR.stir`, at most once a fortnight). The side leaning more toward
+   asking is asked first.
+4. **`A.settleWar(w, res, how)` stays** as the call for an ending decided elsewhere (an event's peace, a faction's demand, a
+   test): `res` is the side that won, its terms named by its own decider (`A.WAR.want`); `'white'` is a peace the crowns
+   made with nothing changing hands, asked by `how.by` (a realm or a side) or, unnamed, the player's side. Every ending,
+   these and a realm's fall included, gets the record (D-096).
+**Conflict recorded:** none with an order. With war.md §11.4: `w.end` was the war's last year in the release; it is now
+the record §11.4 names (nothing read it as a year but the release's own `!w.end`).
+
+### D-092 · W1-5: the will to fight, weighed and calibrated (2026-11-18; D-069, D-091)
+1. **The two pans are war.md §11.3's table, read from facts the game holds:** the cause (by `w.cb`; half for an heir who
+   did not begin the war: pathway 6), defending his land, pride, a young war (point 3), his host against theirs
+   (`A.realmPower`, allies at half), allies, the enemy busy elsewhere, land and capital held, great battles of the last two
+   years (`w.battles`), his word to allies, the terms he would be asked (harsh demands lengthen wars); against: hosts lost
+   (the field against its largest, `w.pk`), the enemy stronger, battles lost, weariness (`r.exhaustion`), an empty chest,
+   debt, years at war, land and capital lost, stability under 40, a rising, a second enemy, a peace faction, age (told as a
+   man's years: sixty at 1.2 of his people's old age), illness, a regency, an attack that has won nothing, the blows
+   events struck (D-096), and his temper (0.6 × ln `A.aiYield`, 20's and 68's weights for giving in). Each reason has a
+   kind (the temper bends it), a source and words; no numbers reach a label.
+2. **The band is 0.4** (in log-odds; W1-2 used 1.5 by default and 3 for war): the question is asked every month, so a wide
+   band would make a war's end a monthly lottery. The answer to terms has 0.6, the victor's demand 1.0.
+3. **Calibrated against the release's own wars** (four worlds of thirty years, two sets of seeds, a scratch probe): the
+   release ended them in a median of 5 months (a quarter within 2 to 3, nine in ten within 11 to 15). With W1-5 as first
+   weighed, wars ended in a median of 2 months; the weights were set to hold them near the release's shape without a
+   timer: pride 0.9, a defender's cause 1.0, battles lost 0.3 each, hosts lost 2.2, weariness 1.2 (it climbs from nothing
+   to "worn out" within months of fighting, so it cannot weigh much more), and **"the war is young: his lords' men are still
+   answering the summons"** (1.2, fading to nothing over six months; W1-3's summons take a season), a real reason, not a
+   floor. Now: a median of 3 months, a quarter within 2, nine in ten within 12 to 13 (the early endings are crushed
+   risings and small realms overrun, read as defeats or asks with their reasons). Wars ended per world in thirty years: 53
+   → 68 in one set of seeds and 77 → 74 to 93 in the other (the release's longer stalemates kept realms busy); within the
+   56 test's band of 0.012 to 0.03 a realm-year. The balance stage (D12b-7) owns these numbers.
+**Not decided here:** what the decider *has been told* (war.md §12.4) instead of the facts: reports are D12b-3's; until
+then he weighs the facts as they stand.
+
+### D-093 · W1-5: envoys, terms named, counters; a truce is not built yet (2026-11-18; war.md §11.3)
+1. **Envoys ride capital to capital** at 45 km a day (`A.capDist`; 2 to 40 days a leg). Legs: the ask reaches the victor,
+   who names his terms; they ride back and the asker takes or refuses them; asked everything, he counters with the
+   cause's terms, which ride to the victor again. The stronger, tired himself, may offer his cause's terms (at most twice
+   a year, after six months). The war goes on while they ride. A refusal: the asker waits four months.
+2. **The victor's demand** (`A.WAR.want`, kind `terms`): his cause's terms (duty to the cause, a beaten man with nothing to
+   lose fights on, his own weariness, his infamy) against everything he holds (greed, ambition, the realm lying open,
+   feelings at the loser); nothing yet when the asker's capital or half his land is held and he would have it whole; the
+   realm itself only from a defeated realm whose people he holds at 85 in a hundred, against its size, the crowns' fear of
+   a conqueror and a far realm too large to swallow.
+3. **A truce (a pause of a winter, a harvest, a burial) is not built.** Nothing in the game yet stops a war's fighting for
+   a season; it comes with the seasons (D12b-6). Until then no war pauses, and none ends without a surrender or a defeat.
+**Not built here (W1-6's):** lords refusing further service, a council's vote, a coup putting in a man who will sign
+(war.md §11.3 "He can be made to"); the peace faction's demand already makes its crown ask (pathway 4).
+
+### D-094 · W1-5: terms are real things, and they hand over for real (2026-11-18; war.md §11.3 step 4; one holder per post)
+1. **The terms by the cause** (`w.cb`): a war for land (conquest, a claim, a reconquest) takes the land his soldiers hold,
+   his claims first (`A.wsTreatyProvinces(w, res, want)`, now sized by the demand instead of the score; 68-reasons-for-war's
+   cap on one peace still applies); an insult, an incident or a holy war a public submission and reparations; refused
+   tribute a tributary; a league its target's alliances renounced; a crown claimed the claimant crowned, or his claim given
+   up and the risen lands returned; a land's freedom recognised or its lands returned. An attack beaten back: the claim
+   given up and the war's cost. Everything: the land held, a submission, tribute and crushing reparations. Always ten
+   years of sworn peace (the release's truce).
+2. **Coin is a share of the loser's yearly income** (a fifth for reparations, half that for an attack's cost, two and a half
+   times for crushing ones). The old table's quarter of the treasury gave sums of a million suns between rich crowns.
+3. **They hand over through the game's own writers:** land through `A.transferProv` (its fiefs, claims, infamy and the
+   world record follow), a crown through `A.makeRuler`, a realm through `A.realmFalls`, tribute through the overlord
+   field. The release's stability after a lost or won war (−10 / +6) stays.
+4. **Captives, hostages and ransoms are not modelled** (no war takes a lord or a king prisoner yet); a hostage event is a
+   blow (D-096). They come with D12b-3's people you know.
+
+### D-095 · W1-5: the player's part is a ruler's, and only through his own choices (2026-11-18; war.md §12.2; owner orders 5, 54)
+1. **Only the ruler of a side's leading realm decides for it**; the AI never asks, answers or names terms for him. His
+   ways: the peace table (`A.WAR.table`, `A.WAR.tableLean`, `A.WAR.send`), the War Room's three buttons (envoys with set
+   terms), and choice cards (an AI crown asks him for terms; counters; offers him terms; a beaten foe's peace to dictate).
+   A card dismissed unanswered is answered as a ruler who ignores envoys: they go home (a beaten foe's peace is his
+   cause's). If he stops ruling while envoys ride, his heir or council answers as any crown would.
+2. **The peace table shows no number standing for the odds:** each term says how heavy a demand it is; how the other crown
+   would answer is A.WHY's odds of its own decision (no draw) in the odds words of `A.V2.odds` and a tipped scale (a
+   rotation, `transform` only), with its reasons (public ones, or all for its own council). Two embassies a year; the
+   answer comes when the envoys arrive.
+3. **A councillor's counsel of peace** is one more reason in the ruler's own weighing (`A.WAR.counsel`, through
+   `A.WHY`), not a roll; counsel of war, an alliance or a pact is still the release's roll (W1-6, `docs/design/r1-audit.md`).
+4. **The events that made a white peace** keep their words and name who asked (`A.settleWar(w, 'white', { by })`); an
+   event that set the score now strikes a blow (D-096).
+
+### D-096 · W1-5: the record of an ending, news by rank, blows, old saves (2026-11-18; war.md §11.4, §12.4, §15)
+1. **`w.end = { y, d, kind, by, who, asked, path, terms, why, told, signed }`**, made for every ending by `A.WAR.endOf`
+   (called by the release's `endWarNow`): from `A.WAR.settle`'s own record, or read from what an ending elsewhere was (a
+   realm's fall: defeat by conquest; an event's peace: a surrender with terms offered and taken). The last 40 are kept in
+   `A.S.warEnds` (rule 21); the world record's peace entry carries the kind, the pathway and who yielded, and its line
+   says "when X asked Y for terms" or "X could fight no more". Decisions: `A.S.why` kinds `yield` and `terms` (20 each),
+   and the rulers' log.
+2. **News by rank:** the ruler and his council hear that their crown asks and why (the full reasons); a commander, a General
+   or a great lord that envoys have ridden; the other side's council that they are coming and the terms named; everyone
+   in the war the peace, its terms, and (council and officers) why; the world the peace.
+3. **Blows:** an event that hurt a side in the old score now names a reason in its pan to ask (`A.WAR.blow`), fading over a
+   year, at most six a war: a mission's triumph or failure, volunteers in borrowed colours, a hostage sent home with
+   terms, a rash crossing of the Gordush, fire-rafts burned short of a chain, Tessar betrayed (its capital is held, the
+   fact the old score of 80 stood for).
+4. **Old saves:** a war in progress goes on (D-064 point 14); `w.score`, `w.bscore` and `w.manualPeace` are dropped on load;
+   its first reading counts its hosts as they stand. Every sample save loads, plays a year, and every ending has its
+   record (`w5OldSaves`).
+5. **lint-reasons 62 → 58.** A stamp made at the turn of the year (the release's `A.absDay` reads the new year with the old
+   year's last day while the year turns) lies a year ahead; `A.WAR` brings such stamps back (`w.d0`, the envoys' days).

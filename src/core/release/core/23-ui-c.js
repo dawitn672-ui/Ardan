@@ -595,33 +595,32 @@ UI.specCard = function (pc) {
 
 UI.peacePicks = UI.peacePicks || {};
 
-// W0 (D-052): the terms no longer show a war score chip; the land held and the battles won stand in its place. The
-// score still decides the foe's willingness inside A.peaceTerms.
+// W1-5 (D-091, D-095): the peace table in words. The terms are real things, each with how heavy a demand it is; under them,
+// how the other crown leans on what you ask, in words and a tipped scale, and why (A.WAR.tableLean: the reasons it would
+// weigh, read without a die). No score, no willingness number, no percentage. Your envoys ride, and its answer comes when
+// they reach its court.
 UI.peacePanel = function (wid) {
   const pc = A.pc(),
     w = A.S.wars.find(x => x.id === wid);
   if (!w || !pc.ruler) return '<p class="muted">This war is over.</p>';
   const T = A.peaceTerms(w, pc.ruler);
-  if (!T) return "";
+  if (!T || !A.WAR) return "";
   const picks = UI.peacePicks[wid] || (UI.peacePicks[wid] = []),
-    odds = A.peaceOdds(T, picks),
-    lead = w.leadA === pc.ruler || w.leadD === pc.ruler;
-  let h = `<div class="peace"><div class="row"><b>Terms for ${UI.esc(w.name)}</b></div><div class="small">${UI.esc(A.warFactsText(w, pc.ruler))}</div><div class="tiny muted">${UI.esc(A.realmName(T.eid))} is ${T.e.exhaustion > 60 ? "exhausted" : T.e.exhaustion > 30 ? "tiring" : "still fresh"} (war weariness ${Math.round(T.e.exhaustion)}). What they will accept depends on the land each side holds, the battles won, their weariness and what you ask.</div>`;
+    L = A.WAR.tableLean(w, pc.ruler, picks) || { words: "in the balance", tilt: 0, why: [] },
+    lead = w.leadA === pc.ruler || w.leadD === pc.ruler,
+    riding = !!w.ask;
+  let h = `<div class="peace"><div class="row"><b>Terms for ${UI.esc(w.name)}</b></div><div class="small">${UI.esc(A.warFactsText(w, pc.ruler))}</div><div class="tiny muted">${UI.esc(A.realmName(T.eid))} is ${UI.esc(T.foe)}. Its crown weighs what you ask against its own will to fight: the land each side holds, its hosts, the battles, its weariness and its pride.</div>`;
   const grps = {};
   for (const t of T.terms) (grps[t.grp] = grps[t.grp] || []).push(t);
   for (const g in grps) {
     h += `<div class="group-h">${UI.esc(g)}</div>`;
     for (const t of grps[g]) {
       const on = picks.includes(t.k);
-      h += `<label class="term ${on ? "on" : ""}"><input type="checkbox" data-c="peaceT" data-k="${wid}" value="${UI.esc(t.k)}" ${on ? "checked" : ""}><div class="grow"><div>${UI.esc(t.name)}</div><div class="tiny muted">${UI.esc(t.sub || "")}</div></div><span class="cost ${t.cost < 0 ? "good" : ""}">${t.cost > 0 ? "−" + t.cost : "+" + -t.cost}</span></label>`;
+      h += `<label class="term ${on ? "on" : ""}"><input type="checkbox" data-c="peaceT" data-k="${wid}" value="${UI.esc(t.k)}" ${on ? "checked" : ""}><div class="grow"><div>${UI.esc(t.name)}</div><div class="tiny muted">${UI.esc(t.sub || "")}</div></div><span class="cost ${/gift/.test(t.heavy) ? "good" : ""}">${UI.esc(t.heavy)}</span></label>`;
     }
   }
-  const tot = odds.cost;
-  // [X1 baked patch diplomacy/20-ai-personality AIP-DIPL-UI] UI.diplCard: the fictional "Slowly pulling them" list
-  // (A.realmStanding fed nothing) now shows the real yearly pulls from A.aiPullParts; a temperament line names the
-  // ruler's traits and what they do; every offer shows its top 3 reasons. The peace screen explains their
-  // willingness.
-  h += `<div class="peace-sum"><div>Your demands: <b>${tot}</b> · Their willingness: <b>${Math.round(T.will)}</b>${UI.aiWillWhy(T)}</div>${UI.barRow("They accept", odds.p, 100, odds.p < 30 ? "hpbar" : "", null, odds.p + "%")}<div class="row"><button class="primary" data-a="peaceSend" data-v="${wid}" ${lead ? "" : "disabled"}>Send the envoy (${odds.p}%)</button><button class="small" data-a="peaceClear" data-v="${wid}">Clear</button></div>${lead ? "" : '<div class="tiny bad">Only the leader of your side can make peace.</div>'}<div class="tiny muted">Two offers a year. A refusal sours relations a little.</div></div></div>`;
+  const tilt = Math.round(-L.tilt * 18);
+  h += `<div class="peace-sum"><div class="row"><span class="peace-scale" aria-hidden="true" style="display:inline-block;transform:rotate(${tilt}deg)">⚖</span><span>How they would answer: <b>${UI.esc(L.words)}</b></span></div>${L.why.length ? `<div class="tiny muted ai-why">Their reasons: ${L.why.map(UI.esc).join(" · ")}</div>` : ""}<div class="row"><button class="primary" data-a="peaceSend" data-v="${wid}" ${lead && !riding ? "" : "disabled"}>${riding ? "Envoys are on the road" : "Send the envoys"}</button><button class="small" data-a="peaceClear" data-v="${wid}">Clear</button></div>${lead ? "" : '<div class="tiny bad">Only the leader of your side can make peace.</div>'}<div class="tiny muted">Two embassies a year. The road takes days; the war goes on while they ride.</div></div></div>`;
   return h;
 };
 

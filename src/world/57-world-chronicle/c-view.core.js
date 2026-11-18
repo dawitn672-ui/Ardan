@@ -118,7 +118,10 @@
       let s = line(e).replace(/\.$/, '');
       if (end) {
         const res = Array.isArray(end.x) ? end.x[1] : 'white', got = Array.isArray(end.x) && Array.isArray(end.x[2]) ? end.x[2].map(pn).filter(Boolean) : [];
-        s += res === 'white' ? `. It ended in ${end.y} in a white peace` : `. It ended in ${end.y}${end.n ? `, after ${say(end.n)} year${end.n > 1 ? 's' : ''},` : ''} with ${rs(end.a)} the victor${got.length ? `, and ${got.slice(0, 3).join(', ')} passed to ${rs(end.a)}` : ''}`;
+        // W1-5 (D-091): surrender or defeat, as the record keeps it
+        const kd = Array.isArray(end.x) ? end.x[3] : '', after = end.n ? `, after ${say(end.n)} year${end.n > 1 ? 's' : ''},` : '';
+        s += res === 'white' ? `. It ended in ${end.y} in a peace the crowns made, with nothing changing hands`
+          : `. It ended in ${end.y}${after} ${kd === 'd' ? `with ${rs(end.b)} beaten and ${rs(end.a)} the victor` : kd === 's' ? `when ${rs(end.b)} asked ${rs(end.a)} for terms` : `with ${rs(end.a)} the victor`}${got.length ? `, and ${got.slice(0, 3).join(', ')} passed to ${rs(end.a)}` : ''}`;
       } else if (A.S.wars.some(w => w.id === id)) s += '. It is still being fought';
       add(e, s + '.', isMine(e) ? 6 : 4);
     }

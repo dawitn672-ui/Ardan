@@ -98,7 +98,7 @@
           {
             t: 'Send a thousand "volunteers"',
             r: "They march without banners. Everyone knows whose they are, and everyone pretends not to.",
-            fx: (p,ctx)=>{const r=A.realm(p.ruler);r.army=Math.max(0,r.army-1e3),A.addRel(r.id,ctx.rid,20);const ow=A.S.wars.find(w=>w.name===ctx.war);if(ow){const side=ow.att.includes(ctx.rid)?"att":"def";ow.score+=side==="att"?6:-6}},
+            fx: (p,ctx)=>{const r=A.realm(p.ruler);r.army=Math.max(0,r.army-1e3),A.addRel(r.id,ctx.rid,20);const ow=A.S.wars.find(w=>w.name===ctx.war);if(ow){const side=ow.att.includes(ctx.rid)?"att":"def";A.WAR&&A.WAR.blow(ow,side==="att"?"def":"att","A thousand volunteers in borrowed colours",.4)}},
           },
           {
             t: "Send silver for mercenaries instead",
@@ -696,7 +696,7 @@
           {
             t: "Trade the hostage for peace terms",
             r: "You send the hostage home with your terms pinned to the cloak.",
-            fx: (p,ctx)=>{const w=A.atWar(p.ruler).find(x=>x.att.includes(ctx.rid)||x.def.includes(ctx.rid));if(w){const side=A.warSide(w,p.ruler);w.score+=side==="att"?12:-12}A.addRel(p.ruler,ctx.rid,10)},
+            fx: (p,ctx)=>{const w=A.atWar(p.ruler).find(x=>x.att.includes(ctx.rid)||x.def.includes(ctx.rid));if(w){const side=A.warSide(w,p.ruler);A.WAR&&A.WAR.blow(w,side==="att"?"def":"att","A hostage of their blood sent home with terms",.8)}A.addRel(p.ruler,ctx.rid,10)},
           },
           {
             t: "Raise the hostage at your court as your ward",
@@ -717,14 +717,14 @@
           {
             t: "Accept the white peace",
             r: "The war ends. Nobody wins. Everybody lives.",
-            fx: (p,ctx)=>{const w=A.S.wars.find(x=>x.id===ctx.wid);w&&A.settleWar(w,"white")},
+            fx: (p,ctx)=>{const w=A.S.wars.find(x=>x.id===ctx.wid);w&&A.settleWar(w,"white",{by:ctx.rid})},
           },
           {
             t: "Demand better terms",
             check: {s:"diplomacy",s2:"intimidation",d:55},
             win: {
               r: "They bend. The peace leaves you a province richer.",
-              fx: (p,ctx)=>{const w=A.S.wars.find(x=>x.id===ctx.wid);if(w){const side=A.warSide(w,p.ruler);w.score=side==="att"?Math.max(w.score,85):Math.min(w.score,-85),A.settleWar(w,side)}},
+              fx: (p,ctx)=>{const w=A.S.wars.find(x=>x.id===ctx.wid);if(w){const side=A.warSide(w,p.ruler);A.settleWar(w,side,{path:7})}},
             },
             lose: {r:"The monk walks back across the lines. The war goes on.",fx:{stability:-1}},
           },
