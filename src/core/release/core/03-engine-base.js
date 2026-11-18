@@ -162,6 +162,8 @@ A.deserialize = function (text) {
   const S = typeof text == "string" ? JSON.parse(text) : text;
   A.S = A.migrate ? A.migrate(S) : S;
   if (A.S.rng != null) A.rngState = A.S.rng | 0;
+  // X5 (999996-state-diet): an older save is compacted as play would have compacted it; draws nothing
+  if (A.DIET && A.DIET.compact) A.DIET.compact(A.S, "load");
   if (A.cacheResetAll) A.cacheResetAll();
   return A.S;
 };
