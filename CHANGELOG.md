@@ -5,6 +5,14 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Made ready for the iPhone.** The page now fills a notched screen edge to edge and keeps clear of the notch and the home bar;
+  text on the buttons and panels can no longer be selected by a long press, and the page no longer bounces or zooms when
+  you tap twice (pinching still zooms). Heights follow the screen as the phone's bars come and go. The score and the
+  sounds share one audio channel that pauses when you leave the game. Every word that opens a description, every chip and
+  every stat row on the You, Profile, Path and Holdings pages is now at least a thumb wide and tall to tap, with the lines
+  looking the same (the skills rows wait for the new skills page). Saving a game to a file keeps working in the browser;
+  the phone's own file hand-off comes with the phone app.
+
 ## v2.1.0-alpha.10 (2026-11-18 06:39 ET) · Reasons for everything: no Marshal, minds that decide, skills that grow like people, doors that open by standing, and a map with roads
 
 - **The Dynasty tab explains its figures.** An ending found in an earlier life says how many lives found it, and the

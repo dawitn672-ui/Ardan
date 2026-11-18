@@ -172,23 +172,23 @@ ${drift(`#title.tl-vista .tl-logo .tl-seal{animation:tlSeal 420ms cubic-bezier(.
 :root[data-theme] #title.tl-vista .sub{color:#d9cfe8;text-shadow:0 1px 2px rgba(10,12,30,.8)}
 :root[data-theme] #title.tl-vista .btns button.ghost{background:rgba(14,16,36,.62);border-color:rgba(233,226,212,.42);color:#f1ead9}
 /* cycle 2 (visual F1): one composition. The logo at 38% of the height, one line of counts, the primary 64 px below */
-#title.tl-vista{display:flex;flex-direction:column;align-items:center;min-height:100vh;box-sizing:border-box;padding-top:max(24px,calc(38vh - 96px))}
+#title.tl-vista{display:flex;flex-direction:column;align-items:center;min-height:100vh;min-height:100dvh;box-sizing:border-box;padding-top:max(24px,calc(38vh - 96px));padding-top:max(24px,calc(38dvh - 96px))}
 :root[data-theme] #title.tl-vista .logo.tl-logo{font-size:clamp(56px,calc(var(--t-display,44px) * 1.6 * var(--tx,1)),112px)}
 #title.tl-vista .blurb.tl-count{max-width:none;margin:10px 0 0;font-family:var(--f-ui,sans-serif);font-size:calc(17px * var(--tx,1));letter-spacing:.08em;font-variant-numeric:tabular-nums;text-shadow:0 1px 3px rgba(10,12,30,.9)}
 #title.tl-vista .btns{margin-top:64px;max-width:min(720px,94vw);display:flex;flex-wrap:wrap;justify-content:center}
 @media (min-width:1600px){
   #title.tl-vista .tl-bust{width:clamp(320px,21vw,420px)}
-  #title.tl-vista .tl-b0{left:4vw;bottom:-2vh}
-  #title.tl-vista .tl-b1{right:calc(4vw + clamp(250px,17vw,340px));bottom:6vh;width:clamp(300px,19vw,380px)}
-  #title.tl-vista .tl-b2{right:2vw;bottom:-3vh;width:clamp(320px,21vw,420px)}
+  #title.tl-vista .tl-b0{left:4vw;bottom:-2vh;bottom:-2dvh}
+  #title.tl-vista .tl-b1{right:calc(4vw + clamp(250px,17vw,340px));bottom:6vh;bottom:6dvh;width:clamp(300px,19vw,380px)}
+  #title.tl-vista .tl-b2{right:2vw;bottom:-3vh;bottom:-3dvh;width:clamp(320px,21vw,420px)}
 }
 /* the phone: the sky, two ridges and one bust behind the logo, faint, still */
 @media (max-width:900px){
   #title.tl-vista .tl-busts{display:block;position:absolute;left:0;right:0;top:0;height:auto}
   #title.tl-vista .tl-bust{display:none;animation:none!important}
-  #title.tl-vista .tl-b0{display:block;position:absolute;left:50%;top:max(4px,calc(38vh - 190px));bottom:auto;width:min(120px,32vw);transform:translateX(-50%);opacity:.4;filter:none}
+  #title.tl-vista .tl-b0{display:block;position:absolute;left:50%;top:max(4px,calc(38vh - 190px));top:max(4px,calc(38dvh - 190px));bottom:auto;width:min(120px,32vw);transform:translateX(-50%);opacity:.4;filter:none}
   #title.tl-vista .tt-sky svg.tl-clouds{display:none}
-  #title.tl-vista{padding-top:max(20px,calc(38vh - 70px))}
+  #title.tl-vista{padding-top:max(20px,calc(38vh - 70px));padding-top:max(20px,calc(38dvh - 70px))}
   #title.tl-vista .btns{margin-top:40px}
   /* the logotype stays inside a 375 px screen, its brush stroke and seal with it */
   :root[data-theme] #title.tl-vista .logo.tl-logo{font-size:min(64px,12vw);padding-left:.35em;padding-right:.35em}

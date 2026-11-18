@@ -466,7 +466,7 @@
       '.at-side .at-card{margin:0}',
       '.at-realm{margin:6px 0}.at-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}.at-chip{font-size:12px}',
       '.at-roads{margin:4px 0 0 16px;padding:0}',
-      '#game.phone .phone-log .at-map{min-height:60vh}',
+      '#game.phone .phone-log .at-map{min-height:60vh;min-height:60dvh}',
     ].join('\n');
     (document.head || document.documentElement).appendChild(st);
   }

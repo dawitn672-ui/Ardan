@@ -140,7 +140,7 @@ export default {
   // and a phone's 420 and 360 with no sideways scroll
   async pfFits(pg) {
     // P2 (D-041): the clean page's own budgets, well under B5's ratchet (it was 270/50 and 230/40 on a laptop, 200/40 and 150/30 on a phone)
-    const BUDGET = { desk: { all: { words: 150, controls: 50 }, page: { words: 100, controls: 30 }, screens: 1 }, phone: { all: { words: 110, controls: 35 }, page: { words: 70, controls: 22 }, screens: 2 } };
+    const BUDGET = { desk: { all: { words: 150, controls: 50 }, page: { words: 100, controls: 30 }, screens: 1 }, phone: { all: { words: 110, controls: 35 }, page: { words: 70, controls: 22 }, screens: 2.1 /* I1-2: the stat rows are 44 points tall now (order 62's tap targets), a tenth of a screen on a 360 phone */ } };
     const probe = (await import('../../../tools/lib/clutter.mjs'));
     const out = [];
     for (const [vw, vh, kind] of [[1366, 768, 'desk'], [420, 900, 'phone'], [360, 740, 'phone']]) {

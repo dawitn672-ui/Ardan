@@ -11,6 +11,7 @@ export default {
   async scoreSilentUntilAsked(pg) {
     const r = await pg.evaluate(async () => {
       const made = { rt: 0, off: 0 }, AC = window.AudioContext, OC = window.OfflineAudioContext;
+      UI.AUDIO.reset();   // the page's one shared context (60-audio-context): start from none
       window.AudioContext = function (o) { made.rt++; return new AC(o); };
       window.OfflineAudioContext = function (a, b, c) { made.off++; return new OC(a, b, c); };
       A.newGame({ seed: 7301, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 });
@@ -27,13 +28,16 @@ export default {
       const waiting = made.rt === 0;
       document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
       const touched = made.rt;
+      UI.SCORE.stop();
+      await new Promise(res => setTimeout(res, 400));
+      const state = UI.SCORE.stats().state;   // the shared context stays open for the effects
+      UI.SCORE.start(); const again = made.rt;   // turned on again: no new context
       UI.SCORE.stop(); UI.set.music = false;
       window.AudioContext = AC; window.OfflineAudioContext = OC;
-      await new Promise(res => setTimeout(res, 400));
-      return { menu, before, idle, waiting, touched, closed: UI.SCORE.stats().state };
+      return { menu, before, idle, waiting, touched, closed: state, again };
     });
-    const ok = r.menu && r.before === 0 && r.idle && r.waiting && r.touched === 1 && r.closed === 'closed';
-    return { ok, detail: `a year played, every tab drawn, the menu opened, a click and a key with the music off: ${r.before} audio contexts; saved on, none until a touch (${r.waiting}), then ${r.touched}; turned off it is ${r.closed}` };
+    const ok = r.menu && r.before === 0 && r.idle && r.waiting && r.touched === 1 && r.again === 1 && r.closed !== 'closed';
+    return { ok, detail: `a year played, every tab drawn, the menu opened, a click and a key with the music off: ${r.before} audio contexts; saved on, none until a touch (${r.waiting}), then ${r.touched}; turned off the shared context is ${r.closed} and turning it on again made ${r.again}` };
   },
 
   // the same place and date compose the same piece; other places and dates compose others; the pieces have the shape
@@ -219,7 +223,7 @@ export default {
       return { has, started, live1, g1, g2, saved: { music: saved.music, vol: saved.musicVol }, hid, frozen, shown, ticking, checkedNow, after: st, peek: SC.peek() === null };
     });
     const ok = r.has && r.started && r.live1 > 0 && r.g1 > 0.3 && Math.abs(r.g2 - 0.04) < 0.01 && r.saved.music === true && r.saved.vol === 20 &&
-      r.hid === 'suspended' && r.frozen && r.shown === 'running' && r.ticking && r.checkedNow && r.peek && r.after.live === 0 && r.after.state === 'closed';
+      r.hid === 'suspended' && r.frozen && r.shown === 'running' && r.ticking && r.checkedNow && r.peek && r.after.live === 0 && r.after.state !== 'closed';
     return { ok, detail: `menu has the toggle and slider ${r.has}; on: ${r.live1} sources playing at gain ${r.g1.toFixed(2)}; slider to 20: gain ${r.g2.toFixed(3)}, saved ${JSON.stringify(r.saved)}; hidden tab ${r.hid}, scheduler stopped ${r.frozen}; shown ${r.shown}, ticking ${r.ticking}; off: ${r.after.live} sources left, context ${r.after.state}` };
   },
 
