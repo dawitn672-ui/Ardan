@@ -38,6 +38,15 @@
   };
   M.pastSpan = p => !!(p && p.alive && A.age(p) > M.maxLife(p));
 
+  // the lore's members of a house first met long after 1105 (A.famMembers) are as old as the lore's birth years make them:
+  // one already past his span died before the story reached the house, of his years, at his people's usual span
+  M.lateBorn = function (ids) {
+    for (const id of ids || []) {
+      const p = A.P(id); if (!M.pastSpan(p)) continue;
+      const R = GD.RACES[p.race] || GD.RACES.human;
+      p.alive = false; p.died = Math.min(A.S.year - 1, p.born + (R.life || 62)); p.cause = 'old age';
+    }
+  };
   // who the older passes already weigh: the rulers, the player's acquaintances, the court's title holders
   M.covered = function () {
     const S = A.S, pc = A.pc(), out = new Set();
@@ -81,16 +90,19 @@
     return true;
   };
 
-  M.year = function () {
+  // agedOnly (each month): only the body's end, for anyone made during the year already past his span (a house's lore
+  // members met late, a lore figure brought in): no one walks past it until the next New Year
+  M.year = function (agedOnly) {
     const S = A.S; if (M.OFF || !S || !S.people) return [];
-    const pc = A.pc(), covered = M.covered(), hard = M.hardYear(), out = [];
-    M.stats.years++;
+    const pc = A.pc(), covered = agedOnly ? null : M.covered(), hard = agedOnly ? null : M.hardYear(), out = [];
+    const salt = agedOnly ? `mortm|${S.year}|${A.absDay ? A.absDay() : 0}` : `mort|${S.year}`;
+    if (!agedOnly) M.stats.years++;
     for (const id of Object.keys(S.people)) {
       const p = S.people[id];
-      if (!p || !p.alive || id === S.pc || p.npcTemp) continue;
+      if (!p || !p.alive || id === S.pc) continue;
       const aged = M.pastSpan(p);
-      if (!aged && covered.has(id)) continue;
-      const r = F.rng(`mort|${S.year}|${id}`);
+      if (!aged && (agedOnly || p.npcTemp || covered.has(id))) continue;
+      const r = F.rng(`${salt}|${id}`);
       let cause = null;
       if (aged) cause = CAUSE_AGE[Math.floor(r.next() * CAUSE_AGE.length)];
       else {
@@ -98,7 +110,7 @@
         if (!(r.next() < o.q)) continue;
         cause = causeOf(p, o, r);
       }
-      F.sandbox(`mort|${S.year}|${id}`, () => {
+      F.sandbox(`${salt}|${id}`, () => {
         A.kill(p, cause || (A.naturalCause ? A.naturalCause(p) : 'a fever'));
         if (!p.alive && pc && !(pc.rel && pc.rel[id])) M.tell(p);
       });
@@ -107,6 +119,7 @@
     return out;
   };
   (A.onYear = A.onYear || []).push(function () { try { M.year(); } catch (e) { console.error('mortality', e); } });
+  (A.onMonth = A.onMonth || []).push(function () { try { M.year(true); } catch (e) { console.error('mortality (month)', e); } });
 
   // the check: no one but the player outlives his people's greatest age (held at 0, tests/coherency-baseline.json)
   if (A.COHERENCY && A.COHERENCY.add) A.COHERENCY.add('alive past the greatest age', () => {
