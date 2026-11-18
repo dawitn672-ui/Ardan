@@ -1409,6 +1409,16 @@ Each failure, its cause and the fix:
   twenty, depending on the pool. The shift in the world from the R2 and D9 merge only brought such a draw to light. The
   name being replaced is now avoided too, and world 9117 has no twins.
 
+- **Addendum (long run 12 on c2e9e0a, branch `reach-pure`).** `npcInitiativeDeterminism` failed: "same while looking
+  at people: false". R2's view was the suspect but is not the cause: a build without 9999960-reach fails the same way,
+  and a run that compares the world before and after each look found no change from any person view. The cause was the
+  release's `A.mktInit` (`18-event-view-b.js`). A realm's market is made the first time anything asks for it, and for a
+  realm founded that month (NEW-3, 1116) the first to ask was a tab drawn by the looking run. The market's starting
+  prices drew `A.rf`, so the random stream moved and the worlds parted. The jitter is now a hash of the realm and the
+  good (`A.mktJitter`, the same 0.92 to 1.08 spread, no draw), so a market made inside a view changes nothing else.
+  The R2 paths (`A.REACH.view`, `filterOpts`, `closedLine`, `knowBtn`) were checked again: they read only. No A.rand,
+  no A.S write, no record; `A.WHY.decide` is reached only from the actions.
+
 ### H-077 · 2026-11-16 ET · D9: the map's ground, read by the game and drawn (D-061)
 - **Branch** `d9-map` from `v2-integration` (`7aee21c`), not pushed. Steps: `aec5924` the ground engine
   (`src/map/engine/ground.js`, `tests/v2/ground.test.js`), `e1c7f63` map version 3 (towns on water, oases on dry land, terrain
