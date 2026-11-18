@@ -38,7 +38,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: node tests/run.mjs index.html --workers=4 --tier=long --shard=${{ matrix.shard }}/8 --times-out=times-${{ matrix.shard }}.json
+      # --limit=3600 (2026-11-18): bot-life tests that make hundreds of new worlds (temperMovesTheWar: 384 lives, each with
+      # D9's ground) ran 1,220 s to past 1,800 s on a slow runner; the default 1800 s cut them off mid-run (H-078).
+      - run: node tests/run.mjs index.html --workers=4 --tier=long --limit=3600 --shard=${{ matrix.shard }}/8 --times-out=times-${{ matrix.shard }}.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
