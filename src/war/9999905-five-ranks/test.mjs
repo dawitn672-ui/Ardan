@@ -78,7 +78,7 @@ export default {
           const r = A.S.realms[id]; if (!r || r.alive === false) continue;
           y.realms++;
           if (r.council && r.council.marshal) y.seat++;
-          if (P.firstHost(r)) { y.firsts++; if (P.seniorGeneral(r)) y.senior++; }
+          { const d = P.firstHost(r); if (d) { y.firsts++; if (P.seniorGeneral(r)) y.senior++; else (y.vacant = y.vacant || []).push(id + '|' + d.id); } }
         }
         for (const k in A.S.posts.h) if (/^seat:.*:marshal$/.test(k)) y.keys++;
         for (const id in A.S.people) {
@@ -112,12 +112,19 @@ export default {
       noStyle: !r.styles.length,
       hostsUnder12k: Y.every(y => !y.over),
       everyHostAGeneral: Y.every(y => !y.noGen) && Y.every(y => y.hosts > 0),
-      seniorAtCouncil: Y.slice(1).every(y => y.senior >= y.firsts - 2) && last.senior > 0,
+      // (CI 143: the crown names a first host's General at each month's end (P.fillGenerals), so a host formed or
+      // changed at the turn of the year stands empty until the month is out, and a yearly look can catch several at once:
+      // seed 7 had three realms at war re-form their first hosts at the turn of 1135, all named within the month. Read
+      // month by month over the same 30 years, 8 vacancies in 188 looks, every one filled by the next. The fault is a
+      // vacancy that outlasts a year of monthly namings, or many of them: none seen at two yearly looks running, and
+      // at most 3% of the realm-years empty (measured: 4 of about 830). H-079.)
+      seniorAtCouncil: Y.slice(1).every((y, i) => !(y.vacant || []).some(k => (Y[i].vacant || []).includes(k))) &&
+        Y.slice(1).reduce((a, y) => a + (y.firsts - y.senior), 0) <= 0.03 * Y.slice(1).reduce((a, y) => a + y.firsts, 0) && last.senior > 0,
       oneHolder: Y.every(y => !y.audit) && !r.strict.length,
       pagesClean: !r.page.length,
     };
     const ok = Object.values(checks).every(Boolean);
-    return { ok, detail: `${Object.entries(checks).filter(x => !x[1]).map(x => 'FAILED ' + x[0]).join(', ') || 'all held'} | ${Y.length - 1} years to ${last.y}; hosts ${Math.min(...Y.map(y => y.hosts))}-${Math.max(...Y.map(y => y.hosts))}, over 12,000 ${Y.reduce((a, y) => a + y.over, 0)}, without a General ${Y.reduce((a, y) => a + y.noGen, 0)}; senior Generals at the end ${last.senior} of ${last.firsts} realms with a first host` +
+    return { ok, detail: `${Object.entries(checks).filter(x => !x[1]).map(x => 'FAILED ' + x[0]).join(', ') || 'all held'} | ${Y.length - 1} years to ${last.y}; hosts ${Math.min(...Y.map(y => y.hosts))}-${Math.max(...Y.map(y => y.hosts))}, over 12,000 ${Y.reduce((a, y) => a + y.over, 0)}, without a General ${Y.reduce((a, y) => a + y.noGen, 0)}; senior Generals at the end ${last.senior} of ${last.firsts} realms with a first host; first hosts empty at a yearly look ${Y.slice(1).reduce((a, y) => a + y.firsts - y.senior, 0)} of ${Y.slice(1).reduce((a, y) => a + y.firsts, 0)}` +
       `${r.styles.length ? ' | styles: ' + r.styles.join('; ') : ''}${r.page.length ? ' | pages: ' + r.page.join('; ') : ''}${r.strict.length ? ' | ' + r.strict.slice(0, 3).join('; ') : ''}` };
   },
 
