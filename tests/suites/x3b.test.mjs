@@ -101,6 +101,9 @@ export default {
         // (CI 143: after the market fix shifted every world, lives that end early left the eight at 396 scenes, four short of
         // the 400; two more lives stand by, played only when the eight fall short. H-079)
         { seed: 709, status: 'merchant', startAge: 26, sex: 'F', realm: 'POL-03' }, { seed: 710, status: 'artisan', startAge: 20, sex: 'M', realm: 'POL-01' },
+        // (H-081: two standbys were one world's margin. Six more, of the same stations, are played only while the scenes
+        // fall short, so a shifted world where several lives end early still reads its 400.)
+        ...['peasant', 'noble', 'merchant', 'artisan', 'serf', 'peasant'].map((status, i) => ({ seed: 711 + i, status, startAge: 20 + 3 * i, sex: i % 2 ? 'F' : 'M', realm: 'POL-0' + (1 + i % 6) })),
       ];
       const K = A.STAKES.KEY, FIELD = { health: 'health', honor: 'honor', fame: 'fame', piety: 'piety', happy: 'happy', infamy: 'infamy' };
       const capOf = (k, pc) => k === 'health' ? A.maxHealth(pc) : 100;

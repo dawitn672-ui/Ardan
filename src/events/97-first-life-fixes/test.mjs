@@ -77,7 +77,7 @@ export default {
       }
       if (pc.alive) break;
       }
-      out.seed = seed;
+      out.seed = seed; out.lived = pc.alive;   // (H-081: no priest of six worlds living through the months is a fault, said so)
       // a duty seen twice is held back for the rest of the life; the policy is read straight
       const duty = A.EV.du_ch_tithe, n0 = LF.n(pc, duty.id);
       pc.evN = pc.evN || {}; pc.flags.ev = pc.flags.ev || {};
@@ -91,7 +91,7 @@ export default {
     });
     if (r.err) return { ok: false, detail: r.err };
     const ok = r.confession <= 1 && r.master <= 1 && r.refills > 0 && r.freshRefill && r.held && r.tooSoon && r.later;
-    return { ok, detail: `80 months of clergy duties and study: confession ${r.confession}, "An old scholar" ${r.master}, fresh refills ${r.refills} (all unseen: ${r.freshRefill}); a duty seen twice held: ${r.held}, seen 5 years ago held: ${r.tooSoon}, 13 years ago allowed: ${r.later}; refills by door ${JSON.stringify(r.stats)} (seed ${r.seed})` };
+    return { ok: ok && r.lived, detail: `${r.lived ? '' : 'no priest of seeds 9711 to 9716 lived the eighty months; '}80 months of clergy duties and study: confession ${r.confession}, "An old scholar" ${r.master}, fresh refills ${r.refills} (all unseen: ${r.freshRefill}); a duty seen twice held: ${r.held}, seen 5 years ago held: ${r.tooSoon}, 13 years ago allowed: ${r.later}; refills by door ${JSON.stringify(r.stats)} (seed ${r.seed})` };
   },
 
   // 1c. The second tellings of NPC moves render with a real person, keep to the diet, and every choice plays

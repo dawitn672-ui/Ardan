@@ -27,5 +27,16 @@ export const HELPERS = () => {
       UI.ov = null; UI.tab = 'life'; UI.render();
     },
     raw: /\{[A-Za-z0-9_.]+\}/,
+    // World-robust tests (H-081; CLAUDE.md, "The net"). A test that needs a situation one world may lack (a war, a
+    // living priest, a council seat to empty) tries worlds in turn: fn(seed) returns a falsy value when that world does
+    // not have it, else its result. Returns { seed, res, tried }; seed and res are null when no world of the list had
+    // it, and the test then fails or skips saying so, naming the worlds tried.
+    trySeeds(seeds, fn) {
+      const tried = [];
+      for (const s of seeds) { tried.push(s); const res = fn(s); if (res) return { seed: s, res, tried }; }
+      return { seed: null, res: null, tried };
+    },
+    // n seeds from `from` on: T.seedRun(9711, 6) is 9711 to 9716
+    seedRun(from, n) { return Array.from({ length: n }, (_, i) => from + i); },
   };
 };

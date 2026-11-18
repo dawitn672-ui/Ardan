@@ -193,7 +193,11 @@ export default {
   async c6NineMonths(pg) {
     const r = await pg.evaluate(() => {
       const bad = [], days = [], gaps = [];
-      for (const seed of [91, 92, 93, 94]) {
+      // (H-081: four lives at least, and more, up to six, until five births are seen: the months are read off the births, and
+      // how many a few couples have is the world's draw (about one a life here). Five births spread over the year fall in
+      // fewer than three months about one time in a hundred; four, one in twenty)
+      for (const seed of T.seedRun(91, 6)) {
+        if (seed > 94 && days.length >= 5) break;
         T.enter({ seed, status: 'peasant', startAge: 18, sex: seed % 2 ? 'M' : 'F' });
         const pc = A.pc(), t = A.makeLoveInterest(pc); A.marry(pc, t);
         const conceived = new Map();

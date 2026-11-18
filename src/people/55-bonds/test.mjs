@@ -469,9 +469,14 @@ export default {
     // decision and A.WHY.warOdds a share of a logistic choice, which saturates; and since CI 140 the court's reasons (68's
     // memory of a wrong among them) weigh as the multipliers they were, so a pair with an old wrong starts high (0.65 with the
     // ledger ignored, 0.86 with it read: the chance x1.32, the odds x3.3)
-    const odds = q => q / Math.max(1e-9, 1 - q);
+    // (H-081: A.WHY.warOdds is null when the crown does not weigh a war on that neighbour at all: relations too good and no
+    // feud hot. The pair is the world's (the first realm with a neighbour of three provinces), and on a shifted world the
+    // ledger ignored left this pair at null, the grudge read at 0.0001: the ledger alone made the war thinkable, the most a
+    // grudge can move it. Both runs share every other gate (not at war, no truce, not allies), so null is the odds of 0.)
+    const odds = q => (q == null ? 0 : q / Math.max(1e-9, 1 - q));
+    const moved = r.pOn != null && (r.pOff == null ? r.pOn > 0 : odds(r.pOn) > odds(r.pOff) * 1.5);
     const ok = r.w === -35 && r.heirs === 1 && r.ruler0 !== r.ruler1 && /carried by/.test(r.origin1) && r.parts.length === 1 && r.offer.some(x => /grudge/.test(x)) &&
-      r.v0 >= r.bar && r.vOff >= r.bar && r.vOn < r.bar && /carried by/.test(r.allyHeir || '') && r.pOn != null && r.pOff != null && odds(r.pOn) > odds(r.pOff) * 1.5;
+      r.v0 >= r.bar && r.vOff >= r.bar && r.vOn < r.bar && /carried by/.test(r.allyHeir || '') && moved;
     return { ok, detail: `${r.b} takes ${r.a}'s capital ${r.capName}: "${r.origin0}" (${r.w}); ${r.ruler0} dies and ${r.ruler1} succeeds: "${r.origin1}"; tooltip "${r.parts[0]}"; offer reasons ${r.offer.join(' / ')}; ` +
       `${r.ax} would ally with ${r.ay} (${r.v0} against a bar of ${r.bar}); after "${r.allyHeir}" it stands at ${r.vOn} with the ledger read, ${r.vOff} with it ignored; ` +
       `odds of war a month on ${r.b}: ${r.pOff && r.pOff.toFixed(4)} → ${r.pOn && r.pOn.toFixed(4)} (×${(r.pOn / r.pOff).toFixed(2)}, vengeance ×${r.mul}); war log: "${r.why[0] || ''}"` };

@@ -155,6 +155,21 @@ provokes an error on purpose calls `expectError(/.../)`). A test that cannot run
 browser. Time with the runner's `cpu()` (main-thread CPU), never the wall clock. Known contradictions are counted in
 `tests/coherency-baseline.json`, which may only shrink.
 
+**World-robust tests (H-082).** Any change to the game moves the random stream, and every seeded world with it. A test
+must test the rule, not one world's luck:
+- **Seed fallback.** When a test needs a situation (a war, a living priest, a councillor to kill), try worlds in turn
+  with a cap: `T.trySeeds(T.seedRun(9711, 6), seed => { ...; return found; })` gives `{ seed, res, tried }`. Name the
+  world read in the detail. If none has it: SKIP with the reason when the situation is rare by design; FAIL, naming the
+  worlds tried, when its absence across the cap is itself a fault (no war in eighty crown-years).
+- **Pooled numbers, bars from measured spread.** Pool over several worlds or lives until the count is enough (a bar on
+  12 lives or 100 fights reads the world, not the rule). Measure the spread on several seeds, write the readings in a
+  comment, and set the bar outside it but where a broken rule still fails.
+- **Standby lives.** A life that ends early is followed by the next seed's; play standbys only while the count falls short.
+- **Poll, never sleep for a state.** `waitForFunction` with a timeout, not `waitForTimeout`, for anything that should come
+  to pass; a fixed wait is only for proving that nothing happens.
+- **Try it on a shifted world:** a scratch build whose `A.newState` draws one extra `A.rand()` after `A.seed(seed)` (never
+  committed) moves every world at once.
+
 The browser tests use the container's Playwright (`/opt/node-tools/node_modules/playwright`): if `npm ci` installs
 the pinned one, delete `node_modules/playwright*` or point `PLAYWRIGHT_PATH` at the container's copy.
 **A failure only CI sees** (layout off by a few px, a font metric): CI runs Playwright 1.56.1's Chromium 141, the

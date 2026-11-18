@@ -92,8 +92,14 @@ export default {
       // but they moved the dice, and the one pay-day line this seed's sixteen years held fell out of the world. This test
       // is about the company's own scenes, so the unit's work is stood down for it.
       const duty0 = A.UNITWORK && A.UNITWORK.onDuty; if (A.UNITWORK) A.UNITWORK.onDuty = () => false;
+      let lived = null, payLines = 0;
       try {
-        A.newGame({ seed: 9742, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+        // (H-081: the sixteen years are the test's frame, not the soldier's luck. A world where he dies or his realm falls
+        // inside them (both are the world's draws) is played again on the next seed, up to six; the pay day and the
+        // spacing of the company's scenes are then read on a life that served the whole time.)
+        lived = T.trySeeds([9742, 9744, 9745, 9746, 9749, 9750], seed => {
+        seen = []; lines.length = 0;
+        A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
         // CI 139 (after S1): against its first neighbour, Sylvaran, Aldmark fell in the ninth year of this forced war, and a
         // man of a fallen realm has no army to join ("There is no realm army here to join"), so the second pay day never
         // came. The test is about the company's memory, not who wins: the war is with Gorath, which this realm outlasts
@@ -109,12 +115,20 @@ export default {
           if (!A.pc().mil) A.enlist(A.pc());
           A.S.queue = []; A.advance(30);
         }
+        const R = A.realm('POL-01');
+        return A.pc().alive && R && R.alive !== false && A.absDay() - d0 >= 16 * 365 - 31;
+        });
         life = seen; seen = [];
-        // two costly fights won in one year by the soldier's battalion, in a fresh life
-        A.newGame({ seed: 9743, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
-        A.startWar('POL-01', A.neighbors('POL-01')[0], null, 'conquest'); A.enlist(A.pc());
+        payLines = lines.filter(t => /^Pay day in the /.test(t)).length;
+        // two costly fights won in one year by the soldier's battalion, in a fresh life (one whose soldier has a company
+        // within two years: the next seed when he has none)
         let M = null;
-        for (let g = 0; g < 24 && !M; g++) { A.S.queue = []; A.advance(30); M = A.pc().alive && A.pc().mil ? CO.mine(A.pc()) : null; }
+        for (const seed of [9743, 9747, 9748]) {
+          A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+          A.startWar('POL-01', A.neighbors('POL-01')[0], null, 'conquest'); A.enlist(A.pc());
+          for (let g = 0; g < 24 && !M; g++) { A.S.queue = []; A.advance(30); M = A.pc().alive && A.pc().mil ? CO.mine(A.pc()) : null; }
+          if (M) break;
+        }
         if (M) {
           A.S.queue = []; seen = []; delete A.pc().flags.co_honour_pend;
           const k0 = lines.length, provs = A.S.prov.filter(x => x && x.name).slice(0, 2);
@@ -132,10 +146,10 @@ export default {
         const l = L(ev);
         for (let i = 1; i < l.length; i++) { const gap = l[i].day - l[i - 1].day, prev = Math.max(...l.slice(0, i).map(x => x.lost)); if (gap < 2 * Q[ev] && !(ev === 'co_roll_call' && l[i].lost >= 2 * prev && gap >= 365)) bad.push(ev.slice(3) + ' again after ' + gap + ' days'); }
       }
-      return { bad, pay: L('co_pay_day').length, payLines: lines.filter(t => /^Pay day in the /.test(t)).length, roll: L('co_roll_call').length, word: L('co_captain_word').length, honour };
+      return { bad, pay: L('co_pay_day').length, payLines, roll: L('co_roll_call').length, word: L('co_captain_word').length, honour, seed: lived && lived.seed, tried: lived ? lived.tried.join(',') : '' };
     });
-    const ok = !r.bad.length && r.pay === 1 && r.payLines >= 1 && !!r.honour && r.honour.scenes === 1 && r.honour.lines === 1;
-    return { ok, detail: `sixteen years of war: pay day ${r.pay} scene(s) and ${r.payLines} log line(s); roll calls ${r.roll}, captain's words ${r.word}${r.bad.length ? '; ' + r.bad.join(', ') : ''}; two names for the colours in a year: ${r.honour ? r.honour.scenes + ' scene(s), ' + r.honour.lines + ' log line(s)' : 'no company'}` };
+    const ok = r.seed != null && !r.bad.length && r.pay === 1 && r.payLines >= 1 && !!r.honour && r.honour.scenes === 1 && r.honour.lines === 1;
+    return { ok, detail: `${r.seed == null ? `no soldier of worlds ${r.tried} served sixteen years in a standing realm; ` : `world ${r.seed}: `}sixteen years of war: pay day ${r.pay} scene(s) and ${r.payLines} log line(s); roll calls ${r.roll}, captain's words ${r.word}${r.bad.length ? '; ' + r.bad.join(', ') : ''}; two names for the colours in a year: ${r.honour ? r.honour.scenes + ' scene(s), ' + r.honour.lines + ' log line(s)' : 'no company'}` };
   },
 
   async coEveryBattalion(pg) {
