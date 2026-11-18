@@ -16,6 +16,7 @@ export * as nobility from '../../nobility/engine/nobility.js';
 export * as diplomacy from '../../diplomacy/engine/diplomacy.js';
 export * as orders from '../../war/engine/orders.js';
 export * as war from '../../war/engine/war.js';
+export * as surrender from '../../war/engine/surrender.js';
 export * as names from '../../world/engine/names.js';
 export * as world from '../../world/engine/world.js';
 export * as events from '../../events/engine/events.js';
