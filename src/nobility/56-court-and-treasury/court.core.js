@@ -598,7 +598,7 @@ RI.joinFactions = function (r) {
     let f = S0.factions.find(x => x.realm === r.id && x.kind === kind);
     // W1-6 (D-098): the court voice's house decides as any house does (A.WHY.factionChoice, with §13.3's tie and
     // standing), no longer A.chance(.3)
-    const rec = A.WHY ? A.WHY.factionChoice(r, v.h, null, kind, f ? f.members.length : 0, A.PEACE ? A.PEACE.joinExtra(r, v.h, kind, f) : null) : null;
+    const rec = A.WHY ? A.WHY.factionChoice(r, v.h, null, kind, f ? f.members.length : 0, A.PAX ? A.PAX.joinExtra(r, v.h, kind, f) : null) : null;
     if (!rec || rec.chose !== 'join') continue;
     if (!f) { f = { id: 'F' + (S0.nextFaction = (S0.nextFaction || 0) + 1), realm: r.id, kind, members: [], leader: v.h.id, start: S0.year, discontent: 0, riBy: v.p.id }; S0.factions.push(f); }
     f.members.push(v.h.id);

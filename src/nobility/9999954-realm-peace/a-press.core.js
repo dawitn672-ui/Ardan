@@ -1,23 +1,23 @@
 // W1-6 "the realm's peace" (docs/design/war.md §13, §9.4, §11.3 point 6; order 54, rule 18; D-097 to D-103).
 // Part a: stability as a reading of named pressures, each lord's stance, and a house's loyalty from named terms.
 //
-//   A.PEACE.press(r)        the pressures on a realm (war.md §13.1): the realm's old temper (its custom), the throne's
+//   A.PAX.press(r)        the pressures on a realm (war.md §13.1): the realm's old temper (its custom), the throne's
 //                           right, the lords, the commons, the towns, the faith, the army and the king himself; each a
 //                           term { k, v, label, src } in points of stability. Pure.
-//   A.PEACE.target(r)       their sum: where the realm's stability settles. The release's AI year moves stability 15% of
+//   A.PAX.target(r)       their sum: where the realm's stability settles. The release's AI year moves stability 15% of
 //                           the way each year (its old pull toward the lore's word, without the ±3 of luck); a ruling
-//                           player's year adds the lords' and the king's push (A.PEACE.yearPush) in place of that luck.
-//   A.PEACE.word(v)         firm, steady, uneasy, shaking, breaking (the player reads the word; its reasons open on a press)
-//   A.PEACE.houseTerms(h)   a house's loyalty to the crown as named terms (war.md §13.7: h.op as the sum of its reasons):
+//                           player's year adds the lords' and the king's push (A.PAX.yearPush) in place of that luck.
+//   A.PAX.word(v)         firm, steady, uneasy, shaking, breaking (the player reads the word; its reasons open on a press)
+//   A.PAX.houseTerms(h)   a house's loyalty to the crown as named terms (war.md §13.7: h.op as the sum of its reasons):
 //                           the crown's hand (authority and conscription laws), the throne's firmness, his oath's weight
 //                           and rights, a seat or office held, wrongs the crown did him (W1-3's grievances), his temper,
 //                           another faith or people, a great house that could rule alone, the realm's lost wars, taxes.
-//                           Pure; never stored (A.PEACE.houseWhy reads them on demand).
-//   A.PEACE.housesYear(r)   each house's loyalty moves a quarter of the way to its terms' sum. No dice: the release's
+//                           Pure; never stored (A.PAX.houseWhy reads them on demand).
+//   A.PAX.housesYear(r)   each house's loyalty moves a quarter of the way to its terms' sum. No dice: the release's
 //                           random walks of ±2 (every realm) and -4..+3 (a ruling player's) are gone.
-//   A.PEACE.stance(h)       loyal, content, cool, aggrieved or plotting (war.md §13.2), with the terms
+//   A.PAX.stance(h)       loyal, content, cool, aggrieved or plotting (war.md §13.2), with the terms
 (function () {
-  const PE = A.PEACE = A.PEACE || {};
+  const PE = A.PAX = A.PAX || {};
   const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
   const r1 = x => Math.round(x * 10) / 10;
   const live = p => !!(p && p.alive);

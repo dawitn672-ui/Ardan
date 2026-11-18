@@ -40,6 +40,8 @@ spears is told only to its ruler and councillors).
 | The crown names the General of its first host (`P.fillGenerals`) | the best by command, renown and grade | the three best before the crown through `A.WHY.appointGeneral`: merit nearly settles it (band 0.3); kin of the king's house and a wary king's fear of a famous man bend it |
 | A war ends (W1-5) | the war score at 80, a roll on a fallen capital or weariness, a white peace by a roll | a side's decider asks for terms or fights on (kind `yield`), the victor names his terms (`terms`), the asker takes or refuses them, all through `A.WAR` (`src/war/9999953-surrender`); defeat is a fact. The whole record keeps a war's records last when it passes its cap |
 
+| The realm's peace (W1-6) | factions on a timer and persona dice, risings, claims and successions on rolls, no coups, counsel on a roll | a league's petition, the crown's answer and theirs, an arrest, claims, risings, sides, coups and their stages, private and border wars, the army's quarrel, counsel of war, an alliance or a pact (`src/nobility/9999954-realm-peace`, `A.PAX`); `A.WHY.factionChoice` takes extra reasons (a tie to the houses sworn, the standing to lead) |
+
 The rest are listed with file, line and the reasons they should use in `docs/design/r1-audit.md`, and counted by
 `tools/lint-reasons.mjs` (baseline `tests/reasons-baseline.json`, which may only fall).
 

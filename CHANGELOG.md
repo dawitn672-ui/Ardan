@@ -5,6 +5,29 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **A realm's peace now has reasons you can read.** A realm's stability is no longer a number that wanders by luck: it
+  settles toward what holds the realm up and what pulls it down (its old temper, the throne's right, the lords, the
+  commons, the towns, the faith, the army, the ruler himself). Press the word (firm, steady, uneasy, shaking, breaking) to
+  read them. A great house's loyalty to the crown follows its own reasons too: the crown's laws and taxes, a seat or an
+  office, wrongs the crown did it, the head's ambition or honour, another faith, wars lost.
+- **Leagues of lords form, petition and rise for reasons.** Two houses or more with the same grievance and a tie between
+  them (a border, a liege, kin) make a league under a house great enough to lead it. Its leader decides when to bring
+  its demand; the crown grants it, buys them off, arrests the leader or refuses; and the league backs down, waits,
+  withholds its taxes and men, or rises. When it rises, every other great lord chooses the crown, the rebels or his own
+  hall.
+- **Claims, risings and coups have a cause.** A claimant presses or kneels by his blood, the crown's right, the realm's
+  state and who would back him. The commons rise only with a leader of their own. A coup needs an opening (a king losing
+  his war, ill, a child; a shaking realm), someone who can reach the king, and a motive; the plotters approach others one
+  by one, and any of them may tell the crown. If you can reach the king, they may come to you, and the choice is yours.
+- **Lords quarrel among themselves.** Two great houses with a boundary, a slight and bad blood between them bring their
+  quarrel to the crown; whoever loses the judgment remembers it, and may defy it, raid, and fight it out unless the crown
+  enforces its peace. As a ruler, you judge such quarrels. A march lord may raid across a hostile border, and his king
+  disowns him, backs him, or lets the march lords fight it out. A great lord set under a General of lower birth may come
+  late, or take his men home.
+- **A ruler can be made to sue for peace:** by lords who refuse further service, by a council that votes for it where the
+  law gives it the vote, or by a coup that puts in a man who will sign. A councillor's counsel of war, an alliance or a
+  pact is weighed by the ruler with his own reasons.
+
 - **Wars end only when one side asks for terms or can fight no more.** There is no hidden war score, no timer and no
   peace nobody asked for. Each month, and after a great battle, each side's ruler weighs his reasons to fight on (his
   cause, his pride, his host, the land he holds, the battles he won, what yielding would cost him) against his reasons to

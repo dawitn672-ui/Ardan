@@ -1890,3 +1890,140 @@ then he weighs the facts as they stand.
    record (`w5OldSaves`).
 5. **lint-reasons 62 → 58.** A stamp made at the turn of the year (the release's `A.absDay` reads the new year with the old
    year's last day while the year turns) lies a year ahead; `A.WAR` brings such stamps back (`w.d0`, the envoys' days).
+
+### D-097 · W1-6: stability is a reading of named pressures; a house's loyalty the sum of named terms (2026-11-18; order 54, rule 18; war.md §13.1, §13.2, §13.7)
+1. **`r.stability` stays the number other code reads** (war.md §13.7), and the release's many one-off writers stay (a lost
+   war, an empty chest, a coup, an event). What changed is the yearly drift: the AI's year moved stability 15% toward
+   the lore's word minus weariness and debt, **plus a roll of ±3**; it now moves 15% toward `A.PAX.target(r)`, the sum
+   of named pressures (`A.PAX.press`): the realm's old temper (the lore word, the old target's base), the throne's
+   right (legitimacy, a child, no heir to an ageing ruler), the lords (every house's loyalty weighed by its swords; leagues
+   against the crown), the commons, the towns, the faith and the army (the Polity's estate approvals without their reading
+   of unrest, which is stability itself and would feed back; weariness and debt, the old target's terms), the king
+   himself (ill, old, famed; at war), the economy law. A ruling player's year keeps the release's own terms (taxes, the
+   Chaplain, weariness, debt, legitimacy, war) and the lords' and the king's push takes the place of the ±3
+   (`A.PAX.yearPush`, a fifth of their pressure, at most ±3). *Why:* §13.7's `clamp(Σ r.press[])` would make every one of
+   the release's 49 writers a stored term with a fade; the pull toward the reading makes the gap between stability and its
+   pressures exactly "what has happened lately, fading", which is what the player is shown (`A.PAX.reasons`).
+   **Conflict recorded:** no `r.press[]` is stored; old saves need no conversion ("the past" of §13.7 is the gap).
+2. **A house's loyalty (`h.op`) moves a quarter of the way each year to the sum of its terms** (`A.PAX.houseTerms`): an
+   oath sworn (52), the crown's authority law (+6 to -14, the release's drift weights) and its right to call men, taxes,
+   the throne's firmness, his oath's weight and rights (the Polity's contract), a seat or office, W1-3's grievances (a
+   refusal punished, a General passed over, a judgment lost, a raid disowned; fading over 12 years), his temper (ambition
+   sours, honour holds), another faith or people than the crown's, a duke or marquis who could rule alone, the realm's
+   lost and won wars. The release's random walks are gone (±2 a year in `A.factionsYear`, -4..+3 in `A.vassalYear`); events
+   still move loyalty and fade. Never stored: read on demand (`A.PAX.houseWhy`, the Loyalty note). *Why:* no field is
+   added to ~1,000 houses (rule 21); the terms are all records the game already keeps.
+3. **Measured** (two worlds of 25 years, seeds 11 and 12, before → after): stability of living realms p10/median/p90
+   39-43/54-59/71-77 → 36-41/59-60/73; houses' loyalty p10/median/p90 34/53/77-81 → 41-42/52-54/67, under 22 3.6% →
+   0.1%. The spread of loyalty is narrower without the walk, so fewer houses fall deep enough to want independence; the
+   upheavals now come from named grievances.
+
+### D-098 · W1-6: factions by §13.3's test and a ladder of decisions (2026-11-18; war.md §13.3; D-069)
+1. **Joining** stays W1-2's `A.WHY.factionChoice` with two more reasons (`A.PAX.joinExtra`): a tie to the houses sworn
+   (a shared liege, a shared border, kin, a marriage: +0.6) or none (-0.9); raising the banner first needs the standing
+   to lead (a great house, its head's ambition) or not (a small house: -1.4). A league of one breaks up after its first
+   year (the release kept one for three, and an independence faction of one for ever): §13.3's "two or more".
+2. **The anger (`f.discontent`) is a reading**, not a clock: half last year's (the events that add anger fade) and half
+   the reading (twice the members' grievance below 55, sixty times the league's share of the swords). The release's +12
+   or +4 a year and the demand at 60 with 40% of the swords are gone.
+3. **The ladder:** the leader petitions or murmurs (kind `petition`: the league's swords, its anger, its cause's urgency,
+   the throne's firmness; against, the danger of petitioning under a heavy crown, a league still new); the crown grants,
+   buys (pensions and offices: the old bribe's price), arrests (needs high authority and a spymaster of 30) or refuses
+   (kind `facanswer`: the league's swords against the rest, the throne, the cost of what is asked, the chest, the
+   precedent, pride); refused or arrested, the league backs down, waits, withholds its taxes and men (half its share of
+   the realm's income, stability -3) or rises (kind `facrise`: its swords, anger, the throne, a foreign backer, an arrest
+   attempted, castles to rise from). An arrested leader flees or is taken (kind `arrest`). *Divide* (setting members
+   against each other through their feuds) is not built: no feud between houses of one league is kept yet (left).
+4. **Retired** to `archive/w1-6-faction-dice`: 20-ai-personality's `A.aiFactionAnswer` and `A.aiRevolt` (persona-weighted
+   dice). The release's `facRefuse` roll (`0.35 - power / 3`) and the purge's arrest roll are replaced in place (the
+   player's refusal is answered by the league's reasons; the purge's arrest by the leader's flight). 56's `RI.deal` (the
+   New Year's offer) and `RI.joinFactions` (a court voice's house) decide through `A.WHY`.
+5. The rulers' log keeps its lines (`yieldfac`, `defyfac`, `revolt`, `backdown`, `facwait`) from the records.
+
+### D-099 · W1-6: risings are decisions of named people; the claimant is the eldest, not a random one (2026-11-18; war.md §13.4)
+1. **A claimant presses or kneels** (kind `claim`, `A.PAX.claimQ`): his blood (a brother or child of the old ruler), a
+   great house's name, the crown's doubted right, the realm shaking, lords sore enough to back him, a child heir, his
+   ambition; against, his oath and the realm's peace (2.2) and the crown's hosts. Asked at a ruler's death in place of the
+   release's contested-succession roll (`0.12 + (100 - stability) / 500` for a child heir, smaller for a grown one) and
+   20's persona roll; each year in a breaking realm (stability under 18) in place of the 1-in-20 roll; and by 20's
+   `A.aiPressClaim`, which now asks it.
+2. **Who claims** (`A.PAX.claimantOf`): the eldest grown brother or child of the old ruler, else the head of the
+   realm's strongest great house; the release picked one at random. **The player is never made a claimant by the AI**
+   (the release put him in a war of succession whenever its random pick fell on him): nothing is handed to him that he
+   did not seek (order 54); he claims through the Polity's `po_claim` and `po_deposed`.
+3. **A lord rises against a ruling player** (kind `rise`, from `A.vassalYear`, only below loyalty 25): his grievance, the
+   throne, his men beside the crown's, his league, a foreign backer; his oath and the block. Was `A.chance(0.15)` under
+   loyalty 12.
+4. **The commons rise** (kind `commons`, from `A.rulerYear` below stability 25) only with a voice, a named leader of the
+   commons (the Polity's, else the Chaplain); their grievance, bread, taxes, sons taken, a lost war, the occasion; the
+   crown's soldiers. Was `A.chance(0.35)` under 15. No voice, no rising.
+5. **Sides** (kind `side`): when a league rises, each other great lord (at most twelve) chooses the crown, the rebels (his
+   men go over: 60% of his strength) or his hall. **A neighbour takes a side in a war of succession** (kind `war`):
+   bad blood or an alliance, his strength, his weariness; was `A.chance(0.35)` and `A.chance(0.4)`.
+
+### D-100 · W1-6: coups, with an opening, access and a motive, settled by who holds what (2026-11-18; war.md §13.5)
+1. **No opening, no question.** Each realm's year (its month fixed by its id) asks the plot question only when the king is
+   losing his war (W1-5's `A.WAR.standing`), ill, a child or very old, the realm shaking (under 30), or a war was lost in
+   two years. Only those with access are asked (heir, consort, the king's grown siblings, the councillors, the senior
+   General; never the player, who is approached instead), and only with a motive (ambition of 0.3 or more, hatred of the
+   king, his house's grievance, royal blood, his house in a league against the crown, saving the realm from a losing war).
+   Weights: the oath 2.8, the block 1.6, the king's blood 1; each opening 0.5.
+2. **The night is counted, not rolled:** the host at the capital 3 (the senior General; with him the king's guard too),
+   the heir and the king's person 2 each, the gates, the treasury, the seals, the faith's word and the royal blood 1
+   each; the king's guard 2 for the crown. More than one over the loyal: crowned; within one: contested (a war of
+   succession with the plotter as claimant); else failed. A month after the plot began.
+3. **After:** the plotter is crowned through `A.makeRuler`; the old ruler dies in the night (`A.kill`, silent so no
+   succession runs), but a **ruling player is deposed, not killed**; legitimacy 30 at most, came as a claimant,
+   stability -10; the lords' loyalty follows their stance (loyal -12, content -6, plotting +6, the plotters' houses +10).
+   Found (told, or the spymaster's watch) or failed: the king judges each plotter (kind `plotjudge`: the block or mercy;
+   his blood, his house's swords); a player plotter is named and hated, not executed (P3's crown crimes own sentences).
+
+### D-101 · W1-6: the three disputes' ladders (2026-11-18; war.md §9.4; D-084 point 3)
+1. **A private war is a ledger record** (`A.S.feuds`), not a war on the war map: the two houses are of one realm, and the
+   old engine's wars are between realms. *Conflict recorded:* war.md §9.5's `w.kind = private` with commands as sides
+   waits for D12b-1's hosts of contingents; until then raids cost the victim's loyalty and men, and a field fight is one
+   battle's chance by the two houses' strength (the field's outcome, not a decision: `lint-reasons: ok`).
+2. **It begins only with two grievances between the houses** (`A.PAX.between`): a shared border (a mill, a toll, a
+   wood), precedence (one of the same rank holds a seat or command the other does not), their heads' enmity, a command
+   given over him to the other's man (W1-3's `passed`). Each realm's year weighs at most ten pairs.
+3. **The rungs:** complaint (kind `feud`) → the king's judgment (kind `judge`: for one, for the other, split, refuse to
+   hear; his regard for each house, their swords, his kin, a war abroad) → a judgment lost is a grievance on the house
+   (`judged`) → the loser accepts or defies (`feud`) → raids, and the king enforces his peace (fines both), crushes both
+   (feared), or lets them fight (kind `peace`) → the field; the loser submits. A ruling player judges on `pe_judge`.
+4. **A border war** (kind `raid`): a march lord whose neighbour crown is hostile (opinion under -50, no truce, not at
+   war) raids or holds the king's peace; his king disowns him and pays the damage (a grievance on the house), backs him
+   (a war, `w.kind = border`, weighed with his war council's own pull, `A.WHY.warOdds`), or leaves it to the march lords
+   (a year or two of raids, weariness on both sides).
+5. **The army's quarrel** (kind `quarrel`): when W1-3's commission sets a General of lesser birth over great lords, each
+   such lord obeys, comes late (his hosts held a month) or takes his host home (held for the war).
+
+### D-102 · W1-6: the council's counsel, a ruler made to yield, the last rolls of the realm's peace (2026-11-18; war.md §11.3 point 6; D-095 point 3)
+1. **Counsel of war, an alliance or a pact** (`A.councilPropose`) is the ruler's decision (kind `counsel`): the
+   councillor's counsel (his standing and skill, the release's `ch`, as one reason), and for war the war council's own
+   reasons (`A.WHY.warReasons`) against the cost of a war, a war on his hands, an ally; for an alliance friendship
+   against the binding of other crowns' wars; for a pact the stronger neighbour. The other crown answers an alliance
+   (kind `ally`). The release's `A.chance(clamp(ch))` and `A.chance(0.5)` are gone. **The lint now counts such a roll:**
+   `counsel`, `councilPropose`, `feud`, `private war` and `staff` are in its `DECIDES` (the acceptance roll sat in a
+   variable's initialiser in a function whose name matched nothing).
+2. **Made to yield** (W1-5's `A.WAR.askHooks`, read by `A.WAR.yieldQ`): his lords refuse further service (the share of his
+   muster's strength that took its men home or refused, at least 15%: 2.5 × the share); his council votes for peace where
+   the law gives it the vote (a council realm, at least three councillors, each weighing the war's two pans by his own
+   temper; a majority: 3); a coup that took the crown to end the war (2.2, two years).
+3. **Routed too:** 56's court push (`RI.session`, the loudest voice presses or waits; was `A.chance(.6)`) and 991's
+   Spear-Lord's staff (`FW.election`: keep it or let the forty households elect; was a roll on legitimacy and
+   stability). **Retired:** `A.startWar`'s two ally rolls, dead since `A.callToArms` always answers (W1-3, H-075).
+4. **lint-reasons 58 → 42.** Left in the realm's peace: none counted. Left elsewhere (diplomacy, appointments): the
+   r1-audit's tables, for R1's next pass.
+
+### D-103 · W1-6: the player's part, news by rank, and the check (2026-11-18; war.md §12, §16; orders 5, 54)
+1. **The player decides only his own choices:** approached by plotters (he has access) on `pe_coup` (join, keep silent,
+   tell the crown); a ruler judging a quarrel on `pe_judge`; a ruler answering a league on the release's card, the
+   league then answering by its own reasons. A card left unanswered lets the plot go on without him.
+2. **News by rank** (`A.PAX.tell`): the world, the realm, the court (ruler, councillors, landed lords) or the parties,
+   with the reasons for the crown and the parties only.
+3. **The coherency check "an unreasoned upheaval"** (war.md §16, W1-6's "done when") counts every record of a league
+   raised, a petition, an answer, a rising, a claim, a coup and its stages, a quarrel and its rungs that has fewer than
+   two reasons with a source. `tests/coherency-baseline.json` holds it at 0.
+4. **Not built (left):** the divide answer to a league; a commons' rising in an AI realm (the release has none); the rank
+   correlation of §13.7 across realms (measured, not held by a test); stability's `r.press[]` stored with fades (point 1
+   of D-097); a private war as a war of hosts (D12b-1).

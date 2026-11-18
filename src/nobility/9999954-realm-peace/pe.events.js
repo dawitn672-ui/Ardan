@@ -1,4 +1,4 @@
-// W1-6: the realm's peace, as the player meets it at his rank (README.md). Queued by A.PEACE: pe_coup when plotters
+// W1-6: the realm's peace, as the player meets it at his rank (README.md). Queued by A.PAX: pe_coup when plotters
 // approach a man with access to the king's person; pe_judge when two great houses bring their quarrel to a ruling
 // player.
 A.defEvents([

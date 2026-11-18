@@ -153,14 +153,14 @@ A.rulerDies = function (r, cause) {
     rival = null;
   if (r.gov === "hereditary") {
     if (((next = A.P(r.heir)), (!next || !next.alive) && (next = A.pickHeirFrom(r, ru)), next)) {
-      // [W1-6, D-099] whether the succession is contested is the claimant's own decision (A.PEACE.claimQ: his blood, a
+      // [W1-6, D-099] whether the succession is contested is the claimant's own decision (A.PAX.claimQ: his blood, a
       // child heir, the crown's doubted right, the realm shaking, lords to back him; against, his oath and the crown's
       // hosts), asked of the eldest grown brother or child of the dead ruler, else the greatest house's head. Before
       // W1-6: a roll of 0.12 + (100 - stability) / 500 for a child heir, a smaller one for a grown heir, a claimant
       // picked at random, then 20's persona roll.
-      if (A.PEACE) {
-        rival = A.PEACE.claimantOf(r, next, ru);
-        contested = !!(rival && rival.id !== S.pc && A.PEACE.presses(r, rival, { old: ru, heir: next }));
+      if (A.PAX) {
+        rival = A.PAX.claimantOf(r, next, ru);
+        contested = !!(rival && rival.id !== S.pc && A.PAX.presses(r, rival, { old: ru, heir: next }));
       } else {
         rival = A.findClaimant(r, next, ru);
         contested = !!rival;
@@ -181,7 +181,7 @@ A.rulerDies = function (r, cause) {
   // (A.aiPressClaim); a refused faction rises or backs down by its leader's traits (A.aiRevolt), and the ruler
   // yields or refuses by pride and caution (A.aiFactionAnswer). Event-driven civil wars are untouched. A coalition
   // is led by its strongest hawk.
-  if (contested && rival && (A.PEACE || A.aiPressClaim(r, rival))) A.successionWar(r, rival);
+  if (contested && rival && (A.PAX || A.aiPressClaim(r, rival))) A.successionWar(r, rival);
   A.emit("rulerDied", r, next);
   return next;
 };
@@ -250,6 +250,9 @@ A.successionWar = function (r, claimant) {
   nr.isRebel = true;
   nr.parent = r.id;
   nr.ruler = claimant.id;
+  // [W1-6] one holder per post: a claimant who held a seat, an office or a command of the crown he rises against leaves
+  // it (W1-6's claimants include councillors and Generals: a coup half won, a great lord's rising)
+  if (A.POSTS && A.S.posts) A.POSTS.leaveAll(claimant.id, "rebelled");
   nr.landless = false;
   if (isPC) nr.name = A.fullName(claimant, false) + "'s faction";
   r.army = Math.round(r.army * 0.65);
@@ -278,14 +281,14 @@ A.successionWar = function (r, claimant) {
       .filter(o => o && o.alive && !o.isRebel && !o.playerRun && !A.atWar(o.id).length),
     meddler = nbs.filter(o => A.relBetween(o.id, r.id) < -30)[0];
   // [W1-6, D-099] a hostile neighbour backs the claimant, and an allied friend the crown, by its own ruler's reasons
-  // (A.PEACE.meddleQ: bad blood or friendship, his strength beside theirs, his own wars and weariness, a debt; the
+  // (A.PAX.meddleQ: bad blood or friendship, his strength beside theirs, his own wars and weariness, a debt; the
   // cost of a war), no longer A.chance(0.35) and A.chance(0.4)
-  if (meddler && (A.PEACE ? A.PEACE.meddleQ(meddler, r, claimant, "att") : false)) {
+  if (meddler && (A.PAX ? A.PAX.meddleQ(meddler, r, claimant, "att") : false)) {
     w.att.push(meddler.id);
     A.news(`${A.realmName(meddler.id)} backs ${claimant.given}'s claim with men and silver.`, "war");
   }
   const friend = nbs.filter(o => r.allies.includes(o.id) && A.relBetween(o.id, r.id) > 40)[0];
-  if (friend && (A.PEACE ? A.PEACE.meddleQ(friend, r, claimant, "def") : false)) w.def.push(friend.id);
+  if (friend && (A.PAX ? A.PAX.meddleQ(friend, r, claimant, "def") : false)) w.def.push(friend.id);
   A.news(`${A.fullName(claimant, false)} refuses to kneel. ${r.short} is torn by a war of succession!`, "war");
   if (pc && pc.realm === r.id)
     A.log(`${A.fullName(claimant, false)} claims the throne of ${r.short}. Civil war!`, "war");
@@ -561,23 +564,23 @@ A.worldYear = function () {
       }
       const L = LORE.realms[id];
       if (!r.army0) r.army0 = L ? L.army : r.army;
-      // [W1-6, D-097] stability settles toward the sum of the realm's named pressures (A.PEACE.target: its old temper,
+      // [W1-6, D-097] stability settles toward the sum of the realm's named pressures (A.PAX.target: its old temper,
       // the throne's right, the lords, the commons, the towns, the faith, the army, the king himself), with no luck of
       // ±3 (war.md §13.1: "a reading, not a number that wanders")
-      const target = A.PEACE
-        ? A.PEACE.target(r)
+      const target = A.PAX
+        ? A.PAX.target(r)
         : (A.STAB[L ? L.stability : "steady"] || 55) - r.exhaustion * 0.25 - (r.debt > r.income ? 8 : 0);
       r.stability = A.clamp(r.stability + (target - r.stability) * 0.15, 3, 100);
       r.exhaustion = Math.max(0, r.exhaustion - (A.atWar(id).length ? 0 : 10));
     }
-    // [W1-6, D-099] in a breaking realm the greatest claimant weighs pressing his claim each year (A.PEACE.claimQ); the
+    // [W1-6, D-099] in a breaking realm the greatest claimant weighs pressing his claim each year (A.PAX.claimQ); the
     // release's 1-in-20 roll is gone
     if (
       r.stability < 18 &&
       !r.isRebel &&
       !S.wars.some(w => w.cb === "throne" && (w.def.includes(id) || w.att.includes(id)))
     ) {
-      const cl = A.PEACE ? A.PEACE.claimantOf(r, A.P(r.heir) || ru, ru) : A.findClaimant(r, A.P(r.heir) || ru, ru);
+      const cl = A.PAX ? A.PAX.claimantOf(r, A.P(r.heir) || ru, ru) : A.findClaimant(r, A.P(r.heir) || ru, ru);
       // [X1 baked patch diplomacy/20-ai-personality AIP-CLAIMANTS] Would-be rulers have tempers too: in AI-started
       // succession wars (a contested succession, a tottering crown) the claimant presses or kneels by his traits
       // (A.aiPressClaim); a refused faction rises or backs down by its leader's traits (A.aiRevolt), and the ruler

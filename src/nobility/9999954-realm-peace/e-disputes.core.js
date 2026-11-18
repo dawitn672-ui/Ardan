@@ -19,7 +19,7 @@
 //     quarrel       takes his host home ('quarrel': the slight, his oath, his temper, the war at his border).
 // State: A.S.feuds (at most 24 kept: live first, then the newest ended; each about 160 bytes).
 (function () {
-  const PE = A.PEACE, W = () => A.WHY;
+  const PE = A.PAX, W = () => A.WHY;
   if (!PE) return;
   const { clamp, live, short } = PE;
   const r2 = x => Math.round(x * 100) / 100;

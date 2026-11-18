@@ -1,9 +1,9 @@
 // W1-6 part f: the crown's council, a ruler made to yield, and the realm's month (D-102).
 //
-//   A.PEACE.counselQ(r, t, pc, kind, ch)  a councillor's counsel of war, an alliance or a pact (the release's
+//   A.PAX.counselQ(r, t, pc, kind, ch)  a councillor's counsel of war, an alliance or a pact (the release's
 //                                         A.councilPropose): the ruler weighs it with his own reasons (kind 'counsel'),
 //                                         as W1-5 made counsel of peace. The release's roll on ch is gone.
-//   A.PEACE.allyQ(t, r)                   the other crown answers the alliance the council proposed (kind 'ally'),
+//   A.PAX.allyQ(t, r)                   the other crown answers the alliance the council proposed (kind 'ally'),
 //                                         no longer A.chance(0.5).
 //   made to yield (war.md §11.3, point 6) three reasons in a ruler's pan to ask for terms (W1-5's A.WAR.askHooks):
 //                                         his lords refuse further service (W1-3's muster: those who took their men
@@ -13,7 +13,7 @@
 //   the month                             each realm's business falls in its own month (fixed by its id, no dice): its
 //                                         feuds and border, a coup's question; plots move monthly.
 (function () {
-  const PE = A.PEACE, W = () => A.WHY;
+  const PE = A.PAX, W = () => A.WHY;
   if (!PE) return;
   const { clamp, live, short } = PE;
   const r2 = x => Math.round(x * 100) / 100;

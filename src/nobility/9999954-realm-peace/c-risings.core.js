@@ -1,19 +1,19 @@
 // W1-6 part c: risings (docs/design/war.md §13.4; D-099). Each is a person's decision through A.WHY, never a roll:
 //
-//   A.PEACE.claimQ(r, cl, ctx)   a claimant presses his claim or kneels (kind 'claim'): his blood, a child heir, the
+//   A.PAX.claimQ(r, cl, ctx)   a claimant presses his claim or kneels (kind 'claim'): his blood, a child heir, the
 //                                throne's doubted right, the realm shaking, the houses sore enough to back him, his
 //                                ambition; against, his oath and the realm's peace, the crown's hosts. Asked at a ruler's
 //                                death (the release's contested-succession roll is gone: the claimant is asked), in a
 //                                tottering realm each year (its 1-in-20 roll is gone) and by 20's A.aiPressClaim.
-//   A.PEACE.lordRiseQ(r, h)      a great lord with a deep grievance rises against a ruling player or bides (kind 'rise';
+//   A.PAX.lordRiseQ(r, h)      a great lord with a deep grievance rises against a ruling player or bides (kind 'rise';
 //                                the release's A.vassalYear rolled 0.15).
-//   A.PEACE.commonsQ(r)          the commons rise (§13.4: a shared grievance, a voice, an occasion), decided by the voice
+//   A.PAX.commonsQ(r)          the commons rise (§13.4: a shared grievance, a voice, an occasion), decided by the voice
 //                                (a named leader of the commons: the Polity's, else a priest of the realm's council); no
 //                                voice, no rising (the release's A.rulerYear rolled 0.35 under stability 15).
-//   A.PEACE.sides(r, nr, w, f)   when a league rises, every other great lord chooses the crown, the rebels or his own
+//   A.PAX.sides(r, nr, w, f)   when a league rises, every other great lord chooses the crown, the rebels or his own
 //                                hall (kind 'side'): his loyalty, a tie to the rebels, the two sides' swords, his seat.
 (function () {
-  const PE = A.PEACE, W = () => A.WHY;
+  const PE = A.PAX, W = () => A.WHY;
   if (!PE) return;
   const { clamp, live, short } = PE;
   const r2 = x => Math.round(x * 100) / 100;
@@ -42,8 +42,8 @@
       kin ? rs('claim', 1, 'The blood of kings', { t: 'blood', id: old.id }, 1) : great ? rs('claim', .4, `The name of ${h.name}`, { t: 'house', id: h.id }, 1) : rs('claim', -.6, 'A thin claim', { t: 'blood' }, 1),
       rs('ambition', .5, 'The crown within his reach', { t: 'ambition' }, 0),
       rs('claim', (50 - legit) / 20, legit < 50 ? 'The crown\'s right is doubted' : 'The crown\'s right is accepted', { t: 'legit', r: Math.round(legit) }, 1),
-      rs('reckoning', (35 - stab) / 12, stab < 35 ? 'The realm is shaking' : 'The realm is quiet', { t: 'stability', r: Math.round(stab) }, 1),
-      rs('want', 4 * sore - .3, sore >= .15 ? 'Lords sore with the crown would back him' : 'No lord would back him', { t: 'backers', r: r2(sore) }, 0),
+      rs('reckoning', Math.min(1.5, (35 - stab) / 12), stab < 35 ? 'The realm is shaking' : 'The realm is quiet', { t: 'stability', r: Math.round(stab) }, 1),
+      rs('want', sore >= .1 ? 4 * sore - .3 : -1, sore >= .1 ? 'Lords sore with the crown would back him' : 'No lord would back him', { t: 'backers', r: r2(sore) }, 0),
     ];
     if (child) press.push(rs('reckoning', 1.6, 'A child would rule', { t: 'child', id: heir.id }, 1));
     return W().decide(cl, 'claim', [
@@ -51,7 +51,8 @@
       { id: 'kneel', at: r.id, feeds: ['fear'], reasons: [
         rs('loyalty', 2.2, 'His oath, and the peace of the realm', { t: 'oath' }, 1),
         rs('fear', .9, 'The crown\'s hosts', { t: 'hosts', r: Math.round(r.army || 0) }, 0),
-      ] },
+        r.claimY && A.S.year - r.claimY < 8 ? rs('fear', 1.5, 'The last claim to this crown was fought only lately', { t: 'claimed', y: r.claimY }, 1) : null,
+      ].filter(Boolean) },
     ], { band: PE.T.claimBand, r: r.id, at: 'crown', logIf: rec => rec.chose === 'press' });
   };
   // 20-ai-personality's A.aiPressClaim asks this (the rulers' log keeps its line); true when he presses
@@ -59,7 +60,8 @@
     const rec = PE.claimQ(r, cl, ctx);
     if (!rec) return false;
     if (rec.chose === 'press') {
-      PE.note(r, { k: 'claim', chose: 'press', p: cl.id }, rec);
+      r.claimY = A.S.year;
+      PE.note(r, { k: 'claim', chose: 'press', p: cl.id, via: ctx && ctx.heir ? 'death' : 'shaking', st: Math.round(r.stability || 0) }, rec);
       if (A.aiLogAdd) A.aiLogAdd('claim', r.id, null, `refuses to kneel and claims the throne of ${short(r.id)}.`, (rec.why || []).map(x => [x[0], x[1]]), `claimant ${A.fullName(cl, false)}`);
     }
     return rec.chose === 'press' ? rec : false;

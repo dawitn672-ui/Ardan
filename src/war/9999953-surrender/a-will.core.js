@@ -231,7 +231,7 @@
 
   // ---------------------------------------------------------------- the three decisions
   const FIGHT_FEEDS = ['pride', 'anger', 'shame', 'zeal', 'grief'];
-  // more reasons to ask, from outside the war's own facts (W1-6's A.PEACE: lords refusing service, a council's vote, a
+  // more reasons to ask, from outside the war's own facts (W1-6's A.PAX: lords refusing service, a council's vote, a
   // coup made to end the war): fn(w, side, facts) -> [reason]
   WAR.askHooks = WAR.askHooks || [];
   // 1. shall I ask for terms? (each month, after a lost battle or a fallen capital)

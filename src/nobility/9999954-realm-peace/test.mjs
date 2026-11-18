@@ -39,14 +39,14 @@ export default {
       for (const r of Object.values(A.S.realms)) {
         if (!r.alive || r.isRebel) continue;
         realms++;
-        const P = A.PEACE.press(r), sum = P.reduce((a, x) => a + x.v, 0);
+        const P = A.PAX.press(r), sum = P.reduce((a, x) => a + x.v, 0);
         if (P.some(x => !x.label || !x.src || !x.src.t || !isFinite(x.v))) bad.push(r.id + ': a term without a label or source');
-        if (A.PEACE.target(r) !== Math.max(3, Math.min(100, Math.round(sum)))) bad.push(r.id + ': target is not the sum');
+        if (A.PAX.target(r) !== Math.max(3, Math.min(100, Math.round(sum)))) bad.push(r.id + ': target is not the sum');
         if (!P.some(x => x.k === 'custom') || !P.some(x => x.k === 'lords')) bad.push(r.id + ': no custom or lords term');
-        const w = A.PEACE.word(r.stability); words[w] = (words[w] || 0) + 1;
+        const w = A.PAX.word(r.stability); words[w] = (words[w] || 0) + 1;
         for (const h of A.realmHouses(r.id).slice(0, 6)) {
           houses++;
-          const T0 = A.PEACE.houseTerms(h, r);
+          const T0 = A.PAX.houseTerms(h, r);
           if (!T0.length || T0.some(x => !x.label || !x.src)) bad.push(h.id + ': loyalty terms');
         }
       }
@@ -54,13 +54,13 @@ export default {
       const R = PEL.aiRealm(A.S.pc ? A.pc().realm : null), hs = A.realmHouses(R.id).slice(0, 5);
       const start = hs.map(h => h.op);
       const r0 = A.S.rngState != null ? A.S.rngState : null;
-      A.PEACE.housesYear(R, hs);
+      A.PAX.housesYear(R, hs);
       const one = hs.map(h => h.op);
       hs.forEach((h, i) => { h.op = start[i]; });
-      A.PEACE.housesYear(R, hs);
+      A.PAX.housesYear(R, hs);
       const two = hs.map(h => h.op);
-      const moved = hs.every((h, i) => Math.abs(two[i] - (start[i] + (A.PEACE.houseTarget(h, R) - start[i]) * .25)) < 1);
-      const note = A.PEACE.noteText(R);
+      const moved = hs.every((h, i) => Math.abs(two[i] - (start[i] + (A.PAX.houseTarget(h, R) - start[i]) * .25)) < 1);
+      const note = A.PAX.noteText(R);
       return { bad: bad.slice(0, 5), nbad: bad.length, realms, houses, words, same: JSON.stringify(one) === JSON.stringify(two), moved, r0, note, pct: /%|\d+ ?percent/.test(note) };
     });
     const ok = !walks.length && !r.nbad && r.realms > 10 && r.houses > 30 && r.same && r.moved && r.note.length > 40 && !r.pct;
@@ -70,9 +70,10 @@ export default {
   // war.md §13.7: over worlds of twenty years every faction, petition, answer, rising, coup and quarrel recorded has two
   // or more reasons with a source (the coherency check "an unreasoned upheaval" finds none); no league against the crown is raised in a
   // realm firm with every lord content or loyal; the records are bounded; the realm's month costs little.
-  // Readings (this build, seeds 9811 to 9813, 20 years): records 130 to 180 a world; leagues raised 35 to 60, petitions
-  // 15 to 25, private complaints 30 to 70, claims pressed 1 to 8, plots 1 to 3. The bars: pooled over three worlds at
-  // least 40 leagues, 15 petitions, 20 complaints and 1 plot or claim; none unreasoned; none in a firm, content realm.
+  // Readings (this build, seeds 9811 to 9813, 20 years, pooled; three runs while tuning): leagues raised 137 to 179,
+  // petitions 32 to 68, private complaints 169 to 186, plots and claims pressed 9 to 13. The bars sit well under the
+  // lowest: pooled, at least 40 leagues, 15 petitions, 20 complaints and 1 plot or claim; none unreasoned; none against
+  // the crown in a firm, content realm.
   async peUpheavalsReasoned(pg) {
     await pg.evaluate(SETUP);
     const per = [];
@@ -80,27 +81,27 @@ export default {
       per.push(await pg.evaluate(seed => {
         T.enter({ seed, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 18 });
         const seen = new Set(), k = {}, firm = [];
-        const note0 = A.PEACE.note;
-        A.PEACE.note = function (r, e, rec) {
+        const note0 = A.PAX.note;
+        A.PAX.note = function (r, e, rec) {
           // a league against the crown (liberty, independence, a claimant): a war party may form in a quiet realm
           if (r && e && e.k === 'faction' && ['liberty', 'independence', 'claimant'].includes(e.fac)) {
-            const quiet = (r.stability || 0) >= 70 && A.realmHouses(r.id).every(h => { const s = A.PEACE.stance(h).k; return s === 'loyal' || s === 'content'; });
+            const quiet = (r.stability || 0) >= 70 && A.realmHouses(r.id).every(h => { const s = A.PAX.stance(h).k; return s === 'loyal' || s === 'content'; });
             if (quiet) firm.push(r.id + ' ' + A.S.year);
           }
           return note0.apply(this, arguments);
         };
         let ms = 0, months = 0;
-        const m0 = A.PEACE.month;
-        A.PEACE.month = function () { const t = performance.now(); try { return m0.apply(this, arguments); } finally { ms += performance.now() - t; months++; } };
+        const m0 = A.PAX.month;
+        A.PAX.month = function () { const t = performance.now(); try { return m0.apply(this, arguments); } finally { ms += performance.now() - t; months++; } };
         for (let y = 0; y < 20; y++) {
           if (A.pc()) A.pc().health = 100;
           const res = T.play(1);
-          for (const e of A.PEACE.log()) { const key = [e.y, e.d, e.r, e.k, e.chose, e.h || e.p || '', e.o || ''].join('|'); if (seen.has(key)) continue; seen.add(key); const kk = e.k + ':' + e.chose; k[kk] = (k[kk] || 0) + 1; }
+          for (const e of A.PAX.log()) { const key = [e.y, e.d, e.r, e.k, e.chose, e.h || e.p || '', e.o || ''].join('|'); if (seen.has(key)) continue; seen.add(key); const kk = e.k + ':' + e.chose; k[kk] = (k[kk] || 0) + 1; }
           if (res === 'dead') break;
         }
-        A.PEACE.note = note0; A.PEACE.month = m0;
+        A.PAX.note = note0; A.PAX.month = m0;
         const co = A.COHERENCY.run(['an unreasoned upheaval'])[0];
-        return { seed, k, unre: A.PEACE.unreasoned(), firm, log: A.PEACE.log().length, feuds: A.PEACE.feuds().length, plots: A.PEACE.plots().length, ms: months ? ms / months : 0, co: co ? co.n : 0, has: A.COHERENCY.checks.some(c => c.name === 'an unreasoned upheaval') };
+        return { seed, k, unre: A.PAX.unreasoned(), firm, log: A.PAX.log().length, feuds: A.PAX.feuds().length, plots: A.PAX.plots().length, ms: months ? ms / months : 0, co: co ? co.n : 0, has: A.COHERENCY.checks.some(c => c.name === 'an unreasoned upheaval') };
       }, seed));
     }
     const sum = (re) => per.reduce((a, x) => a + Object.keys(x.k).filter(kk => re.test(kk)).reduce((b, kk) => b + x.k[kk], 0), 0);
@@ -122,7 +123,7 @@ export default {
         if (!R) return null;
         const hs = PEL.heads(R).filter(h => h.great !== false && ['N01', 'N02', 'N03', 'N04'].includes(h.rung));
         // two great houses with a tie (their seats side by side, or a shared liege)
-        for (const a of hs) for (const b of hs) if (a !== b && A.PEACE.tieOf(a, b)) return { R, a, b };
+        for (const a of hs) for (const b of hs) if (a !== b && A.PAX.tieOf(a, b)) return { R, a, b };
         return null;
       });
       if (!found.res) return { skip: `no realm with two tied great houses in seeds ${found.tried.join(', ')}` };
@@ -133,7 +134,7 @@ export default {
       a.op = 18; b.op = 18;
       const houses = A.realmHouses(R.id);
       // freeze the loyalty pass for the lab (it would pull them back toward their terms)
-      const hy = A.PEACE.housesYear; A.PEACE.housesYear = () => {};
+      const hy = A.PAX.housesYear; A.PAX.housesYear = () => {};
       let f = null;
       for (let i = 0; i < 3 && !(f && f.members.includes(a.id) && f.members.includes(b.id)); i++) { A.factionsYear(R); f = A.factionsOf(R.id).find(x => x.members.includes(a.id)); }
       const formed = !!(f && f.members.includes(a.id) && f.members.includes(b.id));
@@ -143,9 +144,9 @@ export default {
       A.S.year++;
       A.factionsYear(R);
       const gone = !A.factionsOf(R.id).some(x => x.members.includes(a.id) || x.members.includes(b.id));
-      A.PEACE.housesYear = hy;
+      A.PAX.housesYear = hy;
       // a small house with no tie never leads one alone
-      return { seed: found.seed, formed, kind: f && f.kind, why, gone, tie: A.PEACE.tieOf(a, b), n: houses.length };
+      return { seed: found.seed, formed, kind: f && f.kind, why, gone, tie: A.PAX.tieOf(a, b), n: houses.length };
     });
     if (r.skip) return { ok: true, skip: r.skip };
     return { ok: r.formed && r.gone, detail: `seed ${r.seed}: two great houses tied by ${r.tie}, both sore: a league ${r.formed ? 'formed (' + r.kind + ')' : 'did not form'}; its reasons "${r.why || ''}"; the grievance mended: dissolved within the year ${r.gone}` };
@@ -163,10 +164,10 @@ export default {
       for (const w of A.atWar(R.id)) A.S.wars = A.S.wars.filter(x => x !== w);
       R.stability = 70; ru.health = 100; if (R.pol) R.pol.lost = [];
       const before = PEL.count('coup');
-      const quiet = A.PEACE.coupYear(R), asked = PEL.count('coup') - before, opens0 = A.PEACE.openings(R).map(o => o.k).join(',');
+      const quiet = A.PAX.coupYear(R), asked = PEL.count('coup') - before, opens0 = A.PAX.openings(R).map(o => o.k).join(',');
       // an opening (the king lies ill, the realm shaking) and an ambitious, aggrieved man with access
       ru.health = 20; R.stability = 22;
-      const acc = A.PEACE.access(R);
+      const acc = A.PAX.access(R);
       if (!acc.length) return { skip: 'no one with access in seed 9851' };
       const c = acc[0].p;
       c.traits = ['ambitious', 'wrathful', 'proud', 'greedy'];
@@ -174,15 +175,15 @@ export default {
       if (!c.rel[ru.id]) c.rel[ru.id] = { type: 'acquaintance', op: -80 }; else c.rel[ru.id].op = -80;
       delete c.feel;
       let plot = null, tries = 0;
-      for (; tries < 20 && !plot; tries++) { delete R.peaceY; plot = A.PEACE.coupYear(R); }
-      const accIds = new Set(A.PEACE.access(R).map(x => x.p.id));
+      for (; tries < 20 && !plot; tries++) { delete R.peaceY; plot = A.PAX.coupYear(R); }
+      const accIds = new Set(A.PAX.access(R).map(x => x.p.id));
       const memAcc = plot ? plot.m.every(id => accIds.has(id) || id === A.S.pc) : null;
       // run the plot through: approaches, the watch, the night (a month at a time)
       let end = null, months = 0;
-      if (plot) { for (; months < 12 && A.PEACE.plots().includes(plot); months++) { A.PEACE.plotMonth(plot); if (plot.wait) { plot.wait = 0; plot.ask = plot.ask.filter(x => x !== A.S.pc); } plot.d -= 31; } }
-      const last = A.PEACE.log().find(e => e.plot === (plot && plot.id) || (plot && e.k === 'coup' && e.p === plot.by));
+      if (plot) { for (; months < 12 && A.PAX.plots().includes(plot); months++) { A.PAX.plotMonth(plot); if (plot.wait) { plot.wait = 0; plot.ask = plot.ask.filter(x => x !== A.S.pc); } plot.d -= 31; } }
+      const last = A.PAX.log().find(e => e.plot === (plot && plot.id) || (plot && e.k === 'coup' && e.p === plot.by));
       end = last ? last.k + ':' + last.chose : null;
-      const coups = A.PEACE.log().filter(e => e.k === 'coup');
+      const coups = A.PAX.log().filter(e => e.k === 'coup');
       return { quiet: quiet === null, asked, opens0, plot: !!plot, by: plot && plot.role, tries, memAcc, end, months, coupsN: coups.length, n: coups[0] && coups[0].n, why: coups[0] && coups[0].why };
     });
     if (r.skip) return { ok: true, skip: r.skip };
@@ -200,7 +201,7 @@ export default {
         for (const R of Object.values(A.S.realms)) {
           if (!R.alive || R.isRebel || R.playerRun || R.id === A.pc().realm || !A.P(R.ruler)) continue;
           const hs = A.CMD.tics(R.id).filter(h => h.headPid && A.P(h.headPid) && A.P(h.headPid).alive);
-          for (const a of hs) for (const b of hs) if (a !== b && A.PEACE.tieOf(a, b) === 'a shared border') return { R, a, b };
+          for (const a of hs) for (const b of hs) if (a !== b && A.PAX.tieOf(a, b) === 'a shared border') return { R, a, b };
         }
         return null;
       });
@@ -209,15 +210,15 @@ export default {
       A.S.feuds = [];
       pa.traits = ['wrathful', 'proud']; delete pa.feel;
       if (!pa.rel[pb.id]) pa.rel[pb.id] = { type: 'rival', op: -60, met: 'over a boundary' }; else { pa.rel[pb.id].type = 'rival'; pa.rel[pb.id].op = -60; }
-      const g = A.PEACE.between(a, b);
+      const g = A.PAX.between(a, b);
       let F = null;
-      for (let i = 0; i < 6 && !F; i++) { A.PEACE.feudYear(R); F = A.PEACE.feuds().find(x => x.a === a.id && x.b === b.id); }
+      for (let i = 0; i < 6 && !F; i++) { A.PAX.feudYear(R); F = A.PAX.feuds().find(x => x.a === a.id && x.b === b.id); }
       if (!F) return { g: g.map(x => x.label), F: null };
       const before = (a.cmGr || []).length + (b.cmGr || []).length;
-      A.PEACE.feudTurn(F);
+      A.PAX.feudTurn(F);
       const after = (a.cmGr || []).length + (b.cmGr || []).length;
       const judged = F.judged, rung = F.rung, ended = F.end ? F.how : null;
-      const recs = A.PEACE.log().filter(e => e.feud === F.id);
+      const recs = A.PAX.log().filter(e => e.feud === F.id);
       return { seed: found.seed, g: g.map(x => x.label), F: true, why: F.why, judged, rung, ended, grieved: after > before || judged === 'split' || judged === 'ignore', recs: recs.map(e => e.k + ':' + e.chose + ' n' + e.n) };
     });
     if (r.skip) return { ok: true, skip: r.skip };
@@ -247,14 +248,14 @@ export default {
       A.forcesSync && A.forcesSync(D);
       D.exhaustion = 80;
       const f = A.WAR.facts(w, 'def');
-      const vote = A.PEACE.voteAsk(w, 'def', f);
+      const vote = A.PAX.voteAsk(w, 'def', f);
       // the lords: half the muster took their men home
       const m = A.CMD.musterOf(w.id, b);
       let service = [];
-      if (m && m.e.length) { m.e.forEach((e, i) => { if (i % 2 === 0) e.gone = 1; }); service = A.PEACE.serviceAsk(w, 'def'); }
+      if (m && m.e.length) { m.e.forEach((e, i) => { if (i % 2 === 0) e.gone = 1; }); service = A.PAX.serviceAsk(w, 'def'); }
       // a coup to end the war
       D.coupPeace = A.S.year;
-      const coup = A.PEACE.coupAsk(w, 'def');
+      const coup = A.PAX.coupAsk(w, 'def');
       const rec = A.WAR.yieldQ(w, 'def', null, { log: false });
       const labels = rec ? rec.why.map(x => x[0]) : [];
       return { vote: vote.map(x => x.label), service: service.map(x => x.label), musterN: m ? m.e.length : 0, coup: coup.map(x => x.label), chose: rec && rec.chose, labels };
@@ -285,8 +286,8 @@ export default {
         out[kind] = { ok: res.ok, msg: res.msg, rec: recs.length > n0 ? recs[0].chose : null, n: recs[0] ? recs[0].why.length + recs[0].not.length : 0 };
       }
       // a claimant asked at a tottering crown
-      const cl = A.PEACE.claimantOf(R, A.P(R.heir) || A.P(R.ruler), A.P(R.ruler));
-      const cr = cl ? A.PEACE.claimQ(R, cl, { old: A.P(R.ruler) }) : null;
+      const cl = A.PAX.claimantOf(R, A.P(R.heir) || A.P(R.ruler), A.P(R.ruler));
+      const cr = cl ? A.PAX.claimQ(R, cl, { old: A.P(R.ruler) }) : null;
       return { out, claim: cr ? { chose: cr.chose, n: cr.why.length + cr.not.length } : null };
     });
     const lint = await import('node:child_process').then(cp => cp.execFileSync('node', [path.join(ROOT, 'tools/lint-reasons.mjs')], { encoding: 'utf8' }));
@@ -307,13 +308,13 @@ export default {
       T.enter({ seed: 9921, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 });
       const pc = A.pc(), R = A.realm(pc.realm), ru = A.P(R.ruler);
       if (A.POSTS) A.POSTS.appoint(A.POSTS.seatKey(R.id, 'treasurer'), pc.id, { why: 'test', by: R.ruler, force: true });
-      const acc = A.PEACE.access(R);
+      const acc = A.PAX.access(R);
       if (!acc.length) return { skip: 'no one with access' };
       ru.health = 20;
       const P = { id: 'Ktest', r: R.id, by: acc[0].p.id, role: acc[0].role, k: ru.id, m: [acc[0].p.id], ask: [pc.id], d: A.absDay(), war: 0 };
       A.S.plots = [P];
       A.S.queue = [];
-      A.PEACE.plotMonth(P);
+      A.PAX.plotMonth(P);
       const q = A.S.queue.find(x => x.ev === 'pe_coup');
       out.queued = !!q && P.wait === 1;
       if (q) {
@@ -322,7 +323,7 @@ export default {
         out.raw = T.raw.test(out.coupText) || (v && v.choices || []).some(c => T.raw.test(c.t || ''));
         A.S.queue = [q]; A.S.queue.length = 1;
         A.eventChoose(2);   // tell the crown
-        out.told = !A.PEACE.plots().includes(P) && A.PEACE.log().some(e => e.k === 'approach' && e.chose === 'tell');
+        out.told = !A.PAX.plots().includes(P) && A.PAX.log().some(e => e.k === 'approach' && e.chose === 'tell');
       }
       // 2. the ruler judges a quarrel
       T.enter({ seed: 9922, race: 'human', realm: 'POL-01', status: 'royal', sex: 'M', startAge: 30 });
@@ -334,7 +335,7 @@ export default {
       if (hs.length < 2) return Object.assign(out, { skip2: 'two houses' });
       const F = { id: 'Qtest', k: 'private', r: MR.id, a: hs[0].id, b: hs[1].id, y: A.S.year, rung: 'complaint', why: 'a mill both claim' };
       A.S.feuds = [F]; A.S.queue = [];
-      A.PEACE.feudTurn(F);
+      A.PAX.feudTurn(F);
       const j = A.S.queue.find(x => x.ev === 'pe_judge');
       out.judgeQueued = !!j;
       if (j) {
@@ -361,10 +362,10 @@ export default {
       const run = () => {
         T.enter({ seed: 9941, race: 'human', realm: 'POL-02', status: 'peasant', sex: 'M', startAge: 16 });
         T.play(6);
-        return T.hash({ p: A.PEACE.log(), f: A.PEACE.feuds(), k: A.PEACE.plots(), s: Object.values(A.S.realms).map(r => [r.id, Math.round(r.stability * 10)]), h: Object.values(A.S.houses).slice(0, 200).map(h => h.op) });
+        return T.hash({ p: A.PAX.log(), f: A.PAX.feuds(), k: A.PAX.plots(), s: Object.values(A.S.realms).map(r => [r.id, Math.round(r.stability * 10)]), h: Object.values(A.S.houses).slice(0, 200).map(h => h.op) });
       };
       const a = run(), b = run();
-      return { a, b, n: A.PEACE.log().length };
+      return { a, b, n: A.PAX.log().length };
     });
     return { ok: r.a === r.b && r.n > 0, detail: `two runs of seed 9941: ${r.a} and ${r.b}; ${r.n} records` };
   },
@@ -385,7 +386,7 @@ export default {
         const loaded = UI.enterSaveSafe(d);
         const play = T.play(1);
         const r = A.realm(A.pc() && A.pc().realm) || Object.values(A.S.realms).find(x => x.alive);
-        return { loaded: loaded !== false, had, play, terms: A.PEACE.press(r).length, unre: A.PEACE.unreasoned().length, posts: A.POSTS ? A.POSTS.audit().length : 0 };
+        return { loaded: loaded !== false, had, play, terms: A.PAX.press(r).length, unre: A.PAX.unreasoned().length, posts: A.POSTS ? A.POSTS.audit().length : 0 };
       }, b64)));
     }
     const ok = out.every(x => x.loaded && !x.had && (x.play === 'ok' || x.play === 'dead') && x.terms >= 3 && !x.unre && !x.posts);

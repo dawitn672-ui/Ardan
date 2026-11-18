@@ -32,13 +32,13 @@
       `<div class="tip-row tt-sum"><span>Its swords</span><b></b></div>` + TT.sumRows(S.mem, sw, 'Swords', v => esc(A.fmt(v))) +
       `<div class="tip-row tt-sum"><span>${stale ? 'Today' : 'Its power'}</span><b></b></div>` + K.pts(pts, Math.round(S.now * 100), 'Power') +
       (stale ? D(`The card shows ${pct(f.power)}, reckoned at the new year; the realm's swords have moved since.`) : '') +
-      F(A.PEACE ? 'Its leader brings its demand to the crown when his own reasons say the time has come: its swords, its anger, the throne\'s firmness, the crown\'s hand.' : 'At 40% and 60 discontent it makes its demand.');
+      F(A.PAX ? 'Its leader brings its demand to the crown when his own reasons say the time has come: its swords, its anger, the throne\'s firmness, the crown\'s hand.' : 'At 40% and 60 discontent it makes its demand.');
   };
   G.facDisc = function (id) {
     const f = fac(id), r = f && A.realm(f.realm); if (!f) return '';
     // W1-6 (D-098): the league's anger is a reading of its members' grievance and its swords, with what events add fading
-    if (A.PEACE && r) {
-      const g = A.PEACE.grievance(f);
+    if (A.PAX && r) {
+      const g = A.PAX.grievance(f);
       return H('Anger', r0(f.discontent || 0), 'of 100') + D('The league\'s anger with the crown: what its houses hold against the crown and how many swords they have, read at each new year, with the anger events add fading by half a year.') +
         R('Its houses\' grievance', g > 0 ? 'sore' : 'mild', 'tt-sub') + (f.pet ? D(`It brought its petition in ${esc(f.pet.y)}. ${esc(f.pet.why || '')}`) : '') +
         F('Its leader decides each year whether to bring its demand; the crown then grants, buys, arrests or refuses, and the league answers.');
@@ -52,8 +52,8 @@
   G.loyalty = function (hid) {
     const h = A.S.houses && A.S.houses[hid], r = myRealm(); if (!h) return '';
     // W1-6 (D-097): a house's loyalty settles toward the sum of its named reasons, a quarter of the way a year
-    if (A.PEACE) {
-      const T = A.PEACE.houseWhy(h).filter(x => x.k !== 'base').sort((a, b) => Math.abs(b.v) - Math.abs(a.v)).slice(0, 7), st = A.PEACE.stance(h);
+    if (A.PAX) {
+      const T = A.PAX.houseWhy(h).filter(x => x.k !== 'base').sort((a, b) => Math.abs(b.v) - Math.abs(a.v)).slice(0, 7), st = A.PAX.stance(h);
       return H('Loyalty', r0(h.op != null ? h.op : 50), esc(h.name)) + D(`What the house thinks of the crown: ${esc(st.k)}. It settles a quarter of the way each new year toward what its reasons make it.`) +
         T.map(x => R(esc(x.label), sg(r1(x.v)), 'tt-sub')).join('');
     }

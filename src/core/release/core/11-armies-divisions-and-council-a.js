@@ -2777,18 +2777,18 @@ A.rulerYear = function (pc) {
     (r.debt > r.income * 2 ? 4 : 0) +
     (r.legit - 50) / 25;
   if (A.atWar(r.id).length) ds -= 2;
-  // [W1-6, D-097] what the luck of ±3 stood for is the lords' and the king's own push (A.PEACE.yearPush)
-  r.stability = A.clamp(r.stability + ds + (A.PEACE ? A.PEACE.yearPush(r) : 0), 0, 100);
+  // [W1-6, D-097] what the luck of ±3 stood for is the lords' and the king's own push (A.PAX.yearPush)
+  r.stability = A.clamp(r.stability + ds + (A.PAX ? A.PAX.yearPush(r) : 0), 0, 100);
   r.legit = A.clamp(r.legit + 2 + (pc.fame - 40) / 30, 0, 100);
   r.exhaustion = Math.max(0, r.exhaustion - (A.atWar(r.id).length ? 0 : 12));
   r.armyQ = A.clamp(r.armyQ + (cs("general") - 40) / 2e3 + (r.drill === A.S.year ? 0.04 : 0) - 0.005, 0.5, 1.6);
   A.vassalYear(pc, r);
   A.pickHeir(r);
   // [W1-6, D-099] the commons rise when their voice (a named leader of the commons) decides it, from a shared grievance
-  // and an occasion (A.PEACE.commonsQ); no voice, no rising. Before W1-6: A.chance(0.35) under stability 15.
-  const commons = A.PEACE && r.stability < A.PEACE.T.commonsAt ? A.PEACE.commonsQ(r) : null;
+  // and an occasion (A.PAX.commonsQ); no voice, no rising. Before W1-6: A.chance(0.35) under stability 15.
+  const commons = A.PAX && r.stability < A.PAX.T.commonsAt ? A.PAX.commonsQ(r) : null;
   if (commons && commons.chose === "rise") {
-    A.PEACE.note(r, { k: "commons", chose: "rise", p: commons.who }, commons);
+    A.PAX.note(r, { k: "commons", chose: "rise", p: commons.who }, commons);
     A.queue({
       type: "event",
       ev: "ruler_revolt",
@@ -2819,8 +2819,8 @@ A.rulerYear = function (pc) {
 
 A.vassalYear = function (pc, r) {
   // [W1-6, D-099] the houses' loyalty moved in A.factionsYear already (named terms, no dice); a lord with a deep
-  // grievance decides whether to rise (A.PEACE.lordRiseQ). Before W1-6: A.ri(-4, 3) a year, then A.chance(0.15).
-  if (A.PEACE) return A.PEACE.vassalYear(pc, r);
+  // grievance decides whether to rise (A.PAX.lordRiseQ). Before W1-6: A.ri(-4, 3) a year, then A.chance(0.15).
+  if (A.PAX) return A.PAX.vassalYear(pc, r);
   const vs = Object.values(A.S.houses).filter(h => h.realm === r.id && h.kind !== "royal" && !h.extinct);
   for (const h of vs)
     if (

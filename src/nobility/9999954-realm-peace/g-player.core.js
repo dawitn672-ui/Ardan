@@ -4,7 +4,7 @@
 // He reads the realm's stability as a word with its reasons, opening on a press (descriptions open on click, never on
 // hover; no percentages): UI.peaceNote(r) gives the note's text.
 (function () {
-  const PE = A.PEACE;
+  const PE = A.PAX;
   if (!PE) return;
   (A.FX_EXTRA = A.FX_EXTRA || []).push('peCoup', 'peJudge');
   A.addStage('A.applyFx', 'realm-peace', baseFx => function (pc, fx, ctx) {

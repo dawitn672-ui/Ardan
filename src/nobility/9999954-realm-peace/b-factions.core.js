@@ -19,7 +19,7 @@
 // Retired: 20-ai-personality's A.aiFactionAnswer and A.aiRevolt (persona-weighted dice), the release's facRefuse roll
 // and the purge's roll (archive/w1-6-faction-dice).
 (function () {
-  const PE = A.PEACE, W = () => A.WHY;
+  const PE = A.PAX, W = () => A.WHY;
   if (!PE) return;
   const { clamp, r1, live, short, cap } = PE;
   const r2 = x => Math.round(x * 100) / 100;
@@ -128,6 +128,7 @@
   PE.clean = clean;
 
   // ---------------------------------------------------------------- 2. the king's answer
+  const AGAINST = { liberty: 1, independence: 1, claimant: 1 };
   const DEMAND_COST = {
     war: (r, P) => [-.4 + .8 * ((P && P.warLog) || 0), 'A war he may or may not want'],
     peace: (r) => [-.6 + (r.exhaustion || 0) / 40, 'Peace at the price his enemy names'],
@@ -152,7 +153,7 @@
       { id: 'buy', at: lead ? lead.id : null, feeds: ['fear', 'greed'], reasons: [
         rs('coin', r.treasury >= price ? -.3 - price / Math.max(1, r.income) : -4, r.treasury >= price ? `Pensions and offices cost the chest ${A.fmt ? A.fmt(price) : price} suns` : 'The chest cannot pay their price', { t: 'chest', r: Math.round(r.treasury || 0) }, 0),
         rs('fear', 2.5 * (p - .3), 'Their swords, bought rather than fought', { t: 'power', r: r2(p) }, 1),
-        rs('reckoning', .5, 'Quiet bought for a while', { t: 'quiet' }, 0),
+        rs('reckoning', .3, 'Quiet bought for a while', { t: 'quiet' }, 0),
       ] },
       { id: 'arrest', at: lead ? lead.id : null, feeds: ['anger', 'pride'], reasons: [
         rs('reckoning', auth >= 2 && spy >= 30 ? .2 + (spy - 30) / 40 : -3, auth >= 2 && spy >= 30 ? 'His spymaster can take the leader quietly' : 'He has not the power to arrest a great lord', { t: 'arrest', r: Math.round(spy) }, 0),
@@ -161,9 +162,10 @@
       ] },
       { id: 'refuse', at: lead ? lead.id : null, feeds: ['pride', 'anger'], reasons: [
         rs('insult', .8, 'He will not be dictated to by his own lords', { t: 'pride' }, 0),
+        AGAINST[f.kind] ? rs('duty', .8, 'The crown\'s right is not his to bargain away', { t: 'right', id: f.kind }, 1) : null,
         rs('reckoning', 2 * (1 - Math.min(2, ratio)), ratio < 1 ? 'His hosts outnumber theirs' : 'Their men are as many as his', { t: 'ratio', r: r2(ratio) }, 0),
         rs('reckoning', (stab - 50) / 40, stab >= 50 ? 'The realm is quiet behind him' : 'The realm is restless behind him', { t: 'stability', r: Math.round(stab) }, 1),
-      ] },
+      ].filter(Boolean) },
     ];
     return { opts, price, ratio };
   };
@@ -182,7 +184,8 @@
     const lead = A.S.houses[f.leader], hp = headOf(lead), seats = f.members.some(id => { const h = A.S.houses[id]; return h && h.seat && A.realmProvs(r.id).some(q => q.name === h.seat && q.id !== r.capitalProv); });
     const rise = [
       rs('reckoning', 2.4 * (Math.min(2, ratio) - .8), ratio >= 1 ? 'Their men are as many as the crown\'s' : 'The crown\'s hosts outnumber theirs', { t: 'ratio', r: r2(ratio) }, 0),
-      rs('grudge', (anger - 50) / 25, 'Their anger with the crown', { t: 'anger', r: Math.round(anger) }, 1),
+      rs('grudge', (anger - 40) / 20, 'Their anger with the crown', { t: 'anger', r: Math.round(anger) }, 1),
+      rs('ambition', .4, `${lead ? lead.name : 'The leader'} would be his own master`, { t: 'ambition', id: f.leader }, 0),
       rs('reckoning', (40 - stab) / 30, stab < 40 ? 'The throne is shaking' : 'The throne stands firm', { t: 'stability', r: Math.round(stab) }, 1),
     ];
     if (backer) rise.push(rs('want', .8, `${short(backer.id)} would back them with men and silver`, { t: 'backer', at: backer.id }, 0));
