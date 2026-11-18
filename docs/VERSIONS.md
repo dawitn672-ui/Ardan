@@ -54,6 +54,7 @@ Tag a commit whose CI is green, or the end of a step the owner asked for. Say in
 | v2.1.0-alpha.10 | 2026-11-18 | `b8a779a` | W1-1 no Marshal (five ranks, hosts, senior General); W1-2 A.WHY (every decision with reasons, temper and feelings); P3 playtest fixes (new life, free will, crown crimes, first mission, steps finish); S1 skills with levels, experience, concepts and breakthroughs (proficiencies retired); R2 every relationship needs a base; D9 the map's ground (roads, fords, passes, names; travel, supply, crossings); honest duel odds; the designs for war (D12a-2), growth (G0) and the iPhone route; CI 145 and long 15 green |
 | v2.1.0-alpha.11 | 2026-11-18 | `65eb7ba` | I1-2 iPhone readiness: viewport-fit and safe areas, no selection/zoom/bounce, dvh, one AudioContext unlocked on first tap and paused in the background, storage through UI.store, a native export hook, every control at least 44 points; CI 146 and long 17 green |
 | v2.1.0-alpha.12 | 2026-11-18 | `059d686` | Lords with their own armies: the summons and its answers, no levies, conscription only for a named need, desertion and mutiny for reasons |
+| v2.1.0-alpha.13 | 2026-11-18 | `a88513b` | Wars end only by surrender or defeat: a ruler's reasons to ask for terms, envoys on the road, terms of real land, coin and crowns |
 <!-- versions:end -->
 
 v1.0.0 is the release file as uploaded; from v1.1.0 on, every version's `index.html` is built from that commit's

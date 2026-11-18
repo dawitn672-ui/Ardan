@@ -28,6 +28,8 @@ What changed for the player, in plain words, one section per version (newest fir
   law gives it the vote, or by a coup that puts in a man who will sign. A councillor's counsel of war, an alliance or a
   pact is weighed by the ruler with his own reasons.
 
+## v2.1.0-alpha.13 (2026-11-18 15:25 ET) · Wars end only by surrender or defeat: a ruler's reasons to ask for terms, envoys on the road, terms of real land, coin and crowns
+
 - **Wars end only when one side asks for terms or can fight no more.** There is no hidden war score, no timer and no
   peace nobody asked for. Each month, and after a great battle, each side's ruler weighs his reasons to fight on (his
   cause, his pride, his host, the land he holds, the battles he won, what yielding would cost him) against his reasons to
