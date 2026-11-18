@@ -40,39 +40,54 @@
     return `${pick(['Word came from abroad, and none here could swear to it:', 'It was said in the markets:', 'Travellers told it so:'], key)} ${t}`;
   }
 
-  // Build the book as plain data: [{ who, name, chapters: [{ title, span, lines: [string] }], end }]
-  A.chronicleBook = function () {
-    const S = A.S; if (!S || !S.log) return [];
+  // The story log cut into lives (a run of entries with one e.pc) and each life into chapters (a decade of age):
+  // [{ pc, entries, chapters: [[k, entries]] }]. X5 (999996-state-diet) reads the same cut to know which lines of an old
+  // chapter the book keeps.
+  A.chronicleLives = function (log) {
     const lives = [];
     let cur = null;
-    for (const e of S.log) {
+    for (const e of log || []) {
       if (!cur || cur.pc !== e.pc) { cur = { pc: e.pc, entries: [] }; lives.push(cur); }
       cur.entries.push(e);
     }
-    return lives.map(L => {
-      const p = A.P(L.pc), name = p ? (A.fullName ? A.fullName(p, false) : p.given) : 'one whose name is lost';
-      const home = p && A.realm(p.realm), homeShort = home ? (home.short || '') : '';
+    for (const L of lives) {
       const groups = new Map();
       for (const e of L.entries) {
         const k = Math.max(0, Math.floor((+e.age || 0) / 10));
         if (!groups.has(k)) groups.set(k, []);
         groups.get(k).push(e);
       }
+      L.chapters = [...groups.entries()].sort((a, b) => a[0] - b[0]);
+    }
+    return lives;
+  };
+  // the lines one chapter keeps: the ten weightiest of the life's own and three of the world's, in the order of the
+  // days; each item knows its entry and line (e, i). Pure.
+  A.chronicleKeep = function (pcId, k, es) {
+    const items = [];
+    for (const e of es) for (const [i, l] of (e.lines || []).entries()) {
+      if (!Array.isArray(l) || !l[0] || SKIP.has(l[1]) || NOISE.test(String(l[0]))) continue;
+      const cls = l[1] || '', t = String(l[0]);
+      const isWorld = WORLD.has(cls) || (cls === 'warn' && !/\b(you|your)\b/i.test(t));
+      let w = WEIGHT[cls] || 1;
+      if (/\b(born|marr|wed|dies|died|knight|promot|crown|heir|child|son|daughter|wound|prison|freed|war)\b/i.test(t)) w += 2;
+      if (e === es[0] && i === 0 && k === 0) w += 6;   // the first line of a life
+      items.push({ y: e.year, d: l[2], t, cls, w, world: isWorld, key: `${pcId}|${e.year}|${i}`, e, i });
+    }
+    const mine = items.filter(x => !x.world).sort((a, b) => b.w - a.w).slice(0, 10);
+    const abroad = items.filter(x => x.world).sort((a, b) => b.w - a.w).slice(0, 3);
+    return [...mine, ...abroad].sort((a, b) => a.y - b.y || (a.d || 0) - (b.d || 0));
+  };
+
+  // Build the book as plain data: [{ who, name, chapters: [{ title, span, lines: [string] }], end }]
+  A.chronicleBook = function () {
+    const S = A.S; if (!S || !S.log) return [];
+    return A.chronicleLives(S.log).map(L => {
+      const p = A.P(L.pc), name = p ? (A.fullName ? A.fullName(p, false) : p.given) : 'one whose name is lost';
+      const home = p && A.realm(p.realm), homeShort = home ? (home.short || '') : '';
       const chapters = [];
-      for (const [k, es] of [...groups.entries()].sort((a, b) => a[0] - b[0])) {
-        const items = [];
-        for (const e of es) for (const [i, l] of (e.lines || []).entries()) {
-          if (!Array.isArray(l) || !l[0] || SKIP.has(l[1]) || NOISE.test(String(l[0]))) continue;
-          const cls = l[1] || '', t = String(l[0]);
-          const isWorld = WORLD.has(cls) || (cls === 'warn' && !/\b(you|your)\b/i.test(t));
-          let w = WEIGHT[cls] || 1;
-          if (/\b(born|marr|wed|dies|died|knight|promot|crown|heir|child|son|daughter|wound|prison|freed|war)\b/i.test(t)) w += 2;
-          if (e === es[0] && i === 0 && k === 0) w += 6;   // the first line of a life
-          items.push({ y: e.year, d: l[2], t, cls, w, world: isWorld, key: `${L.pc}|${e.year}|${i}` });
-        }
-        const mine = items.filter(x => !x.world).sort((a, b) => b.w - a.w).slice(0, 10);
-        const abroad = items.filter(x => x.world).sort((a, b) => b.w - a.w).slice(0, 3);
-        const keep = [...mine, ...abroad].sort((a, b) => a.y - b.y || (a.d || 0) - (b.d || 0));
+      for (const [k, es] of L.chapters) {
+        const keep = A.chronicleKeep(L.pc, k, es);
         if (!keep.length) continue;
         const y0 = es[0].year, y1 = es[es.length - 1].year, a0 = es[0].age, a1 = es[es.length - 1].age;
         const state = { last: null };

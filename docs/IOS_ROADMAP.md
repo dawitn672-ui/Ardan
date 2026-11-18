@@ -505,7 +505,9 @@ press are cheap; the bar width and the `left` sweep should become `transform`.
 - **State growth** [R] (sample saves `tests/saves/press/`): the state is **1.78 MB at year 0 and 4.01 MB at year 50** (gzip 309 →
   840 KB): `people` 848 → 1,713 KB, `realms` 396 → 1,060 KB, `wrec` 1 → 135 KB, `log` 2 → 119 KB (capped at 600 entries,
   `src/core/release/core/03-engine-base.js:1055`), `aiLog` 0 → 88 KB. The journal (62 KB at year 50) grows with every choice
-  by design (replay). The dead are kept. X5's work.
+  by design (replay). The dead are kept. X5's work. *X5 part 1 (H-087, D-104 to D-106, `tools/bench/state-size.mjs`):
+  the story log's old years and former lives compacted, the save held by bars at year 0, 50 and 100; the people's growth is
+  the unknown who never die (1,023 of 1,669 living past their people's greatest age at year 100), a proposal (D-106).*
 - **Per-draw allocations** in `UI.gmDraw` (`23-ui-c.js:1122-1250`): `P()` returns a new array for every province, capital and
   army drawn (`1156`, `1174`, `1195`, `1219`); a `groups` object and arrays each draw (`1214-1218`); font strings built per
   draw (`1171`, `1205`); `VM.fitGm` reads layout on every draw (`c-draw.core.js:209`).

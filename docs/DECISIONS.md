@@ -2105,3 +2105,58 @@ his own already.
 - **The orders' trials and the free companies** stay their features' doors; the muster names them in its data.
 - **No new bare-dice decision:** lint-reasons stays at 42 (none of the 42 is the muster's; the drill's monthly roll,
   `A.drillMonth`, is D11-2's).
+
+### D-104 · X5: the state diet: what grows, what is cut, what is kept (2026-11-18; rule 21, `docs/IOS_ROADMAP.md` §7.7; D-018)
+*Numbered from D-104: D-110 onward belongs to D11-1, in flight.*
+1. **Measured first** (`tools/bench/state-size.mjs`, four bot lives to year 100): the raw state is 2.6 MB at year 0, 5.1
+   at year 50, 6.1 at year 100 (seed 7 noble; packed for the save 1.8, 4.1, 4.9 MB; the save 333, 855, 1,049 KB gzipped).
+   What grows: the living people (1,352 → 2,429 KB, below and D-106), realms (399 → 1,134, all in the first 25 years: a
+   steady state of forces, court, markets, polity and memories), the world record `S.wrec` (2.5 KB a year), the story log
+   (2.3 KB a year), former lives (60 to 120 KB each), the journal (1.2 KB a year, in the save). Everything else that grows
+   is already a ring or fades out (`aiLog` 300, `why` 150, `warEnds` 40, `news` 220, `v2dip.h` 400, `csHist` and `riGreat`
+   6, `provHist` 7, feud ledgers drop a line under 2).
+2. **Cut: the story log's old years.** A Chronicle chapter (one life's decade of age) closed more than 40 years ago keeps
+   the lines the book keeps (`A.chronicleKeep`, shared with 22-chronicle) and every `big` and `death` line; the rest become
+   `0`, a mark that keeps the line's place (the book's wording is hashed from line indexes; the toasts, hints and drawer
+   count lines). The book is the same word for word (test `dietSameAsPlayed`); "Show earlier years" shows what the book
+   shows of those years. No engine code reads a line older than the current year (`40-memory-practice` reads this
+   year's). Year 100: 233 → 94 KB.
+3. **Cut: former lives' machinery.** A year after a player character's death: `mw evC evN ec npci retry arcs skr skl skm
+   atlas adv deedLog traitWhy traitLog staffPool riPurse coMem idv` (each read of `A.pc()` or guarded where read of an
+   event's `p`; checked reader by reader). The heir has inherited at `A.continueAs` what passes (atlas, bonds, assets).
+   **Kept** of the dead: name, kin, house, stats and skills (the person view reads them), renown `rn`, deeds, flags, the
+   relationships, `nbk` (64-npc-beliefs reads a former life's beliefs), the body, the ending. About 65% of each life.
+4. **Kept whole, on purpose:** `S.wrec` (the annals the player reads say "none dropped", and claims, citations and the
+   atlas hold entries by index: a cut there would be a design change, left to the owner with a measured rate of 2.5 KB a
+   year raw, 0.5 gzipped); the journal (the replay); `S.history` (57-world-chronicle's d-names reads it so no war name repeats);
+   dead NPCs (`A.gcPeople` already keeps only the family tree's, the player's acquaintances' and the houses' heads').
+5. **No outcome changes:** neither pass draws from `A.rand` or reads the clock, and neither field is read by a later
+   decision: a life played with the diet off and compacted at its end equals, to the byte, the life played with it on
+   (`dietSameAsPlayed`); `identity-probe` at 10 years (three seeds, three starts) IDENTICAL, at 50 years the same random
+   stream and journal (H-087).
+
+### D-105 · X5: the save held by bars; an older save compacted on load, with no version step (2026-11-18)
+1. **Bars** (test `dietSaveBars`, seed 7 noble played by `T.play`, heirs taken on): the packed state and the gzipped save
+   at year 0, 50 and 100, a sixth over the largest of four measured lives (seeds 7, 11, 23, 31): 2,170 / 395, 4,840 /
+   1,010, 5,530 / 1,160 KB; the story log under 140 KB (233 without the diet). A new record that grows without bound
+   breaks them within a few decades.
+2. **On load:** the release's `A.deserialize` calls `A.DIET.compact`. Both passes are idempotent and monotone in the year,
+   so a state compacted once at year Y equals one compacted every year to Y: a save of this build loads unchanged, an
+   older one loads compacted, and a journal that replays from the game's start (`J.o`) meets the same state. So
+   `SAVE_VER` stays 15 (a version step would only have thrown away the journals of saves that need nothing).
+   `dietOldSaves` loads the 16 sample saves (`tests/saves/`, `press/`).
+3. **Considered:** compacting at save time only (the live state would differ from what a reload gives: a replay would
+   not match); a version step with an upgrade (above).
+
+### D-106 · X5 found: the unknown never die; a proposal, not built (2026-11-18; rule 18, order 54; D-104 point 1)
+1. **Found:** an NPC dies of age only if he is a ruler (`A.worldYear`), someone the player knows (`A.familyYear`), or a
+   title holder (`A.V2N.yearOfDeaths`). Everyone else (officials, house members, castmates, kin the player never met)
+   ages for ever. Seed 7 (`/tmp` dumps of `state-size.mjs`): living people past their people's greatest age
+   (`GD.RACES[race].maxLife`) 2 at year 0, 5 at 25, 159 at 50, 631 at 75, **1,023 of 1,669 at year 100** (1,480 of 2,427
+   KB); the oldest human 185. This is nearly all of "people ×2", and a man of 185 is outside reason.
+2. **Not built here:** X5 changes nothing in the world (its brief: no outcome change beyond dropping unread data). A death
+   pass for every living NPC (`A.deathChance`, from a stream seeded by year and person as `V2N.yearOfDeaths` does, so the
+   game's stream is untouched; through `A.kill` so posts, titles and houses pass as they do) would end it, and with
+   `A.gcPeople` hold the people near the year-0 count. It moves every world (vacancies, successions, regrants), so it
+   wants its own step, its tests (one holder per post through the extra deaths, the press gate at year 50 and 100) and
+   the owner's yes. A coherency check "alive past the greatest age" would count it (0 at year 0 by design).

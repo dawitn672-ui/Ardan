@@ -2053,3 +2053,52 @@ D-110 to D-115. Branch `d11-1`, from `origin/v2-integration` at `3584e49`. New f
 - **Left:** see D-113 and D-115 (support companies, transfers, what a role moves on campaign: D11-2; ladders, missions
   and pay: D11-3).
 - **Undo:** revert branch `d11-1`'s commits; nothing was retired.
+
+### H-087 · 2026-11-18 · X5 part 1: the state diet
+`docs/PROGRESS.md` X5, `docs/IOS_ROADMAP.md` §7.7 (rule 21: no data that grows forever); decisions D-104 to D-106. Branch
+`x5`, from `origin/v2-integration` at `3584e49`. New: `tools/bench/state-size.mjs`, feature `src/core/999996-state-diet`
+(`A.DIET`: README, `diet.core.js`, `test.mjs`).
+- **Measured** (`state-size.mjs`, seed 7 noble M 20 in POL-01, the bot's life with heirs; raw state / packed for the save /
+  the save gzipped, KB): before, year 0 2,647 / 1,839 / 333, year 50 5,083 / 4,106 / 855, year 100 6,088 / 4,929 / 1,049.
+  After, year 0 the same, year 50 5,072 / 4,096 / 853, year 100 5,837 / 4,678 / 990. Three more lives after (seeds 11
+  peasant, 23 artisan, 31 noble): year 0 1,807 to 1,854 packed, year 50 3,879 to 4,136, year 100 4,449 to 4,722 (the
+  artisan's line ended in 1182). What still grows: the living people (D-106: 1,023 of 1,669 alive at year 100 are past
+  their people's greatest age; 1,480 of 2,427 KB), `S.wrec` (2.5 KB a year, kept on purpose, D-104 point 4), the journal
+  (1.2 KB a year, the replay).
+- **Built:** the story log's chapters closed more than 40 years ago keep the book's lines and every big and death line,
+  the rest become `0` (year 100: 233 → 94 KB; 2,742 lines → 1,073); a former life loses the machinery of play a year after
+  the death (seed 7: Michael 117 → 41 KB, Ferne 58 → 22); each year and on load, idempotent, nothing drawn (D-104, D-105). The
+  Chronicle's cut and choice are now `A.chronicleLives` and `A.chronicleKeep`, shared (no change).
+- **Release file edited:** `03-engine-base.js` (`A.deserialize` calls `A.DIET.compact`). **Feature edited:** 22-chronicle
+  (the two functions; identity-probe IDENTICAL at 10 years).
+- **Same world:** `identity-probe` base against candidate, 10 years, seeds 7, 11, 2024, three starts: IDENTICAL; 50 years,
+  seed 7, three starts: the random stream and the journal identical in every life, the fingerprint different (the log).
+  Seed 7's year-100 states compared offline with the log's marks and the trimmed fields set aside: identical.
+- **Speed** (`next-month-speed.mjs`, 16 presses on the same year-100 state; one run each on a machine shared with another
+  agent, load 11 to 19 on 4 cores, so noisy): quiet month median 135 → 110 ms, all months 156 → 138. `press-gate`
+  (y0 and y50 saves; the y50 save loses 10 KB on load): candidate y50 quiet 160 ms, base 166; both over the same budgets
+  (full redraws 2 to 3 a press, a card's cost, y50 over y0), as base `3584e49` is on this machine: not X5's (CI runs the
+  gate with `--report`).
+- **Tests** (`/tmp/ardan/x5/x.html`): the new `dietSameAsPlayed`, `dietSaveBars`, `dietOldSaves`; the core suites with the
+  quick tests of state-diet and chronicle (28 of 28), then of security, replay, saves-and-keyboard, v2-saves, endings,
+  choice-memories, hall-of-lives, atlas, skills, bonds, illuminated-chronicle, top-bar, action-feedback, story-drawer,
+  next-year, world-chronicle and npc-beliefs (141 of 141; a first run was cut at 79 by the session's time limit, the
+  other 62 run again by name). `coherency --baseline=quick`: no contradiction, no check rose. lint-reasons 42, lint-stages
+  ok, lint-kin ok, lint-skills ok, `--check-tiers` ok. No engine module touched. No long test run. Not run: the long tier,
+  the balance league (CI's).
+- **Proposal, not done (D-018's second half, for the owner): stop committing `index.html`.** (1) `.gitignore` it and
+  `git rm --cached index.html`. (2) `check.yml`: the `build` job runs `node tools/build.mjs` and uploads `index.html` as
+  an artifact (`actions/upload-artifact`); the eight shards and the press gate download it (`actions/download-artifact`)
+  instead of reading the committed file. `long.yml` and `nightly.yml` the same; `long.yml`'s `git diff --exit-code
+  index.html` becomes a reproducibility check (build twice, compare the bytes). (3) `tools/check.mjs`: build to the file
+  without the "out of date, commit it" failure. (4) `tools/version.mjs get`: when the version's commit has no
+  `index.html`, `git archive <sha> | tar -x` into a scratch folder and run its own `node tools/build.mjs --out=...` (the
+  build is deterministic), falling back to `git show <sha>:index.html` for the versions before the change; `new` writes
+  the built file's hash into the version's row so `get` can check the rebuild. (5) `release/*` branches carry the built
+  file (`git add -f index.html`, by hand or a CI step), as D-018 says. (6) Anyone who plays the committed `index.html`
+  from GitHub (raw link, Pages) would use a release branch or a CI artifact instead. Saves about 3.7 MB of git objects a
+  round (D-018: 104 MB of built files by then).
+- **Left:** D-106 (a death pass for every NPC, the owner's call); `S.wrec`'s old battles (an archive volume, if the owner
+  wants the annals to drop anything); the index.html change above.
+- **Undo:** revert the branch's commits (the feature folder, the one line in `A.deserialize`, the two functions in
+  22-chronicle); saves made meanwhile load in the older build (the marks `0` in the log are skipped by every reader of it).
