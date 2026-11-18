@@ -50,7 +50,8 @@ export default {
     // click through the real interface like a player: new life, every tab, a person, the menu, export, the clock
     await pg.evaluate(() => { UI.screen = 'title'; UI.render(); });
     await pg.click('text=Random life');
-    await pg.waitForTimeout(500);
+    // (H-081: the life is waited for, not a fixed 500 ms)
+    await pg.waitForFunction(() => UI.screen === 'game' && A.S && A.pc() && document.querySelector('#tabbody'), null, { timeout: 30000 }).catch(() => {});
     const seen = [];
     const tabs = await pg.$$eval('#tabs [data-a="tab"], #tabs [role="tab"]', els => els.map(e => e.getAttribute('data-v')).filter(Boolean));
     for (const t of [...new Set(tabs)]) {

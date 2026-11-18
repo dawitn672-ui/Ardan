@@ -4,13 +4,14 @@ export default {
     // every clickable thing is reachable by keyboard, Enter opens it, and focus survives the running clock
     await pg.evaluate(() => { UI.screen = 'title'; UI.render(); });
     await pg.click('text=Random life');
-    await pg.waitForTimeout(300);
+    // (H-081: the life is waited for, not a fixed 300 ms a loaded runner can outrun)
+    await pg.waitForFunction(() => UI.screen === 'game' && A.S && A.pc() && document.querySelector('#tabbody'), null, { timeout: 30000 }).catch(() => {});
     await pg.evaluate(() => { UI.tab = 'people'; UI.refresh(); });
     await pg.waitForTimeout(100);
     const unreachable = await pg.$$eval('#app [data-a]:not(button):not(a):not(input):not(select):not(textarea):not(option)', els => els.filter(e => !e.hasAttribute('tabindex')).length);
     const card = await pg.$('#tabbody [data-a="ov"]');
     let opened = false;
-    if (card) { await card.focus(); await pg.keyboard.press('Enter'); await pg.waitForTimeout(200); opened = await pg.evaluate(() => !!(UI.ov && document.querySelector('#modal'))); await pg.keyboard.press('Escape'); }
+    if (card) { await card.focus(); await pg.keyboard.press('Enter'); opened = await pg.waitForFunction(() => !!(UI.ov && document.querySelector('#modal')), null, { timeout: 3000 }).then(() => true, () => false); await pg.keyboard.press('Escape'); }
     // focus a control in the tab body, run the clock past several redraws, see where focus is
     await pg.evaluate(() => { UI.tab = 'life'; UI.refresh(); });
     const btn = await pg.$('#tabbody button');
