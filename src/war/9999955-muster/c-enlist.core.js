@@ -208,7 +208,7 @@
   MU.roleAsk = function (pc, o) {
     o = o || {};
     const m = pc && pc.mil;
-    if (!m || m.role || (m.rank | 0) >= 3 || pc.id !== A.S.pc) return null;
+    if (!m || m.role || (m.rank | 0) >= 3 || pc.id !== A.S.pc) return null;   // (a raised role, D11-3, comes by its line)
     const opts = MU.roleOptions(pc, o);
     if (opts.length < 2) return null;
     const C = MU.captainOf(pc);
@@ -241,9 +241,10 @@
     if (m.role) {
       const R = MU.R(m.role.k);
       if (!R) { delete m.role; return; }
-      if ((m.rank | 0) >= 3) return MU.dropRole(pc, 'an officer has other work');
+      // D11-3: a raised role is an officer's post as far as its rung (A.LADDER.roleKeeps)
+      if ((m.rank | 0) >= 3 && !(A.LADDER && A.LADDER.roleKeeps && A.LADDER.roleKeeps(m.role, m.rank))) return MU.dropRole(pc, 'an officer has other work');
       if (m.co && m.role.co !== coKey(m)) return MU.dropRole(pc, 'you are in another company now');
-      pc.coin = (pc.coin || 0) + (R.pay || 0);
+      pc.coin = (pc.coin || 0) + (A.LADDER && A.LADDER.rolePay ? A.LADDER.rolePay(pc) : R.pay || 0);
       if (A.gainXp) A.gainXp(pc, R.skill, .3, { q: 'practice', why: `the ${R.name}'s duties` });
       return;
     }
