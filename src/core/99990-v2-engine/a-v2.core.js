@@ -4514,6 +4514,14 @@ var __ARDAN_V2_MAKE = (() => {
       }
     };
   }
+  var HYP = null;
+  var hypTable = (gw, gh) => {
+    if (HYP && HYP.gw === gw && HYP.gh === gh) return HYP.t;
+    const t = new Float64Array(gw * gh);
+    for (let x = 0; x < gw; x++) for (let y = 0; y < gh; y++) t[x * gh + y] = Math.hypot(x, y);
+    HYP = { gw, gh, t };
+    return t;
+  };
   function buildGround(w, o = {}) {
     const C = Object.assign({}, DEFAULTS, o.params || {});
     const gw = w.gw, gh = w.gh, N = gw * gh, grid = w.grid, gen = w.gen, gi = o.gi, riv = w.riv, ocean = w.ocean;
@@ -4525,10 +4533,10 @@ var __ARDAN_V2_MAKE = (() => {
     const nz = makeNoise(String(w.seed) + ":d9-cover"), cover = new Uint8Array(N);
     for (let k = 0; k < N; k++) {
       if (grid[k] < 0) continue;
-      const g2 = gi[k], b = gen.biome[g2], x = k % gw, y = k / gw | 0, n3 = nz.fbm(x / 16, y / 16, 3);
+      const g2 = gi[k], b = gen.biome[g2];
       if (b === BIOME.WETLAND || riv[k] >= 400 && hm[k] < 90 && gen.moist[g2] > 0.7) cover[k] = COVER.MARSH;
-      else if (b === BIOME.TEMPERATE_FOREST || b === BIOME.BOREAL_FOREST || b === BIOME.RAINFOREST) cover[k] = n3 < -0.16 ? COVER.OPEN : COVER.WOOD;
-      else if ((b === BIOME.GRASSLAND || b === BIOME.SCRUB) && n3 > 0.3) cover[k] = COVER.WOOD;
+      else if (b === BIOME.TEMPERATE_FOREST || b === BIOME.BOREAL_FOREST || b === BIOME.RAINFOREST) cover[k] = nz.fbm(k % gw / 16, (k / gw | 0) / 16, 3) < -0.16 ? COVER.OPEN : COVER.WOOD;
+      else if ((b === BIOME.GRASSLAND || b === BIOME.SCRUB) && nz.fbm(k % gw / 16, (k / gw | 0) / 16, 3) > 0.3) cover[k] = COVER.WOOD;
     }
     for (const s of sites) {
       const x0 = s % gw, y0 = s / gw | 0, R3 = C.CLEAR_R;
@@ -4536,6 +4544,7 @@ var __ARDAN_V2_MAKE = (() => {
         if ((x - x0) ** 2 + (y - y0) ** 2 <= R3 * R3 + 1 && cover[y * gw + x] === COVER.WOOD) cover[y * gw + x] = COVER.OPEN;
     }
     const dist = new Float64Array(N), prev = new Int32Array(N), stamp = new Int32Array(N), done = new Int32Array(N), H = heap();
+    const HT = hypTable(gw, gh), hyp = (dx, dy) => HT[(dx < 0 ? -dx : dx) * gh + (dy < 0 ? -dy : dy)];
     let tick = 0;
     const DX = [1, -1, 0, 0, 1, 1, -1, -1], DY = [0, 0, 1, -1, 1, -1, 1, -1];
     const used = new Uint8Array(N);
@@ -4553,7 +4562,7 @@ var __ARDAN_V2_MAKE = (() => {
       dist[s] = 0;
       prev[s] = -1;
       stamp[s] = tick;
-      H.push(Math.hypot(s % gw - tx, (s / gw | 0) - ty), s);
+      H.push(hyp(s % gw - tx, (s / gw | 0) - ty), s);
       while (H.n) {
         const k = H.pop();
         if (done[k] === tick) continue;
@@ -4571,7 +4580,7 @@ var __ARDAN_V2_MAKE = (() => {
             stamp[j] = tick;
             dist[j] = nd;
             prev[j] = k;
-            H.push(nd + Math.hypot(xx - tx, yy - ty), j);
+            H.push(nd + hyp(xx - tx, yy - ty), j);
           }
         }
       }
@@ -4584,7 +4593,7 @@ var __ARDAN_V2_MAKE = (() => {
         const p = path[i - 1], q2 = path[i];
         km += p % gw !== q2 % gw && (p / gw | 0) !== (q2 / gw | 0) ? 14.14 : 10;
       }
-      return { path: Int32Array.from(path), cost: dist[t], km, straight: Math.hypot(s % gw - tx, (s / gw | 0) - ty) };
+      return { path: Int32Array.from(path), cost: dist[t], km, straight: hyp(s % gw - tx, (s / gw | 0) - ty) };
     }
     const edges = [];
     for (let a = 0; a < M; a++) for (const b of prov[a].adj) {
