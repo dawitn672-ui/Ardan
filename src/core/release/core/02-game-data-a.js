@@ -2754,20 +2754,23 @@ GD.CAREERS = {
 // the same rank, never a rank of its own (A.rankLabel). The old words map by the post held: File-Leader -> Sergeant,
 // Squad Captain -> Captain, Senior Captain (a battalion, ~800 men: a wing) -> Commander, Commander of a division (up to
 // 7,470 men: a host) -> General. High General and Marshal are gone: General is the highest rank, one to each host.
+// [D11-3, W11] pay rebased (D-127): a soldier earned five farmhands' wages (300 a year against 60) and a captain
+// a yeoman's fivefold; now a soldier a few suns a month, and an officer's pay rises with his command. Wealth in arms
+// comes from loot and ransom, as it did.
 GD.MIL = [
   {
     code: "M01",
     title: "Soldier",
     leads: 1,
     merit: 0,
-    pay: 300,
+    pay: 100,
   },
   {
     code: "M02",
     title: "Sergeant",
     leads: 20,
     merit: 30,
-    pay: 420,
+    pay: 140,
   },
   {
     code: "M03",
@@ -2775,14 +2778,14 @@ GD.MIL = [
     step: 2,
     leads: 40,
     merit: 75,
-    pay: 600,
+    pay: 180,
   },
   {
     code: "M05",
     title: "Captain",
     leads: 100,
     merit: 140,
-    pay: 1200,
+    pay: 300,
   },
   {
     code: "M06",
@@ -2790,21 +2793,21 @@ GD.MIL = [
     step: 2,
     leads: 200,
     merit: 240,
-    pay: 2400,
+    pay: 450,
   },
   {
     code: "M07",
     title: "Commander",
     leads: 800,
     merit: 400,
-    pay: 4e3,
+    pay: 900,
   },
   {
     code: "M08",
     title: "General",
     leads: 3200,
     merit: 650,
-    pay: 7e3,
+    pay: 2000,
   },
   {
     code: "M09",
@@ -2812,7 +2815,7 @@ GD.MIL = [
     step: 2,
     leads: 12e3,
     merit: 1e3,
-    pay: 12e3,
+    pay: 3500,
   },
 ];
 

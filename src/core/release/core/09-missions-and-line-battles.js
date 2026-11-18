@@ -68,13 +68,16 @@ A.newMission = function (pc, enemy, war) {
     ? ["patrol", "scout", "ambush", "raid", "escort", "hold", "siege", "nightraid", "rescue"]
     : ["patrol", "bandits", "escort", "bandits"];
   if (rank >= 4 && war) types = ["ambush", "raid", "hold", "siege", "nightraid"];
-  const type = A.pick(types);
   let place = prov;
   if (enemy) {
     const ep = A.S.prov.filter(p => (p.occ || p.owner) === enemy),
       front = ep.filter(p => p.adj.some(j => (A.S.prov[j].occ || A.S.prov[j].owner) === realm));
     place = A.pick(front.length ? front : ep.length ? ep : [prov]);
   }
+  // [D11-3] the mission's kind is the commander's choice for his reasons, the branch's own work first (A.LADDER.mission,
+  // D-123); a build without it draws from the list as the release did
+  const own = A.LADDER && A.LADDER.mission ? A.LADDER.mission(pc, types, war, enemy, place) : null,
+    type = own ? own.type : A.pick(types);
   // [X1 baked patch events/994-careers CAR-MISSION-SIZE] A mission's size was the men the player's rank leads,
   // whatever the mission: a General's bandit hunt fought 12,800 and logged "Enemy dead: 5,141. Your losses: 0". A
   // bandit hunt is now 20 to 300 men and a mission away from any war at most 400 (A.missionSize); a mission in a war
@@ -87,7 +90,7 @@ A.newMission = function (pc, enemy, war) {
   return {
     id: "M" + A.ri(1e3, 99999),
     type,
-    title: A.MISSION_TYPES[type].name + (place ? " near " + place.name : ""),
+    title: own ? own.title : A.MISSION_TYPES[type].name + (place ? " near " + place.name : ""),
     realm,
     enemy: foeRealm,
     enemyName: enemy ? A.realmShort(enemy) : A.pick(["bandits", "outlaws", "raiders", "deserters"]),

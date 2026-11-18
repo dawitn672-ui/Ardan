@@ -113,6 +113,10 @@ export default {
       const U = A.UNITS, out = {};
       const pc = T.trySeeds(T.seedRun(7, 4), s => UNT.soldier(s, 'spears')).res;
       if (!pc) return { skip: 'no world gave a spearman a company' };
+      // the player's own role, alone (D-120); since D11-3 every company's role-holders work too (D-126: A.LADDER's
+      // world part, measured by lcWorldRoles), so the player's company is one among many: it is set aside here
+      const npc = A.LADDER && A.LADDER.T ? A.LADDER.T.npc : null;
+      if (npc != null) A.LADDER.T.npc = false;
       const M = U.mine(pc), d = M.d, role = k => { pc.mil.role = k ? { k, co: A.MUSTER.coKey(pc.mil), y: A.S.year } : null; if (!k) delete pc.mil.role; };
       // morale
       role(null); const m0 = A.CO.restVal(d, M.b, M.i, 0); role('bearer'); const m1 = A.CO.restVal(d, M.b, M.i, 0);
@@ -133,6 +137,7 @@ export default {
       role(null); const f0 = U.crossF(d, .7); role('carpenter'); const f1 = U.crossF(d, .7);
       out.cross = [f0, f1];
       role(null);
+      if (npc != null) A.LADDER.T.npc = npc;
       return out;
     });
     if (r.skip) return { ok: true, skip: r.skip };

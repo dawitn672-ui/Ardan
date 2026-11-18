@@ -2215,3 +2215,58 @@ effect for every company in the world would move every world's war for a man the
    section). The card lets him go or stay.
 2. **Left for D11-3:** each branch's ladder, missions and pay; a role's promotion line; peace service counting toward
    promotion (the duty's merit is a start); campaign measures of the NPC companies' roles.
+
+### D-122 · D11-3: each branch's ladder, and a promotion that weighs the post (2026-11-18; war.md §14.1; CRITIQUE item 19)
+1. **The ladder** is what each of the five ranks does in a branch (`ladder` in the branches' data); the rank and unit
+   words stay the glossary's (R14, D-114). *Why:* a "ladder of registry posts" per branch would be fifteen ladders of
+   new words; the posts already exist (W1-1's ranks, A2's registry), and what differs by branch is the work.
+2. **The board weighs the post's aptitudes:** the branch's key skill (`key`) and, from sergeant up, command, each a
+   factor 0.6 to 1.5 on the board's hazard (99999-v2-renown's `RN.milRoll`). *Why:* §14.1, "a captaincy wants command;
+   the train wants numbers; the scouts want fieldcraft; a fine swordsman with no voice stays a fine swordsman". The
+   factor bends the existing hazard; it adds no roll.
+
+### D-123 · D11-3: a branch's missions are its commander's choice (2026-11-18; CRITIQUE item 19, W2)
+The release drew a mission's kind from a list (`A.newMission`, `A.pick`). Now the commander decides through `A.WHY`
+(kind `mission`): the branch's own work (`mtypes`, weight 2.2), the war's asks (a siege 1.2, the enemy on our soil 0.8,
+attacking 0.5), the rest 0.2; the draw's band (2.3) lets other work come now and then. A mission of the branch's own
+work is titled with it. Measured (`lcMissions`): of 330 missions at war, as a soldier and a captain, the branch's own
+were between 0.57 (spears, engineers) and 1.0 (lances, light horse) for every branch (CRITIQUE asks a half).
+
+### D-124 · D11-3: peace service counts (2026-11-18; CRITIQUE R12)
+A duty seen through (D-119) is a deed of service on the army's field, which the board reads (half of what the next rank
+asks when done well, a quarter when done, nothing when caught shirking); each duty done at a rank multiplies the
+board's hazard by 1.12 (four at most); and long, clean service at one rank (3, 4, 5, 6, 8 years by rank, no desertion)
+multiplies it by 1.6, said in the promotion's log. *Why:* R12 ("a Captain sat 79 months with every gate met"): a floor
+that raises the odds without handing the rank over (a post must still fall open).
+
+### D-125 · D11-3: a role's line (2026-11-18; war.md §14.1; D-112 point 2)
+Once a year, after two years in a role, the captain decides through `A.WHY` (kind `role`) whether to raise its holder a
+rung of its line (data): his skill against the role's least plus 15 a rung, his years; against, the battalion's own
+holder of the post above (a seed man, by hash: one holder a post). Pay is the role's times (1 + rung). A quartermaster's
+rung is kept by a captain, a master of the train's by a commander; otherwise an officer hands the role on.
+
+### D-126 · D11-3: the world's companies have role-holders and drills of their own (2026-11-18; order 54; revises D-120)
+1. **Every company's seed role-holders work** (one in three companies for each role, D-112's hash; the player in place of
+   his own): morale at rest (bearer +4, signaller +3, cook +2, farrier +3 in horse), the wounded kept (×(1 + 0.6 × the
+   battalion's share of surgeon's mates)), a foraging party's bread (×(1 + 0.7 × the division's foragers)) and the land's
+   anger (×(1 − 0.4 ×)), a day's bread (Quartermasters ×0.9; clerks ×(1 − 0.1 ×)), holds on the ledger (provost's men,
+   clerks, bearers by their share), an attack over a river (Sappers, or carpenters by share, up to 0.4 of the loss).
+   **Every battalion's drill** is its own (its stored grades when the player drills in it, else the division's ± 8 by its
+   seed) in 9997's morale and line battle. *Why:* the owner's first rule; D-120 had made roles the player's alone.
+2. **Cheap:** no man is simulated; a battalion's roles are a bitmask a company and a morale vector, worked out from ids
+   once and kept beside the record (a WeakMap, never saved); a division's shares beside the division. Nothing grows the
+   save. Measured (in-page, under a machine load of 16 to 18 on 4 cores, best of three; seed 7, two years from a new world,
+   six wars): about 31,000 calls a month, about 4 ms a month in all at the best run (role morale 0.28 µs a call, 10,300
+   calls), where H-075 found this machine 3 to 4 times CI's: about 1 to 1.5 ms on CI, inside W1 and D11's 2 ms.
+3. **How much it moves the world's wars** (four worlds, seeds 7 to 10, 15 years, the world's part off and on, the same
+   build): wars 45 against 55, ended 43 against 52; the men lost in all 8.04 million against 9.46 million, so per war
+   178,700 against 172,000 (−4%; by world −14%, −22%, −30%, +60%); mean length of an ended war 4.3 against 3.8 years. Each
+   world diverges from its first changed fight (as any change does), so the pooled figures are a reading, not a law; no
+   measure left the range the worlds span between themselves. `A.LADDER.T.npc = false` turns it off.
+
+### D-127 · D11-3: pay rebased (2026-11-18; CRITIQUE W11)
+`GD.MIL[].pay`: soldier 100 a year (was 300), sergeant 140 and 180 (420, 600), captain 300 and 450 (1,200, 2,400),
+commander 900 (4,000), General 2,000 and 3,500 (7,000, 12,000). A farmhand earns 60, a yeoman 220: a soldier now earns
+less than twice a farmhand and a captain about one and a half to two yeomen. Wealth in arms is loot and ransom (the
+missions' and battles' own). The balance league has no soldier's path; a peasant who enlists keeps less, and CI's long
+tier (the balance league) is where a band would show it.

@@ -139,6 +139,8 @@
     // the company's drill
     try { U.drillMonth(pc); } catch (e) { console.error('[units] drill', e); }
     // a duty in peace: none, or the last one done
+    // D11-3: a duty seen through is a deed of service the promotion board reads (A.LADDER.dutyDone, R12)
+    if (m.duty && day() >= m.duty.d1 && !m.duty.done) { m.duty.done = 1; if (A.LADDER && A.LADDER.dutyDone) A.LADDER.dutyDone(pc, m.duty); }
     if (!war && !m.call && (!m.duty || day() >= m.duty.d1) && !(A.S.queue || []).some(q => q && q.ev === 'un_duty')) U.dutyNow(pc);
     else if (m.duty && day() < m.duty.d1) {
       const D = U.duties().find(x => x.id === m.duty.k);
@@ -169,6 +171,7 @@
         const D = U.duties().find(x => x.id === ctx.dk);
         if (D && A.gainXp) A.gainXp(pc, D.skill, fx.unDuty === 'well' ? 1 : fx.unDuty === 'share' ? .5 : 0, { q: fx.unDuty === 'well' ? 'stretch' : 'practice', why: D.name });
         if (fx.unDuty === 'well') m.merit = (m.merit || 0) + 2;
+        if (m.duty && m.duty.k === ctx.dk) m.duty.q = fx.unDuty;   // how it was done, for the board (D11-3)
         if (fx.unDuty === 'caught') m.merit = Math.max(0, (m.merit || 0) - 2);
       }
       if (fx.unTransfer === 'go' && ctx.tb && MU.assign) MU.assign(pc, ctx.tb);
