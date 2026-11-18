@@ -1483,3 +1483,45 @@ Each failure, its cause and the fix:
   `replayWithRender`, `savesStillLoad`: 18 of 18 pass.
 - **Commits:** `9cdb5b3` (the fix), then this entry and `index.html`.
 - **Undo:** revert `9cdb5b3`; the worlds are the same either way.
+
+### H-079 · 2026-11-18 · CI check run 143 and long run 13: eight failures read
+
+The integration branch at `2599744` (after the market fix, H-073 addendum 2, shifted every world's random stream, and
+speed-fix, H-078) failed eight tests. Each was read against measurements, here and against `c2e9e0a` (before the
+market fix) where it mattered. Three were real gaps in the game; the other five hinged on one world's draw.
+
+- **`whyRecordsKept`** ("wars with a record 0"), a draw. Seed 5's crowns declared no war in ten years (41 asks: 23
+  short of nerve, 18 for want of reasons); seeds 6, 7, 11, 12 and 13 declared 7, 5, 10, 4 and 8, every one with its
+  A.WHY record (before the market fix seed 5 declared 2, the others 3 to 9: the pace did not change, and `DV.tryWar`
+  records every war it declares). The test reads the next world (6, then 7) when one keeps the peace.
+- **`ttCov2Realm`** (Dynasty, noble 15/18), a gap shown by a draw. The first lives of seeds 5958 and 5959 now die (a
+  cave bear) and `TT2.life` moves to the next seed, so the Hall of Lives held an earlier life, and the Dynasty tab showed
+  "In an earlier life (1×)" and the inheritance card's "346 suns" with no description. Fixed in the game: the Hall's count
+  is a click-to-open note (`995-hall-of-lives`), and each figure on the inheritance card opens its row's name and reason
+  (`59-descriptions`' legacy wiring). Dynasty 15/15 and 18/18 now.
+- **`v2sNumbers`**, a real gap. A confidant's pips said "shared history 16 (now -3)": 99993's rule read only a count of
+  nothing or more, so a history where wrong outweighs kindness stayed in numbers. The rule reads it and says so in words.
+- **`v2sNoBareNumbers`** ("Under your command · 54 · Soldier"), the test's misreading: a People row is bond, age, post,
+  and 99994-v2-family words a subordinate's bond "Under your command"; 54 is his age. The row's bond word is read apart.
+- **`x3PreviewReplay400`** (396 scenes), a draw: the eight lives that share 400 scenes ended early. Two standby lives
+  make up a shortfall; with a ninth, 400 scenes and 256 preview claims, every one held.
+- **`w1NoMarshalWorld`** (seniorAtCouncil, 23 of 26 at the end), a timing of the yearly look. Seed 7's three realms at
+  war re-formed their first hosts at the turn of 1135; the crown names a first host's General at each month's end
+  (`P.fillGenerals`), and all three were named within the month. Month by month over the 30 years, 8 vacancies in 188
+  looks, every one filled by the next. The check now fails a vacancy seen at two yearly looks running, or more than 3%
+  of realm-years empty (4 of 827 here).
+- **`kinBotLives`** ("4 given up" of 14, over the quarter), a real gap. Since C6 (D-057) "Your uncle's mill" names only a
+  real unwed uncle and a real grown cousin, and its first scene drops itself without them, but the arc began without
+  asking and was given up at stage 0 (two of the four: an artisan's and a royal's). `ak_inherit` begins only when the
+  tree holds both (`A.AKIN.KIN.isUnwedUncle`; the reading draws nothing). The other two (a foundling who died, a brother
+  who no longer fits his next scene) are the story's own ends. Run once here with the fix (619 s): 20 bot lives, 12 of 40+ years (5 met a kin arc, the bar's 5), 10 kin arcs began, 10 finished, none given up, 7 of 13 kinds: pass.
+- **`varietyGuard`** (guard on, one triple), the test's reading: `bd_sup_drunk` (a refill) > `lfx_bd_old_wrong_2` (a
+  bond's trigger scene) > `sk_deed_offered`, a deed offer `A.schedule` had set for that month. A scheduled, chained,
+  asked-for, journey or forced scene comes when its story says and is never held back (97-first-life-fixes); the triple
+  is the guard's only when its third scene is the roll's own (a refill counts). Run once here (393 s): guard on 1,079 views, no triple, back to back 1.2% against 3.7% off: pass.
+- **Checks:** the eight tests, the other `59-descriptions` coverage and purity tests, the Hall's four tests, the kin
+  arcs' six quick tests, the life arcs' and the other arcs' start tests, `renderRng`, `replayWithRender`,
+  `savesStillLoad` (12 of 12); `lint-reasons` (66, the baseline), `lint-kin`, `lint-stages`.
+- **Commits:** `8a8da9e`, `c7de014`, `181e489`, `5409c94`, `a9a6160`, `4a275f5`, `f513060`, `a2d1ccf`, then this entry and
+  `index.html`.
+- **Undo:** revert the commits; `f513060` changes which story arcs a life meets (worlds stay deterministic).
