@@ -5,6 +5,24 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **No two companies are the same.** Your company has a make-up (veterans or raw men, conscripts, its sergeants, its
+  captain's temper), drills it knows well or not at all, and a character that comes from its own history: it broke
+  before horse at one fight, held a ford at another, chases too far under a bold captain. The War tab's *Your company*
+  card says it all in words.
+- **Training fits the unit.** Each season the company's drills are worked out from what it lacks, what is coming (a war,
+  enemy horse, a siege, a march), what it must unlearn, and what the ground and its sergeants can teach: no ladders where
+  there is no wall, no bridging without a river. As a captain you pick one or two drills a month; below that, your
+  captain does, and you are in the drill yard with your company. A drill learned shows on the war map; men driven hard go
+  into a fight winded.
+- **Scouts, engineers and the train have companies of their own:** the Outriders, the Sappers, the Siege train, the
+  Quartermasters.
+- **There is always work.** In peace your company has a duty for its reasons: the castle watch, a patrol against
+  brigands, the tax escort, the road, the lord's errand, the drill camp. A new soldier has one in his first month.
+- **Your role counts in the field.** A standard-bearer, signaller or cook keeps spirits up; a surgeon's mate saves
+  wounded men; a forager finds bread; a provost's man keeps men from slipping away; a pathfinder sees further; a
+  carpenter gets the division over a river at less cost.
+- **You may be asked for.** Once a year an officer of another branch may ask for you, if your skills suit his men better.
+
 - **Joining the army is a muster now, not a click.** Go to your lord's muster or the crown's (whoever holds the land you
   live in), or to a free company's table. The muster-master looks you over and says what he sees: the weapon you know
   and what you carry, how you are built to fight, and anything else of use (a horse, letters, a trade, the sea, tracking,

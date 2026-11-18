@@ -80,7 +80,8 @@
   W.scope = function (pc) {
     pc = pc || (A.S && A.pc && A.pc());
     if (!pc || !A.S || !W.myWars(pc).length || W.rank(pc) === 'commander') return null;
-    const steps = W.rank(pc) === 'captain' ? 2 : 1, S = A.S, out = new Set();
+    // D11-2: a pathfinder or a scout sees a march further (A.UNITS.sees)
+    const steps = (W.rank(pc) === 'captain' ? 2 : 1) + (A.UNITS && A.UNITS.sees ? A.UNITS.sees(pc) : 0), S = A.S, out = new Set();
     let edge = [];
     for (const id of W.ownDivs(pc)) { const d = A.divById(id); if (d && S.prov[d.loc]) { out.add(d.loc); edge.push(d.loc); } }
     for (let k = 0; k < steps; k++) {

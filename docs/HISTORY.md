@@ -2130,3 +2130,42 @@ D-110 to D-115. Branch `d11-1`, from `origin/v2-integration` at `3584e49`. New f
   realm-peace, five-ranks, surrender, companies and posts 83 of 83 (on the W1-6 head), of fresh-realms-and-tensions,
   v2-nobility, commands and men 53 of 53; `coherency --baseline=quick`: no check rose.
 - **Undo:** revert the branch's commits.
+
+### H-092 · 2026-11-18 · D11-2: units that differ
+Order 54 ("why should one unit need aptitude in every single aspect of war? The training system should be dynamic,
+tailored to each unit's composition, abilities and tendencies"; "it took a year and months to be given my first
+mission"); `docs/design/war.md` §14.1 to §14.3 and §16's D11-2 row; D-115's list; decisions D-116 to D-121. Branch
+`d11-2`, from `origin/v2-integration` at `f802f13`. New feature `src/war/9999956-units` (`A.UNITS`: `a-units`,
+`b-syllabus`, `c-service`, `d-view`, `un.events.js`, README, tests); data `data/military/drills.json` (36 drills in eight
+families) and `data/military/duties.json` (10 duties).
+- **Built:** a company's make-up, abilities (read from the war map, stored only for the player's company) and tendencies
+  (written after every war-map fight, three at most a record) (D-116); support branches in their own support companies
+  (D-117, replacing D-113); the syllabus with reasons and cuts, the month's drill (the player's pick as captain, else
+  `A.WHY` kind `drill`), the release's drill scene on a count (D-118); a duty in peace always (kind `duty`) (D-119); what a
+  role changes on campaign (D-120); transfers (kind `transfer`) (D-121); the War tab's *Your company* card.
+- **Release files edited:** `18-event-view-a.js` (`A.drillMonth`: the scene every eighth month of drilling, not a roll),
+  `23-ui-e.js` (the War tab's company card). **Features edited:** 9997-companies (`CO.place`: the support company; the
+  fight's ledger of tendencies; a role's morale in `CO.restVal`/`CO.restOne`; the surgeon's wounded; the forager's bread;
+  a day's bread; its test helper enlists a spearman, whose battalion and senior captain it reads), 9999952-men (the
+  ledger's holds), 99997-v2-war (sight on campaign), 999911-d9-ground (a river crossing's cost), 01-stages (the `units`
+  stage), `tests/reasons-baseline.json` (42 → 41).
+- **Measured:** every company of seed 7's world (1,977) has a syllabus of its branch's drills only (11,790 offers, none
+  outside); two companies of one branch with different histories: 18 of 18 pairs got different syllabuses; a role in a
+  lab: morale at rest 63.6 → 67.6 (bearer), wounded kept 14.7 → 23.5 of 400 lost (surgeon's mate), a foraging party's
+  bread 3 → 5.1 days (forager), the ledger's net 1.2 → 1.8 (provost's man), sight one march further (pathfinder), a
+  river's factor 0.70 → 0.82 (carpenter); 20 of 20 new soldiers had a duty or a task within three months (one standby
+  life); a drill's grade 24 → 39 in four sessions while another faded 45.6 → 44.4.
+- **Tests:** new `unData`, `unSyllabusArm`, `unSyllabusHistory`, `unRolesMove`, `unFirstDuty`, `unSupport`, `unDrillMonth`,
+  `unTransfer`, `unView`, `unOldSaves` (14 saves load and play a year), `unDeterministic`: all pass. Core suites with the
+  touched features' quick tests (units, muster, companies, men, v2-war, d9-ground, unit-drill, unit-work, posts,
+  commands, five-ranks; 116 tests): 113 on the first build; three failures found and fixed: `v2wFightWaits` (a soldier
+  with no host on the map met a duty's reading of a null division), `x3OneUnit` (a drill said "miles": kilometres),
+  `coScreens` (its helper enlisted a man the muster-master put in a support company, which has no senior captain: it
+  now enlists a spearman). On the final build: the core suites with units and muster, 42 of 42; the three re-run, pass.
+- **Checks:** lint-events (units) 0 errors, 0 warnings; lint-choices (units) 0 obviously best; lint-reasons 41 (baseline
+  lowered from 42); lint-stages ok; lint-kin ok; lint-skills ok; `--check-tiers` ok; `coherency --baseline=quick` (4
+  lives, 16 years): no contradiction, no check rose. No engine module touched; no long test added or run (the long tier
+  and the balance league are CI's). Playtest at 375 by 667: the company card reads in words, its buttons 44 points.
+- **Left (D11-3):** each branch's ladder, missions and pay; a role's line of promotion; peace service toward promotion;
+  NPC companies' own stored drill.
+- **Undo:** revert branch `d11-2`'s commits; nothing was retired.

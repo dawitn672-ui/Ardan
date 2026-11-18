@@ -2160,3 +2160,58 @@ his own already.
    `A.gcPeople` hold the people near the year-0 count. It moves every world (vacancies, successions, regrants), so it
    wants its own step, its tests (one holder per post through the extra deaths, the press gate at year 50 and 100) and
    the owner's yes. A coherency check "alive past the greatest age" would count it (0 at year 0 by design).
+
+### D-116 · D11-2: a company is its make-up, abilities and tendencies; most are read, few are stored (2026-11-18; war.md §14.2, §14.3; rule 21)
+1. **Drills as data** (`data/military/drills.json`): 36 drills in §14.2's eight families, each with its branches, the
+   war-map drill it feeds (60-unit-drill's `GD.DRILLS`), its ground, its teacher's skill, the tendency it mends, the task
+   it prepares. *Why:* §14.3's `drills.json`; a drill that feeds the war map's record changes the battle that exists now.
+2. **Abilities are read, not stored, for the world's companies:** a company's grade in a drill is the division's drill of
+   that family (×70), its experience (×0.35) and its own difference by its seed (±10). Only a company the player drills
+   in keeps grades of its own (`b.dg`, about a dozen numbers). *Why:* about 2,000 company records a world; storing forty
+   grades on each would undo X5's state diet (D-104). NPC companies' training stays the division's monthly drill (60).
+3. **Tendencies from the ledger:** after every war-map fight each company that lost men writes what it did (broke before
+   horse, held, chased, lost a quarter) with the place and year, three at most a record (`b.td`); its captain's temper
+   and its men add the rest as a reading. *Why:* §14.2, "above all its own history in the ledger".
+
+### D-117 · D11-2: support branches stand in the support company they man (2026-11-18; replaces D-113)
+A scout, an engineer, a man of the train or the guard (soldier to captain) stands in his host's Outriders, Sappers,
+Siege train, Quartermasters or Banner guard, when the host has one (9997's `CO.place`, through `A.UNITS.supFor`); a
+captain there holds its one captain's slot (the registry's `coy:<div>:<b>:0`, which `A.POSTS` already allows for a
+support record). A commander leads a wing of a combat battalion: a support record has no wing. Elsewhere he stands in a
+battalion of his troop, as before.
+
+### D-118 · D11-2: the syllabus is worked out with reasons; the drill is a decision; the drill scene is a count (2026-11-18; war.md §14.2; D-069)
+1. **The syllabus** is a pure reading (worked out when the page opens: §16's budget, "the syllabus nothing"): the branch's
+   drills it lacks or holds low; the task (a war, the enemy's horse, a siege, a march); a tendency's remedy; cut where
+   the ground or a teacher is lacking (each cut said with its reason). Four to six offers.
+2. **The month's drill** of the player's company: his own pick as captain or above (one or two, the War tab), else his
+   captain's `A.WHY.decide` (kind `drill`; at captain rank and no pick, the sergeants'). Gain `(100 − grade) × 0.09 ×
+   teacher × hardness ÷ drills`, so less each time; others fade 0.4 a month; the war-map drill gains the company's share;
+   a hard month costs organisation.
+3. **The release's drill scene** (`A.drillMonth`, a roll of 12 in 100 each month) comes every eighth month of drilling;
+   a soldier's company drill scene (`un_drill`) every fourth session. *Why:* the owner asked that lint-reasons fall;
+   a scene that comes on a count is a reasoned schedule, not luck. lint-reasons 42 → 41.
+
+### D-119 · D11-2: a duty in peace, always (2026-11-18; war.md §14.1; order 54)
+The player's company has a duty whenever his realm is at peace and he is not a conscript: chosen by its captain through
+`A.WHY` (kind `duty`) from `data/military/duties.json` for named reasons (the branch's own work, unrest in the province,
+the season, the lord, a raw company, the coast, a hostile border, the law; not the duty just done), three months long,
+practised monthly, its card when it starts. At war the war gives the work (99972-unit-work, the war map). *Why:* §14.3,
+"a new soldier has a duty or a task within three months in 19 careers of 20"; measured 20 of 20.
+
+### D-120 · D11-2: what a role changes, and where (2026-11-18; war.md §14.1; D-112 point 2)
+A role is the player's, so its effects are on his company or division only, each read where the measure lives:
+morale at rest (bearer +4, signaller +3, cook +2, farrier +3 in horse), named among the morale's parts; the wounded kept
+from a battle's dead (surgeon's mate ×1.6 of the third); a foraging party's bread (forager ×1.7) and the land's anger
+(×0.6); a day's bread eaten (the train's branch or a clerk ×0.85); holds on the ledger (provost's man 0.6, clerk 0.4,
+bearer 0.3); sight on campaign (pathfinder or scout, one march further); an attack over a river (carpenter's or
+engineers' division: the loss of the crossing ×0.6). The NPC companies' seed role-holders (D-112) carry no effect: an
+effect for every company in the world would move every world's war for a man the player never meets.
+
+### D-121 · D11-2: transfers, and what is left (2026-11-18)
+1. **Transfers:** once a year, for a soldier or sergeant (not a conscript), the muster-master's reading is taken again;
+   when another branch leads his own by a margin (1 in log-odds), that branch's officer decides through `A.WHY` (kind
+   `transfer`) whether to ask for him (the reading's reasons, that branch's need; against, his captain's want and his
+   section). The card lets him go or stay.
+2. **Left for D11-3:** each branch's ladder, missions and pay; a role's promotion line; peace service counting toward
+   promotion (the duty's merit is a start); campaign measures of the NPC companies' roles.

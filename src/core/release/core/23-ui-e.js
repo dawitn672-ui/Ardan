@@ -1362,6 +1362,8 @@ UI.TAB.war = function (pc) {
     ]);
   // [D11-1] the soldier's place: rank, unit, branch, command and role in one glossary (9999955-muster)
   if (pc.mil && UI.placeCard) add += UI.placeCard(pc);
+  // [D11-2] his company: make-up, drills, tendencies, the syllabus, its duty (9999956-units)
+  if (pc.mil && UI.unitCard) add += UI.unitCard(pc);
   if (pc.mil) add += UI.drillCard(pc);
   // [W1-3] the muster roll of the player's realm, at his rank (9999951-commands)
   if (UI.musterCard) add += UI.musterCard(pc);

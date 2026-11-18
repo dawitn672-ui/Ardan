@@ -62,6 +62,8 @@
     if (P && !home && A.ctrl && A.ctrl(P) !== d.r) h('Deep in enemy country, few dare', .8, 'far');
     if (P && !home && w && A.warSide(w, d.r) === 'att') h('Plunder hoped for', .3, 'plunder');
     if (r.laws && r.laws.authority >= 2) h('Fear of the provost', .5, 'provost');
+    // D11-2: the player's role in this division holds men who would slip away (A.UNITS.ledgerHolds)
+    if (A.UNITS && A.UNITS.ledgerHolds) for (const x of A.UNITS.ledgerHolds(d)) h(x[0], x[1], x[2]);
     // pulls
     const sr = d.sr != null ? d.sr : 1;
     if (sr < .7) p(sr < .35 ? 'Hunger: bread promised and not come' : 'Short rations', (1 - sr) * 2.4, 'hunger');
