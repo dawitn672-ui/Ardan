@@ -38,7 +38,7 @@
     battleYears: 2,       // the battles a decider still counts
     annexShare: .85,      // a victor may take the whole realm only when his soldiers hold this share of its people
   }, WAR.T || {});
-  W.T.kindCap = Object.assign({ yield: 30, terms: 30 }, W.T.kindCap || {});
+  W.T.kindCap = Object.assign({ yield: 20, terms: 20 }, W.T.kindCap || {});
 
   const other = s => (s === 'att' ? 'def' : 'att');
   WAR.other = other;

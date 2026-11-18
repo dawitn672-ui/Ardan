@@ -44,7 +44,7 @@
   decider dead, terms offered and taken, conquest), terms: [{ k, label }], why: [reasons], told, signed: [the two
   rulers] }`, made by every ending (an event's peace, a realm's fall and a test's too, read from what they were by
   `A.WAR.endOf`), kept on the world record's peace entry and in `A.S.warEnds` (the last 40). Decisions are in `A.S.why`
-  (kinds `yield` and `terms`, 30 each) and in the rulers' log (20-ai-personality).
+  (kinds `yield` and `terms`, 20 each) and in the rulers' log (20-ai-personality).
 - **Blows** (`A.WAR.blow`): an event that hurts a side (a mission, volunteers in borrowed colours, a hostage sent home with
   terms, Tessar betrayed) is a named reason in its pan to ask, fading over a year; at most six a war.
 

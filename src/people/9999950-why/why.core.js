@@ -104,6 +104,9 @@
       // each kind keeps its own share, so the crowns' many appointments never push the wars out of the record
       let n = 0;
       for (let i = 0; i < L.length; i++) if (L[i].k === kind && ++n > capK) { L.splice(i, 1); break; }
+      // over the whole cap, the oldest records go first, a war's last (W1-5 added the kinds yield and terms; the kinds'
+      // shares together may pass the whole, and a war's record is the one the game shows longest)
+      for (let i = L.length - 1; i >= 0 && L.length > W.T.logCap; i--) if (L[i].k !== 'war') L.splice(i, 1);
       if (L.length > W.T.logCap) L.length = W.T.logCap;
     }
     return rec;
