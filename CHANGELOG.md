@@ -46,6 +46,25 @@ What changed for the player, in plain words, one section per version (newest fir
   you know: the crown hears the whole roll, a lord who stayed home and why, a soldier his own lord's answer and the
   count of banners.
 
+- **Made ready for the iPhone.** The page now fills a notched screen edge to edge and keeps clear of the notch and the home bar;
+  text on the buttons and panels can no longer be selected by a long press, and the page no longer bounces or zooms when
+  you tap twice (pinching still zooms). Heights follow the screen as the phone's bars come and go. The score and the
+  sounds share one audio channel that pauses when you leave the game. Every word that opens a description, every chip and
+  every stat row on the You, Profile, Path and Holdings pages is now at least a thumb wide and tall to tap, with the lines
+  looking the same (the skills rows wait for the new skills page). Saving a game to a file keeps working in the browser;
+  the phone's own file hand-off comes with the phone app.
+
+## v2.1.0-alpha.10 (2026-11-18 06:39 ET) · Reasons for everything: no Marshal, minds that decide, skills that grow like people, doors that open by standing, and a map with roads
+
+- **The Dynasty tab explains its figures.** An ending found in an earlier life says how many lives found it, and the
+  inheritance card's purse, lands, renown and friends each open what passes to your heir and why.
+- **A friend's next rank reads in words even after a quarrel.** When more wrong than kindness lies between you, the
+  pips say so instead of showing a number below nothing.
+- **Your uncle's mill begins only in a family that has the uncle.** The story no longer starts, and stalls, in a life
+  whose tree holds no unwed uncle and no grown cousin.
+
+- **A fighter's odds against you read truer.** The scale on a person's page ("would usually beat you") overstated your
+  chances by three to five points in close fights; it now reads what the duels do.
 - **Skills with levels and experience; the proficiencies are gone.** Every skill now has a level in words, Beginner to
   Legend, each in five steps ("Swordsmanship: Expert II"), and a bar toward the next step. You earn experience by doing
   things: a month of training with or without a teacher, the work of your post, a card's test, a fight, a lesson. A
@@ -64,8 +83,24 @@ What changed for the player, in plain words, one section per version (newest fir
   it over. Twelve new moments: the master's word, the chance to be judged, the rival, the quiet winter, a specialism,
   "some never see it", and more.
 - **The season's line** now says in words what rose and chiefly why, and what held and why.
+- **Skills grow at a living pace.** What you do in a month counts more toward a step, ideas come a little sooner in a
+  busy life, and once you are ready for a new word the chance to prove it comes to you within a year.
 - **Old saves:** every skill becomes the level under its old number (no word is lost; the rest goes on the bar), the
   folded skills become specialisms, and gifts become talent letters.
+- **Every relationship needs a base.** A king will not get to know a peasant, and most lords will not look at one. Who
+  lets you near follows the gap between you, his pride and his temper, his own birth (a baron risen from the plough
+  sympathises; a duke born to gold does not), what he needs of you (your sword in a war, your skill, your silence, your
+  coin, your voice in council) and what you share (you serve him, stood in his line, shared his cell or his lessons).
+  You shift the scales by knighthood and a good name, mastery, renown, wealth, a deed, and a friend who knows you both.
+  What is out of reach is not offered, and a note says why; what is within reach but not sure is an attempt, and he
+  answers with his reason ("Lord Aymer will hear you now: a knight of your name is worth an hour"). A refusal stands for
+  the year. Patrons, a great house's match for your child and your friends' circles follow the same base.
+- **The map has roads, fords and passes.** High roads and tracks join the towns, most of which now stand on a river or the shore;
+  every road meets a river at a ford or a bridge, and mountain roads go over named passes. Woods, marsh, tributaries and the
+  names of seas, ranges, rivers and forests are on the map, and no two neighbouring realms share a colour.
+- **The ground matters.** You travel and armies march faster on the roads, supply runs along roads and rivers, and an attack
+  across a river or through a pass costs the attacker, as the battle report says. Oases lie in dry country, and hills no longer
+  cover half the land.
 - **Kings and lords decide for reasons you can read.** A crown goes to war, a great house joins or leaves a faction, and
   the king names his first host's General by weighing named reasons (an insult, bad blood, a cause, his Generals' count
   of the enemy's spears, an old wrong, a debt, his temper), never by a roll of the dice alone. The news of a war now ends

@@ -265,7 +265,9 @@ export default {
     await pg.setViewportSize({ width: 1366, height: 768 });
     const samples = [];
     for (const seed of [9551, 9552, 9553, 9554, 9555, 9556]) {
-      await pg.evaluate(s => { __nyEnter({ seed: s, race: 'human', realm: 'POL-0' + (1 + s % 5), status: 'artisan', sex: 'M', startAge: 2 }); }, seed);
+      // (S1b, D-072: a child's year with no card at all is the world's draw, about one year in twenty at three cards a year;
+      // the month's cards are held back for these presses, so the year is quiet by construction and the redraw is what is measured)
+      await pg.evaluate(s => { __nyEnter({ seed: s, race: 'human', realm: 'POL-0' + (1 + s % 5), status: 'artisan', sex: 'M', startAge: 2 }); if (!window.__nyME) { window.__nyME = A.monthEvents; A.monthEvents = () => {}; } }, seed);
       for (let k = 0; k < 4; k++) {
         await pg.evaluate(() => new Promise(r => setTimeout(r, 300)));
         const c0 = await cpu();
@@ -276,6 +278,7 @@ export default {
       }
       if (samples.length >= 4) break;
     }
+    await pg.evaluate(() => { if (window.__nyME) { A.monthEvents = window.__nyME; window.__nyME = null; } });
     const med = samples.map(s => s.cpu).sort((a, b) => a - b)[Math.floor(samples.length / 2)];
     const ok = samples.length >= 2 && samples.every(s => s.full === 1 && s.digest) && med <= 2000;
     return { ok, detail: `${samples.length} quiet years: ${samples.map(s => `${s.cpu} ms CPU, ${s.full} full redraw, digest ${s.digest}`).join('; ')}; median ${med} ms (limit 2000)` };

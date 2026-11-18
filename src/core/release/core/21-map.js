@@ -356,6 +356,45 @@ MAP.provAt = function (canvas, ev) {
 
 MAP.toCanvas = (canvas, kx, ky) => [(kx / 7e3) * canvas.width, (ky / 4500) * canvas.height];
 
+// [D9] One map component (CRITIQUE M8, U5, D9's "every map is one component"). The world tab (MAP.draw), the full map
+// (UI.gmDraw) and the war room (UI.drawWarBasic) lay the same layers, in the same order, through MAP.paint; each then
+// adds only its own marks (names, standards, orders). The layers, for the view v ({ x0, y0, w, h } in km; null: the whole
+// frame): the ground (MAP.ground: the satellite or the inked ground; else the sea colour and the relief picture), the
+// realms' colours (ov, a map mode's overlay), the front (front, when at war), the ways (MAP.ways, 999911-d9-ground:
+// woods and marsh, roads, crossings and passes), then the ink (MAP.inkLines: borders, towns and keeps).
+// [X1 baked patch map/62-inked-map IM-GROUND-DRAW, IM-GROUND-VIEW] MAP.ground draws the inked ground first; only when it
+// declines (the setting is off) is the sea colour and the relief picture painted.
+// [X1 baked patch map/62-inked-map IM-LINES] Right after each map lays its realm colours, MAP.inkLines inks the borders,
+// towns and keeps over them, so the wash never greys the line work.
+MAP.paint = function (ctx, W, H, v, ov, front) {
+  if (!(MAP.ground && MAP.ground(ctx, W, H, v))) {
+    ctx.fillStyle = "#1d3b57";
+    ctx.fillRect(0, 0, W, H);
+    if (MAP.img && MAP.img.complete && MAP.img.naturalWidth) {
+      if (v) {
+        const iw = MAP.img.naturalWidth,
+          ih = MAP.img.naturalHeight;
+        ctx.drawImage(MAP.img, (v.x0 / 7e3) * iw, (v.y0 / 4500) * ih, (v.w / 7e3) * iw, (v.h / 4500) * ih, 0, 0, W, H);
+      } else ctx.drawImage(MAP.img, 0, 0, W, H);
+    }
+  }
+  if (v) {
+    const sx = (v.x0 / 7e3) * MAP.gw,
+      sy = (v.y0 / 4500) * MAP.gh,
+      sw = (v.w / 7e3) * MAP.gw,
+      sh = (v.h / 4500) * MAP.gh;
+    ctx.imageSmoothingEnabled = 7e3 / v.w > 1.4;
+    ctx.drawImage(ov, sx, sy, sw, sh, 0, 0, W, H);
+    if (front) ctx.drawImage(front, sx, sy, sw, sh, 0, 0, W, H);
+  } else {
+    ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(ov, 0, 0, W, H);
+  }
+  ctx.imageSmoothingEnabled = true;
+  if (MAP.ways) MAP.ways(ctx, W, H, v);
+  if (MAP.inkLines) MAP.inkLines(ctx, W, H, v);
+};
+
 MAP.draw = function (canvas, opts = {}) {
   MAP.init();
   const ctx = canvas.getContext("2d"),
@@ -365,17 +404,7 @@ MAP.draw = function (canvas, opts = {}) {
   // asks MAP.ground to draw the inked ground first; only when it declines (the setting is off) does it paint the sea
   // colour and the relief picture.
   ctx.clearRect(0, 0, W, H);
-  if (!(MAP.ground && MAP.ground(ctx, W, H, null))) {
-    ctx.fillStyle = "#1d3b57";
-    ctx.fillRect(0, 0, W, H);
-    if (MAP.img && MAP.img.complete && MAP.img.naturalWidth) ctx.drawImage(MAP.img, 0, 0, W, H);
-  }
-  const ov = MAP.overlay(opts.mode || "political", opts.hl, opts.focus);
-  // [X1 baked patch map/62-inked-map IM-LINES] Right after each map lays its realm colours (MAP.draw, the full map,
-  // the war room), MAP.inkLines inks the borders, towns and keeps over them, so the wash never greys the line work.
-  ctx.imageSmoothingEnabled = true;
-  ctx.drawImage(ov, 0, 0, W, H);
-  if (MAP.inkLines) MAP.inkLines(ctx, W, H, null);
+  MAP.paint(ctx, W, H, null, MAP.overlay(opts.mode || "political", opts.hl, opts.focus));
   const S = A.S;
   // [X1 baked patch map/62-inked-map IM-MARKS-DRAW] MAP.draw lets MAP.marks write the realm names in ink at their
   // keeps; when it does, the cream dot and light label of each capital are skipped (the keep is the capital's mark).

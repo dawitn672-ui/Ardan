@@ -266,8 +266,8 @@ Using these helpers matters, because `A.CX_RX` classifies events by matching the
 **Effect keys** (`fx`): str spd ins sta int wil health happy looks fame honor piety coin coinPct family skill rep masterwork promote style styleXp apt trait untrait wound flag unflag rel them newRel lover die prison punish free merit patronOp rulerOp realmStab realmGold armyXp secret epithet deed ach job perf lang literate gear asset duel beast event stability treasury legit realmRel favor mission cause why infamy authority houseOp factionDisc owed oweThem letter bossOp sworn claim pact ally warOn proof grasp talent specialism.
 
 - `fx` may be a function `(p, ctx) => "extra result text"`.
-- `skill: { persuasion: 2 }` is **experience** (S1, D-072): n × 0.2 of a month's effort, a stretch when the choice had a
-  check or stakes, else practice (so 2 is about four experience: a quarter of a Beginner's step, a hundredth of a
+- `skill: { persuasion: 2 }` is **experience** (S1, D-072, D-077): n × `A.SK.SHIM` (0.5) of a month's effort, a stretch when
+  the choice had a check or stakes, else practice (so 2 is about eight experience: half a Beginner's step, a fiftieth of a
   Master's). It never buys a word: a word also asks its concepts and, from Expert, a proof.
 - `proof: "sword"` (or `"ctx"` for `ctx.sk`) is a proving moment for the next word; `grasp: { k, sure }` a breakthrough's
   moment (the engine's chance, or sure); `talent: { sword: "B" }` raises a talent letter (the old `apt` is read as a

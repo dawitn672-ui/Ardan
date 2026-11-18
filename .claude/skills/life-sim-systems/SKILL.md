@@ -82,6 +82,13 @@ Show odds as words plus a tipped balance icon. The words, from best to worst: a 
 - **Keep the common folk as seeds.** A parish (priest, reeve, miller, smith, neighbours, their children) is a few numbers per person derived from the world seed and the place; a full person is made, deterministically on its own stream, only when met. Acquaintances at home come from the parish before strangers.
 - **Births take nine months.** A conception is a date and the birth comes 262–280 days later, in any month; a woman with child does not conceive again, and a mother who dies first takes the child with her.
 
+## 4b. Every relationship needs a base (who will let you near)
+- **Access is the higher man's decision**, through the same `A.WHY.decide` as every other (`A.REACH`, engine `src/people/engine/reach.js`): "let him near" against "keep him at a distance", for each act (know, befriend, audience, favour, court, wed, patron), each asking more of the base.
+- **Four parts:** the gap in standing (estate, rank, office, in steps; weighs against, bent by his pride against his warmth); his pride and personality, and **his own birth** (a man risen from below sympathises with one where he stood; one born to gold looks down); **need** (your sword in his war, your skill, your silence, your coin, your voice in council); **circumstance** (you serve him, stood in his line, shared his cell or lessons, saved his life).
+- **The scales the player shifts** are reasons of their own with words: knighthood ("a knight of your name is worth an hour"), honour, renown, mastery of anything, wealth, a recent deed, an introduction from someone who knows both, a shared lord, a guild.
+- **Near-equals and kin decide nothing**: keep what worked among equals. A door no reason could open is not offered, with a click-to-open note; a door that might open is an attempt he answers with his reason; a refusal stands for a year.
+- **NPCs alike:** a patron, a great house's match and a circle's newcomer follow the same pull, so bonds across a wide gap are rare where pride is high.
+
 ## 5. Succession: the house law, never a menu
 - Laws: male-preference, absolute, agnatic, seniority, and elective (where ability decides).
 - Houses also have a fitness rule. Under `unfit-passed-over`, the council may skip someone judged simple (wits under 72 and judgment under 75), branded craven, or sickly. Death and holy vows always remove a person.

@@ -94,6 +94,7 @@ export default {
       const menu = document.body.innerHTML;
       const has = ['setWoodcuts', 'setVellum', 'setSound'].every(k => menu.includes(`data-c="${k}"`));
       UI.overlay = null;
+      UI.AUDIO.reset();   // the page's one shared context (60-audio-context): start from none
       let made = 0; const C = window.AudioContext; window.AudioContext = function () { made++; return new C(); };
       UI.set.sound = false; UI.ILLUM.play('quill');
       const silent = made === 0;

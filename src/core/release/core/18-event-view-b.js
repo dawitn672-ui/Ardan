@@ -510,9 +510,20 @@ A.mktInit = function (r) {
     if (k === "fish" || k === "salt" || k === "pearls") f *= ps.some(p => p.coast) ? 0.9 : 1.25;
     if (r.race === "dwarf" && (k === "steel" || k === "arms")) f *= 0.75;
     m.t[k] = f;
-    m.p[k] = Math.max(0.2, G.base * f * A.rf(0.92, 1.08));
+    // [reach-pure, long run 12 npcInitiativeDeterminism] a market is made lazily, and the first to ask may be a view (a
+    // tab that lists the realms' prices, for a realm founded this month): its jitter drew A.rand there, so looking at
+    // the page moved the world. The jitter is now hashed from the realm and the good: the same spread, no draw.
+    m.p[k] = Math.max(0.2, G.base * f * (0.92 + 0.16 * A.mktJitter(r.id, k)));
   }
   return m;
+};
+
+// a stable 0..1 number from a realm and a good (FNV-1a): no draw, so a market made inside a view changes nothing else
+A.mktJitter = function (rid, k) {
+  let h = 2166136261;
+  const s = String(rid) + "|" + k;
+  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
+  return (h >>> 0) / 4294967296;
 };
 
 A.mkt = function (rid) {

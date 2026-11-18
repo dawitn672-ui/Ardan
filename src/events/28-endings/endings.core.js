@@ -231,9 +231,9 @@
       // no first-run hint over a death, and the obituary as a full-screen dusk page rather than a dialog
       'body.en-obit .hint{display:none!important}' +
       '#modal:has(> .obit.en-moment){padding:0;align-items:stretch;justify-content:stretch;background:#0b0d1a}' +
-      '#modal > .obit.en-moment{position:relative;width:100%;max-width:none;min-height:100vh;margin:0;border:0;border-radius:0;box-shadow:none;overflow-x:hidden;overflow-y:auto;isolation:isolate;' +
-        'background:linear-gradient(180deg,rgba(13,17,32,0) 0,rgba(13,17,32,.55) 30vh,#0d1120 52vh);color:#eee8da;padding:24vh max(16px,calc(50vw - 360px)) 40px;text-align:center}' +
-      '#modal > .obit.en-moment > .en-sky{position:absolute;left:0;right:0;top:0;height:60vh;z-index:-1;pointer-events:none}' +
+      '#modal > .obit.en-moment{position:relative;width:100%;max-width:none;min-height:100vh;min-height:100dvh;margin:0;border:0;border-radius:0;box-shadow:none;overflow-x:hidden;overflow-y:auto;isolation:isolate;' +
+        'background:linear-gradient(180deg,rgba(13,17,32,0) 0,rgba(13,17,32,.55) 30vh,#0d1120 52vh);background:linear-gradient(180deg,rgba(13,17,32,0) 0,rgba(13,17,32,.55) 30dvh,#0d1120 52dvh);color:#eee8da;padding:24vh max(16px,calc(50vw - 360px)) 40px;padding:24dvh max(16px,calc(50vw - 360px)) 40px;text-align:center}' +
+      '#modal > .obit.en-moment > .en-sky{position:absolute;left:0;right:0;top:0;height:60vh;height:60dvh;z-index:-1;pointer-events:none}' +
       '#modal > .obit.en-moment > .en-sky svg{width:100%;height:100%;display:block;filter:saturate(.75)}' +
       '#modal > .obit.en-moment > .en-sky::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,17,32,0) 40%,#0d1120 100%)}' +
       '#modal > .obit.en-moment h2{color:#f0c062;font-size:calc(32px * var(--tx,1))}' +
@@ -245,7 +245,7 @@
       '#modal > .obit.en-moment .en-heir{display:inline-flex;align-items:center;gap:8px;padding:4px 12px 4px 4px}' +
       '#modal > .obit.en-moment .en-heir-b{display:block;width:40px;height:40px;flex:none}' +
       '#modal > .obit.en-moment .en-heir-b svg{width:100%;height:100%;display:block}' +
-      '@media (max-width:760px){#modal > .obit.en-moment{padding-top:18vh}#modal > .obit.en-moment > .en-sky{height:42vh}}';
+      '@media (max-width:760px){#modal > .obit.en-moment{padding-top:18vh;padding-top:18dvh}#modal > .obit.en-moment > .en-sky{height:42vh;height:42dvh}}';
     document.head.appendChild(st);
   };
   if (typeof document !== 'undefined') { if (document.head) deathCss(); else document.addEventListener('DOMContentLoaded', deathCss); }

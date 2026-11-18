@@ -228,7 +228,10 @@ export default {
       const d = [...pairs].map(k => { const [a, b] = k.split('|'); return dist(UI.realmHex(a), UI.realmHex(b)); }).sort((x, y) => x - y);
       const known = Object.values(A.S.realms).filter(x => x && /^POL-\d+$/.test(x.id) && +x.id.slice(4) <= 35);
       const lore = (typeof LORE !== 'undefined' && LORE.realms) || {};
-      const keep = known.every(x => UI.realmHex(x) === String((lore[x.id] || x).color).toLowerCase());
+      // D9 (D-061 point 7, CRITIQUE M5): on a generated continent a realm is shown in the map's own colour, one of 36 given
+      // so that neighbours never share one (the lore's 16 colours were shared by two or three realms each); the lore's
+      // colour stays where no generated map is loaded. So a Known World realm keeps the colour its map gives it
+      const keep = known.every(x => UI.realmHex(x) === String((A.D9 && A.D9.colorOf && A.D9.colorOf(x.id)) || (lore[x.id] || x).color).toLowerCase());
       const hexOk = ids.every(id => /^#[0-9a-f]{6}$/.test(UI.realmHex(id)));
       let inkOk = 0, n = 0;
       for (const id of ids) for (const th of ['dark', 'light']) { n++; const k = UI.realmInk(UI.realmHex(id), th), T = UI.LOOK.THEMES[th]; if (Math.min(UI.LOOK.contrast(k.ink, T['--surface']), UI.LOOK.contrast(k.ink, T['--raised'])) >= 4.5) inkOk++; }
@@ -241,7 +244,7 @@ export default {
     const f = x => (x || 0).toFixed(3);
     const ok = !r.far && r.known >= 30 && r.keep && r.hexOk && r.inkOk === r.n && r.pure && r.again;
     return { ok, detail: `${r.realms} realms on the continent, ${r.distinct} distinct colours; ${r.pairs} bordering pairs: OKLab distance median ${f(r.med)}, least ${f(r.min)}, ${r.close} under 0.04 (hatched by 62); ` +
-      `the Known World's ${r.known} keep their colours ${r.keep}; AA ink ${r.inkOk}/${r.n}; pure ${r.pure}, stable ${r.again}; Far Lands data present ${r.far}` };
+      `the Known World's ${r.known} keep their colours (the map's own, D-061) ${r.keep}; AA ink ${r.inkOk}/${r.n}; pure ${r.pure}, stable ${r.again}; Far Lands data present ${r.far}` };
   },
 
   // §4.5 and §1.5: People as rows (twenty fit), the Realm tab's header band, rarity on gear quality and achievements; pure
@@ -536,8 +539,9 @@ export default {
         if (t) { const txt = t.textContent; let i = 0;
           for (const w of txt.split(/(\s+)/)) { if (w.trim()) { const rg = document.createRange(); rg.setStart(t, i); rg.setEnd(t, i + w.length); const tops = new Set([...rg.getClientRects()].map(x => Math.round(x.top))); if (tops.size > 1) broken.push(w); } i += w.length; } }
         const over = [];
-        for (const row of document.querySelectorAll('#profile .profs .prow')) {
-          const a = row.querySelector('.v2-tier'), b = row.querySelector('.v2-hrs'), nm = row.querySelector(':scope > span:first-child');
+        // S1b (D-072): a skill row is 36-skills' .skrow: its name, its level and its two words of state must not overlap
+        for (const row of document.querySelectorAll('#profile .skills .skrow')) {
+          const a = row.querySelector('.skl'), b = row.querySelector('.sks') || row.querySelector('.skl'), nm = row.querySelector('.skn');
           if (!a || !b || !nm) continue;
           // the text's own extent, not the box's: a word wider than its column spills over its neighbour
           const ext = el => { const rg = document.createRange(); rg.selectNodeContents(el); return rg.getBoundingClientRect(); };
@@ -546,7 +550,7 @@ export default {
           const hit = (x, y) => x.left < y.right - 3 && y.left < x.right - 3 && x.top < y.bottom - 3 && y.top < x.bottom - 3;
           if (hit(A1, B1) || hit(N1, A1) || hit(N1, B1)) over.push(nm.textContent.trim());
         }
-        return { cut, name: n ? n.textContent.trim() : '', words: !!t, broken, over, rows: document.querySelectorAll('#profile .profs .prow .v2-tier').length, vitals: document.querySelectorAll('#profile .lk-vitals .barrow').length };
+        return { cut, name: n ? n.textContent.trim() : '', words: !!t, broken, over, rows: document.querySelectorAll('#profile .skills .skrow .skl').length, vitals: document.querySelectorAll('#profile .lk-vitals .barrow').length };
       });
     } finally { await ctx.close(); }
     const ok = r.vitals >= 5 && !r.cut.length && /Hoofbreaker/.test(r.name) && r.words && !r.broken.length && r.rows > 0 && !r.over.length;

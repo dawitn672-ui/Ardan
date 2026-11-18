@@ -167,10 +167,11 @@ export default {
       // twice), and a skill row whose tier sat in the release's number column; each row now has exactly a tier and hours
       const heads = (h.match(/<div class="group-h">([^<]*)<\/div>/g) || []).map(x => x.replace(/<[^>]+>/g, ''));
       const full = UI.profBlock(A.pc());
-      const rows = (full.match(/<div class="prow"[\s\S]*?<div class="bar"/g) || []);
-      const rowsOk = rows.length > 0 && rows.every(x => /class="v2-tier"/.test(x) && /\d hours</.test(x) && !/<b>\d+<\/b>/.test(x));
+      // S1b (D-072): a skill row is its name and its level in words (36-skills' .skrow); the hours are gone
+      const rows = (full.match(/<div class="skrow[^"]*"[\s\S]*?<span class="skl">[^<]*<\/span>/g) || []);
+      const rowsOk = rows.length > 0 && rows.every(x => /<span class="skl">(Rusty · )?(Beginner|Intermediate|Advanced|Expert|Master|Grandmaster|Legend) [IV]+<\/span>/.test(x) && !/\d hours/.test(x) && !/<b>\d+<\/b>/.test(x));
       // C9 (D-040, order 34): the body in words on the measured scale, no real units (kg, m/s, km a day, ms) at all
-      return { t: t.slice(0, 1600), words: /Strength\s*(feeble|weak|slight|average|strong|very strong|mighty|off the chart)/.test(t), kg: /\d+ kg/.test(t), ms: /\d+(\.\d)? m\/s/.test(t), km: /km a day/.test(t), react: /\d+ ms/.test(t), mind: /Wits/.test(t), tier: /(Untrained|Novice|Apprentice|Journeyman|Adept|Expert|Master)/.test(t) && /hours/.test(t), oldBars: /Strength \d+|Combat Instincts/.test(t),
+      return { t: t.slice(0, 1600), words: /Strength\s*(feeble|weak|slight|average|strong|very strong|mighty|off the chart)/.test(t), kg: /\d+ kg/.test(t), ms: /\d+(\.\d)? m\/s/.test(t), km: /km a day/.test(t), react: /\d+ ms/.test(t), mind: /Wits/.test(t), tier: /(Beginner|Intermediate|Advanced|Expert|Master|Grandmaster|Legend) [IV]+/.test(t) && !/\d hours/.test(t), oldBars: /Strength \d+|Combat Instincts/.test(t),
         dupHeads: heads.length !== new Set(heads).size, heads, rowsOk, rows: rows.length };
     });
     const ok = r.words && !r.kg && !r.ms && !r.km && !r.react && r.mind && r.tier && !r.oldBars && !r.dupHeads && r.rowsOk;
@@ -230,6 +231,8 @@ export default {
       const attrPlain = (v, el) => {
         let t = v.replace(/^Portrait of [^,]*, \d{1,3}$/, '').replace(/\bInitiative [\d.]+ of \d+/g, '').replace(/,? age \d{1,3}\b/g, '')
           .replace(DATE, '').replace(/^Provinces since \d+: \d+ to \d+$/, '')
+          // (S1b CI 139: an army is counted in men, not on the 0-100 scale; a host that fell to nothing reads "Army since 1105: 0 to 67k")
+          .replace(/^Army since \d+: [\d.,]+k? to [\d.,]+k?$/, '')
           .replace(/\(Part \d+\)/g, '').replace(/<?\d[\d,]*(?: \/ \d+)? (?:[A-Z][a-z]+ )?(?:loads?|times|galleys?|ships?|carted|used)|\b\d+ of (?:\d+|those)\b|\bcaravans (?:brought|took) \d+/g, '');
         if (el.classList && (el.classList.contains('fold-h') || el.classList.contains('fold-x'))) t = t.replace(/(?:, \d+| \(\d+\))$/, '');
         return t;
@@ -444,12 +447,17 @@ export default {
       const KEYS = new Set(['perf', 'rep', 'merit', 'coMo', 'coDivMo', 'worth', 'fame', 'opinion', 'rulerOp', 'loyalty', 'facDisc', 'feud']);
       const BOARD = /\|(merit|cmd|skill|rep)$/, NEEDS = /^(Rest|Company|Purpose|Comfort)$/;
       const found = [], tick = () => new Promise(res => setTimeout(res, 0));
+      // (CI 143: a person's row on the People tab is "bond · age · post", and 99994-v2-family words a subordinate's bond
+      // "Under your command": "Under your command · 54 · Soldier" is a man of 54, not a command of 54. Seed 38's world
+      // gives the life a subordinate on a page the test reads since the market fix shifted the stream. The bond word is read
+      // apart from the age that follows it.)
+      const ROW = l => l.replace(/^under your command · \d{1,3} · /i, '');
       const scan = async where => {
         await tick();
         const root = document.querySelector('#modal') && document.querySelector('#modal').innerText.trim() ? document.querySelector('#modal') : document.querySelector('#tabbody');
         const roots = [root, document.querySelector('#profile')].filter(Boolean);
         for (const R of roots) {
-          for (const line of R.innerText.split('\n')) if (/\d/.test(line) && (LINE.test(line) || MORE.some(x => x.test(line)))) found.push(`${where}: ${line.trim().slice(0, 90)}`);
+          for (const line of R.innerText.split('\n')) if (/\d/.test(line) && (LINE.test(ROW(line)) || MORE.some(x => x.test(line)))) found.push(`${where}: ${line.trim().slice(0, 90)}`);
           for (const el of R.querySelectorAll('[data-tt]')) {
             const k = el.getAttribute('data-tt'), v = el.getAttribute('data-v') || '';
             if (!(KEYS.has(k) || (k === 'board' && BOARD.test(v))) || el.children.length) continue;
@@ -652,7 +660,10 @@ export default {
           if (/lifts \d+ kg about a (grown )?man/.test(t)) out.bad.push(`${race} ${a}: ${t.slice(0, 120)}`);
           // the mind word and its rarity agree
           for (const w of ['Wavering', 'Faint-hearted', 'Quick', 'Dull', 'Slow', 'Determined']) if (new RegExp(w + ' like most').test(t)) out.bad.push(`${race} ${a}: "${w} like most"`);
-          if (race === 'human' && (a === 10 || a === 13 || a === 17)) out['kg' + a] = Math.round(V.stats(pc).lift);
+          // the growth curve, read with the hurts set aside for the reading (CI 139: seed 32's boy in the world after S1
+          // took a bad back at 12 and lifted 27, 27 and 49; his raw strength still rose 8, 12, 17). A wound's own cost is
+          // body.js's woundFactor and A.stat's, tested where they live; this row asks only that a boy grows.
+          if (race === 'human' && (a === 10 || a === 13 || a === 17)) { const w0 = pc.wounds; pc.wounds = []; out['kg' + a] = Math.round(V.stats(pc).lift); pc.wounds = w0; }
           T.play(1);
         }
       }

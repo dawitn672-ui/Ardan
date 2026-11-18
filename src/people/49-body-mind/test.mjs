@@ -281,7 +281,7 @@ export default {
         side: { body: /Broken leg/.test(side) && /Ill with camp fever/.test(side), chip: /Hang him/.test(side) },
         // with v2 (99993-v2-stats i-numbers, playtest 2 old 7: no 0-100 number the player sees) the eye's cost to the bow
         // reads "Bows & throwing down a good deal", not "−15"; the cost must still be shown, named and sized
-        prof: { body: /Lost an eye/.test(prof) && /bow −15|Bows &amp; throwing −15|throwing −15|Bows &amp; throwing down a good deal/.test(prof), who: /Who you are/.test(prof) && /Leaning brave/.test(prof), aging: /Age, stat by stat/.test(prof) },
+        prof: { body: /Lost an eye/.test(prof) && /bow −15|Bows &amp; throwing −15|throwing −15|Bows &amp; throwing down a good deal|Archery −15|Archery down a good deal/.test(prof), who: /Who you are/.test(prof) && /Leaning brave/.test(prof), aging: /Age, stat by stat/.test(prof) },
         tip: /Holds until about|Fading since/.test(tip) };
     });
     const ok = r.pure && r.side.body && r.side.chip && r.prof.body && r.prof.who && r.prof.aging && r.tip;

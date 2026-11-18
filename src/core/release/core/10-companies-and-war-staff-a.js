@@ -269,6 +269,7 @@ A.foundRealm = function (pc, provIds, men) {
   pc.house = hid;
   pc.sur = houseName.replace(/^House /, "");
   pc.surMode = "house";
+  if (A.REACH) A.REACH.stamp(pc);   // [R2, D-080] the birth station, before the crown
   pc.status = "royal";
   A.makeRuler(pc, r.id);
   pc.home = p0.id;

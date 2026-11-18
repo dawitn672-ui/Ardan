@@ -35,14 +35,14 @@ ${R}.sc-dock.sc-free > .hint-float{position:relative;top:auto;left:auto;transfor
 ${R}.sc-dock.sc-free:has(> .hint-float){flex-direction:column;align-items:center}
 ${R}.sc-dock.sc-free{display:flex;align-items:flex-start;justify-content:center;padding:32px 16px}
 ${R}.sc-dock.sc-free::before{display:none}
-${R}.sc-dock.sc-free > .mbox.sc-card{position:relative;left:auto;top:auto;width:min(720px,100%);max-height:calc(100vh - 64px)}
-${R}.sc-dock.sc-free > .mbox.sc-card > .sc-in{max-height:calc(100vh - 66px)}
+${R}.sc-dock.sc-free > .mbox.sc-card{position:relative;left:auto;top:auto;width:min(720px,100%);max-height:calc(100vh - 64px);max-height:calc(100dvh - 64px)}
+${R}.sc-dock.sc-free > .mbox.sc-card > .sc-in{max-height:calc(100vh - 66px);max-height:calc(100dvh - 66px)}
 
 /* ---- the card: a frame with the cut corner, its inside scrolls ---- */
 ${C}{animation:none;display:flex;flex-direction:column;padding:1px;background:transparent;border:0;border-radius:0 var(--r-l,14px) 0 var(--r-l,14px);box-shadow:var(--e-3);overflow:visible;isolation:isolate}
 ${C}::before{content:"";position:absolute;inset:0;z-index:0;border-radius:inherit;clip-path:${cut(12)};
   background:linear-gradient(180deg,var(--sc-frame-top),var(--line-strong) 38%,var(--line-strong))}
-${C} > .sc-in{position:relative;z-index:1;flex:1 1 auto;min-height:0;max-height:calc(var(--sc-h, 100vh) - 2px);overflow:auto;overscroll-behavior:contain;
+${C} > .sc-in{position:relative;z-index:1;flex:1 1 auto;min-height:0;max-height:calc(var(--sc-h, 100vh) - 2px);max-height:calc(var(--sc-h, 100dvh) - 2px);overflow:auto;overscroll-behavior:contain;
   background:var(--surface);border-radius:0 calc(var(--r-l,14px) - 1px) 0 calc(var(--r-l,14px) - 1px);clip-path:${cut(11.4)};scrollbar-width:thin;scrollbar-color:var(--line-strong) transparent}
 ${C} > .mreport{position:absolute}
 

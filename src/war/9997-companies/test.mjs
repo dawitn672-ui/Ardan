@@ -94,7 +94,11 @@ export default {
       const duty0 = A.UNITWORK && A.UNITWORK.onDuty; if (A.UNITWORK) A.UNITWORK.onDuty = () => false;
       try {
         A.newGame({ seed: 9742, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
-        const en = A.neighbors('POL-01')[0];
+        // CI 139 (after S1): against its first neighbour, Sylvaran, Aldmark fell in the ninth year of this forced war, and a
+        // man of a fallen realm has no army to join ("There is no realm army here to join"), so the second pay day never
+        // came. The test is about the company's memory, not who wins: the war is with Gorath, which this realm outlasts
+        // (both Gorath and Northreach let it stand sixteen years, with one pay-day scene and one pay-day line).
+        const en = A.neighbors('POL-01')[1] || A.neighbors('POL-01')[0];
         A.startWar('POL-01', en, null, 'conquest'); A.enlist(A.pc());
         const d0 = A.absDay();
         for (let g = 0; g < 800 && A.absDay() - d0 < 16 * 365 && A.pc().alive; g++) {

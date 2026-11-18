@@ -313,6 +313,9 @@
     const zoom = ZREF() / v.w;
     if (IM) IM.zoomNow = zoom;
     try {
+      // D9: the one map component (MAP.paint) where the frame is the release's; the Far Lands' bigger frame keeps its own
+      if (!MAP.big && typeof MAP.paint === 'function') MAP.paint(ctx, W, H, v, MAP.overlay('political', null, null));
+      else {
       if (!(MAP.ground && MAP.ground(ctx, W, H, v))) {
         ctx.fillStyle = '#1d3b57'; ctx.fillRect(0, 0, W, H);
         if (MAP.img && MAP.img.complete && MAP.img.naturalWidth) {
@@ -325,6 +328,7 @@
       ctx.drawImage(MAP.overlay('political', null, null), sx, sy, sw, sh, 0, 0, W, H);
       ctx.imageSmoothingEnabled = true;
       if (MAP.inkLines) MAP.inkLines(ctx, W, H, v);
+      }
       if (!(MAP.marks && MAP.marks(ctx, W, H, v, {}))) MAP.veil(ctx, W, H, v);
       AT.overlay(ctx, W, H, v, pc);
     } finally { if (IM) IM.zoomNow = 0; }
@@ -462,7 +466,7 @@
       '.at-side .at-card{margin:0}',
       '.at-realm{margin:6px 0}.at-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}.at-chip{font-size:12px}',
       '.at-roads{margin:4px 0 0 16px;padding:0}',
-      '#game.phone .phone-log .at-map{min-height:60vh}',
+      '#game.phone .phone-log .at-map{min-height:60vh;min-height:60dvh}',
     ].join('\n');
     (document.head || document.documentElement).appendChild(st);
   }

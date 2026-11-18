@@ -20,8 +20,8 @@ export default {
         if (!q.d.result) continue; w += q.d.result === 'win' ? 1 : 0; shown += p; n++; }
       return { monotone, sym: Math.round(sym * 100) / 100, lineOk: line.includes(`(${want}% for`), actual: Math.round(100 * w / n), shown: Math.round(shown / n), n };
     });
-    // swapping seats moves the odds by the measured seat edge (seat -0.22: up to 11 points in all), and no more
-    return { ok: r.monotone && r.sym <= 11.5 && r.lineOk && Math.abs(r.actual - r.shown) <= 8,
+    // swapping seats moves the odds by the measured seat edge (seat -0.4: up to 20 points in all, 100 tanh(0.2)), and no more
+    return { ok: r.monotone && r.sym <= 20 && r.lineOk && Math.abs(r.actual - r.shown) <= 8,
       detail: `monotone ${r.monotone}; seat asymmetry ${r.sym} pts; person view uses it ${r.lineOk}; ${r.n} duels: won ${r.actual}% vs shown ${r.shown}%` };
   },
 

@@ -21,7 +21,7 @@ VM.release = function () {
   let k = 0; for (let i = 0; i < u16.length; i += 2) { const v = u16[i] - 1, n = u16[i + 1]; g.fill(v, k, k + n); k += n; }
   VM._rel = { gw: m.gw, gh: m.gh, grid: g, n: m.provinces.length,
     realmNames: Object.fromEntries(Object.keys(LORE.realms).map(id => [id, LORE.realms[id].name])),
-    provinces: m.provinces.map(p => ({ id: p.id, realm: p.realm, sx: p.sx, sy: p.sy, cells: p.cells, type: p.type, pop: p.pop })) };
+    provinces: m.provinces.map(p => ({ id: p.id, realm: p.realm, sx: p.sx, sy: p.sy, cells: p.cells, type: p.type, pop: p.pop, biome: p.biome, name: p.name })) };
   return VM._rel;
 };
 // on unless switched off or the province list is not the release's (the 09-engine-at-scale clone harness copies it K times)
@@ -49,6 +49,8 @@ VM.onProv = function (S) {
     const q = w.prov[p.id]; if (!q) continue;
     for (const f of VM.FIELDS) p[f] = q[f];
     p.adj = q.adj.slice(); p.sea = q.sea.slice();
+    // D9 (map v3): an oasis the land left off dry ground is a town named for its water; it keeps its old name as `oname`
+    if (q.retype && p.type === 'oasis') { p.type = q.retype.type; p.oname = p.name; p.name = q.retype.name; }
   }
   S.v2map = { seed, v: VM.VERSION };
   VM.use(w);
@@ -98,7 +100,7 @@ if (A.BH && typeof A.BH.canonSays === 'function') {
     if (key !== looseKey) { looseKey = key; looseMemo = new Map(); }
     if (looseMemo.has(id)) return looseMemo.get(id);
     const byCode = {}, out = new Set();
-    for (const P of A.S.prov) if (P && e.inRange.has(P.id)) { const c = r.regionOf[P.name]; (byCode[c] = byCode[c] || []).push(P); }
+    for (const P of A.S.prov) if (P && e.inRange.has(P.id)) { const c = r.regionOf[P.name] || r.regionOf[P.oname]; (byCode[c] = byCode[c] || []).push(P); }
     for (const c in byCode) if (!byCode[c].some(P => A.BH.terrOk(A.BEASTS[id], P.terr))) for (const P of byCode[c]) out.add(P.id);
     looseMemo.set(id, out);
     return out;
@@ -106,7 +108,7 @@ if (A.BH && typeof A.BH.canonSays === 'function') {
   A.BH.canonSays = function (id, P) {
     if (!(A.S && A.S.v2map)) return says.apply(this, arguments);
     const r = A.BH.resolve(), e = r.E[id];
-    if (!e || !P || !r.regionOf[P.name]) return null;
+    if (!e || !P || !(r.regionOf[P.name] || r.regionOf[P.oname])) return null;
     return e.inRange.has(P.id) && (A.BH.looseOf(id).has(P.id) || A.BH.terrOk(A.BEASTS[id], P.terr));
   };
 }

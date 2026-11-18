@@ -370,7 +370,7 @@
       const step = (v, sea) => {
         if (blocked(v)) return;
         const Q = S.prov[v], c = A.ctrl(Q), own = A.friendly(c, rid), foe = A.hostile(rid, c);
-        const w = A.wsDist(u, v) / (A.WS.moveTerr[Q.terr] || 1) * (sea ? 2.5 : 1) * (own ? (Q.road ? 0.8 : 1) : foe ? 1.2 : v === to ? 1.5 : 3.5);
+        const w = A.wsDist(u, v) / (A.WS.moveTerr[Q.terr] || 1) * (sea ? 2.5 : A.D9 ? 1 / A.D9.marchF(u, v) : 1) * (own ? (Q.road ? 0.8 : 1) : foe ? 1.2 : v === to ? 1.5 : 3.5);   // D9: the road between
         if (du + w < dist[v]) { dist[v] = du + w; prev[v] = u; heap.push([dist[v], v]); }
       };
       for (const v of P.adj) step(v, false);

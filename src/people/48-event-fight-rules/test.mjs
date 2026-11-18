@@ -55,9 +55,14 @@ export default {
   async flBeastOdds(pg) {
     // the duel screen's chance against beasts, alone and with a hunting party, at health 60-100
     await pg.evaluate(FIGHTS_LAB);
-    const r = await pg.evaluate(() => FLAB.beasts(3000, 4301));
+    // CI 139 (after S1): on seed 4301 alone the 60-74 bin read shown 66.3, won 46.4 (84 duels), the rest within a few
+    // points. 300 fighters fight 3,000 times, so a bin of 84 duels rests on a handful of them (five duels of one spear
+    // master won one). Pooled over eight worlds (4301-4308, 3,464 duels shown 20-90) no skill band reads wrong (a fighter's
+    // weapon skill 90 and over: shown 54.8, won 52.8; under 55: 59.4 and 60.4), and the 60-74 bin is the worst at shown
+    // 67.0, won 61.5. Two worlds, 3,000 duels each, so no bin is a few fighters' luck.
+    const r = await pg.evaluate(() => FLAB.beasts(3000, [4301, 4302]));
     const ok = r.meanErr <= 4 && seOk(r);
-    return { ok, detail: `${r.n} beast duels, mean error ${r.meanErr}, worst bin ${r.maxErr} (${fmtBins(r)})` };
+    return { ok, detail: `${r.n} beast duels on two worlds, mean error ${r.meanErr}, worst bin ${r.maxErr} (${fmtBins(r)})` };
   },
 
   async flGroupTiers(pg) {

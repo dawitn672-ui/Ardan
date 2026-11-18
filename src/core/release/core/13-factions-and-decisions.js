@@ -1563,7 +1563,9 @@ DEC("match_child", {
           h2.id !== pc.house &&
           (h2.great !== false || ["noble", "gentry_mil", "gentry", "merchant"].includes(h2.kind)),
       ),
-      h = hs.length ? A.pick(hs) : null;
+      // [R2, D-080] the head of a great house takes a match only on a base (your standing, the dowry, need, ties):
+      // A.REACH asks the likeliest three; with none, the child marries into the gentry
+      h = A.REACH ? A.REACH.pickHouse(pc, k, hs, 300) : hs.length ? A.pick(hs) : null;
     pc.coin -= 300;
     const sp = A.genNoble(
       pc.realm,

@@ -333,6 +333,14 @@ UI.continueGame = async function (slot) {
 };
 
 UI.download = function (bytes, name, type) {
+  // I1-2 HOOK, for the iPhone shell (stage I1-4): the blob download below does nothing in the iOS WebView. Inside Capacitor
+  // the shell defines UI.nativeDownload(bytes, name, type) (Filesystem.writeFile to the cache, then Share.share on the file) and
+  // returns true when it took the file. Capacitor itself is not part of the page; a browser never takes this branch.
+  if (typeof window !== "undefined" && window.Capacitor && typeof UI.nativeDownload === "function") {
+    try {
+      if (UI.nativeDownload(bytes, name, type) !== false) return;
+    } catch {}
+  }
   const a = document.createElement("a");
   a.href = URL.createObjectURL(
     new Blob([bytes], {

@@ -528,6 +528,14 @@
   };
   // a division or an army taken off the rolls: its posts are left ('disbanded'), the men who held them are named so
   const offRolls = function (keys) { for (const k of keys) if (P.holder(k) || P.mirror(k)) P.vacate(k, 'disbanded', { keep: true }); };
+  // ...and once the division or army is gone, its records go too ("a post whose object is gone keeps no record"). P.vacate
+  // runs while the object still stands, so its record stayed until the month's sync; a save made before then was pruned by
+  // the load's sync instead, and the state after loading was not the state saved (CI 140, v2svRoundTrip: div:DNEW1-1,
+  // struck off by A.divRetreat in a fight, seed 5's eighth year).
+  const dropGone = function (keys) {
+    const st = A.S && A.S.posts; if (!st || !st.h) return;
+    for (const k of keys) { const r = st.h[k]; if (!r) continue; const [M, o] = mir(k); if (!M || !M.exists(o)) { if (r.p) ixDel(r.p, k); delete st.h[k]; } }
+  };
   P.divKeys = function (d) {
     const out = [P.divKey(d.id)];
     if (Array.isArray(d.bs)) for (let i = 0; i < d.bs.length; i++) { const b = d.bs[i]; if (b && b.p) for (const sl of Object.keys(b.p)) out.push(P.coyKey(d.id, i, +sl)); }
@@ -535,8 +543,10 @@
   };
   const divRemove = A.divRemove;
   if (divRemove) A.divRemove = function (d) {
-    try { if (d && d.id && A.S && A.S.posts && !d.elite) offRolls(P.divKeys(d)); } catch (e) { console.error('[posts] divRemove', e); }
+    let keys = null;
+    try { if (d && d.id && A.S && A.S.posts && !d.elite) offRolls(keys = P.divKeys(d)); } catch (e) { console.error('[posts] divRemove', e); }
     const out = divRemove.apply(this, arguments);
+    try { if (keys) dropGone(keys); } catch (e) { console.error('[posts] divRemove', e); }
     // W1-1: a first host struck off: the council's place follows the next one
     try { if (A.S && A.S.posts && d && !d.elite) { const r = A.S.realms[d.r]; if (r && r.firstHost === d.id) fixFirstHost(r); mirrorSenior(); } } catch (e) { console.error('[posts] divRemove', e); }
     return out;
@@ -544,7 +554,9 @@
   const demob = A.wsDemobilize;
   if (demob) A.wsDemobilize = A.wsDisband = function (a) {
     try { if (a && a.id && A.S && A.S.posts) offRolls([P.armyKey(a.id)]); } catch (e) { console.error('[posts] demobilize', e); }
-    return demob.apply(this, arguments);
+    const out = demob.apply(this, arguments);
+    try { if (a && a.id) dropGone([P.armyKey(a.id)]); } catch (e) { console.error('[posts] demobilize', e); }
+    return out;
   };
 
   // ---- the month's reconciliation: adopt what other code wrote, then hold everything to the rules ---------------------

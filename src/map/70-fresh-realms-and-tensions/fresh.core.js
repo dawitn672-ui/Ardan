@@ -434,7 +434,9 @@
       const r = A.wpick(pool, x => A.realmProvs(x.id).length);
       pool.splice(pool.indexOf(r), 1);
       const nr = FR.split(r);
-      if (!nr) continue;
+      // D9: a realm whose land gives no block to break away (a generated map's shapes vary) does not use up the count:
+      // the next larger realm is tried, so a varied world has the one to three fresh realms it promises
+      if (!nr) { k++; continue; }
       made.push(nr.id);
       notes.push(`${nr.name} ${nr.fresh.kind === 'prince' ? `has been held by ${A.rulerStyle(A.P(nr.ruler), nr)} since ${S.year - nr.fresh.ago}` : `broke away from ${r.short} ${nr.fresh.ago} years ago`}, and ${r.short} ${nr.fresh.war ? 'is at war to take it back' : 'still claims it'}`);
     }

@@ -279,7 +279,13 @@ export default {
         return { id, sheet: m.classList.contains('sc-sheet'), fills: cr.left <= 1 && cr.right >= innerWidth - 1 && cr.bottom >= innerHeight - 1, scroller: getComputedStyle(inn).overflowY, scrolls: inn.scrollHeight > inn.clientHeight + 4, rows, y0: scrollY };
       });
       const box = await p.$eval('#modal .sc-in', el => { const b = el.getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; });
-      await p.mouse.move(box.x, box.y); await p.mouse.wheel(0, 600); await p.waitForTimeout(150);
+      // (CI 144: the sheet and its scroller were as before (overflow auto, taller than its box), yet the wheel had moved
+      // nothing 150 ms later: in a touch-emulating context the wheel's scroll lands on the compositor's time, which a
+      // loaded runner stretches; here and in CI's own Chromium it scrolls 432 px. The scroll is waited for, up to 3 s,
+      // not timed. H-080.)
+      await p.mouse.move(box.x, box.y); await p.mouse.wheel(0, 600);
+      await p.waitForFunction(() => document.querySelector('#modal .sc-in').scrollTop > 0 || scrollY > 0, null, { timeout: 3000 }).catch(() => {});
+      await p.waitForTimeout(100);   // and a moment more, for the page behind to move if it were going to
       r.after = await p.evaluate(() => ({ inner: document.querySelector('#modal .sc-in').scrollTop, page: scrollY }));
     } finally { await ctx.close(); }
     const ok = r.sheet && r.fills && /auto|scroll/.test(r.scroller) && r.scrolls && r.rows.length >= 4 && r.rows.every(h => h >= 52) && r.after.inner > 0 && r.after.page === r.y0;

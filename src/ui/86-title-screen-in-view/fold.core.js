@@ -6,7 +6,7 @@
 // smaller.
 (function () {
   // desktop only: on a phone the strip is already as narrow as the screen and short enough
-  const css = '@media (min-width:761px){#title canvas.mapstrip{height:clamp(220px,calc(100vh - 430px),579px);width:auto;max-width:100%}}';
+  const css = '@media (min-width:761px){#title canvas.mapstrip{height:clamp(220px,calc(100vh - 430px),579px);height:clamp(220px,calc(100dvh - 430px),579px);width:auto;max-width:100%}}';
   const put = () => { if (typeof document === 'undefined' || document.getElementById('tf-style')) return; const s = document.createElement('style'); s.id = 'tf-style'; s.textContent = css; document.head.appendChild(s); };
   if (typeof document !== 'undefined') { if (document.head) put(); else document.addEventListener('DOMContentLoaded', put); }
 })();
@@ -150,7 +150,7 @@
     '#title.tt-dawn .logo::after{content:"";display:block;width:min(240px,40%);height:2px;margin:12px auto 0;background:linear-gradient(90deg,transparent,var(--accent,#e8b04a),transparent)}',
     '#title canvas.gcstrip{border-radius:var(--r-m,8px);image-rendering:auto}',
     '.tf-help{margin:0 0 12px}.tf-help canvas{display:block;width:100%;height:auto;border-radius:var(--r-m,8px);border:1px solid var(--line-strong)}.tf-help .tf-pitch{margin:8px 0 0;font-family:var(--f-prose,serif)}',
-    '@media (min-width:761px){#title canvas.gcstrip{height:clamp(150px,calc(100vh - 500px),420px);width:auto;max-width:100%}}',
+    '@media (min-width:761px){#title canvas.gcstrip{height:clamp(150px,calc(100vh - 500px),420px);height:clamp(150px,calc(100dvh - 500px),420px);width:auto;max-width:100%}}',
     '#title .btns button.ghost{background:rgba(14,16,36,.55);border-color:rgba(233,226,212,.35);color:#f1ead9}',
     '#title .btns button.tt-go{min-width:280px;font-size:calc(20px * var(--tx,1));padding:14px 28px}',
     '@media (min-width:761px){#title .btns{row-gap:10px}#title .btns button:not(.tt-go){min-width:0;padding:8px 16px;font-size:calc(15px * var(--tx,1));min-height:40px}#title .btns .tt-go{flex-basis:100%;max-width:360px;margin:0 calc(50% - 180px)}}',

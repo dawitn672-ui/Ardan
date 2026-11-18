@@ -426,6 +426,8 @@ Codemagic.
 Audit of `origin/v2-integration` at `044436b` (built to `/tmp`, 133 features, 5,378 KB). Counts are from `grep` over `src/`
 (the engine's ES modules excluded) and from the two probes in `docs/research/ios/`.
 
+> **After I1-2 (H-074, branch `i1-2`):** items below marked **[I1-2 done]** are fixed; the counts in the headings are the ones the audit found. What is left is in §8's last column.
+
 ### 7.1 Input: pointer events only; nothing on hover, right-click, double-click or keys
 - **Good.** No `mousedown/up/move`, no `touchstart/move/end` and no `dblclick` anywhere; the maps drag with pointer events
   (`src/core/release/core/23-ui-c.js:1273-1284`, `23-ui-d.js:1130-1146`, `src/map/9991-atlas-of-known-places/atlas.core.js:374-381`,
@@ -445,7 +447,7 @@ Audit of `origin/v2-integration` at `044436b` (built to `/tmp`, 133 features, 5,
   has buttons and pinch.
 
 ### 7.2 Tap targets of 44 points
-[R] `docs/research/ios/tap-probe.mjs` at 375 × 667, a noble's life, the title, 13 pages and an event card, the same in Chromium
+**[After merging v2.1.0-alpha.10 (S1 skills, R2): 0 of 454 under 44 points, the skills rows, the skills sheet, the person view and R2's "out of reach" line included (its "why not" button was 44 already); `tapTargets44` holds it with no exception.]** **[I1-2 done: 58 of 382 under 44 points before, 10 of 385 after, in Chromium; WebKit 10 too. The 10 are the skills rows (`div.prow` 5 on the You page, `li.tt.pf-sk` 5 on the Profile page): S1b's new skills page owns them. `src/ui/9990-tap-targets` (a hit box or a 44-point reach that leaves the line where it was; the probe counts a `::after` hit box; `tapTargets44` holds it at 0 but the skills rows).]** [R] `docs/research/ios/tap-probe.mjs` at 375 × 667, a noble's life, the title, 13 pages and an event card, the same in Chromium
 and WebKit: **58 of 382 controls are under 44 points (15%)**; of those in view without scrolling, 17 of 273 (6%). By page:
 **You 29 of 55**, Profile 12 of 32, Path 6 of 39, Holdings 6 of 35, Dynasty 3 of 24, Life 1, Realm 1; the title, Story,
 Decisions, Arms, People, World, Book and the event card have none. The small ones are short, not narrow: `span.tt` and
@@ -454,14 +456,16 @@ Decisions, Arms, People, World, Book and the event card have none. The small one
 area (padding or an `::after` hit box), not bigger type.
 
 ### 7.3 Layout: 375 × 667 to Pro Max; safe areas; dvh
+- **[I1-2 done]** `viewport-fit=cover` is on; the 14 safe-area paddings now see the real insets (Playwright cannot fake them: look at them in TestFlight). 375×667 and 393×852: no page scrolls sideways.
 - **Viewport** (`page.html:6`): `width=device-width, initial-scale=1`, **no `viewport-fit=cover`**: every `env(safe-area-inset-*)`
   is 0 today. There are **14 safe-area paddings** (`phone.core.js:42, 48, 73, 180, 183, 199, 228, 239`;
   `toasts.core.js:86`; `src/ui/92-scene-card/scene.d-style.core.js:176, 210, 211`; `src/events/29-starting-stories/starts.core.js:265`;
   `page.html:23` three times), all in the phone layout (`max-width:760px`); the desktop layout has none.
-- **`vh`: 50 uses in 13 files, `dvh`: 0** (`page.html` 20, `endings.core.js` 7, `look.g-title.core.js` 7, `look.c-layout.core.js` 3,
+- **[I1-2 done]** all 49 CSS uses became `dvh`, each with the `vh` line kept before it as a fallback (the 50th was a comment in `c-draw.core.js`). **`vh`: 50 uses in 13 files, `dvh`: 0** (as audited) (`page.html` 20, `endings.core.js` 7, `look.g-title.core.js` 7, `look.c-layout.core.js` 3,
   `scene.d-style.core.js` 3, `phone.core.js` 2, `86-title-screen-in-view/fold.core.js` 2, one each in `23-ui-b.js`, `atlas.core.js`,
   `c-draw.core.js`, `identity.a-mark.core.js`, `skies.core.js`, `share.core.js`). In a Capacitor app there is no browser bar, so
   `vh` and `dvh` differ less than in Safari, but the rule stands.
+- **[I1-2 done]** `html, body{overscroll-behavior:none; touch-action:manipulation; -webkit-tap-highlight-color:transparent}`, `body{user-select:none; -webkit-touch-callout:none}`, selection allowed again on inputs, textareas, selects, `[contenteditable]` and `.selectable`; no `maximum-scale` (pinch zoom stays for accessibility; `touch-action:manipulation` stops the double-tap zoom). Probe: `select none touch manipulation overscroll none` on every page.
 - **Selection, callout, bounce** [R]: `body` computes `user-select: auto`, `touch-action: auto`, `overscroll-behavior: auto`:
   text can be selected and the page bounces. `#gmap, #warmap` have `touch-action:none` (`page.html:23`), the atlas canvas too
   (`atlas.core.js:453`). `-webkit-touch-callout` and a global `-webkit-tap-highlight-color` are absent.
@@ -471,6 +475,7 @@ area (padding or an `::after` hit box), not bigger type.
 - **Good.** No `http(s)://` in `src/` or `data/` (except the SVG namespace); no root-relative `src="/"`; no `fetch`, XHR,
   WebSocket, EventSource or `sendBeacon`; fonts are inline `data:` woff2 (`page.html:10-21`, `src/ui/77-offline-fonts`); the CSP
   (`page.html:5`) is `default-src 'none'` with `connect-src data: blob:`. The page works offline as one file today.
+- **[I1-2 done]** `UI.download` has a guarded native hook: inside Capacitor (`window.Capacitor`) it calls `UI.nativeDownload(bytes, name, type)` if the shell defines it (I1-4: Filesystem write to the cache, then Share) and falls back to the blob download if it returns false; browsers never take the branch.
 - Two web-only paths to replace on the device: `UI.download` (`23-ui-a.js:335`, 6 callers: save export `23-ui-a.js:355`, report
   `23-ui-f.js:752`, `23-ui-b.js:491`, chronicle `src/events/22-chronicle/chronicle.core.js:125`, picture
   `src/ui/9994-share-a-picture/share.core.js:229`, mod example `src/core/65-mods/mods.core.js:282`). There is no `window.open` or `target=_blank`.
@@ -489,7 +494,7 @@ area (padding or an `::after` hit box), not bigger type.
   make with D9.
 
 ### 7.6 Animate only transform and opacity
-14 of 29 `transition` declarations animate something else: colours and borders on buttons (`look.b-base.core.js:139`, `155`;
+**[I1-2 done: the bar `width` transition is gone (96-big-moments already tweens a bar with `transform`) and the steel glint's `left` sweep is a `translateX`. Left, with the reason: the colour, border and `box-shadow` fades on buttons and inputs (page.html, `look.b-base` 139 and 155, `scene.d-style` 86 and 91: paint-only, 100 to 150 ms, on a press, not a loop); `fold-flash` box-shadow (1.3 s, once, on a jump to a section); `lkPulse` filter (300 ms, once); `clip-path` reveals (`look.g-title`, `scene.d-style`, once); `stroke-dashoffset` (`n-motion`, SVG, once); `visibility` beside a transform (harmless). Converting those means an overlay pseudo-element on every control for no measured gain.]** 14 of 29 `transition` declarations animate something else: colours and borders on buttons (`look.b-base.core.js:139`, `155`;
 `scene.d-style.core.js:86`, `91`; `page.html:23` twice), `box-shadow` (`page.html:23`), a bar's `width` (`page.html:23`), and
 `visibility` beside a transform (`look.c-layout.core.js:47`, harmless). Keyframes on `left` (`src/ui/61-illuminated-chronicle/illumination.core.js:44`),
 `box-shadow` (`src/ui/90-collapsible-sections/fold.core.js:468`), `filter` (`look.e-rows.core.js:441`), `clip-path`
@@ -512,12 +517,14 @@ press are cheap; the bar width and the `left` sweep should become `transform`.
 - **Nearly there.** `SAVES` (`src/core/release/core/22-saves.js:7`) owns every save: IndexedDB `ardan`/`slots`, four slots
   (`cur`, `bak1-3`), localStorage fallback (`22-saves.js:167-187`), a legacy import (`377-393`), a Web Lock against two tabs.
   Its storage is four functions (`open`, `get`, `put`, `clear`): one switch underneath them is all a native backend needs.
+- **[I1-2 done]** the profile tab's 4 direct `localStorage` calls go through `UI.store`. (`SAVES.backend` and the `UI.store` native switch stay for I1-4.)
 - **Outside it:** settings and small keys go through `UI.store` (`23-ui-a.js:46-66`, localStorage: settings, mods, the hall,
   folds), which is fine as the second funnel; **4 direct `localStorage` calls bypass both** in the profile tab
   (`src/ui/999996-profile-tab/profile.b-view.core.js:29`, `30`, `284`, `331`). Player mods are stored whole in localStorage
   through `UI.store` (`mods.core.js:36`, `44`): on the device they belong in a file.
 
 ### 7.9 Audio: one AudioContext, unlocked on the first tap, paused in the background
+- **[I1-2 done]** `src/ui/60-audio-context`: `UI.AUDIO` owns one context (`latencyHint: 'playback'`), used by the effects and the score; turning the music off no longer closes it and turning it on makes none; the first `pointerdown` makes and resumes it when sound or music is on; it is suspended 220 ms after the page is hidden and resumed when shown (`UI.AUDIO.suspend()/resume()` for Capacitor's pause and resume, I1-4); `navigator.audioSession.type = 'playback'` where it exists. Test `oneSharedContext`.
 - **Two contexts:** sound effects (`illumination.core.js:148`, made on the first sound once sound is on) and the score
   (`src/ui/73-music-score/music.core.js:452`, a **new context each time music is turned on**, closed when turned off).
   Plus an `OfflineAudioContext` for tests (`music.core.js:497`, fine).
@@ -532,16 +539,16 @@ press are cheap; the bar width and the `left` sweep should become `transform`.
 
 | # | Fix | Size | Rule | Goes into |
 | --- | --- | --- | --- | --- |
-| 1 | `viewport-fit=cover` on `page.html:6`; check every fixed bar, sheet and toast with real insets (Playwright cannot fake them: test in TestFlight) | S | layout | I1-2 |
-| 2 | One base rule: no selection (except inputs), no callout, no tap highlight, `overscroll-behavior:none` | S | layout, 4.2 | I1-2 |
-| 3 | `pointercancel` (and `setPointerCapture`) on the four drags | S | input | I1-2 |
+| 1 | **done (I1-2)** `viewport-fit=cover` on `page.html:6`; check every fixed bar, sheet and toast with real insets (Playwright cannot fake them: test in TestFlight) | S | layout | I1-2 |
+| 2 | **done (I1-2)** One base rule: no selection (except inputs), no callout, no tap highlight, `overscroll-behavior:none` | S | layout, 4.2 | I1-2 |
+| 3 | `pointercancel` (and `setPointerCapture`) on the four drags: **left for D9** (the map drags: `23-ui-c.js:1273`, `23-ui-d.js:1130`, `atlas.core.js:374`, `m-field.core.js:122`; I1-2 was told not to touch the maps) | S | input | D9 |
 | 4 | `:hover` rules inside `@media (hover:hover)`; archive the dead `UI.tipsInit` of `23-ui-b.js:12-80` | S | input | Gaps |
-| 5 | 44-pt hit areas for `.tt`, `.tt-n`, `.chip`, `.v2-row`, `.prow` and the path links; a test that holds the count at 0 (the probe made into a feature test) | M | input | Gaps (with the tablet's phone shell) |
-| 6 | `vh` → `dvh` with a `vh` fallback line, 50 places | S | layout | I1-2 |
-| 7 | One audio module: one AudioContext for score and effects, made on the first tap, suspended on hide and `pause`, `navigator.audioSession.type` set while sound or music is on | M | audio | I1-2 |
-| 8 | `SAVES.backend` switch (idb, local, native); profile tab's 4 `localStorage` calls through `UI.store`; `UI.store` with a backend switch; `UI.download` with a native branch | M | saves | I1-2 (the native branches in I1-4) |
+| 5 | **done (I1-2) except the skills rows (S1b)** 44-pt hit areas for `.tt`, `.tt-n`, `.chip`, `.v2-row`, `.prow` and the path links; a test that holds the count at 0 (the probe made into a feature test) | M | input | Gaps (with the tablet's phone shell) |
+| 6 | **done (I1-2)** `vh` → `dvh` with a `vh` fallback line, 50 places | S | layout | I1-2 |
+| 7 | **done (I1-2)** One audio module: one AudioContext for score and effects, made on the first tap, suspended on hide and `pause`, `navigator.audioSession.type` set while sound or music is on | M | audio | I1-2 |
+| 8 | **partly done (I1-2: the 4 profile-tab calls, `UI.download`'s hook; `SAVES.backend` and `UI.store`'s native switch left for I1-4)** `SAVES.backend` switch (idb, local, native); profile tab's 4 `localStorage` calls through `UI.store`; `UI.store` with a backend switch; `UI.download` with a native branch | M | saves | I1-2 (the native branches in I1-4) |
 | 9 | Map pan: one draw a frame (rAF-coalesced) on `#gmap`, `#warmap`, the atlas; no arrays, objects or closures in the draw loops; layout read once a gesture | M | rendering, performance | X7 part 2 (with D12b-1, which redraws the war map anyway) |
-| 10 | The bar `width` and the `left` sweep as `transform` | S | rendering | Gaps |
+| 10 | **done (I1-2)** The bar `width` and the `left` sweep as `transform` | S | rendering | Gaps |
 | 11 | State diet: cap `aiLog` and `wrec`, compact the dead, bound `realms` histories; save size held by a test | L | performance | X5 |
 | 12 | One tile cache for both map layers and one kept view per visible canvas, freed when the screen closes | M | rendering, memory | D9 |
 | 13 | Load and Next month inside the iPhone budget (§4.1) | L | performance | X7 part 2, D12b-1 |
