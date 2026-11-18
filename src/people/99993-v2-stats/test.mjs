@@ -183,6 +183,11 @@ export default {
     const r = await pg.evaluate(async () => {
       T.enter({ seed: 38, startAge: 16 });
       const found = [], tick = () => new Promise(res => setTimeout(res, 0));
+      // (CI 143: a person's row on the People tab is "bond · age · post", and 99994-v2-family words a subordinate's bond
+      // "Under your command": "Under your command · 54 · Soldier" is a man of 54, not a command of 54. Seed 38's world
+      // gives the life a subordinate on a page the test reads since the market fix shifted the stream. The bond word is read
+      // apart from the age that follows it.)
+      const ROW = l => l.replace(/^under your command · \d{1,3} · /i, '');
       const scan = async where => {
         await tick();
         const t = document.body.innerText;
@@ -447,12 +452,17 @@ export default {
       const KEYS = new Set(['perf', 'rep', 'merit', 'coMo', 'coDivMo', 'worth', 'fame', 'opinion', 'rulerOp', 'loyalty', 'facDisc', 'feud']);
       const BOARD = /\|(merit|cmd|skill|rep)$/, NEEDS = /^(Rest|Company|Purpose|Comfort)$/;
       const found = [], tick = () => new Promise(res => setTimeout(res, 0));
+      // (CI 143: a person's row on the People tab is "bond · age · post", and 99994-v2-family words a subordinate's bond
+      // "Under your command": "Under your command · 54 · Soldier" is a man of 54, not a command of 54. Seed 38's world
+      // gives the life a subordinate on a page the test reads since the market fix shifted the stream. The bond word is read
+      // apart from the age that follows it.)
+      const ROW = l => l.replace(/^under your command · \d{1,3} · /i, '');
       const scan = async where => {
         await tick();
         const root = document.querySelector('#modal') && document.querySelector('#modal').innerText.trim() ? document.querySelector('#modal') : document.querySelector('#tabbody');
         const roots = [root, document.querySelector('#profile')].filter(Boolean);
         for (const R of roots) {
-          for (const line of R.innerText.split('\n')) if (/\d/.test(line) && (LINE.test(line) || MORE.some(x => x.test(line)))) found.push(`${where}: ${line.trim().slice(0, 90)}`);
+          for (const line of R.innerText.split('\n')) if (/\d/.test(line) && (LINE.test(ROW(line)) || MORE.some(x => x.test(line)))) found.push(`${where}: ${line.trim().slice(0, 90)}`);
           for (const el of R.querySelectorAll('[data-tt]')) {
             const k = el.getAttribute('data-tt'), v = el.getAttribute('data-v') || '';
             if (!(KEYS.has(k) || (k === 'board' && BOARD.test(v))) || el.children.length) continue;

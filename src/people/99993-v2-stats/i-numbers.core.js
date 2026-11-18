@@ -306,9 +306,12 @@ VS.NUMRULES2 = [
   // how much of the history is there and the regard it asks for, in 59-descriptions' opinion words.
   // The regard is compared with the bar, not named by band: the opinion bands are wider than the bars (friendly is 10-39,
   // the bars 20-60), so "friendly or better" read as met for a friend at 20 whose rank needs 30 (verifier, round 7).
-  [/\bNext rank: shared history (\d+) \(now (\d+)\), their opinion (-?\d{1,3})(?: \(now (-?\d{1,3})\))?\./g, (all, need, now, op, opNow) => {
+  // (CI 143: the history can be below nothing, 55's ledger after a wrong outweighs the kindnesses, "(now -3)", and the
+  // rule read only a bare count, so the whole title stayed in numbers. H-079.)
+  [/\bNext rank: shared history (\d+) \(now (-?\d+)\), their opinion (-?\d{1,3})(?: \(now (-?\d{1,3})\))?\./g, (all, need, now, op, opNow) => {
     const f = +need > 0 ? 100 * +now / +need : 100;
-    const hist = f >= 100 ? 'your shared history is already enough' : +now <= 0 ? 'a shared history (you have none yet)'
+    const hist = f >= 100 ? 'your shared history is already enough' : +now < 0 ? 'a shared history (what lies between you now is more wrong than kindness)'
+      : +now === 0 ? 'a shared history (you have none yet)'
       : `more shared history (you have ${VS.fracWords(f)} of what it asks)`;
     const reg = opNow == null ? 'for them to think better of you'
       : +opNow >= +op ? 'their regard is already enough'
