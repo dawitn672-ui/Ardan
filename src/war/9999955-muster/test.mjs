@@ -185,7 +185,9 @@ export default {
       T.enter({ seed: 7, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
       const pc = A.pc(); A.S.queue = [];
       SV(pc, 'bow', 40); SV(pc, 'tracking', 40); SV(pc, 'craft', 40);
-      const res = A.enlist(pc, false);
+      // a scene's effect (as the release's cards call it): A.enlist inside A.applyFx
+      let res = null;
+      A.applyFx(pc, p => { res = A.enlist(p, false); return ''; }, {});
       out.ok = !!(res && res.ok !== false && pc.mil);
       out.branch = pc.mil && pc.mil.branch;
       const rec = (A.S.why || []).find(x => x.k === 'muster' && x.at === pc.id);

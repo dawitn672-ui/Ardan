@@ -5,6 +5,23 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Joining the army is a muster now, not a click.** Go to your lord's muster or the crown's (whoever holds the land you
+  live in), or to a free company's table. The muster-master looks you over and says what he sees: the weapon you know
+  and what you carry, how you are built to fight, and anything else of use (a horse, letters, a trade, the sea, tracking,
+  medicine, a horn). Then he offers you two or three places, each with his reason ("The bows: you can draw a bow"), and
+  says which door is shut ("No horse, so not the lances"). Choose one, or walk home. A man taken by lot gets no offers.
+- **Fifteen branches of a feudal army:** the lances, the light horse, the Scout Regiment, the spears, the men-at-arms on
+  foot, the bows, the crossbows, the siege engineers, the garrisons, the train, the ships' companies (only where the realm
+  has a coast), the household guard and the royal knights, the elite orders, the hired companies and the conscript foot.
+  Your branch decides your troop, your arm of service (no more being asked a year later where you belong) and whose
+  command you serve in.
+- **Roles beside your rank.** A captain who sees you read, dress wounds, shoe a horse or find a road may make you the
+  company's clerk, surgeon's mate, farrier or pathfinder (ten roles in all). A role pays a little, teaches its skill, and
+  brings its own work.
+- **Rank words agree everywhere.** The War tab, the Path card and the chain of command say the same rank and the same men:
+  a sergeant a section, a captain a company, a commander a wing, a General a host. The War tab shows your place, your
+  branch, what it beats and what beats it, and its work in peace.
+
 - **A realm's peace now has reasons you can read.** A realm's stability is no longer a number that wanders by luck: it
   settles toward what holds the realm up and what pulls it down (its old temper, the throne's right, the lords, the
   commons, the towns, the faith, the army, the ruler himself). Press the word (firm, steady, uneasy, shaking, breaking) to

@@ -170,11 +170,10 @@
     o = o || {};
     const kind = o.merc ? 'company' : c && c.k === 'house' ? 'house' : 'crown';
     const rid = c && c.r;
+    // a free company signs men into its fighting arms (its own branch, the hired companies, is the table itself)
+    const COMPANY = ['lances', 'light_horse', 'spears', 'foot_men_at_arms', 'archers', 'crossbows'];
     return MU.branches().filter(B => {
-      if (!(B.muster || []).includes(kind)) {
-        // a free company takes men into its fighting arms
-        if (!(o.merc && B.arm && ['lances', 'light_horse', 'spears', 'foot_men_at_arms', 'archers', 'crossbows'].includes(B.id))) return false;
-      }
+      if (o.merc ? !COMPANY.includes(B.id) : !(B.muster || []).includes(kind)) return false;
       const need = B.needs || {};
       if (need.coast === 'must' && !MU.coast(rid)) return false;
       if (!o.merc && rid && (B.troops || []).length && !(B.sup || []).length && B.id !== 'ships') {

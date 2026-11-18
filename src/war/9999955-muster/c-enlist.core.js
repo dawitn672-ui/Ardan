@@ -68,6 +68,7 @@
   MU.troopIn2 = function (pc, b, rid) {
     const av = A.wsTroopsFor ? A.wsTroopsFor(rid || 'unclaimed') : [];
     if (pc.race === 'giant' && av.includes('GI') && (b === 'spears' || b === 'foot_men_at_arms')) return 'GI';
+    if (pc.race === 'elf' && b === 'archers' && GD.TROOPS.EA) return 'EA';   // the release's own rule: an elf draws an elven bow
     return MU.troopIn(b, rid || 'unclaimed');
   };
   MU.troopFor = function (pc, realm, merc, opts) {
@@ -96,7 +97,9 @@
       m.cmd = c ? c.id : null;
       if (pc.id === A.S.pc && b !== 'conscripts') MU.seat(pc);
     }
-    if (pc.id === A.S.pc && L && L.M && !opts.branch && !opts.quiet && L.M.offers.length >= 2) MU.queueCard(pc, L.M, { merc, sworn: true, company: m.company });
+    // a scene that swore him in (A.enlist inside a card's effects): the card follows. A direct call (a tool, a test, a
+    // lab) gets the muster-master's choice alone.
+    if (pc.id === A.S.pc && MU.inScene > 0 && L && L.M && !opts.branch && !opts.quiet && L.M.offers.length >= 2) MU.queueCard(pc, L.M, { merc, sworn: true, company: m.company });
   };
   // a host of his command for his troop, nearest his home; a command with no host leaves him to the crown's (the release)
   MU.seat = function (pc) {
@@ -136,6 +139,9 @@
       if (!m.div) m.div = was;
       if (A.S.coOn && A.CO && A.CO.place) A.CO.place(pc);
     }
+    // the oath named his first company; the roll now names the new one
+    const M = A.CO && A.CO.mine ? A.CO.mine(pc) : null;
+    A.log(`The muster-master moves your name to the roll of ${low(MU.nameOf(B, m.cmd && A.CMD ? A.CMD.get(m.cmd) : null))}${M && A.CO.coName ? `: the ${A.CO.coName(M.d, M.b, M.i)}` : ''}.`);
     return true;
   };
 
@@ -250,8 +256,11 @@
 
   // ---------------------------------------------------------------- the cards' answers
   (A.FX_EXTRA = A.FX_EXTRA || []).push('muster', 'musterRole', 'musterDuty');
+  MU.inScene = 0;
   A.addStage('A.applyFx', 'muster', baseFx => function (pc, fx, ctx) {
-    const out = baseFx.apply(this, arguments);
+    let out;
+    MU.inScene++;
+    try { out = baseFx.apply(this, arguments); } finally { MU.inScene--; }
     try {
       if (!fx || typeof fx !== 'object' || !pc || pc.id !== A.S.pc || !ctx) return out;
       const say = s => { if (Array.isArray(out) && s) out.push(s); };
