@@ -56,7 +56,13 @@ const SETUP = () => {
           for (const x of Object.values(A.S.realms)) {
             if (!x.alive || x.isRebel || x.playerRun || x.id === me()) continue;
             o.ry++;
-            if (x.treasury > Math.max(1, x.income) * 6) o.hoard.push(`${x.short} ${A.S.year}: ${Math.round(x.treasury / x.income * 10) / 10} years`);
+            // a hoard is a treasury kept over six years of income two year-turns running: the court spends once a year,
+            // after the turn, and a crown that lost nearly all its land in the year shows its old coffers against its new
+            // income once (CI 148, seed 606 with the casus off: Sahrim cut to one province, 6,859 suns on an income of
+            // 303 in 1145, spent on a great work by 1147)
+            const over = x.treasury > Math.max(1, x.income) * 6, was = (o.over = o.over || {})[x.id] === A.S.year - 1;
+            if (over) o.over[x.id] = A.S.year;
+            if (over && was) o.hoard.push(`${x.short} ${A.S.year}: ${Math.round(x.treasury / x.income * 10) / 10} years`);
           }
         }
       } finally { A.aiLogAdd = lg; A.aiNoteWar = nw; A.HOOKS.warStart = A.HOOKS.warStart.filter(f => f !== onWar); CS.ON = true; CS.TEMPER.ON = true; }

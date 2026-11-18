@@ -75,6 +75,9 @@
     try { return !!e && (!e.cond || !!e.cond(pc, A.C)); } catch (err) { return false; }
   };
   AR.state = pc => (pc && pc.arcs && typeof pc.arcs === 'object' ? pc.arcs : {});
+  // why an arc was given up, kept short on the arc (the tests and the record read it): its stage no longer fitted the
+  // life or was dropped by its own setup, and what the life was then (a trade or none, in the field, a ruler)
+  AR.gaveWhy = (pc, k) => `${k},age ${A.age(pc)}${pc.job ? '' : ',no trade'}${pc.mil ? (pc.mil.call ? ',called up' : ',soldier') : ''}${pc.ruler ? ',ruler' : ''}`;
   AR.marks = (pc, k) => (AR.state(pc)[k] || {}).m || [];
 
   // the month: start an arc when its time comes, and bring on its next stage when it is due
@@ -86,7 +89,7 @@
     // would wait for it for ever
     for (const k of Object.keys(st)) {
       const a = st[k];
-      if (!a.done && a.next == null && a.q != null && A.absDay() - a.q > 60) { a.done = S.year; a.gave = 1; }
+      if (!a.done && a.next == null && a.q != null && A.absDay() - a.q > 60) { a.done = S.year; a.gave = 1; a.gw = AR.gaveWhy(pc, 'dropped'); }
     }
     // a stage that is due
     for (const k of Object.keys(st)) {
@@ -94,7 +97,7 @@
       if (a.done || a.next == null || S.year < a.next) continue;
       const ev = AR.ARC[k] && AR.ARC[k].stages[a.stage];
       if (!ev) { a.done = S.year; continue; }
-      if (!AR.fits(pc, ev)) { a.done = S.year; a.gave = 1; continue; }
+      if (!AR.fits(pc, ev)) { a.done = S.year; a.gave = 1; a.gw = AR.gaveWhy(pc, 'unfit'); continue; }
       A.queue({ type: 'event', ev, forced: true, ctx: { arc: k } });
       a.next = null; a.q = A.absDay();
       return;

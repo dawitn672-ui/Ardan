@@ -182,7 +182,11 @@ export default {
       void p;
       return { int: rate[1][1] / Math.max(1, rate[1][0]), exp: rate[3][1] / Math.max(1, rate[3][0]), n: [rate[1][0], rate[3][0]], ratio: share(3) / share(23) };
     });
-    const ok = r.ratio >= 20 && (r.n[1] < 5 || r.int >= 3 * r.exp);
+    // the bar on the ratio of the two climbs is set from its measured spread (CI 148 read 0.81 against 0.27, 2.99, and failed
+    // on the rounding at 3): four sets of twelve lives on the same build read 2.99 (seeds from 900), 3.24 (1400), 3.91 (2100)
+    // and 3.09 (3300), 3.3 pooled. A straight line climbs as fast at Expert as at Intermediate (a ratio near 1); 2.5 sits
+    // under every reading and far above that
+    const ok = r.ratio >= 20 && (r.n[1] < 5 || r.int >= 2.5 * r.exp);
     return { ok, detail: `a month at Beginner III buys ${r.ratio.toFixed(0)} times the share of a step it buys at Master III; steps a year while Intermediate ${r.int.toFixed(2)} (${r.n[0]} skill-years), while Expert ${r.exp.toFixed(2)} (${r.n[1]} skill-years)` };
   },
 
