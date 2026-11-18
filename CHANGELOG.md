@@ -45,6 +45,7 @@ What changed for the player, in plain words, one section per version (newest fir
   lord's host answers to that lord. The War tab's muster roll and the news of the muster tell you what your place lets
   you know: the crown hears the whole roll, a lord who stayed home and why, a soldier his own lord's answer and the
   count of banners.
+## v2.1.0-alpha.11 (2026-11-18 07:34 ET) · Ready for a phone: every button a fingertip wide, safe areas, no stray zoom or bounce, one sound engine
 
 - **Made ready for the iPhone.** The page now fills a notched screen edge to edge and keeps clear of the notch and the home bar;
   text on the buttons and panels can no longer be selected by a long press, and the page no longer bounces or zooms when
