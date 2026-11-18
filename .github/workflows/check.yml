@@ -21,8 +21,27 @@ concurrency:
 # hour on four workers). As one job the whole check took 80 minutes, and the
 # tests alone up to 104. Two shards ran 81 minutes each against a 120-minute timeout; three leave room for more tests.
 # Round 2 A3a (CRITIQUE Q5): the build, the v2 engine's tests and every linter run once, in `build`; the eight shards
-# only run browser tests, on the committed index.html that `build` proves current (each shard used to rebuild and relint).
+# only run browser tests (each shard used to rebuild and relint).
+# X5 (D-109): index.html is no longer committed. `game` builds it once (twice, to prove the build reproducible) and
+# shares it as the `game` artifact; the eight shards and the press gate download it.
 jobs:
+  game:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tools/build.mjs
+      # the same source builds the same bytes (tools/version.mjs get rebuilds old versions on that promise)
+      - run: node tools/build.mjs --out="$RUNNER_TEMP/again.html" && cmp index.html "$RUNNER_TEMP/again.html"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: game
+          path: index.html
+          if-no-files-found: error
+          retention-days: 7
   build:
     runs-on: ubuntu-24.04   # Playwright 1.56 has no Chromium for ubuntu-latest (26.04) yet
     timeout-minutes: 30
@@ -36,6 +55,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: node tools/check.mjs --skip-tests --skip-balance
   check:
+    needs: game
     runs-on: ubuntu-24.04   # Playwright 1.56 has no Chromium for ubuntu-latest (26.04) yet
     timeout-minutes: 120
     strategy:
@@ -50,6 +70,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      - uses: actions/download-artifact@v4
+        with:
+          name: game
+          path: .
       - run: node tests/run.mjs index.html --workers=4 --tier=quick --shard=${{ matrix.shard }}/8 --times-out=times-${{ matrix.shard }}.json
       - uses: actions/upload-artifact@v4
         if: always()
@@ -64,6 +88,7 @@ jobs:
   # (tests/saves/press/), on a fresh page and after a death, at 1366 px and at four-times CPU throttle, held to the
   # budgets in tools/bench/press-gate.mjs (CPU time, full redraws and layouts a press).
   press:
+    needs: game
     runs-on: ubuntu-24.04   # Playwright 1.56 has no Chromium for ubuntu-latest (26.04) yet
     timeout-minutes: 40
     steps:
@@ -74,6 +99,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      - uses: actions/download-artifact@v4
+        with:
+          name: game
+          path: .
       # --report until the engine's own share of a month (80 to 170 ms on a loaded 4-core box, all of the 150 ms budget)
       # is cut: the table is in the log and the artifact; drop --report to hold the budgets
       - run: node tools/bench/press-gate.mjs index.html --out=press-gate --report

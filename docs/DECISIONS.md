@@ -2270,3 +2270,24 @@ commander 900 (4,000), General 2,000 and 3,500 (7,000, 12,000). A farmhand earns
 less than twice a farmhand and a captain about one and a half to two yeomen. Wealth in arms is loot and ransom (the
 missions' and battles' own). The balance league has no soldier's path; a peasant who enlists keeps less, and CI's long
 tier (the balance league) is where a band would show it.
+
+### D-109 · X5: the built game is not committed; CI builds it once a run (2026-11-19; carries out D-018's second half; proposed in H-087, approved by the coordinator)
+1. **`index.html` leaves git:** `/index.html` in `.gitignore`, `git rm --cached index.html`. Every round committed a
+   rebuilt file of 3.7 to 5.7 MB (D-018: 104 MB of built files by then). `node tools/build.mjs` still writes it, to play
+   and to test.
+2. **CI builds once and shares it:** a `game` job in `check.yml` (artifact `game`), `long.yml` (`game-long`: its own name,
+   since a workflow that calls it may have a `game`) and `nightly.yml` (`game-nightly`) builds the file and uploads it; the
+   eight quick shards, the press gate, the long shards, the balance league and the nightly league and net download it
+   (`needs: game`). The `game` jobs of check and long build twice and compare the bytes (the reproducibility check that
+   `long.yml`'s `git diff --exit-code index.html` was). `check.yml`'s `build` job (linters, the v2 engine's tests) is as before.
+3. **`tools/check.mjs`** builds and no longer fails on a stale committed file.
+4. **`tools/version.mjs`:** `get` takes the committed `index.html` of a version up to X5; for a commit without one it
+   unpacks the commit with `git archive` into a scratch folder and runs that commit's own `tools/build.mjs` there (checked:
+   `4707b7d`'s rebuild equals its committed file byte for byte), and checks the result against the hash in the row. `new`
+   builds the commit the same way and writes `· build sha256:...` (in backticks) at the end of the row's title (`list`
+   shows it).
+5. **Milestones:** a `release/*` branch carries the built file (`node tools/build.mjs && git add -f index.html`), the
+   restorable record on GitHub while the proxy refuses tags. Nowhere else.
+6. **Considered:** a CI step that commits the file to `release/*` (it needs write permission for the workflow token: by
+   hand instead); each shard building for itself (10 s each, but eight builds are not one tested artifact); keeping the
+   committed file only on the integration branches (the growth is the same).

@@ -21,7 +21,27 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  # X5 (D-109): index.html is not committed; it is built once here (twice, to prove the build reproducible) and shared
+  # with the shards and the league as the `game-long` artifact (its own name: a run that calls this workflow may share its own `game`)
+  game:
+    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[full ci]') || startsWith(github.ref, 'refs/heads/release/')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tools/build.mjs
+      - run: node tools/build.mjs --out="$RUNNER_TEMP/again.html" && cmp index.html "$RUNNER_TEMP/again.html"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: game-long
+          path: index.html
+          if-no-files-found: error
+          retention-days: 7
   long:
+    needs: game
     # a plain push runs only for [full ci] or a release branch; schedule, dispatch and call always run
     if: github.event_name != 'push' || contains(github.event.head_commit.message, '[full ci]') || startsWith(github.ref, 'refs/heads/release/')
     runs-on: ubuntu-24.04   # Playwright 1.56 has no Chromium for ubuntu-latest (26.04) yet
@@ -38,6 +58,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      - uses: actions/download-artifact@v4
+        with:
+          name: game-long
+          path: .
       # --limit=3600 (2026-11-18): bot-life tests that make hundreds of new worlds (temperMovesTheWar: 384 lives, each with
       # D9's ground) ran 1,220 s to past 1,800 s on a slow runner; the default 1800 s cut them off mid-run (H-078).
       - run: node tests/run.mjs index.html --workers=4 --tier=long --limit=3600 --shard=${{ matrix.shard }}/8 --times-out=times-${{ matrix.shard }}.json
@@ -51,6 +75,7 @@ jobs:
   # The balance league, moved here from check.yml (D-063 addendum, 2026-11-16): each starting path held to the bands in
   # tools/bench/targets.mjs. It took 37 minutes on CI 131, twice the slowest quick shard.
   balance:
+    needs: game
     if: github.event_name != 'push' || contains(github.event.head_commit.message, '[full ci]') || startsWith(github.ref, 'refs/heads/release/')
     runs-on: ubuntu-24.04   # Playwright 1.56 has no Chromium for ubuntu-latest (26.04) yet
     timeout-minutes: 120
@@ -62,8 +87,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: node tools/build.mjs
-      - run: git diff --exit-code index.html
+      - uses: actions/download-artifact@v4
+        with:
+          name: game-long
+          path: .
       - run: node tools/bench/balance.mjs index.html --workers=4
   times:
     needs: long

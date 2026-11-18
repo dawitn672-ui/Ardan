@@ -1,7 +1,8 @@
 # Versions
 
 Every foundational or significant change to Ardan is a version: a row in the table below naming the commit that holds
-that version's built game (`index.html`). Annotated git tags of the same names exist where they can be pushed (this
+that version's game: its built `index.html` up to X5, its source from then on (X5, D-109: the built file is not committed;
+`get` rebuilds it from the commit's own source and checks it against the build hash the row records). Annotated git tags of the same names exist where they can be pushed (this
 session's git proxy refuses tag pushes, so the table is the record). Any version can be played exactly as it was:
 
 ```sh
@@ -58,4 +59,6 @@ Tag a commit whose CI is green, or the end of a step the owner asked for. Say in
 <!-- versions:end -->
 
 v1.0.0 is the release file as uploaded; from v1.1.0 on, every version's `index.html` is built from that commit's
-features (`features/` until beta.1, `src/<system>/` from round 2) by `tools/build.mjs` (CI checks the committed file matches its build).
+features (`features/` until beta.1, `src/<system>/` from round 2) by `tools/build.mjs` (CI checked the committed file matched its
+build). From X5 (D-109) the file is not committed: a row ends with the build's hash (`· build \`sha256:...\``), and `get`
+builds the version's commit in a scratch folder and checks the hash; the milestone branches `release/*` carry the built file.

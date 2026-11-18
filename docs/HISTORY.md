@@ -2206,3 +2206,24 @@ revisit D-120 under order 54's first rule (the world is not built around the pla
 - **Left:** D11+ (the military path by weapon and way at every rung); NPC soldiers' own careers (there are none as
   persons below the seeds); transfers between commands; a foreign contract as peace service (R12's third example).
 - **Undo:** revert branch `d11-3`'s commits; nothing was retired (the release's mission draw stays as the fallback).
+
+### H-091 · 2026-11-19 · X5: the built game leaves git (D-109)
+D-018's second half, proposed in H-087 and approved by the coordinator. Branch `x5-build`, from `origin/v2-integration` at
+`4707b7d`.
+- **Done:** `/index.html` in `.gitignore` and removed from the index (`git rm --cached`; the file stays on disk and is
+  rebuilt by `node tools/build.mjs`). `check.yml`, `long.yml` and `nightly.yml` each gain a `game` job that builds the file
+  once and uploads it (artifacts `game`, `game-long`, `game-nightly`); every job that read the committed file now
+  `needs: game` and downloads it: the eight quick shards and the press gate; the eight long shards and the balance league;
+  the nightly league and net. The `game` jobs of check and long build a second time and `cmp` the bytes (the
+  reproducibility check that was `git diff --exit-code index.html`). `tools/check.mjs` builds without the stale-file
+  failure. `tools/version.mjs get` rebuilds a commit with no `index.html` from `git archive` in a scratch folder with that
+  commit's own build and checks the row's hash; `new` writes the build's sha256 into the row; `list` shows it.
+  `docs/VERSIONS.md` and CLAUDE.md say so (a new note "The built game is not committed", the repack note, the build
+  line, milestones: a `release/*` branch carries the file with `git add -f`).
+- **Checked:** `4707b7d` rebuilt from `git archive` equals its committed `index.html` byte for byte (5,725,564 bytes);
+  `version.mjs get v2.1.0-alpha.13` still takes the committed file; the row parser reads a row with a build hash
+  (a sample row). The three workflows through actionlint (the npm WASM build, 2.0.6): no finding but `ubuntu-24.04`
+  being unknown to that old label list (the workflows already ran on it), and each read twice by hand.
+- **Not run here:** the workflows themselves (the first push of this branch, and the first nightly, are their test); the
+  `new` command (it tags; tried only through its parts).
+- **Undo:** revert the branch's commits and `git add index.html` again from a build.
