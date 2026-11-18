@@ -25,7 +25,7 @@
       for (const o of S.offers) {
         const on = chosen.includes(o.id);
         const note = `${U.D(o.id).desc} Why: ${o.why.join('; ') || 'it is on its list'}. Taught by ${o.teacher}. Now ${U.GRADE_W(o.grade)}.`;
-        h += `<div class="row small"><span class="grow">${on ? '<b>' : ''}${esc(o.name)}${on ? '</b>' : ''} <span class="muted">${esc(o.why[0] || '')}</span></span><button class="small un-why" data-note="${esc(note)}">why</button>${own ? `<button class="small un-pick${on ? ' primary' : ''}" data-a="unSyl" data-v="${esc(o.id)}" aria-pressed="${on}">${on ? 'chosen' : 'choose'}</button>` : ''}</div>`;
+        h += `<div class="row small"><span class="grow">${on ? '<b>' : ''}${esc(o.name)}${on ? '</b>' : ''}${o.why[0] ? ': ' : ''}<span class="muted">${esc(o.why[0] || '')}</span></span><button class="small un-why" data-note="${esc(note)}">why</button>${own ? `<button class="small un-pick${on ? ' primary' : ''}" data-a="unSyl" data-v="${esc(o.id)}" aria-pressed="${on}">${on ? 'chosen' : 'choose'}</button>` : ''}</div>`;
       }
       h += '</div>';
       if (S.cut.length) h += `<div class="row small"><span class="grow muted">Not this season: ${esc(S.cut.slice(0, 2).map(c => U.D(c[0]).name.replace(/^The /, 'the ')).join(', '))}${S.cut.length > 2 ? ', and more' : ''}</span><button class="small un-why" data-note="${esc(S.cut.map(c => `${U.D(c[0]).name}: ${c[1]}`).join('. ') + '.')}">why not</button></div>`;
