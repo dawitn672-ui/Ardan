@@ -10,7 +10,11 @@
 // rules that overstated the player's seat by 1.5-2.6 points in every bench cell).
 // Re-fit with: node tools/bench/run.mjs <html> --only=duels (maxShownVsActualErrorPct) after changing duel rules, pooling seeds
 // (one seed's 150 duels per cell carry a standard error of 4 points in the even cells).
-A.DUEL_ODDS = { scale: 5.85, slope: 3.5, mid: 70, seat: -0.22 };
+// Seat re-fit (CI 140, after S1b, R2 and D9): on honestOddsCells' own setting over six worlds (seeds 4711-4716, 21,600
+// lethal duels) the maximum-likelihood seat was -0.41, and -0.22 overstated the player by 2.9, 3.6 and 4.6 points in the
+// even and one-tier cells (0P, 0N, 1P). The build before S1b measured the same (2.8, 3.2, 4.4): the edge had drifted with
+// earlier duel changes, not with the skills. Scale and slope were left as they are.
+A.DUEL_ODDS = { scale: 5.85, slope: 3.5, mid: 70, seat: -0.4 };
 A.duelScale = function (wa, wb) {
   const O = A.DUEL_ODDS, m = ((+wa || 0) + (+wb || 0)) / 2;
   return Math.max(3, O.scale + (O.slope || 0) * (m - (O.mid || 70)) / 100);

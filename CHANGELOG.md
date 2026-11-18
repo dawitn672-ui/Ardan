@@ -5,6 +5,8 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **A fighter's odds against you read truer.** The scale on a person's page ("would usually beat you") overstated your
+  chances by three to five points in close fights; it now reads what the duels do.
 - **Skills with levels and experience; the proficiencies are gone.** Every skill now has a level in words, Beginner to
   Legend, each in five steps ("Swordsmanship: Expert II"), and a bar toward the next step. You earn experience by doing
   things: a month of training with or without a teacher, the work of your post, a card's test, a fight, a lesson. A
