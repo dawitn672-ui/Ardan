@@ -117,7 +117,7 @@
           m.rank++; m.rankSince = A.absDay();
           A.fame(pc, 2 + m.rank);
           const t = GD.MIL[m.rank];
-          A.log(`RAISED PAST A RANK: ${t.title}, never having served as ${skipped}. You now lead ${A.fmt(t.leads)}${m.rank >= 4 ? ' — men who will live or die by your orders' : ''}.`, 'big');
+          A.log(`RAISED PAST A RANK: ${t.title}, never having served as ${skipped}. You now lead ${A.milUnitPhrase ? A.milUnitPhrase(m.rank) : A.fmt(t.leads)}${m.rank >= 4 ? ' — men who will live or die by your orders' : ''}.`, 'big');
           if (m.rank === 2) A.ach('sergeant');
           if (m.rank === 4) A.ach('captain');
           if (m.rank >= 3 && Array.isArray(m.squad)) m.squad = m.squad.slice(0, 6);

@@ -429,7 +429,7 @@ UI.armyPathCard = function (pc) {
   // summary and explained as a bar to meet; it no longer decides promotion. In the source: say where you stand for
   // the next rank in words, and say how the board decides.
   return `<div class="card"><div class="row"><h3 style="margin:0">${UI.esc(A.rankLabel(m.rank))}</h3><span class="right tag">The Army · ${UI.esc(A.realmShort(m.realm))}</span></div>
-    <div class="small muted">${UI.esc(m.unit || "")} · leads ${A.fmt(G.leads)} · ${m.years} years · ${m.battles} battles · ${m.kills} enemy dead${A.RN && A.RN.on ? "" : ` · merit ${Math.round(m.merit)}`}</div>
+    <div class="small muted">${UI.esc(m.unit || "")} · leads ${A.fmt(A.MUSTER && A.MUSTER.leads ? A.MUSTER.leads(pc) : G.leads)} · ${m.years} years · ${m.battles} battles · ${m.kills} enemy dead${A.RN && A.RN.on ? "" : ` · merit ${Math.round(m.merit)}`}</div>
     ${UI.ladderHtml(
       GD.MIL.map((x, i) => [A.rankLabel(i), 0, 0]),
       m.rank,
@@ -1360,6 +1360,8 @@ UI.TAB.war = function (pc) {
       "army",
       "guard",
     ]);
+  // [D11-1] the soldier's place: rank, unit, branch, command and role in one glossary (9999955-muster)
+  if (pc.mil && UI.placeCard) add += UI.placeCard(pc);
   if (pc.mil) add += UI.drillCard(pc);
   // [W1-3] the muster roll of the player's realm, at his rank (9999951-commands)
   if (UI.musterCard) add += UI.musterCard(pc);

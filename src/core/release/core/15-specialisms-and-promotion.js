@@ -1802,7 +1802,8 @@ const promoCheckNow = function (pc) {
     const t = GD.MIL[m.rank];
     // [W1-1] the five ranks' words; a second step of a rank says so (A.rankLabel). No grade above General.
     A.log(
-      `PROMOTED: ${A.rankLabel(m.rank)}. You now lead ${A.fmt(t.leads)}${m.rank >= 4 ? " — men who will live or die by your orders" : ""}.`,
+      // [D11-1, R14] what the rank leads, in the glossary's words
+      `PROMOTED: ${A.rankLabel(m.rank)}. You now lead ${A.milUnitPhrase ? A.milUnitPhrase(m.rank) : A.fmt(t.leads)}${m.rank >= 4 ? " — men who will live or die by your orders" : ""}.`,
       "big",
     );
     m.rank === 1 && A.ach("sergeant");

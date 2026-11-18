@@ -131,7 +131,7 @@
   G.milRank = function () {
     const p = pc(), m = p && p.mil; if (!m) return '';
     const Gm = GD.MIL[m.rank];
-    return H(esc(Gm.title), null, esc(A.realmShort(m.realm))) + R('Leads', esc(A.fmt(Gm.leads))) + R('Years served', m.years) + R('Battles', m.battles) + R('Enemy dead', esc(A.fmt(m.kills || 0))) +
+    return H(esc(Gm.title), null, esc(A.realmShort(m.realm))) + R('Leads', esc(A.fmt(A.MUSTER && A.MUSTER.leads ? A.MUSTER.leads(p) : Gm.leads))) + R('Years served', m.years) + R('Battles', m.battles) + R('Enemy dead', esc(A.fmt(m.kills || 0))) +
       R(L('merit', '', 'Merit'), r0(m.merit)) + F(GD.MIL.map((x, i) => i === m.rank ? `<b>${esc(x.title)}</b>` : esc(x.title)).join(' › '));
   };
   G.school = function () {

@@ -688,8 +688,10 @@
     }
     const rec = d.bs[m.b], rank = pc.mil.rank || 0;
     CO.touch(rec);
-    // who leads whom: a captain is his company's captain, a senior captain his battalion's
-    const want = rank === 4 || rank === 5 ? m.i : rank === 6 ? 4 : -1;
+    // who leads whom: a captain is his company's captain, a commander his battalion's (a wing); a General holds his
+    // host and his own battalion. [D11-1, R14] By the five ranks (W1-1): grades 3 and 4 are Captain, 5 Commander, 6
+    // General; before, grade 3 led no company and grade 5 led a company, so "Commander" stood over "a company".
+    const want = rank === 3 || rank === 4 ? m.i : rank === 5 || rank === 6 ? 4 : -1;
     if (A.POSTS && A.POSTS.appoint) {
       // A2 stage 2: through the registry (999990-posts). The slot he held is handed over inside the appointment, and the
       // captain he replaces takes it (a promotion hands over the real command); any other slot of his is left
@@ -701,15 +703,15 @@
         A.POSTS.appoint(ck, out.id, { why: 'swap', force: true });
       for (const k of A.POSTS.held(pc.id)) if ((k.startsWith('coy:') || k.startsWith('bn:')) && k !== A.POSTS.coyKey(d.id, m.b, want)) A.POSTS.vacate(k, 'moved');
     } else {
-      for (let s = 0; s < 5; s++) if (rec.p && rec.p[s] === pc.id && !((rank === 4 || rank === 5) && s === m.i) && !(rank === 6 && s === 4)) delete rec.p[s];
-      if (rank === 4 || rank === 5) (rec.p = rec.p || {})[m.i] = pc.id;
-      else if (rank === 6) { (rec.p = rec.p || {})[4] = pc.id; delete rec.vac; }
+      for (let s = 0; s < 5; s++) if (rec.p && rec.p[s] === pc.id && !((rank === 3 || rank === 4) && s === m.i) && !((rank === 5 || rank === 6) && s === 4)) delete rec.p[s];
+      if (rank === 3 || rank === 4) (rec.p = rec.p || {})[m.i] = pc.id;
+      else if (rank === 5 || rank === 6) { (rec.p = rec.p || {})[4] = pc.id; delete rec.vac; }
     }
     // the man above you is a person you can know
     // one name for the unit everywhere: the release's own unit name (the oath, the Path card) is the battalion's
     pc.mil.unit = CO.bnName(d, m.b);
-    if (rank <= 3) CO.person(d, m.b, m.i);
-    if (rank <= 5) CO.person(d, m.b, 4);
+    if (rank <= 2) CO.person(d, m.b, m.i);
+    if (rank <= 4) CO.person(d, m.b, 4);
     return m;
   };
   function clearMe(pc) {

@@ -1714,7 +1714,10 @@ UI.chainOfCommand = function (pc) {
     "you",
     pc,
     A.fullName(pc),
-    GD.MIL[m.rank].title + " · leads " + A.fmt(A.V2W && A.V2W.leads ? A.V2W.leads(pc) : GD.MIL[m.rank].leads),
+    // [D11-1, R14] what he leads, read from the post he holds (A.MUSTER.post), as the Path card and the War tab say it
+    GD.MIL[m.rank].title +
+      " · leads " +
+      A.fmt(A.MUSTER && A.MUSTER.leads ? A.MUSTER.leads(pc) : A.V2W && A.V2W.leads ? A.V2W.leads(pc) : GD.MIL[m.rank].leads),
   ]);
   const sq = A.squad(pc).slice(0, 5);
   let h = '<div class="card chain"><div class="tag">Chain of command</div>';

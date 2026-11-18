@@ -2036,3 +2036,72 @@ memories of land taken (55's ledger, the release's `took_land`) that the next wa
 4. **Not built (left):** the divide answer to a league; a commons' rising in an AI realm (the release has none); the rank
    correlation of §13.7 across realms (measured, not held by a test); stability's `r.press[]` stored with fades (point 1
    of D-097); a private war as a war of hosts (D12b-1).
+
+### D-110 · D11-1: the muster; branches as data; the branch fixes the troop, the arm and the command (2026-11-18; D-012, D-064 point 16; war.md §14.1, §14.3; CRITIQUE W2)
+1. **Fifteen branches** in `data/military/branches.json` (war.md §14.1's list: the research draft's knights split into the
+   lances and the household guard, the old call-up become the conscript foot, the train and the ships' companies added).
+   Each names its arm (`GD.ARMS`), the war map's troops it fills, the support companies it mans, weapon skills, ways of
+   fighting, prized aptitudes, needs, what it beats and loses to, drill families, peace duties, three missions, a way out.
+   Twelve are entered at a crown's or a lord's muster; the orders by their trials, the hired companies at a free
+   company's table, the conscript foot by the lot. *Why:* §14.3's file, the owner's order 54 on the military path.
+2. **Nothing is handed over:** the War activities go to a muster and put a card before the player (`md_muster`), with
+   offers and a way home. A scene of the release that swears him in with no branch (about twenty-five call `A.enlist`
+   directly) is not rewritten: the muster-master decides where to write him, and the same card follows, so he may ask
+   for another of the offers. *Why:* §14.1 ("enlisting is two or three scenes in which a muster-master reads you"); the
+   release's scenes keep their text (they are read as text, CLAUDE.md).
+3. **The branch fixes the troop** (the first of its troops the realm raises; the release's elf and giant rules kept),
+   **the arm of service** (`pc.mil.arm`, the release's `GD.ARMS`: the card that asked a sergeant a year on where he
+   belonged no longer comes; CRITIQUE W2, "the arm is chosen a year later and changes nothing") and **the command**:
+   the muster's, crown's or lord's (W1-3), and a host of it for his troop near his home. A consequence: the arm's skill
+   growth and battle bonus (`A.specMul`, `A.armBonus`) count from the oath, not from the second grade.
+4. **The release's `A.troopFor`** (a weighted pick) is kept only for a build without the muster; the muster decides
+   instead. `A.enlist` takes a third argument `{ branch, cmd, company }`.
+
+### D-111 · D11-1: the muster-master is the command's decision through A.WHY; his offers are its reasons (2026-11-18; D-069; war.md §14.3)
+1. **One `A.WHY.decide` (kind `muster`)** over the branches open at that muster; the decider the command's owner (the
+   king; a lord through `A.WHY.houseMind`), whose temper bends the reasons (a proud lord weighs birth more). Reasons:
+   the two best skills the branch wants (`merit`), the way of fighting he is made for (`temper`; from his stats against
+   his own mean and his temper's axes), what he brings (a horse, mail, a bow), birth (`station`: the lances and the guard
+   take men of birth, a noble is wasted in a file), his people (`kin`), age, a patron holding a company or wing there
+   (`kin`), the command's men short in that branch (`want`, read from 9997's company records), and the spears' and
+   others' standing want. *Why:* §14.3, "the muster-master is a decide on the command's side: its offers are its reasons".
+2. **The offers** are the chosen branch and the next within 2.4 (log-odds) of it, at most three, each shown with its two
+   heaviest reasons; one refusal is said aloud. The draw among close options is a stream keyed by the recruit, the day
+   and the world's seed (`MU.rng`): deterministic, and it never moves `A.rand`, so a muster does not shift the world.
+3. **Where a man musters:** his own house's command when it holds of the crown; else the command of his province's
+   nearest seat (W1-4's rule for calls); a lord with no host on the map sends recruits to the crown's.
+4. **Measured** (`mdSpread`, 200 varied recruits over coastal and landlocked realms of seed 7): 12 different first
+   offers, the commonest (light horse) first for 35 of 200; every offer with its reasons; 15 of 16 sea-wise recruits in a
+   coastal realm offered a ship's company, none of 5 in a landlocked one.
+
+### D-112 · D11-1: roles beside rank (2026-11-18; war.md §14.1)
+1. **Ten roles** (`data/military/roles.json`) for soldiers and sergeants; one holder a company (a seed man by hash, else
+   none; the player only when better). The captain offers one through `A.WHY` (kind `role`): at the muster and every six
+   months in service; against, the line wants every man. A role pays its suns monthly and teaches its skill by practice
+   (`A.gainXp`); its work comes as `md_role_duty`. An officer, or a man moved to another company, hands it on.
+2. **What a role moves on campaign** (straggling, wounds, bridging) and its line of promotion are D11-2's and D11-3's;
+   the data carries both.
+
+### D-113 · D11-1: support branches stand on a battalion's roll until D11-2 (2026-11-18)
+A scout, an engineer, a man of the train or the guard is placed (9997's `CO.place`) in a battalion of his branch's
+troop, not in the support company (Outriders, Sappers, Quartermasters, Banner guard) the branch mans: those records
+hold one company with a captain's slot, and placing the player there would change the posts' audit. D11-2 gives every
+company its make-up and the support branches companies of their own. His branch's words (the War tab, the muster) are
+his own already.
+
+### D-114 · D11-1: one glossary of rank and unit words (R14) (2026-11-18; W1-1, D-066; CRITIQUE R14)
+1. `A.MUSTER.post(pc)` is the one reading of what the player leads: the rank's word, the rank's unit (section, company,
+   wing, host, army) and the men of the post he holds, else the unit's usual size. The Path card, the chain of command,
+   the rank's description and the War tab read it.
+2. `A.milUnitWord` says the five ranks' units (it said "file", "hundred", "regiment", "battle"); a promotion's line says
+   "You now lead a company of about 200" (`A.milUnitPhrase`), not GD.MIL's step number.
+3. **9997-companies' places follow the five ranks:** grades 3 and 4 (Captain) hold a company, 5 (Commander) and 6
+   (General, with his host) a battalion's wing. Before, grade 3 held nothing and grade 5 a company, so a Commander stood
+   over "a company". `GD.MIL[].leads` stays the engine's number (missions, war-map shares); only words changed.
+
+### D-115 · D11-1: what is not built, and why (2026-11-18)
+- **Transfers offered in service** ("aptitude is noticed in service", §14.1) are D11-2's with the units' make-up; a
+  conscript's role is offered already.
+- **The orders' trials and the free companies** stay their features' doors; the muster names them in its data.
+- **No new bare-dice decision:** lint-reasons stays at 42 (none of the 42 is the muster's; the drill's monthly roll,
+  `A.drillMonth`, is D11-2's).

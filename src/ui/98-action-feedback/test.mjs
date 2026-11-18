@@ -24,14 +24,17 @@ export default {
         UI.A.act(k); UI.A.actDo(k);   // round 2 B4: a press opens the sheet, Do it commits, and the card says what happened
         await new Promise(res => setTimeout(res, 50));
         const card = document.querySelector('#modal .act-res-text');
-        return { toast: (card && card.textContent) || (document.getElementById('toast') || {}).textContent || '', hash: JSON.stringify(A.S).length, rng: JSON.stringify(A.rngState) };
+        return { ev: A.S.queue[0] && A.S.queue[0].ev, toast: (card && card.textContent) || (document.getElementById('toast') || {}).textContent || '', hash: JSON.stringify(A.S).length, rng: JSON.stringify(A.rngState) };
       };
       const out = {};
       for (const k of ['enlist', 'merc', 'crime_burgle', 'tournament']) out[k] = await run(k, true);
       return out;
     });
-    const ok = /oath/.test(r.enlist.toast) && /oath|articles/.test(r.merc.toast) && r.crime_burgle.toast.length > 0 && /fee/.test(r.tournament.toast);
-    return { ok, detail: Object.entries(r).map(([k, v]) => `${k}: "${v.toast.slice(0, 70)}"`).join('; ') };
+    // D11-1: enlisting is going to a muster or a free company's table, and the muster's card is what the press shows
+    // (9999955-muster)
+    const said = x => /oath|muster|articles|table/.test(x.toast) || x.ev === 'md_muster';
+    const ok = said(r.enlist) && said(r.merc) && r.crime_burgle.toast.length > 0 && /fee/.test(r.tournament.toast);
+    return { ok, detail: Object.entries(r).map(([k, v]) => `${k}: "${v.toast.slice(0, 70)}"${v.ev ? ' then ' + v.ev : ''}`).join('; ') };
   },
   async fbPure(pg) {
     const r = await pg.evaluate(() => {

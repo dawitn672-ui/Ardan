@@ -2009,3 +2009,47 @@ README, tests).
   test; stability's pressures stored with fades; a private war as a war of hosts (D12b-1); the alliance, pact and
   appointment rolls of the r1-audit (diplomacy, R1's next pass).
 - **Undo:** revert the branch's commits; the archive holds the retired code.
+
+### H-088 · 2026-11-18 · D11-1: the muster
+Order 54 ("when choosing what path you want to go in the military, pay more attention to the weapon under use, the method
+of combat they prefer, as well as their aptitude across any skill that could be made use of in context even outside of
+combat"); D-012 (feudal armies); `docs/design/war.md` §14.1, §14.3 and §16's D-11-1 row; CRITIQUE W2 and R14; decisions
+D-110 to D-115. Branch `d11-1`, from `origin/v2-integration` at `3584e49`. New feature `src/war/9999955-muster`
+(`A.MUSTER`: `a-branches`, `b-reading`, `c-enlist`, `d-view`, `md.events.js`, README, tests) and data
+`data/military/branches.json`, `data/military/roles.json`.
+- **Built:** fifteen branches and ten roles as data (D-110, D-112); the muster-master's reading and offers, one
+  `A.WHY.decide` (kind `muster`) by the command's owner, its draw on a stream keyed by the recruit and the day (D-111);
+  enlisting as scenes (`md_muster`: the War activities go to a muster or a free company's table; a release scene's
+  enlistment is decided by the muster-master and the card follows; the lot makes no offers); the branch fixes troop, arm
+  of service and command, and a host of the command for the troop (D-110); roles offered by the captain through `A.WHY`
+  (kind `role`), paid, practised, with their own card (`md_role`, `md_role_duty`) (D-112); the War tab's place card; one
+  glossary of rank and unit words (D-114).
+- **Release files edited:** `07-duels.js` (`A.enlist`'s third argument, the troop from `A.MUSTER.troopFor`,
+  `A.MUSTER.onEnlist`, `A.milUnitWord` by the five ranks, new `A.milUnitPhrase`), `04-realms-and-war-years-b.js` (the
+  enlist and merc activities go to `A.MUSTER.go`), `15-specialisms-and-promotion.js` (a promotion's line in the glossary's
+  words), `23-ui-b.js` (the chain of command's "leads"), `23-ui-e.js` (the War tab's place card; the Path card's
+  "leads"). **Features edited:** 9997-companies (`CO.place` by the five ranks: grades 3 and 4 a company, 5 and 6 a
+  battalion's wing, D-114 point 3), 9999952-men (`CA.pcGo` passes the conscript branch), 59-descriptions (the rank's
+  "leads"), 99999-v2-renown (a promotion past a rank in the glossary's words), 98-action-feedback (its test: the muster's
+  card is what the press shows), 01-stages (the `muster` stage of `A.applyFx`).
+- **Measured:** `mdSpread` (seed 7, 200 varied recruits, four in five in coastal realms): 12 different first offers, the
+  commonest (light horse) first for 35 of 200, 575 offers all with reasons; the first offer led by the weapon (bow:
+  crossbows in Aldmark, which raises no archers; riding: light horse; sword: men-at-arms on foot; none: engineers);
+  15 of 16 sea-wise recruits in a coastal realm offered a ship's company, 0 of 5 in a landlocked one. `mdLabs`: the
+  bowman, the rider of birth, the tracker, the craftsman and the steward each offered his branch in the first two.
+- **Tests:** new `mdData`, `mdSpread`, `mdLabs`, `mdPlayerMuster`, `mdSceneAndLot`, `mdRoles`, `mdWordsAgree`,
+  `mdOldSaves` (14 saves; the alpha.9 Marshal save's soldier reads as the spears), `mdDeterministic`: all pass. The core
+  suites with the touched features' quick tests (muster, companies, men, commands, five-ranks, posts, v2-war, unit-drill,
+  careers, descriptions, action-feedback, v2-renown, surrender, realm-peace; 150 tests): 146 on the first build; three
+  failures found and fixed (`v2wByPost`, `v2wAnnalsHearsay` and `coOneName` met a muster card queued by a direct
+  `A.enlist`: the card now follows only a scene's oath, D-110 point 2), and `cmEveryManOneCommand` fails the same way on
+  the base build `3584e49` (seed 13: "FAM-005's contingent split between R40 and R41"; not this stage's). The final build:
+  77 quick tests of the muster, companies, men, commands, five-ranks, posts and action-feedback, 76 pass, the one above.
+- **Checks:** lint-events (muster) 0 errors, one warning (`md_role_duty` needs a soldier with a role); lint-choices
+  (muster) 0 obviously best; lint-reasons 42 (baseline 42); lint-stages ok; lint-kin ok; lint-skills ok; `--check-tiers`
+  ok; `coherency --baseline=quick` (4 lives, 16 years): no contradiction, no check rose. No engine module touched. Not run
+  here: the long tier and the balance league (CI's). A playtest pass at 375 by 667 (the muster card, the War tab's place
+  card): the card reads in 48 words, three offers and a way home; the place card's notes open on a tap.
+- **Left:** see D-113 and D-115 (support companies, transfers, what a role moves on campaign: D11-2; ladders, missions
+  and pay: D11-3).
+- **Undo:** revert branch `d11-1`'s commits; nothing was retired.

@@ -45,7 +45,8 @@
 
   // the soldier's place in a call: into the conscript foot of his own lord's contingent (or the crown's)
   CA.pcGo = function (pc, call) {
-    if (!pc.mil && A.enlist) { const r = A.enlist(pc, false); if (r && r.ok === false) return r.msg || null; }
+    // D11-1: the lot makes no offers; it puts a man in the conscript foot (9999955-muster)
+    if (!pc.mil && A.enlist) { const r = A.enlist(pc, false, { branch: 'conscripts' }); if (r && r.ok === false) return r.msg || null; }
     if (!pc.mil) return null;
     pc.mil.call = call.id;
     const ds = CA.divs(call);

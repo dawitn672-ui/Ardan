@@ -927,11 +927,12 @@ A.ACT = {
       ]),
     };
   },
+  // [D11-1] going to a muster: the muster-master reads you and makes offers on a card (A.MUSTER.go, D-110)
   enlist(pc) {
-    return A.enlist(pc, false);
+    return A.MUSTER && A.MUSTER.go ? A.MUSTER.go(pc, false) : A.enlist(pc, false);
   },
   merc(pc) {
-    return A.enlist(pc, true);
+    return A.MUSTER && A.MUSTER.go ? A.MUSTER.go(pc, true) : A.enlist(pc, true);
   },
   found_company(pc) {
     return A.foundCompany(pc);
