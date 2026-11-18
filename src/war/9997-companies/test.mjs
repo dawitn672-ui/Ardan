@@ -8,7 +8,9 @@ const findFight = `
   window.__coFight1 = function (seed, rank) {
     A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 });
     const pc = A.pc(), enemy = A.neighbors('POL-01')[0];
-    const w = A.startWar('POL-01', enemy, null, 'conquest'); A.enlist(pc);
+    // (a spearman: the battalion and its senior captain are what these tests read; since D11-2 a scout or an engineer
+    // the muster-master writes down stands in a support company, which has neither, D-117)
+    const w = A.startWar('POL-01', enemy, null, 'conquest'); A.enlist(pc, false, { branch: 'spears' });
     pc.mil.rank = rank;
     for (let day = 0; day < 500; day++) {
       A.advance(1); let h, k = 0; while ((h = A.headReady()) && k++ < 50) { if (h.type === 'event') A.eventAuto(); else A.S.queue.shift(); }

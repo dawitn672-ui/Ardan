@@ -26,7 +26,7 @@
   const rs = (kind, weight, label, source) => ({ kind, weight: r2(weight), label, source: source || null, pub: 1 });
   U.dutyOptions = function (pc) {
     const M = U.mine(pc);
-    const B = MU.branchOf(pc), m = pc.mil, d = M ? M.d : (m.div && A.divById(m.div)), P = d ? A.S.prov[d.loc] : (A.prov ? A.prov(pc.home) : null);
+    const B = MU.branchOf(pc), m = pc.mil, d = M ? M.d : (m.div && A.divById ? A.divById(m.div) : null) || null, P = d ? A.S.prov[d.loc] : (A.prov && pc.home != null ? A.prov(pc.home) : null);
     const mo = month(), mk = M ? U.makeup(M.d, M.b) : null, BB = MU.B(B) || {};
     const out = [];
     for (const D of U.duties()) {
@@ -40,7 +40,7 @@
       if (D.id === 'camp') { if (mk && mk.vet < .33) r.push(rs('want', 1, D.why, { t: 'men', r: mk.vet })); if (mo >= 2 && mo <= 4) r.push(rs('want', .4, 'spring is the season for it', { t: 'season', r: mo })); }
       if (D.id === 'stores' && mo >= 5 && mo <= 6) r.push(rs('duty', .8, D.why, { t: 'season', r: mo }));
       if (D.id === 'harbour' && P && P.coast) r.push(rs('duty', 1, D.why, { t: 'coast' }));
-      if (D.id === 'border' && P && (P.adj || []).some(j => { const q = A.S.prov[j]; return q && q.owner && q.owner !== d.r && A.hostile && A.hostile(d.r, q.owner); })) r.push(rs('fear', 1, D.why, { t: 'border' }));
+      if (D.id === 'border' && P && d && (P.adj || []).some(j => { const q = A.S.prov[j]; return q && q.owner && q.owner !== d.r && A.hostile && A.hostile(d.r, q.owner); })) r.push(rs('fear', 1, D.why, { t: 'border' }));
       if (D.id === 'butts') r.push(rs('duty', .3, D.why, { t: 'law' }));
       // the company did it last: a change is wanted
       if (m.duty && m.duty.k === D.id) r.push(rs('cost', -.8, 'the company has just come from it', { t: 'last', id: D.id }));
