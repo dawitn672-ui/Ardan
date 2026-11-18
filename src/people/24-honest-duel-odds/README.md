@@ -4,7 +4,7 @@
 
 XCOM's lesson: odds on screen must be the odds the engine rolls. The release showed `100/(1+e^(-d/12))` on the fighting-worth gap `d`, which understated a stronger fighter's real chances by up to 15 points: 79% shown where duels went 88–93%, 88% shown where they went 97%.
 
-`A.shownDuelOdds(a, b)` (in `odds.core.js`) is `1/(1+e^-(d/scale(m) + seat))`, where `m` is the two fighters' mean worth and `scale(m) = 5.85 + 3.5·(m − 70)/100` (never below 3). The curve is wider between masters than between brawlers. Two brawlers of worth 50 have a scale of 5.2, so 10 worth is about 2 logits. Two masters of worth 110 have a scale of 7.3, so 10 worth is 1.4 logits. A master's last points of worth are mostly skill and speed, and the duel engine values those less than the strength and stamina a lower tier gains. The seat term is −0.22: the player's seat (auto-played by `A.duelAuto`) is about 5.5 points weaker in an even fight. The person view ("would usually beat you") uses it through patch `ODDS-VSYOU`. 48-event-fight-rules adds the weapon a person would draw and both fighters' health on top (`FL.scaleAt` reads `A.duelScale`).
+`A.shownDuelOdds(a, b)` (in `odds.core.js`) is `1/(1+e^-(d/scale(m) + seat))`, where `m` is the two fighters' mean worth and `scale(m) = 5.85 + 3.5·(m − 70)/100` (never below 3). The curve is wider between masters than between brawlers. Two brawlers of worth 50 have a scale of 5.2, so 10 worth is about 2 logits. Two masters of worth 110 have a scale of 7.3, so 10 worth is 1.4 logits. A master's last points of worth are mostly skill and speed, and the duel engine values those less than the strength and stamina a lower tier gains. The seat term is −0.4 (re-fit after CI 140 on 21,600 duels over six worlds; it was −0.22, which by then overstated the player by 3 to 4.6 points in the even and one-tier cells, before S1b as after): the player's seat (auto-played by `A.duelAuto`) is about 10 points weaker in an even fight. The person view ("would usually beat you") uses it through patch `ODDS-VSYOU`. 48-event-fight-rules adds the weapon a person would draw and both fighters' health on top (`FL.scaleAt` reads `A.duelScale`).
 
 ## The round-7 refit
 
@@ -36,7 +36,7 @@ The scorecard showed "largest gap between shown and real duel odds" at 9 points 
 
 | Test | Result |
 | --- | --- |
-| `honestOdds` | Monotone in worth, the seat asymmetry within 11.5 points (the measured seat, −0.22, swings an even fight by 11 in all), the person view's line uses the function, and 160 duels within 8 points |
+| `honestOdds` | Monotone in worth, the seat asymmetry within 20 points (the measured seat, −0.4, swings an even fight by 20 in all), the person view's line uses the function, and 160 duels within 8 points |
 | `honestOddsCells` | The bench's own procedure, pooled over two worlds to 1,200 duels a cell. Every cell within 5 points and within 3.5 standard errors plus a point. Full build: worst cell 1.5 points |
 
 48-event-fight-rules's `flDuelOdds` (whose profile part reads this function) and `flHonest` pass on the full build.

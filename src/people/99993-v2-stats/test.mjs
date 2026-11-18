@@ -231,6 +231,8 @@ export default {
       const attrPlain = (v, el) => {
         let t = v.replace(/^Portrait of [^,]*, \d{1,3}$/, '').replace(/\bInitiative [\d.]+ of \d+/g, '').replace(/,? age \d{1,3}\b/g, '')
           .replace(DATE, '').replace(/^Provinces since \d+: \d+ to \d+$/, '')
+          // (S1b CI 139: an army is counted in men, not on the 0-100 scale; a host that fell to nothing reads "Army since 1105: 0 to 67k")
+          .replace(/^Army since \d+: [\d.,]+k? to [\d.,]+k?$/, '')
           .replace(/\(Part \d+\)/g, '').replace(/<?\d[\d,]*(?: \/ \d+)? (?:[A-Z][a-z]+ )?(?:loads?|times|galleys?|ships?|carted|used)|\b\d+ of (?:\d+|those)\b|\bcaravans (?:brought|took) \d+/g, '');
         if (el.classList && (el.classList.contains('fold-h') || el.classList.contains('fold-x'))) t = t.replace(/(?:, \d+| \(\d+\))$/, '');
         return t;
@@ -653,7 +655,10 @@ export default {
           if (/lifts \d+ kg about a (grown )?man/.test(t)) out.bad.push(`${race} ${a}: ${t.slice(0, 120)}`);
           // the mind word and its rarity agree
           for (const w of ['Wavering', 'Faint-hearted', 'Quick', 'Dull', 'Slow', 'Determined']) if (new RegExp(w + ' like most').test(t)) out.bad.push(`${race} ${a}: "${w} like most"`);
-          if (race === 'human' && (a === 10 || a === 13 || a === 17)) out['kg' + a] = Math.round(V.stats(pc).lift);
+          // the growth curve, read with the hurts set aside for the reading (CI 139: seed 32's boy in the world after S1
+          // took a bad back at 12 and lifted 27, 27 and 49; his raw strength still rose 8, 12, 17). A wound's own cost is
+          // body.js's woundFactor and A.stat's, tested where they live; this row asks only that a boy grows.
+          if (race === 'human' && (a === 10 || a === 13 || a === 17)) { const w0 = pc.wounds; pc.wounds = []; out['kg' + a] = Math.round(V.stats(pc).lift); pc.wounds = w0; }
           T.play(1);
         }
       }

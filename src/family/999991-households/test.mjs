@@ -197,9 +197,12 @@ export default {
         T.enter({ seed, status: 'peasant', startAge: 18, sex: seed % 2 ? 'M' : 'F' });
         const pc = A.pc(), t = A.makeLoveInterest(pc); A.marry(pc, t);
         const conceived = new Map();
+        // (S1b CI 139: at the yearly chance of one in five, four lives of twelve years gave one child in the shifted world and
+        // three before it; the couple try for a child every year, so enough are born to read their months)
         T.play(12, { each: () => {
           for (const x of A.S.pregs || []) if (!conceived.has(x.m + '|' + x.due)) conceived.set(x.m + '|' + x.due, x);
           const p = A.pc(); if (!p) return;
+          p.flags.tryChild = A.S.year;
           for (const id of p.children) { const c = A.P(id); if (c && !c._seen) { c._seen = 1; days.push(A.S.warClock || 0); } }
         } });
         for (const x of conceived.values()) gaps.push(x.due - x.c);

@@ -1251,6 +1251,26 @@ Each failure, its cause and the fix:
   - *Not fixed:* `flBeastOdds` (seed 4301's pool of fighters misses its 60-74 bin by 3.7 standard errors, the fighters at
     86 to 100 losing more than shown; seeds 4302 and 4303 pass within 5 points; for a look at the duel's own reading of
     skill), `v2sNumbers` (fails the same before S1b: P3's), `carMissionSize` (fails the same before S1b).
+- **Addendum, CI 139 and 140** (branch `s1b-ci2` from `b78fac1`, merged with `a56b5b6`: R2 and D9). Eight failures:
+  - *c6NineMonths* ("every birth in January"): four married couples had one child in twelve years in the world after S1
+    (three before), so the births seen all fell in one month. Test: each couple tries for a child (`flags.tryChild`).
+  - *x3PreviewReplay400* (av_ditch_corpse, fame moved): the lost check calls `A.punish`, whose fame, fine and hurt are the
+    law's and not the card's. Test: `punish` is an indirect effect, like `arc` and `treat`.
+  - *v2sNumbers* ("Army since 1105: 0 to 67k"): the army sparkline counts men, not a stat. Test exempts it.
+  - *v2sPlaytest2Body* (27, 27, 49 kg): seed 32's boy hurt his back at 12; his raw strength still grew. Test reads the
+    growth with the wounds set aside; six other seeds before and after S1b show no fall in children's strength.
+  - *coRoutineOnce* (no second pay day): Aldmark fell to Sylvaran in the forced war's ninth year, and a man of a fallen
+    realm has no army to join. Test: the war is with Gorath, which the realm outlasts (Northreach too).
+  - *flBeastOdds*: not the duel's reading of skill. Pooled over eight worlds no skill band reads wrong (90 and over:
+    shown 54.8, won 52.8); seed 4301's 60-74 bin rests on a few fighters fought many times. Test: two worlds pooled
+    (`FLAB.beasts` takes a list of seeds). The 60-74 bin is still the worst pooled (shown 67.0, won 61.5; 66.7 and 66.9
+    before S1b), a refit of `GD.BEAST_DUEL` for later.
+  - *honestOddsCells* (1P 73.6 against 79.4): not S1b; the build before S1b overstated the player's seat the same (2.8,
+    3.2, 4.4 points in 0P, 0N, 1P over six worlds). Game: the seat term re-fit by likelihood on 21,600 duels, -0.22 to
+    -0.4; every cell within 2.1 points over six worlds. `honestOdds`'s seat asymmetry bound follows it (20 points).
+  - *v2svRoundTrip* (state after load not the same): a division struck off in a fight kept its post record
+    (`div:DNEW1-1`) until the month's sync, and a save made before then was pruned by the load's sync. Game (999990-posts,
+    W1-2's feature): `A.divRemove` and `A.wsDemobilize` drop the records of what they removed at once.
 ### H-064 · 2026-11-16 · W1-2: minds (R1's core)
 - **Asked:** `A.WHY.decide`, one way of deciding for every decider (D-064 point 9); the owner's two lab kings as tests;
   the first structural decisions routed through it; a lint against bare dice with a baseline; reasons shown where the
