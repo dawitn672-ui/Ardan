@@ -5,6 +5,8 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+## v2.1.0-alpha.12 (2026-11-18 12:45 ET) · Lords with their own armies: the summons and its answers, no levies, conscription only for a named need, desertion and mutiny for reasons
+
 - **No more levies.** A realm's armies are its sworn men (knights, men-at-arms, a lord's retinue, about one in four
   hundred of the people), the regiments its treasury pays, and the roll: volunteers, about one in a hundred, who drill
   some days a year and march when mustered. Nobody is taken by a yearly tax of men.
