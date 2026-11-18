@@ -133,7 +133,9 @@ export default {
             // effects that come from outside the choice's own fx are not previewed: a story's next step (arc), a marriage written into the register
             // (akin), a skill's knack (every-number-counts rides): the claim is not made for those choices (D-059 says so)
             const fxo = branch.fx && typeof branch.fx === 'object' ? branch.fx : {};
-            const indirect = !!(fxo.arc || fxo.akin || fxo.treat || fxo.care || (A.LN && A.LN.rides && A.LN.rides[h.ev + '#' + vc.i]));
+            // (S1b CI 139: a punishment (fx.punish) brings its own fine, pillory or fame as the law decides, which the preview does
+            // not name: av_ditch_corpse's lost purse, met for the first time in the shifted world, paid a fine larger than the purse)
+            const indirect = !!(fxo.arc || fxo.akin || fxo.treat || fxo.care || fxo.punish || (A.LN && A.LN.rides && A.LN.rides[h.ev + '#' + vc.i]));
             const share = R.down.some(x => x.k === 'coinPct'), strips = R.down.some(x => x.k === 'arLose');
             if (indirect || (R.coin && !A.isAdult(pc))) { /* a child's purse is the family's; indirect effects are not previewed */ }
             else if (R.coin) { out.claims++; if (share ? d.coin > -Math.min(R.coin, b0.coin) + 0.5 : Math.abs(d.coin + Math.min(R.coin, b0.coin)) > 0.5) say(`previewed -${R.coin} suns${share ? ' and a share' : ''}, coin ${Math.round(b0.coin)} -> ${Math.round(pc.coin)}`); }
@@ -145,6 +147,7 @@ export default {
               if (key === 'prison') { out.claims++; if (!pc.prison && pc.alive) say('previewed prison, none'); continue; }
               if (key === 'wound') { out.claims++; continue; }
               if (!(key in FIELD)) continue;
+              if (fxo.punish) continue;   // (the law's own fame, honour and hurt: see above)
               out.claims++;
               const sense = K[key] ? K[key].sense : 1, mv = d[key] * sense;     // in the better direction
               const atCap = (up ? (sense > 0 ? pc[FIELD[key]] >= capOf(key, pc) : pc[FIELD[key]] <= 0) : (sense > 0 ? pc[FIELD[key]] <= 0 : pc[FIELD[key]] >= capOf(key, pc)));
