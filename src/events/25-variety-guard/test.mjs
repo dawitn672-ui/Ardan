@@ -22,12 +22,18 @@ const RUN = () => {
       // what the guard governs: an event the roll chose (not a trigger-only scene another system queued), against the
       // scenes the player saw just before it, whatever they were. That is what the guard itself looks at (S.evShapes);
       // a duty scene between two road scenes breaks the run, and two queued scenes after a rolled one are not its doing
+      const rolled = z => !z.how || z.how === 'refill';
       for (let i = 1; i < all.length; i++) {
         const x = all[i]; if (x.trig || !x.s) continue;
-        pairs++; if (x.s === all[i - 1].s) { same++; if (i > 1 && x.s === all[i - 2].s && !(all[i - 1].from && all[i - 2].from)) { triples++; tri.push(seed + ' ' + x.s + ': ' + [all[i - 2], all[i - 1], x].map(z => z.id + '@' + z.y + (z.trig ? '(trig)' : '') + (z.how ? '(' + z.how + ')' : '')).join(' > ')); } }
+        pairs++; if (x.s === all[i - 1].s) { same++; if (i > 1 && x.s === all[i - 2].s && !(all[i - 1].from && all[i - 2].from) && rolled(x)) { triples++; tri.push(seed + ' ' + x.s + ': ' + [all[i - 2], all[i - 1], x].map(z => z.id + '@' + z.y + (z.trig ? '(trig)' : '') + (z.how ? '(' + z.how + ')' : '')).join(' > ')); } }
         // (CI 110: a gathering put two court scenes, gs_spy and gs_whisper, ahead of a court scene the month had already
         // rolled; the guard could not see them when it rolled, so a run made by scenes another system set in front of a
         // rolled one is not a triple of the guard's)
+        // (CI 143, long run 13: bd_sup_drunk (a refill) > lfx_bd_old_wrong_2 (a bond's trigger scene) > sk_deed_offered,
+        // a deed offer A.schedule had set for that month. The third of a triple must be the roll's own choice to be the
+        // guard's fault: a scheduled scene, a choice's consequence ('chain'), one the player asked for ('ask'), a journey's
+        // or a forced one comes when its story says, and 97-first-life-fixes never holds those back at the head of the
+        // queue (a-memory.core.js, "where a queued scene came from"). A refill is the roll's, and still counts. H-079.)
       }
     }
     A.EV_COOL = keep.cool; A.evVariety = keep.v; A.evRecency = keep.r;

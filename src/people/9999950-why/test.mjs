@@ -65,10 +65,17 @@ export default {
   // survive a save and a load, and an old save without them loads and decides again
   async whyRecordsKept(pg) {
     const r = await pg.evaluate(() => {
-      T.enter({ seed: 5, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 22 });
+      // A world may keep a quiet decade: after the market fix (H-073 addendum 2) shifted every world's stream, seed 5's
+      // crowns all waited (23 short of nerve, 18 for want of reasons) and declared no war in ten years, while seeds 6, 7,
+      // 11, 12 and 13 declared 7, 5, 10, 4 and 8, each with its record (before the fix seed 5 declared 2, the others
+      // 3 to 9: the pace did not change). So the test reads the next world when one keeps the peace (H-079).
       const declared = [];
       A.on('warStart', w => { if (w.why) declared.push(w.id); });
-      T.play(10);
+      for (const seed of [5, 6, 7]) {
+        T.enter({ seed, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 22 });
+        T.play(10);
+        if (declared.length || A.S.wars.some(w => w.why)) break;
+      }
       const S = A.S, L = S.why || [], out = {};
       out.n = L.length; out.kinds = L.reduce((m, e) => (m[e.k] = (m[e.k] || 0) + 1, m), {});
       out.wellFormed = L.every(e => e.k && e.chose != null && Array.isArray(e.why) && e.why.length <= 3 && Array.isArray(e.not) && e.not.length <= 2 && e.why.every(x => typeof x[0] === 'string' && !/[<>"]/.test(x[0]) && isFinite(x[1])));

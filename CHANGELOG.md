@@ -5,6 +5,13 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **The Dynasty tab explains its figures.** An ending found in an earlier life says how many lives found it, and the
+  inheritance card's purse, lands, renown and friends each open what passes to your heir and why.
+- **A friend's next rank reads in words even after a quarrel.** When more wrong than kindness lies between you, the
+  pips say so instead of showing a number below nothing.
+- **Your uncle's mill begins only in a family that has the uncle.** The story no longer starts, and stalls, in a life
+  whose tree holds no unwed uncle and no grown cousin.
+
 - **A fighter's odds against you read truer.** The scale on a person's page ("would usually beat you") overstated your
   chances by three to five points in close fights; it now reads what the duels do.
 - **Skills with levels and experience; the proficiencies are gone.** Every skill now has a level in words, Beginner to
