@@ -8,9 +8,10 @@ const SAVEDIR = here('../../../tests/saves/');
 
 // in the page: one life of `years`, its player killed at `kill` years and played on as an heir (the same each run)
 const INSTALL = () => {
-  // the heir a test plays on as: the eldest living child, else the first young person of the realm by id
-  window.__dietHeir = old => ((old.children || []).map(A.P).filter(p => p && p.alive).sort((a, b) => a.born - b.born || (a.id < b.id ? -1 : 1))[0]
-    || Object.values(A.S.people).filter(p => p.alive && p.realm === old.realm && A.age(p) >= 16 && A.age(p) <= 30).sort((a, b) => (a.id < b.id ? -1 : 1))[0]);
+  // the heir a test plays on as: the eldest living child, else the first young person of the realm by id, else of Ardan
+  const young = p => p.alive && A.age(p) >= 16 && A.age(p) <= 30, byId = (a, b) => (a.id < b.id ? -1 : 1);
+  window.__dietHeir = old => ((old.children || []).map(A.P).filter(p => p && p.alive).sort((a, b) => a.born - b.born || byId(a, b))[0]
+    || Object.values(A.S.people).filter(p => young(p) && p.realm === old.realm).sort(byId)[0] || Object.values(A.S.people).filter(young).sort(byId)[0]);
   window.__dietLife = ([o, kill, years]) => {
     T.enter(o);
     const end = A.S.year + years;

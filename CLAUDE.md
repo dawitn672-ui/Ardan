@@ -130,6 +130,7 @@ node tools/bench/style-probe.mjs /tmp/me.html             # one <span> insert's 
 node tools/bench/phone-load.mjs /tmp/me.html --runs=3 --profile --out=/tmp/ardan/me   # X7: as a Pixel 7 at 1x/4x/6x CPU: load, title, first Life screen, Next month, and where the boot's time goes
 node tools/bench/clutter.mjs /tmp/me.html --out=/tmp/c.json --shots=/tmp/s   # B5: words, controls, elements, scroll and width share of every page, for three lives at 1366x768 and 420x900
 node tools/bench/long-life-audit.mjs /tmp/me.html --seed=7 --years=60    # a long bot life with the one-holder audit and error counts
+node tools/bench/state-size.mjs /tmp/me.html --years=100 [--dump=dir]    # X5: the state's size by key and field at year 0 to 100 (what grows)
 node tools/check.mjs                                      # everything CI runs
 node tools/lint-stages.mjs                                # the named stages and the count of names defined more than once (X2)
 node tools/coherency.mjs --quick                          # the coherency checks over a few lives (src/core/08-coherency-checks)

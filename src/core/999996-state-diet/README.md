@@ -1,7 +1,7 @@
 # The state diet (X5)
 
 **Aspect:** the iPhone build rules (rule 21: no data that grows forever), saves · **Kind:** engine, no interface ·
-**Decisions:** D-104 to D-107 · **History:** H-087
+**Decisions:** D-104 to D-106 · **History:** H-087
 
 `tools/bench/state-size.mjs` plays a life to year 100 and breaks `A.S` down by key, by person field (the living and the
 dead apart) and by realm field. What it found, and what this feature does about each:

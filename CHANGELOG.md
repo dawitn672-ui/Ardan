@@ -5,6 +5,11 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Smaller saves in a long game.** The story of years more than forty years past keeps what the Chronicle tells of
+  them (a decade's weightiest moments, and every great moment and death); the Chronicle itself reads exactly as before.
+  A past life's private bookkeeping is let go a year after the death; the person, their family, deeds and renown stay.
+  At year 100 a save is about a twentieth smaller, and the story log no longer grows without end. Older saves are
+  trimmed the same way when they load.
 - **A realm's peace now has reasons you can read.** A realm's stability is no longer a number that wanders by luck: it
   settles toward what holds the realm up and what pulls it down (its old temper, the throne's right, the lords, the
   commons, the towns, the faith, the army, the ruler himself). Press the word (firm, steady, uneasy, shaking, breaking) to
