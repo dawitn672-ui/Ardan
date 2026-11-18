@@ -1919,3 +1919,32 @@ D-064 point 10; decisions D-091 to D-096. Branch `w1-5`, from `origin/v2-integra
   and ransoms (D12b-3); the crown's acceptance of counsel for war, an alliance or a pact (still a roll, not counted by the
   lint); `A.startWar`'s dead ally branch (r1-audit).
 - **Undo:** revert the branch's commits; the archive holds the retired code.
+
+### H-085 · 2026-11-18 · CI 150 and long 26 after W1-5: three failures read (branch `w15-ci`)
+On `67bca05` (W1-5 merged), three tests failed. Each was reproduced on a scratch build of that commit, and on the build
+just before W1-5 (`84b7f92`) where a number was in question.
+- **`planIsVisible`** (38-orders), `war room: ""`. **Cause:** the world. On seed 81 Sylvaran's old king (an elf, "his years
+  told as a man's") asks Aldmark for terms on day 50 of the test's war (path 1: "the host of Aldmark is stronger than
+  his"), the armies go home, and after sixty days the War Room has no army row to read. Wars now end when a side asks or
+  can fight no more, so a war of sixty days is one world's draw. **Fix (test):** the first of six worlds (81 to 86) whose
+  war is still fought after sixty days, named in the detail (world 83 now: "Bold · means to take Rinthil, Eridor and
+  Falessa...").
+- **`moodsInLives`** (35-moods), `in a low mood 2% of months`. **Cause:** one world's luck over two lives. Over seeds 355 to
+  362 (ten years each) the share runs 0 to 32% a life on the W1-5 build (pooled 8.4%) and 3 to 28% before it (9.6%); seeds
+  355 and 356 read 2% and 1%. **Fix (test):** six lives of eight years pooled (readings 6.9% on this build, 13.6% before
+  W1-5, one life there in want a third of its months), bar 3% unchanged; `tests/test-times.json` 150 s.
+- **`csWorlds`** (68-reasons-for-war, long), citing a memory or a want 17.2% (by world 8, 18, 23%) under the bar of 18%.
+  **Cause, the game (W1-5's):** reproduced exactly (606, 2424, 7: 17.2% of 99 AI wars; 19.1% of 94 on `84b7f92`). Land
+  changing hands at a war's end fell from 196 provinces to 118 in those worlds, and the memories of land taken with it
+  (feud and memory cites 11 → 7). W1-5's terms had dropped the defender's border land after beating back an attack
+  (68's F4 rule, "a border district or two", a recorded decision undone without a record) and a rivalry's border land.
+  **Fix:** both restored in `A.WAR.terms` (D-094 addendum): 153 provinces, memory cites 13, 18.1%. What remains is the
+  world and W1-5's design: over seven worlds of fifty years 20.0% (by world 14, 19, 20, 14, 27, 30, 12) against 23.8%
+  before (22, 22, 13, 25, 19, 36, 31): shorter wars leave a neighbour "away at war" less often (the moment a planned want
+  waits for), and a war over an insult ends without a province. **Test:** four worlds pooled (606, 2424, 7, 42) and a bar
+  of 15% from that spread (two standard errors under the pooled readings), the rest of the test unchanged. Run once
+  here: 21.0% of 138 AI wars (by world 14, 19, 20, 30%), 18 planned wars struck, in character 78.2% (off 65.8%), no
+  hoarding; 702 s.
+- **Tests** (`--workers=4`, this container): the quick tests of surrender, orders, moods, reasons-for-war and why with the
+  core suites 52 of 52; then `planIsVisible`, `moodsInLives`, `csWorlds` (long, once), `peaceFitsWar`, `w5WarsEnd`,
+  `w5AiEnding` pass.

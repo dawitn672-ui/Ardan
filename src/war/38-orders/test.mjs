@@ -148,16 +148,24 @@ export default {
 
   async planIsVisible(pg) {
     await pg.evaluate(SETUP);
+    // (W1-5, H-085: a war now ends when a side asks for terms or can fight no more. On seed 81 Sylvaran's old king asks
+    // Aldmark for terms on day 50 and the armies go home, so the plan has no army to show. The test reads the first of six
+    // worlds whose war is still being fought after sixty days, and names it.)
     const r = await pg.evaluate(() => {
-      const { F } = GOT.soldier(81, 'bold');
-      if (!F) return { none: true };
-      // sixty days of war; scenes other features queue (a custom, a plague nearby) would hold the clock, so clear them
-      const d0 = A.today(); for (let g = 0; g < 60 && A.today() - d0 < 60; g++) { A.S.queue = []; A.advance(60 - (A.today() - d0)); }
-      const a = F.a, h = UI.wrArmyRow(a, A.cmdRole(A.pc()));
-      return { plan: a.gtPlan, line: (h.match(/<b>(Bold|Cautious|Cunning|Steady)<\/b> · [^<]*/) || [''])[0], text: A.GENERALS.planText(a) };
+      const found = T.trySeeds(T.seedRun(81, 6), seed => {
+        const { F } = GOT.soldier(seed, 'bold');
+        if (!F) return null;
+        const w = A.S.wars.find(x => x.att.includes('POL-01') || x.def.includes('POL-01'));
+        // sixty days of war; scenes other features queue (a custom, a plague nearby) would hold the clock, so clear them
+        const d0 = A.today(); for (let g = 0; g < 60 && A.today() - d0 < 60; g++) { A.S.queue = []; A.advance(60 - (A.today() - d0)); }
+        if (!w || !A.S.wars.includes(w)) return null;
+        const a = F.a, h = UI.wrArmyRow(a, A.cmdRole(A.pc()));
+        return { plan: a.gtPlan, line: (h.match(/<b>(Bold|Cautious|Cunning|Steady)<\/b> · [^<]*/) || [''])[0], text: A.GENERALS.planText(a) };
+      });
+      return found.res ? Object.assign({ seed: found.seed }, found.res) : { none: true, tried: found.tried.join(', ') };
     });
-    if (r.none) return { ok: false, detail: 'no army for the soldier' };
-    return { ok: !!r.plan && /Bold/.test(r.line), detail: `war room: "${r.line.replace(/<\/?b>/g, '')}"` };
+    if (r.none) return { ok: false, detail: `no soldier's war lasted sixty days in worlds ${r.tried}` };
+    return { ok: !!r.plan && /Bold/.test(r.line), detail: `world ${r.seed}: war room: "${r.line.replace(/<\/?b>/g, '')}"` };
   },
 
   async movesAreVisible(pg) {
