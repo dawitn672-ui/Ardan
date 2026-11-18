@@ -591,43 +591,14 @@ UI.icon = function (name, cls) {
   return d ? `<svg class="ic ${cls || ""}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${d}</svg>` : "";
 };
 
+// S1b (D-072): the proficiency lists (category, number, tier word, a bar by width, stars) are retired to
+// archive/s1-proficiencies/old-views.js; the skills panel is 36-skills' UI.skillsBlock and UI.skillRows (§8).
 UI.profBlock = function (p, opts = {}) {
-  let h = '<div class="profs">';
-  for (const [cat, ks] of Object.entries(GD.SKILL_CATS)) {
-    const rows = ks
-      .map(k => [k, A.skill(p, k)])
-      .filter(([k, v]) => opts.all || v >= 1 || (p.apt && p.apt[k] && p.apt[k] !== 1));
-    if (rows.length) {
-      h += `<div class="pcat group-h">${cat}</div>`;
-      for (const [k, v] of rows.sort((a, b) => b[1] - a[1])) {
-        const apt = p.apt && p.apt[k],
-          an = apt ? GD.aptName(apt) : "",
-          perks = A.perksOf(p, k);
-        h += `<div class="prow" title="${UI.esc(GD.SKILL_DESC[k] || "")}"><span>${UI.esc(GD.SKILLS[k])} ${an ? `<span class="apt ${apt < 1 ? "bad" : ""}">${apt >= 1 ? "★" : "▽"} ${an}</span>` : ""}</span><b>${v}</b><span class="tier">${GD.profTier(v)}</span><div class="bar"><i style="width:${v}%"></i></div></div>`;
-        if (perks.length && !opts.compact)
-          h += `<div>${perks.map(x => `<span class="perk" title="${UI.esc(x[2])}">${UI.esc(x[1])}</span>`).join("")}</div>`;
-      }
-    }
-  }
-  return h + "</div>";
+  return UI.skillsBlock ? UI.skillsBlock(p, opts) : "";
 };
 
 UI.topProfs = function (p, n = 5) {
-  const rows = Object.keys(p.skills || {})
-    .map(k => [k, A.skill(p, k)])
-    .filter(x => x[1] >= 1 && GD.SKILLS[x[0]])
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, n);
-  return rows.length
-    ? '<div class="profs">' +
-        rows
-          .map(([k, v]) => {
-            const apt = p.apt && p.apt[k];
-            return `<div class="prow" title="${UI.esc(GD.SKILL_DESC[k] || "")}"><span>${UI.esc(GD.SKILLS[k])}${apt >= 1.2 ? ' <span class="apt">★</span>' : ""}</span><b>${v}</b><span class="tier">${GD.profTier(v)}</span><div class="bar"><i style="width:${v}%"></i></div></div>`;
-          })
-          .join("") +
-        "</div>"
-    : '<div class="tiny muted">No proficiencies yet. Practice something.</div>';
+  return UI.skillRows ? UI.skillRows(p, n) : "";
 };
 
 UI.famCard = function (h, sel, act) {
@@ -1248,7 +1219,7 @@ UI.ovModalBasic = function (ov) {
           ? ov.type === "person"
             ? UI.personModal(A.P(ov.id), close)
             : ov.type === "profs"
-              ? `<div class="panel mbox wide">${close}<h2>Proficiencies</h2><p class="small muted">★ natural talent (learns faster) · ▽ blind spot (learns slower, lower ceiling). Perks unlock at 40, 65 and 85. Practice any proficiency from the Life tab.</p>${UI.profBlock(
+              ? `<div class="panel mbox wide">${close}<h2>Skills</h2><p class="small muted">Tap a skill for its sheet: the way to the next step, the concepts the next word asks, and why it moves as it does. Work at a skill from the Life tab.</p>${UI.profBlock(
                   pc,
                   {
                     all: true,
@@ -1280,7 +1251,7 @@ UI.profileModal = function (pc, close) {
   if (BL)
     h += `<div class="card" style="margin-top:8px"><b>${UI.esc(BL.name)}</b> <span class="chip blood">${UI.esc(GD.BLOOD[BL.id].short)}${pc.blood.show ? "" : " — carried, not shown"}${pc.blood.copies === 2 ? " — two copies" : ""}</span><div class="small">${UI.esc(BL.trait)}</div><div class="small bad">Price: ${UI.esc(BL.cost)}</div><div class="lore-text tiny">${UI.esc(BL.story)}</div></div>`;
   h += `<div class="grid2" style="margin-top:8px"><div><div class="group-h">Stats (current / potential)</div>${GD.STATS.map(k => UI.barRow(GD.STAT_NAMES[k], st[k], Math.max(100, pc.pot[k] + 5), "statbar", pc.pot[k], st[k] + "/" + Math.round(pc.pot[k]))).join("")}</div>
-    <div><div class="group-h">Proficiencies</div>${UI.profBlock(pc)}</div></div>`;
+    <div><div class="group-h">Skills</div>${UI.profBlock(pc)}</div></div>`;
   h += `<div class="group-h">Wounds & scars</div>${pc.wounds.length ? pc.wounds.map(w => `<span class="chip red">${UI.esc((GD.WOUNDS[w.k] || {}).name || w.k)}${w.until ? " (heals ~" + w.until + ")" : ""}</span>`).join("") : '<span class="small muted">None. Yet.</span>'}`;
   if (pc.deeds.length)
     h += `<div class="group-h">Deeds</div>${pc.deeds.map(d => `<div class="small">${d.y}: ${UI.esc(d.t)}</div>`).join("")}`;

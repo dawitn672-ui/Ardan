@@ -21,7 +21,7 @@
   const H = VM.AHEAD = { worker: null, failed: false, wait: new Map(), built: 0, adopted: 0, ms: [], err: null };
   VM.AHEAD_OFF = false;
   // the settings the map is built with, as they stand on the page (a feature may have changed one since a-world ran)
-  const KEYS = ['VERSION', 'GW', 'GH', 'OPTS', 'ELEV_M', 'RIVER_T', 'TERR_SHARE', 'ISLE_RX', 'COAST_RX', 'SEA_ID'];
+  const KEYS = ['VERSION', 'GW', 'GH', 'OPTS', 'ELEV_M', 'RIVER_T', 'STREAM_T', 'TERR_SHARE', 'TERR_CAP', 'HILL', 'SITE_R', 'ARID_REALM', 'ISLE_RX', 'COAST_RX', 'SEA_ID'];
   const source = () => 'var A = { V2: (' + String(A.V2_MAKE) + ')(), V2MAP: {} };\n(' + String(VM.define) + ')(A);\n' +
     'onmessage = function (e) {\n  var d = e.data, VM = A.V2MAP, w = null, err = null, t0 = performance.now();\n' +
     '  for (var k in d.k) VM[k] = d.k[k];\n' +

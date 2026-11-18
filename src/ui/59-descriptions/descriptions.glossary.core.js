@@ -292,23 +292,14 @@
   };
 
   // ---- skills, traits, keywords --------------------------------------------------------------------------------------
+  // S1b (D-072): a skill's sheet (36-skills' UI.skillSheet): the level in words, the way to the next step, the concepts
+  // of the next word, this season's causes, discipline, talent, specialism, knacks, kin, its story
   G.skill = function (k) {
-    const p = pc(); if (!p || !GD.SKILLS[k]) return '';
-    const v = A.skill(p, k), raw = r0((p.skills || {})[k] || 0), apt = p.apt && p.apt[k], tierW = GD.profTier(v);
-    const parts = [['Practised', raw]];
-    for (const w of p.wounds || []) { const W = GD.WOUNDS[w.k]; if (W && W.skillPen && W.skillPen[k]) parts.push([esc(W.name || w.k), W.skillPen[k]]); }
-    const perks = (GD.PERKS && GD.PERKS[k]) || [], next = perks.find(x => x[0] > v);
-    return H(esc(GD.SKILLS[k]), v, '· ' + L('profTier', tierW, esc(tierW))) + (GD.SKILL_DESC && GD.SKILL_DESC[k] ? D(esc(GD.SKILL_DESC[k])) : '') +
-      (parts.length > 1 || v !== raw ? TT.sumRows(parts, v, GD.SKILLS[k]) : '') +
-      (apt && apt !== 1 ? R('Aptitude', '×' + r1(apt) + ' to learning', 'tt-sub') : '') +
-      perks.filter(x => x[0] <= v).map(x => R('✦ ' + esc(x[1]), 'at ' + x[0], 'tt-sub')).join('') +
-      (next ? F(`Next: ${esc(next[1])} at ${next[0]} (${next[0] - v} to go). ${esc(next[2] || '')}`) : '');
+    const p = pc(); if (!p || !GD.SKILLS[k] || !UI.skillSheet) return '';
+    return UI.skillSheet(p, k);
   };
-  G.profTier = function (name) {
-    const p = pc();
-    return H('Proficiency', null, esc(name)) + D('How a skill is named by its number.') +
-      GD.PROF_TIERS.map(([m, n]) => R(n === name ? `<span class="tt-on-row">${esc(n)}</span>` : esc(n), m + '+', 'tt-sub')).join('') +
-      (p ? F(`A skill counts for more in a fight than in a trade: see ${L('worthSkill', p.id, 'skill in fighting worth')}.`) : '');
+  G.skillWord = function (name) {
+    return H('Levels', null, esc(name)) + D('A skill has seven words, each in five steps: Beginner, Intermediate, Advanced, Expert, Master, Grandmaster, Legend. Experience fills the bar to the next step; a new word also asks its concepts grasped, and from Expert a proof.');
   };
   G.trait = function (t) {
     const T = GD.TRAITS[t]; if (!T) return '';

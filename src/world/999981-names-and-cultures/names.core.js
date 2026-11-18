@@ -167,7 +167,10 @@
       const key = N.townKey(x), others = key != null ? [...town[key]].filter(([id]) => id !== x.id).map(([, s]) => s) : [];
       const twin = () => others.includes(plain(x)), clash = () => kinNames.has(x.given);
       if (!clash() && !twin()) continue;
-      const avoid = new Set(kinNames);
+      // the name being replaced is avoided too: for a twin in a town (not a kin clash) it was not in kinNames, so a draw
+      // that gave the same name back ended the renaming at once and left the twin (CI 140, nmTwins: "Sofia of Camia
+      // twice in Camia", a world the R2 and D9 merge had shifted)
+      const avoid = new Set(kinNames).add(x.given);
       for (let t = 0; t < 8 && (clash() || twin()); t++) {
         if (!N.rename(x, avoid)) break;
         avoid.add(x.given);

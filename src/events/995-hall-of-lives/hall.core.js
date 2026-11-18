@@ -224,7 +224,10 @@
       // endings this save has not found but the Hall has
       for (const e of A.ENDINGS || []) if (h.endings[e.id]) {
         const lockRx = `<div class="card ach lock"><b>${UI.esc(e.name)}</b>Not yet.`;
-        out = out.split(lockRx).join(`<div class="card ach lock hl-past"><b>${UI.esc(e.name)}</b>${UI.esc(e.t)}<div class="tiny muted">In an earlier life (${esc(h.endings[e.id])}×)</div>`);
+        // the count opens what it counts (59's coverage: a number explains itself, H-079)
+        const n = +h.endings[e.id] || 0, cnt = `${esc(n)}×`;
+        const told = `Reached ${n === 1 ? 'once' : n === 2 ? 'twice' : n + ' times'} in your earlier lives in this browser. The Hall of Lives keeps every ending a life has found, whichever game it was.`;
+        out = out.split(lockRx).join(`<div class="card ach lock hl-past"><b>${UI.esc(e.name)}</b>${UI.esc(e.t)}<div class="tiny muted">In an earlier life (${UI.note ? UI.note(told, cnt) : cnt})</div>`);
       }
       for (const k in GD.ACH || {}) if (h.ach[k] && !(A.S.ach || {})[k]) {
         const [n, d] = GD.ACH[k];

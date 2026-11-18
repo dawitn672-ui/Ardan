@@ -95,7 +95,7 @@ export default {
       A.interact(t.id, 'time');
       const afterInteract = pc.rel[t.id].hist.map(e => e.t);
       // get to know a stranger
-      const stranger = Object.values(A.S.people).find(p => p.alive && p.id !== pc.id && !pc.rel[p.id] && A.isAdult(p));
+      const stranger = Object.values(A.S.people).find(p => p.alive && p.id !== pc.id && !pc.rel[p.id] && A.isAdult(p) && Math.abs(A.REACH ? A.REACH.standing(p) - A.REACH.standing(pc) : A.classOf(p) - A.classOf(pc)) <= 1);   // R2: a stranger near your station (one far above may not let you near)
       A.S.time = 10; A.getToKnow(stranger.id);
       // with 30-get-to-know the meeting is a scene: play it (keep it short and proper)
       const gk = A.S.queue.find(q => q.ev === 'gk_meet');

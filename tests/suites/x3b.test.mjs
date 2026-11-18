@@ -98,6 +98,9 @@ export default {
         { seed: 703, status: 'peasant', startAge: 12, sex: 'M', realm: 'POL-01' }, { seed: 704, status: 'artisan', startAge: 28, sex: 'F', realm: 'POL-07' },
         { seed: 705, status: 'royal', startAge: 22, sex: 'M', realm: 'POL-02' }, { seed: 706, status: 'serf', startAge: 20, sex: 'F', realm: 'POL-05' },
         { seed: 707, status: 'noble', startAge: 18, sex: 'M', realm: 'POL-04', enlist: true }, { seed: 708, status: 'peasant', startAge: 24, sex: 'M', realm: 'POL-06', enlist: true },
+        // (CI 143: after the market fix shifted every world, lives that end early left the eight at 396 scenes, four short of
+        // the 400; two more lives stand by, played only when the eight fall short. H-079)
+        { seed: 709, status: 'merchant', startAge: 26, sex: 'F', realm: 'POL-03' }, { seed: 710, status: 'artisan', startAge: 20, sex: 'M', realm: 'POL-01' },
       ];
       const K = A.STAKES.KEY, FIELD = { health: 'health', honor: 'honor', fame: 'fame', piety: 'piety', happy: 'happy', infamy: 'infamy' };
       const capOf = (k, pc) => k === 'health' ? A.maxHealth(pc) : 100;
@@ -105,7 +108,7 @@ export default {
       let k = 0;
       for (const l of LIVES) {
         if (out.scenes >= 400) break;
-        out.lives++; const cap = out.scenes + 56;      // eight lives share the 400 scenes
+        out.lives++; const cap = out.scenes + 56;      // eight lives share the 400 scenes (the last two only make up a shortfall)
         T.enter({ seed: l.seed, race: 'human', realm: l.realm, status: l.status, sex: l.sex, startAge: l.startAge });
         for (let g = 0; g < 600 && out.scenes < Math.min(400, cap) && A.pc() && A.pc().alive; g++) {
           A.advance(400);
@@ -133,7 +136,9 @@ export default {
             // effects that come from outside the choice's own fx are not previewed: a story's next step (arc), a marriage written into the register
             // (akin), a skill's knack (every-number-counts rides): the claim is not made for those choices (D-059 says so)
             const fxo = branch.fx && typeof branch.fx === 'object' ? branch.fx : {};
-            const indirect = !!(fxo.arc || fxo.akin || fxo.treat || fxo.care || (A.LN && A.LN.rides && A.LN.rides[h.ev + '#' + vc.i]));
+            // (S1b CI 139: a punishment (fx.punish) brings its own fine, pillory or fame as the law decides, which the preview does
+            // not name: av_ditch_corpse's lost purse, met for the first time in the shifted world, paid a fine larger than the purse)
+            const indirect = !!(fxo.arc || fxo.akin || fxo.treat || fxo.care || fxo.punish || (A.LN && A.LN.rides && A.LN.rides[h.ev + '#' + vc.i]));
             const share = R.down.some(x => x.k === 'coinPct'), strips = R.down.some(x => x.k === 'arLose');
             if (indirect || (R.coin && !A.isAdult(pc))) { /* a child's purse is the family's; indirect effects are not previewed */ }
             else if (R.coin) { out.claims++; if (share ? d.coin > -Math.min(R.coin, b0.coin) + 0.5 : Math.abs(d.coin + Math.min(R.coin, b0.coin)) > 0.5) say(`previewed -${R.coin} suns${share ? ' and a share' : ''}, coin ${Math.round(b0.coin)} -> ${Math.round(pc.coin)}`); }
@@ -145,6 +150,7 @@ export default {
               if (key === 'prison') { out.claims++; if (!pc.prison && pc.alive) say('previewed prison, none'); continue; }
               if (key === 'wound') { out.claims++; continue; }
               if (!(key in FIELD)) continue;
+              if (fxo.punish) continue;   // (the law's own fame, honour and hurt: see above)
               out.claims++;
               const sense = K[key] ? K[key].sense : 1, mv = d[key] * sense;     // in the better direction
               const atCap = (up ? (sense > 0 ? pc[FIELD[key]] >= capOf(key, pc) : pc[FIELD[key]] <= 0) : (sense > 0 ? pc[FIELD[key]] <= 0 : pc[FIELD[key]] >= capOf(key, pc)));

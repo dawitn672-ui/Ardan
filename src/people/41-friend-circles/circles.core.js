@@ -76,7 +76,8 @@
         if (pool.length) {
           const foe = kind === 'enemy' || kind === 'rival';
           // like finds like: a foe of yours is more often met through your foes, a friend through your friends
-          const x = A.wpick(pool, y => { const v = op(pc, y); return foe ? (v <= -30 ? 4 : 1) : (v >= 30 ? 3 : 1); });
+          // R2 (D-080): a newcomer is close to someone far above him only on a base (A.REACH's pull, no draw of its own)
+          const x = A.wpick(pool, y => { const v = op(pc, y); return (foe ? (v <= -30 ? 4 : 1) : (v >= 30 ? 3 : 1)) * (A.REACH ? Math.max(.01, A.REACH.pull(p, y, 'befriend')) : 1); });
           if (x) A.link(p, x, 'friend', A.ri(35, 60), 'friend');
         }
       }

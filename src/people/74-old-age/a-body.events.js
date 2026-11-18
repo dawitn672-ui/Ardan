@@ -40,7 +40,7 @@ A.defEvents([
     ] },
 
   { id: 'oa_body_hands', title: 'Hands that will not close',
-    cond: (p, C) => C.old(p) && (C.job(p) || C.poor(p) || C.prof(p, 'craft', 30)),
+    cond: (p, C) => C.old(p) && (C.job(p) || C.poor(p) || C.lvl(p, 'craft', 30)),
     w: 2, cool: 12,
     text: 'In the cold mornings your hands are claws until noon. The knuckles have swollen like knots in a rope, and the work that used to be in your fingers is somewhere else now. You dropped a full pail today and stood looking at it.',
     choices: [

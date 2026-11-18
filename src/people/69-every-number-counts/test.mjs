@@ -118,8 +118,11 @@ export default {
       const cn = k => (A.BM && A.BM.canon ? A.BM.canon(k) : k);
       const fresh = (o, k, v, seed) => { A.newGame(Object.assign({ seed: seed || 6903, race: 'human', sex: 'M', startAge: 25 }, o)); const pc = A.pc(); A.S.queue = []; pc.skills[cn(k)] = v; return pc; };
       // a farmer's axe: 8 years of work
-      const farm = v => { const pc = fresh({ realm: 'POL-01', status: 'peasant' }, 'axe', v); pc.job = { c: 'farm', r: 1, y: 3, perf: 50, merit: 0 }; let pay = 0; for (let y = 0; y < 8; y++) { pc.skills[cn('axe')] = v; pc.coin = 100; pc.job.r = 1; A.careerYear(pc); pay += pc.coin - 100; } return { perf: Math.round(pc.job.perf), pay }; };
-      const f0 = farm(0), f60 = farm(60);
+      const farm1 = (v, s) => { const pc = fresh({ realm: 'POL-01', status: 'peasant' }, 'axe', v, s); pc.job = { c: 'farm', r: 1, y: 3, perf: 50, merit: 0 }; let pay = 0; for (let y = 0; y < 8; y++) { pc.skills[cn('axe')] = v; pc.coin = 100; pc.job.r = 1; A.careerYear(pc); pay += pc.coin - 100; } return { perf: Math.round(pc.job.perf), pay }; };
+      // (S1b, D-072: the year's draws part between the two lives once a skill's level moves a check, so the rating is the mean of
+      // four seeds; one life's rating carries the year's ±8 of luck)
+      const farmN = v => { const R = [6903, 6913, 6923, 6933].map(s => { const pcf = farm1(v, s); return pcf; }); return { perf: Math.round(R.reduce((a, x) => a + x.perf, 0) / R.length), pay: Math.round(R.reduce((a, x) => a + x.pay, 0) / R.length) }; };
+      const f0 = farmN(0), f60 = farmN(60);
       // the wake: a mother's death with music 0 and 60
       const wake = v => { const pc = fresh({ realm: 'POL-01', status: 'peasant' }, 'music', v); const m = { given: 'Agna' }; pc.happy = 60; L.wake(pc, m, 'mother'); return pc.happy - 60; };
       // the butts in Ashmere: 40 years at bow 0 and 60 (a man of Ashmere outside the custom's years)
@@ -237,7 +240,8 @@ export default {
       const rng0 = JSON.stringify(A.S.rng), h0 = T.hash(A.S), r0 = A.rngState;
       T.renderAll();
       const html = document.body.innerHTML;
-      return { pure: JSON.stringify(A.S.rng) === rng0 && T.hash(A.S) === h0 && A.rngState === r0, desc: /Second skill: Hafts/.test(GD.CAREERS.farm.desc), scene: /song for the bride|A song for the bride/i.test(html) };
+      return { pure: JSON.stringify(A.S.rng) === rng0 && T.hash(A.S) === h0 && A.rngState === r0, // (S1b, D-072: the axe is a specialism of "Spear, axe and mace", named from data/skills.json; "Hafts" was 69's merge)
+        desc: new RegExp('Second skill: ' + GD.SKILLS.spear.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).test(GD.CAREERS.farm.desc), scene: /song for the bride|A song for the bride/i.test(html) };
     });
     return { ok: r.pure && r.desc, detail: `render pure ${r.pure}; the farm's description names its second skill ${r.desc}; the scene drawn ${r.scene}` };
   },

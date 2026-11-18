@@ -259,7 +259,11 @@ export default {
           // and 49-body-mind's deed log, whose receipt quotes the scene's title as shown ("The lord's wood" / "The sepmet's
           // wood"): the year and weight of each deed, which the traits are scored on, are compared, the quoted words are not
           // and a bond's history line, which quotes it too ("In the lord's wood: you reported them"): its other fields are compared
-          for (const p of Object.values(people)) { delete p.vo; delete p.mw; if (p.deedLog) for (const k in p.deedLog) if (Array.isArray(p.deedLog[k])) p.deedLog[k] = p.deedLog[k].map(d => Array.isArray(d) ? d.slice(0, 2) : d);
+          // and 9992-identity's inner-voice record (pc.idv: which line the life has heard, and when): the line is chosen by
+          // the kind of scene, read from the scene's words as shown, so a scene in the place's words can be heard as
+          // another kind (CI 134, seed 9090 after W1-2 changed the world: one scene's kind moved two lines by two years).
+          // It only picks the next line shown; nothing in the engine reads it, and the random stream is compared above.
+          for (const p of Object.values(people)) { delete p.vo; delete p.mw; delete p.idv; if (p.deedLog) for (const k in p.deedLog) if (Array.isArray(p.deedLog[k])) p.deedLog[k] = p.deedLog[k].map(d => Array.isArray(d) ? d.slice(0, 2) : d);
             if (p.rel) for (const k in p.rel) { const h = p.rel[k] && p.rel[k].hist; if (Array.isArray(h)) for (const x of h) if (x && typeof x === 'object') delete x.t; } }
           return { rng: JSON.stringify(A.rngState), people: JSON.stringify(people).length + ':' + T.hash(people), year: A.S.year, voiced };
         } finally { A.VOICE.OFF = false; }

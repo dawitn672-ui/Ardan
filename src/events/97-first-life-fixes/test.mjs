@@ -47,12 +47,18 @@ export default {
     const r = await pg.evaluate(() => {
       if (!A.LF) return { err: 'A.LF is missing: the feature is not in this build' };
       const LF = A.LF;
-      A.newGame({ seed: 9711, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 24 });
-      const pc = A.pc();
+      // (CI 144: seed 9711's priest died in his third year, month 36 of 80, after the merge of ci-2599 changed which story
+      // arcs a life meets; a dead man is refused every refill (LF.refill wants the living player), so the doors were never
+      // tested: refills 0, A.S.lf.by never made. The eighty months are the policy's, not the man's luck: a life that dies
+      // in them is played again on the next seed. H-080.)
+      let pc, out, seed = 9711;
+      for (; seed < 9711 + 6; seed++) {
+      A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 24 });
+      pc = A.pc();
       pc.job = { c: 'clergy', r: 1, y: 3, perf: 60 }; pc.literate = true;
-      const out = { confession: 0, study: 0, master: 0, refills: 0, freshRefill: true };
+      out = { confession: 0, study: 0, master: 0, refills: 0, freshRefill: true };
       // eighty months of clergy duties and study breakthroughs, the clock moving a month at a time
-      for (let i = 0; i < 80; i++) {
+      for (let i = 0; i < 80 && pc.alive; i++) {
         A.S.queue = [];
         A.dutyEvent(pc); A.flowEvent(pc, 'study');
         for (const q of A.S.queue.slice()) {
@@ -69,6 +75,9 @@ export default {
         for (let g = 0; g < 60 && A.absDay() < end && A.pc().alive; g++) { A.S.queue = []; A.advance(end - A.absDay()); }
         A.S.queue = [];
       }
+      if (pc.alive) break;
+      }
+      out.seed = seed;
       // a duty seen twice is held back for the rest of the life; the policy is read straight
       const duty = A.EV.du_ch_tithe, n0 = LF.n(pc, duty.id);
       pc.evN = pc.evN || {}; pc.flags.ev = pc.flags.ev || {};
@@ -82,7 +91,7 @@ export default {
     });
     if (r.err) return { ok: false, detail: r.err };
     const ok = r.confession <= 1 && r.master <= 1 && r.refills > 0 && r.freshRefill && r.held && r.tooSoon && r.later;
-    return { ok, detail: `80 months of clergy duties and study: confession ${r.confession}, "An old scholar" ${r.master}, fresh refills ${r.refills} (all unseen: ${r.freshRefill}); a duty seen twice held: ${r.held}, seen 5 years ago held: ${r.tooSoon}, 13 years ago allowed: ${r.later}; refills by door ${JSON.stringify(r.stats)}` };
+    return { ok, detail: `80 months of clergy duties and study: confession ${r.confession}, "An old scholar" ${r.master}, fresh refills ${r.refills} (all unseen: ${r.freshRefill}); a duty seen twice held: ${r.held}, seen 5 years ago held: ${r.tooSoon}, 13 years ago allowed: ${r.later}; refills by door ${JSON.stringify(r.stats)} (seed ${r.seed})` };
   },
 
   // 1c. The second tellings of NPC moves render with a real person, keep to the diet, and every choice plays

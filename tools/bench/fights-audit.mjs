@@ -70,8 +70,11 @@ export const FIGHTS_LAB = () => {
     return { screen: rows.length ? L.bins(rows) : null, profile: L.bins(prof) };
   };
   // duels with beasts, alone and with a hunting party of 8
+  // seed may be a list: n duels on each seed's world, pooled (more fighters, so a few odd ones weigh less in a bin)
   L.beasts = function (n, seed) {
-    const ids = L.pool(seed, 300), r = L.rng(seed + 1), rows = [], bs = Object.keys(A.BEASTS || {});
+    const rows = [];
+    for (const sd of [].concat(seed)) {
+    const ids = L.pool(sd, 300), r = L.rng(sd + 1), bs = Object.keys(A.BEASTS || {});
     L.quiet(() => {
       for (let k = 0; k < n; k++) {
         const a = A.P(ids[Math.floor(r() * ids.length)]), bid = bs[Math.floor(r() * bs.length)], party = r() < 0.5;
@@ -84,6 +87,7 @@ export const FIGHTS_LAB = () => {
         if (shown != null) rows.push([shown, D.result === 'win' || D.result === 'beastfled' ? 1 : 0]);
       }
     });
+    }
     return rows.length ? L.bins(rows) : null;
   };
   // the converted event choices: the odds the choice shows against the roll. fx are held back so the life goes on.

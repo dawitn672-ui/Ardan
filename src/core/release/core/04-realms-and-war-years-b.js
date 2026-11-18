@@ -339,6 +339,9 @@ A.breakthrough = function (p, gap, ctx) {
 };
 
 A.mortalCheck = function (pc, cause, pen) {
+  // [P3 CI, x3IllnessArc] a body brought to nothing while a fatal sickness has not yet had its crisis is held at the edge
+  // for the sickness's crisis scene (99999-x3-honest-cards, A.X3.illEdge), whatever blow took the last of it
+  if (A.X3 && A.X3.illEdge && A.X3.illEdge(pc, cause)) return false;
   // [X1 baked patch core/03-engine-fixes ENG-DEATH-CAUSE] A death right after a hurt was put down to a natural
   // cause. mortalCheck calls a death from health long gone "natural" when the last hurt is over 40 days old, but the
   // day of the last hurt is stamped only by the daily tick (onDay). A duel, a beast, a battle or an event that drops
@@ -532,7 +535,9 @@ A.doActivity = function (key, arg) {
       ok: false,
       msg: "Not implemented",
     };
-  const res = A.SESSION_ACTS && A.SESSION_ACTS[key] ? A.trainingSession(pc, key, arg, dim, fn) : fn(pc, arg, dim);
+  const run = () => (A.SESSION_ACTS && A.SESSION_ACTS[key] ? A.trainingSession(pc, key, arg, dim, fn) : fn(pc, arg, dim)),
+    // S1b (D-072): what an activity teaches carries its cause (a lesson from a teacher in reach, or practice alone)
+    res = A.SK && A.SK.actCause ? A.SK.within(A.SK.actCause(pc, key, arg), run) : run();
   return res && res.ok === false
     ? res
     : (A.spend(key),
@@ -548,25 +553,10 @@ A.weaponSkillOf = function (p) {
 };
 
 A.ACT = {
+  // S1b (D-072): "Work at a skill": alone, a lesson, a harder test or thinking it over, through A.gainXp (36-skills'
+  // A.SK.work). The old practice, with its number, tier word and aptitude, is in archive/s1-proficiencies/old-views.js.
   practice(pc, arg, d) {
-    const k = arg && GD.SKILLS[arg] ? arg : A.weaponSkillOf(pc),
-      trait = pc.traits.reduce((m, t) => m * ((GD.TRAITS[t] && GD.TRAITS[t].train) || 1), 1),
-      before = A.skill(pc, k),
-      g = A.trainSkill(pc, k, 5.5 * d * trait),
-      [s1, s2] = GD.SKILL_STAT[k] || ["int", "wil"];
-    A.train(pc, s1, 0.6 * d);
-    A.train(pc, s2, 0.4 * d);
-    const how = A.pick(GD.SKILL_PRACTICE[k] || ["long hours of practice"]),
-      tier = GD.profTier(A.skill(pc, k)),
-      apt = pc.apt && pc.apt[k] ? GD.aptName(pc.apt[k]) : "";
-    return GD.SKILL_CAT_OF[k] === "Martial" && A.chance(0.05)
-      ? ((pc.health -= 6),
-        {
-          msg: `${A.cap(how)}. You pull something in your shoulder. (+${A.round(g, 1)} ${GD.SKILLS[k]}, now ${tier})`,
-        })
-      : {
-          msg: `${A.cap(how)}.${apt === "Prodigy" || apt === "Gifted" ? " It comes to you easily." : apt === "Hopeless" || apt === "Clumsy" ? " It does not come easily." : ""} (+${A.round(g, 1)} ${GD.SKILLS[k]}: ${before} → ${A.skill(pc, k)}, ${tier})`,
-        };
+    return A.SK && A.SK.work ? A.SK.work(pc, arg, d) : { msg: "You practise for some days." };
   },
   train_yard(pc, arg, d) {
     const k = arg && GD.SKILLS[arg] ? arg : A.weaponSkillOf(pc),
@@ -1232,7 +1222,9 @@ A.interactOptions = function (pc, t) {
     )
       out.push("swear");
   }
-  return out;
+  // [R2, D-080] an act out of reach (a peasant courting a duchess, asking a king for money) is not offered; the person
+  // view says why (A.REACH.closedLine)
+  return A.REACH ? A.REACH.filterOpts(pc, t, out) : out;
 };
 
 A.interact = function (tid, key, arg) {
@@ -1264,9 +1256,12 @@ const interactNow = function (tid, key, arg) {
       ok: false,
       msg: "You cannot spare the time for that today.",
     };
-  if (!pc.rel[tid]) A.link(pc, t, "acquaint", 0, "acquaint");
+  // [R2, D-080] an act that needs a base he does not see is refused with his reason (A.REACH.interactGate); an
+  // attempt within reach is his decision (A.WHY), and counts as done
+  const gate = A.REACH ? A.REACH.interactGate(pc, t, key) : null;
+  if (!gate && !pc.rel[tid]) A.link(pc, t, "acquaint", 0, "acquaint");
   const r = pc.rel[tid],
-    res = A.INT_FN[key](pc, t, r, arg);
+    res = gate || A.INT_FN[key](pc, t, r, arg);
   if (
     (res.ok !== false &&
       ((pc.flags.ints[ik] = count + 1), I.cost && (A.S.time -= I.cost), res.msg && A.log(res.msg, res.cls || "")),

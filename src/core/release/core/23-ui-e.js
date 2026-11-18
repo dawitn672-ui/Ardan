@@ -173,7 +173,8 @@ UI.planCard = function (pc) {
   const P = A.plan(pc),
     tt = A.trainTargets(pc),
     cur = P.train,
-    val = k => (GD.TRAIN_STATS[k] ? Math.round(A.stat(pc, k)) : A.skill(pc, k)),
+    // S1b (D-072): a skill shows its level in words, a stat its number as before
+    val = k => (GD.TRAIN_STATS[k] ? Math.round(A.stat(pc, k)) : A.SK ? A.SK.levelName(A.SK.lvOf(pc, k)) : A.skill(pc, k)),
     grp = {};
   for (const x of tt) {
     const g = x.kind === "stat" ? "Body and mind" : x.cat;
@@ -184,7 +185,7 @@ UI.planCard = function (pc) {
     )
       .map(
         ([g, L]) =>
-          `<optgroup label="${UI.esc(g)}">${L.map(x => `<option value="${x.k}" ${cur === x.k ? "selected" : ""}>${UI.esc(x.name)} — ${val(x.k)}${pc.apt && pc.apt[x.k] >= 1.2 ? " ★" : ""}</option>`).join("")}</optgroup>`,
+          `<optgroup label="${UI.esc(g)}">${L.map(x => `<option value="${x.k}" ${cur === x.k ? "selected" : ""}>${UI.esc(x.name)} — ${UI.esc(val(x.k))}</option>`).join("")}</optgroup>`,
       )
       .join("")}</select>`,
     ints = Object.entries(GD.INTENSITY)
@@ -886,6 +887,9 @@ UI.titleLine = function (p) {
   );
 };
 
+// [P3 CI, b5Budget] A met cooldown or "Not at war" tells the player nothing to act on: shown only while it is unmet,
+// so a ruler at peace with five great decisions open stays within the page's word budget (costs and thresholds stay).
+UI.DEC_QUIET = /^(Once every \d+ years?|Once per life|Not at war)$/;
 UI.TAB.goals = function (pc) {
   let h =
     '<p class="small muted" style="margin-top:0">There are no quest lists in Ardan. What you aim for is set on the <span class="click u" data-a="tab" data-v="life">Life</span> tab (your days and free hours) and climbed on the <span class="click u" data-a="tab" data-v="path">Path</span> tab. These are the big moves you can make when the time is right.</p>';
@@ -907,7 +911,7 @@ UI.TAB.goals = function (pc) {
         const cur = (UI.decArg || {})[d.k];
         pick = `<select data-c="decArg" data-k="${d.k}" aria-label="Choose"><option value="">Choose…</option>${opts.map(([v, n]) => `<option value="${UI.esc(v)}" ${String(cur) === String(v) ? "selected" : ""}>${UI.esc(n)}</option>`).join("")}</select>`;
       }
-      h += `<div class="card dec ${st.ok ? "ok" : ""}"><span class="tag">${UI.esc(d.cat)}</span><div><b>${UI.esc(d.name)}</b></div><div class="small ink2">${UI.esc(d.desc)}</div><div class="reqs">${st.rs.map(([l, ok]) => `<span class="req ${ok ? "ok" : "no"}">${ok ? "✓" : "✗"} ${UI.esc(l)}</span>`).join("")}</div>${pick}<button class="small ${st.ok ? "primary" : ""}" data-a="decide" data-v="${d.k}" ${st.ok ? "" : "disabled"}>Decide</button></div>`;
+      h += `<div class="card dec ${st.ok ? "ok" : ""}"><span class="tag">${UI.esc(d.cat)}</span><div><b>${UI.esc(d.name)}</b></div><div class="small ink2">${UI.esc(d.desc)}</div><div class="reqs">${st.rs.filter(([l, ok]) => !ok || !UI.DEC_QUIET.test(l)).map(([l, ok]) => `<span class="req ${ok ? "ok" : "no"}">${ok ? "✓" : "✗"} ${UI.esc(l)}</span>`).join("")}</div>${pick}<button class="small ${st.ok ? "primary" : ""}" data-a="decide" data-v="${d.k}" ${st.ok ? "" : "disabled"}>Decide</button></div>`;
     }
     h += "</div>";
   } else
@@ -962,7 +966,7 @@ UI.TAB.legacy = function (pc) {
         : kids.slice().sort((a, b) => a.born - b.born)[0].id;
     for (const c of kids.sort((a, b) => a.born - b.born)) {
       const taught = (pc.flags.taught || {})[c.id] || 0;
-      h += `<div class="card person ${c.id === cur ? "sel" : ""}"><div class="pp click" data-a="ov" data-v="person:${c.id}">${PORTRAIT.svg(c, 46)}</div><div><div class="nm">${UI.esc(A.fullName(c, false))}</div><div class="sub">${A.age(c)} · ${UI.esc(UI.titleLine(c) || "")}${taught ? ` · taught by you ${taught}×` : ""}</div></div><div class="row" style="gap:4px"><button class="small" data-a="teach" data-v="${c.id}" ${A.S.time >= 1 ? "" : "disabled"} title="Spend days teaching them your two best proficiencies. What you teach is what they inherit.">Teach</button><button class="small ${c.id === cur ? "on" : ""}" data-a="dynHeir" data-v="${c.id}" aria-pressed="${c.id === cur}">If heir…</button></div></div>`;
+      h += `<div class="card person ${c.id === cur ? "sel" : ""}"><div class="pp click" data-a="ov" data-v="person:${c.id}">${PORTRAIT.svg(c, 46)}</div><div><div class="nm">${UI.esc(A.fullName(c, false))}</div><div class="sub">${A.age(c)} · ${UI.esc(UI.titleLine(c) || "")}${taught ? ` · taught by you ${taught}×` : ""}</div></div><div class="row" style="gap:4px"><button class="small" data-a="teach" data-v="${c.id}" ${A.S.time >= 1 ? "" : "disabled"} title="Spend days teaching them your two best skills. What you teach is what they inherit.">Teach</button><button class="small ${c.id === cur ? "on" : ""}" data-a="dynHeir" data-v="${c.id}" aria-pressed="${c.id === cur}">If heir…</button></div></div>`;
     }
     const heir = A.P(cur),
       inh = A.inheritance(pc, heir);
@@ -1029,16 +1033,18 @@ UI.rosterCard = function (pc) {
       h += `<div class="ro-h">${UI.esc(g)}</div>`;
       for (const { p, role } of groups[g].slice(0, 12)) {
         const known = !!pc.rel[p.id];
-        h += `<div class="ro-row"><span class="click" data-a="ov" data-v="person:${p.id}">${PORTRAIT.svg(p, 34)}</span><div class="grow"><div class="small"><b class="click" data-a="ov" data-v="person:${p.id}">${UI.esc(A.fullName(p, false))}</b> <span class="muted">— ${UI.esc(role)}</span></div><div class="tiny muted">${UI.esc(UI.titleLine(p) || p.occ || "")}</div></div>${UI.tierChip(p, true)}${known ? UI.bondChip(pc, p) : `<button class="small" data-a="know" data-v="${p.id}" ${A.S.time >= (A.knowCost || 1) ? "" : "disabled"}>Get to know</button>`}</div>`;
+        h += `<div class="ro-row"><span class="click" data-a="ov" data-v="person:${p.id}">${PORTRAIT.svg(p, 34)}</span><div class="grow"><div class="small"><b class="click" data-a="ov" data-v="person:${p.id}">${UI.esc(A.fullName(p, false))}</b> <span class="muted">— ${UI.esc(role)}</span></div><div class="tiny muted">${UI.esc(UI.titleLine(p) || p.occ || "")}</div></div>${UI.tierChip(p, true)}${known ? UI.bondChip(pc, p) : A.REACH ? A.REACH.knowBtn(pc, p, "small", "Get to know") : `<button class="small" data-a="know" data-v="${p.id}" ${A.S.time >= (A.knowCost || 1) ? "" : "disabled"}>Get to know</button>`}</div>`;
       }
     }
   return h + "</div>";
 };
 
 UI.TAB.people = function (pc) {
+  // (CI 144, H-080: the line said the same in 24 words, and a ruler's People page, its council above, went one word over
+  // B5's desktop budget of 270 in view; 15 words now)
   return (
     UI.rosterCard(pc) +
-    '<p class="small muted" style="margin-top:0">These are the people you have chosen to know. Bonds you never tend fade after a few years; the ones you care for last.</p>' +
+    '<p class="small muted" style="margin-top:0">The people you have chosen to know. A bond left untended fades within a few years.</p>' +
     UI.peopleBonds(pc)
   );
 };
@@ -1153,6 +1159,8 @@ UI.personModal = function (t, close) {
       ) {
         const opts = A.interactOptions(pc, t);
         h += `<div class="row" style="margin-top:6px">${opts.map(k => (k === "gift" ? `<span class="row" style="gap:3px"><input id="giftAmt" type="number" min="1" value="${Math.max(1, Math.round(Math.min(pc.coin, Math.max(2, pc.coin * 0.05))))}" style="width:80px" aria-label="Gift amount"><button class="small" data-a="int" data-v="${t.id}|gift">Give gift</button></span>` : k === "name_child" ? `<span class="row" style="gap:3px"><input id="childName" value="${UI.esc(t.given)}" style="width:120px" aria-label="Name"><button class="small" data-a="int" data-v="${t.id}|name_child">Rename</button></span>` : `<button class="small ${["murder", "duel", "insult", "divorce", "breakup"].includes(k) ? "danger" : ""}" data-a="int" data-v="${t.id}|${k}">${UI.esc(A.INTERACT[k].name)}</button>`)).join("")}</div>`;
+        // [R2, D-080] what is out of reach with this person, and why (a click-to-open note)
+        if (A.REACH) h += A.REACH.closedLine(pc, t);
         const fo = A.favorOptions(pc, t);
         if (A.favorsOf(pc, t.id) && fo.length)
           h += `<div class="small" style="margin-top:6px"><b>Call in a favor:</b></div><div class="row" style="margin-top:4px">${fo.map(k => `<button class="small" data-a="favor" data-v="${t.id}|${k}" title="${UI.esc(A.FAVORS[k].desc)}">${UI.esc(A.FAVORS[k].name)}</button>`).join("")}</div>`;
@@ -1160,7 +1168,7 @@ UI.personModal = function (t, close) {
           h += `<div class="small" style="margin-top:8px"><b>Your superior.</b> ${UI.bossButtons()}</div>`;
       }
     } else if (t.alive && pc.alive && (!UI.scope || UI.scope(pc).sees("know")))
-      h += `<div class="row"><span class="small ink2 grow">You know who ${A.he(t)} is, but you do not know ${A.him(t)}. Whether you ever will is up to you.</span><button class="primary small" data-a="know" data-v="${t.id}" ${A.S.time >= (A.knowCost || 1) ? "" : "disabled"}>Get to know ${UI.esc(A.him(t))}</button></div>`;
+      h += `<div class="row"><span class="small ink2 grow">You know who ${A.he(t)} is, but you do not know ${A.him(t)}. Whether you ever will is up to you.</span>${A.REACH ? A.REACH.knowBtn(pc, t, "primary small", "Get to know " + A.him(t)) : `<button class="primary small" data-a="know" data-v="${t.id}" ${A.S.time >= (A.knowCost || 1) ? "" : "disabled"}>Get to know ${UI.esc(A.him(t))}</button>`}</div>`;
   return h + "</div>";
 };
 

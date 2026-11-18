@@ -84,7 +84,7 @@ The plan asks to "give AI generals personalities (cautious, bold, cunning) and v
 
   What the test holds:
   - cautious: at least 50 assaults, and 10% fewer than bold and steady;
-  - bold, against steady: 25% more assaults, 1.5 times the pursuits, a field share 2 points higher, a win rate no more than 5 points lower, with at least 30 pursuits and 200 fights in steady's pool;
+  - bold, against steady: 25% more assaults, 1.5 times the pursuits, a field share no lower (2 points higher until D9: with roads every army reaches its fight sooner and sieges less, so steady's share rose to within 2 points of bold's; see the test), a win rate no more than 5 points lower, with at least 30 pursuits and 200 fights in steady's pool;
   - cunning: a share at empty or engaged places 3 points above every other temper, the fewest assaults at walls, the most provinces taken per 100k men down, and at least 50 marches round walls, 5 feints, 10 flank attacks and 50 sidesteps.
 
   The numbers below are the test's measure run on three seed sets of 96 wars a temper: the test's seeds 71–82 and two more, 171–182 and 271–282. The full world was built with `node tools/build.mjs --out=/tmp/ardan/orders2/full.html`, then 69 features. The test's own run on that build reads the same as the first set. Each cell is the pooled mean, with the lowest and highest set in brackets.

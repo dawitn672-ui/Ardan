@@ -287,6 +287,10 @@
         // the title remembers its holder (the dead are pruned from A.S.people, so a chain through them would break)
         const t = N.titleOf(k); if (t && to && hasKey(to, k)) t.pid = to.id;
         if (to && hasKey(to, k) && A.POSTS && A.POSTS.note) A.POSTS.note(A.POSTS.titleKey(k), to.id, 'law');
+        // no heir took it (a daughter where the law wants a son, a house with no one of age): the title is vacant until
+        // the crown regrants it (N.regrantMonth), and the registry says so at once instead of naming the dead man until
+        // the New Year's pass (CI 140, postsStage2Kinds: the March of Crossmarch held by a dead count in the registry)
+        else if (A.POSTS && A.POSTS.note && A.POSTS.holder && A.POSTS.holder(A.POSTS.titleKey(k)) === from.id) A.POSTS.note(A.POSTS.titleKey(k), null, 'died');
       }
     } catch (e) { console.error('v2-nobility inherit', e); }
     return moved;

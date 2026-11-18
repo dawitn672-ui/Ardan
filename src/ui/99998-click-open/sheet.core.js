@@ -7,7 +7,7 @@
 //
 //   UI.A.act(k)      opens the sheet (UI.ov = { type: 'actSheet', id: k })
 //   UI.A.actDo(k)    commits: runs the activity, shows the answer on the card, or lets a queued event take the screen
-//   UI.A.practice()  the "Practice a proficiency" button: the same, for the proficiency picked in the list
+//   UI.A.practice()  "Work at a skill": the same, for the skill and the way picked on the sheet (36-skills)
 //
 // Drawing the sheet only reads the game. The sheet's words are the same for every life (by category and age), never a
 // number, never a percentage.
@@ -37,7 +37,7 @@
     return WORTH[WORTH.length - 1][1];
   };
   ACT.def = key => (GD.ACTIVITIES && GD.ACTIVITIES[key]) || null;
-  const SPECIAL = { practice: 'Pick the proficiency in the list on this page first; the same work again in a year teaches less each time.' };
+  const SPECIAL = { practice: 'The same work again in a year teaches less each time.' };
 
   ACT.sheet = function (ov) {
     const k = ov.id, D = ACT.def(k), pc = A.pc();
@@ -64,7 +64,9 @@
         row('How it may go', ACT.RISK[D.cat] || 'It depends on your skill and on luck.') +
         (ok ? '' : row('Not now', why || 'You cannot do this yet.', 'act-no')) +
       `</div>` +
-      `<div class="choices"><button class="primary" data-a="actDo" data-v="${esc(k)}"${ok ? '' : ' disabled'}>Do it</button><button data-a="closeOv">Not now</button></div></div>`;
+      (k === 'practice' && ok && UI.workSheet ? UI.workSheet(pc) : '') +
+      (k === 'practice' && ok && UI.workSheet ? `<div class="choices"><button data-a="closeOv">Not now</button></div></div>` :
+      `<div class="choices"><button class="primary" data-a="actDo" data-v="${esc(k)}"${ok ? '' : ' disabled'}>Do it</button><button data-a="closeOv">Not now</button></div></div>`);
   };
 
   const ovModal = UI.ovModal;

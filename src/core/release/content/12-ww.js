@@ -127,7 +127,7 @@
       {
         id: "ww_ald_lanceyard",
         title: "The Lance Yard",
-        cond: (p,C)=>R(p,"POL-01")&&grown(p,C)&&(is(p,"gentry","noble","royal")||C.prof(p,"lance",30)||C.famKind(p,"gentry_mil","horse")),
+        cond: (p,C)=>R(p,"POL-01")&&grown(p,C)&&(is(p,"gentry","noble","royal")||C.lvl(p,"lance",30)||C.famKind(p,"gentry_mil","horse")),
         w: 1,
         cool: 6,
         text: 'The Lance Yard of Kingsmere holds its public runs, and the crowd stands three deep to bet. Sir Roland Ashby walks the line of young riders like a dealer at the Horsefair. "Close order," he says. "Knee to knee. A lance alone is a stick."',
@@ -146,7 +146,7 @@
           },
           {
             t: "Run a single tilt against a Greymane cousin",
-            req: (p,C)=>C.mounted(p)||C.prof(p,"lance",45),
+            req: (p,C)=>C.mounted(p)||C.lvl(p,"lance",45),
             check: {s:"lance",s2:"ins",d:56},
             win: {
               r: "Your point takes him square on the shield and he goes over his horse's tail. The Greymanes have long memories, but the crowd roars your name.",
@@ -272,7 +272,7 @@
       {
         id: "ww_ald_stakeyard",
         title: "The Stake Yard",
-        cond: (p,C)=>R(p,"POL-01")&&grown(p,C)&&(C.soldier(p)||C.prof(p,"xbow",25)),
+        cond: (p,C)=>R(p,"POL-01")&&grown(p,C)&&(C.soldier(p)||C.lvl(p,"xbow",25)),
         w: 1,
         cool: 6,
         text: 'At the Stake Yard of Crossmarch, Captain Hilda Rook runs the drill that won Hartgate: plant the stake, kneel, shoot, reload behind the man beside you. Every Stake-Man carries a sharpened stake and thirty bolts. "Stand by the stake," she says. "The horse will not."',
@@ -766,7 +766,7 @@
       {
         id: "ww_sol_noonhall",
         title: "Noon Hall",
-        cond: (p,C)=>R(p,"POL-02")&&grown(p,C)&&C.male(p)&&(is(p,"gentry","noble")||C.prof(p,"riding",35)),
+        cond: (p,C)=>R(p,"POL-02")&&grown(p,C)&&C.male(p)&&(is(p,"gentry","noble")||C.lvl(p,"riding",35)),
         w: 1,
         cool: 8,
         text: "At Noon Hall, the chapter house of the Knights of the Sun, Sir Garin Solis teaches mace and shield from the saddle with the sun behind you, so the enemy rides into the glare. The Grand Master is looking for young men to take the vows: for life, no wife, no land of your own.",
@@ -1031,7 +1031,7 @@
       {
         id: "ww_va_gatebout",
         title: "Outside the gate",
-        cond: (p,C)=>R(p,"POL-03")&&grown(p,C)&&(is(p,"gentry","noble")||C.prof(p,"sword",35)||C.trait(p,"proud")),
+        cond: (p,C)=>R(p,"POL-03")&&grown(p,C)&&(is(p,"gentry","noble")||C.lvl(p,"sword",35)||C.trait(p,"proud")),
         w: 1,
         cool: 6,
         setup: (p,ctx)=>{pid(p,ctx,"rival")},
@@ -1232,7 +1232,7 @@
           },
           {
             t: "Ask about marine pay instead",
-            req: (p,C)=>C.prof(p,"xbow",30)||C.prof(p,"spear",30),
+            req: (p,C)=>C.lvl(p,"xbow",30)||C.lvl(p,"spear",30),
             r: "A marine eats better and rows less. You sign with the crossbowmen of a galley out of Tibata.",
             fx: {coin:15,skill:{sea:2,xbow:1},job:"mercenary"},
           },
@@ -1285,7 +1285,7 @@
       {
         id: "ww_va_terrace",
         title: "The Terrace School",
-        cond: (p,C)=>R(p,"POL-03")&&grown(p,C)&&(C.soldier(p)||C.prof(p,"xbow",25)),
+        cond: (p,C)=>R(p,"POL-03")&&grown(p,C)&&(C.soldier(p)||C.lvl(p,"xbow",25)),
         w: 1,
         cool: 6,
         text: 'At the Terrace School of Castella, Captain Ilario Monti drills crossbowmen behind stone terraces cut into the hillside. "Varenna does not fight on open ground," he says. "We make the ground fight for us. Ditch, stakes, terrace. Knights wait. Then knights."',
@@ -1363,7 +1363,7 @@
         choices: [
           {
             t: "Hunt it with a boar spear",
-            req: (p,C)=>C.prof(p,"spear",30)||C.prof(p,"tracking",30)||C.trait(p,"brave"),
+            req: (p,C)=>C.lvl(p,"spear",30)||C.lvl(p,"tracking",30)||C.trait(p,"brave"),
             r: "You find it at dusk in the scrub above the vines. It sees you at the same moment.",
             fx: {beast:{id:"CRE-23",place:"the vine terraces",title:"The hell boar"}},
           },
@@ -1641,7 +1641,7 @@
       {
         id: "ww_lu_staple",
         title: "One bushel in twenty",
-        cond: (p,C)=>R(p,"POL-04")&&C.adult(p)&&(is(p,"merchant")||C.job(p,"merchant")||C.prof(p,"trade",30)),
+        cond: (p,C)=>R(p,"POL-04")&&C.adult(p)&&(is(p,"merchant")||C.job(p,"merchant")||C.lvl(p,"trade",30)),
         w: 1,
         cool: 6,
         text: "Every grain ship crossing the Middle Sea lands at Lucerna and pays the Staple: one bushel in twenty, weighed by the Staple Weighers of House Bassan. Your cargo of Tamari wheat is on the weigh-house floor, and the weigher's thumb is resting very close to the scale.",
@@ -1883,7 +1883,7 @@
       {
         id: "ww_lu_pilots",
         title: "The Pilots' Hall",
-        cond: (p,C)=>R(p,"POL-04")&&grown(p,C)&&C.male(p)&&(C.prof(p,"sea",30)||C.job(p,"sailor")),
+        cond: (p,C)=>R(p,"POL-04")&&grown(p,C)&&C.male(p)&&(C.lvl(p,"sea",30)||C.job(p,"sailor")),
         w: .9,
         once: !0,
         text: "Pilot-Master Stefano Marin has watched you bring a cog through the lagoon mouth in fog. The Pilots' Hall teaches stars, shoals and the floating lodestone needle, but only after an oath on your life: a pilot who sells the needle's secret is hanged. Pilots are called by the name of the first ship they steer.",
@@ -1981,7 +1981,7 @@
       {
         id: "ww_ash_poach",
         title: "A deer in the royal forest",
-        cond: (p,C)=>R(p,"POL-05")&&C.adult(p)&&(C.poor(p)||C.prof(p,"bow",35))&&C.terr(p,"hills","forest","mountains"),
+        cond: (p,C)=>R(p,"POL-05")&&C.adult(p)&&(C.poor(p)||C.lvl(p,"bow",35))&&C.terr(p,"hills","forest","mountains"),
         w: 1,
         cool: 7,
         text: "Late winter, and the barley is gone. In the royal forest above the village a red deer is browsing at the edge of the trees, sixty paces away. A poacher in Ashmere's royal forests loses a hand. Your bow is in your hand already.",
@@ -2014,7 +2014,7 @@
       {
         id: "ww_ash_silverarrow",
         title: "The silver arrow",
-        cond: (p,C)=>R(p,"POL-05")&&grown(p,C)&&C.prof(p,"bow",40),
+        cond: (p,C)=>R(p,"POL-05")&&grown(p,C)&&C.lvl(p,"bow",40),
         w: 1.2,
         cool: 3,
         text: "Return Day at the King's Butts below the castle rock. The best archers of Ashmere shoot for the silver arrow, and Perrin Hollowell, who holds it, is stringing his bow with a bored face. Princess Rowena watches from the stand in royal red. Twelve aimed arrows a minute at 200 paces is the King's Bowmen's standard. Today's mark is further.",
@@ -2445,7 +2445,7 @@
           },
           {
             t: "Train the young ones in the shield wall",
-            req: (p,C)=>C.prof(p,"shield",30)||C.prof(p,"axe",30),
+            req: (p,C)=>C.lvl(p,"shield",30)||C.lvl(p,"axe",30),
             r: "You teach six farm boys to lock shields and step together. By the end they flinch less.",
             fx: {skill:{command:2,shield:1},fame:1},
           },
@@ -2654,7 +2654,7 @@
       {
         id: "ww_nr_tinwharf",
         title: "Short bars",
-        cond: (p,C)=>R(p,"POL-08")&&C.adult(p)&&(C.poor(p)||C.prof(p,"stealth",30)),
+        cond: (p,C)=>R(p,"POL-08")&&C.adult(p)&&(C.poor(p)||C.lvl(p,"stealth",30)),
         w: .8,
         cool: 9,
         text: "Hakon Gull keeps a net-loft on the Boathouse Strand and buys wreck goods. He also runs short tin bars to the Coldhaven boats, past the crown's tenth on all tin bound for Kingsmere. He needs someone to carry a sack of bars along the shore at night.",
@@ -2847,7 +2847,7 @@
         choices: [
           {
             t: "Shoot at it",
-            req: (p,C)=>C.prof(p,"xbow",25)||C.prof(p,"bow",25),
+            req: (p,C)=>C.lvl(p,"xbow",25)||C.lvl(p,"bow",25),
             check: {s:"xbow",s2:"ins",d:48},
             win: {
               r: "Your bolt takes it through the wing. It flaps off over the ridge, crippled, and the calf staggers back to its mother.",
@@ -3033,7 +3033,7 @@
       {
         id: "ww_hl_drakes",
         title: "White shapes in the clouds",
-        cond: (p,C)=>R(p,"POL-13")&&grown(p,C)&&(C.prof(p,"tracking",25)||C.prof(p,"survival",25)||C.job(p,"hunter","herd")),
+        cond: (p,C)=>R(p,"POL-13")&&grown(p,C)&&(C.lvl(p,"tracking",25)||C.lvl(p,"survival",25)||C.job(p,"hunter","herd")),
         w: .8,
         cool: 12,
         text: `A man who works for Speaker Tomas Redford offers you 30 silver to guide him into the Stonefoot kin's closed valleys above Highcastle, where no hunter may go. Over the door of the Council Hall hangs a Snow Drake hide, "the last of its kind since 704". Herders whisper about white shapes in the clouds. Guiding strangers there can get you killed.`,
@@ -3314,7 +3314,7 @@
       {
         id: "ww_gh_needlegold",
         title: "The pilots' secret",
-        cond: (p,C)=>R(p,"POL-14")&&grown(p,C)&&(C.job(p,"sailor")||C.prof(p,"sea",35)),
+        cond: (p,C)=>R(p,"POL-14")&&grown(p,C)&&(C.job(p,"sailor")||C.lvl(p,"sea",35)),
         w: .9,
         cool: 10,
         text: "A soft-spoken man with a Velgradan lilt buys you drinks in the Tapper's House on the Galley Strand, and asks about the floating lodestone needle that Greyhaven pilots use to find north in fog. He has a purse of gold on the table. Any pilot who shows the lodestone to an outsider is drowned.",
@@ -3365,7 +3365,7 @@
           },
           {
             t: "Volunteer for the Chain Guard marines instead",
-            req: (p,C)=>C.prof(p,"spear",25)||C.prof(p,"xbow",25)||C.prof(p,"melee",25),
+            req: (p,C)=>C.lvl(p,"spear",25)||C.lvl(p,"xbow",25)||C.lvl(p,"melee",25),
             r: "Paid all year from the tolls, a tower to sleep in, and toll-runners to board. Better than an oar.",
             fx: {job:"mercenary",coin:6,skill:{sea:1,spear:1}},
           },
@@ -3885,7 +3885,7 @@
       {
         id: "ww_mh_santorariders",
         title: "The Santora Riders",
-        cond: (p,C)=>R(p,"POL-15")&&grown(p,C)&&(C.prof(p,"riding",30)||C.prof(p,"bow",30)||C.race(p,"halforc")),
+        cond: (p,C)=>R(p,"POL-15")&&grown(p,C)&&(C.lvl(p,"riding",30)||C.lvl(p,"bow",30)||C.race(p,"halforc")),
         w: 1,
         cool: 8,
         text: `Dame Oriana Sabine's Santora Riders are 3,000 light horse archers of the steppe edge, many of mixed blood, and they serve for pay. A sergeant has a straw target on a post and a horse ready. "Ride past at a gallop. Three arrows. Two in the straw, and you eat with us."`,
@@ -4011,7 +4011,7 @@
       {
         id: "ww_mh_nagoth",
         title: "Orcs at the Horse Gate",
-        cond: (p,C)=>R(p,"POL-15")&&C.adult(p)&&(is(p,"merchant","artisan")||C.prof(p,"trade",25)),
+        cond: (p,C)=>R(p,"POL-15")&&C.adult(p)&&(is(p,"merchant","artisan")||C.lvl(p,"trade",25)),
         w: 1,
         cool: 7,
         text: "Morhaven sells oil, wine and grain to the Nagoth clans of Gorath, and three Nagoth orcs with copper-capped tusks are at the Horse Gate today with felt and hides to trade. Most of the market is pretending not to see them. Orcs are feared here. Their silver is as good as anyone's.",
@@ -4103,7 +4103,7 @@
       {
         id: "ww_os_bill",
         title: "A bill of exchange",
-        cond: (p,C)=>R(p,"POL-16")&&C.adult(p)&&(is(p,"merchant","gentry")||C.prof(p,"trade",30)),
+        cond: (p,C)=>R(p,"POL-16")&&C.adult(p)&&(is(p,"merchant","gentry")||C.lvl(p,"trade",30)),
         w: 1,
         cool: 7,
         text: "A factor from the Free Marches offers you a bill of exchange drawn on a Lucernan house for 60 suns, at a good discount. Ostran bills are honored in every port of the Middle Sea. But the hand looks a little too careful, and everyone knows the forger Lazzaro Fenn cuts dies in the city. Forging bills hangs.",
@@ -4372,7 +4372,7 @@
       {
         id: "ww_os_holdbank",
         title: "Dwarf crowns",
-        cond: (p,C)=>R(p,"POL-16")&&C.adult(p)&&(is(p,"merchant","gentry")||C.prof(p,"trade",35)),
+        cond: (p,C)=>R(p,"POL-16")&&C.adult(p)&&(is(p,"merchant","gentry")||C.lvl(p,"trade",35)),
         w: 1,
         cool: 8,
         text: "At the Broken Bench a dwarf factor of the Hold Bank of Stonehold offers you a loan at 9 in 100, three less than any Ostran bank. Ostra and Stonehold are rivals; dwarf crowns undercut Ostran bills, and the Lunetti do not forgive people who borrow from the Hold. And the dwarves never forgive a debt at all.",
@@ -4598,7 +4598,7 @@
       {
         id: "ww_vg_bearhall",
         title: "The Hall of the Bear",
-        cond: (p,C)=>R(p,"POL-25")&&grown(p,C)&&C.male(p)&&(C.stat(p,"str")>=35||C.prof(p,"axe",30)||C.race(p,"halforc","orc","giant")),
+        cond: (p,C)=>R(p,"POL-25")&&grown(p,C)&&C.male(p)&&(C.stat(p,"str")>=35||C.lvl(p,"axe",30)||C.race(p,"halforc","orc","giant")),
         w: 1,
         cool: 7,
         text: 'The Bear Guard chooses the tallest men in the realm and arms them with long-hafted great-axes. At the Hall of the Bear, Ruslan Hardhand, who has taught the king since 1088, runs a trial for big men in mail. "The king is two hundred and ten centimeters," he says. "His guard should not look like children beside him."',
@@ -4851,7 +4851,7 @@
           },
           {
             t: "Ask the Hooks for work",
-            req: (p,C)=>C.prof(p,"axe",25)||C.prof(p,"sea",25),
+            req: (p,C)=>C.lvl(p,"axe",25)||C.lvl(p,"sea",25),
             r: "The Channel-Master always needs boarders. You learn grapnel work in a week.",
             fx: {job:"mercenary",skill:{sea:2,axe:1}},
           },
@@ -4897,7 +4897,7 @@
       {
         id: "ww_vg_icon",
         title: "An icon facing east",
-        cond: (p,C)=>R(p,"POL-25")&&C.adult(p)&&(is(p,"artisan")||C.prof(p,"craft",30)),
+        cond: (p,C)=>R(p,"POL-25")&&C.adult(p)&&(is(p,"artisan")||C.lvl(p,"craft",30)),
         w: 1,
         cool: 8,
         text: "A merchant of the Fur Staple wants an icon of the Lamp-Bearer for his new house: painted on a board, always hung facing east, with gold leaf if you can get it. He will pay 15 suns. The monastery painters say laymen paint icons badly. You mean to prove them wrong.",
@@ -5063,7 +5063,7 @@
       {
         id: "ww_dv_steppemarch",
         title: "A crossbow on the wall",
-        cond: (p,C)=>R(p,"POL-26")&&grown(p,C)&&(C.terr(p,"steppe","plains")||C.prof(p,"xbow",30)),
+        cond: (p,C)=>R(p,"POL-26")&&grown(p,C)&&(C.terr(p,"steppe","plains")||C.lvl(p,"xbow",30)),
         w: 1,
         cool: 6,
         text: "On the Steppe March farmers keep crossbows at home by law, women too, since the Lakeland War. Tonight the dogs are barking at the edge of the rye, and you hear hooves on the frozen ground: Ughrak riders, a raiding party, testing the grazing line.",
@@ -5569,7 +5569,7 @@
       {
         id: "ww_ts_engineyard",
         title: "The Engine Yard",
-        cond: (p,C)=>R(p,"POL-31")&&grown(p,C)&&(is(p,"artisan")||C.prof(p,"craft",30)||C.prof(p,"siegecraft",20)||C.job(p,"carpenter","smith")),
+        cond: (p,C)=>R(p,"POL-31")&&grown(p,C)&&(is(p,"artisan")||C.lvl(p,"craft",30)||C.lvl(p,"siegecraft",20)||C.job(p,"carpenter","smith")),
         w: 1,
         cool: 8,
         text: "Master Silas Vane, sixty-eight, who built the first counterweight trebuchet in 1065 and smashed both of Andros's siege towers with it, is hiring carpenters and smiths for the Engine Yard of Tessar. He asks every man to look at a drawing and tell him what is wrong with it.",
@@ -5793,7 +5793,7 @@
       {
         id: "ww_ts_envoy",
         title: "Between the two crowns",
-        cond: (p,C)=>R(p,"POL-31")&&C.adult(p)&&(C.race(p,"halfelf")||C.prof(p,"diplomacy",40)),
+        cond: (p,C)=>R(p,"POL-31")&&C.adult(p)&&(C.race(p,"halfelf")||C.lvl(p,"diplomacy",40)),
         w: 1.1,
         cool: 7,
         text: "Half-elves serve as envoys between the two sides in Tessaria, because nobody can quite decide which church a half-elf belongs to. A lord of the south needs a letter carried to a lord of the north about the exchange of prisoners, and he asks you.",
@@ -5990,7 +5990,7 @@
           },
           {
             t: "Volunteer as a marine instead of a rower",
-            req: (p,C)=>C.prof(p,"spear",30)||C.prof(p,"bow",30),
+            req: (p,C)=>C.lvl(p,"spear",30)||C.lvl(p,"bow",30),
             r: "The Sultan's Marines take you gladly: boarding troops, better rations, first onto the beach.",
             fx: {job:"mercenary",skill:{sea:1,spear:2}},
           },
@@ -6169,7 +6169,7 @@
       {
         id: "ww_ai_wyrm",
         title: "The Wyrm Spears",
-        cond: (p,C)=>R(p,"POL-32")&&grown(p,C)&&(C.prof(p,"spear",35)||C.trait(p,"brave","reckless")),
+        cond: (p,C)=>R(p,"POL-32")&&grown(p,C)&&(C.lvl(p,"spear",35)||C.trait(p,"brave","reckless")),
         w: .9,
         cool: 8,
         text: "At the Spear Yard of Aming, Bakar the Wyrm-Killer trains the Wyrm Spears: hunters who kill Amber Wyrms with heavy spears driven into the neck. The wyrms are as long as a galley and twice as patient. Bakar has a wyrm in a gully above the tappers' camp, and he wants one more spear.",
@@ -6286,7 +6286,7 @@
       {
         id: "ww_ai_bowl",
         title: "The pilot's bowl",
-        cond: (p,C)=>R(p,"POL-32")&&grown(p,C)&&(C.job(p,"sailor")||C.prof(p,"sea",35)),
+        cond: (p,C)=>R(p,"POL-32")&&grown(p,C)&&(C.job(p,"sailor")||C.lvl(p,"sea",35)),
         w: 1,
         cool: 8,
         text: `"The pilot's bowl is not for looking," say the sailors. Only House Karang's sworn pilots may carry the needle bowl, and the pilots would sink a ship before showing a Keshi the floating needle. A Keshi pilot in the joint fleet buys you rice wine and asks, very casually, how your pilot finds north in fog.`,

@@ -413,7 +413,7 @@ RI.fillCouncil = function (r) {
     if (!live(p)) continue;
     const sk = A.COUNCIL[seat].skill;
     p.skills = p.skills || {};
-    p.skills[sk] = Math.max(p.skills[sk] || 0, A.ri(25, 55));   // nobody is named to a seat without knowing the trade
+    A.SK.raiseTo(p, sk, A.ri(25, 55), 'named to the council');   // nobody is named to a seat without knowing the trade
     if (!p.occ || /^(a lord of the realm|a general)$/.test(p.occ) || /^once /.test(p.occ)) p.occ = `${A.COUNCIL[seat].name} of ${r.short}`;
     // through the registry (A2): the one appointed gives up a shire office or a command, the one replaced loses his style
     if (A.POSTS) A.POSTS.appoint(A.POSTS.seatKey(r.id, seat), p.id, { why: 'crown', by: r.ruler, force: true });
@@ -500,7 +500,7 @@ RI.deal = function (r) {
     const out = A.P(r.council[seatFor]);
     if (A.POSTS) A.POSTS.appoint(A.POSTS.seatKey(r.id, seatFor), head.id, { why: 'deal', by: r.ruler, force: true });
     else r.council[seatFor] = head.id;
-    const sk = A.COUNCIL[seatFor].skill; head.skills = head.skills || {}; head.skills[sk] = Math.max(head.skills[sk] || 0, A.ri(20, 45));
+    const sk = A.COUNCIL[seatFor].skill; head.skills = head.skills || {}; A.SK.raiseTo(head, sk, A.ri(20, 45), 'named to the council');
     f.discontent = clamp((f.discontent || 0) - 25, 0, 100);
     lead.op = clamp((lead.op || 40) + 15, 0, 100);
     const oh = out && houseOf(out); if (oh && oh.realm === r.id) oh.op = clamp((oh.op || 50) - 10, 0, 100);

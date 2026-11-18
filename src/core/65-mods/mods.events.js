@@ -409,7 +409,8 @@
     }
     if (k === 'flag') return { fn: (p, C) => !!C.flag(p, v), src: `C.flag(p,${J(v)})` };
     if (k === 'trait') return { fn: (p, C) => !!C.trait(p, v), src: `C.trait(p,${J(v)})` };
-    if (k === 'apt') return { fn: (p, C) => !!C.apt(p, v), src: `C.apt(p,${J(v)})` };
+    // S1b (D-072): an aptitude is a talent letter now: a mod's { apt: 'sword' } asks a gifted talent (B or better)
+    if (k === 'apt') return { fn: (p, C) => !!C.talent(p, v), src: `C.talent(p,${J(v)})` };
     if (k === 'hasRel') return { fn: (p, C) => !!C.hasRel(p, ...v), src: `C.hasRel(p${args(v)})` };
     if (k === 'job') {
       if (v === true) return { fn: (p, C) => !!C.job(p), src: 'C.job(p)' };

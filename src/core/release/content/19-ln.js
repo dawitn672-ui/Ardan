@@ -555,7 +555,7 @@
           },
           {
             t: "Tell the dead man's kin what a feud will cost them",
-            req: (p,C)=>C.prof(p,"intimidation",35),
+            req: (p,C)=>C.lvl(p,"intimidation",35),
             check: {s:"intimidation",s2:"wil",d:50},
             win: {
               r: "You count the funerals for them, one by one. They take the lower price and go home.",
@@ -1061,7 +1061,7 @@
             fx: {honor:1,rep:1},
           },
         ],
-      }, (p,C)=>lit(p)&&C.prof(p,"learning",55)&&C.prof(p,"persuasion",35)),
+      }, (p,C)=>lit(p)&&C.lvl(p,"learning",55)&&C.lvl(p,"persuasion",35)),
       D(["lawyer","scribe","teacher","clergy","healer"], {
         id: "ln_d_book",
         w: .8,
@@ -1088,7 +1088,7 @@
           },
           {t:"Leave it",r:"You think about it for a month.",fx:{happy:-1}},
         ],
-      }, (p,C)=>lit(p)&&C.prof(p,"learning",45)),
+      }, (p,C)=>lit(p)&&C.lvl(p,"learning",45)),
     ]);
     A.defEvents([
       O(["healer"], {
@@ -1616,7 +1616,7 @@
             fx: {honor:-2,happy:-2},
           },
         ],
-      }, (p,C)=>C.prof(p,"medicine",50)&&C.town(p)),
+      }, (p,C)=>C.lvl(p,"medicine",50)&&C.town(p)),
       D(["healer"], {
         id: "ln_d_heal_kind",
         w: 1,
@@ -1640,7 +1640,7 @@
             fx: {coin:5,honor:-2},
           },
         ],
-      }, (p,C)=>C.prof(p,"medicine",50)),
+      }, (p,C)=>C.lvl(p,"medicine",50)),
       D(["healer"], {
         id: "ln_d_heal_sick",
         w: .8,
@@ -1670,7 +1670,7 @@
             },
           },
         ],
-      }, (p,C)=>C.prof(p,"medicine",55)),
+      }, (p,C)=>C.lvl(p,"medicine",55)),
       D(["healer"], {
         id: "ln_d_heal_child",
         w: 1,
@@ -1693,7 +1693,7 @@
             fx: {honor:1,skill:{medicine:1}},
           },
         ],
-      }, (p,C)=>C.prof(p,"medicine",45)),
+      }, (p,C)=>C.lvl(p,"medicine",45)),
     ]);
     A.defEvents([
       O(["clergy"], {
@@ -2461,7 +2461,7 @@
           },
           {
             t: "Challenge the prince's envoy",
-            req: (p,C)=>C.prof(p,"sword",35)||C.prof(p,"dagger",35),
+            req: (p,C)=>C.lvl(p,"sword",35)||C.lvl(p,"dagger",35),
             r: "In the yard at dawn, with blunted blades and half the court watching.",
             fx: both(rel(-4), {
               fame: 3,
@@ -2877,7 +2877,7 @@
           },
           {t:"Shrug it off",r:"Foreigners. They will get over it.",fx:{wil:.5}},
         ],
-      }, (p,C)=>C.prof(p,"diplomacy",50)||J(p,"merchant","sailor")),
+      }, (p,C)=>C.lvl(p,"diplomacy",50)||J(p,"merchant","sailor")),
       D(["envoy"], {
         id: "ln_d_env_home",
         w: .9,
@@ -3430,7 +3430,7 @@
             fx: {coin:8,honor:-4},
           },
         ],
-      }, (p,C)=>C.prof(p,"stewardship",45)&&(gentle(p)||C.rich(p)||J(p,"farm"))),
+      }, (p,C)=>C.lvl(p,"stewardship",45)&&(gentle(p)||C.rich(p)||J(p,"farm"))),
       D(["steward","servant"], {
         id: "ln_d_stw_hiring",
         w: .9,
@@ -3477,7 +3477,7 @@
             fx: {happy:1},
           },
         ],
-      }, (p,C)=>C.prof(p,"stewardship",50)&&(gentle(p)||C.rich(p))),
+      }, (p,C)=>C.lvl(p,"stewardship",50)&&(gentle(p)||C.rich(p))),
     ]);
     A.defEvents([
       O(["courtier"], {
@@ -4547,7 +4547,7 @@
             fx: {skill:{persuasion:1},int:.3},
           },
         ],
-      }, (p,C)=>lit(p)&&C.prof(p,"learning",50)&&J(p,"clergy","scribe")),
+      }, (p,C)=>lit(p)&&C.lvl(p,"learning",50)&&J(p,"clergy","scribe")),
       D(["teacher"], {
         id: "ln_d_tch_fees",
         w: 1,
@@ -4592,7 +4592,7 @@
             fx: {coin:20,them:{type:"friend",op:15}},
           },
         ],
-      }, (p,C)=>lit(p)&&C.prof(p,"learning",45)&&C.ageAdj(p)>=35),
+      }, (p,C)=>lit(p)&&C.lvl(p,"learning",45)&&C.ageAdj(p)>=35),
     ]);
     A.defEvents([
       O(["minstrel"], {
@@ -5085,7 +5085,7 @@
             },
           },
         ],
-      }, (p,C)=>C.prof(p,"music",50)),
+      }, (p,C)=>C.lvl(p,"music",50)),
       D(["minstrel"], {
         id: "ln_d_min_broken",
         w: .9,
@@ -5118,7 +5118,7 @@
             fx: {skill:{music:2},coin:-5},
           },
         ],
-      }, (p,C)=>C.prof(p,"music",55)),
+      }, (p,C)=>C.lvl(p,"music",55)),
       D(["minstrel"], {
         id: "ln_d_min_heart",
         w: 1,
@@ -5137,7 +5137,7 @@
             fx: {skill:{music:2},happy:-2,coin:6},
           },
         ],
-      }, (p,C)=>C.prof(p,"music",50)),
+      }, (p,C)=>C.lvl(p,"music",50)),
     ]);
     A.defEvents([
       O(["scribe"], {
@@ -5641,7 +5641,7 @@
             fx: {honor:3,them:{type:"friend",op:40}},
           },
         ],
-      }, (p,C)=>lit(p)&&C.prof(p,"learning",45)),
+      }, (p,C)=>lit(p)&&C.lvl(p,"learning",45)),
     ]);
     A.defEvents([
       O(["scribe","lawyer","steward"], {
@@ -5805,7 +5805,7 @@
             lose: {r:"You explain it wrong. The reeve corrects you in front of everyone.",fx:{rep:-2,happy:-2}},
           },
         ],
-      }, (p,C)=>lit(p)&&!C.town(p)&&C.prof(p,"learning",40)),
+      }, (p,C)=>lit(p)&&!C.town(p)&&C.lvl(p,"learning",40)),
       D(["scribe","lawyer","teacher","healer","clergy"], {
         id: "ln_d_correspondent",
         w: .7,
@@ -5829,7 +5829,7 @@
           },
           {t:"Leave it unanswered",r:"It sits on your desk for a year, looking at you.",fx:{happy:-1}},
         ],
-      }, (p,C)=>lit(p)&&C.prof(p,"learning",55)),
+      }, (p,C)=>lit(p)&&C.lvl(p,"learning",55)),
       D(["lawyer"], {
         id: "ln_d_law_gift",
         w: .9,
@@ -5883,7 +5883,7 @@
             fx: {coin:-4,rep:1},
           },
         ],
-      }, (p,C)=>J(p,"farm")||C.prof(p,"stewardship",45)),
+      }, (p,C)=>J(p,"farm")||C.lvl(p,"stewardship",45)),
       D(["courtier"], {
         id: "ln_d_crt_dice",
         w: .9,
@@ -5945,7 +5945,7 @@
           },
           {t:"Leave him with his sheep",r:"He counts sheep all his life, very accurately.",fx:{}},
         ],
-      }, (p,C)=>lit(p)&&C.prof(p,"learning",55)&&!C.town(p)),
+      }, (p,C)=>lit(p)&&C.lvl(p,"learning",55)&&!C.town(p)),
       D(["minstrel"], {
         id: "ln_d_min_winter",
         w: 1,
@@ -5975,7 +5975,7 @@
             },
           },
         ],
-      }, (p,C)=>C.prof(p,"music",50)&&C.poor(p)),
+      }, (p,C)=>C.lvl(p,"music",50)&&C.poor(p)),
     ]);
     A.defEvents([
       D(["lawyer"], {
@@ -6047,7 +6047,7 @@
             fx: {rep:-5,them:{type:"enemy",op:-50}},
           },
         ],
-      }, (p,C)=>C.prof(p,"medicine",50)),
+      }, (p,C)=>C.lvl(p,"medicine",50)),
       D(["clergy"], {
         id: "ln_d_cl_vow",
         w: .8,
@@ -6232,7 +6232,7 @@
             lose: {r:"{them} laughs and tells everyone you are bitter.",fx:{rep:-2,them:{type:"enemy",op:-25}}},
           },
         ],
-      }, (p,C)=>C.prof(p,"music",55)),
+      }, (p,C)=>C.lvl(p,"music",55)),
       D(["scribe"], {
         id: "ln_d_scr_secret",
         w: .9,

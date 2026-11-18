@@ -465,8 +465,13 @@ export default {
         ax: al && al.x.short, ay: al && al.y.short, v0: v0 != null ? Math.round(v0) : null, vOn: vOn != null ? Math.round(vOn) : null, vOff: vOff != null ? Math.round(vOff) : null, bar: bar != null ? Math.round(bar) : null, allyHeir,
         pOn, pOff, mul: Math.round(mul * 100) / 100, why: why.filter(x => /grudge/.test(x)) };
     });
+    // the ledger at least half again the odds of war (p / (1 - p)), not the chance: since W1-2 the war is a council's
+    // decision and A.WHY.warOdds a share of a logistic choice, which saturates; and since CI 140 the court's reasons (68's
+    // memory of a wrong among them) weigh as the multipliers they were, so a pair with an old wrong starts high (0.65 with the
+    // ledger ignored, 0.86 with it read: the chance x1.32, the odds x3.3)
+    const odds = q => q / Math.max(1e-9, 1 - q);
     const ok = r.w === -35 && r.heirs === 1 && r.ruler0 !== r.ruler1 && /carried by/.test(r.origin1) && r.parts.length === 1 && r.offer.some(x => /grudge/.test(x)) &&
-      r.v0 >= r.bar && r.vOff >= r.bar && r.vOn < r.bar && /carried by/.test(r.allyHeir || '') && r.pOn != null && r.pOff != null && r.pOn > r.pOff * 1.5;
+      r.v0 >= r.bar && r.vOff >= r.bar && r.vOn < r.bar && /carried by/.test(r.allyHeir || '') && r.pOn != null && r.pOff != null && odds(r.pOn) > odds(r.pOff) * 1.5;
     return { ok, detail: `${r.b} takes ${r.a}'s capital ${r.capName}: "${r.origin0}" (${r.w}); ${r.ruler0} dies and ${r.ruler1} succeeds: "${r.origin1}"; tooltip "${r.parts[0]}"; offer reasons ${r.offer.join(' / ')}; ` +
       `${r.ax} would ally with ${r.ay} (${r.v0} against a bar of ${r.bar}); after "${r.allyHeir}" it stands at ${r.vOn} with the ledger read, ${r.vOff} with it ignored; ` +
       `odds of war a month on ${r.b}: ${r.pOff && r.pOff.toFixed(4)} → ${r.pOn && r.pOn.toFixed(4)} (×${(r.pOn / r.pOff).toFixed(2)}, vengeance ×${r.mul}); war log: "${r.why[0] || ''}"` };

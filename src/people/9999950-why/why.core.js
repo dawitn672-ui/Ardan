@@ -24,6 +24,7 @@
   const clean = (s, n) => String(s == null ? '' : s).replace(/[<>"{}]/g, '').replace(/\s+/g, ' ').trim().slice(0, n || 140);
   const short = id => (A.realm(id) ? A.realmShort(id) : String(id || ''));
   const ln = x => Math.log(Math.max(1e-6, x));
+  const logit = q => Math.log(q / (1 - q));
 
   const W = A.WHY = {
     E,
@@ -39,6 +40,9 @@
       facBand: 1.5,    // a house's choice about a faction
       apptBand: .3,    // the crown's choice of a General: merit nearly settles it
       hotAt: .5,       // a feeling this hot opens the question of war even without bad blood
+      courtP0: .35,    // the court's own reasons (68's plan and its moment, an old wrong or want; 55's feud ledger) were
+      courtCap: .97,   // tuned as multipliers on the chance of a hostile month turning to war (DV.WAR.p, .35): a factor
+                       // above 1 weighs logit(min(cap, p0 x m)) - logit(p0), as it did in that roll (see W.courtW)
       askAt: .8,       // and this hot calls the council at once
     }, (A.WHY && A.WHY.T) || {}),
   };
@@ -224,6 +228,18 @@
     return (/^[aeiou]/i.test(t) ? 'An ' : 'A ') + t;
   };
   // the reasons for war on o, or null when it is not to be thought of (a debt honoured)
+  // A court reason's weight. 68's plan (x1 to x9 when its moment comes) and an old wrong or want (x1 to x4), and 55's feud
+  // ledger (up to x2.1), were tuned as multipliers on a probability, capped at certainty: the old roll made a planned war
+  // all but sure once its moment came. As plain log-odds (ln m) they were drowned by the war's other reasons (the count of
+  // spears, no accepted cause, temper), and the wars that answer a memory or a want fell from 31% to 17% of AI wars on
+  // CI 140, under the 23% they reach with 68 switched off. So a factor above 1 is read as the multiplier it was, at the
+  // old roll's base chance: x9 weighs 4.1 (not 2.2), x2 1.5 (not 0.7), x1.5 0.7 (not 0.4). A factor below 1 (waiting
+  // for the moment, plans elsewhere, an old debt) stays ln m. (D-069 addendum, H-064 addendum.)
+  W.courtW = function (m) {
+    if (!(m > 1)) return ln(m);
+    const p0 = W.T.courtP0;
+    return logit(Math.min(W.T.courtCap, p0 * m)) - logit(p0);
+  };
   W.warReasons = function (r, o, P, rel, cb) {
     const a = r.id, b = o.id, out = [], his = female(a) ? 'Her' : 'His';
     const add = (kind, weight, label, source, pub) => { if (isFinite(weight) && Math.abs(weight) >= .02) out.push({ kind, weight: r2(weight), label, source, pub: !!pub }); };
@@ -239,7 +255,7 @@
     const fm = A.feudWarMul ? A.feudWarMul(a, b) : 1;
     if (fm !== 1) {
       const FE = A.BONDS && A.BONDS.FEUD, e = FE && FE.top ? FE.top(a, b, fm > 1 ? -1 : 1) : null;
-      add(fm > 1 ? 'grudge' : 'debt', ln(fm), e ? `${fm > 1 ? 'An old wrong' : 'An old debt'}: ${FE.label(e).toLowerCase()}, in ${e.y}` : (fm > 1 ? 'Old wrongs between the crowns' : 'An old debt to them'), { t: 'feud', at: b, y: e ? e.y : null }, 1);
+      add(fm > 1 ? 'grudge' : 'debt', W.courtW(fm), e ? `${fm > 1 ? 'An old wrong' : 'An old debt'}: ${FE.label(e).toLowerCase()}, in ${e.y}` : (fm > 1 ? 'Old wrongs between the crowns' : 'An old debt to them'), { t: 'feud', at: b, y: e ? e.y : null }, 1);
     }
     const cm = A.cbWarMul ? A.cbWarMul(a, b, P) : 1;
     if (cm <= 0) return null;   // 68's debts: an honourable crown will not attack its benefactor
@@ -248,7 +264,8 @@
       const he = his === 'Her' ? 'she' : 'he', hi = his.toLowerCase();
       const label = cm > 1 ? (pl && pl.t === b && mo ? `The moment ${he} waited for: ${mo.t}` : `An old wrong or an old want turns ${hi === 'her' ? 'her' : 'him'} to them`)
         : pl && pl.t === b ? `Not yet the moment ${he} waits for` : pl ? `${his} plans lie against ${short(pl.t)}` : `${his} mind is on other plans`;
-      add(pl ? 'reckoning' : 'grudge', ln(cm), label, { t: 'plan', at: pl ? pl.t : b }, 0);
+      // a plan's moment is the crown's own resolve, not a count of spears: 'want' (ambition bends it; heat never discounts it)
+      add(cm > 1 ? (pl && pl.t === b ? 'want' : 'grudge') : pl ? 'reckoning' : 'grudge', W.courtW(cm), label, { t: 'plan', at: pl ? pl.t : b }, 0);
     }
     if (o.playerRun) add('fear', ln(.8), 'A crown that answers for itself', { t: 'player', at: b }, 0);
     add('fear', ln(clamp(1 - (r.infamy || 0) / 90, .15, 1)), `${his} name is already black among the crowns`, { t: 'infamy', r: Math.round(r.infamy || 0) }, 1);

@@ -64,7 +64,7 @@
   ${D} .lk-acts > .act{min-height:34px}
 }
 
-/* ---- the rail (brief §4.1: identity 112, chips 24, vitals 72, stats 80, needs 48, proficiencies, body, buttons) */
+/* ---- the rail (brief §4.1: identity 112, chips 24, vitals 72, stats 80, needs 48, skills, body, buttons) */
 ${D} #profile .fold-pid{display:grid;grid-template-columns:88px minmax(0,1fr);gap:10px;align-items:start;margin:0}
 ${D} #profile .fold-pid .portrait-wrap{display:none}
 .lk-bust{position:relative;width:88px;height:88px;flex:none;isolation:isolate}
@@ -128,7 +128,7 @@ ${D} #profile .lk-stats .barrow:hover{border-color:var(--sc)}
 .lk-needs .lk-nh{grid-column:1 / -1;display:flex;align-items:center;gap:8px;min-height:24px}
 .lk-needs .lk-nh .tt{min-height:24px}
 .lk-needs .lk-nh .tag{color:var(--ink-3)}
-/* proficiencies and the buttons */
+/* skills and the buttons */
 ${D} #profile .profs .prow{grid-template-columns:minmax(0,1fr) 28px 64px;min-height:24px;padding:0;align-content:center;font-size:var(--t-small);line-height:1.2;row-gap:2px}
 ${D} #profile .profs .prow .tier{font-size:var(--t-cap);color:var(--ink-3);opacity:1}
 /* v2 (99993-v2-stats): a skill row is a tier word and its hours, not a number, so the 28 px number column let

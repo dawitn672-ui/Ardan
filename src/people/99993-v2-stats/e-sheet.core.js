@@ -62,22 +62,13 @@ VS.sheetHtml = function (p, opts = {}) {
   if (!opts.noLegend && fights) h += `<div class="tiny muted v2-legend">A levy: an untrained spearman in a padded coat.</div>`;
   return h + '</div>';
 };
-// skill rows: "Sword  Journeyman · 812 hours" with the bar as the way to the next tier
+// S1b (D-072): a skill's tier is its level in words ("Expert II"), read from the value its level reads; the hours were
+// a second reading of the same number and are gone (archive/s1-proficiencies/99993-v2-stats.tiers.js)
 VS.tierOf = function (v) {
-  const hrs = VS.hoursOf(v), T = B.SKILL_TIERS;
-  let t = 0; for (let i = 0; i < T.length; i++) if (hrs >= T[i][0]) t = i;
-  const lo = T[t][0], hi = T[t + 1] ? T[t + 1][0] : lo * 2;
-  return { name: T[t][1], hours: Math.round(hrs), next: T[t + 1] ? T[t + 1][1] : null, frac: Math.max(0, Math.min(1, (hrs - lo) / Math.max(1, hi - lo))) };
+  const SK = A.SK, lv = SK ? SK.lvOfValue(+v || 0) : 0;
+  return { name: SK ? SK.levelName(lv) : String(v), hours: 0, next: SK && lv < SK.MAX_LV ? SK.levelName(lv + 1) : null, frac: 0 };
 };
-VS.fmtH = n => (n >= 10000 ? Math.round(n / 1000) + ',000' : n >= 1000 ? Math.floor(n / 1000) + ',' + String(n % 1000).padStart(3, '0') : String(n));
-VS.skillRows = function (h) {
-  // the release's row is name, <b>value</b>, <span class="tier">, bar: the value's place takes the tier, the tier's the hours
-  return h.replace(/<b>(\d+)<\/b><span class="tier">[^<]*<\/span><div class="bar"><i style="width:\d+(?:\.\d+)?%"><\/i><\/div>/g, (m, n) => {
-    const t = VS.tierOf(+n);
-    return `<b class="v2-tier">${esc(t.name)}</b><span class="tier v2-hrs">${esc(VS.fmtH(t.hours))} hours</span>` +
-      `<div class="bar" title="${esc(t.next ? 'on the way to ' + t.next : 'the top')}"><i style="width:${Math.round(t.frac * 100)}%"></i></div>`;
-  });
-};
+VS.skillRows = h => h;
 // a check chip's value (92-scene-card): a skill as its tier, a stat as a word for your place among your own kind
 VS.statWord = function (p, s, v) {
   // a small child is not rated on any scale (playtest round 1: a 1-year-old's "SPD good")
@@ -151,11 +142,6 @@ if (UI.profileModal) {
     } catch (e) { console.error('v2 sheet', e); }
     return h;
   });
-}
-for (const k of ['topProfs', 'profBlock']) {
-  if (!UI[k]) continue;
-  const f = UI[k];
-  UI[k] = function () { const h = f.apply(this, arguments); try { return typeof h === 'string' ? VS.skillRows(h) : h; } catch (e) { return h; } };
 }
 
 // 92-scene-card's check chip: "INT 39" becomes "INT fair", "Diplomacy 12" "Diplomacy Novice"

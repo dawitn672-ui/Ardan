@@ -1564,7 +1564,9 @@ DEC("match_child", {
           h2.id !== pc.house &&
           (h2.great !== false || ["noble", "gentry_mil", "gentry", "merchant"].includes(h2.kind)),
       ),
-      h = hs.length ? A.pick(hs) : null;
+      // [R2, D-080] the head of a great house takes a match only on a base (your standing, the dowry, need, ties):
+      // A.REACH asks the likeliest three; with none, the child marries into the gentry
+      h = A.REACH ? A.REACH.pickHouse(pc, k, hs, 300) : hs.length ? A.pick(hs) : null;
     pc.coin -= 300;
     const sp = A.genNoble(
       pc.realm,
@@ -1687,7 +1689,8 @@ DEC("treatise", {
   reqs: pc => {
     const best = A.bestSkillOf(pc);
     return [
-      R(`A proficiency at 50 (best: ${GD.SKILLS[best.k]} ${best.v})`, best.v >= 50),
+      // S1b (D-072): a level in words (50 is the top of Advanced IV)
+      R(`A skill at Advanced IV (best: ${GD.SKILLS[best.k]}, ${A.SK ? A.SK.levelName(A.SK.lvOfValue(best.v)) : best.v})`, best.v >= 47),
       R("Once every 6 years", !pc.flags.author || A.S.year - pc.flags.author >= 6),
     ];
   },

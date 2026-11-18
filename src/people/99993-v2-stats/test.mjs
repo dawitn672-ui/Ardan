@@ -23,7 +23,9 @@ export default {
       // re-rolled by later steps took seed 32's boy at six)
       A.S.settings.diff = 'story';
       const pc = A.pc(), byAge = [];
-      for (let y = 0; y < 30; y++) { T.play(1); if (!pc.alive) break; if ([5, 12, 18, 25].includes(A.age(pc))) byAge.push([A.age(pc), Math.round(A.stat(pc, 'str')), Math.round(A.V2S.stats(pc).lift)]); }
+      // (P3 CI: the body's own strength, pc.st.str, not A.stat's, which a wound lowers: the re-rolled world gave seed 32's
+      // sailor a strained back at 20, str 34 at 18 and 33 at 25 though his body went on growing, 31.9 -> 35.7)
+      for (let y = 0; y < 30; y++) { T.play(1); if (!pc.alive) break; if ([5, 12, 18, 25].includes(A.age(pc))) byAge.push([A.age(pc), Math.round(pc.st.str), Math.round(A.V2S.stats(pc).lift)]); }
       // headroom under the old engine's cap (1.02 x potential), which fx and training both stop at
       if (pc.st.str >= pc.pot.str * 1.02 - 3) { pc.st.str -= 8; A.V2S.sync(pc); }
       const before = { c: pc.v2.c.lift, st: pc.st.str, cstat: A.C.stat(pc, 'str') };
@@ -165,10 +167,11 @@ export default {
       // twice), and a skill row whose tier sat in the release's number column; each row now has exactly a tier and hours
       const heads = (h.match(/<div class="group-h">([^<]*)<\/div>/g) || []).map(x => x.replace(/<[^>]+>/g, ''));
       const full = UI.profBlock(A.pc());
-      const rows = (full.match(/<div class="prow"[\s\S]*?<div class="bar"/g) || []);
-      const rowsOk = rows.length > 0 && rows.every(x => /class="v2-tier"/.test(x) && /\d hours</.test(x) && !/<b>\d+<\/b>/.test(x));
+      // S1b (D-072): a skill row is its name and its level in words (36-skills' .skrow); the hours are gone
+      const rows = (full.match(/<div class="skrow[^"]*"[\s\S]*?<span class="skl">[^<]*<\/span>/g) || []);
+      const rowsOk = rows.length > 0 && rows.every(x => /<span class="skl">(Rusty · )?(Beginner|Intermediate|Advanced|Expert|Master|Grandmaster|Legend) [IV]+<\/span>/.test(x) && !/\d hours/.test(x) && !/<b>\d+<\/b>/.test(x));
       // C9 (D-040, order 34): the body in words on the measured scale, no real units (kg, m/s, km a day, ms) at all
-      return { t: t.slice(0, 1600), words: /Strength\s*(feeble|weak|slight|average|strong|very strong|mighty|off the chart)/.test(t), kg: /\d+ kg/.test(t), ms: /\d+(\.\d)? m\/s/.test(t), km: /km a day/.test(t), react: /\d+ ms/.test(t), mind: /Wits/.test(t), tier: /(Untrained|Novice|Apprentice|Journeyman|Adept|Expert|Master)/.test(t) && /hours/.test(t), oldBars: /Strength \d+|Combat Instincts/.test(t),
+      return { t: t.slice(0, 1600), words: /Strength\s*(feeble|weak|slight|average|strong|very strong|mighty|off the chart)/.test(t), kg: /\d+ kg/.test(t), ms: /\d+(\.\d)? m\/s/.test(t), km: /km a day/.test(t), react: /\d+ ms/.test(t), mind: /Wits/.test(t), tier: /(Beginner|Intermediate|Advanced|Expert|Master|Grandmaster|Legend) [IV]+/.test(t) && !/\d hours/.test(t), oldBars: /Strength \d+|Combat Instincts/.test(t),
         dupHeads: heads.length !== new Set(heads).size, heads, rowsOk, rows: rows.length };
     });
     const ok = r.words && !r.kg && !r.ms && !r.km && !r.react && r.mind && r.tier && !r.oldBars && !r.dupHeads && r.rowsOk;
@@ -228,6 +231,8 @@ export default {
       const attrPlain = (v, el) => {
         let t = v.replace(/^Portrait of [^,]*, \d{1,3}$/, '').replace(/\bInitiative [\d.]+ of \d+/g, '').replace(/,? age \d{1,3}\b/g, '')
           .replace(DATE, '').replace(/^Provinces since \d+: \d+ to \d+$/, '')
+          // (S1b CI 139: an army is counted in men, not on the 0-100 scale; a host that fell to nothing reads "Army since 1105: 0 to 67k")
+          .replace(/^Army since \d+: [\d.,]+k? to [\d.,]+k?$/, '')
           .replace(/\(Part \d+\)/g, '').replace(/<?\d[\d,]*(?: \/ \d+)? (?:[A-Z][a-z]+ )?(?:loads?|times|galleys?|ships?|carted|used)|\b\d+ of (?:\d+|those)\b|\bcaravans (?:brought|took) \d+/g, '');
         if (el.classList && (el.classList.contains('fold-h') || el.classList.contains('fold-x'))) t = t.replace(/(?:, \d+| \(\d+\))$/, '');
         return t;
@@ -237,7 +242,8 @@ export default {
       let attrsRead = 0, skillAria = '';
       const checkAttrs = (where, root) => {
         for (const el of root.querySelectorAll('[title],[aria-label]')) for (const k of ['title', 'aria-label']) { const v = el.getAttribute(k); if (v) { attrsRead++; check(`${where} [${k}]`, attrPlain(v, el)); } }
-        for (const el of root.querySelectorAll('.prow[aria-label]')) if (!/ & /.test(skillAria) && /^(?!.*&amp;)[^:]+: [A-Z][a-z]+$/.test(el.getAttribute('aria-label'))) skillAria = el.getAttribute('aria-label');
+        // S1b (D-072): a skill row is its name and level in words ("Riding and the lance, Expert II, about half way to Expert III")
+        for (const el of root.querySelectorAll('.skrow[aria-label]')) if (!skillAria && /^[^\d&]+, (Rusty · )?[A-Z][a-z]+ [IV]+/.test(el.getAttribute('aria-label'))) skillAria = el.getAttribute('aria-label');
       };
       T.enter({ seed: 9611, race: 'human', realm: 'POL-02', status: 'peasant', sex: 'F', startAge: 16 });
       const pc = A.pc(); A.plan(pc).train = 'survival';
@@ -268,7 +274,7 @@ export default {
       // the training pickers and the season's log
       check('training picker', [...document.querySelectorAll('select[data-c="planTrain"] option')].map(o => o.textContent).join('\n'));
       // (B5: from 1100 px the story is a drawer, so read its lines as well as the page's)
-      const log = [...document.getElementById('app').innerText.split('\n'), ...[...document.querySelectorAll('#logwrap .ll, #log .ll')].map(e => e.textContent)].filter(l => /got better at/.test(l));
+      const log = [...document.getElementById('app').innerText.split('\n'), ...[...document.querySelectorAll('#logwrap .ll, #log .ll')].map(e => e.textContent)].filter(l => /got better at|This season/.test(l));
       check('training log', log.join('\n'));
       UI.tab = 'goals'; UI.render(); await tick();
       check('mentor picker', [...document.querySelectorAll('select[data-c="decArg"] option')].map(o => o.textContent).join('\n'));
@@ -284,7 +290,7 @@ export default {
       UI.A.ov('profs'); UI.render(); await tick();
       check('proficiencies', (document.getElementById('modal') || document.body).innerText.split('\n').filter(l => /Perks/.test(l)).join('\n'));
       UI.ov = null;
-      check('wound line', VS.deNum('In a fight: Bad leg: worth 46 to 43 (speed -9). Legs Bad leg −9 speed, −3 stamina, Athletics & climbing −12'));
+      check('wound line', VS.deNum('In a fight: Bad leg: worth 46 to 43 (speed -9). Legs Bad leg −9 speed, −3 stamina, ' + GD.SKILLS.athletics + ' −12'));
       // the sweep's other finds: the yard, a door's skill, an ambition's fighting worth, a staff candidate, a sparkline
       for (const t of ['The yard master sends you home: health worn, come back at 50', 'Too hurt for that: health worn, rest to 50 first', 'Needs Crossbow 30 (you have 2), or a bow',
         'Fighting worth 62 of 118: masters to learn from', 'Enzo Montessi — fit 70 · Master', 'They would not take you yet: your chance is under 2 in 100.']) check('phrase', VS.deNum(t));
@@ -406,14 +412,17 @@ export default {
       const hd = A.headReady(); UI.ov = null; UI.render(); await tick();
       const letter = hd && hd.ev === 'pl_coalition_letter' ? nodes(document.getElementById('modal') || document.body).join('\n') : 'no letter 0';
       scanR('coalition letter event', letter.split('\n'));
-      const rw = [/Infamy\s*\n?\s*feared/.test(shown.realm), /Infamy: feared/.test(shown.life), /Infamy feared/.test(tipInf), /infamy: hated/.test(shown.card),
+      // (P3 CI, order 54: the Life tab's "Infamy: feared" came from What now's "Mind your infamy", a suggestion handed to
+      // the player, retired with fix 2; a ruler's infamy is shown in words where he governs, the Realm tab's bar (the first
+      // check), its popover and the realm card. The Life tab is held to carrying no suggestion of it.)
+      const rw = [/Infamy\s*\n?\s*feared/.test(shown.realm), !/Mind your infamy/.test(shown.life), /Infamy feared/.test(tipInf), /infamy: hated/.test(shown.card),
         /infamy up /.test(shown.war), /feared abroad/.test(letter), !/near collapse/.test(shown.war),
         // round 4: the three bars, the war weariness popover, the golden age step, the peace table, the Decide title
         barWords, /War weariness tiring/.test(tipWeary), /Stability shaky \(it must be rock steady\) and/.test(golden),
         peace === 'Aldmark is tiring. What they will accept depends on the war score.', /Legitimacy accepted\.$/.test(ttl)], rulerWords = rw.every(Boolean);
       return { bad: [...new Set(bad)], wordsShown, infamyWords, rulerWords, rw: rw.map(Number).join('') + ' bars: ' + bars.slice(0, 160), letter: letter.split('\n').filter(l => /infam|feared/.test(l)).join(' ').slice(0, 200), coal: coal.replace(/\n/g, " ").slice(0, 160), gridWords, foe: !!foe, log: log.length, logged, pure, attrsRead, skillAria, cfTip };
     });
-    const ok = r.bad.length === 0 && r.wordsShown && r.infamyWords && r.rulerWords && r.gridWords && r.foe && r.log > 0 && r.pure && r.attrsRead > 100 && / & /.test(r.skillAria) && /^[^\d]*rank 1 of 5: .*Next rank: [^\d]*$/.test(r.cfTip);
+    const ok = r.bad.length === 0 && r.wordsShown && r.infamyWords && r.rulerWords && r.gridWords && r.foe && r.log > 0 && r.pure && r.attrsRead > 100 && /^[^\d]+, (Rusty · )?[A-Z][a-z]+ [IV]+/.test(r.skillAria) && /^[^\d]*rank 1 of 5: .*Next rank: [^\d]*$/.test(r.cfTip);
     return { ok, detail: `${r.bad.length ? r.bad.length + ' bare numbers, e.g. ' + r.bad.slice(0, 6).join(' | ') : 'no bare 0-100 number'}; needs in words ${r.wordsShown}; infamy in words ${r.infamyWords} ("${r.coal}"), for a ruler ${r.rulerWords} (${r.rw}: "${r.letter}"); War Room grid compared ${r.gridWords}; ${r.attrsRead} titles and aria-labels read (a skill row: "${r.skillAria}"; a confidant's pips: "${r.cfTip}"); ${r.log} training log lines, e.g. "${r.logged}"; no draw ${r.pure}` };
   },
 
@@ -438,12 +447,17 @@ export default {
       const KEYS = new Set(['perf', 'rep', 'merit', 'coMo', 'coDivMo', 'worth', 'fame', 'opinion', 'rulerOp', 'loyalty', 'facDisc', 'feud']);
       const BOARD = /\|(merit|cmd|skill|rep)$/, NEEDS = /^(Rest|Company|Purpose|Comfort)$/;
       const found = [], tick = () => new Promise(res => setTimeout(res, 0));
+      // (CI 143: a person's row on the People tab is "bond · age · post", and 99994-v2-family words a subordinate's bond
+      // "Under your command": "Under your command · 54 · Soldier" is a man of 54, not a command of 54. Seed 38's world
+      // gives the life a subordinate on a page the test reads since the market fix shifted the stream. The bond word is read
+      // apart from the age that follows it.)
+      const ROW = l => l.replace(/^under your command · \d{1,3} · /i, '');
       const scan = async where => {
         await tick();
         const root = document.querySelector('#modal') && document.querySelector('#modal').innerText.trim() ? document.querySelector('#modal') : document.querySelector('#tabbody');
         const roots = [root, document.querySelector('#profile')].filter(Boolean);
         for (const R of roots) {
-          for (const line of R.innerText.split('\n')) if (/\d/.test(line) && (LINE.test(line) || MORE.some(x => x.test(line)))) found.push(`${where}: ${line.trim().slice(0, 90)}`);
+          for (const line of R.innerText.split('\n')) if (/\d/.test(line) && (LINE.test(ROW(line)) || MORE.some(x => x.test(line)))) found.push(`${where}: ${line.trim().slice(0, 90)}`);
           for (const el of R.querySelectorAll('[data-tt]')) {
             const k = el.getAttribute('data-tt'), v = el.getAttribute('data-v') || '';
             if (!(KEYS.has(k) || (k === 'board' && BOARD.test(v))) || el.children.length) continue;
@@ -646,7 +660,10 @@ export default {
           if (/lifts \d+ kg about a (grown )?man/.test(t)) out.bad.push(`${race} ${a}: ${t.slice(0, 120)}`);
           // the mind word and its rarity agree
           for (const w of ['Wavering', 'Faint-hearted', 'Quick', 'Dull', 'Slow', 'Determined']) if (new RegExp(w + ' like most').test(t)) out.bad.push(`${race} ${a}: "${w} like most"`);
-          if (race === 'human' && (a === 10 || a === 13 || a === 17)) out['kg' + a] = Math.round(V.stats(pc).lift);
+          // the growth curve, read with the hurts set aside for the reading (CI 139: seed 32's boy in the world after S1
+          // took a bad back at 12 and lifted 27, 27 and 49; his raw strength still rose 8, 12, 17). A wound's own cost is
+          // body.js's woundFactor and A.stat's, tested where they live; this row asks only that a boy grows.
+          if (race === 'human' && (a === 10 || a === 13 || a === 17)) { const w0 = pc.wounds; pc.wounds = []; out['kg' + a] = Math.round(V.stats(pc).lift); pc.wounds = w0; }
           T.play(1);
         }
       }

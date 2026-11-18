@@ -214,7 +214,11 @@ A.eventChoose = function (idx) {
     // a check.
     success = A.V2S.roll(pc, c.check, c);
     branch = success ? c.win || {} : c.lose || {};
-    if (!GD.STATS.includes(c.check.s) && GD.SKILLS[c.check.s]) A.trainSkill(pc, c.check.s, 1.5);
+    // S1b (D-072): a check is a stretch: 0.3 of a month's effort against its difficulty, a failure teaching a third more
+    if (!GD.STATS.includes(c.check.s) && GD.SKILLS[c.check.s])
+      A.SK
+        ? A.gainXp(pc, c.check.s, 0.3, { q: "stretch", d: A.SK.lvOfValue(c.check.d || 45), failed: !success, why: A.SK.cardTitle ? A.SK.cardTitle(q, e) : "a test" })
+        : A.trainSkill(pc, c.check.s, 1.5);
   } else if (c.group && A.groupFightPC) {
     const g = A.groupFightPC(pc, c.group, q.ctx || {});
     success = g.win;
@@ -337,7 +341,9 @@ A.applyFx = function (pc, fx, ctx) {
         if (A.S.family) A.S.family.wealth = Math.max(0, A.S.family.wealth + v);
         break;
       case "skill":
-        for (const s in v) A.trainSkill(pc, s, v[s]);
+        // S1b (D-072): a card's grant is experience: n x 0.2 of a month's effort, a stretch when the choice had a check
+        // or stakes (the eventChoose stage "skills" sets the cause), a practice otherwise
+        for (const s in v) A.SK ? A.gainXp(pc, s, v[s] * A.SK.SHIM, A.SK.cur || undefined) : A.trainSkill(pc, s, v[s]);
         break;
       case "rep":
         if (A.addRep) A.addRep(pc, v);
@@ -373,8 +379,12 @@ A.applyFx = function (pc, fx, ctx) {
         if (A.styleXp && pc.styles) for (const sid in pc.styles) A.styleXp(pc, sid, v);
         break;
       case "apt":
-        pc.apt = pc.apt || {};
-        for (const s in v) if (GD.SKILLS[s]) pc.apt[s] = Math.max(pc.apt[s] || 1, v[s]);
+        // S1b (D-072): an old pack's aptitude is a talent letter now (fx.talent is the new key)
+        if (A.SK) for (const s in v) A.SK.raiseTalent(pc, s, A.SK.letterOfApt(v[s]));
+        else {
+          pc.apt = pc.apt || {};
+          for (const s in v) if (GD.SKILLS[s]) pc.apt[s] = Math.max(pc.apt[s] || 1, v[s]);
+        }
         break;
       case "trait":
         A.addTrait(pc, v);
@@ -402,13 +412,20 @@ A.applyFx = function (pc, fx, ctx) {
         if (t) {
           if (pc.rel[t.id]) {
             if (v.op) A.addOp(pc, t, v.op);
-            if (v.type) {
+            // [R2, D-080] a close bond with someone far above you needs a base; the scene itself counts as one
+            const rb = v.type && A.REACH ? A.REACH.eventBond(pc, t, v.type) : null;
+            if (rb) out.push(`(${rb.msg})`);
+            if (v.type && !rb) {
               // [C6, D-057] a kin word only for kin the tree places (A.KIN.guard)
               const kg = A.KIN && A.KIN.guard ? A.KIN.guard(pc, t, v.type, v.back || v.type) : null;
               pc.rel[t.id].type = kg ? kg[0] : v.type;
               if (t.rel[pc.id]) t.rel[pc.id].type = kg ? kg[1] : v.back || v.type;
             }
-          } else A.link(pc, t, v.type || "acquaint", v.op || 0, v.back || v.type || "acquaint");
+          } else {
+            const rb = v.type && A.REACH ? A.REACH.eventBond(pc, t, v.type) : null;
+            if (rb) out.push(`(${rb.msg})`);
+            A.link(pc, t, rb ? rb.keep : v.type || "acquaint", v.op || 0, rb ? rb.keep : v.back || v.type || "acquaint");
+          }
         }
         break;
       case "newRel": {
@@ -878,7 +895,7 @@ A.inherit = function (from, to) {
       if (x.k === "taught")
         for (const k of Object.keys(from.skills))
           if (A.skill(from, k) >= 40 && A.skill(to, k) < A.skill(from, k) * 0.45)
-            to.skills[k] = Math.max(to.skills[k] || 0, Math.round(A.skill(from, k) * 0.45));
+            A.SK ? A.SK.raiseTo(to, k, Math.round(A.skill(from, k) * 0.45), "taught by a parent") : (to.skills[k] = Math.max(to.skills[k] || 0, Math.round(A.skill(from, k) * 0.45)));
     }
 };
 
@@ -1257,6 +1274,9 @@ A.getToKnow = function (pid) {
       ok: false,
       msg: "You cannot spare the time for that today.",
     };
+  // [R2, D-080] every relationship needs a base: a man far above you may not let you near (A.REACH, 9999960-reach)
+  const gate = A.REACH ? A.REACH.knowGate(pc, t) : null;
+  if (gate) return gate;
   A.S.time -= A.knowCost;
   const ro = A.roster(pc).find(x => x.p.id === pid),
     gap = A.classOf(t) - A.classOf(pc),

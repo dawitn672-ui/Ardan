@@ -1,0 +1,6 @@
+{
+  "about": "Counts tools/lint-skills.mjs holds older code to (S1b, D-074): writes into p.skills outside src/people/36-skills, reads of p.apt, and calls of the A.trainSkill shim. They may only fall; lower them with node tools/lint-skills.mjs --write.",
+  "skillsWrites": 95,
+  "aptReads": 56,
+  "trainSkillCalls": 329
+}
