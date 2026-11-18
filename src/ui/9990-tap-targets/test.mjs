@@ -1,6 +1,6 @@
 // Tap targets (I1-2): at 375 x 667, on the title, the thirteen pages of a noble's life and an event card, every control's hit
-// area (its box joined with an absolutely positioned ::before/::after hit box) is at least 44 x 44. The one allowed leftover is
-// the skills rows (.prow, li.pf-sk): S1b's new skills page owns them (docs/PROGRESS.md S1b); when it lands, drop the exception.
+// area (its box joined with an absolutely positioned ::before/::after hit box) is at least 44 x 44. No exceptions (the skills rows
+// were an exception until S1b's skills page landed).
 // The same measurement as docs/research/ios/tap-probe.mjs.
 import { HELPERS } from '../../../tests/helpers.mjs';
 import { PERSONAS, PAGES, START, SETTLE } from '../../../tools/lib/clutter.mjs';
@@ -19,7 +19,7 @@ const PROBE = () => {
   };
   let n = 0;
   for (const el of document.querySelectorAll('button, a[href], [data-a], input, select, summary, [role=button], [role=tab], [data-note]')) {
-    if (el.disabled || !vis(el) || el.closest('.prow, li.pf-sk')) continue;
+    if (el.disabled || !vis(el)) continue;
     n++; const h = hit(el);
     if (h.w < 43.5 || h.h < 43.5) bad.push((el.id ? '#' + el.id : el.tagName.toLowerCase()) + (typeof el.className === 'string' && el.className ? '.' + el.className.trim().split(/\s+/)[0] : '') + ' ' + Math.round(h.w) + 'x' + Math.round(h.h));
   }
@@ -45,7 +45,14 @@ export default {
         for (const b of r.bad) bad.push(nm + ' ' + b);
         if (r.hscroll) bad.push(nm + ' scrolls sideways ' + r.hscroll);
       }
+      // the skills sheet and the person view (S1b, R2): after the pages, as overlays
+      for (const [nm, js] of [['skills', `UI.ov = { type: 'profs' };`], ['met', `{ const pc = A.pc(); UI.ov = { type: 'person', id: (pc.rel && Object.keys(pc.rel)[0]) || pc.father || pc.mother }; }`]]) {
+        await p.evaluate(`(() => { A.S.queue = []; ${js} UI.render(); UI.renderModal && UI.renderModal(); window.scrollTo(0, 0); })()`);
+        await p.evaluate(SETTLE);
+        r = await p.evaluate(PROBE); total += r.n;
+        for (const b of r.bad) bad.push(nm + ' ' + b);
+      }
     } finally { await ctx.close(); }
-    return { ok: !bad.length && total > 250, detail: `${total} controls on the title and 13 pages at 375 x 667: ${bad.length ? bad.length + ' under 44 x 44 (' + bad.slice(0, 6).join('; ') + ')' : 'none under 44 x 44, none scrolls sideways (the skills rows excepted, S1b)'}` };
+    return { ok: !bad.length && total > 250, detail: `${total} controls on the title and 13 pages at 375 x 667: ${bad.length ? bad.length + ' under 44 x 44 (' + bad.slice(0, 6).join('; ') + ')' : 'none under 44 x 44, none scrolls sideways'}` };
   },
 };

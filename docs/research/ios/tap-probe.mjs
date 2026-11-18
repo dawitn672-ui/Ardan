@@ -69,6 +69,20 @@ for (const [nm, tab, extra] of PAGES) {
     out[nm] = await pg.evaluate(PROBE, VERBOSE);
   } catch (e) { out[nm] = { error: String(e.message).slice(0, 160) }; }
 }
+// overlays: the skills sheet, a person met and a person not yet known (the "out of reach" line, R2), the skills block with every group open
+for (const [nm, js] of [
+  ['skills', `UI.ov = { type: 'profs' };`],
+  ['met', `{ const pc = A.pc(); const id = (pc.rel && Object.keys(pc.rel)[0]) || pc.father || pc.mother; UI.ov = { type: 'person', id }; }`],
+  ['stranger', `{ const pc = A.pc(); const o = Object.values(A.S.people).find(x => x.alive && x.id !== pc.id && !(pc.rel && pc.rel[x.id]) && x.id !== pc.father && x.id !== pc.mother); UI.ov = { type: 'person', id: o.id }; }`],
+  ['skillsOpen', `UI.ov = null; UI.tab = 'profile'; UI.render(); document.querySelectorAll('details').forEach(d => d.open = true);`],
+]) {
+  try {
+    await pg.evaluate(`(() => { A.S.queue = []; ${js} UI.render(); UI.renderModal && UI.renderModal(); window.scrollTo(0, 0); })()`);
+    await pg.evaluate(SETTLE);
+    out[nm] = await pg.evaluate(PROBE, VERBOSE);
+  } catch (e) { out[nm] = { error: String(e.message).slice(0, 160) }; }
+}
+await pg.evaluate(`(() => { UI.ov = null; UI.render(); })()`);
 // an event card: queue the first event the player can see
 try {
   await pg.evaluate(() => { A.defEvents([{ id: 'ios_probe', title: 'A door', cond: () => false, w: 0, text: 'A door in the wall.', choices: [{ t: 'Open it', r: 'It opens.' }, { t: 'Leave it', r: 'You leave it.' }, { t: 'Knock twice and wait', r: 'Nobody.' }] }]); UI.tab = 'life'; UI.render(); A.S.queue.unshift({ type: 'event', ev: 'ios_probe', ctx: {} }); UI.renderModal(); });

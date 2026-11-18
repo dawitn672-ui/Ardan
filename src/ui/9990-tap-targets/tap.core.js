@@ -7,7 +7,7 @@
 //   - a chip: a transparent ::after hit box 44 points tall centred on it, so the pill keeps its look;
 //   - a stat row: a minimum height of 44 points (a few points taller, in a list).
 // A description glyph inside a button is left alone: the button is the target (and the glyph takes no touch there, 71-phone).
-// Not touched here: the skills rows (.prow, .pf-sk: S1b's new skills page owns them) and the map canvases (D9).
+// Not touched here: the map canvases (D9). The skills rows (.skrow, the person view and the skills sheet) were 44 already; the profile's .pf-sk rows are covered above.
 // Scoped to a touch screen or a phone-width window; a mouse on a wide window is unchanged. Rules sit after 59-descriptions
 // and 71-phone, so they win at equal specificity.
 // The page's panels are #game and #modal: an id in front puts these rules above 59-descriptions' and 71-phone's, whose
@@ -22,7 +22,7 @@ const TAP_CSS = `
     border-bottom:0;text-decoration:underline dotted var(--accent-line);text-underline-offset:3px}
   ${IN(CHIP)}{position:relative}
   ${IN(CHIP, '::after')}{content:"";position:absolute;left:0;right:0;top:calc(50% - 22px);height:44px}
-  ${IN(['div.v2-row.tt', '.pf div[data-tt].pf-row.tt'])}{min-height:44px;align-content:center;align-items:center}
+  ${IN(['div.v2-row.tt', '.pf div[data-tt].pf-row.tt', '.pf li[data-tt].pf-sk.tt'])}{min-height:44px;align-content:center;align-items:center}
 }`;
 {
   const put = () => {
