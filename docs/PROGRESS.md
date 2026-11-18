@@ -56,6 +56,7 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [x] **D12a** · War design: theatre, field, press; sight by rank; one engine with a cause ledger; nine stages (`docs/design/war.md`) · `0378b9e` · 2026-11-14 05:43 ET · **10 owner decisions pending**
 
 - [x] **v2.1.0-alpha.10** · cut on green CI 145 and long 15 at `b8a779a`, `release/v2.1.0-alpha.10` pushed, sample save `v2.1.0-alpha.10-noble.ardan` · 2026-11-18 06:39 ET
+- [x] **v2.1.0-alpha.11** · cut on green CI 146 and long 17 at `65eb7ba` (I1-2 iPhone readiness), `release/v2.1.0-alpha.11` pushed · 2026-11-18 07:34 ET
 
 ### Open, in build order (re-sorted 2026-11-16 by what the rest stands on; owner: "start with the more important or more
 structurally necessary things")

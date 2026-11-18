@@ -5,6 +5,8 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+## v2.1.0-alpha.11 (2026-11-18 07:34 ET) · Ready for a phone: every button a fingertip wide, safe areas, no stray zoom or bounce, one sound engine
+
 - **Made ready for the iPhone.** The page now fills a notched screen edge to edge and keeps clear of the notch and the home bar;
   text on the buttons and panels can no longer be selected by a long press, and the page no longer bounces or zooms when
   you tap twice (pinching still zooms). Heights follow the screen as the phone's bars come and go. The score and the
