@@ -1295,15 +1295,16 @@ A.whatNow = function (pc) {
         );
         break;
       }
+    // W1-5 (D-091): how a war stands is read from its facts (land held, hosts, battles, weariness), in a word
     for (const w of A.atWar(r.id))
-      if (w.leadA === r.id || w.leadD === r.id) {
-        const sc = A.warSide(w, r.id) === "att" ? w.score : -w.score;
-        if (sc >= 25) {
-          add(80, "Dictate the peace", `You are winning ${w.name} (+${sc}).`, "war", ["tab", "war"], "good");
+      if ((w.leadA === r.id || w.leadD === r.id) && A.WAR && A.WAR.standing) {
+        const st = A.WAR.standing(w, r.id);
+        if (st === "winning") {
+          add(80, "Dictate the peace", `You are winning ${w.name}.`, "war", ["tab", "war"], "good");
           break;
         }
-        if (sc <= -40) {
-          add(82, "Sue for peace", `You are losing ${w.name} (${sc}).`, "war", ["tab", "war"], "bad");
+        if (st === "losing") {
+          add(82, "Sue for peace", `You are losing ${w.name}.`, "war", ["tab", "war"], "bad");
           break;
         }
       }

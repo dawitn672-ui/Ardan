@@ -261,7 +261,7 @@
         r.pact = gamePact(a, b);
         if (DV.tryWar(a, b, D.score(d, i, j)) === 'war') r.pact = 'war';
       } else if (e.kind === 'peace') {
-        // wars end through the war machinery (war score, peace terms); v2's own peace roll is not used
+        // wars end only by surrender or defeat, decided by the war's own deciders (W1-5, src/war/9999953-surrender); v2's own peace roll is not used
         r.pact = gamePact(a, b);
         if (r.pact === 'war') for (const nm of [...r.factors.keys()]) if (nm === `grudge-war-${Y}`) r.factors.delete(nm);
       } else if (e.kind === 'marriage') {

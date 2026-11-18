@@ -243,7 +243,7 @@
     const r = base.apply(this, arguments);
     if (B && B.aar) {
       const w = B.war && A.S.wars.find(x => x.id === B.war), last = w && w.battles && w.battles[w.battles.length - 1];
-      // war records are signed for the war's attacker, like those from A.warYear
+      // war records are signed for the war's attacker (as the retired A.warYear signed them)
       const flip = w && A.warSide(w, B.sides[B.pcSide].realm) === 'def' ? -1 : 1;
       if (last && last.name === B.title && !last.aar) last.aar = B.aar.causes.map(c => ({ label: c.label, pct: c.pct * flip }));
       const line = A.aarLine(B.aar);

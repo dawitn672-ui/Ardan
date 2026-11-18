@@ -50,11 +50,6 @@ UI.aiOfferWhy = function (x, r, o) {
   return t.length ? `<div class="tiny muted ai-why">Why: ${t.map(pts).join(' · ')}</div>` : '';
 };
 
-UI.aiWillWhy = function (T) {
-  if (!T || !A.aiWillParts) return '';
-  const parts = A.aiWillParts(T).filter(p => p[1]);
-  return parts.length ? `<div class="tiny muted ai-why">${parts.map(pts).join(' · ')}</div>` : '';
-};
 
 // a log entry's reasons: what pushed toward the decision, and what it was made despite
 UI.aiWhyLine = function (why) {

@@ -1022,17 +1022,25 @@ const missionFinishNow = function (m) {
   A.trainSkill(pc, "command", m.rank >= 1 ? 2 : 0.5);
   if (m.losses > 0) A.willGrow(pc, 0.3 + m.losses * 0.2, "losses");
   const w = A.S.wars.find(x => x.id === m.war);
-  if (w && pc.mil) {
+  // W1-5 (D-091): no war score. A mission that went well is a blow to the enemy's side, a failure one to your own: a
+  // named reason in that side's will to fight, fading over a year (A.WAR.blow)
+  if (w && pc.mil && A.WAR) {
     const side = A.warSide(w, m.realm),
       d =
         {
-          triumph: 3,
-          success: 1.5,
+          triumph: 0.3,
+          success: 0.15,
           mixed: 0,
-          failure: -1.5,
+          failure: -0.15,
         }[m.result] *
         (1 + m.rank * 0.5);
-    w.score = A.clamp(w.score + (side === "att" ? d : -d), -100, 100);
+    if (side && d)
+      A.WAR.blow(
+        w,
+        d > 0 ? (side === "att" ? "def" : "att") : side,
+        `${m.title}: ${d > 0 ? "a blow from the soldiers of " + A.realmShort(m.realm) : "a mission of " + A.realmShort(m.realm) + " gone wrong"}`,
+        Math.abs(d),
+      );
   }
   m.log.push(
     `— ${m.title}: ${A.cap(m.result)}. Enemy dead: ${A.fmt(m.kills)}. Your losses: ${A.fmt(m.losses)}. Merit +${Math.max(0, m.merit)}.`,
@@ -1367,9 +1375,9 @@ const battleStageOutcome = function (m, pc, ch, tier, mates) {
       lossB = Math.round(m.armyB * (win ? A.rf(0.18, 0.38) : A.rf(0.05, 0.12))),
       w = A.S.wars.find(x => x.id === m.war);
     if (w) {
-      const side = A.warSide(w, m.realm),
-        d = win ? A.ri(10, 18) : -A.ri(10, 18);
-      w.score = A.clamp(w.score + (side === "att" ? d : -d), -100, 100);
+      // W1-5 (D-091): no war score; the battle is a fact in the war's record, weighed by its loser at once
+      const side = A.warSide(w, m.realm);
+      if (A.WAR) A.WAR.stir(w);
       w.battles.push({
         y: A.S.year,
         name: m.title,

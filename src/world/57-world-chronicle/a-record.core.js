@@ -94,7 +94,9 @@
       WC.keepName(w.id, w.name);
       const win = result === 'att' ? w.leadA : result === 'def' ? w.leadD : null, lose = result === 'att' ? w.leadD : result === 'def' ? w.leadA : null;
       const ceded = (w.wcCede || []).slice(0, 6);
-      WC.put('peace', { p: cap(w.leadD), a: win || w.leadA, b: lose || w.leadD, w: [ruler(win || w.leadA), ruler(lose || w.leadD)], n: Math.max(0, S_().year - (w.start || S_().year)), x: [w.id, result || 'white', ceded] });
+      // W1-5 (D-091): how it ended rides along: surrender or defeat ('s' or 'd'), the pathway (1 to 8), the realm that yielded
+      const E = w.end && typeof w.end === 'object' ? w.end : null, by = E ? (E.by === 'att' ? w.leadA : w.leadD) : null;
+      WC.put('peace', { p: cap(w.leadD), a: win || w.leadA, b: lose || w.leadD, w: [ruler(win || w.leadA), ruler(lose || w.leadD)], n: Math.max(0, S_().year - (w.start || S_().year)), x: [w.id, result || 'white', ceded, E ? (E.kind === 'defeat' ? 'd' : 's') : '', E ? E.path : 0, by || ''] });
       // a rising that wins its war is a realm born
       if (w.cb === 'liberty' && result === 'att') {
         const nr = A.realm(w.leadA);
@@ -458,7 +460,10 @@
       case 'peace': {
         const res = Array.isArray(e.x) ? e.x[1] : 'white', got = Array.isArray(e.x) && Array.isArray(e.x[2]) ? e.x[2].map(pin).filter(Boolean) : [];
         const span = e.n > 0 ? ` after ${e.n} year${e.n > 1 ? 's' : ''}` : '';
-        if (res === 'white') return `${when}, ${the(WC.warName(e))} ended${span} in a white peace.`;
+        const kind = Array.isArray(e.x) ? e.x[3] : '', by = Array.isArray(e.x) && e.x[5] ? rs(e.x[5]) : '';
+        if (res === 'white') return `${when}, ${the(WC.warName(e))} ended${span} in a peace the crowns made${by ? `, asked by ${by}` : ''}, with nothing changing hands.`;
+        if (kind === 'd') return `${when}, ${the(WC.warName(e))} ended${span}: ${B1} could fight no more, and ${A1} dictated the peace${got.length ? `: ${got.slice(0, 4).join(', ')} passed to ${A1}` : ''}.`;
+        if (kind === 's') return `${when}, ${the(WC.warName(e))} ended${span} when ${B1} asked ${A1} for terms${got.length ? `: ${got.slice(0, 4).join(', ')} passed to ${A1}` : ''}.`;
         return `${when}, ${the(WC.warName(e))} ended${span}, and ${A1} had the better of it${got.length ? `: ${got.slice(0, 4).join(', ')} passed to ${A1}` : ''}.`;
       }
       case 'battle': { const x = Array.isArray(e.x) ? e.x : []; return `${when}, at ${P}, ${A1} beat ${B1}: ${fmt(e.n)} men in the field, ${fmt(x[0] || 0)} dead${x[1] > 1 ? ` in ${x[1]} days` : ''}.`; }

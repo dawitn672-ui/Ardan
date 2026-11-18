@@ -1936,14 +1936,14 @@
           {
             t: "Accept the white peace",
             r: "The war ends. The graves stay.",
-            fx: rf((r,p,ctx)=>{const w=A.S.wars.find(x=>x.id===ctx.wid);w&&A.settleWar(w,"white"),r.treasury+=inc(p,.03),st(r,4)}),
+            fx: rf((r,p,ctx)=>{const w=A.S.wars.find(x=>x.id===ctx.wid);w&&A.settleWar(w,"white",{by:A.warSide(w,p.ruler)==="att"?"def":"att"}),r.treasury+=inc(p,.03),st(r,4)}),
           },
           {
             t: "Demand more: land and a larger payment",
             check: {s:"diplomacy",s2:"wil",d:52},
             win: {
               r: "They swallow hard and pay double. The peace is signed.",
-              fx: rf((r,p,ctx)=>{const w=A.S.wars.find(x=>x.id===ctx.wid);w&&A.settleWar(w,"white"),r.treasury+=inc(p,.06),lg(r,4),A.fame(p,2)}),
+              fx: rf((r,p,ctx)=>{const w=A.S.wars.find(x=>x.id===ctx.wid);w&&A.settleWar(w,"white",{by:A.warSide(w,p.ruler)==="att"?"def":"att"}),r.treasury+=inc(p,.06),lg(r,4),A.fame(p,2)}),
             },
             lose: {r:"The envoy leaves. The war goes on.",fx:rf((r,p)=>{st(r,-2)})},
           },

@@ -156,33 +156,22 @@ A.rulerAction = function (key, arg) {
     case "war":
       return A.diplDo("war", arg);
     case "peace": {
+      // W1-5 (D-095): "Offer peace" sends envoys to ask for peace with nothing changing hands; the other crown answers
+      // from its own reasons when they arrive (A.WAR.send), never by a roll against a score
       const w = A.S.wars.find(x => x.id === arg);
       if (!w)
         return {
           ok: false,
         };
-      const side = A.warSide(w, r.id),
-        myScore = side === "att" ? w.score : -w.score;
+      const side = A.warSide(w, r.id);
       if ((side === "att" ? w.leadA : w.leadD) !== r.id)
         return {
           ok: false,
           msg: "Only the war leader can make peace.",
         };
-      const er = A.realm(side === "att" ? w.leadD : w.leadA);
-      mark();
-      return myScore > 20 || (er && er.exhaustion > 50) || A.chance(0.25 + myScore / 150)
-        ? (myScore >= 25
-            ? A.settleWar(w, side)
-            : myScore <= -40
-              ? A.settleWar(w, side === "att" ? "def" : "att")
-              : A.settleWar(w, "white"),
-          {
-            ok: true,
-          })
-        : (A.log(`${er ? er.short : "The enemy"} refuse your terms.`, "bad"),
-          {
-            ok: true,
-          });
+      const sent = A.WAR && A.WAR.send ? A.WAR.send(w.id, []) : { ok: false, msg: "No envoys can be sent." };
+      if (sent.ok) mark();
+      return sent;
     }
     case "bank": {
       const amt = Math.round(r.income * 0.5 + 5e3);

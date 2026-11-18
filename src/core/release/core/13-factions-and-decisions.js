@@ -2,7 +2,7 @@
 // Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: A.polOnTransfer, A.pickCB, A.FACTIONS, A.houseStrength, A.realmHouses, A.factionsOf, A.factionPower,
 // A.factionsYear, A.factionDemand, A.factionConcede, A.factionRevolt, A.canJoinFaction, A.joinFaction,
-// A.leaveFaction, A.CONSCRIPT_LAW, A.setLaw, A.peaceTerms, A.peaceOdds, A.peaceOffer, A.aiOffers, A.aiDiploYear,
+// A.leaveFaction, A.CONSCRIPT_LAW, A.setLaw, A.peaceTerms, A.peaceOffer, A.aiOffers, A.aiDiploYear,
 // A.queueAiOffer, A.CHOICE_FN (+), A.provsHeld, A.livingKids, A.grandkids, A.bestStyleRank, A.netWorth,
 // A.realmsSeen, A.DEC, DEC, R, A.decisionsFor, A.decisionState, A.decide, A.bestSkillOf, A.markSeen, A.progYear,
 // progYearNow; 22 decisions (DEC).
@@ -251,9 +251,15 @@ A.factionConcede = function (r, f) {
       A.startWar(r.id, t.id, null, A.pickCB(r.id, t.id));
     }
   }
+  // W1-5 (D-095): the crown yields to the peace faction by asking its enemy for terms (pathway 4, revolt at home); the
+  // envoys ride and the enemy names its terms, as for any crown that asks
   if (f.kind === "peace") {
-    const w = A.atWar(r.id)[0];
-    if (w) A.settleWar(w, "white");
+    const w = A.atWar(r.id).find(x => x.leadA === r.id || x.leadD === r.id) || A.atWar(r.id)[0];
+    if (w && A.WAR && A.WAR.ask && !w.ask)
+      A.WAR.ask(w, A.warSide(w, r.id), null, null, {
+        path: 4,
+        why: [[`The ${A.FACTIONS[f.kind].name} at court`, 1.5, "fear", null, 1]],
+      });
   }
   if (
     (f.kind === "liberty" &&
@@ -545,210 +551,21 @@ A.setLaw = function (k, v) {
   };
 };
 
+// W1-5 (D-091, D-095): the peace table. The terms are real things (land your soldiers hold, land theirs hold, coin,
+// tribute, a submission, alliances renounced), and the other crown's answer is its own decision, through A.WHY, when your
+// envoys reach it: no score, no willingness number, no percentage (src/war/9999953-surrender, A.WAR.table, A.WAR.send).
+// The old table, its odds and its roll are in archive/w1-5-war-score-and-peace.
 A.peaceTerms = function (w, rid) {
-  const S = A.S,
-    side = A.warSide(w, rid);
-  if (!side) return null;
-  const my = side === "att" ? w.att : w.def,
-    them = side === "att" ? w.def : w.att,
-    eid = side === "att" ? w.leadD : w.leadA,
-    e = A.realm(eid),
-    r = A.realm(rid);
-  if (!e || !r) return null;
-  const sc = side === "att" ? w.score : -w.score,
-    ePop = S.prov.filter(p => them.includes(p.owner)).reduce((a, p) => a + p.pop, 0) || 1,
-    myPop = S.prov.filter(p => my.includes(p.owner)).reduce((a, p) => a + p.pop, 0) || 1,
-    out = [];
-  for (const p of S.prov)
-    if (them.includes(p.owner) && my.includes(p.occ)) {
-      const cap = A.realm(p.owner) && A.realm(p.owner).capitalProv === p.id;
-      out.push({
-        k: "take:" + p.id,
-        grp: "Land you hold",
-        name: `Take ${p.name}`,
-        sub: `${A.realmShort(p.owner)} · ${A.fmt(p.pop)} people${cap ? " · their capital" : ""}${r.claims && r.claims[p.id] ? " · your claim" : ""}`,
-        cost: Math.round(6 + (70 * p.pop) / ePop + (cap ? 15 : 0) - (r.claims && r.claims[p.id] ? 4 : 0)),
-      });
-    }
-  const g1 = Math.round(Math.max(800, (e.treasury > 0 ? e.treasury * 0.25 : 0) + e.income * 0.1));
-  out.push({
-    k: "gold",
-    grp: "Gold and honor",
-    name: `Reparations: ${A.fmt(g1)} suns`,
-    sub: "Paid from their treasury.",
-    cost: 14,
-    gold: g1,
-  });
-  out.push({
-    k: "gold2",
-    grp: "Gold and honor",
-    name: `Crushing reparations: ${A.fmt(g1 * 2.5)} suns`,
-    sub: "They will borrow to pay it, and hate you for years.",
-    cost: 30,
-    gold: Math.round(g1 * 2.5),
-  });
-  if (!e.overlord && r.overlord !== e.id)
-    out.push({
-      k: "trib",
-      grp: "Gold and honor",
-      name: "They become your tributary",
-      sub: "8% of their income every year until they break free.",
-      cost: 42,
-    });
-  if (e.allies.filter(x => A.realm(x) && A.realm(x).alive && x !== rid).length)
-    out.push({
-      k: "unally",
-      grp: "Gold and honor",
-      name: "They renounce their alliances",
-      sub: e.allies
-        .filter(x => A.realm(x))
-        .map(A.realmShort)
-        .join(", "),
-      cost: 16,
-    });
-  out.push({
-    k: "humble",
-    grp: "Gold and honor",
-    name: "A public submission",
-    sub: "Their ruler kneels to yours. Legitimacy +8 for you, −8 for them.",
-    cost: 10,
-  });
-  for (const p of S.prov)
-    if (my.includes(p.owner) && them.includes(p.occ))
-      out.push({
-        k: "cede:" + p.id,
-        grp: "What you give",
-        name: `Cede ${p.name}`,
-        sub: `They hold it already · ${A.fmt(p.pop)} people`,
-        cost: -Math.round(6 + (70 * p.pop) / myPop),
-      });
-  const pay = Math.round(Math.max(600, r.income * 0.12));
-  out.push({
-    k: "pay",
-    grp: "What you give",
-    name: `Pay them ${A.fmt(pay)} suns`,
-    sub: "Silver to end it.",
-    cost: -14,
-    gold: pay,
-  });
-  // [X1 baked patch diplomacy/20-ai-personality AIP-PEACE] A.checkPeace: the loser gives in sooner if cautious,
-  // later if proud or wrathful (A.aiYield); white peace comes sooner between calm, kind, cautious rulers
-  // (A.aiWhite). A.peaceTerms adds the enemy ruler's temper to their willingness. Every settlement is logged.
-  const will =
-    sc * 1.3 +
-    18 +
-    (e.exhaustion || 0) * 0.35 -
-    (r.exhaustion || 0) * 0.15 +
-    (A.atWar(eid).length > 1 ? 10 : 0) +
-    A.aiPeaceWill(eid);
-  return {
-    w,
-    side,
-    my,
-    them,
-    eid,
-    e,
-    r,
-    sc,
-    terms: out,
-    will,
-  };
-};
-
-// [X1 baked patch core/04-world-fixes WLD-REPARATIONS-EXCLUSIVE] "Reparations" and "Crushing reparations" could
-// both be ticked and were both paid: 3.5x gold for cost 44 beat the crushing option alone (2.5x for 30). They are
-// now one choice: the engine keeps only the crushing one if both arrive, and ticking one unticks the other.
-A.peaceOdds = function (T, picks) {
-  if (picks.includes("gold2")) picks = picks.filter(k => k !== "gold");
-  const cost = T.terms.filter(t => picks.includes(t.k)).reduce((a, t) => a + t.cost, 0),
-    p = cost <= 0 ? 0.9 + Math.min(0.08, -cost / 200) : A.clamp(0.55 + (T.will - cost) / 45, 0.02, 0.95);
-  return {
-    cost,
-    p: Math.round(p * 100),
-  };
+  return A.WAR && A.WAR.table ? A.WAR.table(w, rid) : null;
 };
 
 A.peaceOffer = function (wid, picks) {
-  const pc = A.pc(),
-    rid = pc && pc.ruler,
-    w = A.S.wars.find(x => x.id === wid);
-  if (!w || !rid)
-    return {
-      ok: false,
-      msg: "There is no such war.",
-    };
-  if (!(w.leadA === rid || w.leadD === rid))
-    return {
-      ok: false,
-      msg: "Only the leader of your side can make peace.",
-    };
-  const T = A.peaceTerms(w, rid);
-  if (A.S.yearActs["peace_" + wid] >= 2)
-    return {
-      ok: false,
-      msg: "They have heard two offers this year. They will not hear a third.",
-    };
-  A.S.yearActs["peace_" + wid] = (A.S.yearActs["peace_" + wid] || 0) + 1;
-  // [X1 baked patch core/04-world-fixes WLD-REPARATIONS-EXCLUSIVE] "Reparations" and "Crushing reparations" could
-  // both be ticked and were both paid: 3.5x gold for cost 44 beat the crushing option alone (2.5x for 30). They are
-  // now one choice: the engine keeps only the crushing one if both arrive, and ticking one unticks the other.
-  if (picks.includes("gold2")) picks = picks.filter(k => k !== "gold");
-  const { cost, p } = A.peaceOdds(T, picks);
-  if (!A.chance(p / 100)) {
-    A.addRel(rid, T.eid, -4);
-    return {
-      ok: false,
-      msg: `${A.realmShort(T.eid)} refuses your terms (${p}% chance). The war goes on.`,
-    };
-  }
-  const r = T.r,
-    e = T.e,
-    got = [];
-  for (const t of T.terms.filter(x => picks.includes(x.k)))
-    if (t.k.startsWith("take:")) {
-      const pr = A.prov(+t.k.slice(5));
-      if (pr && T.them.includes(pr.owner)) {
-        A.transferProv(pr, rid, true);
-        got.push(pr.name);
-      }
-    } else if (t.k.startsWith("cede:")) {
-      const pr = A.prov(+t.k.slice(5));
-      if (pr && pr.owner === rid) {
-        A.transferProv(pr, pr.occ && T.them.includes(pr.occ) ? pr.occ : T.eid, true);
-        got.push("ceded " + pr.name);
-      }
-    } else if (t.k === "gold" || t.k === "gold2") {
-      e.treasury -= t.gold;
-      r.treasury += t.gold;
-      if (e.treasury < 0) {
-        e.debt += -e.treasury;
-        e.treasury = 0;
-      }
-      got.push(A.fmt(t.gold) + " suns");
-    } else if (t.k === "pay") {
-      r.treasury -= t.gold;
-      e.treasury += t.gold;
-      got.push("paid " + A.fmt(t.gold));
-    } else if (t.k === "trib") {
-      e.overlord = rid;
-      A.unally(rid, e.id);
-      got.push("tribute");
-    } else if (t.k === "unally") {
-      for (const x of e.allies.slice()) if (x !== rid) A.unally(e.id, x);
-      got.push("their alliances broken");
-    } else if (t.k === "humble") {
-      r.legit = Math.min(100, r.legit + 8);
-      e.legit = Math.max(0, e.legit - 8);
-      got.push("submission");
-    }
-  const res = cost > 0 ? T.side : cost < 0 ? (T.side === "att" ? "def" : "att") : "white";
-  A.endWar(w, res, `${w.name} ends at the table: ${got.length ? got.join(", ") : "nothing changes hands"}.`);
-  A.updateRealmPops();
-  if (cost > 30) A.addRel(rid, T.eid, -25);
-  return {
-    ok: true,
-    msg: `Peace! ${got.join(", ") || "White peace."}`,
-  };
+  return A.WAR && A.WAR.send
+    ? A.WAR.send(wid, picks || [])
+    : {
+        ok: false,
+        msg: "No envoys can be sent.",
+      };
 };
 
 A.aiOffers = function (pc) {
@@ -890,40 +707,8 @@ A.aiOffers = function (pc) {
           foe: t.id,
         });
     }
-  for (const w of A.atWar(r.id)) {
-    if (w.leadA !== r.id && w.leadD !== r.id) continue;
-    const side = A.warSide(w, r.id),
-      sc = side === "att" ? w.score : -w.score,
-      eid = side === "att" ? w.leadD : w.leadA,
-      e = A.realm(eid);
-    if (!(!e || e.playerRun)) {
-      if (sc >= 30 || (e.exhaustion > 60 && sc >= 10))
-        out.push({
-          w: 4,
-          kind: "sue",
-          rid: eid,
-          war: w.id,
-        });
-      else {
-        if (sc <= -35)
-          out.push({
-            w: 4,
-            kind: "demand",
-            rid: eid,
-            war: w.id,
-          });
-        else {
-          if ((e.exhaustion > 55 && r.exhaustion > 40) || S.year - w.start >= 4)
-            out.push({
-              w: 2,
-              kind: "whitepeace",
-              rid: eid,
-              war: w.id,
-            });
-        }
-      }
-    }
-  }
+  // W1-5 (D-095): a crown at war with you asks for terms, offers them or is beaten when its own reasons say so (A.WAR
+  // brings its envoys as a card); it no longer sues, demands or offers a white peace from the war score here
   return out;
 };
 
@@ -1115,45 +900,6 @@ A.queueAiOffer = function (pc, r, o) {
       );
       break;
     }
-    case "sue": {
-      const w = A.S.wars.find(x => x.id === o.war);
-      if (!w) return;
-      const side = A.warSide(w, r.id),
-        provs = A.wsTreatyProvinces(w, side);
-      o.provs = provs.map(p => p.id);
-      Q(
-        `${t.short} sues for peace`,
-        `${w.name} is going your way. ${who} offers peace: ${provs.length ? "you keep " + provs.map(p => p.name).join(", ") : "reparations of " + A.fmt(Math.round(t.income * 0.15)) + " suns"}.`,
-        "Accept their surrender",
-        "Fight on for more",
-      );
-      break;
-    }
-    case "demand": {
-      const w = A.S.wars.find(x => x.id === o.war);
-      if (!w) return;
-      const side = A.warSide(w, r.id) === "att" ? "def" : "att",
-        provs = A.wsTreatyProvinces(w, side);
-      o.provs = provs.map(p => p.id);
-      Q(
-        `${t.short} demands your surrender`,
-        `${w.name} is going badly. ${who} offers to stop — if you ${provs.length ? "give up " + provs.map(p => p.name).join(", ") : "pay " + A.fmt(Math.round(r.income * 0.2)) + " suns"}.`,
-        "Accept their terms",
-        "Never — fight on",
-      );
-      break;
-    }
-    case "whitepeace": {
-      const w = A.S.wars.find(x => x.id === o.war);
-      if (!w) return;
-      Q(
-        `${t.short} offers a white peace`,
-        `Both realms are bleeding for ${w.name}. ${who} offers to end it where it stands: no land, no gold.`,
-        "Accept the white peace",
-        "Refuse",
-      );
-      break;
-    }
   }
 };
 
@@ -1226,46 +972,6 @@ Object.assign(A.CHOICE_FN, {
             A.addRel(r.id, t.id, 15);
             A.log(`You sell ${p.name} to ${t.name} for ${A.fmt(o.price)}.`, "warn");
           }
-          break;
-        }
-        case "sue": {
-          const w = A.S.wars.find(x => x.id === o.war);
-          if (!w) return;
-          const side = A.warSide(w, r.id),
-            provs = (o.provs || []).map(A.prov).filter(p => p && w[side === "att" ? "def" : "att"].includes(p.owner));
-          for (const p of provs) A.transferProv(p, r.id, true);
-          if (!provs.length) {
-            const g = Math.round(t.income * 0.15);
-            t.treasury -= g;
-            r.treasury += g;
-          }
-          A.endWar(
-            w,
-            side,
-            `${w.name} ends: ${t.short} sues for peace${provs.length ? " and gives up " + provs.map(p => p.name).join(", ") : " and pays"}.`,
-          );
-          A.updateRealmPops();
-          break;
-        }
-        case "demand": {
-          const w = A.S.wars.find(x => x.id === o.war);
-          if (!w) return;
-          const side = A.warSide(w, r.id) === "att" ? "def" : "att",
-            provs = (o.provs || []).map(A.prov).filter(p => p && p.owner === r.id);
-          for (const p of provs) A.transferProv(p, t.id, true);
-          if (!provs.length) {
-            const g = Math.round(r.income * 0.2);
-            r.treasury -= g;
-            t.treasury += g;
-          }
-          r.legit = Math.max(0, r.legit - 5);
-          A.endWar(w, side, `${w.name} ends: ${r.short} accepts ${t.short}'s terms.`);
-          A.updateRealmPops();
-          break;
-        }
-        case "whitepeace": {
-          const w = A.S.wars.find(x => x.id === o.war);
-          if (w) A.settleWar(w, "white");
           break;
         }
         case "jointwar": {

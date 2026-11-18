@@ -392,17 +392,17 @@ UI.wrWars = function () {
   let h = "";
   for (const w of ws) {
     const side = A.warSide(w, myR),
-      sc = side === "att" ? w.score : -w.score,
+      held = A.warFacts(w, myR).held,
       mine = side === "att" ? w.att : w.def,
       theirs = side === "att" ? w.def : w.att;
-    // W0 (D-052): no war score bar or number; the facts of the war (A.warFactsText). The score still decides, inside the
-    // engine, whether "Demand what you hold" is offered (sc >= 25), but it is not shown.
+    // W0 (D-052): no war score bar or number; the facts of the war (A.warFactsText). W1-5 (D-091): no score at all; a war
+    // ends when one side asks for terms or can fight no more, and "Demand what you hold" is offered when you hold land.
     // [X1 baked patch diplomacy/68-reasons-for-war CB-WAR-ROOM] UI.wrWars: each war in the war room shows why it
     // began, the casus belli recorded when it was declared (UI.csWarLine, w.casus). In the source: one line under the
     // sides of each war.
     h += `<div class="card"><div class="row"><b>${UI.esc(w.name)}</b><span class="right tiny muted">since ${w.start}</span></div><div class="tiny muted">${mine.map(A.realmShort).join(", ")} <b>vs</b> ${theirs.map(A.realmShort).join(", ")}</div>${UI.csWarLine ? UI.csWarLine(w) : ""}
       <div class="small">${UI.esc(A.warFactsText(w, myR))}</div>
-      <div class="tiny muted">A foe gives up land when the war has gone against him: the land you hold (his capital most of all) and the battles you win.</div>
+      <div class="tiny muted">${w.ask ? "Envoys are on the road between the courts." : "A foe asks for terms when his own reasons say so: the land you hold (his capital most of all), the hosts he has lost, the battles, his weariness. Envoys take days on the road."}</div>
       ${
         w.battles.length
           ? `<div class="group-h">Great battles</div>${w.battles
@@ -415,7 +415,7 @@ UI.wrWars = function () {
               .join("")}`
           : ""
       }
-      ${pc.ruler && (w.leadA === pc.ruler || w.leadD === pc.ruler) ? `<div class="row wrap" style="margin-top:6px">${UI.peacePanel ? `<button class="small primary" data-a="wrPeaceT" data-v="${w.id}">${UI.wrIcon("handshake")}Peace table</button>` : ""}<button class="small" data-a="wrPeace" data-v="${w.id}|white">White peace</button>${sc >= 25 ? `<button class="small" data-a="wrPeace" data-v="${w.id}|demand">Demand what you hold</button>` : ""}<button class="small danger" data-a="wrPeace" data-v="${w.id}|concede">Concede</button></div>` : pc.ruler ? '<div class="tiny muted">Only the war leader makes peace.</div>' : ""}</div>`;
+      ${pc.ruler && (w.leadA === pc.ruler || w.leadD === pc.ruler) ? `<div class="row wrap" style="margin-top:6px">${UI.peacePanel ? `<button class="small primary" data-a="wrPeaceT" data-v="${w.id}">${UI.wrIcon("handshake")}Peace table</button>` : ""}<button class="small" data-a="wrPeace" data-v="${w.id}|white">White peace</button>${held > 0 ? `<button class="small" data-a="wrPeace" data-v="${w.id}|demand">Demand what you hold</button>` : ""}<button class="small danger" data-a="wrPeace" data-v="${w.id}|concede">Concede</button></div>` : pc.ruler ? '<div class="tiny muted">Only the war leader makes peace.</div>' : ""}</div>`;
   }
   const news = S.news.filter(n => ["battle", "map", "war", "peace"].includes(n.c)).slice(0, 8);
   // [X1 baked patch world/26-belief-versus-truth BT-NEWS-NOTE] Far news is now set down as it was first told
