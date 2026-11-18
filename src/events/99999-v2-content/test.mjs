@@ -446,7 +446,7 @@ export default {
       UI.worldView = 'dipl'; const pol = V2CT.strip(UI.worldTabPolitics(pc));
       out.lords = (/Restless lords (.{0,80})/.exec(pol) || [])[1] || '';
       A.makeRuler(pc, pc.realm, true);
-      out.quality = (/conscripts · ([a-z ]*?quality)/.exec(V2CT.strip(UI.realmTabBasic(pc))) || [])[1] || '';
+      out.quality = (/on the roll · ([a-z ]*?quality)/.exec(V2CT.strip(UI.realmTabBasic(pc))) || [])[1] || '';
       return out;
     });
     const ok = /^(some|about) /.test(r.foeMen) && !r.foeExact && /^(some|about) /.test(r.multi) && !r.multiExact && r.mine && !r.over && r.lords && !/\d/.test(r.lords) && r.quality && !/\d/.test(r.quality);

@@ -237,7 +237,7 @@
   };
   W.wrManpower = function (h) {
     const r = A.realm(UI.wrMyR(A.pc())); if (!r || !r.forces) return h;
-    h = TT.wireBars(h, lbl => lbl === 'Pool' ? ['manpower', r.id] : null);
+    h = TT.wireBars(h, lbl => lbl === 'The roll' || lbl === 'Pool' ? ['manpower', r.id] : null);
     h = h.replace(/(<small>[^<]*)(Pool ×[\d.]+\.)(<\/small>)/g, (m, a, x, b) => `${a}<span${A_('manpower', r.id)}>${x}</span>${b}`);
     const tpls = Object.values(r.forces.tpl); let i = 0;
     h = h.replace(/<div class="wr-trainrow"><div class="grow"><b class="small">([^<]*)<\/b><div class="tiny muted">/g, (m, nm) => { const t = tpls[i++]; return t ? `<div class="wr-trainrow"><div class="grow"><b class="small">${nm}</b><div class="tiny muted"${UI.ttAttrs('trainCost', r.id + '|' + t.id)}>` : m; });

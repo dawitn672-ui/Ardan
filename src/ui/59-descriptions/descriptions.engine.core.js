@@ -121,6 +121,8 @@
     const s = TT.stack[lvl - 1]; if (!s) return;
     const el = s.el, W = window.innerWidth, H = window.innerHeight, w = Math.min(330, W - 16);
     el.style.width = w + 'px';
+    // a popover taller than the screen scrolls inside itself (a long skill sheet on a 375 x 740 phone ran 751 px: CI 147)
+    el.style.maxHeight = Math.max(120, H - 16) + 'px'; el.style.overflowY = 'auto'; el.style.overscrollBehavior = 'contain';
     el.style.left = '0px'; el.style.top = '0px';
     // a canvas has no parts: the popover sits where it was pressed
     const r = s.pt ? { left: s.pt.x, right: s.pt.x, top: s.pt.y, bottom: s.pt.y } : s.a.getBoundingClientRect(), h = el.offsetHeight;

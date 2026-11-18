@@ -191,15 +191,18 @@
   G.host = function (rid) {
     const r = A.realm(rid || myR()); if (!r || !r.forces) return '';
     const all = r.forces.divs, men = all.reduce((x, d) => x + d.men, 0), full = all.reduce((x, d) => x + A.divS(d).men, 0);
-    return H('The host of ' + esc(r.short), `${fmt(men)} of ${fmt(full)}`) + R('Divisions', all.length) + R(L('manpower', r.id, 'Manpower pool'), fmt(r.roll)) +
+    return H('The host of ' + esc(r.short), `${fmt(men)} of ${fmt(full)}`) + R('Divisions', all.length) + R(L('manpower', r.id, 'The roll'), fmt(r.roll)) +
       R('In training', r.forces.queue.length) + R('Army experience', Math.floor(r.forces.xp), 'tt-sub') +
       D('Army experience is earned in battle and drill.');
   };
   G.manpower = function (rid) {
     const r = A.realm(rid || myR()); if (!r) return '';
     const cap = r.rollCap || Math.max(r.roll, 1), lv = A.CONSCRIPT_LAW && A.CONSCRIPT_LAW[(r.laws || {}).conscript];
-    return H('Manpower', `${fmt(r.roll)} of ${fmt(cap)}`, esc(r.short)) + R('Next year', r.roll >= cap * 0.98 ? 'full' : '+' + fmt(Math.max(0, (cap - r.roll) * 0.2)) + ' (a fifth of the gap)') +
-      (lv ? R('Conscription law: ' + esc(lv[0]), 'pool ×' + lv[1], 'tt-sub') : '') + D('What the land can give, at the conscription law. Training a division takes its men at once; refits draw on it all the time.');
+    // W1-4: the roll (volunteers, one man in a hundred) fills a little each year; the law says how far the crown may call
+    // conscripts by lot on its own word, and no longer swells the roll
+    const calls = ['the first call', 'the second call', 'every call'][(r.laws || {}).conscript != null ? r.laws.conscript : 1] || 'the second call';
+    return H('The roll', `${fmt(r.roll)} of ${fmt(cap)}`, esc(r.short)) + R('Next year', r.roll >= cap * 0.98 ? 'full' : '+' + fmt(Math.max(0, (cap - r.roll) * 0.3)) + ' (volunteers come forward)') +
+      (lv ? R('Conscription law: ' + esc(lv[0]), 'up to ' + calls + ' on the crown\'s word', 'tt-sub') : '') + D('Volunteers who keep their arms and march when mustered: about one man in a hundred of the people. Training a regiment takes its men at once; refits draw on it all the time. Conscripts come only by a call to arms, for a need.');
   };
   G.training = function (arg) {
     const [rid, i] = String(arg).split('|'), r = A.realm(rid), q = r && r.forces && r.forces.queue[+i]; if (!q) return '';

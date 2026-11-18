@@ -1745,3 +1745,36 @@ choose that path"); `docs/design/war.md` §10 and §16; D-064 points 7 and 8; de
     no more than a year of the house's rents nor twice the crown's yearly income.
   Tests on the merged build (`--workers=2`): the core suites with the men, commands, five-ranks and why features (47: every `w4*`, `cm*`, quick `w1*` and `why*` test, `coherencyBaseline`, `savesStillLoad`), then `renderRng`, `replayWithRender`, `poMusterRung`, `poMusterAsBefore`, `riGoldGetsUsed`, `riCourtInTheWorld`, `v2svOldCycle2`: 54 of 54 pass. `lint-reasons` 62, `lint-stages` ok, `--check-tiers` ok (60 long of 896), lint-events and lint-choices (men) clean, `node --test tests/v2` 118/118. Tap targets: `docs/research/ios/tap-probe.mjs` 0 of 450 controls under 44 points;
   W1-4's own views at 375 by 667 (the lot, the proclamation, the release, the War tab's card): 0 under 44.
+
+### H-081 · 2026-11-18 · CI check run 147 after W1-3 and W1-4: eleven failures read (branch `w14-ci`)
+The quick tier on `cc6b6a3` (W1-3 and W1-4 merged; the long run 19 green, balance included) failed 11 tests. Each was read
+against the build just before the merge (`35af4a0`) in this container, and fixed where it is.
+- **The game:**
+  - `mwSourcesIntact`: W1-4 gated the release's scenes of a man taken for service (`lf_lover_to_war`, `wr_hf_lot`,
+    `ss_rp_muster`) and retired `pl_heavy_call` by wrapping their `setup`, which hid 67-choice-memories' own wrapper from
+    the text the test reads. Now gated as 58-event-cut retires an event, by marking it `trigger` while no call is out in
+    the player's realm (`A.CALLS.gate`, on each month, a call proclaimed or ended, and a load); cond, text and setup stay
+    as written. `wr_hf_lot`, also on the cut's list, keeps the cut's mark.
+  - `ttPhone2`: a long skill sheet opened from the market on a 375 × 740 phone ran 751 px, off the screen. A popover now
+    scrolls inside itself when it is taller than the screen (`TT.place`: max height the screen less 16 px).
+  - `ttCov2War`: the War tab's numbers each open a note. W1-3's muster roll (the summary and each lord's men) now carries
+    notes, and W1-4's renamed Manpower bar ("The roll") its link again; its note speaks of the roll and the conscription law
+    as they now are (no "pool ×").
+  - `v2cWarRoomNumbers`: the realm tab read "N muster · quality"; it reads "N on the roll · quality" (the test's own
+    pattern follows). It also failed on `35af4a0` here, but not on CI.
+  - `s1TwoLives`: S1b's memo of a person's concept needs was keyed by his id alone, so twelve new games in one page, each
+    player "p1", shared the first world's needs (and so one fate). Keyed by the world's seed with the id
+    (`36-skills/a-model.core.js`, `SK.view`). The test reads twelve pairs, the bar half of them (7 of 12 apart now).
+- **The tests (the world moved; each fix is commented in the test):**
+  - `sameWorld`: S1b's skill record quotes the scene where a skill was first tried by its title as shown ("A lord in his
+    cups" / "A sepmet in his cups"), as the deed log does; that quote is set aside, the rest compared.
+  - `v2wRankCounts`: the "leak" of an exact enemy count was the scale's legend, "Captain: a block for 200 men", on a day
+    the enemy's dead were exactly 200; the legend is set aside.
+  - `mpfMemory`, `lnWorkAndYear`: their fixtures wrote a skill into `p.skills`, the level's mirror since S1b; seed 4242's
+    and 6905's men now have bodies that hold the skill below the event's bar (order 35). The fixtures set the level
+    (`A.SK.put`) and fall back to the next seed until the body can carry it, as the marches beside them already did.
+  - `cutPoolsKeepFloor`: seed 777's eight-year-old gained a sibling and a farm (three more classic scenes the cut retires)
+    and fell one under the floor; an age band falls back to seeds 778 and 779.
+  - `mtSiegeBread`: seed 53 picked an elven hamlet whose bread stood at the capital's price open and besieged alike; a
+    world whose pick cannot show a siege is passed over for the next (51 to 55, three worlds kept).
+- **Tests** (`--workers=2`, this container): the core suites with the men, commands, skills and why features, 49 of 49; the eleven, the tooltip and tap tests (`tt*`, `tapTargets44`), `renderRng`, `replayWithRender`, `mwBareObject` and the quick `w1*`, 35 of 35. `lint-reasons` 62, `lint-stages` ok, `--check-tiers` ok.

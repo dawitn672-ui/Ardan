@@ -202,11 +202,13 @@ export default {
         }
         return pc.sk.sword.lv;
       };
-      for (let i = 0; i < 6; i++) { const a = one(7100 + i * 2), b = one(7101 + i * 2); out.push([a, b]); }
+      // twelve pairs, the bar half of them (CI 147: after W1-3/W1-4 moved the world, the first six pairs fell to 2 apart;
+      // which seeds' hidden grasp differs is the world's draw, the spread across many pairs is what is tested)
+      for (let i = 0; i < 12; i++) { const a = one(7100 + i * 2), b = one(7101 + i * 2); out.push([a, b]); }
       return out.map(([a, b]) => [SK.levelName(a), SK.levelName(b), Math.abs(SK.wordOf(a) - SK.wordOf(b))]);
     });
     const apart = r.filter(x => x[2] >= 1).length;
-    return { ok: apart >= 3, detail: `${apart} of 6 pairs a word or more apart: ` + r.map(x => `${x[0]} / ${x[1]}`).join('; ') };
+    return { ok: apart >= 6, detail: `${apart} of 12 pairs a word or more apart: ` + r.map(x => `${x[0]} / ${x[1]}`).join('; ') };
   },
 
   // the spread run of the design, in the page's engine: 400 people of ordinary talent, the same good training
