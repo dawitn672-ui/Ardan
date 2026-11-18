@@ -2102,3 +2102,31 @@ D-110 to D-115. Branch `d11-1`, from `origin/v2-integration` at `3584e49`. New f
   wants the annals to drop anything); the index.html change above.
 - **Undo:** revert the branch's commits (the feature folder, the one line in `A.deserialize`, the two functions in
   22-chronicle); saves made meanwhile load in the older build (the marks `0` in the log are skipped by every reader of it).
+
+### H-089 · 2026-11-18 · CI 152 after the W1-6 merge: three failures read (branch `w16-ci`)
+- **Found:** `cmEveryManOneCommand` (W1-3) failed on `3584e49`, seed 13: "FAM-005's contingent split between R40 and R41"
+  (two armies of one realm, not two realms). Traced (scratch probe, every raise and month of the world): the house's six
+  hosts stood together in R41 from the war's raise; months later a seventh, `DPOL01-35`, was formed by W1-4's call to
+  arms (conscripts formed at the lord's seat, `d.own` his house, `CA.form`) and the war map's weekly mobilising
+  (`A.wsDay`, every seventh day) put it in another army, R40. `A.CMD.keepWhole` ran only at a war's raise
+  (`A.wsRaise` → `A.CMD.onRaise`), so a host raised after it was never brought to its lord's contingent. A gap of W1-3
+  and W1-4 together, not a W1-6 decision; W1-6's changes moved seed 13's world (the random stream) into it.
+- **Fixed in the game, not the test** (D-081 point 4: a contingent is kept whole): the weekly mobilising in `A.wsDay`
+  (`src/core/release/core/11-armies-divisions-and-council-a.js`) now calls `A.CMD.keepWhole(rid)` after it forms an army,
+  as the raise does; the same limits hold (an army at 24 hosts, a host in a fight waits for the next week).
+- **`v2nRegrant` (99995-v2-nobility): the test read a title between a death and its regrant.** `TypeError: Cannot read
+  properties of null (reading 'noble')`: the test forces POL-01's first duchy vacant to draw its card, and in seed 202
+  Easterham stood vacant at the moment the twenty years ended (its lord died in 1125's first weeks; vacancies before it
+  in seeds 201 and 202 were regranted within the year, and the test's own bound, at most 5% vacant at worst, held at 4
+  and 5 of 246). Not a one-holder fault, and not W1-6's doing (no record of the realm's peace in POL-01 that world):
+  the world moved. The test now forces a duchy that is held.
+- **`freshRealmsRun` (70-fresh-realms-and-tensions): a life that ended early.** Seed 813's peasant died before the six
+  years, which stops the world's clock (`__frPlay` plays while he lives), so one fresh realm's treasury and relations
+  had not yet moved. Seed 814's one fresh realm, Juma, fell in 1107 to its parent's war of reconquest (W8, begun by
+  POL-20's war council for its lost provinces, four months long): a reasoned end, not W1-6's (no coup, rising, league or
+  feud touched it). The test now plays standby lives (H-082): a life that ends early is not read, and the next seed
+  stands in until four full lives (seeds 811, 812, 814 and 815).
+- **Tests** (`/tmp/ardan/w16/d.html`, on `aa0fdd8` with D11-1): the three pass; the quick tier of commands, men,
+  realm-peace, five-ranks, surrender, companies and posts 83 of 83 (on the W1-6 head), of fresh-realms-and-tensions,
+  v2-nobility, commands and men 53 of 53; `coherency --baseline=quick`: no check rose.
+- **Undo:** revert the branch's commits.
