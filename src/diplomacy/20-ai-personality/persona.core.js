@@ -424,6 +424,11 @@ A.aiPressClaim = function (r, cl) {
   if (!r || !cl) return false;
   const pc = A.pc();
   if (pc && cl.id === pc.id) return true;
+  // W1-6 (D-099): the claimant's own decision through A.WHY (A.PEACE.claimQ: his blood, a child heir, the crown's
+  // doubted right, the realm shaking, lords to back him; his oath and the crown's hosts), no longer a roll on his traits
+  if (A.PEACE && A.PEACE.presses) {
+    return !!A.PEACE.presses(r, cl);
+  }
   const P = A.personPersona(cl), p = clamp(1 * Math.exp(A.AI_TUNE.claimK * P.warLog + .4 * P.pride - .4 * P.caution), .1, 1), yes = A.chance(p), s = yes ? 1 : -1;
   const why = traitWhy(P, 'war', A.AI_TUNE.claimK * s).concat(traitWhy(P, 'pride', .4 * s), traitWhy(P, 'caution', -.4 * s));
   why.push([`${cap(r.short)} is ${r.stability < 30 ? 'tottering' : 'divided'} (stability ${Math.round(r.stability)})`, s * (.3 + Math.max(0, 40 - r.stability) / 60)]);
@@ -431,26 +436,8 @@ A.aiPressClaim = function (r, cl) {
   A.aiLogAdd(yes ? 'claim' : 'kneel', r.id, null, yes ? `refuses to kneel and claims the throne of ${short(r.id)}.` : `has a claim to the throne of ${short(r.id)}, but kneels.`, why, `claimant ${name}`);
   return yes;
 };
-// a faction's demand: the ruler yields or refuses (pride, caution), then the faction's leader rises or backs down (his own temper)
-A.aiFactionAnswer = function (r, f) {
-  const P = A.rulerPersona(r.id), adj = clamp(.12 * (P.caution - P.pride) - .05 * P.wrath, -.25, .25);
-  const yes = A.chance(clamp(f.power * 1.4 - r.stability / 200 + adj, .1, .85)), s = yes ? 1 : -1, F = (A.FACTIONS || {})[f.kind] || {};
-  const why = traitWhy(P, 'caution', .12 * 8 * s).concat(traitWhy(P, 'pride', -.12 * 8 * s), traitWhy(P, 'wrath', -.05 * 8 * s));
-  why.push([`The faction holds ${Math.round(f.power * 100)}% of the swords`, s * (f.power * 1.4 - .3)], [`Stability ${Math.round(r.stability)}`, -s * r.stability / 200]);
-  A.aiLogAdd(yes ? 'yieldfac' : 'defyfac', r.id, null, yes ? `yields to the ${F.name || 'faction'}: ${F.demand || 'its demand'}.` : `refuses the ${F.name || 'faction'}.`, why);
-  return yes;
-};
-A.aiRevolt = function (r, f) {
-  const lead = A.S.houses[f.leader], head = lead ? A.houseHead(lead.id) : null;
-  if (!head || (A.pc() && head.id === A.pc().id)) return true;
-  const P = A.personPersona(head), p = clamp(.95 * Math.exp(A.AI_TUNE.claimK * P.warLog + .4 * P.pride - .4 * P.caution), .1, 1), yes = A.chance(p), s = yes ? 1 : -1, F = (A.FACTIONS || {})[f.kind] || {};
-  const why = traitWhy(P, 'war', A.AI_TUNE.claimK * s).concat(traitWhy(P, 'pride', .4 * s), traitWhy(P, 'caution', -.4 * s));
-  why.push([`The crown refused: ${F.demand || 'their demand'}`, s * .4]);
-  const name = A.fullName(head, false);
-  A.aiLogAdd(yes ? 'revolt' : 'backdown', r.id, null, yes ? `raises the banners of revolt against the crown of ${short(r.id)}.` : `backs down rather than rise against the crown of ${short(r.id)}; the faction breaks up.`, why, `${F.name || 'faction'} leader ${name}`);
-  if (!yes) A.S.factions = (A.S.factions || []).filter(x => x !== f);
-  return yes;
-};
+// a faction's demand and a refused faction's answer: W1-6's A.PEACE.answer and A.PEACE.theirAnswer (src/nobility/
+// 9999954-realm-peace); A.aiFactionAnswer and A.aiRevolt are retired (archive/w1-6-faction-dice)
 // a coalition marches: the strongest hawk among the members leads it
 A.aiNoteCoalition = function (lead, t, mem) {
   const P = A.rulerPersona(lead), rt = A.realm(t);

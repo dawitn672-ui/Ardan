@@ -475,9 +475,20 @@ RI.deal = function (r) {
   const lead = A.S.houses[f.leader], head = lead ? A.houseHead(lead.id) : null;
   if (!head || !live(head) || head.id === A.S.pc) return null;
   const why = [[`The ${F.name || 'faction'} holds ${Math.round((f.power || 0) * 100)}% of the swords`, .3], [`Discontent ${Math.round(f.discontent)}`, .2]];
-  const pAct = clamp(.35 + .3 * P.caution + .2 * P.warmth - .35 * P.pride - .15 * P.wrath, .05, .85);
   for (const [l, v] of [['A cautious crown', .3 * P.caution], ['A proud crown', -.35 * P.pride], ['A generous crown', .2 * P.warmth]]) if (Math.abs(v) >= .03) why.push([l, r2(v), 1]);
-  if (!A.chance(pAct)) {
+  // W1-6 (D-098): whether the crown treats with a league close to rising is the ruler's decision through A.WHY (the
+  // league's swords and anger, a quarrel's cost; against, a crown that will not be seen to pay its lords), his temper
+  // bending it (caution weighs the fear, pride the insult); before W1-6 a roll on clamp(.35 + .3 caution + .2 warmth -
+  // .35 pride - .15 wrath)
+  const dealRec = A.WHY ? A.WHY.decide(r.id, 'deal', [
+    { id: 'deal', at: head.id, feeds: ['fear'], reasons: [
+      { kind: 'fear', weight: r2(2.5 * ((f.power || 0) - .2)), label: `The ${F.name || 'faction'} holds ${(f.power || 0) >= .35 ? 'a great part' : 'part'} of the swords`, source: { t: 'power', id: f.id }, pub: 1 },
+      { kind: 'reckoning', weight: r2(((f.discontent || 0) - 40) / 40), label: 'Their anger with the crown', source: { t: 'anger', id: f.id }, pub: 1 },
+      { kind: 'kin', weight: .2, label: 'An open hand to his own lords', source: { t: 'warmth' }, pub: 0 },
+    ] },
+    { id: 'refuse', at: head.id, feeds: ['pride', 'anger'], reasons: [{ kind: 'insult', weight: .4, label: 'A crown that pays its lords to be loyal', source: { t: 'pride' }, pub: 0 }] },
+  ], { band: 1.5, r: r.id, at: f.kind, logIf: x => x.chose === 'deal' }) : null;
+  if (!dealRec || dealRec.chose !== 'deal') {
     logCourt(r, { k: 'refuse', who: head.id, house: lead.id, fac: f.kind, yes: false, why });
     aiLog('court', r, `will not treat with the ${F.name || 'faction'} of ${lead.name}.`, why.map(x => [x[0], -x[1], x[2]]));
     return 'refuse';
@@ -531,7 +542,13 @@ RI.session = function (r) {
     // council business: twice a reign's life, twelve years apart (97-first-life-fixes' rule for council and duty scenes);
     // a year the court's push is held back, the matter waits (cycle 1: "The council presses" 21 to 24 times a reign)
     const held = A.LF && A.LF.held && A.EV.ri_court_push ? A.LF.held(A.EV.ri_court_push, pc) : false;
-    if (t && t.pro[0] && !held && A.chance(.6) && !A.S.queue.some(q => q.ev === 'ri_court_push')) {
+    // W1-6 (D-102): the loudest voice decides whether to press the matter this year (his want's weight in the tally,
+    // against waiting on the crown's mood), no longer A.chance(.6)
+    const pressRec = t && t.pro[0] && !held && A.WHY ? A.WHY.decide(t.pro[0][0].p, 'press', [
+      { id: 'press', at: r.ruler, reasons: [{ kind: 'want', weight: r2(.3 + .2 * Math.min(2, t.pro[0][1] || 1)), label: `${RI.wantText(RI.aims(t.pro[0][0].p).want)}`, source: { t: 'push', id: t.k }, pub: 1 }] },
+      { id: 'wait', at: r.ruler, reasons: [{ kind: 'fear', weight: .1, label: 'The crown\'s mood this year', source: { t: 'mood' }, pub: 0 }] },
+    ], { band: 1.5, r: r.id, at: t.k, log: false }) : null;
+    if (t && t.pro[0] && !held && pressRec && pressRec.chose === 'press' && !A.S.queue.some(q => q.ev === 'ri_court_push')) {
       const top = t.pro[0][0], foe = t.con[0] ? t.con[0][0] : null;
       A.queue({ type: 'event', ev: 'ri_court_push', ctx: { pid: top.p.id, push: PUSH[t.k].t, riK: t.k, seatT: top.seat ? 'your ' + A.COUNCIL[top.seat].name : RI.voiceLabel(top, r), wantT: RI.wantText(RI.aims(top.p).want),
         foeName: foe ? A.fullName(foe.p, false) : 'nobody', foeT: foe ? RI.fearText(RI.aims(foe.p).fear) : 'nothing', foeId: foe ? foe.p.id : null, npcMove: true } });
@@ -577,8 +594,12 @@ RI.joinFactions = function (r) {
   for (const v of RI.voices(r)) {
     if (!v.h) continue;
     const kind = RI.facFor(r, v);
-    if (!kind || S0.factions.some(f => f.realm === r.id && f.members.includes(v.h.id)) || !A.chance(.3)) continue;
+    if (!kind || S0.factions.some(f => f.realm === r.id && f.members.includes(v.h.id))) continue;
     let f = S0.factions.find(x => x.realm === r.id && x.kind === kind);
+    // W1-6 (D-098): the court voice's house decides as any house does (A.WHY.factionChoice, with §13.3's tie and
+    // standing), no longer A.chance(.3)
+    const rec = A.WHY ? A.WHY.factionChoice(r, v.h, null, kind, f ? f.members.length : 0, A.PEACE ? A.PEACE.joinExtra(r, v.h, kind, f) : null) : null;
+    if (!rec || rec.chose !== 'join') continue;
     if (!f) { f = { id: 'F' + (S0.nextFaction = (S0.nextFaction || 0) + 1), realm: r.id, kind, members: [], leader: v.h.id, start: S0.year, discontent: 0, riBy: v.p.id }; S0.factions.push(f); }
     f.members.push(v.h.id);
   }

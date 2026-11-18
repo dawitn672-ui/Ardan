@@ -961,10 +961,16 @@ A.councilPropose = function (kind, tid) {
   if (kind === "ally") ch += A.relBetween(r.id, t.id) / 150 - (r.allies.length >= 3 ? 0.3 : 0);
   if (kind === "nap") ch += 0.15;
   // W1-5 (D-095): counsel to make peace is weighed by the ruler with his own will to fight: your counsel (your standing
-  // with him and your skill) is one reason among his (A.WAR.counsel, through A.WHY), not a roll
-  // (counsel for war, an alliance or a pact is still the release's roll on ch: W1-6's, docs/design/r1-audit.md)
-  const counselRec = kind === "peace" && A.WAR && A.WAR.counsel ? A.WAR.counsel(r, t, pc, ch) : null,
-    yes = counselRec ? counselRec.chose === "ask" : A.chance(A.clamp(ch, 0.03, 0.9));
+  // with him and your skill) is one reason among his (A.WAR.counsel, through A.WHY), not a roll.
+  // W1-6 (D-102): so is counsel for war, an alliance or a pact (A.PEACE.counselQ: the war council's own reasons, his
+  // allies, his friendship with them, the pact's wall); the release's roll on ch is gone.
+  const counselRec =
+      kind === "peace" && A.WAR && A.WAR.counsel
+        ? A.WAR.counsel(r, t, pc, ch)
+        : kind !== "peace" && A.PEACE
+          ? A.PEACE.counselQ(r, t, pc, kind, ch)
+          : null,
+    yes = counselRec ? counselRec.chose === "ask" || counselRec.chose === "act" : false;
   if ((ru && A.addOp(ru, pc, yes ? 2 : -2), !yes)) {
     A.log("The council hears you out. The crown decides against it.", "warn");
     return {
@@ -991,7 +997,9 @@ A.councilPropose = function (kind, tid) {
     }
   }
   if (kind === "ally") {
-    if (A.relBetween(r.id, t.id) > 20 && A.chance(0.5)) {
+    // W1-6 (D-102): the other crown answers by its own reasons (A.PEACE.allyQ), no longer A.chance(0.5)
+    const allyRec = A.PEACE ? A.PEACE.allyQ(t, r) : null;
+    if (A.relBetween(r.id, t.id) > 20 && allyRec && allyRec.chose === "sign") {
       A.ally(r.id, t.id);
       A.log(`On your counsel, ${r.short} and ${t.name} swear an alliance.`, "good");
     } else {

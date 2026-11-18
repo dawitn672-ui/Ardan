@@ -231,14 +231,20 @@
 
   // ---------------------------------------------------------------- the three decisions
   const FIGHT_FEEDS = ['pride', 'anger', 'shame', 'zeal', 'grief'];
+  // more reasons to ask, from outside the war's own facts (W1-6's A.PEACE: lords refusing service, a council's vote, a
+  // coup made to end the war): fn(w, side, facts) -> [reason]
+  WAR.askHooks = WAR.askHooks || [];
   // 1. shall I ask for terms? (each month, after a lost battle or a fallen capital)
   WAR.yieldQ = function (w, s, f, o) {
     o = o || {};
     f = f || WAR.facts(w, s);
     const P = E.will(f), foe = WAR.lead(w, other(s));
+    // W1-6 (war.md §11.3 point 6, "he can be made to"): his lords refusing service, his council's vote, a coup's purpose
+    let extra = o.extra || [];
+    for (const fn of WAR.askHooks) { const x = fn(w, s, f); if (x && x.length) extra = extra.concat(x); }
     return W.decide(WAR.lead(w, s), 'yield', [
       { id: 'fight', at: foe, feeds: FIGHT_FEEDS, reasons: P.fight },
-      { id: 'ask', at: foe, feeds: ['fear'], reasons: o.extra ? P.ask.concat(o.extra) : P.ask },
+      { id: 'ask', at: foe, feeds: ['fear'], reasons: extra.length ? P.ask.concat(extra) : P.ask },
     ], { band: WAR.T.yieldBand, r: WAR.lead(w, s), at: foe, log: o.log, logIf: rec => rec.chose !== 'fight' });
   };
   // a councillor counsels peace (the release's A.councilPropose): his counsel is one more reason to ask, weighed by the

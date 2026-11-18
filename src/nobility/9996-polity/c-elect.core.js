@@ -225,7 +225,18 @@ if (FW && typeof FW.election === 'function') {
       const h = A.genNoble(me.id, 'noble', null, A.ri(34, 56), 'M');
       h.sur = 'Harovi'; h.surMode = 'house'; A.SK.raiseTo(h, 'command', 45, 'raised to lead'); h.fame = Math.max(h.fame || 0, 40);
       const kname = ka ? A.fullName(ka, false) : 'The Spear-Lord';
-      if (A.chance(clamp(0.25 + (me.legit || 50) / 250 + (me.stability || 50) / 400, 0.3, 0.7))) {
+      // W1-6 (D-102): the Spear-Lord's own decision through A.WHY: keep the staff for his house (his right as the realm
+      // sees it, a realm quiet behind him, his ambition) or let the forty households elect (their law, the Harovi's
+      // swords); before W1-6 a roll on clamp(.25 + legitimacy / 250 + stability / 400)
+      const keepRec = A.WHY ? A.WHY.decide(ka && ka.alive ? ka : me.id, 'staff', [
+        { id: 'keep', at: h.id, feeds: ['pride', 'greed'], reasons: [
+          { kind: 'claim', weight: Math.round(((me.legit || 50) - 50) / 25 * 100) / 100, label: (me.legit || 50) >= 50 ? 'The realm holds his right good' : 'The realm doubts his right', source: { t: 'legit', r: Math.round(me.legit || 50) }, pub: 1 },
+          { kind: 'reckoning', weight: Math.round(((me.stability || 50) - 50) / 40 * 100) / 100, label: (me.stability || 50) >= 50 ? 'The realm is quiet behind him' : 'The realm is restless', source: { t: 'stability', r: Math.round(me.stability || 50) }, pub: 1 },
+          { kind: 'ambition', weight: .4, label: 'The staff for his own house', source: { t: 'house' }, pub: 0 },
+        ] },
+        { id: 'elect', at: h.id, feeds: ['fear'], reasons: [{ kind: 'duty', weight: .5, label: 'The law of the forty households', source: { t: 'law' }, pub: 1 }] },
+      ], { band: 1.5, r: me.id, at: 'staff' }) : null;
+      if (keepRec && keepRec.chose === 'keep') {
         me.gov = 'hereditary';
         A.news(`${kname} marries the Ember Queen and keeps the Spear-Lord's staff for his house. The Harovi household calls it theft.`, 'crown');
         if (A.successionWar) A.successionWar(me, h);

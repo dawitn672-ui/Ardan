@@ -110,8 +110,11 @@ A.factionsYear = function (r) {
     auth = (r.laws && r.laws.authority) != null ? r.laws.authority : 1,
     drift = A.AUTH[auth][2] / 4 + (r.laws && r.laws.conscript != null ? A.CONSCRIPT_LAW[r.laws.conscript][2] : 0),
     houses = A.realmHouses(r.id);
-  for (const h of houses)
-    h.op = A.clamp((h.op != null ? h.op : 50) + drift + A.ri(-2, 2) + (r.stability - 50) / 60, 0, 100);
+  // [W1-6, D-098] A house's loyalty moves toward the sum of its named terms (A.PEACE.housesYear: the crown's hand, the
+  // throne's firmness, his oath, a seat or office, wrongs remembered, his temper, his faith and people, lost wars), no
+  // longer by a random walk of ±2 a year. (Before W1-6: drift + A.ri(-2, 2) + (stability - 50) / 60.)
+  if (A.PEACE) A.PEACE.housesYear(r, houses);
+  else for (const h of houses) h.op = A.clamp((h.op != null ? h.op : 50) + drift + (r.stability - 50) / 60, 0, 100);
   const atWar = A.atWar(r.id).length > 0,
     want = h => {
       const op = h.op != null ? h.op : 50,
@@ -140,7 +143,8 @@ A.factionsYear = function (r) {
       w = want(h);
     if ((!w && !cur) || (cur && cur.kind === w) || !A.WHY) continue;
     const fw = w ? S.factions.find(x => x.realm === r.id && x.kind === w) : null,
-      rec = A.WHY.factionChoice(r, h, cur, w, fw ? fw.members.length : 0);
+      // [W1-6, D-098] §13.3's test: a tie to the houses sworn, or the standing to raise the banner first
+      rec = A.WHY.factionChoice(r, h, cur, w, fw ? fw.members.length : 0, A.PEACE && w ? A.PEACE.joinExtra(r, h, w, fw) : null);
     if (!rec || rec.chose === "stay") continue;
     if (cur) cur.members = cur.members.filter(x => x !== h.id);
     if (rec.chose !== "join") continue;
@@ -157,13 +161,18 @@ A.factionsYear = function (r) {
       };
       S.factions.push(f);
       if (A.WHY && A.WHY.factionFormed) A.WHY.factionFormed(r, f, h, rec);
+      if (A.PEACE) A.PEACE.note(r, { k: "faction", chose: "found", fac: w, h: h.id }, rec);
     }
     f.members.push(h.id);
   }
   for (const f of A.factionsOf(r.id).slice()) {
+    // [W1-6, D-098] a league is two houses or more (war.md §13.3): one that has found no second house within its first
+    // year breaks up (before W1-6: three years, and an independence faction of one never)
     if (
       ((f.members = f.members.filter(id => S.houses[id] && !S.houses[id].extinct)),
-      (!f.members.length || (f.members.length < 2 && f.kind !== "independence" && S.year - f.start >= 3)) && !f.pc)
+      (!f.members.length ||
+        (f.members.length < 2 && (A.PEACE || f.kind !== "independence") && S.year - f.start >= (A.PEACE ? 1 : 3))) &&
+        !f.pc)
     ) {
       S.factions = S.factions.filter(x => x !== f);
       continue;
@@ -174,6 +183,13 @@ A.factionsYear = function (r) {
     }
     if (f.kind === "war" && atWar) {
       f.discontent = 0;
+      continue;
+    }
+    // [W1-6, D-098] the league's anger is a reading (its members' grievance, its swords, events' anger fading), and its
+    // leader decides each year whether to bring the petition (A.PEACE.factionTurn, through A.WHY). (Before W1-6: +12 or
+    // +4 a year, and the demand at 60 with 40% of the swords.)
+    if (A.PEACE) {
+      A.PEACE.factionTurn(r, f);
       continue;
     }
     f.power = A.factionPower(f);
@@ -218,10 +234,11 @@ A.factionDemand = function (r, f) {
   // (A.aiPressClaim); a refused faction rises or backs down by its leader's traits (A.aiRevolt), and the ruler
   // yields or refuses by pride and caution (A.aiFactionAnswer). Event-driven civil wars are untouched. A coalition
   // is led by its strongest hawk.
-  if (A.aiFactionAnswer(r, f)) A.factionConcede(r, f);
-  else {
-    if (A.aiRevolt(r, f)) A.factionRevolt(r, f);
-  }
+  // [W1-6, D-098] The crown answers through A.WHY (grant, buy, arrest, refuse) and the league answers a refusal (back
+  // down, wait, withhold, rise): A.PEACE.answer. 20-ai-personality's A.aiFactionAnswer and A.aiRevolt (persona-weighted
+  // dice) are retired (archive/w1-6-faction-dice).
+  if (A.PEACE) A.PEACE.answer(r, f);
+  else A.factionConcede(r, f);
 };
 
 A.factionConcede = function (r, f) {
@@ -411,19 +428,27 @@ Object.assign(A.CHOICE_FN || (A.CHOICE_FN = {}), {
       );
     } else {
       A.log("You cannot afford their price. They take your silence as a refusal.", "bad");
-      A.factionRevolt(r, f);
+      A.CHOICE_FN.facRefuse(fid);
     }
   },
+  // [W1-6, D-098] refused, the league's leader answers by his reasons (A.PEACE.theirAnswer: back down, wait, withhold,
+  // rise), no longer by A.chance(0.35 - power / 3)
   facRefuse(fid) {
     const f = (A.S.factions || []).find(x => x.id === fid),
       r = f && A.realm(f.realm);
-    if (!(!f || !r))
-      if (A.chance(0.35 - f.power / 3)) {
-        A.log(`You refuse. The ${A.FACTIONS[f.kind].name} blusters, counts its swords, and backs down.`, "good");
-        r.legit = Math.min(100, r.legit + 5);
-        f.discontent = 0;
-        for (const id of f.members) if (A.S.houses[id]) A.S.houses[id].op = Math.max(0, (A.S.houses[id].op || 40) - 10);
-      } else A.factionRevolt(r, f);
+    if (!f || !r) return;
+    const rec = A.PEACE ? A.PEACE.theirAnswer(r, f) : null;
+    if (!rec) {
+      A.log(`You refuse. The ${A.FACTIONS[f.kind].name} goes home to think on it.`, "warn");
+      return;
+    }
+    const told = A.WHY.tell(rec, true);
+    if (rec.chose === "back")
+      A.log(`You refuse. The ${A.FACTIONS[f.kind].name} counts its swords and backs down. ${told}`, "good");
+    else if (rec.chose === "wait") A.log(`You refuse. The ${A.FACTIONS[f.kind].name} goes home to bide its time. ${told}`, "warn");
+    else if (rec.chose === "withhold")
+      A.log(`You refuse. The houses of the ${A.FACTIONS[f.kind].name} withhold their taxes and their men. ${told}`, "bad");
+    A.PEACE.doAnswer(r, f, rec);
   },
 });
 
@@ -1737,16 +1762,23 @@ DEC("purge", {
       R("Spymaster with Intrigue 30+", r && A.councilSkill(r, "spymaster") >= 30),
     ];
   },
+  // [W1-6, D-098] whether the leader is taken or flees is his own decision, warned or not (A.PEACE.arrestQ: the
+  // spymaster's secrecy, his own care, a friend on the council), no longer A.chance(0.35 + spymaster / 200 - power / 2)
   run(pc) {
     const r = A.myRealm(),
       f = A.factionsOf(r.id).sort((a, b) => (b.power || 0) - (a.power || 0))[0],
       lead = A.S.houses[f.leader];
-    if (A.chance(A.clamp(0.35 + A.councilSkill(r, "spymaster") / 200 - (f.power || 0) / 2, 0.1, 0.85))) {
-      A.S.factions = A.S.factions.filter(x => x !== f);
-      if (lead) lead.op = 5;
-      for (const h of A.realmHouses(r.id)) h.op = A.clamp((h.op || 50) - 4, 0, 100);
-      r.legit = Math.max(0, r.legit - 3);
-      return `Your guards take the head of ${lead ? lead.name : "the faction"} at dawn. The ${A.FACTIONS[f.kind].name} breaks apart. The other lords watch very quietly.`;
+    if (A.PEACE) {
+      const how = A.PEACE.doArrest(r, f, { noRise: true });
+      if (how === "taken")
+        return `Your guards take the head of ${lead ? lead.name : "the faction"} at dawn. The ${A.FACTIONS[f.kind].name} breaks apart. The other lords watch very quietly.`;
+      const ans = A.PEACE.theirAnswer(r, f, { arrest: true });
+      if (ans && ans.chose !== "rise") {
+        A.PEACE.doAnswer(r, f, ans);
+        return `${lead ? lead.name : "The faction's leader"} was warned and is gone from his hall before your guards arrive. The ${A.FACTIONS[f.kind].name} does not rise, yet.`;
+      }
+      A.factionRevolt(r, f);
+      return `The arrest is botched. ${lead ? lead.name : "The faction"} escapes to raise the banners. Civil war.`;
     }
     A.factionRevolt(r, f);
     return `The arrest is botched. ${lead ? lead.name : "The faction"} escapes to raise the banners. Civil war.`;

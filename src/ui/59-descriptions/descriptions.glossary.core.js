@@ -366,6 +366,7 @@
       if (r.debt > r.income * 2) parts.push(['Debt over two years\' income', -4]);
       parts.push([L('realmLegit', r.id, 'Legitimacy'), (r.legit - 50) / 25]);
       if (A.atWar(r.id).length) parts.push(['At war', -2]);
+      if (A.PEACE) { const y = A.PEACE.yearPush(r); if (y) parts.push(['The lords and the crown\'s own standing', y]); }
     } else {
       const Lr = LORE.realms && LORE.realms[r.id], tgt = (A.STAB[Lr ? Lr.stability : 'steady'] || 55);
       parts.push([`Settles toward ${tgt} (a ${esc(Lr ? Lr.stability : 'steady')} realm), 15% of the gap`, (tgt - r.stability) * 0.15]);
@@ -378,9 +379,15 @@
   };
   G.realmStab = function (id) {
     const r = realmOf(id); if (!r) return '';
+    // W1-6 (D-097): stability is a reading of named pressures; the word and its reasons
+    if (A.PEACE && !(pc() && pc().ruler === r.id && r.playerRun)) {
+      const P = A.PEACE.reasons(r).sort((a, b) => Math.abs(b.v) - Math.abs(a.v)).slice(0, 9);
+      return H('Stability', esc(A.PEACE.word(r.stability)), esc(r.short)) + D(esc(A.PEACE.noteText(r))) + D('Order in the land: the sum of what holds the realm up and what pulls it down; each year it settles part of the way toward that sum.') +
+        P.map(x => R(esc(x.label), sg(r1(x.v)), 'tt-sub')).join('');
+    }
     const parts = TT.stabParts(r), sum = parts.reduce((a, x) => a + x[1], 0);
     return H('Stability', r0(r.stability), esc(r.short)) + D('Order in the land: low stability brings revolts and pretenders, and below 18 a rising becomes likely.') +
-      `<div class="tip-row tt-sum"><span>Next year, before luck (±3)</span><b>${sg(r1(sum))}</b></div>` + parts.map(x => R(x[0], sg(r1(x[1])), 'tt-sub')).join('') +
+      `<div class="tip-row tt-sum"><span>Next year</span><b>${sg(r1(sum))}</b></div>` + parts.map(x => R(x[0], sg(r1(x[1])), 'tt-sub')).join('') +
       (r.playerRun ? F('As ruler, stability also sets your income: ×' + r1(0.6 + r.stability / 250) + '.') : '');
   };
   G.realmLegit = function (id) {

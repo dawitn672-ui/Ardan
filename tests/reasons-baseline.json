@@ -1,23 +1,17 @@
 {
-  "about": "Bare-dice decisions in AI code (tools/lint-reasons.mjs, W1-2, R1, D-069): a roll of A.chance or rng.chance that decides a war, a peace, a faction, a revolt, an appointment, an alliance, a claim or a succession without A.WHY.decide. The count may only fall: tools/check.mjs fails when it rises. Lower it with node tools/lint-reasons.mjs --write when a decision is routed through A.WHY; never raise it without a line in docs/DECISIONS.md. W1-2 set it: 72 before (2d7de66), 66 once the war council, DV.tryWar and the faction choices went through A.WHY. docs/design/r1-audit.md lists the rest. W1-3 lowered it to 63: the crown's General for a new army (A.wsGeneralFor), its judgment on an ignored summons (ignoreSummons) and a league member joining a war on a conqueror (A.callExtra) go through A.WHY. W1-4 lowered it to 62: the v2 kit's call to the muster (src/core/engine/game.js) goes through the why engine; the new decisions of W1-4 (a crown's call to arms, a lord's answer to it, the term's end, a commander's answer to a mutiny) were built on A.WHY and add none. W1-5 lowered it to 58: the old A.settleWar's two rolls (a claimant kneeling or a split; a crushing peace annexing the realm), the ruler's peace offer rolled against the score (A.rulerAction 'peace') and the peace table's roll (A.peaceOffer) are gone; a war ends only by a decider's surrender or by defeat, through A.WHY (src/war/9999953-surrender, D-091).",
-  "bareDice": 58,
+  "about": "Bare-dice decisions in AI code (tools/lint-reasons.mjs, W1-2, R1, D-069): a roll of A.chance or rng.chance that decides a war, a peace, a faction, a revolt, an appointment, an alliance, a claim or a succession without A.WHY.decide. The count may only fall: tools/check.mjs fails when it rises. Lower it with node tools/lint-reasons.mjs --write when a decision is routed through A.WHY; never raise it without a line in docs/DECISIONS.md. W1-2 set it: 72 before (2d7de66), 66 once the war council, DV.tryWar and the faction choices went through A.WHY. docs/design/r1-audit.md lists the rest. W1-3 lowered it to 63: the crown's General for a new army (A.wsGeneralFor), its judgment on an ignored summons (ignoreSummons) and a league member joining a war on a conqueror (A.callExtra) go through A.WHY. W1-4 lowered it to 62: the v2 kit's call to the muster (src/core/engine/game.js) goes through the why engine; the new decisions of W1-4 (a crown's call to arms, a lord's answer to it, the term's end, a commander's answer to a mutiny) were built on A.WHY and add none. W1-5 lowered it to 58: the old A.settleWar's two rolls (a claimant kneeling or a split; a crushing peace annexing the realm), the ruler's peace offer rolled against the score (A.rulerAction 'peace') and the peace table's roll (A.peaceOffer) are gone; a war ends only by a decider's surrender or by defeat, through A.WHY (src/war/9999953-surrender, D-091). W1-6 lowered it to 42: the faction ladder (A.aiFactionAnswer, A.aiRevolt, facRefuse, the purge's arrest, RI.deal, RI.joinFactions), the commons' and a lord's rising (A.rulerYear, A.vassalYear), a claimant's press (A.rulerDies's contested succession, a breaking realm's claimant), a neighbour backing a side in a war of succession (A.successionWar, two), the council's counsel of war, an alliance or a pact and the other crown's answer (A.councilPropose, whose acceptance roll the heuristic now counts: 'counsel' and 'councilPropose' in DECIDES), the court push (RI.session), the Spear-Lord's staff (FW.election) go through A.WHY; A.startWar's dead ally rolls are retired (archive/w1-6-faction-dice) (D-097 to D-103).",
+  "bareDice": 42,
   "byFile": {
-    "src/core/release/core/03-engine-base.js": 2,
-    "src/core/release/core/04-realms-and-war-years-a.js": 3,
     "src/core/release/core/04-realms-and-war-years-b.js": 1,
     "src/core/release/core/09-missions-and-line-battles.js": 1,
-    "src/core/release/core/11-armies-divisions-and-council-a.js": 2,
     "src/core/release/core/12-nobility-and-politics.js": 2,
-    "src/core/release/core/13-factions-and-decisions.js": 4,
-    "src/core/release/core/17-careers-and-event-engine-a.js": 15,
+    "src/core/release/core/13-factions-and-decisions.js": 2,
+    "src/core/release/core/17-careers-and-event-engine-a.js": 14,
     "src/core/release/core/17-careers-and-event-engine-b.js": 11,
     "src/core/release/core/18-event-view-a.js": 1,
     "src/map/70-fresh-realms-and-tensions/fresh.core.js": 2,
     "src/world/engine/world.js": 1,
-    "src/nobility/56-court-and-treasury/court.core.js": 3,
     "src/nobility/9996-polity/a-polity.core.js": 1,
-    "src/nobility/9996-polity/c-elect.core.js": 1,
-    "src/diplomacy/20-ai-personality/persona.core.js": 2,
     "src/diplomacy/engine/diplomacy.js": 6
   }
 }

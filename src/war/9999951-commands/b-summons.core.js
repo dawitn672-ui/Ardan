@@ -332,7 +332,8 @@
     // a commission over great lords of higher birth than the General: a grievance in their houses (the army's quarrel, W1-6)
     if (a.cmdBy === 'commission') {
       const g = A.P(a.gen), gh = g && g.house && A.S.houses[g.house], gr = gh ? CM.rungIdx(gh.rung) : -1;
-      for (const h of great) if (h !== gh && CM.rungIdx(h.rung) > gr) { CM.grieve(h, 'passed', `${A.fullName(g, false)} given the command over them`); h.op = clamp((h.op != null ? h.op : 50) - 2, 0, 100); }
+      // W1-6 (D-101): and each such lord answers the slight: obeys coldly, comes late, or takes his host home (A.PEACE.quarrel)
+      for (const h of great) if (h !== gh && CM.rungIdx(h.rung) > gr) { CM.grieve(h, 'passed', `${A.fullName(g, false)} given the command over them`); h.op = clamp((h.op != null ? h.op : 50) - 2, 0, 100); if (A.PEACE && A.PEACE.quarrel) A.PEACE.quarrel(a, h, g); }
     }
     void lords;
     return rec;
