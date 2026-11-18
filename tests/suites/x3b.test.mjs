@@ -98,6 +98,9 @@ export default {
         { seed: 703, status: 'peasant', startAge: 12, sex: 'M', realm: 'POL-01' }, { seed: 704, status: 'artisan', startAge: 28, sex: 'F', realm: 'POL-07' },
         { seed: 705, status: 'royal', startAge: 22, sex: 'M', realm: 'POL-02' }, { seed: 706, status: 'serf', startAge: 20, sex: 'F', realm: 'POL-05' },
         { seed: 707, status: 'noble', startAge: 18, sex: 'M', realm: 'POL-04', enlist: true }, { seed: 708, status: 'peasant', startAge: 24, sex: 'M', realm: 'POL-06', enlist: true },
+        // (CI 143: after the market fix shifted every world, lives that end early left the eight at 396 scenes, four short of
+        // the 400; two more lives stand by, played only when the eight fall short. H-079)
+        { seed: 709, status: 'merchant', startAge: 26, sex: 'F', realm: 'POL-03' }, { seed: 710, status: 'artisan', startAge: 20, sex: 'M', realm: 'POL-01' },
       ];
       const K = A.STAKES.KEY, FIELD = { health: 'health', honor: 'honor', fame: 'fame', piety: 'piety', happy: 'happy', infamy: 'infamy' };
       const capOf = (k, pc) => k === 'health' ? A.maxHealth(pc) : 100;
@@ -105,7 +108,7 @@ export default {
       let k = 0;
       for (const l of LIVES) {
         if (out.scenes >= 400) break;
-        out.lives++; const cap = out.scenes + 56;      // eight lives share the 400 scenes
+        out.lives++; const cap = out.scenes + 56;      // eight lives share the 400 scenes (the last two only make up a shortfall)
         T.enter({ seed: l.seed, race: 'human', realm: l.realm, status: l.status, sex: l.sex, startAge: l.startAge });
         for (let g = 0; g < 600 && out.scenes < Math.min(400, cap) && A.pc() && A.pc().alive; g++) {
           A.advance(400);
