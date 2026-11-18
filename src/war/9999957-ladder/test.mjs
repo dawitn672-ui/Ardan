@@ -195,13 +195,16 @@ export default {
       const d = A.allDivs().find(x => Array.isArray(x.bs) && x.bs.length);
       const ci = L.masks(d, 0).findIndex((_, k) => L.has(d, 0, k, 'bearer'));
       out.bearer = ci >= 0 ? U.roleMorale(d, 0, ci) : null;
+      // a division's foragers bring in more: the most against the fewest of the world's divisions
+      const fs = A.allDivs().filter(x => Array.isArray(x.bs) && x.bs.length).map(x => U.forageF(x)).sort((a, b) => a - b);
+      out.forage = [Math.round(fs[0] * 100) / 100, Math.round(fs[fs.length - 1] * 100) / 100];
       L.T.npc = false; out.off = [U.woundF(d, 0), U.roleMorale(d, 0, Math.max(0, ci))]; L.T.npc = true;
       const t0 = performance.now(); for (const x of A.allDivs()) if (Array.isArray(x.bs)) for (let i = 0; i < x.bs.length; i++) for (let k = 0; k < x.bs[i].k.length; k++) U.roleMorale(x, i, k);
       out.ms = Math.round((performance.now() - t0) * 10) / 10;
       return out;
     });
     const shares = Object.values(r.roles);
-    const ok = r.comps > 1000 && shares.length === 10 && shares.every(x => x > .25 && x < .42) && r.woundHi > r.woundLo && r.woundLo === 1 && r.bearer >= 4 && r.off[0] === 1 && r.off[1] === 0;
+    const ok = r.comps > 1000 && shares.length === 10 && shares.every(x => x > .25 && x < .42) && r.woundHi > r.woundLo && r.woundLo === 1 && r.bearer >= 4 && r.forage[1] > r.forage[0] && r.off[0] === 1 && r.off[1] === 0;
     return { ok, detail: JSON.stringify(r) };
   },
 
