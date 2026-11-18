@@ -130,7 +130,8 @@
     const vs = other(s), asker = WAR.lead(w, s), victor = WAR.lead(w, vs);
     w.ask = { k: 'ask', s, d0: day(), due: day() + WAR.ride(asker, victor), leg: 1, path: o.path || E.pathOf(f || {}, rec), why: o.why || shortWhy(rec), told: rec ? W.tell(rec, true).slice(0, 240) : '' };
     WAR.stats.asks++;
-    aiLog('yield', asker, victor, `asks ${short(victor)} for terms: ${w.name}.`, rec);
+    // (an ask made for the crown by others, a peace league granted: its reasons are o.why)
+    aiLog('yield', asker, victor, `asks ${short(victor)} for terms: ${w.name}.`, rec || (o.why ? { why: o.why } : null));
     WAR.tell(w, s, 'ask', rec);
   };
   WAR.offer = function (w, vs, rec) {

@@ -2154,28 +2154,8 @@ A.startWar = function (att, def, name, cb, opts = {}) {
     A.emit("warStart", w, opts);
     return w;
   }
-  if (!opts.noAllies) {
-    for (const al of A.realm(def).allies)
-      if (
-        A.realm(al) &&
-        A.realm(al).alive &&
-        !w.att.includes(al) &&
-        !w.def.includes(al) &&
-        A.relBetween(al, def) > 35 &&
-        A.chance(0.55)
-      )
-        w.def.push(al);
-    for (const al of A.realm(att).allies)
-      if (
-        A.realm(al) &&
-        A.realm(al).alive &&
-        !w.att.includes(al) &&
-        !w.def.includes(al) &&
-        A.relBetween(al, att) > 50 &&
-        A.chance(0.3)
-      )
-        w.att.push(al);
-  }
+  // [W1-6, D-102] the old ally rolls of a war called without A.callToArms (dead: A.callToArms always answers, from
+  // 12-nobility-and-politics) are retired to archive/w1-6-faction-dice; a war that reaches here is one with no allies
   if ((A.setRelPair(att, def, Math.min(A.relBetween(att, def), -70)), !opts.silent)) {
     A.news(
       A.realmName(att) +

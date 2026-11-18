@@ -28,7 +28,9 @@ let acorn; try { acorn = req('acorn'); } catch { acorn = createRequire('/opt/nod
 const BASEFILE = path.join(here, 'tests/reasons-baseline.json');
 
 // what a structural decision is about (in a function's name or in what a roll guards)
-const DECIDES = /declareWar|startWar|aiWarCheck|tryWar|warOn|\bwar\b|'war'|"war"|\bpeace|settleWar|faction|revolt|\brebel|rising|\bcoup|usurp|betray|appoint|fillGeneral|fillOffice|\bcouncil\b|\bseat\b|takeSeat|\bally\b|allian|cancelTr|\bsign\(|aiSign|\bclaim|succession|\bheirs?\b|summon|muster|defect|tribut|vassal|\bplot|depose|abdicat|independ/i;
+// W1-6 (D-102): and a council's counsel or a proposal to the crown (A.councilPropose's acceptance roll was a bare die the
+// heuristic missed: it sat in a variable's initialiser, in a function whose name matched nothing)
+const DECIDES = /declareWar|startWar|aiWarCheck|tryWar|warOn|\bwar\b|'war'|"war"|\bpeace|settleWar|faction|revolt|\brebel|rising|\bcoup|usurp|betray|appoint|fillGeneral|fillOffice|\bcouncil\b|\bseat\b|takeSeat|\bally\b|allian|cancelTr|\bsign\(|aiSign|\bclaim|succession|\bheirs?\b|summon|muster|defect|tribut|vassal|\bplot|depose|abdicat|independ|counsel|councilPropose|\bfeud|private war|\bstaff\b/i;
 // names that look like a decision word but are not one (the war machinery's own battle dice, a war's name, morale)
 const NOT_DECIDES = /^(warName|warPreview|wsDay|wsBattle|fight|battle|siege|duel|casualt|loot|skirmish)/i;
 

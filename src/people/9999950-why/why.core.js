@@ -315,7 +315,8 @@
     liberty: (r, h) => ['want', .6, 'The crown\'s hand lies heavy on the lords'],
     war: (r, h) => ['ambition', .5 + (h.military ? .3 : 0) + ((A.AGGRO && A.AGGRO[r.id]) || 1) - 1, h.military ? 'A house of the sword wants a war' : 'He wants glory, land and plunder'],
   };
-  W.factionChoice = function (r, h, cur, want, members) {
+  // extra: more reasons for joining (W1-6's §13.3 test: a tie to the houses sworn, the standing to lead)
+  W.factionChoice = function (r, h, cur, want, members, extra) {
     const op = h.op != null ? h.op : 50, opts = [];
     const F = A.FACTIONS || {}, name = k => (F[k] && F[k].name) || k;
     const grievance = { kind: 'grudge', weight: r2((50 - op) / 18), label: op < 50 ? 'His grievance with the crown' : 'He has little against the crown', source: { t: 'opinion', id: h.id, r: Math.round(op) }, pub: 1 };
@@ -325,6 +326,7 @@
       const rs = [grievance, { kind, weight: r2(w), label, source: { t: 'want', id: want }, pub: 1 }, firm];
       rs.push(n ? { kind: 'kin', weight: r2(.25 * Math.min(4, n)), label: `${n} house${n === 1 ? '' : 's'} already sworn to the ${name(want)}`, source: { t: 'faction', id: want }, pub: 1 }
         : { kind: 'ambition', weight: -.4, label: 'No one has raised the banner yet', source: { t: 'faction', id: want }, pub: 0 });
+      if (Array.isArray(extra)) for (const x of extra) if (x) rs.push(x);
       opts.push({ id: 'join', reasons: rs });
     }
     if (cur) {

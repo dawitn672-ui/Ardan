@@ -174,7 +174,10 @@
     const c = CO.cap(d, i, slot), r = A.realm(d.r) || {};
     if (!c) return null;
     const race = r.race && r.race !== 'giant' ? r.race : 'human';
-    const p = A.newPerson({ given: c.given, sur: c.sur, surMode: /^of /.test(c.sur) ? 'place' : 'trade', sex: c.sex, race, realm: d.r, cult: cultOf(d), faith: r.faith, born: A.S.year - c.age, status: slot === 4 ? 'gentry' : 'peasant', home: b.h, traits: CO.TEMPER_TRAIT[c.temper] ? [CO.TEMPER_TRAIT[c.temper]] : [] });
+    // the seed's age is a man's; a captain of a longer-lived people is grown by his own people's measure (W1-6 found an
+    // elven captain of 25 made under age, a one-holder fault, once its world shifted)
+    const RR = GD.RACES && GD.RACES[race], age = RR && RR.adult && c.age < RR.adult ? RR.adult + 2 + Math.max(0, c.age - 18) : c.age;
+    const p = A.newPerson({ given: c.given, sur: c.sur, surMode: /^of /.test(c.sur) ? 'place' : 'trade', sex: c.sex, race, realm: d.r, cult: cultOf(d), faith: r.faith, born: A.S.year - age, status: slot === 4 ? 'gentry' : 'peasant', home: b.h, traits: CO.TEMPER_TRAIT[c.temper] ? [CO.TEMPER_TRAIT[c.temper]] : [] });
     p.skills.command = c.cmd; p.skills.tactics = Math.max(10, c.cmd - 6); p.skills.spear = Math.max(p.skills.spear || 0, 30 + c.cmd / 3);
     p.milRank = slot === 4 ? 5 : 4;
     p.occ = (slot === 4 ? 'Commander of the ' : 'Captain of the ') + (slot === 4 ? CO.bnName(d, i) : CO.coName(d, i, slot));

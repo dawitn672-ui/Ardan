@@ -12,7 +12,7 @@ A.FN_STAGE_ORDER = {
     'body-mind.mind', 'arcs-kin', 'arcs-rivals', 'arcs-world', 'arcs-things', 'bonds', 'court-and-treasury',
     'npc-beliefs', 'every-number-counts', 'one-battle-two-scales', 'old-age', 'first-life-fixes', 'journeys',
     'identity.name', 'identity.ripe', 'identity.thought',
-    'polity.po', 'polity.fate', 'commands', 'men', 'companies', 'advisors', 'v2-stats'
+    'polity.po', 'polity.fate', 'commands', 'men', 'realm-peace', 'companies', 'advisors', 'v2-stats'
   ],
   'A.eventView': [
     'character-voices', 'world-chronicle', 'choice-memories', 'fight-odds', 'first-life-fixes', 'choice-stakes',
