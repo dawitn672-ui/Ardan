@@ -114,6 +114,7 @@
   if (des) A.deserialize = function () {
     const out = des.apply(this, arguments);
     try { M.convert(); } catch (e) { console.error('[men] convert', e); }
+    try { if (A.CALLS && A.CALLS.gate) A.CALLS.gate(); } catch (e) { console.error('[men] gate', e); }
     return out;
   };
 })();

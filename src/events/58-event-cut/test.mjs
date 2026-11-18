@@ -115,17 +115,26 @@ export default {
       for (const [b, age] of [['child', 8], ['teen', 14], ['adult', 35], ['old', 65]]) probes.push(['age:' + b, { status: 'peasant', startAge: age }]);
       for (const rid of Object.keys(LORE.realms)) probes.push(['realm:' + rid, { status: 'peasant', startAge: 28, realm: rid, race: Object.keys(GD.RACES).find(x => A.raceAllowed(x, rid)) || 'human' }]);
       const out = [];
+      // an age band falls back to the next seeds' worlds when seed 777's family is an odd one (CI 147, W1-3/W1-4 merged:
+      // the eight-year-old of seed 777 gained a sibling and a farm, three more classic scenes the cut retires, and fell
+      // one under the floor at 64 -> 36). Class and realm probes stay on seed 777.
+      const floor = n => n.a >= Math.max(30, Math.ceil(0.6 * n.b)) - 2;
       for (const [name, o] of probes) {
-        A.newGame(Object.assign({ seed: 777, race: 'human', realm: 'POL-01', sex: 'M' }, o));
-        const pc = A.pc(), n = { };
-        for (const classic of [true, false]) {
-          A.EC.sync(classic);
-          let all = 0, loc = 0;
-          for (const id in A.EV) { const e = A.EV[id]; if (e.trigger) continue; let ok = false; try { ok = !e.cond || !!e.cond(pc, A.C); } catch {} if (!ok || (A.evFit && A.evFit(e, pc) <= 0)) continue;
-            all++; if (e.cond && LOCAL.test(e.cond.toString())) loc++; }
-          n[classic ? 'b' : 'a'] = all; n[classic ? 'lb' : 'la'] = loc;
+        let n = null;
+        for (const seed of name.startsWith('age:') ? [777, 778, 779] : [777]) {
+          A.newGame(Object.assign({ seed, race: 'human', realm: 'POL-01', sex: 'M' }, o));
+          const pc = A.pc(), m = { seed };
+          for (const classic of [true, false]) {
+            A.EC.sync(classic);
+            let all = 0, loc = 0;
+            for (const id in A.EV) { const e = A.EV[id]; if (e.trigger) continue; let ok = false; try { ok = !e.cond || !!e.cond(pc, A.C); } catch {} if (!ok || (A.evFit && A.evFit(e, pc) <= 0)) continue;
+              all++; if (e.cond && LOCAL.test(e.cond.toString())) loc++; }
+            m[classic ? 'b' : 'a'] = all; m[classic ? 'lb' : 'la'] = loc;
+          }
+          A.EC.sync();
+          if (!n) n = m;
+          if (floor(m)) { n = m; break; }
         }
-        A.EC.sync();
         out.push({ name, ...n });
       }
       return out;

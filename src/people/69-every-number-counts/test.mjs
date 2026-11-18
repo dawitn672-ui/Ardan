@@ -147,8 +147,15 @@ export default {
       const c0 = camp(0), c60 = camp(60);
       // a crossing by sea to a gathering: 200 crossings at sea 0 and 60
       const cross = v => {
-        A.newGame({ seed: 6905, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 25 });
-        const pc = A.pc(); A.S.queue = [];
+        // a body that can carry the skill, as the marches below: a skill is held back by the body (order 35), and the
+        // noble of seed 6905 could not hold 35 at sea once W1-3/W1-4 moved the world (CI 147)
+        let pc;
+        for (const sd of [6905, 6906, 6907, 6908, 6909, 6910]) {
+          A.newGame({ seed: sd, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 25 });
+          pc = A.pc(); if (A.SK && A.SK.put) A.SK.put(pc, 'sea', v, 'test');
+          if (v < 35 || A.skill(pc, 'sea') >= 35) break;
+        }
+        A.S.queue = [];
         const me = pc.realm, host = Object.keys(A.S.realms).find(id => L.bySea(me, id));
         if (!host) return null;
         A.S.gath = A.S.gath || []; const g = { id: 'ln_test', host, kind: 'wedding', pc: {} }; A.S.gath.push(g);

@@ -40,7 +40,7 @@ UI.realmTabBasic = function (pc) {
     sub === "state")
   ) {
     if (
-      ((h += `<div class="kv small" style="margin-top:6px"><div>Treasury</div><div><b>${A.fmt(r.treasury)}</b> suns${r.debt ? ` · <span class="bad">debt ${A.fmt(r.debt)}</span>` : ""}</div><div>Last year</div><div>income ${A.fmt(b.inc)} · army ${A.fmt(b.upkeep)} · interest ${A.fmt(b.interest)} · court ${A.fmt(b.court)}</div><div>People</div><div>${A.fmt(r.pop)} in ${r.provCount} provinces</div><div>Army</div><div>${A.fmt(r.army)} standing · ${A.fmt(r.roll)} muster · quality ${Math.round(r.armyQ * 100)}%</div><div>Heir</div><div>${r.heir && A.P(r.heir) ? UI.esc(A.fullName(A.P(r.heir))) + " (" + A.age(A.P(r.heir)) + ")" : r.gov === "hereditary" ? '<span class="bad">none</span>' : "chosen by election"}</div><div>Tributaries</div><div>${
+      ((h += `<div class="kv small" style="margin-top:6px"><div>Treasury</div><div><b>${A.fmt(r.treasury)}</b> suns${r.debt ? ` · <span class="bad">debt ${A.fmt(r.debt)}</span>` : ""}</div><div>Last year</div><div>income ${A.fmt(b.inc)} · army ${A.fmt(b.upkeep)} · interest ${A.fmt(b.interest)} · court ${A.fmt(b.court)}</div><div>People</div><div>${A.fmt(r.pop)} in ${r.provCount} provinces</div><div>Army</div><div>${A.fmt(r.army)} standing · ${A.fmt(r.roll)} on the roll · quality ${Math.round(r.armyQ * 100)}%</div><div>Heir</div><div>${r.heir && A.P(r.heir) ? UI.esc(A.fullName(A.P(r.heir))) + " (" + A.age(A.P(r.heir)) + ")" : r.gov === "hereditary" ? '<span class="bad">none</span>' : "chosen by election"}</div><div>Tributaries</div><div>${
         A.tributariesOf(r.id)
           .map(t => UI.esc(t.short))
           .join(", ") || "none"

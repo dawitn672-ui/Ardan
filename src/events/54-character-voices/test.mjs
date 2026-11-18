@@ -263,7 +263,10 @@ export default {
           // the kind of scene, read from the scene's words as shown, so a scene in the place's words can be heard as
           // another kind (CI 134, seed 9090 after W1-2 changed the world: one scene's kind moved two lines by two years).
           // It only picks the next line shown; nothing in the engine reads it, and the random stream is compared above.
-          for (const p of Object.values(people)) { delete p.vo; delete p.mw; delete p.idv; if (p.deedLog) for (const k in p.deedLog) if (Array.isArray(p.deedLog[k])) p.deedLog[k] = p.deedLog[k].map(d => Array.isArray(d) ? d.slice(0, 2) : d);
+          // and S1b's skill record (p.skr): a line's text quotes the scene where a skill was first tried, by its title as
+          // shown ("first tried (A lord in his cups)" / "(A sepmet in his cups)": CI 147, seed 9094); its other fields are compared
+          for (const p of Object.values(people)) { if (Array.isArray(p.skr)) for (const x of p.skr) if (x && typeof x === 'object' && typeof x.text === 'string') x.text = x.text.replace(/\s*\([^)]*\)\s*$/, '');
+            delete p.vo; delete p.mw; delete p.idv; if (p.deedLog) for (const k in p.deedLog) if (Array.isArray(p.deedLog[k])) p.deedLog[k] = p.deedLog[k].map(d => Array.isArray(d) ? d.slice(0, 2) : d);
             if (p.rel) for (const k in p.rel) { const h = p.rel[k] && p.rel[k].hist; if (Array.isArray(h)) for (const x of h) if (x && typeof x === 'object') delete x.t; } }
           return { rng: JSON.stringify(A.rngState), people: JSON.stringify(people).length + ':' + T.hash(people), year: A.S.year, voiced };
         } finally { A.VOICE.OFF = false; }

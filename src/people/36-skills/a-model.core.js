@@ -168,7 +168,10 @@
   SK.INSIGHT_LIFE = 2;
   const memo = new Map();
   SK.view = function (p) {
-    let m = memo.get(p.id); if (!m) { if (memo.size > 30) memo.clear(); m = new Map(); memo.set(p.id, m); }
+    // keyed by the world's seed with the id: a person's needs are drawn from both, and a new game in the same page reuses
+    // ids (CI 147, s1TwoLives: twelve worlds' players, all "p1", shared one world's needs and so one fate)
+    const key = (A.S ? A.S.seed : '') + ':' + p.id;
+    let m = memo.get(key); if (!m) { if (memo.size > 30) memo.clear(); m = new Map(); memo.set(key, m); }
     return { id: p.id, seed: String(A.S ? A.S.seed : 'ardan'), talent: p.tal || {}, memory: SK.memoryOf ? SK.memoryOf(p) : 1,
       proud: SK.proudOf ? SK.proudOf(p) : false, proofSlack: SK.PROOF_SLACK, sk: p.sk, ledger: [], rec: [], rng: A.rand, needMemo: m };
   };

@@ -459,7 +459,8 @@ export default {
           const ours = new Set([dead(meK), me.men0, liveMen(me)].map(n => A.fmt(n)));
           const theirs = [dead(enK), en.men0, liveMen(en)].filter(n => n >= 100).map(n => A.fmt(n)).filter(n => !ours.has(n));
           // (an estimate that rounds to the exact number, "about 500" for 500 dead, gives nothing away: it is not a leak)
-          const hit = n => new RegExp(`(^|[^\\d,])${n}($|[^\\d,])`).test(all.replace(/\b(about|some) [\d,]+/gi, ''));
+          // (nor is the scale's legend, "Captain: a block for 200 men": CI 147, the enemy's dead were exactly 200 that day)
+          const hit = n => new RegExp(`(^|[^\\d,])${n}($|[^\\d,])`).test(all.replace(/\b(about|some) [\d,]+/gi, '').replace(/a block for [\d,]+ men/gi, ''));
           // the morale word on a popover agrees with its side line's (both from the rounded average)
           const sideWords = ['A', 'B'].map(k => A.V2W.moWord(Math.round(A.avgMorale(B, k))));
           const moTips = tips.filter(x => x.k === 'bMorale' || x.k === 'bSide').map(x => (x.t.match(/Morale (eager|steady|sullen|shaken|near breaking)/) || [])[1]).filter(Boolean);

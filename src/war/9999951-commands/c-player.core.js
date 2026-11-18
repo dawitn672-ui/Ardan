@@ -250,7 +250,8 @@
     const m = CM.musters().find(x => x.r === rid && !x.end);
     if (!m) return '';
     let h = `<div class="card cm-muster"><div class="row">${UI.icon ? UI.icon('flag', 's') : ''}<span class="tag">The muster roll</span><span class="tiny muted grow">${esc(m.name || '')}</span></div>`;
-    h += `<p class="small">${esc(CM.summary(m))}</p>`;
+    // (the counts open a note on a tap, as every number on the War tab does: ttCov2War)
+    h += `<p class="small" data-note="How the great lords answered the crown's summons: in full, with part of their men, late, by a deputy, with shield money, or not at all.">${esc(CM.summary(m))}</p>`;
     const rows = place === 'camp' ? m.e.filter(e => { const mh = CM.myHouse(pc); return mh && e.h === mh.id; }) : m.e;
     if (rows.length) {
       h += '<div class="cm-roll">';
@@ -258,7 +259,7 @@
         const hh = A.S.houses[e.h], who = e.p === pc.id ? 'You' : lordName(e, hh);
         const truth = CM.seesTruth(m.r, e) && e.t && e.a !== 'full';
         const note = [e.g ? `He says: ${e.g}.` : '', truth ? `The truth: ${e.t}.` : '', e.sen ? `The crown ${CM.SENT_WORDS[e.sen]}${e.unf ? ', and could not enforce it' : ''}.` : '', e.bf ? 'He raised his men for his border, unsummoned.' : '', e.gone ? 'He took his men home when the crown would not pay.' : '', e.pay ? 'The crown pays his men now.' : ''].filter(Boolean).join(' ');
-        h += `<div class="cm-row"><b>${esc(who)}</b> <span class="chip${e.a === 'refuse' ? ' red' : e.a === 'full' ? ' gold' : ''}">${esc(CM.WORDS[e.a] || e.a)}</span>${e.m ? ` <span class="tiny muted">${A.fmt(e.m)} men</span>` : ''}${note ? ` <span class="tiny ink2" data-note="${esc(note)}">why</span>` : ''}</div>`;
+        h += `<div class="cm-row"><b>${esc(who)}</b> <span class="chip${e.a === 'refuse' ? ' red' : e.a === 'full' ? ' gold' : ''}">${esc(CM.WORDS[e.a] || e.a)}</span>${e.m ? ` <span class="tiny muted" data-note="The men of his hosts on the war map: what his answer sends, or keeps at home.">${A.fmt(e.m)} men</span>` : ''}${note ? ` <span class="tiny ink2" data-note="${esc(note)}">why</span>` : ''}</div>`;
       }
       h += '</div>';
     }

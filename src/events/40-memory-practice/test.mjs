@@ -136,7 +136,9 @@ export default {
       const rel = (pc, t, type, op, n) => { A.link(pc, t, type, op, type); pc.rel[t.id].since = Y() - (n || 0); return t; };
       const npc = (pc, o = {}) => { const t = A.makeAcquaintance(pc, 'acquaint'); t.born = Math.min(t.born, Y() - 20); Object.assign(t, o); return t; };
       // 49-body-mind folds some skills into a family for the player (lance and mounted read riding): set both
-      const sk = (pc, o) => { for (const k in o) { pc.skills[k] = o[k]; const c = A.BM && A.BM.canon ? A.BM.canon(k) : k; if (c !== k) pc.skills[c] = Math.max(pc.skills[c] || 0, o[k]); } };
+      // a skill set for a fixture is set as a level (S1b: p.skills is the level's mirror, which A.skill no longer reads; CI 147,
+      // after W1-3/W1-4 moved the world, seed 4242's man rode at Advanced, not Expert, and the mirror's 70 was not read)
+      const sk = (pc, o) => { for (const k in o) { pc.skills[k] = o[k]; const c = A.BM && A.BM.canon ? A.BM.canon(k) : k; if (c !== k) pc.skills[c] = Math.max(pc.skills[c] || 0, o[k]); if (A.SK && A.SK.put) A.SK.put(pc, c, o[k], 'test'); } };
       const aged = (pc, n) => { pc.born = Y() - Math.round(n * GD.RACES[pc.race].adult / 16); };   // newGame caps startAge
       const place = (pc, test) => { const l = A.S.prov.filter(x => x.owner === pc.realm && test(x)); if (l.length) pc.home = l[0].id; return !!l.length; };
       const town = pc => place(pc, x => x.town >= 8000);
@@ -180,7 +182,7 @@ export default {
         ],
         mpf_knife_client: [V({}, pc => { pc.coin = 100; }, pc => ago(pc, 'pf_hired_knife', 2))],
         mpf_knife_son: [V({}, pc => { aged(pc, 40); pc.coin = 80; }, pc => ago(pc, 'pf_hired_knife', 10))],
-        mpf_rim_ashby: [V({}, pc => sk(pc, { lance: 70 }), pc => ago(pc, 'pf_rim_trick', 2))],
+        mpf_rim_ashby: [V({ need: pc => A.skill(pc, 'lance') >= 50 }, pc => sk(pc, { lance: 70 }), pc => ago(pc, 'pf_rim_trick', 2))],
         mpf_shot_road: [V({}, pc => { pc.gear.mount = 'horse'; sk(pc, { bow: 50, mounted: 50 }); }, pc => ago(pc, 'pf_backward_shot', 2))],
         mpf_shot_kharsa: [V({ realm: 'POL-12' }, pc => sk(pc, { bow: 50, mounted: 50 }), pc => ago(pc, 'pf_backward_shot', 3))],
         mpf_crates_bolt: [V({}, pc => { coastTown(pc) || town(pc); pc.coin = 30; }, pc => ago(pc, 'pf_smuggler_contact', 2))],   // the start's home is not always a town or on the coast
@@ -267,9 +269,16 @@ export default {
       console.error = (...a) => { out.problems.push(`${cur}: engine error: ${a.map(x => String(x && x.message || x)).join(' ').slice(0, 160)}`); };
       const chance = A.chance;
       const BASE = { seed: 4242, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 };
+      // o.need: a body that can carry the fixture's skill. A skill is held back by the body (order 35: a master needs the
+      // build to match), so a fixture that needs a level tries the next seeds until the man can hold it (CI 147: after
+      // W1-3/W1-4 moved the world, seed 4242's man could ride no better than Advanced, and mpf_rim_ashby's lance never read 50)
       const build = ([o, world, hist], withHistory = true) => {
-        A.newGame(Object.assign({}, BASE, o));
-        world(A.pc());
+        const { need, ...oo } = o;
+        for (let k = 0; k < 20; k++) {
+          A.newGame(Object.assign({}, BASE, oo, { seed: (oo.seed || BASE.seed) + k }));
+          world(A.pc());
+          if (!need || need(A.pc())) break;
+        }
         if (withHistory) hist(A.pc());
         return A.pc();
       };

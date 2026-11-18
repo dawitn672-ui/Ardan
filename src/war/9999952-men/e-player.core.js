@@ -136,25 +136,30 @@
   });
 
   // ---------------------------------------------------------------- events gated by a call
-  // the release's scenes of a man taken for service fire only while a call is out in the realm (a need named); the old
-  // heavy-law card is retired in favour of mn_lot (its text spoke of a law that took one man in five by itself)
+  // the release's scenes of a man taken for service fire only while a call is out in the player's realm (a need named);
+  // the old heavy-law card is retired in favour of mn_lot (its text spoke of a law that took one man in five by itself).
+  // Gated the way 58-event-cut retires an event: marked `trigger` (never rolled, only queued) while it may not fire, so
+  // its cond, text and setup stay exactly as written (the classifiers and 67-choice-memories read them as text).
   CA.GATED = ['lf_lover_to_war', 'wr_hf_lot', 'ss_rp_muster'];
   CA.RETIRED = ['pl_heavy_call'];
+  CA.base = {};
   CA.gate = function () {
-    const EV = A.EV || {};
+    const EV = A.EV || {}, pc = A.pc && A.pc(), open = !!(pc && A.S && CA.open(pc.realm).length);
     for (const id of CA.GATED.concat(CA.RETIRED)) {
       const e = EV[id];
-      if (!e || (e.setup && e.setup.mnGated)) continue;
-      const s0 = e.setup, retired = CA.RETIRED.includes(id);
-      e.setup = function (p, ctx) {
-        if (retired || !CA.open(p.realm).length) { ctx.skip = true; return; }
-        return s0 ? s0.apply(this, arguments) : undefined;
-      };
-      e.setup.mnGated = true;
+      if (!e) continue;
+      if (!(id in CA.base)) CA.base[id] = !!e.trigger;
+      // an event 58-event-cut also lists (wr_hf_lot) keeps the cut's own mark: retired unless the classic pool is chosen
+      const EC = A.EC, cut = EC && EC.R && id in EC.R ? (EC.classic() ? !!EC.base[id] : true) : null;
+      e.trigger = (cut != null ? cut : CA.base[id]) || CA.RETIRED.includes(id) || !open;
     }
   };
-  A.on && A.on('worldInit', () => { try { CA.gate(); } catch (e) { console.error('[men] gate', e); } });
-  A.onMonth.push(() => { try { CA.gate(); } catch (e) { console.error('[men] gate', e); } });
+  const gate = () => { try { CA.gate(); } catch (e) { console.error('[men] gate', e); } };
+  A.on && A.on('worldInit', gate);
+  A.on && A.on('callProclaimed', gate);
+  A.on && A.on('callEnded', gate);
+  A.onMonth.push(gate);
+  // (and on load: b-men.core.js's load pass calls A.CALLS.gate)
 
   // ---------------------------------------------------------------- the War tab: the call and the company's ledger
   UI.menCard = function (pc) {
