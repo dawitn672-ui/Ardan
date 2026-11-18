@@ -223,21 +223,30 @@ export default {
       const canon = A.WC.canon; A.WC._canon = []; A.WC._canonById = {};
       const empty = view().v.skip;
       A.S.queue.shift(); delete A.WC._canon;
-      WCT.years(25);
-      const { q, v } = view();
-      A.eventChoose(0);
-      const res = q.result && q.result.text, pc = A.pc();
-      const ids = v.cites || [], cs = ids.map(id => A.WC.cite(id)).filter(Boolean);
-      const near = cs.every(c => c.c ? c.c.realms.includes(pc.realm) || c.c.realms.includes((A.prov(pc.home) || {}).owner) : (A.WC.nearRealms(pc).has(c.e.a) || A.WC.nearRealms(pc).has(c.e.b) || A.WC.nearProvs(pc).has(c.e.p)));
-      const war = cs.find(c => c.k === 'war' || c.k === 'peace');
       A.WC.canon = canon;
+      // (H-081: a war near the player in 25 years is the world's draw. A world with none to cite drops the probe, rightly;
+      // the text and result are then read in the next world, up to four, which has one)
+      let q, v, res, pc, cs, near, war, seed = 31;
+      for (; seed < 35; seed++) {
+        if (seed > 31) A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
+        WCT.years(25);
+        ({ q, v } = view());
+        if (v.skip) { A.S.queue.shift(); continue; }
+        A.eventChoose(0);
+        res = q.result && q.result.text; pc = A.pc();
+        const ids = v.cites || []; cs = ids.map(id => A.WC.cite(id)).filter(Boolean);
+        near = cs.every(c => c.c ? c.c.realms.includes(pc.realm) || c.c.realms.includes((A.prov(pc.home) || {}).owner) : (A.WC.nearRealms(pc).has(c.e.a) || A.WC.nearRealms(pc).has(c.e.b) || A.WC.nearProvs(pc).has(c.e.p)));
+        war = cs.find(c => c.k === 'war' || c.k === 'peace');
+        if (war) break;
+      }
+      if (!v || v.skip) return { empty, skip: true, text: `no world of 31 to 34 had a war to cite after 25 years`, res: '', n: 0, near: false, same: false, seed };
       // the war the result names is one the text named: {since_event} may cite a war too (CI 133's world: "since the end
       // of the Salt War" before "the old men talk of the War of the Aldmark Succession"), so the first war cited is
       // not always {last_war}'s
       const same = !!war && cs.some(c => (c.k === 'war' || c.k === 'peace') && res.includes(c.ref) && v.text.includes(c.ref));
-      return { empty, skip: v.skip, text: v.text, res, n: cs.length, near, same };
+      return { empty, skip: v.skip, text: v.text, res, n: cs.length, near, same, seed };
     });
-    return { ok: r.empty && !r.skip && r.n >= 2 && r.near && r.same, detail: `nothing to cite: dropped ${r.empty}; after 25 years: "${r.text}" / result "${r.res}"; ${r.n} entries cited, all near: ${r.near}, the same war in text and result: ${r.same}` };
+    return { ok: r.empty && !r.skip && r.n >= 2 && r.near && r.same, detail: `nothing to cite: dropped ${r.empty}; after 25 years (world ${r.seed}): "${r.text}" / result "${r.res}"; ${r.n} entries cited, all near: ${r.near}, the same war in text and result: ${r.same}` };
   },
 
   async wcAnnalsPage(pg) {
@@ -336,6 +345,12 @@ export default {
       const realms = Object.values(A.S.realms).filter(x => !x.isRebel).length;
       // force one into the player's home: the scene comes
       const pc = A.pc(), chance = A.WC.plagueChance;
+      // (H-081: the player is struck at home, so he must be there. A shifted world's forty years made her a soldier whose
+      // division stood elsewhere, and a scene that names the home town is not shown to one away from it (99999-x3-honest-
+      // cards' X3.homeBreach, as it should be): the scene was queued every month and dropped every month. She leaves the
+      // army for the strike; the life's other draws are the world's)
+      if (pc.mil && A.X3 && A.X3.away && A.X3.away(pc)) pc.mil = null;
+      const away = !!(A.X3 && A.X3.away && A.X3.away(pc));
       // what the forced roll saw of its realm, in the rebel strike: the regression has to reach the roll as a rebel
       let sawRebel = null, inRebel = false;
       A.WC.plagueChance = r => { const v = r.id === (A.prov(pc.home) || {}).owner ? 12 : 0; if (v && inRebel) sawRebel = !!r.isRebel; return v; };
@@ -346,7 +361,10 @@ export default {
       // A.advance stops on them before the epidemic's month comes (80-orphan-flag-callbacks' events were enough to do it)
       const clearOthers = () => { A.S.queue = A.S.queue.filter(q => q.ev === 'wc_sickness_comes'); };
       clearOthers();
-      const strike = () => { let got = false; for (let i = 0; i < 6 && !got; i++) { A.advance(31); got = A.S.queue.some(q => q.ev === 'wc_sickness_comes'); if (!got) clearOthers(); } return got; };
+      // (H-081: by the calendar, five months, not six steps. In a busy month (a shifted world's soldier met five prompts in
+      // 33 days) the month's cap of scenes (99992-v2-time's V2T.MAX) holds the scene to the next month, as it holds any
+      // rolled scene, and six short steps ended before it came back)
+      const strike = () => { const d0 = A.absDay(); let got = false; for (let i = 0; i < 80 && !got && A.absDay() - d0 < 150; i++) { A.advance(31); got = A.S.queue.some(q => q.ev === 'wc_sickness_comes'); if (!got) clearOthers(); } return got; };
       let q, v, rebelQueued = null;
       const base = A.serialize(), found = A.EF && A.EF.found;
       try {
@@ -362,9 +380,9 @@ export default {
         // code too (the verifier's finding). Founding is held off for the strike, and the roll must see a rebel.
         if (own) { own.isRebel = true; if (A.EF && found) A.EF.found = () => false; inRebel = true; clearOthers(); rebelQueued = strike(); }
       } finally { A.WC.plagueChance = chance; A.wpick = wp; if (A.EF && found) A.EF.found = found; inRebel = false; }
-      return { n: pl.length, fam: fam.length, realms, perRealm20: Math.round(100 * pl.length / realms / 2) / 100, famPer20: Math.round(100 * fam.length / realms / 2) / 100, queued, rebelQueued, sawRebel, text: v ? v.text : '', skip: v ? v.skip : null };
+      return { n: pl.length, fam: fam.length, realms, perRealm20: Math.round(100 * pl.length / realms / 2) / 100, famPer20: Math.round(100 * fam.length / realms / 2) / 100, queued, rebelQueued, sawRebel, away, text: v ? v.text : '', skip: v ? v.skip : null };
     });
-    return { ok: r.n > 0 && r.queued && r.rebelQueued === true && r.sawRebel === true && r.skip === false && !/\{/.test(r.text), detail: `40 years: ${r.n} epidemics (${r.perRealm20} per realm per 20 years) and ${r.fam} famines (${r.famPer20}) over ${r.realms} realms; struck at home, the scene comes: ${r.queued}; under a rebel holder too: ${r.rebelQueued} (the roll saw a rebel: ${r.sawRebel}): "${r.text}"` };
+    return { ok: r.n > 0 && r.queued && r.rebelQueued === true && r.sawRebel === true && r.skip === false && !/\{/.test(r.text), detail: `40 years: ${r.n} epidemics (${r.perRealm20} per realm per 20 years) and ${r.fam} famines (${r.famPer20}) over ${r.realms} realms; struck at home, the scene comes: ${r.queued}; under a rebel holder too: ${r.rebelQueued} (the roll saw a rebel: ${r.sawRebel})${r.away ? '; the player was away from home' : ''}: "${r.text}"` };
   },
 
   async wcScenesRender(pg) {

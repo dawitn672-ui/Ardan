@@ -103,7 +103,9 @@ export default {
   async v2sOddsShape(pg) {
     const r = await pg.evaluate(() => {
       const V = A.V2S, n = 4000, at = (p, pct, m) => { let w = 0; const save = V.minds; V.minds = () => m; try { for (let i = 0; i < n; i++) w += V.attempt(null, pct / 100, { stakes: 0.8 }).success ? 1 : 0; } finally { V.minds = save; } return w / n; };
-      const A0 = A.S.rngState;
+      // (H-081: the line read A.S.rngState into a name never used, and threw when the test ran before the title's world was
+      // made, a tick after the content is ready (menuStartsVaried's race); the world is made first, as the game's entries do)
+      if (!A.S) UI.ensureWorld();
       const avg = { judgment: 100, will: 100, fatigue: 0, mood: 0 };
       return { p50: at(null, 50, avg), p80: at(null, 80, avg), p20: at(null, 20, avg),
         fool: at(null, 85, { judgment: 60, will: 100, fatigue: 0.6, mood: 0 }), sage: at(null, 85, { judgment: 135, will: 100, fatigue: 0, mood: 0 }),
@@ -645,7 +647,10 @@ export default {
       const V = A.V2S, txt = h => h.replace(/<[^>]+>/g, ' ').replace(/&#39;/g, "'").replace(/\s+/g, ' ');
       const out = { rows: [], bad: [] };
       const BAD = [/grown m[ae]n/, /ordinary man/, /fells any man/, /toddler/, /as fast as a child/];
-      for (const [seed, race] of [[32, 'human'], [42, 'orc']]) {
+      // (H-081: the human boy's lifts are read at 10, 13 and 17. Story mode spares most children, not all: a boy who dies
+      // before 17 is followed by the next seed's, up to four; the sheet's words are read for every year any of them lived)
+      for (const [seed, race] of [[32, 'human'], [33, 'human'], [34, 'human'], [35, 'human'], [42, 'orc']]) {
+        if (race === 'human' && out.kg17 != null) continue;
         T.enter({ seed, race, sex: 'M', startAge: 0 });
         A.S.settings.diff = 'story';   // growth, not the child's luck (CI 107: seed 32's boy died at six in a re-rolled world)
         const pc = A.pc();

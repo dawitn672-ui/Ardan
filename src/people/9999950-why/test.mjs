@@ -69,14 +69,16 @@ export default {
       // crowns all waited (23 short of nerve, 18 for want of reasons) and declared no war in ten years, while seeds 6, 7,
       // 11, 12 and 13 declared 7, 5, 10, 4 and 8, each with its record (before the fix seed 5 declared 2, the others
       // 3 to 9: the pace did not change). So the test reads the next world when one keeps the peace (H-079).
+      // (H-081: up to eight worlds, not three. A decade of peace is one world's draw, about one in six on the readings above;
+      // eight in a row would be the crowns' war-making broken, and the test then fails naming the worlds read.)
       const declared = [];
       A.on('warStart', w => { if (w.why) declared.push(w.id); });
-      for (const seed of [5, 6, 7]) {
+      const found = T.trySeeds([5, 6, 7, 8, 9, 10, 11, 12], seed => {
         T.enter({ seed, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 22 });
         T.play(10);
-        if (declared.length || A.S.wars.some(w => w.why)) break;
-      }
-      const S = A.S, L = S.why || [], out = {};
+        return declared.length || A.S.wars.some(w => w.why);
+      });
+      const S = A.S, L = S.why || [], out = { seed: found.seed, tried: found.tried.join(',') };
       out.n = L.length; out.kinds = L.reduce((m, e) => (m[e.k] = (m[e.k] || 0) + 1, m), {});
       out.wellFormed = L.every(e => e.k && e.chose != null && Array.isArray(e.why) && e.why.length <= 3 && Array.isArray(e.not) && e.not.length <= 2 && e.why.every(x => typeof x[0] === 'string' && !/[<>"]/.test(x[0]) && isFinite(x[1])));
       out.warsWithWhy = S.wars.filter(w => w.why).length + declared.length;
@@ -98,7 +100,7 @@ export default {
       return out;
     });
     const ok = r.n > 0 && r.wellFormed && r.warReasons && r.feelOk && r.capped && r.loaded && r.oldOk && r.warsWithWhy >= 1;
-    return { ok, detail: `${r.n} records ${JSON.stringify(r.kinds)}; wars with a record ${r.warsWithWhy}; well formed ${r.wellFormed}; every war reason sourced ${r.warReasons}; ${r.hot} people with feelings (at most four each: ${r.feelOk}); capped ${r.capped}; save and load ${r.loaded}; old save ${r.oldOk}` };
+    return { ok, detail: `world ${r.seed == null ? 'none of ' + r.tried + ' declared a war in ten years' : r.seed + ' (read ' + r.tried + ')'}: ${r.n} records ${JSON.stringify(r.kinds)}; wars with a record ${r.warsWithWhy}; well formed ${r.wellFormed}; every war reason sourced ${r.warReasons}; ${r.hot} people with feelings (at most four each: ${r.feelOk}); capped ${r.capped}; save and load ${r.loaded}; old save ${r.oldOk}` };
   },
 
   // what the player is told: a war's news says why in plain words, never a number, and the council's count of spears

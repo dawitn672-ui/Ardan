@@ -21,7 +21,10 @@ export default {
         return { seed, first: got.length ? got[0].d : null, n: got.length, why: got.length ? got[0].why : '', reasons: got.filter(x => x.why).length, alive: A.pc().alive, mil: !!A.pc().mil, fp: A.fingerprint() };
       };
       const out = [];
-      for (const seed of [9901, 9902, 9903, 9904, 9905]) out.push(run(seed));
+      // (H-081: five soldiers, and standbys up to eight while fewer than four of them lived through the two years: a recruit's
+      // death is the world's draw, and the rule is read on the living)
+      const lives = () => out.filter(x => x.first != null || x.alive).length;
+      for (const seed of T.seedRun(9901, 8)) { if (out.length >= 5 && lives() >= 4) break; out.push(run(seed)); }
       const again = run(9901);
       return { out, same: again.fp === out[0].fp && again.first === out[0].first };
     });

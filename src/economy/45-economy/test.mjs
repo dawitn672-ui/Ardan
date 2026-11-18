@@ -58,9 +58,16 @@ export default {
         const E = A.ECON, hv = E.HARVESTS.reduce((a, h) => a + h[0] * h[1], 0), self = r => (A.mkt(r.id).pr.grain || 0) * hv / Math.max(1, E.demand(r).grain || 0);
         return ECT.live().filter(r => A.mkt(r.id).ex.includes('grain')).sort((a, b) => self(b) - self(a) || (a.id < b.id ? -1 : 1))[0].id;
       };
+      // (H-081: the four importers were named realms, but whether a realm ships grain out is its world's draw; a named realm
+      // that exports in its world now gives way to the first living realm by id there that does not, with neighbours to
+      // trade with, so the median is always of four importers)
+      const importer = rid0 => {
+        const ok = R => R && R.alive && !R.isRebel && !A.mkt(R.id).ex.includes('grain') && A.neighbors(R.id).length;
+        return ok(A.realm(rid0)) ? rid0 : ((ECT.live().filter(ok).sort((a, b) => (a.id < b.id ? -1 : 1))[0]) || {}).id || rid0;
+      };
       for (const [seed, rid0] of [[22, 'POL-02'], [24, 'POL-06'], [26, 'POL-10'], [27, 'POL-07'], [23, null]]) {
         ECT.world(seed); ECT.months(6);   // June: the harvest is known
-        const rid = rid0 || grower();
+        const rid = rid0 ? importer(rid0) : grower();
         const M0 = A.mkt(rid), norm = GD.GOODS.grain.base * M0.t.grain;
         const snap = JSON.stringify(A.S), rng = A.rngState, out = { rid, exports: M0.ex.includes('grain') };
         for (const [k, f, closed] of [['ordinary', 1, false], ['failed', 0.4, false], ['famine', 0.25, true]]) {
