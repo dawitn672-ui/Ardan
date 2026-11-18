@@ -168,7 +168,8 @@
   // a payment: a share of the loser's yearly income (the release's peace took a fifth of it)
   const g1 = L => Math.round(Math.max(500, (L.income || 0) * .2));
   const popOf = rid => A.realmProvs(rid).reduce((a, p) => a + p.pop, 0) || 1;
-  const LAND_CB = new Set(['conquest', 'justified', 'claim', 'reconquest']);
+  // (H-085: a rivalry is a quarrel over a border; its victor keeps the border land his soldiers hold)
+  const LAND_CB = new Set(['conquest', 'justified', 'claim', 'reconquest', 'rivalry']);
   // the land the victor's soldiers hold, as the peace may take it (the release's chain to his own land, 68's cap):
   // for his cause, the land he claims (and, in a war of conquest, the land he holds); asking all, every held province
   WAR.land = function (w, vs, want) {
@@ -206,9 +207,13 @@
       return out;
     }
     if (!vAtt) {
-      // an attack beaten back: the attacker gives up his claim and pays for the war; asked everything, the land held too
+      // an attack beaten back: the attacker gives up his claim and pays for the war, and the defender keeps the border
+      // land his soldiers hold (68-reasons-for-war's F4: "a border district or two", its cap for an attacker beaten back);
+      // asked everything, full reparations too. (H-085: W1-5 first left the land out; with it went two in five of the
+      // provinces that changed hands, and the memories of land taken that the next war's cause reads.)
       out.push({ k: 'renounce', label: `the claim of ${short(loser)} given up` });
-      if (want === 'all') { landTerm(WAR.land(w, vs, 'all')); coin(1, 'reparations'); }
+      landTerm(WAR.land(w, vs, 'all'));
+      if (want === 'all') coin(1, 'reparations');
       else coin(.5, 'the cost of the war');
       out.push(peace);
       return out;

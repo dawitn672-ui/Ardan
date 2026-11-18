@@ -68,7 +68,8 @@ export default {
 
   // three worlds of twenty years: every war that ended has its record (surrender or defeat, who yielded, a pathway, the
   // terms, reasons), none carries a score, the record of endings is bounded; pooled, both kinds and several pathways.
-  // Readings (this build, seeds 4401 to 4403): 10, 13 and 15 endings; 26 surrenders and 12 defeats; pathways 1, 2, 3, 6, 8.
+  // Readings (seeds 4401 to 4403): 10, 13 and 15 endings, 26 surrenders and 12 defeats, pathways 1, 2, 3, 6, 8 (W1-5);
+  // 11, 19 and 14, 29 and 15, pathways 1, 2, 3, 4, 8 (H-085, the peace's border land restored).
   // The bar is 20 endings in all (a world of twenty years with fewer than five wars would read the world, not the rule)
   async w5WarsEnd(pg) {
     const per = [];

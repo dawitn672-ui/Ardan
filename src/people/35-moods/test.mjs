@@ -65,19 +65,24 @@ export default {
   },
 
   async moodsInLives(pg) {
-    // across real lives, moods come and go rather than sticking
+    // across real lives, moods come and go rather than sticking.
+    // (H-085, pooled: one life's share of months in a low mood reads its world, not the rule: over seeds 355 to 362, ten
+    // years each, 2, 1, 8, 9, 6, 32, 0 and 8% on the W1-5 build (pooled 8.4%), 6, 6, 28, 11, 5, 11, 3 and 7% the build
+    // before (pooled 9.6%). Two lives read 2% on CI 150. Six lives of eight years are pooled (the test's time stays
+    // near the old one's): 3, 0, 11, 11, 6 and 9% on this build (pooled 6.9%), 7, 6, 35, 13, 6 and 13% before W1-5 (13.6%,
+    // one life in want a third of its months). The bar of 3% is under both; a rule that never lowers a mood reads 0.)
     const r = await pg.evaluate(() => {
       const seen = {}; let months = 0, inMood = 0;
-      for (const seed of [355, 356]) {
+      for (const seed of [355, 356, 357, 358, 359, 360]) {
         A.newGame({ seed, race: 'human', realm: 'POL-01', status: ['peasant', 'artisan'][seed % 2], sex: 'M', startAge: 18 });
         A.onMonth.push(pc => { months++; const m = A.MOODS.mood(pc); if (m) { seen[m.name] = (seen[m.name] || 0) + 1; if (m.k !== 'content') inMood++; } });
-        T.play(10);
+        T.play(8);
         A.onMonth.pop();
       }
       return { seen, share: Math.round(100 * inMood / Math.max(1, months)) };
     });
     const kinds = Object.keys(r.seen).length;
     // moods are a signal, not weather: they should come and go, most months none
-    return { ok: kinds >= 1 && r.share >= 3 && r.share <= 60, detail: `moods seen in 20 years of two lives: ${JSON.stringify(r.seen)}; in a low mood ${r.share}% of months` };
+    return { ok: kinds >= 1 && r.share >= 3 && r.share <= 60, detail: `moods seen in 48 years of six lives: ${JSON.stringify(r.seen)}; in a low mood ${r.share}% of months` };
   },
 };

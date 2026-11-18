@@ -1855,6 +1855,11 @@ then he weighs the facts as they stand.
    field. The release's stability after a lost or won war (−10 / +6) stays.
 4. **Captives, hostages and ransoms are not modelled** (no war takes a lord or a king prisoner yet); a hostage event is a
    blow (D-096). They come with D12b-3's people you know.
+**Addendum (CI 150, H-085):** an attack beaten back now also gives the defender the border land his soldiers hold
+(68-reasons-for-war's F4, "a border district or two", under its cap for a repulsed attacker; W1-5 had left it out, which
+undid that recorded decision without a record), and a rivalry, a quarrel over a border, is a war for land (its victor
+keeps the land he holds). With both left out two in five fewer provinces changed hands at a war's end, and with them the
+memories of land taken (55's ledger, the release's `took_land`) that the next war's cause cites.
 
 ### D-095 · W1-5: the player's part is a ruler's, and only through his own choices (2026-11-18; war.md §12.2; owner orders 5, 54)
 1. **Only the ruler of a side's leading realm decides for it**; the AI never asks, answers or names terms for him. His
