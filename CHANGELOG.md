@@ -5,6 +5,24 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Wars end only when one side asks for terms or can fight no more.** There is no hidden war score, no timer and no
+  peace nobody asked for. Each month, and after a great battle, each side's ruler weighs his reasons to fight on (his
+  cause, his pride, his host, the land he holds, the battles he won, what yielding would cost him) against his reasons to
+  ask (his hosts broken, battles lost, his land and capital taken, a worn-out realm, an empty chest, trouble at home, his
+  age), bent by his temper: a cautious king asks while he can still bargain, a proud one holds on. A side whose capital
+  has fallen with no host left, or whose every host is broken, is beaten and is asked nothing.
+- **Envoys ride, and the war goes on while they do.** The asking crown's envoys take days on the road to the other court,
+  whose ruler names his terms: what his war was for, or everything he holds, or nothing yet. The asker takes them,
+  refuses, or offers the terms of the cause instead. Terms are real things: land his soldiers hold, coin, tribute, a
+  public submission, alliances renounced, a claim given up, a claimant crowned, a land set free, and ten years of sworn
+  peace. Land, crowns and realms really change hands.
+- **As a ruler,** the peace table tells you in words and on a tipped scale how the other crown would answer, and why; no
+  percentages. Your envoys ride and bring its answer back. When an enemy's envoys come to ask you for terms, or bring
+  terms of their own, or an enemy can fight no more, you decide on a card. A councillor's counsel of peace is weighed by
+  the king with his own reasons.
+- **The news follows your rank:** a king's council hears why he asks for terms, a commander hears that envoys have ridden,
+  everyone in the war hears the peace and its terms. The chronicle says who asked whom for terms, or who could fight no
+  more.
 - **No more levies.** A realm's armies are its sworn men (knights, men-at-arms, a lord's retinue, about one in four
   hundred of the people), the regiments its treasury pays, and the roll: volunteers, about one in a hundred, who drill
   some days a year and march when mustered. Nobody is taken by a yearly tax of men.
