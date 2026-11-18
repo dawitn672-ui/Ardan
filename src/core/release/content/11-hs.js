@@ -2225,7 +2225,7 @@
         w: .8,
         cool: 14,
         title: "The honor of the house",
-        setup: (p,ctx)=>{fill(p,ctx),kinPid(p,ctx,{sex:"M"}),ctx.where=A.pick(["in the last border fight","at the siege","when the levy broke on the river crossing"])},
+        setup: (p,ctx)=>{fill(p,ctx),kinPid(p,ctx,{sex:"M"}),ctx.where=A.pick(["in the last border fight","at the siege","when the muster broke on the river crossing"])},
         text: "A herald says it in the liege's hall, where everyone can hear: your {cz} {them} turned his horse and ran {where}. A knight of {fam}, running. The other houses smile into their cups.",
         choices: [
           {
@@ -6398,7 +6398,7 @@
         cond: p=>AD(p)&&C.famHead(p)&&C.famKind(p,"noble","gentry_mil","gentry","merchant","clergy","horse","hunt","sea"),
         cool: 10,
         title: "The liege's demand",
-        setup: (p,ctx)=>{fill(p,ctx),ctx.want=KT(p,{noble:"twice the usual levy",gentry_mil:"every man of the family unit, at once",merchant:"a loan without interest",clergy:"prayers and a tithe for the war",horse:"the whole year's foals",hunt:"every hunter in the family for a war",sea:"every family ship for a season",def:"more than the family can give"})},
+        setup: (p,ctx)=>{fill(p,ctx),ctx.want=KT(p,{noble:"twice the usual men",gentry_mil:"every man of the family unit, at once",merchant:"a loan without interest",clergy:"prayers and a tithe for the war",horse:"the whole year's foals",hunt:"every hunter in the family for a war",sea:"every family ship for a season",def:"more than the family can give"})},
         text: "A letter from {lg}, to you as head of {fam}: the realm needs {want}. Refusing a liege is dangerous. Agreeing could break the family.",
         choices: [
           {

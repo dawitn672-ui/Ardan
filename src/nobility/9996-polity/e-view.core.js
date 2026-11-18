@@ -98,8 +98,8 @@ const band = ap => ap >= 5 ? 'po-good' : ap <= -5 ? 'po-bad' : ap <= -2 ? 'po-wa
 const LAW_FX = {
   tax: i => `the crown takes ${Math.round(((RI.TAXES || [])[i] || 1) * 100)}% of its customary dues`,
   auth: i => `${['the great houses keep their governors', 'the crown names some governors', 'the crown names the governors', 'the crown names every office'][i]}; houses drift ${(A.AUTH && A.AUTH[i] ? A.AUTH[i][2] / 4 : 0) >= 0 ? 'warmer' : 'colder'}`,
-  levy: i => `the muster calls ×${A.LEVY && A.LEVY[i] ? A.LEVY[i][1] : 1}`,
-  obl: i => `new oaths owe ${['a twentieth', 'a tenth', 'three twentieths'][i]} of rents and ×${POL.OBL_LEVY[i]} the men`,
+  conscript: i => `the muster calls ×${A.CONSCRIPT_LAW && A.CONSCRIPT_LAW[i] ? A.CONSCRIPT_LAW[i][1] : 1}`,
+  obl: i => `new oaths owe ${['a twentieth', 'a tenth', 'three twentieths'][i]} of rents and ×${POL.OBL_MEN[i]} the men`,
   just: i => `${['the lords judge their own people', 'the crown\'s magistrates sit in every shire', 'magistrates must be lettered'][i]}`,
   comm: i => `${['the lords\' rents rise a tenth; the commons count for less', 'rents as they are', 'the commons count for half again; rents fall a twentieth'][i]}`,
   trade: i => `${['the guilds set craft prices', 'the treasury takes a share of trade; the guilds hate it', 'caravans run freer; prices fall'][i]}`,
@@ -230,7 +230,7 @@ POL.lordsCard = function (r, pc) {
   const seg = (h, key, cur) => `<span class="po-seg" role="group" aria-label="${esc(key === 'tax' ? 'Tax owed' : 'Men owed')}">${lvl.map((l, i) => { const d = i - cur, q = d === 1 ? POL.oblCost(r, h, key, 1, pc) : null, dis = Math.abs(d) > 1 || (q && !q.ok); const title = d === 0 ? 'Now' : d < 0 ? '+10 opinion with them' : q && q.ok ? (q.free ? 'Free: spends the favour their head owes you' : 'Tyranny: −15 with them, −3 with every landed house') : q ? q.why : 'One step at a time'; return `<button class="small${d === 0 ? ' primary' : ''}"${d === 0 || dis ? ' disabled aria-disabled="true"' : ` data-a="poOath" data-v="${esc(h.id + '|' + key + '|' + (d > 0 ? 1 : -1))}"`} aria-pressed="${d === 0}" title="${esc(title)}">${l}</button>`; }).join('')}</span>`;
   const rows = hs.map(h => {
     const c = POL.contractOf(h, r), head = h.headPid && A.P(h.headPid), free = Object.keys(POL.RIGHTS).filter(x => !c.rights.includes(x));
-    return `<div class="po-lord">${bust(live(head) ? head : null, 26)}<div class="po-lord-t"><div class="po-small"><b>${esc(h.name)}</b> <span class="muted">loyalty ${Math.round(h.op != null ? h.op : 50)}</span></div><div class="po-small po-oath"><span class="po-cap">Tax</span>${seg(h, 'tax', c.tax)}<span class="po-cap">Men</span>${seg(h, 'levy', c.levy)}</div>${free.length ? `<div class="po-small"><button class="small ghost" data-a="poOath" data-v="${esc(h.id + '|right|' + free[0])}" data-note="+15 with them; −0.1 on the next authority bill">Grant a right: ${esc(POL.RIGHTS[free[0]].toLowerCase())}</button></div>` : ''}</div></div>`;
+    return `<div class="po-lord">${bust(live(head) ? head : null, 26)}<div class="po-lord-t"><div class="po-small"><b>${esc(h.name)}</b> <span class="muted">loyalty ${Math.round(h.op != null ? h.op : 50)}</span></div><div class="po-small po-oath"><span class="po-cap">Tax</span>${seg(h, 'tax', c.tax)}<span class="po-cap">Men</span>${seg(h, 'men', c.men)}</div>${free.length ? `<div class="po-small"><button class="small ghost" data-a="poOath" data-v="${esc(h.id + '|right|' + free[0])}" data-note="+15 with them; −0.1 on the next authority bill">Grant a right: ${esc(POL.RIGHTS[free[0]].toLowerCase())}</button></div>` : ''}</div></div>`;
   }).join('');
   return card('lords', 'The great lords and their oaths', rows || '<div class="po-small muted">No landed houses.</div>', '', `${hs.length} houses`);
 };
@@ -390,7 +390,7 @@ if (G && typeof G.facPower === 'function' && TT && TT.K) {
     const pts = [[`Its swords: ${esc(A.fmt(Math.round(sw)))} of the realm's ${esc(A.fmt(Math.round(S.all)))}`, sw / Math.max(1, S.all) * 100]];
     if (S.back) pts.push([`On the council, ${S.nb} lean${S.nb === 1 ? 's' : ''} its way${S.lead ? ', and its leader wants what it wants' : ''} (56-realm-inside, at most 15%)`, S.back * 100]);
     for (const [l, v] of S.pol) pts.push([esc(l), v * 100]);
-    return K.H('Power', K.pct(S.total), esc(F0.name || '')) + K.D('Its houses\' swords, against all the realm\'s: every house, a quarter of the army and a twentieth of the levy; and what the estates make of the crown (9996-polity).') +
+    return K.H('Power', K.pct(S.total), esc(F0.name || '')) + K.D('Its houses\' swords, against all the realm\'s: every house, a quarter of the army and a twentieth of the roll; and what the estates make of the crown (9996-polity).') +
       `<div class="tip-row tt-sum"><span>Its swords</span><b></b></div>` + TT.sumRows(S.mem, sw, 'Swords', v => esc(A.fmt(v))) +
       `<div class="tip-row tt-sum"><span>${stale ? 'Today' : 'Its power'}</span><b></b></div>` + K.pts(pts, Math.round(S.now * 100), 'Power') +
       (stale ? K.D(`The card shows ${K.pct(f.power)}, reckoned at the new year; the realm's swords have moved since.`) : '') +

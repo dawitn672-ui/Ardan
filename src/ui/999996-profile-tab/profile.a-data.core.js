@@ -60,8 +60,8 @@ PF.bodyWord = function (p) {
   const age = A.age(p), R = GD.RACES[p.race] || GD.RACES.human;
   if (age < 3) return 'too young to measure';
   const build = (p.app && p.app.build) || '', grow = age < (R.grown || 20) ? ', still growing' : '';
-  if (!VS || !VS.shownLevies || age < 6) return (build + grow).replace(/^, /, '') || 'growing';
-  let rank = ''; try { rank = VS.levyRank(VS.shownLevies(p)); } catch (e) {}
+  if (!VS || !VS.shownConscripts || age < 6) return (build + grow).replace(/^, /, '') || 'growing';
+  let rank = ''; try { rank = VS.conscriptRank(VS.shownConscripts(p)); } catch (e) {}
   return [build, rank].filter(Boolean).join(', ') + (grow ? grow : '');
 };
 PF.renownWord = p => (VS && VS.band ? VS.band('fame', p.fame || 0) : 'unknown');

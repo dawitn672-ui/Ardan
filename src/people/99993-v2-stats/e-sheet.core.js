@@ -2,30 +2,30 @@
 //
 // The profile (desktop side panel, the phone's You page) and the full profile no longer show "Strength 35 / 46": they
 // show the body as A.V2.body.describe gives it (height that grows, lift in kg with a thing you know, sprint in m/s, march
-// in km a day, reaction in ms, toughness in blows), the mind as words plus "1 in N", fighting worth in levies, and skills
+// in km a day, reaction in ms, toughness in blows), the mind as words plus "1 in N", fighting worth in conscripts, and skills
 // as named tiers with hours practised. Rendering only: everything is read through A.V2S.view, which writes no state.
 const VS = A.V2S, B = A.V2.body;
 const esc = s => UI.esc(String(s == null ? '' : s));
 const cap = s => (s ? s[0].toUpperCase() + s.slice(1) : s);
 VS.MEASURE_AGE = 3;
 VS.MIND_NAME = { wits: 'Wits', learning: 'Memory', judgment: 'Judgment', will: 'Will', presence: 'Presence', cunning: 'Cunning' };
-VS.levyWords = function (lv) {
+VS.conscriptWords = function (lv) {
   if (lv < 0.15) return 'no use in a fight yet';
-  if (lv < 0.7) return 'less than one levy';
-  if (lv < 1.4) return 'about one levy';
-  if (lv < 2) return 'about one and a half levies';
-  if (lv < 20) return `about ${Math.round(lv)} levies`;
-  return `about ${Math.round(lv / 5) * 5} levies`;
+  if (lv < 0.7) return 'less than one conscript';
+  if (lv < 1.4) return 'about one conscript';
+  if (lv < 2) return 'about one and a half conscripts';
+  if (lv < 20) return `about ${Math.round(lv)} conscripts`;
+  return `about ${Math.round(lv / 5) * 5} conscripts`;
 };
-// the rank reads the same bands as the words: "about one and a half levies" is never "a levy's worth" (playtest 2)
-VS.levyRank = function (lv) {
-  return lv < 0.7 ? 'not yet a fighter' : lv < 1.4 ? 'a levy\'s worth' : lv < 3.3 ? 'a man-at-arms' : lv < 8 ? 'a knight' : lv < 12 ? 'a champion'
+// the rank reads the same bands as the words: "about one and a half conscripts" is never "a conscript's worth" (playtest 2)
+VS.conscriptRank = function (lv) {
+  return lv < 0.7 ? 'not yet a fighter' : lv < 1.4 ? 'a conscript\'s worth' : lv < 3.3 ? 'a man-at-arms' : lv < 8 ? 'a knight' : lv < 12 ? 'a champion'
     : lv < 32 ? 'an order knight, or a giant' : lv < 50 ? 'a hero of the age' : 'a legend';
 };
 // each row says what its number measures (59-descriptions: every number on the profile explains itself)
 VS.ROW_TIP = { Height: 'Your height and weight now; a child grows each year.', Strength: 'The heaviest dead weight you can raise once.',
   Speed: 'Your flat-out sprint.', Endurance: 'How far you can march in a day with a pack.', Reflexes: 'How long you take to answer a blow.',
-  Toughness: 'How many blows that would fell an ordinary man you can take.', 'In a fight': 'Your worth in a fight, counted in levies: untrained spearmen in padded coats.' };
+  Toughness: 'How many blows that would fell an ordinary man you can take.', 'In a fight': 'Your worth in a fight, counted in conscripts: untrained spearmen in padded coats.' };
 const row = (lbl, val, words) => `<div class="v2-row" title="${esc(VS.ROW_TIP[lbl] || lbl + ', against everyone of your people')}"><span class="v2-l">${esc(lbl)}</span><span class="v2-v">${esc(val)}</span><span class="v2-w">${esc(words)}</span></div>`;
 VS.sheetHtml = function (p, opts = {}) {
   const d = VS.describe(p), s = VS.stats(p);
@@ -48,8 +48,8 @@ VS.sheetHtml = function (p, opts = {}) {
   h += row('Toughness', d.toughness.value, toughW);
   const fights = age >= 6;
   if (fights) {
-    const lv = VS.shownLevies(p);
-    h += row('In a fight', VS.levyWords(lv), VS.levyRank(lv));
+    const lv = VS.shownConscripts(p);
+    h += row('In a fight', VS.conscriptWords(lv), VS.conscriptRank(lv));
   }
   h += `<div class="group-h">Mind</div>`;
   for (const k of B.MENTAL) {
@@ -58,8 +58,8 @@ VS.sheetHtml = function (p, opts = {}) {
   }
   const bt = (v.body.breakthroughs || []);
   if (bt.length) h += `<div class="tiny muted v2-bt">Broke through: ${esc(bt.slice(-3).map(b => `${b.attr === 'lift' ? 'strength' : b.attr} at ${b.age}${b.note ? ' (' + b.note + ')' : ''}`).join('; '))}.</div>`;
-  // the legend explains the fight row, so it goes only where that row is (playtest 2: "A levy: ..." on a one-year-old)
-  if (!opts.noLegend && fights) h += `<div class="tiny muted v2-legend">A levy: an untrained spearman in a padded coat.</div>`;
+  // the legend explains the fight row, so it goes only where that row is (playtest 2: "A muster: ..." on a one-year-old)
+  if (!opts.noLegend && fights) h += `<div class="tiny muted v2-legend">A conscript: an untrained spearman in a padded coat.</div>`;
   return h + '</div>';
 };
 // S1b (D-072): a skill's tier is its level in words ("Expert II"), read from the value its level reads; the hours were
@@ -155,17 +155,17 @@ if (UI.SCENE && UI.SCENE.chip) {
     } catch (e) { return h; }
   };
 }
-// 48-event-fight-rules's tier chip: "Untrained · 39" becomes "about one levy"
+// 48-event-fight-rules's tier chip: "Untrained · 39" becomes "about one muster"
 if (UI.tierChip) {
   const tc = UI.tierChip;
   UI.tierChip = function (p, short) {
     const h = tc.apply(this, arguments);
     try {
       if (typeof h !== 'string') return h;
-      // the chip says v2's levies alone: the tier name it carried is the release's worth, which ranks people a little
-      // differently (playtest 2, old 17: "Elite · about one and a half levies" beside the sheet's "a levy's worth").
-      // The short chip keeps the tier name, with no levies beside it.
-      const lw = w => VS.levyWords(p && p.st ? VS.shownLevies(p) : VS.fromWorth(+w));
+      // the chip says v2's conscripts alone: the tier name it carried is the release's worth, which ranks people a little
+      // differently (playtest 2, old 17: "Elite · about one and a half conscripts" beside the sheet's "a conscript's worth").
+      // The short chip keeps the tier name, with no conscripts beside it.
+      const lw = w => VS.conscriptWords(p && p.st ? VS.shownConscripts(p) : VS.fromWorth(+w));
       if (short) return h.replace(/, fighting worth \d+\./, '.');
       return h.replace(/aria-label="[^"]*?, fighting worth (\d+)\./, (m, w) => `aria-label="Worth ${esc(lw(w))} in a fight.`)
         .replace(/>[^<>]* · (\d+)<\/span>$/, (m, w) => `>${esc(lw(w))}</span>`);

@@ -58,8 +58,8 @@ for (const seed of SEEDS) {
   runs.push(await page.evaluate(([seed, YEARS, LANDS]) => {
     A.newGame({ seed, lands: LANDS, race: 'human', realm: LANDS === 'great' ? 'POL-36' : 'POL-01', status: 'peasant', sex: 'M', startAge: 16, diff: 'story' });
     const P = A.POL, o = { seed, ry: 0, legit: [], low: 0, estN: 0, angry: 0, loyal: 0, claimFy: 0, fac40: 0, facY: 0, realms: 0, changes: 0, byGroup: {}, outside: 0, hoard: 0, throne: 0, revolts: 0, wars: 0, elected: 0, electedVotes: 0, succ: 0, tax60: null, taxEnd: null, offices: [], held: 0, offN: 0, ms: 0 };
-    const groups = ['tax', 'auth', 'levy', 'obl', 'just', 'comm', 'trade', 'faith'];
-    const posOf = (r, g) => P ? P.pos(r, g) : g === 'tax' ? (r.laws.tax || 1) : g === 'auth' ? r.laws.authority : g === 'levy' ? r.laws.levy : null;
+    const groups = ['tax', 'auth', 'conscript', 'obl', 'just', 'comm', 'trade', 'faith'];
+    const posOf = (r, g) => P ? P.pos(r, g) : g === 'tax' ? (r.laws.tax || 1) : g === 'auth' ? r.laws.authority : g === 'conscript' ? r.laws.conscript : null;
     const last = {}, outside = new Set(), seen = new Set();
     const ai = () => Object.values(A.S.realms).filter(r => r.alive && !r.isRebel && !r.playerRun);
     // successions in realms that elect, and whether a vote was recorded for them

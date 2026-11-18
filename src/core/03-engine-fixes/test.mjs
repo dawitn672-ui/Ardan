@@ -6,7 +6,7 @@ export default {
       A.newGame({ seed: 4402, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
       A.S.queue.length = 0;
       const par = A.realm('POL-05'), p = A.realmProvs('POL-05').find(x => x.id !== par.capitalProv);
-      const nr = A.createRealm({ name: 'Test League', short: 'Testers', title: 'Lord', race: 'human', cult: par.cult, faith: par.faith, color: '#888888', army: 2000, levy: 500, armyQ: 1, income: 5000, stability: 50, legit: 30, treasury: 2000, comp: par.comp });
+      const nr = A.createRealm({ name: 'Test League', short: 'Testers', title: 'Lord', race: 'human', cult: par.cult, faith: par.faith, color: '#888888', army: 2000, roll: 500, armyQ: 1, income: 5000, stability: 50, legit: 30, treasury: 2000, comp: par.comp });
       nr.isRebel = true; nr.parent = par.id; p.owner = nr.id; nr.capitalProv = p.id; nr.capital = p.name; A.updateRealmPops();
       A.startWar(nr.id, par.id, 'The Test Revolt', 'liberty', { noAllies: true });
       const w = A.S.wars.find(x => x.leadA === nr.id), mid = nr.isRebel;

@@ -2,7 +2,7 @@
 // Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: A.polOnTransfer, A.pickCB, A.FACTIONS, A.houseStrength, A.realmHouses, A.factionsOf, A.factionPower,
 // A.factionsYear, A.factionDemand, A.factionConcede, A.factionRevolt, A.canJoinFaction, A.joinFaction,
-// A.leaveFaction, A.LEVY, A.setLaw, A.peaceTerms, A.peaceOdds, A.peaceOffer, A.aiOffers, A.aiDiploYear,
+// A.leaveFaction, A.CONSCRIPT_LAW, A.setLaw, A.peaceTerms, A.peaceOdds, A.peaceOffer, A.aiOffers, A.aiDiploYear,
 // A.queueAiOffer, A.CHOICE_FN (+), A.provsHeld, A.livingKids, A.grandkids, A.bestStyleRank, A.netWorth,
 // A.realmsSeen, A.DEC, DEC, R, A.decisionsFor, A.decisionState, A.decide, A.bestSkillOf, A.markSeen, A.progYear,
 // progYearNow; 22 decisions (DEC).
@@ -70,12 +70,12 @@ A.FACTIONS = {
 A.houseStrength = function (h) {
   if (h.great === false) {
     const R3 = GD.NOBLE_RUNGS.find(x => x.code === h.rung);
-    return R3 ? R3.levy * (h.kind === "gentry_mil" ? 2 : 1) + (h.military ? 200 : 0) : 30;
+    return R3 ? R3.men * (h.kind === "gentry_mil" ? 2 : 1) + (h.military ? 200 : 0) : 30;
   }
-  const lv = +h.levy || 0;
+  const lv = +h.men || 0;
   if (lv) return lv;
   const R2 = GD.NOBLE_RUNGS.find(x => x.code === h.rung);
-  return R2 ? R2.levy : 800;
+  return R2 ? R2.men : 800;
 };
 
 A.realmHouses = rid =>
@@ -92,7 +92,7 @@ A.factionsOf = rid => (A.S.factions || []).filter(f => f.realm === rid);
 A.factionPower = function (f) {
   const r = A.realm(f.realm);
   if (!r) return 0;
-  const all = A.realmHouses(f.realm).reduce((a, h) => a + A.houseStrength(h), 0) + (r.army * 0.25 + r.levy * 0.05);
+  const all = A.realmHouses(f.realm).reduce((a, h) => a + A.houseStrength(h), 0) + (r.army * 0.25 + (A.MEN ? A.MEN.reserve(r) : r.roll) * 0.05);
   return (
     (f.members
       .map(id => A.S.houses[id])
@@ -108,7 +108,7 @@ A.factionsYear = function (r) {
   S.factions = S.factions || [];
   const pc = A.pc(),
     auth = (r.laws && r.laws.authority) != null ? r.laws.authority : 1,
-    drift = A.AUTH[auth][2] / 4 + (r.laws && r.laws.levy != null ? A.LEVY[r.laws.levy][2] : 0),
+    drift = A.AUTH[auth][2] / 4 + (r.laws && r.laws.conscript != null ? A.CONSCRIPT_LAW[r.laws.conscript][2] : 0),
     houses = A.realmHouses(r.id);
   for (const h of houses)
     h.op = A.clamp((h.op != null ? h.op : 50) + drift + A.ri(-2, 2) + (r.stability - 50) / 60, 0, 100);
@@ -318,7 +318,7 @@ A.factionRevolt = function (r, f, peaceful) {
     faith: r.faith,
     color: A.pick(A.COLORS_EXTRA),
     army: Math.round(f.members.reduce((a, id) => a + A.houseStrength(S.houses[id] || {}), 0) * 0.6 + 500),
-    levy: Math.round(r.levy * 0.1),
+    roll: Math.round(r.roll * 0.1),
     armyQ: r.armyQ,
     income: Math.round((r.income * provs.length) / Math.max(1, A.realmProvs(r.id).length)),
     stability: 50,
@@ -473,10 +473,10 @@ A.leaveFaction = function () {
   };
 };
 
-A.LEVY = [
-  ["Light levies", 0.75, 1, "Fewer men called up. The lords like you for it."],
-  ["Customary levies", 1, 0, "What the old charters allow."],
-  ["Heavy levies", 1.3, -2, "Every hall sends more spears. The lords grumble every year."],
+A.CONSCRIPT_LAW = [
+  ["By the estates' leave", 0.75, 1, "The crown calls only the first call (one hearth in twenty) on its own word; more needs the lords' consent. The lords like you for it."],
+  ["The old custom", 1, 0, "The first and second calls on the crown's word, as the old charters allow."],
+  ["The crown's right", 1.3, -2, "Every call, the last among them, on the crown's word alone. The lords grumble every year."],
 ];
 
 A.setLaw = function (k, v) {
@@ -527,16 +527,15 @@ A.setLaw = function (k, v) {
       ok: true,
     };
   }
-  if (k === "levy") {
-    const cur = r.laws.levy;
+  if (k === "conscript") {
+    const cur = r.laws.conscript;
     return v === cur || v < 0 || v > 2
       ? {
           ok: false,
         }
-      : ((r.levy = Math.round((r.levy * A.LEVY[v][1]) / A.LEVY[cur][1])),
-        (r.laws.levy = v),
+      : ((r.laws.conscript = v),
         (A.S.yearActs["law_" + k] = 1),
-        A.log(`New levy law: ${A.LEVY[v][0]}. The muster rolls now count ${A.fmt(r.levy)}.`),
+        A.log(`New conscription law: ${A.CONSCRIPT_LAW[v][0]}. ${A.CONSCRIPT_LAW[v][3]}`),
         {
           ok: true,
         });
@@ -2136,7 +2135,7 @@ DEC("holy_war", {
       ? null
       : ((r.stability = Math.min(100, r.stability + 5)),
         (pc.piety = Math.min(100, pc.piety + 5)),
-        (r.army += Math.round(r.levy * 0.1)),
+        (r.army += Math.round(r.roll * 0.1)),
         "The priests preach it from every pulpit. Volunteers crowd your muster fields.");
   },
 });

@@ -21,12 +21,12 @@
         fx: { happy: -2 }, keepT: 'Let the law stand', keep: 'You stand by the grave and say nothing about the will. Nobody else does either.',
         defy: { t: 'Take it to the {w3}', r: 'The {w3} hears you out and upholds the law. Your brother remembers that you asked.', fx: { wil: 1, happy: -4, honor: 1 } },
         log: '{parent} is buried, and the land goes as Aldmark\'s law says: you get {got}.' },
-      { id: 'ald_scutage', name: 'Forty days or two marks', kind: 'levy', who: 'male',
+      { id: 'ald_scutage', name: 'Forty days or two marks', kind: 'call', who: 'male',
         rule: 'In war, every free man owes forty days with the host, or two marks of scutage.',
-        text: 'War, and the levy-riders come through with a list. Every free man of a {w1} owes forty days with the Emperor\'s host, or two marks of scutage to stay at home and plough.',
+        text: 'War, and the muster-riders come through with a list. Every free man of a {w1} owes forty days with the Emperor\'s host, or two marks of scutage to stay at home and plough.',
         fx: { coin: -6 }, keepT: 'Pay the scutage and stay', keep: 'You pay the two marks. The rider moves on to the next door.',
         defy: { t: 'Be out in the far field when they come', r: 'They do not find you. Your neighbours, who paid, notice that you did not.', fx: { honor: -4 } },
-        log: 'The levy rides through for the war; you pay the scutage.' },
+        log: 'The muster rides through for the war; you pay the scutage.' },
     ],
   };
 })();

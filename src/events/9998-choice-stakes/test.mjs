@@ -236,7 +236,7 @@ export default {
       ST.why('stxBill', v => (+v > 100 ? 'The council will not hear it this season.' : ''));
       ST.add('choice', (c, e) => (e.id === 'stx_test' && c.t === 'Walk away' ? [{ k: 'note', t: 'Your advisor frowns' }] : []));
       const box = document.createElement('div'); box.id = 'stx-box';
-      box.innerHTML = '<button data-a="stxBill" data-v="40">Lighter levies</button><button data-a="stxBill" data-v="400" disabled>Heavy levies</button>';
+      box.innerHTML = '<button data-a="stxBill" data-v="40">Milder conscription</button><button data-a="stxBill" data-v="400" disabled>Harsh conscription</button>';
       document.body.appendChild(box);
       const n = ST.decorate(box);
       const chips = [...box.querySelectorAll('.st-row')].map(x => x.textContent);

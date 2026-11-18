@@ -1,6 +1,6 @@
 // 99997-v2-war, part 3: elite orders, few and terrible (V2_SPEC complaint 9).
 //
-// v2's orders (A.V2.orders): a handful in the world, 150-350 sworn members each, every member worth 14-26 levies, plus
+// v2's orders (A.V2.orders): a handful in the world, 150-350 sworn members each, every member worth 14-26 conscripts, plus
 // terror that shakes the men facing them; joining takes three trials. The game already has its orders (GD.ORDERS: the
 // Iron Wolf, the Sun, the Greyfeathers, ...), each a division of its own in its realm's forces, with lore, ranks and a
 // way in (A.orderJoin). So v2's rules are laid onto them rather than a second set of orders made:
@@ -8,8 +8,8 @@
 //   - worth: 14 + 1.2 x (the order's experience - 80), held within 14-26 (the Greyfeathers 14, the Iron Wolf 18.8,
 //     the Last Door 26); terror 0.25-0.45 from the same experience. Fixed by the order's record, not drawn;
 //   - the division simulator: each order battalion (A.orderBuildCompanies) is scaled so that its attack, defence and
-//     toughness per man are its worth times a levy's (GD.BN.LV), so in A.fightDay and A.divCombat an order of 260
-//     fights like 3,000 to 7,000 levies, and takes a front no wider than its few men;
+//     toughness per man are its worth times a conscript's (GD.BN.LV), so in A.fightDay and A.divCombat an order of 260
+//     fights like 3,000 to 7,000 conscripts, and takes a front no wider than its few men;
 //   - terror: each day of a war-map fight with an order in it, every division on the other side loses order (its
 //     morale) of terror x 3% of its full order, scaled by the order's men (full at 150);
 //   - joining: A.orderJoin first runs v2's three trials (the endurance march, the weapon trial, the oath night) on
@@ -21,7 +21,7 @@
   W.ORDER = { W_MIN: 14, W_MAX: 26, TERROR_DAY: 0.03, RETRY_YEARS: 2 };
   W.orderWorth = id => { const o = GD.ORDERS[id]; return o ? Math.round(clamp(14 + 1.2 * ((o.exp || 80) - 80), W.ORDER.W_MIN, W.ORDER.W_MAX) * 10) / 10 : 1; };
   W.orderTerror = id => { const o = GD.ORDERS[id]; return o ? Math.round(clamp(0.25 + 0.02 * ((o.exp || 80) - 80), 0.25, 0.45) * 100) / 100 : 0; };
-  W.orderList = () => Object.keys(GD.ORDERS).map(id => ({ id, name: GD.ORDERS[id].name, members: GD.ORDERS[id].size, worth: W.orderWorth(id), terror: W.orderTerror(id), levies: Math.round(GD.ORDERS[id].size * W.orderWorth(id)) }));
+  W.orderList = () => Object.keys(GD.ORDERS).map(id => ({ id, name: GD.ORDERS[id].name, members: GD.ORDERS[id].size, worth: W.orderWorth(id), terror: W.orderTerror(id), conscripts: Math.round(GD.ORDERS[id].size * W.orderWorth(id)) }));
 
   // ---- the division simulator ---------------------------------------------------------------------------------------
   const pm = B => (B.soft + B.def + B.hp) / Math.max(1, B.men);
@@ -46,7 +46,7 @@
     A.orderBuildCompanies = function () { const r = ob.apply(this, arguments); W.scaleOrders(); return r; };
   }
   W.scaleOrders();
-  // an order's worth per member as the division simulator reads it, in levies (for the tests and the sheet)
+  // an order's worth per member as the division simulator reads it, in conscripts (for the tests and the sheet)
   // (against an ordinary division of the same realm, as the simulator reads both, times that division's own worth)
   W.simWorth = function (d) {
     const per = x => { const c = A.divCombat(x); return (c.soft + c.def + c.hp) / Math.max(1, x.men); };
@@ -55,7 +55,7 @@
     return per(d) / per(line) * (W.divWorth ? W.divWorth(line) : 1);
   };
 
-  // the orders' page reads the same worth: members times their worth in levies (the release measured it against the
+  // the orders' page reads the same worth: members times their worth in conscripts (the release measured it against the
   // realm's biggest line division, which read 57 a member after the scaling, and nothing where a realm had none)
   if (typeof A.orderSummary === 'function') {
     const os = A.orderSummary;
@@ -86,7 +86,7 @@
   // ---- three trials to join ----------------------------------------------------------------------------------------------
   W.applicant = function (pc) {
     const VS = A.V2S, s = VS && VS.stats ? VS.stats(pc) : null, m = VS ? VS.minds(pc) : { judgment: 100, will: 100 };
-    return { capability: { march: s && s.march ? s.march : 35, worth: VS && VS.leviesOf ? VS.leviesOf(pc) : 1, will: m.will }, judgment: m.judgment, will: m.will };
+    return { capability: { march: s && s.march ? s.march : 35, worth: VS && VS.conscriptsOf ? VS.conscriptsOf(pc) : 1, will: m.will }, judgment: m.judgment, will: m.will };
   };
   W.trialFor = function (pc, id) {
     const o = GD.ORDERS[id];

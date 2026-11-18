@@ -206,7 +206,9 @@
       m.dn = E.needOf(r, d);
       const hv = m.hv && m.hv.y === S.year ? m.hv.f : 1;
       // production: the land, less what war takes
-      const warCut = 1 - 0.5 * (taken[r.id] || 0) / Math.max(1, held[r.id] || 1);
+      const warCut = (1 - 0.5 * (taken[r.id] || 0) / Math.max(1, held[r.id] || 1)) *
+        // [W1-4] a call to arms takes hands from the fields: its share of the working men, twice that at the reaping
+        (A.CALLS && A.CALLS.fields ? A.CALLS.fields(r.id, mo) : 1);
       for (const k in G()) {
         let made = (m.pr && m.pr[k] || 0) * warCut;
         if (k === 'grain') made = made * E.HARVEST[mo] * hv;

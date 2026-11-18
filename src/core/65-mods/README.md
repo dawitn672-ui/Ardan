@@ -20,7 +20,7 @@ The game is one HTML page with a strict security policy: no `eval`, no `new Func
   - its own words for each culture;
   - customs, in a build with the realm bible (47-realm-customs).
 
-  A custom uses the bible's own data model and is limited to the three kinds the bible runs from its month hook: `year`, `rite` and `ward`. It has the same first-meeting scene and log line as the bible's customs, and it shows on the Realm tab's card. The kinds tied to other moments (the wed, mourn, name, levy, law, market and grave customs) are left out. **New realms are out of scope.** A realm is more than data here: `A.initWorld` builds the provinces from the map's geometry, and rulers, houses, armies and borders all hang from them. A new realm would need new provinces on a map the game draws from fixed shapes, and the engine has no clean way in for that.
+  A custom uses the bible's own data model and is limited to the three kinds the bible runs from its month hook: `year`, `rite` and `ward`. It has the same first-meeting scene and log line as the bible's customs, and it shows on the Realm tab's card. The kinds tied to other moments (the wed, mourn, name, muster, law, market and grave customs) are left out. **New realms are out of scope.** A realm is more than data here: `A.initWorld` builds the provinces from the map's geometry, and rulers, houses, armies and borders all hang from them. A new realm would need new provinces on a map the game draws from fixed shapes, and the engine has no clean way in for that.
 - **The Mods panel** is on the title screen and in the Menu. It has these parts:
   - **Load a mod file**: an `<input type=file>` read with `FileReader`, with no network.
   - **Save the example as a file**: a template to start from.

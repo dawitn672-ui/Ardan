@@ -97,7 +97,7 @@ export default {
     const r = await pg.evaluate(async () => {
       T.enter({ seed: 9203, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
       for (let i = 0; i < 48; i++) {
-        // since the v2 war (99997) a peasant of 30 can be levied, and on campaign Next month is refused with its own
+        // since the v2 war (99997) a peasant of 30 can be laid, and on campaign Next month is refused with its own
         // notice ("You are on campaign: ..."), which is not a quiet month: march the campaign out a week at a time and
         // hold only a month that was lived to the quiet-month toast
         if (A.V2T.campaign()) { await __press('v2Week'); continue; }

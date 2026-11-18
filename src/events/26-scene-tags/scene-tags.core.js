@@ -23,7 +23,7 @@
     sea: /\b(ships?|deck|sails?|sailors?|harbou?rs?|tide|oars?|voyage|at sea|shipmaster|quay|docks?|boats?|nets?|wharf|strand|galley|the port|crews)\b/gi,
     prison: /\b(cell|dungeon|gaol|gaoler|jail|jailer|chains|prison|shackles?|the stocks)\b/gi,
     grave: /\b(funeral|graves?|graveside|graveyard|burial|buried|bury|pyre|mourners?|coffin|bier)\b/gi,
-    war: /\b(battle|siege|army|armies|muster|war camp|the camp|the host|levy|levies|banners?|campaign|soldiers?|garrison|sergeant|recruiter|recruiting|the line|sentry|picket|squad|rations?|the mess|column|general|march(?:es|ed|ing)?|the lists|captain|drill(?:s|ed|ing)?|the section|spearmen)\b/gi,
+    war: /\b(battle|siege|army|armies|muster|war camp|the camp|the host|conscripts?|banners?|campaign|soldiers?|garrison|sergeant|recruiter|recruiting|the line|sentry|picket|squad|rations?|the mess|column|general|march(?:es|ed|ing)?|the lists|captain|drill(?:s|ed|ing)?|the section|spearmen)\b/gi,
     fight: /\b(duel|brawl|ambush|bandits?|cutthroats?|draws? (?:a|his|her) (?:knife|blade|sword)|fists?|bouts?)\b/gi,
     church: /\b(priests?|temple|shrine|chapel|abbey|abbot|bishop|monks?|nuns?|pray(?:s|er|ers|ing)?|altar|sermon|church(?:es)?|pilgrims?|relic|confess\w*|tithe|vigil)\b/gi,
     court: /\b(court|throne|council|king|queen|emperor|audience|herald|duke|duchess|chancellor|courtiers?|envoys?|petition|the lord's hall|great hall|liege|vassals?|homage|tapestry|conspirators)\b/gi,

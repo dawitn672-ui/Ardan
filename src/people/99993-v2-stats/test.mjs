@@ -42,7 +42,7 @@ export default {
     return { ok, detail: `str/lift by age ${r.byAge.map(x => `${x[0]}: ${x[1]}, ${x[2]} kg`).join('; ')}; fx str +3: cond ${r.before.c} -> ${r.after.c}, st ${r.before.st} -> ${r.after.st}, C.stat ${r.before.cstat} -> ${r.after.cstat}; lift ${r.peak} kg now, ${r.old} kg at 70` };
   },
 
-  // races are different bodies: in levies a giant beats an orc beats a man beats an elf, and the old scale follows
+  // races are different bodies: in conscripts a giant beats an orc beats a man beats an elf, and the old scale follows
   async v2sRaces(pg) {
     const r = await pg.evaluate(() => {
       const by = {};
@@ -51,7 +51,7 @@ export default {
         for (const p of Object.values(A.S.people)) {
           if (!p.alive || !p.st || A.age(p) < (GD.RACES[p.race].grown || 20)) continue;
           const o = by[p.race] || (by[p.race] = { lv: [], w: [], lift: [], h: [] });
-          o.lv.push(A.V2S.leviesOf(p)); o.w.push(A.fightWorth(p)); o.lift.push(A.V2S.stats(p).lift); o.h.push(A.V2S.height(p));
+          o.lv.push(A.V2S.conscriptsOf(p)); o.w.push(A.fightWorth(p)); o.lift.push(A.V2S.stats(p).lift); o.h.push(A.V2S.height(p));
         }
       }
       const med = a => { a = a.slice().sort((x, y) => x - y); return a[a.length >> 1]; }, out = {};
@@ -66,7 +66,7 @@ export default {
     const o = r.out;
     const ok = o.giant.lv > 5 * o.human.lv && o.orc.lv > 1.5 * o.human.lv && o.dwarf.lv > o.human.lv && o.giant.worth > o.human.worth + 20 &&
       o.giant.h > 300 && o.dwarf.h < o.human.h && o.giant.lift > 10 * o.human.lift && r.giant > 12 && r.giant < 30 && r.hero >= r.giant * 0.8;
-    return { ok, detail: Object.entries(o).map(([k, v]) => `${k} (${v.n}) ${v.lv} levies, worth ${v.worth}, lift ${v.lift} kg, ${v.h} cm`).join('; ') + `; an ordinary giant ${r.giant} levies, a master human with a breakthrough in order gear ${r.hero}` };
+    return { ok, detail: Object.entries(o).map(([k, v]) => `${k} (${v.n}) ${v.lv} conscripts, worth ${v.worth}, lift ${v.lift} kg, ${v.h} cm`).join('; ') + `; an ordinary giant ${r.giant} conscripts, a master human with a breakthrough in order gear ${r.hero}` };
   },
 
   // every event check goes through A.V2.odds.attempt(): 200 events with checks, one check choice each
@@ -435,7 +435,7 @@ export default {
   async v2sNoBareNumbers(pg) {
     const r = await pg.evaluate(async () => {
       const W = '(strength|speed|instincts?|stamina|wits|will|willpower|intelligence|renown|opinion(?: of you)?|command(?: skill)?|morale|performance|reputation|merit(?: in your post)?|blood|wind|health|happiness|looks|honou?r|piety|loyalty|discontent|infamy)';
-      const LINE = new RegExp(`\\b${W}\\b[:\\s·—–-]{0,3}\\(?[+−-]?\\d{1,4}(?:\\.\\d)?(?:\\s*/\\s*\\d+)?\\b(?!\\s*(?:suns?|years?|days?|months?|men\\b|km|kg|cm|ms|m/s|hours?|levies|blows|AR\\b|of \\d|in \\d))`, 'i');
+      const LINE = new RegExp(`\\b${W}\\b[:\\s·—–-]{0,3}\\(?[+−-]?\\d{1,4}(?:\\.\\d)?(?:\\s*/\\s*\\d+)?\\b(?!\\s*(?:suns?|years?|days?|months?|men\\b|km|kg|cm|ms|m/s|hours?|conscripts|blows|AR\\b|of \\d|in \\d))`, 'i');
       // (CI 90: the exact-sum check is j-numbers' hearsay rule's other side, "a sum that passes between crowns" told to
       // one who is no party to it: it flagged a learned secret, "He owes 4,785 suns to a moneylender in" a town, a
       // count of suns (a real unit) owed by one man to another, which names no realm and is no 0-100 scale. The check
@@ -461,8 +461,8 @@ export default {
           for (const el of R.querySelectorAll('[data-tt]')) {
             const k = el.getAttribute('data-tt'), v = el.getAttribute('data-v') || '';
             if (!(KEYS.has(k) || (k === 'board' && BOARD.test(v))) || el.children.length) continue;
-            // a worth is said in levies, a real unit ("about 25 levies")
-            if (/\d/.test(el.textContent) && !(k === 'worth' && /\blev(?:y|ies)$/.test(el.textContent.trim()))) found.push(`${where} [${k}]: ${el.textContent.trim().slice(0, 40)}`);
+            // a worth is said in conscripts, a real unit ("about 25 conscripts")
+            if (/\d/.test(el.textContent) && !(k === 'worth' && /\bconscripts?$/.test(el.textContent.trim()))) found.push(`${where} [${k}]: ${el.textContent.trim().slice(0, 40)}`);
           }
           for (const el of R.querySelectorAll('.barrow > .val')) {
             const l = ((el.parentNode.querySelector('.lbl') || {}).textContent || '').trim();
@@ -550,7 +550,7 @@ export default {
     return { ok, detail: `${r.id}: ${r.b.join(' | ')} (${r.svg} balance icon${r.svg === 1 ? '' : 's'}; digits in the HTML: ${r.digits})` };
   },
 
-  // the levies agree with the release's worth for humans (the fit), a human's worth is unchanged, and the other races
+  // the conscripts agree with the release's worth for humans (the fit), a human's worth is unchanged, and the other races
   // carry the v2 difference of their bodies (a giant far above a man), in the duel engine's fighter as in A.fightWorth
   async v2sWorthFit(pg) {
     const r = await pg.evaluate(() => {
@@ -559,7 +559,7 @@ export default {
       for (const p of Object.values(A.S.people)) {
         if (!p.alive || A.age(p) < 16) continue;
         const old = A.V2S.oldWorth(p), now = A.fightWorth(p);
-        if (p.race === 'human') { xs.push(Math.log(A.V2S.v2Levies(p))); ys.push(old); same.push(now === old); }
+        if (p.race === 'human') { xs.push(Math.log(A.V2S.v2Conscripts(p))); ys.push(old); same.push(now === old); }
         else (shift[p.race] = shift[p.race] || []).push(now - old);
       }
       const m = a => a.reduce((x, y) => x + y, 0) / a.length, mx = m(xs), my = m(ys);
@@ -568,28 +568,28 @@ export default {
       return { n: xs.length, r: c / Math.sqrt(vx * vy), same: same.every(Boolean), med };
     });
     const ok = r.r > 0.75 && r.same && r.med.giant > 25 && r.med.orc > 4 && r.med.dwarf > 0 && r.med.elf <= 1;
-    return { ok, detail: `${r.n} humans: r = ${r.r.toFixed(3)} between ln v2 levies and the release's worth; a human's worth unchanged: ${r.same}; median shift by race ${Object.entries(r.med).map(([k, v]) => k + ' ' + (v > 0 ? '+' : '') + v).join(', ')}` };
+    return { ok, detail: `${r.n} humans: r = ${r.r.toFixed(3)} between ln v2 conscripts and the release's worth; a human's worth unchanged: ${r.same}; median shift by race ${Object.entries(r.med).map(([k, v]) => k + ' ' + (v > 0 ? '+' : '') + v).join(', ')}` };
   },
 
-  // playtest round 1: whole phrases in words, 0-100 scales as bands, no tap target on a choice, v2's levies for a
+  // playtest round 1: whole phrases in words, 0-100 scales as bands, no tap target on a choice, v2's conscripts for a
   // master, a small child not rated, piety for the faithless said as a pull, the odds popover words only
   async v2sPlaytest1(pg) {
     const r = await pg.evaluate(async () => {
       const V = A.V2S, w = t => V.deNum(V.dePct(t));
       const phrases = [w('+30% pay and +30% from your own house of trade'), w('your stats lend 4 + 30% of their average'), w('Each point of skill above it is worth 1.6%.'),
         w('100% of it from doing, the rest from practice.'), w('Health 97 · Happiness 66'), w('Master fighter (95), a steady officer'), w('Blood 76 / Wind 100')];
-      // a sword master: a body of ordinary make (at least half a levy untrained; a frail man of strength 20 is under one
-      // levy even as a master, rightly) with a sword in his hand (a cudgel is not moved by the sword skill)
+      // a sword master: a body of ordinary make (at least half a muster untrained; a frail man of strength 20 is under one
+      // muster even as a master, rightly) with a sword in his hand (a cudgel is not moved by the sword skill)
       let pc = null;
-      // (the first body of the twenty worlds that is worth over a levy as a master: which one it is depends on the stream)
+      // (the first body of the twenty worlds that is worth over a muster as a master: which one it is depends on the stream)
       let master = 0;
       for (let seed = 41; seed < 61; seed++) {
         T.enter({ seed, startAge: 30 }); pc = A.pc(); A.V2S.cache = new WeakMap();
-        if (V.shownLevies(pc) < 0.5) continue;
+        if (V.shownConscripts(pc) < 0.5) continue;
         for (const k of ['sword', 'melee']) pc.skills[k] = 80;
         pc.gear = Object.assign({}, pc.gear, { weapon: 'sword' });
         A.V2S.cache = new WeakMap();
-        master = V.shownLevies(pc);
+        master = V.shownConscripts(pc);
         if (master > 1) break;
       }
       const chip = UI.SCENE && UI.SCENE.chipHtml ? UI.SCENE.chipHtml({ k: 'them', d: 36, label: "Merewyn's regard" }) : '';
@@ -608,7 +608,7 @@ export default {
       /worth a little/.test(p[2]) && p[3] === 'all of it from doing.' && p[4] === 'Health hale · Happiness content' && p[5] === 'Master fighter, a steady officer' && p[6] === 'Blood bloodied / Wind fresh' &&
       r.master > 1 && r.master < 40 && /a great deal more/.test(r.chip) && !/\+36/.test(r.chip) && />hale</.test(r.bar) && r.taps === 0 && r.popWords &&
       r.baby === 'too young to tell' && (!r.faithless || r.piety === '▲▲ a strong pull toward the faith');
-    return { ok, detail: `${p.join(' | ')}; a sword master ${r.master.toFixed(1)} levies; chip ${r.chip.replace(/<[^>]+>/g, '')}; tap targets on choices ${r.taps}; popover words only ${r.popWords}; a 1-year-old's speed "${r.baby}"; piety for the faithless "${r.piety}"` };
+    return { ok, detail: `${p.join(' | ')}; a sword master ${r.master.toFixed(1)} conscripts; chip ${r.chip.replace(/<[^>]+>/g, '')}; tap targets on choices ${r.taps}; popover words only ${r.popWords}; a 1-year-old's speed "${r.baby}"; piety for the faithless "${r.piety}"` };
   },
 
   // playtest 2, new 1 and 2: what a failed check costs, read as the engine will play it. A.punish for treason, a queued
@@ -652,8 +652,8 @@ export default {
         for (let y = 0; y < 26 && pc.alive; y++) {
           const a = A.age(pc), t = txt(V.sheetHtml(pc)), adult = a >= (GD.RACES[pc.race].grown || 20);
           if ([1, 6, 10, 13, 17, 25].includes(a)) out.rows.push(`${race} ${a}: ${t.slice(0, 150)}`);
-          if (a < V.MEASURE_AGE && (!/too young to measure/.test(t) || /lifts|levy/i.test(t))) out.bad.push(`${race} ${a}: measured as a babe: ${t.slice(0, 120)}`);
-          if (a < 6 && /A levy:/.test(t)) out.bad.push(`${race} ${a}: the levy legend with no fight row`);
+          if (a < V.MEASURE_AGE && (!/too young to measure/.test(t) || /lifts|muster/i.test(t))) out.bad.push(`${race} ${a}: measured as a babe: ${t.slice(0, 120)}`);
+          if (a < 6 && /A conscript:/.test(t)) out.bad.push(`${race} ${a}: the muster legend with no fight row`);
           if (!adult) for (const re of BAD) if (re.test(t)) out.bad.push(`${race} ${a}: "${re.source}" in ${t.slice(0, 200)}`);
           if (a >= 6 && !adult && !/your age/.test(t)) out.bad.push(`${race} ${a}: no comparison with others of the same age`);
           // a lift that names a person ("about a grown man") read as a strength comparison
@@ -668,7 +668,7 @@ export default {
         }
       }
       // the fight row's words and rank read the same bands
-      for (let lv = 0.5; lv < 3.5; lv += 0.05) { const w = V.levyWords(lv), k = V.levyRank(lv); if (/one and a half|about [23] levies/.test(w) && /a levy's worth/.test(k)) out.bad.push(`${w}: ${k}`); }
+      for (let lv = 0.5; lv < 3.5; lv += 0.05) { const w = V.conscriptWords(lv), k = V.conscriptRank(lv); if (/one and a half|about [23] conscripts/.test(w) && /a conscript's worth/.test(k)) out.bad.push(`${w}: ${k}`); }
       return out;
     });
     // an untrained human boy: 10 about 30-60 kg, 13 about 45-100, 17 about 80-170 (playtest 2 saw 92, 144 and 250 kg)
@@ -702,12 +702,12 @@ export default {
     const ok = r.phone && r.rows.length >= 4 && r.rows.every(x => !x.clipped && !/\d/.test(x.word) && x.icon);
     return { ok, detail: `${r.phone ? 'phone' : 'not the phone layout'}: ${r.rows.map(x => `${x.word}${x.clipped ? ' (cut off)' : ''}${x.icon ? '' : ' (no icon)'}`).join(', ')}` };
   },
-  // playtest 2 (old 17) without a new scale: the tier chip says v2's levies alone (the tier name was the release's worth,
-  // which ranks people a little differently: "Elite · about one and a half levies"), the short chip the tier alone, and
-  // the levies stay on v2's scale (V2_SPEC row 12: an order knight 15-25 levies, and only a Master with breakthroughs
+  // playtest 2 (old 17) without a new scale: the tier chip says v2's conscripts alone (the tier name was the release's worth,
+  // which ranks people a little differently: "Elite · about one and a half conscripts"), the short chip the tier alone, and
+  // the conscripts stay on v2's scale (V2_SPEC row 12: an order knight 15-25 conscripts, and only a Master with breakthroughs
   // stands level with a giant's 20; playtest 1, complaint 8, set orders at 18.8-23.6 a member). A verifier measured a
-  // curve on the worth at 19.9 levies for a plain Elite and 30.4 for a Master: kept from coming back.
-  async v2sLevyScale(pg) {
+  // curve on the worth at 19.9 conscripts for a plain Elite and 30.4 for a Master: kept from coming back.
+  async v2sConscriptScale(pg) {
     const r = await pg.evaluate(() => {
       const V = A.V2S, txt = h => h.replace(/<[^>]+>/g, '').trim(), tiers = GD.TIERS.map(t => t.n);
       A.newGame({ seed: 4701, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 24 });
@@ -718,17 +718,17 @@ export default {
         for (let i = 0; lv.length < 30 && i < 120; i++) {
           const p = A.makeFoe({ realm: human[i % human.length], tier });
           if (p.race !== 'human') continue;
-          const s = V.shownLevies(p);
-          if (Math.abs(s - V.v2Levies(p)) > 1e-9) bad.push(`shown ${s} is not v2's ${V.v2Levies(p)}`);
+          const s = V.shownConscripts(p);
+          if (Math.abs(s - V.v2Conscripts(p)) > 1e-9) bad.push(`shown ${s} is not v2's ${V.v2Conscripts(p)}`);
           lv.push(s);
         }
         lv.sort((a, b) => a - b); med[tier] = +lv[lv.length >> 1].toFixed(1);
       }
       const chips = [];
       for (const p of Object.values(A.S.people).filter(p => p.alive && p.st && A.age(p) >= 16).slice(0, 40)) {
-        const full = UI.tierChip(p), short = UI.tierChip(p, true), t = txt(full), ts = txt(short), lw = V.levyWords(V.shownLevies(p));
+        const full = UI.tierChip(p), short = UI.tierChip(p, true), t = txt(full), ts = txt(short), lw = V.conscriptWords(V.shownConscripts(p));
         if (t !== lw) bad.push(`chip "${t}" is not "${lw}"`);
-        // a count of levies is a real unit; the worth (0-100) is not said, in the text or the label
+        // a count of conscripts is a real unit; the worth (0-100) is not said, in the text or the label
         const al = h => (h.match(/aria-label="([^"]*)"/) || [])[1] || '';
         if (tiers.some(n => t.includes(n) || al(full).includes(n)) || /worth \d/.test(al(full))) bad.push(`chip "${t}" (${al(full)})`);
         if (!tiers.includes(ts) || /\d|lev/.test(al(short))) bad.push(`short chip "${ts}" (${al(short)})`);
@@ -739,6 +739,6 @@ export default {
     // the release's tiers on v2's scale: an Elite a few knights' worth, a Master below an order member, a tier-6 at most
     // about a giant
     const ok = !r.bad.length && r.med[2] < 3 && r.med[4] < 10 && r.med[5] < 16 && r.med[6] < 25 && r.med[2] < r.med[4] && r.med[4] < r.med[5];
-    return { ok, detail: `median levies of 30 humans by tier ${JSON.stringify(r.med)}; chips ${JSON.stringify(r.chips)}; ${r.bad.length} problems ${r.bad.slice(0, 4).join(' | ')}` };
+    return { ok, detail: `median conscripts of 30 humans by tier ${JSON.stringify(r.med)}; chips ${JSON.stringify(r.chips)}; ${r.bad.length} problems ${r.bad.slice(0, 4).join(' | ')}` };
   },
 };

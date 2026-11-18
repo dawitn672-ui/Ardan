@@ -290,7 +290,7 @@ var __ARDAN_V2_MAKE = (() => {
   var SKILL_MULT = [1, 1.15, 1.35, 1.6, 1.95, 2.4, 3, 3.8, 4.8];
   var GEAR = {
     none: { name: "bare hands", mult: 1 },
-    levy: { name: "spear and padded coat", mult: 1.25 },
+    conscript: { name: "spear and padded coat", mult: 1.25 },
     mail: { name: "mail, sword and shield", mult: 1.6 },
     plate: { name: "plate harness and longsword", mult: 2 },
     order: { name: "order-forged panoply", mult: 2.2 },
@@ -458,7 +458,7 @@ var __ARDAN_V2_MAKE = (() => {
     [6e3, "a felled oak"]
   ];
   var SPRINT_REF = [[2.5, "a toddler"], [4.5, "a child"], [6.5, "most people"], [8.5, "a trained runner"], [10.5, "a hunting dog"], [13, "a galloping horse"], [17, "a stooping hawk's shadow"], [99, "anything on legs"]];
-  var MARCH_REF = [[0, "only a short way"], [12, "a short day's walk"], [22, "as far as a pilgrim"], [30, "as far as a levy"], [40, "like a veteran on a forced march"], [55, "like a ranger"], [80, "like a relay of couriers, alone"], [999, "beyond belief"]];
+  var MARCH_REF = [[0, "only a short way"], [12, "a short day's walk"], [22, "as far as a pilgrim"], [30, "as far as a conscript"], [40, "like a veteran on a forced march"], [55, "like a ranger"], [80, "like a relay of couriers, alone"], [999, "beyond belief"]];
   function typicalStats(person2, age = person2.age) {
     const genes = { ...person2.genes, lift: 1, sprint: 1, march: 1, reaction: 1, toughness: 1, build: 1 };
     return stats({ ...person2, genes, body: newBody(), mentalXp: {} }, age);
@@ -2398,7 +2398,7 @@ var __ARDAN_V2_MAKE = (() => {
         avgWorth: avgWorth2,
         patron: rng.pick(realms).id,
         renown: rng.int(60, 200),
-        strengthInLevies: Math.round(members * avgWorth2),
+        strengthInConscripts: Math.round(members * avgWorth2),
         terror: 0.25 + rng.next() * 0.2,
         // morale shock dealt to foes
         ranks: ["Aspirant", "Sworn Brother", "Blade", "Captain of the Order", "Seneschal of the Order", "Grand Master"]
@@ -3730,7 +3730,7 @@ var __ARDAN_V2_MAKE = (() => {
       choices: [
         {
           label: "Face it with a boar-spear",
-          check: (c) => ({ capability: fightingWorth(c.me, "spear", "levy").worth, difficulty: 2.4 }),
+          check: (c) => ({ capability: fightingWorth(c.me, "spear", "conscript").worth, difficulty: 2.4 }),
           fx: (c, r) => {
             practise(c.me, "spear", 20);
             if (r.success) recordDeed(c.me, { weight: r.deedWeight, witnesses: "company", year: c.world.year, month: c.world.month, text: "killing the great boar", field: "arms" });
@@ -3957,7 +3957,10 @@ var __ARDAN_V2_MAKE = (() => {
     for (const r of W.realms) {
       if (r.id === me.realm) continue;
       const rel = W.diplomacy.get(me.realm, r.id);
-      if (rel.pact === "war" && me.age >= 16 && !g2.flags[`served-${r.id}-${rel.pactSince}`] && g2.rng.chance(0.25) && !cards.some((c) => c.enemyId != null)) {
+      if (rel.pact === "war" && me.age >= 16 && !g2.flags[`served-${r.id}-${rel.pactSince}`] && !cards.some((c) => c.enemyId != null) && decide({ temper: {}, feel: [] }, "conscript", [
+        { id: "call", reasons: [{ kind: "duty", weight: 0, label: `The war with ${r.name} needs men`, source: { t: "war", at: r.id }, pub: 1 }] },
+        { id: "wait", reasons: [{ kind: "reckoning", weight: Math.log(3), label: "The standing men may be enough this month", source: { t: "roll" }, pub: 0 }] }
+      ], { rand: () => g2.rng.next() }).chose === "call") {
         g2.flags[`served-${r.id}-${rel.pactSince}`] = true;
         const ev = EVENTS.find((x) => x.id === "muster");
         const ctx2 = ctxFor(g2);
@@ -4135,14 +4138,14 @@ var __ARDAN_V2_MAKE = (() => {
   }
   function startCampaign(g2, enemyId) {
     const me = g2.me, rng = g2.rng, W = g2.world;
-    const fw = fightingWorth(me, "sword", me.estate === "noble" ? "plate" : me.estate === "gentry" ? "mail" : "levy");
+    const fw = fightingWorth(me, "sword", me.estate === "noble" ? "plate" : me.estate === "gentry" ? "mail" : "conscript");
     const rank = me.titles.length && renown(me, W.year) > 40 ? "commander" : me.estate === "noble" ? "captain" : me.estate === "gentry" ? "sergeant" : "soldier";
-    me.gear = me.estate === "noble" ? "plate" : me.estate === "gentry" ? "mail" : "levy";
-    me.career ?? (me.career = { name: "soldiering", ladder: ["Levy", "Veteran", "Sergeant", "Captain", "Knight-captain", "General"] });
+    me.gear = me.estate === "noble" ? "plate" : me.estate === "gentry" ? "mail" : "conscript";
+    me.career ?? (me.career = { name: "soldiering", ladder: ["Conscript", "Veteran", "Sergeant", "Captain", "Knight-captain", "General"] });
     if (me.rankIndex == null) me.rankIndex = { soldier: 0, sergeant: 2, captain: 3, commander: 4 }[rank];
     const order = W.orders.find((o) => o.patron === me.realm) ?? null, foeOrder = W.orders.find((o) => o.patron === enemyId) ?? null;
     const mk = (side, name, withOrder) => makeArmy(name, side, [
-      makeUnit(side * 10 + 1, "Levy spearmen", "levy", rng.int(2200, 3600), 1, { drill: { hold: 0.1 } }),
+      makeUnit(side * 10 + 1, "Conscript spearmen", "conscript", rng.int(2200, 3600), 1, { drill: { hold: 0.1 } }),
       makeUnit(side * 10 + 2, "Men-at-arms", "maa", rng.int(500, 900), 2.5, { drill: { advance: 0.1 } }),
       makeUnit(side * 10 + 3, "Archers", "arch", rng.int(300, 700), 1.4, { ranged: true }),
       makeUnit(side * 10 + 4, "Knights", "kn", rng.int(80, 160), 6, { cavalry: true, drill: { charge: 0.15 } }),

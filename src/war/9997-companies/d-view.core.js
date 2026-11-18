@@ -148,7 +148,7 @@
   if (typeof TSq === 'function') A.TS.squadHtml = function (m) {
     const h = TSq.apply(this, arguments);
     try {
-      if (m && m.ts && m.ts.levy) return h;
+      if (m && m.ts && m.ts.muster) return h;
       const C = CO.myCompany(A.pc());
       if (!C) return h;
       return h + `<p class="ts-coy tiny">${esc(C.name)}, ${esc(C.d.name)}: ${esc(C.cap.pc ? 'your own company' : 'Captain ' + C.cap.name)}, Sergeant ${esc(C.sergeants[0].given)}. ${tt('coMen', C.d.id + '|' + C.b + '|' + C.i, `${A.fmt(C.men)} in the ranks`)}, ${tt('coMo', C.d.id + '|' + C.b + '|' + C.i, `morale ${Math.round(C.mo)}`)} (${esc(word(C.mo))}).</p>`;

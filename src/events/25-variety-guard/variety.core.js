@@ -17,7 +17,7 @@
     ['weather', /\b(storm|storms|snow|flood|floods|drought|frost|hail|gale)\b/i],
     ['learning', /\b(book|books|scroll|scrolls|lesson|lessons|tutor|school|schooling|letters and numbers)\b/i],
     ['death', /\b(funeral|funerals|grave|graves|graveyard|dies|died|dying|death|deathbed|corpse|buried|burial|mourning)\b/i],
-    ['war', /\b(army|armies|soldiers?|war|siege|levy|levies|camp|muster|sergeant|captain|company|garrison|deserters?)\b/i],
+    ['war', /\b(army|armies|soldiers?|war|siege|conscripts?|camp|muster|sergeant|captain|company|garrison|deserters?)\b/i],
     ['crime', /\b(thief|thieves|steal|stolen|stole|smugglers?|smuggling|bribe|bribes|forgery|forged|poach|poacher|outlaws?)\b/i],
     ['court', /\b(court|courtiers?|council|councillors?|king|queen|crown|throne|steward|chancellor|audience|envoy|petition)\b/i],
     ['travel', /\b(road|roads|journey|travell?ers?|travel|ship|ships|sea|river|ferry|bridge|pass|caravan|inn yard|crossing)\b/i],

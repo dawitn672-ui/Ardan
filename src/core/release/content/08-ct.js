@@ -1088,7 +1088,7 @@
         id: "ct_muster",
         cool: 8,
         cond: (p,C)=>NB(p,C)&&rung(p)>=2&&!C.soldier(p),
-        setup: (p,ctx)=>{ctx.n=rung(p)>=4?"two hundred levies":rung(p)>=3?"twelve lances":"your lance of four riders",ctx.c=cost(p,15)},
+        setup: (p,ctx)=>{ctx.n=rung(p)>=4?"two hundred conscripts":rung(p)>=3?"twelve lances":"your lance of four riders",ctx.c=cost(p,15)},
         title: "The muster",
         text: ()=>`The spring muster. You inspect {n}. ${A.pick(["Half the spears are rusted.","One man has brought a pitchfork and his son.","Your sergeant is drunk.","The horses are thin and the mail is moth-eaten padding."])} If the summons comes this year, these are the men who will follow you.`,
         choices: [
@@ -1197,7 +1197,7 @@
         id: "ct_great_council",
         cool: 8,
         cond: (p,C)=>NB(p,C)&&rung(p)>=4,
-        setup: (p,ctx)=>{const r=LR(p);ctx.rs=r?r.short:"the realm",ctx.ask=A.pick(["a new hearth tax for the war","a tax on wool for the crown's debts","a tenth of every lord's rents for three years","a levy for the heir's wedding"])},
+        setup: (p,ctx)=>{const r=LR(p);ctx.rs=r?r.short:"the realm",ctx.ask=A.pick(["a new hearth tax for the war","a tax on wool for the crown's debts","a tenth of every lord's rents for three years","an aid for the heir's wedding"])},
         title: "The great council",
         text: p=>`As a peer of the greater or lesser peerage you sit in the great council of {rs} by right. The crown asks for {ask}. ${liege(p)} looks along the benches, counting votes. The barons beside you mutter.`,
         choices: [
@@ -1424,7 +1424,7 @@
         id: "ct_patriarch",
         cool: 10,
         cond: (p,C)=>RU(p,C)&&(p.faith==="REL-02"||RM(p)&&RM(p).faith==="REL-02"),
-        setup: (p,ctx)=>{ctx.ask=A.pick(["volunteers for Prince Andros's war in Tessaria","monastery lands exempt from your levy","that you expel the Temple's Needle-Keepers from your towns","gold to rebuild a burned monastery"])},
+        setup: (p,ctx)=>{ctx.ask=A.pick(["volunteers for Prince Andros's war in Tessaria","monastery lands exempt from your muster","that you expel the Temple's Needle-Keepers from your towns","gold to rebuild a burned monastery"])},
         title: "The Patriarch's letter",
         text: ()=>"A letter from the Patriarch of Dawn at Velgrad, sealed with the red dawn. He asks for {ask}. Velgrad's kings are not kings until he anoints them, and no one in the east has ever ruled uncrowned.",
         choices: [
@@ -1542,7 +1542,7 @@
         id: "ct_vassal_demand",
         cool: 5,
         cond: (p,C)=>RU(p,C)&&vass(p).length>0,
-        setup: (p,ctx)=>{setHouse(ctx,p),ctx.ask=A.pick(["a seat on the council","the wardship of a rich orphan","a royal charter for a market at "+ctx.seat,"relief from the levy for three years","the hand of your cousin for their heir","a royal castle on their border"])},
+        setup: (p,ctx)=>{setHouse(ctx,p),ctx.ask=A.pick(["a seat on the council","the wardship of a rich orphan","a royal charter for a market at "+ctx.seat,"relief from the muster for three years","the hand of your cousin for their heir","a royal castle on their border"])},
         title: "A vassal's price",
         text: ()=>"The head of {house} comes to court with a long face and a longer list. Their loyalty, they hint, has a price this year: {ask}.",
         choices: [
@@ -1905,7 +1905,7 @@
         cond: (p,C)=>RUA(p,C)&&A.atWar(p.ruler).length===0&&A.neighbors(p.ruler).length>0,
         setup: (p,ctx)=>{const r=RM(p),ns=A.neighbors(p.ruler).map(A.realm).filter(t2=>t2&&t2.alive&&!t2.isRebel&&!(r.allies||[]).includes(t2.id)&&!(r.truce&&r.truce[t2.id]>A.S.year)),t=ns.length?ns.reduce((a,b)=>A.realmPower(a)<A.realmPower(b)?a:b):null;ctx.tid=t?t.id:"",ctx.tname=t?nm(t):"your neighbor";const m=seatHolder(r,"general");ctx.m=m?A.fullName(m):"Your senior General"},
         title: "The war council",
-        text: ()=>'{m} spreads a map on the table and taps it. "{tname}. Their levies are thin, their court is distracted, and the border forts are rotten. One summer, Majesty. One summer and the land is ours." The council waits for your word.',
+        text: ()=>'{m} spreads a map on the table and taps it. "{tname}. Their musters are thin, their court is distracted, and the border forts are rotten. One summer, Majesty. One summer and the land is ours." The council waits for your word.',
         choices: [
           {
             t: "Declare war on {tname}",

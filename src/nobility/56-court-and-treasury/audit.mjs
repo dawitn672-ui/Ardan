@@ -52,7 +52,7 @@ for (const seed of SEEDS) {
         const y = lastY = A.S.year;
         for (const x of ai()) {
           o.ry++;
-          o.inc += Math.round(x.income * .92); o.up += Math.round(x.army * 3.2 + x.levy * .05);
+          o.inc += Math.round(x.income * .92); o.up += Math.round(x.army * 3.2 + x.roll * .05);
           const B = x.riBook;
           if (B && B.y === y) for (const c in B.cats) o.cats[c] = (o.cats[c] || 0) + B.cats[c];
           const q = x.treasury / Math.max(1, x.income); o.tre.push(q); if (q > 6) o.hoard++;

@@ -157,17 +157,17 @@ export default {
       const head = A.houseHead(h1.id); if (!pc.rel[head.id]) A.link(pc, head, 'acquaint', 10, 'acquaint');
       A.addFavor(pc, head.id, 1);
       const op = h => Math.round(h.op), o1 = op(h1), o3 = op(h3), f0 = A.favorsOf(pc, head.id);
-      UI.A.poOath(`${h1.id}|levy|1`);
-      const free = { op: op(h1) - o1, fav: A.favorsOf(pc, head.id) - f0, lv: h1.contract.levy, rest: op(h3) - o3 };
+      UI.A.poOath(`${h1.id}|men|1`);
+      const free = { op: op(h1) - o1, fav: A.favorsOf(pc, head.id) - f0, lv: h1.contract.men, rest: op(h3) - o3 };
       const o2 = op(h2), o3b = op(h3);
-      UI.A.poOath(`${h2.id}|levy|1`);
-      const tyr = { op: op(h2) - o2, rest: op(h3) - o3b, lv: h2.contract.levy };
-      const lv3 = h3.contract.levy; UI.A.poOath(`${h3.id}|tax|1`);
+      UI.A.poOath(`${h2.id}|men|1`);
+      const tyr = { op: op(h2) - o2, rest: op(h3) - o3b, lv: h2.contract.men };
+      const lv3 = h3.contract.men; UI.A.poOath(`${h3.id}|tax|1`);
       const second = { tax: h3.contract.tax, was: lv3 };
       return { free, tyr, second };
     });
     const ok = r.free.op === 0 && r.free.fav === -1 && r.free.lv === 2 && r.free.rest === 0 && r.tyr.op === -15 && r.tyr.rest === -3 && r.tyr.lv === 2 && r.second.tax === 1;
-    return { ok, detail: `with a favour owed: opinion ${r.free.op}, favours ${r.free.fav}, levy now ${r.free.lv}, others ${r.free.rest}; without: ${r.tyr.op} with the house, ${r.tyr.rest} with the rest; a second tyrannical change the same year: tax stays ${r.second.tax}` };
+    return { ok, detail: `with a favour owed: opinion ${r.free.op}, favours ${r.free.fav}, muster now ${r.free.lv}, others ${r.free.rest}; without: ${r.tyr.op} with the house, ${r.tyr.rest} with the rest; a second tyrannical change the same year: tax stays ${r.second.tax}` };
   },
 
   // a peace that moves the player's home queues po_new_crown; each of its three ways does what it says
@@ -213,10 +213,15 @@ export default {
     const r = await pg.evaluate(() => {
       const out = {};
       for (const [k, st] of [['ruler', 'royal'], ['lord', 'noble']]) {
-        T.enter({ seed: 4801, race: 'human', realm: 'POL-02', status: st, sex: 'F', startAge: 22 });
-        const pc = A.pc(), x = A.realm('POL-02');
-        if (k === 'ruler') { A.makeRuler(pc, x.id); }
-        T.play(1);
+        // (W1-3: seed 4801's lord now dies in her first year, a duel; the page is read for a life that lives the year, the
+        // first of four seeds that does)
+        let pc, x;
+        for (let seed = 4801; seed < 4805; seed++) {
+          T.enter({ seed, race: 'human', realm: 'POL-02', status: st, sex: 'F', startAge: 22 });
+          pc = A.pc(); x = A.realm('POL-02');
+          if (k === 'ruler') { A.makeRuler(pc, x.id); }
+          if (T.play(1) !== 'dead' && A.pc().alive) break;
+        }
         const c = A.P(x.council.chancellor); if (c) c.given = '<b>Bad</b>';
         UI.tab = 'realm'; UI.realmView = 'pol'; UI.poOpen = true;
         const h0 = T.hash(A.S), rng0 = A.rngState;
@@ -304,11 +309,11 @@ export default {
       A.newGame({ seed: 5201, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 });
       const pc = A.pc(), P = A.POL, out = {};
       pc.noble = pc.noble || { rung: 2, realm: pc.realm };
-      for (const [k, rung] of [['knight', 2], ['baron', 4], ['count', 6]]) { pc.noble.rung = rung; pc.pol = null; const o = P.pcOath(pc); out[k] = o ? Math.round(o.men / P.OBL_LEVY[o.c.levy]) : null; out[k + 'Name'] = (GD.NOBLE_RUNGS[rung] || {}).code; }
+      for (const [k, rung] of [['knight', 2], ['baron', 4], ['count', 6]]) { pc.noble.rung = rung; pc.pol = null; const o = P.pcOath(pc); out[k] = o ? Math.round(o.men / P.OBL_MEN[o.c.men]) : null; out[k + 'Name'] = (GD.NOBLE_RUNGS[rung] || {}).code; }
       return out;
     });
     const ok = r.knight === 5 && r.count === 4000 && r.baron === 300;
-    return { ok, detail: `levy before the oath's share: knight (${r.knightName}) ${r.knight}, baron (${r.baronName}) ${r.baron}, count (${r.countName}) ${r.count}` };
+    return { ok, detail: `muster before the oath's share: knight (${r.knightName}) ${r.knight}, baron (${r.baronName}) ${r.baron}, count (${r.countName}) ${r.count}` };
   },
 
   // a ruling player who loses the throne gets a fate scene; the one who took it never becomes the patron

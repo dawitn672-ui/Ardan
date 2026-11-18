@@ -107,7 +107,7 @@ A.addStage('A.eventView', 'v2-stats', view => function () {
 });
 
 // ---- numbers in text: the 0-100 scales as bands, tier numbers dropped -------------------------------------------------
-const VITAL_RE = /\b(Health|Happiness|Looks|Renown|Honou?r|Piety|Stability|Legitimacy|Blood|Wind|Infamy|War weariness)(\s*[:·—–-]?\s*)(\d{1,3})\b(?!\s*(?:suns?|years?|days?|months?|men|km|kg|cm|ms|hours?|levies|[/,.]\d|→))/gi;
+const VITAL_RE = /\b(Health|Happiness|Looks|Renown|Honou?r|Piety|Stability|Legitimacy|Blood|Wind|Infamy|War weariness)(\s*[:·—–-]?\s*)(\d{1,3})\b(?!\s*(?:suns?|years?|days?|months?|men|km|kg|cm|ms|hours?|conscripts|[/,.]\d|→))/gi;
 // (S1b: the retired skill tier words, Novice, Apprentice, Journeyman and Adept, are gone; Expert, Master, Grandmaster and Legend
 // are words of a skill's level as well as a fight's)
 const TIER = '(Untrained|Brawler|Trained|Veteran|Elite|Master|Champion|Legend|Hero|Expert|Grandmaster)';
@@ -117,7 +117,7 @@ VS.NUMRULES = [
   [/\b([A-Z][A-Za-z&' ]{1,28}?) (\d{1,3})\s?→\s?(\d{1,3})\b/g, (m, n, a, b) => `${n} ${+b >= +a ? 'up' : 'down'}${Math.abs(b - a) >= 5 ? ' a good deal' : ' a little'}`],
   [/\b(STR|SPD|INS|STA|INT|WIL) ([+−-])\d{1,2}\b/g, (m, k, s) => `${k} ${s === '+' ? 'up' : 'down'}`],
   [/ fighter \((\d{1,3})\)/g, () => ' fighter'],
-  [new RegExp(`\\b${TIER} · (\\d{1,3})\\b(?! levies)`, 'g'), (m, t) => t],
+  [new RegExp(`\\b${TIER} · (\\d{1,3})\\b(?! conscripts)`, 'g'), (m, t) => t],
   [/(Most (?:feared|loved|trusted|hated|respected)[^\d\n]{0,40}?) (\d{1,3})\b/g, (m, a) => a],
   [VITAL_RE, (m, k, sep, v) => `${k}${sep || ' '}${VS.band(k, +v)}`],
 ];

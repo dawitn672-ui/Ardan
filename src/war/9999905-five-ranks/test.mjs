@@ -146,7 +146,7 @@ export default {
           titles: hosts.every(h => h.general && h.general.title === 'General') && cols.every(c => c.general && c.general.title === 'Commander'),
           max: Math.max(0, ...list.map(x => x.men)) });
       }
-      out.armies = (A.S.armies || []).map(a => { const c = A.HOSTS.army(a); return { id: a.id, hosts: c.hosts, as: c.as, gen: !!a.gen }; });
+      out.armies = (A.S.armies || []).map(a => { const c = A.HOSTS.army(a); return { id: a.id, hosts: c.hosts, as: c.as, gen: !!a.gen, by: a.cmdBy || null }; });
       // the order of battle says the same
       const a = A.armiesOf('POL-01').find(x => A.HOSTS.armyHosts(x).length >= 2);
       out.oob = a ? A.oobRoot(a).leader.title : null;
@@ -157,7 +157,9 @@ export default {
       words: r.realms.every(x => x.titles),
       under12k: r.realms.every(x => x.max <= 12e3),
       bySize: r.realms.length > 10 && r.realms.filter(x => x.men >= 3e4).every(x => x.hosts >= 3),
-      armyCommand: r.armies.every(a => a.hosts < 2 || a.as === 'commission' || a.as === 'king' || (!a.gen && a.as === 'council of war')),
+      // W1-3 (D-083): a council of war the king chose keeps a.gen (the General who keeps the army's books; A.wsDay fills
+      // an empty one at once), so a council reads by a.cmdBy as well as by an empty a.gen
+      armyCommand: r.armies.every(a => a.hosts < 2 || a.as === 'commission' || a.as === 'king' || (a.as === 'council of war' && (!a.gen || a.by === 'council'))),
       oobWords: r.oob === null || r.oob === 'Commanding General',
     };
     const ok = Object.values(checks).every(Boolean);
@@ -197,7 +199,9 @@ export default {
       out.strict = P.audit({ strict: true });
       out.resign = A.resign();
       P.sync('month');
-      out.after = { posts: P.held(pc.id), council: r.council.general === pc.id, office: pc.office };
+      // the commission's posts (a shire office the noble life won meanwhile, 9996's office:, is not the army's: W1-3's
+      // world, seed 23, gives him a magistracy in his first year)
+      out.after = { posts: P.held(pc.id).filter(k => !/^(office|house|title):/.test(k)), council: r.council.general === pc.id, office: pc.office };
       out.strict2 = P.audit({ strict: true });
       return out;
     });

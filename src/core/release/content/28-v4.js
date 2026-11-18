@@ -48,7 +48,7 @@
         w: .8,
         cool: 5,
         title: "Drill",
-        text: "The new levy cannot keep step. In a real fight a line that cannot keep step dies. You have one month.",
+        text: "The new conscripts cannot keep step. In a real fight a line that cannot keep step dies. You have one month.",
         choices: [
           {
             t: "Drill them dawn to dusk",

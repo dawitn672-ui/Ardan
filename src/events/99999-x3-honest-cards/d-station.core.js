@@ -44,7 +44,7 @@
     titled('master|mistress', H.master, 'title-master'),
     titled('captain', H.officer, 'title-captain'),
     titled('sergeant', H.sergeant, 'title-sergeant'),
-    ['your-men', /\byour (?:men|soldiers|troops|garrison|lieutenants?|squad|banner|riders|archers|footmen|battalion|division|regiment|levy)\b/i, H.commands],
+    ['your-men', /\byour (?:men|soldiers|troops|garrison|lieutenants?|squad|banner|riders|archers|footmen|battalion|division|regiment|conscripts?)\b/i, H.commands],
     ['your-company', /\byour (?:company|comrades-in-arms)\b/i, H.soldier],
     ['your-retinue', /\byour (?:retinue|retainers|knights|household knights|bannermen)\b/i, H.gentle],
     ['your-crew', /\byour (?:crew|deckhands)\b/i, H.crew],

@@ -13,7 +13,7 @@
 
   // ---- factions ----------------------------------------------------------------------------------------------------
   TT.facParts = function (f) {
-    const r = A.realm(f.realm), all = A.realmHouses(f.realm).reduce((a, h) => a + A.houseStrength(h), 0) + (r.army * 0.25 + r.levy * 0.05);
+    const r = A.realm(f.realm), all = A.realmHouses(f.realm).reduce((a, h) => a + A.houseStrength(h), 0) + (r.army * 0.25 + (A.MEN ? A.MEN.reserve(r) : r.roll) * 0.05);
     const mem = f.members.map(id => A.S.houses[id]).filter(Boolean).map(h => [L('house', h.id, esc(h.name)), A.houseStrength(h)]);
     if (f.pc && pc() && pc().noble) mem.push(['You', 200]);
     // 56-court-and-treasury: the council voices that lean its way (4% each), and a leader who truly wants it (5%), at most 15%
@@ -28,7 +28,7 @@
     const stale = f.power != null && Math.round(f.power * 100) !== Math.round(S.now * 100);
     const pts = [[`Its swords: ${fmt(sw)} of the realm's ${fmt(S.all)}`, sw / Math.max(1, S.all) * 100]];
     if (S.back) pts.push([`On the council, ${S.nb} lean${S.nb === 1 ? 's' : ''} its way${S.lead ? ', and its leader wants what it wants' : ''} (56-realm-inside, at most 15%)`, S.back * 100]);
-    return H('Power', pct(S.total), esc(F0.name || '')) + D('Its houses\' swords, against all the realm\'s: every house, a quarter of the army and a twentieth of the levy.') +
+    return H('Power', pct(S.total), esc(F0.name || '')) + D('Its houses\' swords, against all the realm\'s: every house, a quarter of the army and a twentieth of the roll.') +
       `<div class="tip-row tt-sum"><span>Its swords</span><b></b></div>` + TT.sumRows(S.mem, sw, 'Swords', v => esc(A.fmt(v))) +
       `<div class="tip-row tt-sum"><span>${stale ? 'Today' : 'Its power'}</span><b></b></div>` + K.pts(pts, Math.round(S.now * 100), 'Power') +
       (stale ? D(`The card shows ${pct(f.power)}, reckoned at the new year; the realm's swords have moved since.`) : '') +
@@ -44,8 +44,8 @@
   };
   G.loyalty = function (hid) {
     const h = A.S.houses && A.S.houses[hid], r = myRealm(); if (!h) return '';
-    const auth = r && r.laws && r.laws.authority != null ? r.laws.authority : 1, drift = r ? A.AUTH[auth][2] / 4 + (r.laws && r.laws.levy != null && A.LEVY[r.laws.levy] ? A.LEVY[r.laws.levy][2] : 0) : 0;
-    const parts = [['The crown\'s authority and levy law', drift]]; if (r) parts.push([L('realmStab', r.id, 'Stability') + ` ${r0(r.stability)} against 50, ÷ 60`, (r.stability - 50) / 60]);
+    const auth = r && r.laws && r.laws.authority != null ? r.laws.authority : 1, drift = r ? A.AUTH[auth][2] / 4 + (r.laws && r.laws.conscript != null && A.CONSCRIPT_LAW[r.laws.conscript] ? A.CONSCRIPT_LAW[r.laws.conscript][2] : 0) : 0;
+    const parts = [['The crown\'s authority and conscription law', drift]]; if (r) parts.push([L('realmStab', r.id, 'Stability') + ` ${r0(r.stability)} against 50, ÷ 60`, (r.stability - 50) / 60]);
     return H('Loyalty', r0(h.op != null ? h.op : 50), esc(h.name)) + D('What the house thinks of the crown. Under 42 it may join a faction; under 22 a great house may seek to leave the realm.') +
       `<div class="tip-row tt-sum"><span>Next new year, before luck (±2)</span><b>${sg(r1(parts.reduce((a, x) => a + x[1], 0)))}</b></div>` + parts.map(x => R(x[0], sg(r1(x[1])), 'tt-sub')).join('');
   };
@@ -95,12 +95,12 @@
   G.rung = function (i) {
     const x = GD.NOBLE_RUNGS[+i], p = pc(); if (!x) return '';
     const mine = p && p.noble && p.noble.rung === +i;
-    return H(esc(x.title), null, mine ? 'your rung' : 'a rung') + R('Rents a year', fmt(x.income) + ' suns') + R('Levy owed the crown', fmt(x.levy) + ' men') +
+    return H(esc(x.title), null, mine ? 'your rung' : 'a rung') + R('Rents a year', fmt(x.income) + ' suns') + R('Men owed the crown', fmt(x.men) + ' men') +
       D('What a holder of this rung draws from their lands, and the men they bring when the crown calls.') + F('A petition at court, a war or a marriage can raise you.');
   };
   G.rungs = function () {
     const p = pc(), NR = GD.NOBLE_RUNGS || [];
-    return H('The ladder of rungs', null, 'the world\'s Part 12') + NR.slice().reverse().map((x, i) => R(p && p.noble && p.noble.rung === NR.length - 1 - i ? `<span class="tt-on-row">${esc(x.title)}</span>` : esc(x.title), `${fmt(x.income)} · levy ${fmt(x.levy)}`, 'tt-sub')).join('') +
+    return H('The ladder of rungs', null, 'the world\'s Part 12') + NR.slice().reverse().map((x, i) => R(p && p.noble && p.noble.rung === NR.length - 1 - i ? `<span class="tt-on-row">${esc(x.title)}</span>` : esc(x.title), `${fmt(x.income)} · owes ${fmt(x.men)} men`, 'tt-sub')).join('') +
       F('Each rung\'s rents a year and the men it owes the crown. Part 12 of the world\'s lore sets the ladder.');
   };
   G.custom = function (id) {

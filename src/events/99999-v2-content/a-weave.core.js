@@ -102,7 +102,7 @@
     law: /\b(watch|watchmen|watchman|bailiff|reeve|judge|magistrate|gaol|jail|cell|arrest|sheriff|constable)\b/i,
     temple: /\b(temple|shrine|priests?|chapel|church|altar)\b/i,
     court: /\b(court|hall|throne|king|queen|steward|council|courtiers?)\b/i,
-    war: /\b(soldiers?|camp|army|company|sergeant|captain|march|battle|siege|muster|levy|drill|garrison|ranks|regiment)\b/i,
+    war: /\b(soldiers?|camp|army|company|sergeant|captain|march|battle|siege|muster|conscripts?|drill|garrison|ranks|regiment)\b/i,
     sea: /\b(sea|ship|boat|deck|harbou?r|sail|sailors?)\b/i,
   };
   const ownWords = e => { let s = String((e && e.title) || ''); try { s += ' ' + String(e && e.text); } catch (err) {} return s; };

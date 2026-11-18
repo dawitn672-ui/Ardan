@@ -8,7 +8,7 @@ const files = process.argv.slice(2).length ? process.argv.slice(2) : fs.readdirS
 const A = {};
 for (const f of files) new Function('A', fs.readFileSync(f, 'utf8'))(A);   // the data files only fill A.BIBLE_DATA and A.BIBLE_WORDS
 const D = A.BIBLE_DATA || {}, W = A.BIBLE_WORDS || {};
-const KINDS = { year: ['m', 'who'], rite: ['age', 'who'], wed: ['dowry'], mourn: ['share'], name: ['by'], levy: ['who'], law: [], ward: ['when', 'every'], market: ['cut'], grave: [] };
+const KINDS = { year: ['m', 'who'], rite: ['age', 'who'], wed: ['dowry'], mourn: ['share'], name: ['by'], call: ['who'], law: [], ward: ['when', 'every'], market: ['cut'], grave: [] };
 const WHO = ['all', 'adult', 'free', 'commoner', 'unfree', 'noble', 'rich', 'poor', 'male', 'female', 'married', 'parent'];
 const WHEN = ['armed', 'mounted', 'rich', 'poor', 'unwed', 'childless', 'old', 'sick', 'foreignFaith', 'soldier', 'landed', 'any'];
 const SHARE = ['eldest', 'eldestSon', 'youngest', 'daughters', 'equal', 'temple', 'lord', 'clan', 'none'];

@@ -15,7 +15,7 @@ UI.realmTabBasic = function (pc) {
   A.realmEnsure(r);
   const b = r.lastBudget || {
       inc: r.income,
-      upkeep: Math.round(r.army * 3.2 + r.levy * 0.05),
+      upkeep: Math.round(r.army * 3.2 + r.roll * 0.05),
       interest: Math.round(r.debt * 0.09),
       court: 0,
       bld: 0,
@@ -40,7 +40,7 @@ UI.realmTabBasic = function (pc) {
     sub === "state")
   ) {
     if (
-      ((h += `<div class="kv small" style="margin-top:6px"><div>Treasury</div><div><b>${A.fmt(r.treasury)}</b> suns${r.debt ? ` · <span class="bad">debt ${A.fmt(r.debt)}</span>` : ""}</div><div>Last year</div><div>income ${A.fmt(b.inc)} · army ${A.fmt(b.upkeep)} · interest ${A.fmt(b.interest)} · court ${A.fmt(b.court)}</div><div>People</div><div>${A.fmt(r.pop)} in ${r.provCount} provinces</div><div>Army</div><div>${A.fmt(r.army)} standing · ${A.fmt(r.levy)} levy · quality ${Math.round(r.armyQ * 100)}%</div><div>Heir</div><div>${r.heir && A.P(r.heir) ? UI.esc(A.fullName(A.P(r.heir))) + " (" + A.age(A.P(r.heir)) + ")" : r.gov === "hereditary" ? '<span class="bad">none</span>' : "chosen by election"}</div><div>Tributaries</div><div>${
+      ((h += `<div class="kv small" style="margin-top:6px"><div>Treasury</div><div><b>${A.fmt(r.treasury)}</b> suns${r.debt ? ` · <span class="bad">debt ${A.fmt(r.debt)}</span>` : ""}</div><div>Last year</div><div>income ${A.fmt(b.inc)} · army ${A.fmt(b.upkeep)} · interest ${A.fmt(b.interest)} · court ${A.fmt(b.court)}</div><div>People</div><div>${A.fmt(r.pop)} in ${r.provCount} provinces</div><div>Army</div><div>${A.fmt(r.army)} standing · ${A.fmt(r.roll)} muster · quality ${Math.round(r.armyQ * 100)}%</div><div>Heir</div><div>${r.heir && A.P(r.heir) ? UI.esc(A.fullName(A.P(r.heir))) + " (" + A.age(A.P(r.heir)) + ")" : r.gov === "hereditary" ? '<span class="bad">none</span>' : "chosen by election"}</div><div>Tributaries</div><div>${
         A.tributariesOf(r.id)
           .map(t => UI.esc(t.short))
           .join(", ") || "none"
@@ -53,7 +53,7 @@ UI.realmTabBasic = function (pc) {
       (h +=
         '<div class="tiny muted">Infamy rises when you take land without a claim. At 40 neighbors start a coalition; above 60 it may march.</div>'),
       (h += `<div class="group-h">Laws</div><div class="small"><b>Crown authority</b> <span class="muted">— income ×, lords' yearly mood</span><div class="row">${A.AUTH.map(([n, inc, op], i) => `<button class="small ${r.laws.authority === i ? "primary" : ""}" data-a="setLaw" data-v="authority|${i}" title="Income ×${inc}; vassal mood ${op >= 0 ? "+" : ""}${op}/yr">${n}</button>`).join("")}</div><div class="tiny muted">Higher: more income, angrier lords and a Liberty faction. Raising needs stability 40 and legitimacy 50. One step a year.</div></div>`),
-      (h += `<div class="small" style="margin-top:6px"><b>Levies</b><div class="row">${A.LEVY.map(([n, mul, op, d], i) => `<button class="small ${r.laws.levy === i ? "primary" : ""}" data-a="setLaw" data-v="levy|${i}" title="${UI.esc(d)}">${n}</button>`).join("")}</div></div>`),
+      (h += `<div class="small" style="margin-top:6px"><b>Conscripts</b><div class="row">${A.CONSCRIPT_LAW.map(([n, mul, op, d], i) => `<button class="small ${r.laws.conscript === i ? "primary" : ""}" data-a="setLaw" data-v="conscript|${i}" title="${UI.esc(d)}">${n}</button>`).join("")}</div></div>`),
       (h += `<div class="row small" style="margin-top:6px">Taxes: ${Object.entries(A.TAX)
         .map(
           ([k, v]) =>

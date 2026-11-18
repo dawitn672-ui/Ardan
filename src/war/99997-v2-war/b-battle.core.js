@@ -5,7 +5,7 @@
 // play the fight as v2's battle (A.V2.war.battlePhase), phase by phase (Skirmish, Clash, Press, Decision), with the
 // clock stopped:
 //   - the armies are the real fight's divisions (one unit each, at most 6 a side, the rest grouped), with their men,
-//     their order as morale, their troop types as worth in levies, and an elite order's terror; your company (about
+//     their order as morale, their troop types as worth in conscripts, and an elite order's terror; your company (about
 //     200 men) is its own unit;
 //   - a soldier and a sergeant choose from v2's CHOICES, rated against the unit across from them (A.V2.war.facing),
 //     and see the enemy only as estimates ("about 3,500"); a captain also sets his company's tactic, and is rated on
@@ -41,7 +41,7 @@
   // and our men's worth carries it
   for (const k of Object.keys(VW.TERRAIN)) if (!VW.TERRAIN[k + '_us'] && !/_us$/.test(k)) VW.TERRAIN[k + '_us'] = Object.assign({}, VW.TERRAIN[k], { defenderBonus: undefined });
   const lvPM = () => { const L = GD.BN.LV; return (L.soft + L.def + L.hp) / L.men; };
-  // a division's worth per man, in levies: its battalions' attack, defence and toughness per man against a levy's
+  // a division's worth per man, in conscripts: its battalions' attack, defence and toughness per man against a conscript's
   W.divWorth = function (d) {
     if (!d) return 1;
     if (d.elite && W.orderWorth) return W.orderWorth(d.elite);
@@ -116,7 +116,7 @@
   // ---- the player in the fight ----------------------------------------------------------------------------------------
   W.person = function (pc, rank) {
     const S2 = VS(), m = S2 ? S2.minds(pc) : { judgment: 100, will: 100, fatigue: 0 };
-    const worth = S2 && S2.leviesOf ? Math.max(0.3, S2.leviesOf(pc)) : 1;
+    const worth = S2 && S2.conscriptsOf ? Math.max(0.3, S2.conscriptsOf(pc)) : 1;
     const sk = k => (A.skill ? A.skill(pc, k) || 0 : 0);
     // command: the tactics and command skills, judgment and the years in an officer's post (0.3 a rank from captain up),
     // on the scale of the enemy general's (1.5 + judgment / 100)
@@ -131,7 +131,7 @@
     const mag = Math.pow(10, Math.max(1, Math.floor(Math.log10(n)) - 1)), r = Math.round(n / mag / 5) * 5 * mag || mag;
     return `about ${A.fmt(r)}`;
   };
-  W.quality = w => (w >= 12 ? 'an elite order' : w >= 3 ? 'picked troops' : w >= 1.8 ? 'hardened men' : w >= 1.2 ? 'line troops' : 'levies');
+  W.quality = w => (w >= 12 ? 'an elite order' : w >= 3 ? 'picked troops' : w >= 1.8 ? 'hardened men' : w >= 1.2 ? 'line troops' : 'conscripts');
 
   // ---- starting it ----------------------------------------------------------------------------------------------------
   W.begin = function (pc, F, arg, rank) {
@@ -188,7 +188,7 @@
   // the soldier's and the sergeant's line, and the captain's company: v2's battle
   const CF = A.CHOICE_FN = A.CHOICE_FN || {};
   const line0 = CF.wsLine, part0 = CF.wsPart;
-  // the layers this replaces (72-one-battle-two-scales' line, 44/9997's tactical battle) stay callable: 72's levy still uses its
+  // the layers this replaces (72-one-battle-two-scales' line, 44/9997's tactical battle) stay callable: 72's muster still uses its
   // scene, and their own tests reach them here. A fight that is over all the same (a save from before the hold) goes to
   // them too: 72's short scene of a fight over before you reach the front rank, not a log line and nothing to play
   W.classic = { wsLine: line0, wsPart: part0 };

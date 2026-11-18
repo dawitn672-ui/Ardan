@@ -24,7 +24,7 @@ Bot lives on the Great Continent showed careers that topped out by 30 and then w
 - **Raised for merit.**
   - Once a year, a commoner who has made a name may be knighted by the crown (`cr_knighted`). That means a captain's rank (5) and renown 30, or renown 55 on any path. You can kneel (rung 2, Knight, 300 suns a year, gentry, the crown's regard) or decline (renown, and a cooler crown).
   - A knighthood is what the Iron Wolf's lore asks of a commoner ("Gentle birth or a knighthood"), so a knighted soldier can now be asked to the order.
-  - A knight of 33 or more, with renown 55 and a high command, a council seat or renown 65, is then offered a fief (`cr_fief`, rung 4, Baron). You can take it with its levies, ask for a pension instead (a check), or decline.
+  - A knight of 33 or more, with renown 55 and a high command, a council seat or renown 65, is then offered a fief (`cr_fief`, rung 4, Baron). You can take it with its conscripts, ask for a pension instead (a check), or decline.
 - **Something above the top.**
   - At the top of a ladder (General or above, or the last rank of a trade), an honour comes every seven years or so (`cr_honour`): the wardenship of the march, the guild's chain, a see. Each can be accepted, bargained for or declined.
   - `A.seatEligible` lets a General of renown 35 and command 50 be named the senior General (W1-1; the army's place at council). The release asked a grade above General, so no General ever sat on the council. A merchant prince with 50,000 suns can be named Treasurer.
@@ -32,7 +32,7 @@ Bot lives on the Great Continent showed careers that topped out by 30 and then w
 - **Promotion is slower above Senior Captain.** Merit bars are ×1.5 for ranks 5 and 6 and ×2 from General up, so General is 2,000 merit (1,000 before).
 - **Numbers that fit.** A bandit hunt is 20 to 300 men, and a mission away from any war is at most 400 (`A.missionSize`, patch `CAR-MISSION-SIZE`). A mission in a war keeps the rank's numbers.
 - **A quieter log.**
-  - Levies called out log one line per realm a month (`A.levyLog`, patch `CAR-LEVY-LOG`), not one per division.
+  - Conscripts called out log one line per realm a month (`A.musterLog`, patch `CAR-MUSTER-LOG`), not one per division.
   - "The X is held without you" is logged only for gatherings that had a place for you (patch `CAR-HELD-WITHOUT`).
 
 Other folders carry the rest of the late-game work: 97-first-life-fixes (ambitions after the top, What now, great works scaled to the fortune, gathering caps), 32-legend-and-master-caps (order entry by merit), 56-court-and-treasury (`ri_taken` and the council's pushes) and 81-pacing (the first-year ceiling).

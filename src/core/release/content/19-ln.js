@@ -2041,13 +2041,13 @@
         title: "Preach the war",
         cond: (p,C)=>C.atWar(p),
         setup: (p,ctx)=>{ctx.enemy=A.enemyRealmOf(p.realm)?A.realmShort(A.enemyRealmOf(p.realm)):"the enemy"},
-        text: "{ruler} wants the faith behind the war with {enemy}. You are asked to preach on the feast day in {capital}: that the gods march with {realmShort}, that the dead go to the best of the afterlife, that the levy must answer.",
+        text: "{ruler} wants the faith behind the war with {enemy}. You are asked to preach on the feast day in {capital}: that the gods march with {realmShort}, that the dead go to the best of the afterlife, that the muster must answer.",
         choices: [
           {
             t: "Preach fire",
             check: {s:"faith",s2:"persuasion",d:50},
             win: {
-              r: "You give them the gods and the dead and the glory, and the levy answers singing.",
+              r: "You give them the gods and the dead and the glory, and the muster answers singing.",
               fx: {fame:3,favor:8,rep:4,piety:-1,stability:2},
             },
             lose: {r:"You preach fire to a hall of mothers. It goes badly.",fx:{rep:-3,favor:2}},
@@ -4933,7 +4933,7 @@
         cool: 6,
         title: "Songs carry news",
         setup: (p,ctx)=>{const e=A.enemyRealmOf(p.realm);ctx.enemy=e?A.realmShort(e):"the old enemy",setFee(p,ctx,.3)},
-        text: "A councillor's man pays you {pay} to carry a new song round every tavern in the realm: that the men of {enemy} poison wells and eat children, and that the levy should be ready. Songs are history, and the songs are rarely what happened.",
+        text: "A councillor's man pays you {pay} to carry a new song round every tavern in the realm: that the men of {enemy} poison wells and eat children, and that the muster should be ready. Songs are history, and the songs are rarely what happened.",
         choices: [
           {
             t: "Sing it",
@@ -5025,7 +5025,7 @@
         w: 1,
         cool: 6,
         title: "A lament",
-        setup: (p,ctx)=>{ctx.loss=C2r(p,"POL-14","POL-08","POL-04")||A.prov(p.home)&&A.prov(p.home).coast?"the fishing fleet lost in the autumn gale, eleven boats and forty men":A.atWar(p.realm).length?"the levy of "+A.provName(p.home)+", cut down at the river":"the children taken by the summer flux",setFee(p,ctx,.15)},
+        setup: (p,ctx)=>{ctx.loss=C2r(p,"POL-14","POL-08","POL-04")||A.prov(p.home)&&A.prov(p.home).coast?"the fishing fleet lost in the autumn gale, eleven boats and forty men":A.atWar(p.realm).length?"the muster of "+A.provName(p.home)+", cut down at the river":"the children taken by the summer flux",setFee(p,ctx,.15)},
         text: "The whole of {home} is in black for {loss}. The priest has said the words. Now they want a song, so the names are not forgotten.",
         choices: [
           {
@@ -5147,7 +5147,7 @@
         w: 1.3,
         title: "Letters for those who cannot write",
         setup: (p,ctx)=>{who(p,ctx,"a soldier's mother",{sex:"F",ageAdj:48}),ctx.price=lawOf(p)==="sun"?"six pence a letter":"a penny a line"},
-        text: "Few on Ardan can write. You sit by the market cross at {price}, and today {them} wants a letter to her son in the levy. She talks for half an hour: the roof, the dog, his sister's baby, and please, please come home.",
+        text: "Few on Ardan can write. You sit by the market cross at {price}, and today {them} wants a letter to her son in the muster. She talks for half an hour: the roof, the dog, his sister's baby, and please, please come home.",
         choices: [
           {
             t: "Write it all, in her words",
@@ -5787,7 +5787,7 @@
         w: 1,
         cool: 5,
         title: "Reading the proclamation",
-        setup: (p,ctx)=>{ctx.news=A.atWar(p.realm).length?"a new levy: one armed man from every five hearths, by the month's end":A.pick(["a new tax on salt","the betrothal of the heir","a reward for the head of an outlaw band","a ban on dice on holy days"])},
+        setup: (p,ctx)=>{ctx.news=A.atWar(p.realm).length?"a new call to arms: one armed man from every five hearths, by the month's end":A.pick(["a new tax on salt","the betrothal of the heir","a reward for the head of an outlaw band","a ban on dice on holy days"])},
         text: "A rider nails a proclamation to the door of the village hall at {home}, and the village crowds round a page nobody can read. Every face turns to you. It announces {news}.",
         choices: [
           {

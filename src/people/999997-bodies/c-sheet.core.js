@@ -7,7 +7,7 @@
 // where it stands among one's people; a click on the row opens the same line (data-note, 59-descriptions). Height is a
 // word for one's place among one's own people and sex ("tall", "a little short"), weight goes, the build stays a word.
 // The character maker's height slider says the word too, not centimetres. Toughness keeps its words (blows a body takes
-// are a count, not a unit) and the fight row its levies. The mind keeps v2's words for memory, judgment, presence and
+// are a count, not a unit) and the fight row its conscripts. The mind keeps v2's words for memory, judgment, presence and
 // cunning; wits and will read the measured scale like the body, so the sheet and the Profile page say the same word.
 // Rendering only: pure, reads A.stat and A.V2S.view, draws nothing, writes no state.
 (function () {
@@ -61,8 +61,8 @@
     h += row('Toughness', d.toughness.value, tw, 'How hard a blow or a fever you can take.');
     const fights = age >= 6;
     if (fights) {
-      const lv = VS.shownLevies(p);
-      h += row('In a fight', VS.levyWords(lv), VS.levyRank(lv), 'Your worth in a fight, counted in levies: untrained spearmen in padded coats.');
+      const lv = VS.shownConscripts(p);
+      h += row('In a fight', VS.conscriptWords(lv), VS.conscriptRank(lv), 'Your worth in a fight, counted in conscripts: untrained spearmen in padded coats.');
     }
     h += `<div class="group-h">Mind</div>`;
     for (const k of B.MENTAL) {
@@ -74,7 +74,7 @@
     const bt = (v.body.breakthroughs || []);
     // a click says what a breakthrough is (every number on the Profile page carries a description: pfNumbers)
     if (bt.length) h += `<div class="tiny muted v2-bt tt" data-tt="note" data-v="${esc('A breakthrough: a surge of will against long odds, with something real at stake, raised how far this body or mind can go. The number is the age it came.')}" tabindex="0" role="button" aria-haspopup="dialog" aria-expanded="false">Broke through: ${esc(bt.slice(-3).map(b => `${b.attr === 'lift' ? 'strength' : b.attr} at ${b.age}${b.note ? ' (' + b.note + ')' : ''}`).join('; '))}.</div>`;
-    if (!opts.noLegend && fights) h += `<div class="tiny muted v2-legend">A levy: an untrained spearman in a padded coat.</div>`;
+    if (!opts.noLegend && fights) h += `<div class="tiny muted v2-legend">A conscript: an untrained spearman in a padded coat.</div>`;
     return h + '</div>';
   };
   VS.css = (VS.css || '') + '.v2-row.tt{cursor:pointer}';

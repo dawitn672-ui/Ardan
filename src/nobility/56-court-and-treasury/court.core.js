@@ -12,7 +12,7 @@
 // - Once a year the court meets (wrapper of A.factionsYear, which runs inside A.politicsYear for every realm). The
 //   councillors and the heads of the four strongest houses each push the law or the spending their want calls
 //   for; the crown weighs the pushers against the opposers with its own temper and the state of the treasury, and
-//   at most one law changes (taxes, crown authority, levies). Houses remember who won.
+//   at most one law changes (taxes, crown authority, the conscription law). Houses remember who won.
 // - Vassal deals: a faction that is close to rising is offered a pension or its leader a council seat, or refused.
 // - Factions are people: house heads join the faction their want calls for, and councillors who share a faction's
 //   aim lend it weight (A.factionPower).
@@ -158,8 +158,8 @@ const PUSH = {
   taxDown: { t: 'lighter taxes', law: 'tax', ok: r => taxIdx(r) > 0 },
   authUp: { t: 'more power for the crown', law: 'authority', ok: r => (r.laws.authority || 0) < 3 && r.stability >= 40 && (r.legit || 50) >= 50 },
   authDown: { t: "the return of the lords' liberties", law: 'authority', ok: r => (r.laws.authority || 0) > 0 },
-  levyUp: { t: 'heavier levies', law: 'levy', ok: r => (r.laws.levy != null ? r.laws.levy : 1) < 2 },
-  levyDown: { t: 'lighter levies', law: 'levy', ok: r => (r.laws.levy != null ? r.laws.levy : 1) > 0 },
+  conscriptUp: { t: 'a harsher conscription law', law: 'conscript', ok: r => (r.laws.conscript != null ? r.laws.conscript : 1) < 2 },
+  conscriptDown: { t: 'a milder conscription law', law: 'conscript', ok: r => (r.laws.conscript != null ? r.laws.conscript : 1) > 0 },
   army: { t: 'gold for the host', ok: () => true },
   works: { t: 'gold for walls, roads and granaries', ok: () => true },
   temple: { t: 'gold for the temples', ok: () => true },
@@ -168,26 +168,26 @@ const PUSH = {
 RI.PUSH = PUSH;
 // how each want and fear leans on each push (-1..1)
 const W_ST = {
-  glory: { levyUp: 1, army: .9, taxUp: .4, levyDown: -.8, taxDown: -.3 },
-  peace: { levyDown: .8, taxDown: .4, levyUp: -.8, army: -.5 },
+  glory: { conscriptUp: 1, army: .9, taxUp: .4, conscriptDown: -.8, taxDown: -.3 },
+  peace: { conscriptDown: .8, taxDown: .4, conscriptUp: -.8, army: -.5 },
   wealth: { taxDown: .7, grant: 1, taxUp: -.6, works: -.3 },
   order: { authUp: 1, taxUp: .7, authDown: -1, grant: -.4, taxDown: -.5 },
-  liberty: { authDown: 1, taxDown: .45, levyDown: .4, authUp: -1, taxUp: -.5, levyUp: -.4 },
+  liberty: { authDown: 1, taxDown: .45, conscriptDown: .4, authUp: -1, taxUp: -.5, conscriptUp: -.4 },
   faith: { temple: 1, taxUp: .2 },
   works: { works: 1, taxUp: .5, taxDown: -.4 },
   crown: { authDown: .7, grant: .4, authUp: -.6 },
 };
 const F_ST = {
-  war: { levyUp: -.6, army: -.4, levyDown: .4 },
+  war: { conscriptUp: -.6, army: -.4, conscriptDown: .4 },
   ruin: { taxUp: -.5, works: -.4, army: -.3, grant: .3 },
   tyranny: { authUp: -1, authDown: .6 },
-  unrest: { taxUp: -.6, taxDown: .4, levyUp: -.3, authUp: .3 },
+  unrest: { taxUp: -.6, taxDown: .4, conscriptUp: -.3, authUp: .3 },
   heresy: { temple: .8 },
   rival: { grant: -.5, authUp: .2 },
 };
 const SEAT_ST = {
   treasurer: (k, r, Y) => k === 'taxUp' ? (Y < 1 || r.debt > 0 ? .5 : -.2) : k === 'taxDown' ? (Y > 2.5 ? .4 : -.3) : 0,
-  general: (k, r) => k === 'army' ? .5 : k === 'levyUp' ? (A.atWar(r.id).length || (A.threatsTo && A.threatsTo(r.id).length) ? .5 : .1) : 0,
+  general: (k, r) => k === 'army' ? .5 : k === 'conscriptUp' ? (A.atWar(r.id).length || (A.threatsTo && A.threatsTo(r.id).length) ? .5 : .1) : 0,
   chaplain: k => k === 'temple' ? .6 : 0,
   chancellor: k => k === 'works' ? .2 : 0,
   spymaster: k => k === 'authUp' ? .25 : 0,
@@ -195,7 +195,7 @@ const SEAT_ST = {
 const years = r => (r.treasury || 0) / Math.max(1, r.income || 1);
 RI.years = years;
 // the realm's own custom in each law (what it had when the court first met): pushes away from it lose force
-RI.lawPos = (r, law) => law === 'tax' ? taxIdx(r) : law === 'authority' ? (r.laws.authority != null ? r.laws.authority : 1) : (r.laws.levy != null ? r.laws.levy : 1);
+RI.lawPos = (r, law) => law === 'tax' ? taxIdx(r) : law === 'authority' ? (r.laws.authority != null ? r.laws.authority : 1) : (r.laws.conscript != null ? r.laws.conscript : 1);
 RI.trad = (r, law) => { const t = r.riLaw0 || {}; return law === 'tax' ? (t.tax != null ? taxIdx({ laws: { tax: t.tax } }) : 2) : law === 'authority' ? (t.authority != null ? t.authority : 1) : 1; };
 RI.awayMul = function (r, k) {
   const P = PUSH[k]; if (!P || !P.law) return 1;
@@ -214,7 +214,7 @@ RI.stance = function (v, k, r) {
   const tx = (r.laws && r.laws.tax) || 1;
   if (k === 'taxUp') s *= (Y < .5 || r.debt > r.income ? 1.5 : Y > 2 ? .3 : 1) * (tx > 1 ? .6 : 1);
   if (k === 'taxDown') s *= (Y > 2.5 ? 1.4 : Y < 1 ? .2 : 1) * (tx < 1 ? .5 : 1);
-  if ((k === 'levyUp' || k === 'army') && A.atWar(r.id).length) s *= s > 0 ? 1.5 : .6;
+  if ((k === 'conscriptUp' || k === 'army') && A.atWar(r.id).length) s *= s > 0 ? 1.5 : .6;
   if (k === 'grant' && v.h) s *= (v.h.op != null ? v.h.op : 50) < 40 ? 1.4 : .6;
   if (s > 0) s *= RI.awayMul(r, k);
   return clamp(s, -1.5, 1.5);
@@ -253,8 +253,8 @@ RI.lean = function (r, k) {
   if (k === 'taxDown') { add('A generous crown', .25 * Math.max(0, P.warmth)); add('A greedy crown', -.25 * Math.max(0, P.greed)); }
   if (k === 'authUp') { add('A proud crown', .25 * Math.max(0, P.pride)); add('A cautious crown', -.15 * Math.max(0, P.caution)); }
   if (k === 'authDown') { add('A cautious crown', .2 * Math.max(0, P.caution)); add('A proud crown', -.3 * Math.max(0, P.pride)); }
-  if (k === 'levyUp') add(P.warLog >= 0 ? 'A warlike crown' : 'A peaceable crown', .12 * P.warLog);
-  if (k === 'levyDown') { add(P.warLog >= 0 ? 'A warlike crown' : 'A peaceable crown', -.12 * P.warLog); add('A kind crown', .1 * Math.max(0, P.warmth)); }
+  if (k === 'conscriptUp') add(P.warLog >= 0 ? 'A warlike crown' : 'A peaceable crown', .12 * P.warLog);
+  if (k === 'conscriptDown') { add(P.warLog >= 0 ? 'A warlike crown' : 'A peaceable crown', -.12 * P.warLog); add('A kind crown', .1 * Math.max(0, P.warmth)); }
   return out;
 };
 RI.need = function (r, k) {
@@ -266,7 +266,7 @@ RI.need = function (r, k) {
     else if (RI.nextWork && Y < (RI.reserveYears ? RI.reserveYears(r) : 1.5) + .3 && RI.nextWork(r, RI.rax(r), null)) out.push(['The crown has works it cannot pay for', .1]);
   }
   if (k === 'taxDown') { if (Y > 2.5) out.push([tre, .25]); else if (Y < 1) out.push([tre, -.4]); else if (RI.nextWork && RI.nextWork(r, RI.rax(r), null)) out.push(['The crown has works to pay for', -.15]); }
-  if (k === 'levyUp' && (A.atWar(r.id).length || (A.threatsTo && A.threatsTo(r.id).length))) out.push([A.atWar(r.id).length ? 'The realm is at war' : 'Strong, hungry neighbours', .15]);
+  if (k === 'conscriptUp' && (A.atWar(r.id).length || (A.threatsTo && A.threatsTo(r.id).length))) out.push([A.atWar(r.id).length ? 'The realm is at war' : 'Strong, hungry neighbours', .15]);
   if (k === 'authUp' && r.stability < 50) out.push([`Stability ${Math.round(r.stability)}`, -.1]);
   return out;
 };
@@ -317,24 +317,24 @@ RI.odds = function (r, t) {
 
 // ---------------------------------------------------------------- applying a law
 
-const lawText = { taxUp: 'raises taxes', taxDown: 'lowers taxes', authUp: 'raises crown authority', authDown: 'lowers crown authority', levyUp: 'calls heavier levies', levyDown: 'lightens the levies' };
+const lawText = { taxUp: 'raises taxes', taxDown: 'lowers taxes', authUp: 'raises crown authority', authDown: 'lowers crown authority', conscriptUp: 'hardens the conscription law', conscriptDown: 'softens the conscription law' };
 // effects on every house of the realm when the law passes (the release's own setLaw moves them -15 and +10)
-const HOUSE_FX = { taxUp: -4, taxDown: 3, authUp: -8, authDown: 5, levyUp: -3, levyDown: 2 };
+const HOUSE_FX = { taxUp: -4, taxDown: 3, authUp: -8, authDown: 5, conscriptUp: -3, conscriptDown: 2 };
 RI.applyLaw = function (r, k) {
   A.polInit && A.polInit(r);
   if (k === 'taxUp' || k === 'taxDown') r.laws.tax = TAXES[clamp(taxIdx(r) + (k === 'taxUp' ? 1 : -1), 0, 4)];
   if (k === 'authUp') { r.laws.authority = clamp((r.laws.authority || 0) + 1, 0, 3); r.legit = clamp((r.legit || 50) - 5, 0, 100); }
   if (k === 'authDown') { r.laws.authority = clamp((r.laws.authority || 0) - 1, 0, 3); r.legit = clamp((r.legit || 50) - 2, 0, 100); }
-  if (k === 'levyUp' || k === 'levyDown') {
-    const cur = r.laws.levy != null ? r.laws.levy : 1, nv = clamp(cur + (k === 'levyUp' ? 1 : -1), 0, 2);
-    if (A.LEVY) r.levy = Math.round(r.levy * A.LEVY[nv][1] / A.LEVY[cur][1]);
-    r.laws.levy = nv;
+  if (k === 'conscriptUp' || k === 'conscriptDown') {
+    const cur = r.laws.conscript != null ? r.laws.conscript : 1, nv = clamp(cur + (k === 'conscriptUp' ? 1 : -1), 0, 2);
+    if (A.CONSCRIPT_LAW) r.roll = Math.round(r.roll * A.CONSCRIPT_LAW[nv][1] / A.CONSCRIPT_LAW[cur][1]);
+    r.laws.conscript = nv;
   }
   for (const h of A.realmHouses(r.id)) h.op = clamp((h.op != null ? h.op : 50) + (HOUSE_FX[k] || 0), 0, 100);
 };
 RI.lawNow = r => {
-  const T = A.TAX && A.TAX[(r.laws && r.laws.tax) || 1], au = A.AUTH && A.AUTH[(r.laws && r.laws.authority) != null ? r.laws.authority : 1], lv = A.LEVY && A.LEVY[(r.laws && r.laws.levy) != null ? r.laws.levy : 1];
-  return { tax: T ? T[0] : 'Customary', auth: au ? au[0] : 'Limited', levy: lv ? lv[0] : 'Customary levies' };
+  const T = A.TAX && A.TAX[(r.laws && r.laws.tax) || 1], au = A.AUTH && A.AUTH[(r.laws && r.laws.authority) != null ? r.laws.authority : 1], lv = A.CONSCRIPT_LAW && A.CONSCRIPT_LAW[(r.laws && r.laws.conscript) != null ? r.laws.conscript : 1];
+  return { tax: T ? T[0] : 'Customary', auth: au ? au[0] : 'Limited', conscript: lv ? lv[0] : 'The old custom' };
 };
 
 const logCourt = (r, e) => {

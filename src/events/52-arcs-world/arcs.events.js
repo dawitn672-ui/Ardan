@@ -228,7 +228,7 @@ A.defEvents([
   { id: 'aw_ref_1', title: 'People on the road', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: refRealm,
-    text: 'Families are coming up the road from {other}, where the war is, with handcarts, goats and the clothes they stood up in. Some have walked a month. A woman with two children and an old mother asks for your barn for the night. Her husband went with the levy, and she has heard nothing since.',
+    text: 'Families are coming up the road from {other}, where the war is, with handcarts, goats and the clothes they stood up in. Some have walked a month. A woman with two children and an old mother asks for your barn for the night. Her husband went with the muster, and she has heard nothing since.',
     choices: [
       { t: 'Give them the barn, and supper', r: 'They eat like people who have forgotten how, and sleep in the straw with the goat. In the morning she will not go until she has swept your yard.',
         fx: { coin: -5, honor: 3, awWho: { type: 'friend', op: 30, sex: 'F', from: 'other', age: [24, 34], occ: 'a refugee from the war', line: 'remembers your barn' }, arc: { mark: 'aw_ref_barn' } } },
@@ -297,14 +297,14 @@ A.defEvents([
     text: p => `The headmen send to {capital} for help against the Hawk. The answer comes back in spring: the crown's soldiers are needed elsewhere, and the villages must see to their own roads. Now they meet in the church to see to them.${M(p, 'aw_bandit_spy') ? ' Nobody at the meeting knows you take the Hawk\'s silver.' : M(p, 'aw_bandit_double') ? ' The sheriff\'s man nods to you across the nave.' : M(p, 'aw_bandit_marked') ? ' You keep your hat on, over the ear.' : M(p, 'aw_bandit_no') ? ' The Hawk\'s man stands at the back of the nave, listening.' : ''}`,
     choices: [
       { t: 'Put in your share to hire sellswords', req: p => p.coin >= 20, r: 'Twenty suns from you, a hundred from the parish, and a captain of crossbowmen who looks at the tower and asks for more.', fx: { coin: -20, arc: { mark: 'aw_bandit_hired' } } },
-      { t: 'Offer to lead the village levy yourself', check: { s: 'command', s2: 'wil', d: 50 },
-        win: { r: 'They choose you, more or less. You drill forty men with bills and bows on the green every Sunday.', fx: { fame: 3, skill: { command: 1 }, arc: { mark: 'aw_bandit_levy' } } },
-        lose: { r: 'They laugh, kindly, and choose the farrier\'s son. You drill in the back row.', fx: { happy: -4, skill: { command: 1 }, arc: { mark: 'aw_bandit_levy' } } } },
+      { t: 'Offer to lead the village muster yourself', check: { s: 'command', s2: 'wil', d: 50 },
+        win: { r: 'They choose you, more or less. You drill forty men with bills and bows on the green every Sunday.', fx: { fame: 3, skill: { command: 1 }, arc: { mark: 'aw_bandit_muster' } } },
+        lose: { r: 'They laugh, kindly, and choose the farrier\'s son. You drill in the back row.', fx: { happy: -4, skill: { command: 1 }, arc: { mark: 'aw_bandit_muster' } } } },
       { t: 'Argue for paying him off: cheaper than a war', r: 'The parish votes to pay the Hawk a yearly sum to keep off the road. He takes it, and keeps off, mostly.', fx: { coin: -5, wil: 1, arc: { mark: 'aw_bandit_peace' } } },
     ] },
   { id: 'aw_bandit_4', title: 'The tower', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `${M(p, 'aw_bandit_peace') ? 'The Hawk took the parish\'s money, and the next year asked for twice as much. Now {ruler} sends a captain after all, with sixty men and no guides. The captain wants someone who knows the hill.' : 'The night comes: forty men with ladders and a ram, under the Hawk\'s tower above the ford. The moon is down. Somebody\'s dog will not stop barking.'}${M(p, 'aw_bandit_spy') ? ' The Hawk\'s man finds you first. The Hawk wants to know when.' : M(p, 'aw_bandit_hired') ? ' The hired crossbowmen want the rest of their money before they climb.' : M(p, 'aw_bandit_levy') ? ' The men drilled on the green are at the foot of the ladders.' : ''}`,
+    text: p => `${M(p, 'aw_bandit_peace') ? 'The Hawk took the parish\'s money, and the next year asked for twice as much. Now {ruler} sends a captain after all, with sixty men and no guides. The captain wants someone who knows the hill.' : 'The night comes: forty men with ladders and a ram, under the Hawk\'s tower above the ford. The moon is down. Somebody\'s dog will not stop barking.'}${M(p, 'aw_bandit_spy') ? ' The Hawk\'s man finds you first. The Hawk wants to know when.' : M(p, 'aw_bandit_hired') ? ' The hired crossbowmen want the rest of their money before they climb.' : M(p, 'aw_bandit_muster') ? ' The men drilled on the green are at the foot of the ladders.' : ''}`,
     choices: [
       { t: 'Go up the ladders with the first men', check: { s: 'melee', s2: 'str', d: 55 },
         win: { r: 'You are third over the wall and first to the gate-bar. By dawn the tower is burning and the Hawk is in chains.', fx: { fame: 5, honor: 2, arc: { mark: 'aw_bandit_stormed' } } },

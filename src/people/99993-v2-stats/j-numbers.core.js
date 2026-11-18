@@ -91,11 +91,11 @@
     // "Morale 66" (9997-companies' company card)
     coMo: t => { const m = /^Morale (\d{1,3}(?:\.\d+)?)$/.exec(t); return m ? `Morale: ${band('morale', +m[1])}` : null; },
     coDivMo: t => { const m = /^Morale (\d{1,3}(?:\.\d+)?)$/.exec(t); return m ? `Morale: ${band('morale', +m[1])}` : null; },
-    // the fighter's worth beside a tier ("Master fighter (101)"): in levies, as the sheet says it
+    // the fighter's worth beside a tier ("Master fighter (101)"): in conscripts, as the sheet says it
     worth: (t, el) => {
       if (!isNum(t)) return null;
       const id = el.getAttribute('data-v'), P = id ? A.P(id) : pc();
-      return P && VS.shownLevies && VS.levyWords ? VS.levyWords(VS.shownLevies(P)) : null;
+      return P && VS.shownConscripts && VS.conscriptWords ? VS.conscriptWords(VS.shownConscripts(P)) : null;
     },
     // a promotion board's row: "379 / 600", "28 / 35"
     board: (t, el) => {
@@ -276,7 +276,7 @@
     // a captain or a general by his skills, where they are listed: "(Cunning, command 56)", "(command 60)",
     // "Name · command 45 · tactics 30 · logistics 20". Only after "(", ", " or "· ", and never a count ("You command
     // 4,500 men", "command 300 men") or a tooltip's sum ("command 45 ÷ 12").
-    [/(\(|, |· )(command|tactics|logistics) (\d{1,3})(?![\d,.]\d|\d)(?!\s*(?:÷|\(÷|×|\/|%|vs\b|men\b|spears\b|soldiers\b|horse\b|riders\b|levies\b|lances\b|bows\b|archers\b|knights\b|swords\b))/g, (m, pre, k, v) => `${pre}${k} ${tier(+v)}`],
+    [/(\(|, |· )(command|tactics|logistics) (\d{1,3})(?![\d,.]\d|\d)(?!\s*(?:÷|\(÷|×|\/|%|vs\b|men\b|spears\b|soldiers\b|horse\b|riders\b|conscripts\b|lances\b|bows\b|archers\b|knights\b|swords\b))/g, (m, pre, k, v) => `${pre}${k} ${tier(+v)}`],
     // 55-bonds: "holds his opinion of you up (+4)"
     [/(opinion of you (?:up|down)) \([+−-]\d{1,3}\)/g, '$1'],
     // the duel's blows: "You take a hit — 7 damage."

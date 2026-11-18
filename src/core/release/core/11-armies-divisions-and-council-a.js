@@ -1561,7 +1561,7 @@ A.fightEnd = function (pid, winner) {
     if (!r) continue;
     const lost = rid === F.a ? F.deadA : F.deadD;
     r.exhaustion = A.clamp(
-      r.exhaustion + (lost / Math.max(2e3, r.army + r.levy * 0.2)) * (rid === L ? 55 : 35),
+      r.exhaustion + (lost / Math.max(2e3, r.army + (A.MEN ? A.MEN.reserve(r) : r.roll) * 0.2)) * (rid === L ? 55 : 35),
       0,
       100,
     );
@@ -2754,7 +2754,7 @@ A.rulerYear = function (pc) {
   const tax = r.laws.tax || 1,
     stabMul = 0.6 + r.stability / 250,
     inc = Math.round(r.income * stabMul * (1 + cs("treasurer") / 400)),
-    upkeep = Math.round(r.army * 3.2 + r.levy * 0.05),
+    upkeep = Math.round(r.army * 3.2 + r.roll * 0.05),
     interest = Math.round(r.debt * 0.09),
     court = Math.round(A.LIFESTYLE[pc.lifestyle || "lavish"].cost * 2),
     bld = Object.values(r.bldUpkeep || {}).reduce((a, b) => a + b, 0);

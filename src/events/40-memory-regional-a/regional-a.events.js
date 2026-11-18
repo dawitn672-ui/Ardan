@@ -705,7 +705,7 @@
           r: "You swear. Then you step back into line beside {them}, who did not. The Measurers write down both names. {them} remembers where you stood.",
           fx: { them: { type: "friend", op: 30 }, honor: 2, favor: -2 } },
         { t: "Refuse to swear, alongside {themHim}",
-          r: "Two archers stand silent. The Measurers write you down and leave. That spring Hapu strikes both your names from the levy roll, to keep you out of the temple's reach.",
+          r: "Two archers stand silent. The Measurers write you down and leave. That spring Hapu strikes both your names from the muster roll, to keep you out of the temple's reach.",
           fx: { them: { type: "friend", op: 45 }, honor: 4, piety: -3, favor: -5, trait: "stubborn" } },
         { t: "Talk {themHim} into swearing", check: { s: "persuasion", s2: "ins", d: 48 },
           win: { r: "{them} says the words with two fingers bent in the Well sign. The Measurers are satisfied. In time, so is {them}.",

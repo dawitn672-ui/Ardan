@@ -17,7 +17,7 @@ export const SKILL_TIERS = [
 const SKILL_MULT = [1, 1.15, 1.35, 1.6, 1.95, 2.4, 3.0, 3.8, 4.8];
 
 export const GEAR = {
-  none: { name: 'bare hands', mult: 1.0 }, levy: { name: 'spear and padded coat', mult: 1.25 },
+  none: { name: 'bare hands', mult: 1.0 }, conscript: { name: 'spear and padded coat', mult: 1.25 },
   mail: { name: 'mail, sword and shield', mult: 1.6 }, plate: { name: 'plate harness and longsword', mult: 2.0 },
   order: { name: 'order-forged panoply', mult: 2.2 }, club: { name: 'tree-trunk club', mult: 1.2 },
   giantArms: { name: 'giant-forged maul and hide', mult: 1.5 },
@@ -143,7 +143,7 @@ export function breakthrough(person, attr, magnitude = 1, note = '') {
   person.body.breakthroughs.push({ attr, magnitude, age: person.age, note });
 }
 
-// ---------- fighting worth (in "levies": one untrained spearman in a padded coat = 1) ----------
+// ---------- fighting worth (in "conscripts": one untrained spearman in a padded coat = 1) ----------
 export function fightingWorth(person, weaponSkill = 'sword', gearKey = person.gear ?? 'none') {
   const s = stats(person);
   const might = s.lift / 130, speed = (s.sprint / 7.2) * (250 / s.reaction), tough = s.toughness;
@@ -160,7 +160,7 @@ const LIFT_REF = [[0, 'a loaf of bread'], [2, 'a hen'], [5, 'a goose'], [10, 'a 
   [80, 'a small cask of ale'], [140, 'a big hog'], [250, 'a blacksmith\'s anvil'],
   [400, 'a draught pony'], [650, 'a warhorse'], [1000, 'an ox'], [1800, 'a laden hay wagon'], [3000, 'a war galley\'s anchor'], [6000, 'a felled oak']];
 const SPRINT_REF = [[2.5, 'a toddler'], [4.5, 'a child'], [6.5, 'most people'], [8.5, 'a trained runner'], [10.5, 'a hunting dog'], [13, 'a galloping horse'], [17, 'a stooping hawk\'s shadow'], [99, 'anything on legs']];
-const MARCH_REF = [[0, 'only a short way'], [12, 'a short day\'s walk'], [22, 'as far as a pilgrim'], [30, 'as far as a levy'], [40, 'like a veteran on a forced march'], [55, 'like a ranger'], [80, 'like a relay of couriers, alone'], [999, 'beyond belief']];
+const MARCH_REF = [[0, 'only a short way'], [12, 'a short day\'s walk'], [22, 'as far as a pilgrim'], [30, 'as far as a conscript'], [40, 'like a veteran on a forced march'], [55, 'like a ranger'], [80, 'like a relay of couriers, alone'], [999, 'beyond belief']];
 
 // The yardstick a young body is held to: an ordinary, untrained body of the same race, sex and age.
 export function typicalStats(person, age = person.age) {

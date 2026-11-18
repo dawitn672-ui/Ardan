@@ -60,7 +60,7 @@
         cond: (p,C)=>C.adult(p)&&!C.old(p)&&(C.soldier(p)||C.lvl(p,"melee",10)||C.trait(p,"brave")),
         w: .7,
         cool: 10,
-        setup: (p,ctx)=>{who(p,ctx,"mentor"),ctx.vet=A.pick(["lost an eye at the ford","served twenty years in the levies","fought in three wars and won one","once guarded a count"])},
+        setup: (p,ctx)=>{who(p,ctx,"mentor"),ctx.vet=A.pick(["lost an eye at the ford","served twenty years in the ranks","fought in three wars and won one","once guarded a count"])},
         title: "The pell yard",
         text: "{them}, who {vet}, keeps a pell yard behind the alehouse in {town}: a post, a chalk circle and a barrel of blunted blades. Four suns a month, footwork first, steel later.",
         choices: [

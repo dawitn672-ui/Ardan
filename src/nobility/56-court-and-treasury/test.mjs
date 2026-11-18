@@ -171,7 +171,7 @@ export default {
       for (const d of F.divs.slice()) A.divRemove(d);
       A.forcesSync(x); F.queue = [];
       const normal = (LORE.realms[x.id] ? LORE.realms[x.id].army : x.army0 || x.army) * x.provPop / x.basePop;
-      x.levy = Math.max(x.levy || 0, Math.round(normal * 2)); x.treasury = Math.max(x.treasury, x.income * 2);
+      x.roll = Math.max(x.roll || 0, Math.round(normal * 2)); x.treasury = Math.max(x.treasury, x.income * 2);
       const rng0 = JSON.stringify(A.rngState);
       RI.fitHost(x);
       const drew = JSON.stringify(A.rngState) !== rng0, men1 = A.tplS(x.id, main).men, name1 = F.tpl[main].name;

@@ -2871,12 +2871,12 @@
         ],
       },
       {
-        id: "pp_dw_levy",
+        id: "pp_dw_muster",
         title: "Pike, axe and crossbow",
         cond: (p,C)=>C.realm(p,"POL-28","POL-29","POL-10")&&C.race(p,"dwarf")&&C.adult(p)&&!C.old(p)&&!C.soldier(p),
         w: 1,
         cool: 12,
-        text: "In {realmShort} every adult trains with pike, axe and crossbow, and the levy can stand in the gate within hours. Today is your clan's drill: crossbows on the wall, bolts at a mark below on the snow, and the sergeant has a bet with another clan's sergeant.",
+        text: "In {realmShort} every adult trains with pike, axe and crossbow, and the muster can stand in the gate within hours. Today is your clan's drill: crossbows on the wall, bolts at a mark below on the snow, and the sergeant has a bet with another clan's sergeant.",
         choices: [
           {
             t: "Shoot for the clan",

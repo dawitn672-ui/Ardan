@@ -32,7 +32,7 @@ RI.TUNE = Object.assign({
 // ---------------------------------------------------------------- the book
 
 RI.CATS = ['recruits', 'mercs', 'drill', 'works', 'worksUp', 'court', 'bribes', 'subsidy'];
-RI.CAT_T = { recruits: 'New levies trained', mercs: 'Sellswords', drill: 'Drill and arms', works: 'Works: walls, markets, temples, great halls', worksUp: 'Upkeep of works',
+RI.CAT_T = { recruits: 'New regiments trained', mercs: 'Sellswords', drill: 'Drill and arms', works: 'Works: walls, markets, temples, great halls', worksUp: 'Upkeep of works',
   court: "The council's pay", bribes: 'Pensions, feasts and gifts to the lords', subsidy: 'Gold for allies at war' };
 RI.book = function (r, k, amt) {
   if (!r || !amt) return;
@@ -48,7 +48,7 @@ A.worldYear = function () {
     for (const id in S.realms) {
       const r = S.realms[id]; if (!r.alive) continue;
       const pr = !!r.playerRun;
-      r.riBookNext = { y: S.year, t0: Math.round(r.treasury || 0), d0: Math.round(r.debt || 0), inc: pr ? 0 : Math.round(r.income * .92), up: pr ? 0 : Math.round(r.army * 3.2 + r.levy * .05), int: pr ? 0 : Math.round((r.debt || 0) * .08), cats: {}, pr };
+      r.riBookNext = { y: S.year, t0: Math.round(r.treasury || 0), d0: Math.round(r.debt || 0), inc: pr ? 0 : Math.round(r.income * .92), up: pr ? 0 : Math.round(r.army * 3.2 + r.roll * .05), int: pr ? 0 : Math.round((r.debt || 0) * .08), cats: {}, pr };
     }
   } catch (e) { console.error('[ri] book', e); }
   const out = baseWorldYear.apply(this, arguments);
@@ -171,7 +171,7 @@ RI.greatWork = function (r, cost) {
 // ---------------------------------------------------------------- a host cut to the realm's size
 // The release sizes a realm's divisions once, at the world's start: a realm whose host is under 1.6 divisions gets
 // brigades (A.tplDefaults). A realm that later loses most of its land keeps divisions bigger than its whole normal host,
-// and the release raises a division only with twice its men in the levy: on the generated continent (v2) realms shrink
+// and the release raises a division only with twice its men on the roll: on the generated continent (v2) realms shrink
 // fast, and one in eight AI realm-years had no army at all, at peace, with gold in the treasury (POL-21 at seed 606:
 // two counties, a host of 1,700, divisions of 7,350; CI run 88). Each year before the release's recruiting, an AI crown
 // cuts its templates to brigades by the release's own rule, and gives them back their full battalions once its host

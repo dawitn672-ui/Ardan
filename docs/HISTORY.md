@@ -1605,3 +1605,143 @@ After `fa1e665` (ci-2599 merged; long run 14 green) the quick tier failed three 
   (`tap-probe.mjs`) and `tapTargets44` now visit the skills sheet and a person met, and the S1b exception is dropped.
   Tests (merged build, `--workers=2`): the 10 core tests and 16 feature tests (profile, audio, tap, scene card, folds, title,
   endings, mods) 26 of 26 pass.
+
+### H-075 · 2026-11-16 · W1-3: commands and the summons
+- **Asked:** war.md §16's W1-3 (D-064 points 2, 4, 5 and 6; order 54 answers 10 and 5): every armed man in one command
+  with one owner (the crown's, or a tenant-in-chief's under officers he names, sworn to him); the king commands several
+  hosts in person, by a commission or through a council of war, for reasons; the summons' six answers from named reasons
+  with the reason given and the true one; a lord's men a season at his own cost; a refusal's grievance and the king's
+  sentence; a march lord unsummoned; hooks for the four disputes and the refused summons' ladder built; the player by
+  rank; old saves mapped; lint-reasons below 66.
+- **Built:** new `src/war/9999951-commands` (`A.CMD`; `a-commands.core.js` the reading: tenants-in-chief, commands,
+  `d.own`, the dealing of hosts, a command's General, `armyBy`, `kindOf`, the disputes' hooks, march lords, grievances,
+  the audit; `b-summons.core.js` the decisions: the summons, contingents kept whole, the king's command, the crown's
+  General for a new army, a league member's call, the sentence and the lord's answer, the seasons, the border, the month;
+  `c-player.core.js` the player: cm_summons and cm_sentence's effects, `pcJudge`, the quiet, `ridesWith`, `chiefOf`, the
+  news by rank, `UI.musterCard`; `cm.events.js`; README). Decisions D-081 to D-085.
+- **Release files edited:** `10-companies-and-war-staff-b.js` (`A.wsRaise` calls `A.CMD.onRaise`; `wsMobilizeNow` passes
+  held hosts by; `A.wsGeneralFor` decides through `A.CMD.generalChoice`), `11-armies-divisions-and-council-b.js` (the
+  yearly summons skips a lord already summoned), `12-nobility-and-politics.js` (`ignoreSummons` judged by
+  `A.CMD.pcJudge`), `14-bonds-and-favours.js` (`A.makeSuperior`, `A.needsNewSuperior`: a General in a great lord's host
+  answers to the lord; officers "of <house>'s host"), `17-careers-and-event-engine-a.js` (`A.callExtra` through
+  `A.CMD.leagueJoins`), `23-ui-e.js` (the War tab adds the muster roll). **Features edited:** 38-orders (`G.of`: the king's
+  temper, a council's none; `G.every` + 1 for a council), 9999905-five-ranks (`A.HOSTS.army` reads `a.cmdBy`;
+  `A.HOSTS.leader` gives a great lord's first host to him or his named General; its tests `w1GeneralsFollowHosts`, which
+  allows a council the king chose with `a.gen` kept, and `w1SeniorGeneral`, which counts the commission's posts and not a
+  shire office won meanwhile), 9996-polity (`POL.musterCall` is not called on `warStart` when the commands are built;
+  `poPure` reads the first of four seeds whose lord lives her first year), 99997-v2-war (`W.side` knows a lord who rides
+  with his men; `v2wNoSpectate` seed 7312, because 7311's life enlists in its second month in W1-3's world),
+  01-stages (the `commands` stage of `A.applyFx`).
+- **Routed through `A.WHY`:** the summons (kind `summons`), the king's command (`command`), the crown's General for a new
+  army (`general`, was `A.chance(0.7)` and `A.pick`), the sentence (`sentence`; the release's ignored summons was
+  `A.chance(0.25)`), the lord's answer (`answer`), the crown's pay and the lord's stay (`pay`, `season`), the border
+  (`border`), a league member's call (`war`, was `A.chance(0.4)`). `tools/lint-reasons.mjs` 66 -> 63 (baseline written).
+  Left: `src/core/engine/game.js:85` (the v2 kit's own call to serve; a v2 module, rebundled by `build-v2`) and
+  `A.startWar`'s two ally rolls, found dead while `A.callToArms` exists (W1-5).
+- **Measured:** the summons in a test world (`cmSummonsRange`, 3 seeds, lords' opinions spread 15 to 75, 9 wars): 263
+  lords answered: full 134, deputy 37, part 36, late 26, refuse 17, coin 13; each with its reasons; of 129 who did not
+  come in full, 129 gave a reason and 48 had another underneath. The lab (`cmHatredRefuses`, 8 border lords, 240
+  summonses each way): hating the king (opinion 8) full 42, part 48, late 47, deputy 8, coin 52, refuse 43; loving him
+  (80) full 240; a grievance and a hostile neighbour: part or nothing 191 of 240 (§9.5 wants 7 in 10); neither: full 224
+  of 240 (9 in 10). The sentences (`cmRefusalLadder`, 147 refusals of 1 to 4): fine 75, hostages 42, forsworn 19, accept
+  9, strip 2, 3 beyond the crown's strength; the lords submit 65, sulk 68, league 2. In a natural 12-year world (seed 11):
+  168 answers, 14 musters; 130 seasons served, 57 paid, 38 lords took their men home; most armies commissioned, the king
+  in person in 2 of 17.
+- **Cost** (seed 7, 15 years, in-page wall time on a machine at a load of 11 to 16, about 3 to 4 times CI's): `CM.month`
+  0.6 ms a month; the summons 18 ms at each war's start (14 in 15 years, 1.8 ms a month averaged), the king's command and
+  contingents at a raise 7 ms (0.46 ms a month averaged), the crown's choice of a General 0.33 ms a month; nothing in a
+  loop over all people or houses. The muster store about 150 bytes an entry after trimming (36 KB for 14 musters before
+  it), at most 12 to 24 musters; records in `A.S.why` stay within W1-2's caps.
+- **Tests:** new `cmEveryManOneCommand` (131 readings over 15 years: 0 command faults, 0 one-holder faults; 231 hosts in
+  32 realms' 299 commands, 60 in great lords' and 171 in the crowns'), `cmSummonsRange`, `cmHatredRefuses`,
+  `cmContingentWhole` (6 contingents in the field, 0 split), `cmThreeWays` (in person, a commission and a council of war,
+  each for its reasons; the council a day slower), `cmRefusalLadder`, `cmPlayerSummons` (all six answers at 375 by 667,
+  a battle for full and part, the shield money paid, the refusal judged; the War tab's roll shown; another realm's
+  peasant sees none), `cmDeterministic`, `cmOldSave` (alpha.9-marshal and alpha.1-noble: 219 and 227 hosts, 78 and 82
+  dealt to great lords, 0 faults, plays on). With the touched features' and the determinism tests (`war*`, `posts*`,
+  `w1*`, `why*`, `v2w*`, `cs*` but `csWorlds`, `po*`, `renderRng`, `replayWithRender`, `journalReplay`, `savesStillLoad`):
+  73 tests, all passing on the last code (runs: 66 of 69 on the first build; then 36 of 37 and 43 of 44 on the merged
+  build; each failure is named above with its fix and passed when re-run). `node --test tests/v2/*.test.js` 97/97; lint-stages, lint-kin ok; lint-events (commands) 0 errors,
+  one warning (cm_summons has six choices, D-082 point 6); lint-choices 0 obviously best; `--check-tiers` ok;
+  `coherency --quick` (8 lives, 12 years): no contradiction; `long-life-audit --seed=7 --years=30`: 0 errors, audit
+  empty, 0 months with a broken post rule. Not run here: `csWorlds` and the long tier, the balance league (CI's).
+- **After merging S1b** (`eb3eac7`, skills with levels): the 18 most exposed tests re-run (cm*, w1GeneralsFollowHosts,
+  w1SeniorGeneral, w1OldSaveMarshal, whyFactionsAndGenerals, postsSeniorGeneralFill, poPure, poMusterAsBefore,
+  v2wNoSpectate, renderRng) pass; the summons' spread in that world: 261 lords, full 138, part 38, deputy 31, late 26,
+  coin 21, refuse 7, with a true reason under the excuse for 39 of 123 (the test asks a quarter: many excuses are true).
+- **Undo:** revert branch `w1-3`'s commits (base `7716f05`, merged with `bfb9082` and `eb3eac7`); the release's old lines are in
+  `7716f05`'s copies of the six release files above.
+
+### H-076 · 2026-11-16 · W1-4: no levies
+Order 54, answer 5 ("remove levies: there is conscription when it is needed, but armies are built on honour and those who
+choose that path"); `docs/design/war.md` §10 and §16; D-064 points 7 and 8; decisions D-086 to D-090. Branch `w1-4`, on
+`w1-3`, merged with `origin/v2-integration` (guard-famine). New feature `src/war/9999952-men` (README).
+- **Retired** (`a81d8cc`, behaviour-neutral, identity-probe over 9 fixed-seed lives of 10 years: same random stream and
+  journal lengths, only names differ): the levy as a field, a law, a troop, an event id and a word, in 130 files (the
+  release's core and content, its lore, 40 features, the v2 engine and its tests). The release's emergency call-out
+  (`A.emergencyLevy`) and the levy law's multiplier went to `archive/w1-4-levies/` (`52fde2b`). `w4NoLevyLint` reads 604
+  files: none carries the word but the old-save converter.
+- **Built** (`52fde2b`, `eed74b8`): `A.MEN` (sworn, enlisted and the roll, conscripts; `A.MEN.reserve` where the release
+  weighed a realm by its pool), `A.CALLS` (the need, the crown's decision, three calls by lot, each lord's answer, conscript
+  foot in his contingent after drill, hands from the fields through 45-economy, the term's end, the grievance),
+  `A.LEDGER` (holds and pulls, desertion without dice, mutiny's three parts and the commander's answer), the player's
+  `mn_lot`, `mn_proclaim`, `mn_release` and the War tab's `UI.menCard`; small realms raise a regiment from half its men
+  on the roll. Decisions through `A.WHY`: `conscript`, `raise`, `release`, `mutiny` (new, none bare); the v2 kit's
+  muster call routed (lint-reasons 63 → 62).
+- **Army sizes** (seed 7, every realm, men under arms per thousand people at years 0, 10, 20): before 11.76 / 11.84 /
+  11.72; after (the final build) 11.76 / 13.22 / 12.22 (and 11.83 at 30). The roll 10 per thousand at the start (the pool
+  was 49) and 6.9 to 7.5 later. Sworn about 2.5 per thousand (D-064's 1 in 400). `riGoldGetsUsed` (3 worlds × 30 years): army against
+  normal p10/50/90 0.65 / 1.01 / 1.23 (it fell to 0 at p10 before small realms could raise a regiment from half its men).
+- **A test world** (seed 7, the bot's life, 30 years, the final build): 13 calls kept (the store keeps the open and the
+  last 12 ended), their needs `few` 8, `home` 5; degrees 9 first, 3 second, 1 last; 402,406 men taken, 140,644 did not
+  come back, 1 held past its term; ended at peace 8, with a bounty 3, released 2; the lords answered full 103, half 25,
+  late 1; grievances 0.9 to 9.6. Deserters over the 30 years: 95,947 conscripts and 372 enlisted men; 5 companies left
+  in a body and 48 were let go home when their captain gave way; every mutiny record names its three parts (e.g. "The
+  harvest at home; the voice of old Brandt; the harvest month") and every desertion record two pulls.
+- **Cost** (in-page wall time under a load of 9 to 15 on 4 cores): `A.CALLS.month` 0.63 ms and `A.LEDGER.tick` 0.40 ms a
+  month on average over 361 months; nothing loops over people or houses. State: `A.S.calls` 18 KB (13 calls with their provinces),
+  the desertion and mutiny logs about 5 KB each (forty entries).
+- **Old saves:** all 13 sample saves load (`w4OldSaves`): no old field left, the roll within its cap; 6 were at war with
+  levy hosts in the field (32 divisions kept as conscripts of a call for that war), 12 sent such men home at peace.
+- **Tests:** new `w4NoLevyLint`, `w4ThreeKinds`, `w4CallsAndFields`, `w4Desertion`, `w4MutinyThree`, `w4OldSaves`,
+  `w4Player`, `w4Deterministic`: all pass. The touched features' and the asked suites (war, `cm*`, `w1*`, `why*`, `v2w*`,
+  economy and markets, `posts*`, `po*`, `ri*`, 72's, 47's, 99993's, 59's, the next year's, 99999-v2-content's,
+  `savesStillLoad`, `renderRng`, `replayWithRender`; 223 tests of the quick tier, `--workers=2`): 217 pass. Found and
+  fixed on the way: `riGoldGetsUsed` (small realms could not raise a regiment from the smaller roll: army against
+  normal p10 0), `cmPlayerSummons`, `poMusterRung`, `poMusterAsBefore` (a lord's oath read the roll instead of his
+  rung's men), `savesStillLoad` (an old save's polity bill on the old law), `v2svOldCycle2` (a second load must change
+  nothing), `v2sNoBareNumbers` (its own regex for the worth's unit). The other 6 (`pfFits`, `v2svRoundTrip`,
+  `ttCov2War`, `v2sSheet`, `v2cWarRoomNumbers`, `ttMarkNoCell`) fail the same way on W1-3's build (`26e0068`): S1b's,
+  in flight on v2-integration. Long tests (`twoScalesMovesFront`, `twoScalesOtherLives`, `realLivesMeetCustoms`,
+  `w1NoMarshalWorld`, `worldArcsInBotLives`) are left to CI.
+- **Checks:** `node --test tests/v2/*.test.js` 108/108; lint-stages ok (349 names defined more than once, baseline lowered
+  from 351); lint-events (men) 0 errors, 0 warnings; lint-choices (men) 0 obviously best; lint-kin ok; lint-skills ok;
+  lint-reasons 62; `coherency --quick` (8 lives, 12 years): no contradiction; `long-life-audit --seed=7 --years=30`:
+  0 errors, the audit empty, 0 months with a broken post rule. Not run here: the long tier and the balance league (CI's).
+- **Release files edited:** `core/02-game-data-a.js`, `03-engine-base.js`, `04-realms-and-war-years-a.js`, `07-duels.js`, `09-missions-and-line-battles.js`,
+  `10-companies-and-war-staff-a.js`, `10-companies-and-war-staff-b.js`, `11-armies-divisions-and-council-a.js`,
+  `11-armies-divisions-and-council-b.js`, `12-nobility-and-politics.js`, `13-factions-and-decisions.js`,
+  `18-event-view-a.js`, `18-event-view-b.js`, `23-ui-a.js`, `23-ui-c.js`, `23-ui-d.js`, `23-ui-e.js`, `00-lore.json`; `content/` 03, 04, 05, 06,
+  08, 09, 10, 11, 12, 13, 14, 15, 19, 20, 22, 28, 29, 30; `lore/` 02 to 05. (`10-companies-*` and `11-armies-*` are also
+  d9-map's: a merge, not a conflict.)
+- **Undo:** revert `w1-4`'s commits (base `26e0068`, W1-3's rebuild); the levy's code is in `archive/w1-4-levies/` and in
+  `26e0068`.
+- **Addendum, 2026-11-18: merged with `origin/v2-integration` at `65eb7ba`** (v2.1.0-alpha.10, I1-2, R2, D9, S1b's fixes,
+  the speed fix, the market hash, CI fixes). Conflicts only in `CHANGELOG.md` (both kept: W1-3 and W1-4 in Unreleased with
+  the iPhone entry, then alpha.10), `docs/HISTORY.md` (both kept: the CI addenda and H-077 to H-080 before H-075/H-076)
+  and `index.html` (rebuilt). D9's edits to `10-companies-and-war-staff-b.js` and `11-armies-divisions-and-council-a.js`
+  (supply and marches by road, river crossings) merged beside W1-4's without overlap; the ledger's hunger reads the war
+  map's supply ratio, which D9's roads now shape. `A.WHY.courtW` (the court's multipliers as log-odds) is W1-2's war
+  council's and is not used by W1-4's decisions. No new use of the old word came in (`w4NoLevyLint`).
+  Two faults the merged world met, fixed:
+  - **`coherencyBaseline`** rose by one ("one ruler per realm": seed 7103, Tessaria in 1117, its ruler dead). Livia
+    Tessaran ruled Tessaria and was made ruler of Prince Andros's Tessaria as its heir; `A.makeRuler` set her to the new
+    crown but left the old realm pointing at her, so when she died there, Tessaria kept a dead ruler. **Fix**
+    (`03-engine-base.js`, `A.makeRuler`): a ruler crowned in a second realm leaves his first throne to its heir (else
+    the old ruler's line, else a new noble), with a line of news. One holder per post.
+  - **`riGoldGetsUsed`** found one hoarding flag (seed 606, Hrimfell in 1116: a treasury of 38,269 on an income of 1,095).
+    W1-3's fine for a refused summons was a count's full strength × 9 (36,000), whatever the realm had left.
+    **Fix** (`9999951-commands/b-summons.core.js`, `A.CMD.collect`): a fine or shield money is the sum the law sets, but
+    no more than a year of the house's rents nor twice the crown's yearly income.
+  Tests on the merged build (`--workers=2`): the core suites with the men, commands, five-ranks and why features (47: every `w4*`, `cm*`, quick `w1*` and `why*` test, `coherencyBaseline`, `savesStillLoad`), then `renderRng`, `replayWithRender`, `poMusterRung`, `poMusterAsBefore`, `riGoldGetsUsed`, `riCourtInTheWorld`, `v2svOldCycle2`: 54 of 54 pass. `lint-reasons` 62, `lint-stages` ok, `--check-tiers` ok (60 long of 896), lint-events and lint-choices (men) clean, `node --test tests/v2` 118/118. Tap targets: `docs/research/ios/tap-probe.mjs` 0 of 450 controls under 44 points;
+  W1-4's own views at 375 by 667 (the lot, the proclamation, the release, the War tab's card): 0 under 44.

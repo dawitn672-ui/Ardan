@@ -3475,9 +3475,9 @@
             lose: {r:"Foragers take half your herd and pay in promises.",fx:{coin:-8,wil:1}},
           },
           {
-            t: "Hide your sons and brothers from the levy",
+            t: "Hide your sons and brothers from the muster",
             check: {s:"stealth",s2:"int",d:34},
-            win: {r:"The levy-men count empty huts. Your family stays whole this season.",fx:{happy:3,honor:-1}},
+            win: {r:"The muster-men count empty huts. Your family stays whole this season.",fx:{happy:3,honor:-1}},
             lose: {r:"They are found. Your family pays a fine and they march anyway.",fx:{coin:-10,happy:-5}},
           },
           {

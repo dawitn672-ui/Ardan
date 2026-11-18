@@ -32,7 +32,7 @@
       law: /\b(laws?|judge[sd]?|court|trial|crimes?|thief|thieves|theft|steal|stole|stolen|punish\w*|flog\w*|hang(ed|s)?|guilty|witness\w*|accus\w*|reeve|magistrate|sentence|quarrel\w*|dispute|claims?)\b/g,
       oath: /\b(oaths?|swears?|sworn|swore|vows?|promis\w*|pledge\w*)\b/g,
       death: /\b(dead|death|dies|died|dying|graves?|funeral|buried|burial|bury|mourn\w*|corpse|tomb|widow\w*|killed|kills?)\b/g,
-      war: /\b(wars?|army|armies|battle\w*|siege|levy|soldiers?|raid\w*|swords?|spears?|enemy|enemies|muster|fight\w*)\b/g,
+      war: /\b(wars?|army|armies|battle\w*|siege|conscripts?|soldiers?|raid\w*|swords?|spears?|enemy|enemies|muster|fight\w*)\b/g,
       kin: /\b(marr(y|ies|ied|iage)|wedding|bride|groom|husband|wife|child(ren)?|sons?|daughters?|mother|father|birth|born|baby|brothers?|sisters?|family|kin|names?|named|grand(mother|father)|heirs?)\b/g,
       faith: /\b(temples?|priests?|gods?|prayers?|pray\w*|shrines?|holy|faith|monks?|monaster\w*|church|sacred|bless\w*|shamans?)\b/g,
       land: /\b(fields?|harvest|crops?|plough\w*|flood\w*|rain|herds?|cattle|horses?|camels?|sheep|goats?|wells?|water|river|trees?|forest|grass|terraces?|rice|wheat|rye|farm\w*)\b/g,

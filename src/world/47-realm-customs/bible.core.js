@@ -12,7 +12,7 @@
 //   wed    when you marry: the dowry is multiplied (0 none, -1 a bride price paid)   dowry
 //   mourn  when a parent dies: who takes the estate                                  share
 //   name   when a child of yours is born: how it is named                            by
-//   levy   when your realm goes to war                                               who
+//   muster   when your realm goes to war                                               who
 //   law    after you are punished for a crime
 //   ward   a standing rule, met when your life fits it (armed, mounted, rich ...)    when, every
 //   market when you sell goods: a cut of the proceeds                                cut
@@ -23,7 +23,7 @@
 // Engine side: the month hook and wrappers of A.marry, A.kill, A.birth, A.punish and A.sellGood. Rendering only reads.
 (function () {
   const B = A.BIBLE = {
-    KINDS: ['year', 'rite', 'wed', 'mourn', 'name', 'levy', 'law', 'ward', 'market', 'grave'],
+    KINDS: ['year', 'rite', 'wed', 'mourn', 'name', 'call', 'law', 'ward', 'market', 'grave'],
     // a parent's estate, by status rank (slave .. royal): what the release never paid out while you lived
     ESTATE: [0, 4, 15, 60, 250, 500, 1500, 5000],
     WARD_EVERY: 3,      // years between two meetings with a standing rule
@@ -54,13 +54,13 @@
     married: pc => !!pc.spouse,
     parent: pc => (pc.children || []).length > 0,
   };
-  // the commons: free, not a noble, not a lord, not on a throne. Dues and levies are theirs (cycle 2, design A6: the
+  // the commons: free, not a noble, not a lord, not on a throne. Dues and calls to arms are theirs (cycle 2, design A6: the
   // Emperor of Aldmark heard the reeve knock for the hearth mark, because "free" counted nobles and rulers)
   B.WHO.commons = pc => A.isAdult(pc) && !unfree(pc) && !pc.ruler && rank(pc) < 5 && !(pc.noble && pc.noble.rung >= 2) && !pc.office;
-  B.DUE_RX = /tithe|tax|toll|penny|mark|tenth|tribute|levy|loan|receipt|days for|fiftieth|a man or|remount|grain to|month|count/i;
+  B.DUE_RX = /tithe|tax|toll|penny|mark|tenth|tribute|muster|due of men|loan|receipt|days for|fiftieth|a man or|remount|grain to|month|count/i;
   B.NOT_DUE_RX = /scutage|forty days or|whose host|dark weeks/i;
-  // a custom of dues (a year's due or a war's levy, read from its name) asks the commons, whatever its own audience
-  B.isDue = c => !!c && (c.who === 'commons' || ((c.kind === 'year' || c.kind === 'levy') && B.DUE_RX.test(c.name || '') && !B.NOT_DUE_RX.test(c.name || '')));
+  // a custom of dues (a year's due or a war's muster, read from its name) asks the commons, whatever its own audience
+  B.isDue = c => !!c && (c.who === 'commons' || ((c.kind === 'year' || c.kind === 'call') && B.DUE_RX.test(c.name || '') && !B.NOT_DUE_RX.test(c.name || '')));
   const who0 = (pc, w) => (B.WHO[w || 'adult'] || B.WHO.adult)(pc);
   const who = (pc, w, c) => who0(pc, w) && (!B.isDue(c) || B.WHO.commons(pc));
   B.whoFor = (pc, c) => !!c && who(pc, c.who, c);
@@ -150,7 +150,7 @@
       } else if (c.kind === 'ward') {
         const f = B.WHEN[c.when] || B.WHEN.any;
         if ((!h || S.year - h.y >= (c.every || B.WARD_EVERY)) && A.isAdult(pc) && f(pc)) B.hit(pc, c);
-      } else if (c.kind === 'levy') {
+      } else if (c.kind === 'call') {
         // once for each war: the war's start year is its mark
         const w = war[0], key = w ? (w.id || w.name || '') + '|' + (w.start || w.y || '') : null;
         if (w && who(pc, c.who, c) && !pc.mil && (!h || h.war !== key)) { B.hit(pc, c); pc.rb[c.id].war = key; }

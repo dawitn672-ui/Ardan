@@ -5,6 +5,46 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **No more levies.** A realm's armies are its sworn men (knights, men-at-arms, a lord's retinue, about one in four
+  hundred of the people), the regiments its treasury pays, and the roll: volunteers, about one in a hundred, who drill
+  some days a year and march when mustered. Nobody is taken by a yearly tax of men.
+- **Conscription, only when it is needed.** A crown at war may proclaim a call by lot, and only for a need it can name:
+  the enemy on its own soil, a stronghold besieged, a host lost, fewer spears than the enemy. One hearth in twenty for a
+  season, one in ten for a year, one in five while the enemy stands on home soil. Each great lord raises it in his own
+  lands, in full, by half, or late, for his own reasons; the men drill a month and march as conscript foot in his
+  contingent. The fields lose their hands (twice as badly at harvest), and the parishes remember every call: a call for
+  their own doors is forgiven, one held past its term or made for a king's pride is not. The law now says how far the
+  crown may call on its own word.
+- **Men desert and companies mutiny for reasons.** Every company in the field weighs what holds it (an oath, pay on the
+  day, their own doors, a captain who wins, years together) against what pulls at it (hunger, pay owed, the harvest at
+  home, half the company dead, winter, a term served and still held). Conscripts slip away first; sworn men almost
+  never. A mutiny needs a grievance, a man the others follow, and an occasion, and the captain must answer it.
+- **If your hearth's lot is drawn,** you go, pay for a substitute, hide in the loft, or take to the roads, each with its
+  price. As a ruler you proclaim the call yourself and decide when the conscripts go home. As a soldier, the War tab
+  tells you in words how your company holds together.
+- **The great lords have their own armies.** Every soldier of a realm now serves in one command: the crown's (the
+  king's own regiments, his knights, the orders, hired men, led by Generals he commissions) or a great lord's (a duke,
+  or a marquis or count who holds straight of the crown), whose first host the lord leads himself or gives to a General
+  of his own. A lord's hosts march together in one army; nobody breaks them up.
+- **The summons.** When the crown goes to war, each great lord answers for his own reasons: he comes in full, comes with
+  part of his men, comes late, sends a son or a captain, sends shield money, or refuses. The muster roll keeps what
+  each said and, underneath, why he really did it: the harvest, a hostile neighbour on his border, his years, an old
+  grievance, a faction that wants the king weaker. A lord's men serve the first season at his own cost; after that the
+  crown pays them, or he may take them home.
+- **A refusal has consequences.** The king decides how far he dares punish a lord who would not come: he may let it
+  pass, fine him, take a son to court, take a host from him, call him forsworn before the court, or attaint him. A
+  sentence the crown is not strong enough to enforce costs it, and every lord watches. The lord submits, keeps
+  silent, or writes to the others who stayed home. A march lord who stayed home still rises when the enemy reaches
+  his own lands.
+- **How the king commands.** An army of two hosts or more is led by the king in person, by one General given it by the
+  king's written word for that war, or, when the king will name nobody, by a council of its Generals, which is slower
+  to agree and has no one will. The king chooses for reasons you can read (his skill, his trust in the man, his kin, his
+  fear of a General the soldiers love, the great lords' pride).
+- **If you are a landed lord,** you are summoned too, with all six answers and what each costs; riding with your men
+  takes you into the war, and refusing brings the crown's judgment, which you answer. A General serving in a great
+  lord's host answers to that lord. The War tab's muster roll and the news of the muster tell you what your place lets
+  you know: the crown hears the whole roll, a lord who stayed home and why, a soldier his own lord's answer and the
+  count of banners.
 ## v2.1.0-alpha.11 (2026-11-18 07:34 ET) · Ready for a phone: every button a fingertip wide, safe areas, no stray zoom or bounce, one sound engine
 
 - **Made ready for the iPhone.** The page now fills a notched screen edge to edge and keeps clear of the notch and the home bar;

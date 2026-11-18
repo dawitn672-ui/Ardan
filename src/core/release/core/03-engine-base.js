@@ -1495,7 +1495,7 @@ A.neighbors = function (rid) {
 A.realmPower = function (r) {
   return !r || !r.alive
     ? 0
-    : (r.army + r.levy * 0.3) * r.armyQ * (0.65 + r.stability / 250) * (r.treasury < 0 ? 0.8 : 1);
+    : (r.army + (A.MEN ? A.MEN.reserve(r) : r.roll) * 0.3) * r.armyQ * (0.65 + r.stability / 250) * (r.treasury < 0 ? 0.8 : 1);
 };
 
 A.atWar = function (rid) {
@@ -1604,7 +1604,7 @@ A.createRealm = function (o) {
       stability: o.stability || 50,
       legit: o.legit || 40,
       army: o.army || 500,
-      levy: o.levy || 1500,
+      roll: o.roll || 1500,
       armyQ: o.armyQ || 0.8,
       comp: o.comp || null,
       exhaustion: 0,
@@ -1719,7 +1719,7 @@ A.initWorld = function () {
         stability: A.STAB[L.stability] || 50,
         legit: 70,
         army: L.army,
-        levy: L.levy,
+        roll: L.roll,
         armyQ:
           0.9 + (L.comp ? Math.min(0.25, ((L.comp.heavyHorse + L.comp.heavyFoot) / Math.max(1, L.army)) * 0.6) : 0),
         comp: L.comp,
@@ -1803,7 +1803,7 @@ A.initWorld = function () {
         faith: "REL-02",
         color: "#c98a6a",
         army: 13e3,
-        levy: 3e4,
+        roll: 3e4,
         armyQ: 0.95,
         income: 9e4,
         stability: 40,
@@ -1838,7 +1838,7 @@ A.initWorld = function () {
       A.makeRuler(andros, "POL-31A", true);
       andros.house = tess.house;
       tess.army = 18e3;
-      tess.levy = 4e4;
+      tess.roll = 4e4;
       for (const k in S.realms)
         if (k !== "POL-31A") {
           nr.rel[k] = S.realms[k].rel["POL-31"] || 0;
@@ -1883,6 +1883,10 @@ A.makeRuler = function (p, rid, silent) {
   }
   const r = A.realm(rid);
   if (!r || !p) return;
+  // [W1-4 merge] one holder per post: a ruler crowned in a second realm (an heir of two crowns, as Tessaria's split
+  // allows) leaves his first throne to its own heir below, instead of being left on it as its ruler in name only
+  const prevR = p.ruler && p.ruler !== rid ? A.realm(p.ruler) : null,
+    leaves = prevR && prevR.alive !== false && prevR.ruler === p.id ? prevR : null;
   const old = A.P(r.ruler);
   if (old && old.ruler === rid) old.ruler = null;
   // [A2 posts] a crowned head leaves his seats, offices and divisions (he may still lead an army in person)
@@ -1902,6 +1906,14 @@ A.makeRuler = function (p, rid, silent) {
   if (!silent) r.history.push([A.S.year, A.fullName(p)]);
   if (r.heir === p.id) r.heir = null;
   A.pickHeir(r);
+  if (leaves) {
+    let nx = A.P(leaves.heir);
+    if (!nx || !nx.alive || nx.id === p.id || nx.ruler) nx = A.pickHeirFrom(leaves, p);
+    if (!nx || !nx.alive || nx.id === p.id || nx.ruler) nx = A.genNoble(leaves.id, "royal", leaves.house, A.ri(25, 50));
+    leaves.ruler = null;
+    A.makeRuler(nx, leaves.id);
+    A.news(`${A.fullName(p, false)} takes the crown of ${r.short} and leaves ${leaves.short} to ${A.rulerStyle(nx, leaves)}.`, "crown");
+  }
 };
 
 A.genNoble = function (rid, status, house, age, sex) {

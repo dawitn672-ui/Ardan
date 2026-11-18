@@ -401,28 +401,30 @@ const nobleYearNow = function (pc) {
     ru = r ? A.P(r.ruler) : null;
   if (
     (ru && ru.id !== pc.id && !pc.rel[ru.id] && A.link(pc, ru, "lord", A.ri(10, 40), "acquaint"),
-    r && A.atWar(r.id).length && n.rung >= 2 && !pc.mil && !pc.company && A.isAdult(pc))
+    r && A.atWar(r.id).length && n.rung >= 2 && !pc.mil && !pc.company && A.isAdult(pc) &&
+    // [W1-3] a lord summoned for this war (A.CMD's six answers, 9999951-commands) is not summoned twice
+    !(A.CMD && A.CMD.summonedPc && A.CMD.summonedPc(pc, A.atWar(r.id)[0])))
   ) {
     const w = A.atWar(r.id)[0],
       en = A.pick(A.warSide(w, r.id) === "att" ? w.def : w.att);
     A.queue({
       type: "choice",
       title: "The summons",
-      text: `${ru ? A.rulerStyle(ru, r) : "Your liege"} calls the levies for ${w.name}. As ${A.nobleTitle(pc)} you owe ${A.fmt(R2.levy)} ${R2.levy === 1 ? "man (yourself)" : "men"} and your own sword.`,
+      text: `${ru ? A.rulerStyle(ru, r) : "Your liege"} calls the conscripts for ${w.name}. As ${A.nobleTitle(pc)} you owe ${A.fmt(R2.men)} ${R2.men === 1 ? "man (yourself)" : "men"} and your own sword.`,
       options: [
         {
-          t: "Answer the summons and lead your levy",
-          fn: "levyBattle",
+          t: "Answer the summons and lead your muster",
+          fn: "summonsBattle",
           arg: {
             war: w.id,
             enemy: en,
-            men: Math.max(40, R2.levy),
+            men: Math.max(40, R2.men),
           },
         },
         {
           t: "Pay scutage (shield-money) instead",
           fn: "scutage",
-          arg: R2.levy,
+          arg: R2.men,
         },
         {
           t: "Ignore the summons",

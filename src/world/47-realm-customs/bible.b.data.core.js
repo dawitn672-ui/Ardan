@@ -178,12 +178,12 @@
         fx: { happy: 2 }, keepT: 'Count out the {w3} on the step', keep: 'The pelts are counted twice, once by each family, and the priest blesses them before he blesses you.',
         defy: { t: 'Pay half and promise the rest', r: 'The other family takes the half and brings up the promise at every feast for years. The priest marries you facing east all the same.', fx: { coin: 10, honor: -4 } },
         log: 'You marry, and {paid} in sable and silver goes over as the {w3}.' },
-      { id: 'vel_pelt_levy', name: 'A man or a pelt-tax', kind: 'levy', who: 'male',
+      { id: 'vel_pelt_due', name: 'A man or a pelt-tax', kind: 'call', who: 'male',
         rule: 'In war each {w1} sends a man to the king\'s host or pays the pelt-tax, and the king sends the men where he likes.',
-        text: 'The levy comes for the war. Each {w1} on the hearth-roll owes a man for the king\'s host, or the pelt-tax to hire one. The clerk says plainly that the men may never march under Velgrad\'s banner, but go to Prince Andros\'s camp in the Neck.',
+        text: 'The muster comes for the war. Each {w1} on the hearth-roll owes a man for the king\'s host, or the pelt-tax to hire one. The clerk says plainly that the men may never march under Velgrad\'s banner, but go to Prince Andros\'s camp in the Neck.',
         fx: { coin: -8 }, keepT: 'Pay the pelt-tax and stay home', keep: 'You pay in sable and rye. Somebody poorer goes to the Neck in your place.',
         defy: { t: 'Send nothing and go to the woods', r: 'You winter in a trapper\'s hut. When you come out, the clerk has written you down as a deserter from a war Velgrad says it is not fighting.', fx: { honor: -3, health: -3 } },
-        log: 'The levy comes for the war, and you pay the pelt-tax rather than go to the Neck.' },
+        log: 'The muster comes for the war, and you pay the pelt-tax rather than go to the Neck.' },
     ],
   };
 

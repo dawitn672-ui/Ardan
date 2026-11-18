@@ -201,7 +201,7 @@
     'tidy wander whittle yell bellow hail signal tally listen beckon nudge shove grip clutch hug stroke pet soothe rouse warn hush silence summon ' +
     'gossip boast brag joke jest flirt woo serenade marvel ponder pace kneel linger loiter lurk dodge duck parry block feint lunge charge withdraw ' +
     'surrender yield insist interrupt accompany escort lead obey defy rebuke chide forbid permit allow urge beg bargain barter haggle wager tip ' +
-    'reward fine tax levy muster recruit drill arm disband pay hide bury exhume unearth dig plant harvest thresh mill bake brew ferment hope pretend ' +
+    'reward fine tax muster muster recruit drill arm disband pay hide bury exhume unearth dig plant harvest thresh mill bake brew ferment hope pretend ' +
     'keep wish').split(' ').concat(Object.keys(IRR), [...DBL]));
   const pastOf = w => {
     if (IRR[w]) return IRR[w];

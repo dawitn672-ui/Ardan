@@ -151,7 +151,7 @@
         { t: 'Keep your head down and your mouth shut', r: 'There is no mutiny, and no wine. You arrive.', fx: { happy: -3 } },
       ] },
     { id: 'lfx_du_ct_child_petition', duty: ['courtier', 'scribe', 'steward'], trigger: true, lfOnce: true, title: 'A petition in a child\'s hand',
-      text: 'Among the petitions is one in a child\'s hand. Her father was taken for the levy, and her mother cannot work the strip alone. It is spelled badly and it is true. It is not your place to send it up.',
+      text: 'Among the petitions is one in a child\'s hand. Her father was taken by the lot, and her mother cannot work the strip alone. It is spelled badly and it is true. It is not your place to send it up.',
       choices: [
         { t: 'Send it up anyway, with a note of your own', check: { s: 'etiquette', s2: 'persuasion', d: 44 },
           win: { r: 'The steward reads it and signs a release. You never learn her name.', fx: { honor: 3, merit: 2 } },

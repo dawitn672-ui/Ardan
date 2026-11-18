@@ -64,7 +64,7 @@
     const lv = Math.round(Math.min(2500, Math.max(200, (q.pop || 20000) * 0.012)) * (rank === 'duke' ? 2.5 : rank === 'marquis' ? 1.6 : 1));
     S.houses[id] = {
       id, name: `House ${sur.replace(/^(of |the )/, '')}`, sur, realm: rid, kind: 'noble', status: 'noble', rung: CODE[rank],
-      title: N.title(rank, 'M'), seat: q.name, seatId: q.pid, great: true, extinct: false, op: 50, levy: lv,
+      title: N.title(rank, 'M'), seat: q.name, seatId: q.pid, great: true, extinct: false, op: 50, men: lv,
       people: Math.round((q.pop || 20000) * 0.25), since: String(S.year - rng.int(30, 260)),
       colors: [c1, rng.pick(palette.filter(x => x !== c1))], charge: rng.pick(charges), words: '', arms: '',
       notes: `Raised to hold ${q.name}.`, members: [], v2court: rid,

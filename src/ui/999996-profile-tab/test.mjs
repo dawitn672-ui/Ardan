@@ -105,7 +105,7 @@ export default {
         UI.PF.forceOpen = false; out.push({ who: o.status, n: c.n, covered: c.covered, miss: c.miss.concat(d.miss), pct: c.pct + d.pct, hover: document.querySelectorAll('.pf [onmouseover],.pf [onmouseenter]').length, title: document.querySelectorAll('.pf [title]').length }); }
       return out; })()`);
     // n >= 2: W1-1's crown names a senior General with the game's dice, so seed 4104's orc girl of 15 now reads two
-    // measured numbers ("less than one levy" in a fight), not three; every number she shows still explains itself
+    // measured numbers ("less than one conscript" in a fight), not three; every number she shows still explains itself
     const ok = r.every(x => x.miss.length === 0 && x.pct === 0 && x.hover === 0 && x.n >= 2);
     return { ok, detail: r.map(x => `${x.who}: ${x.covered} of ${x.n} numbers carry a description${x.miss.length ? ', missing ' + x.miss.slice(0, 4).join(' | ') : ''}; percentages ${x.pct}`).join('; ') };
   },

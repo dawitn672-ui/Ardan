@@ -385,7 +385,7 @@ FL.css = '.fl-measure{display:block;font-size:.82em;opacity:.8;margin-top:2px;fo
 FL.style = () => { if (typeof document === 'undefined' || document.getElementById('fl-style')) return; const s = document.createElement('style'); s.id = 'fl-style'; s.textContent = FL.css; document.head.appendChild(s); };
 FL.v2 = () => !!A.V2S;
 FL.digits = () => (A.DIFF && A.DIFF.showOdds ? A.DIFF.showOdds() : true);
-// v2 (99993-v2-stats) shows no worth number (the owner's rule: no 0-100 number the player sees), and its levies are
+// v2 (99993-v2-stats) shows no worth number (the owner's rule: no 0-100 number the player sees), and its conscripts are
 // its own scale, read from the body, which a worth cannot be turned into; so beside a worth's tier there is nothing
 FL.duelBox = function (D) {
   const m = D.measure; if (!m) return '';
@@ -467,7 +467,7 @@ if (typeof profileModal === 'function') UI.profileModal = function (pc) {
     // its own block just above the wounds (49-body-mind redraws the wounds block itself, and keeps what comes before it)
     const P = pc && pc.st ? pc : A.pc(), rows = FL.woundCosts(P), at = h.indexOf('<div class="group-h">Wounds & scars</div>');
     if (rows.length && at >= 0) {
-      // with v2 (99993-v2-stats) the player reads words: the tiers and the levies, and which stats a wound takes, not
+      // with v2 (99993-v2-stats) the player reads words: the tiers and the conscripts, and which stats a wound takes, not
       // "worth 31 to 8 (strength -10)" (the owner's rule: no 0-100 number the player sees)
       const v2 = FL.v2();
       const cost = r => (r.before === r.after ? 'no cost to your fighting worth' : !v2 ? (r.tb === r.ta ? `worth ${r.before} to ${r.after}` : `${r.tb} ${r.before} to ${r.ta} ${r.after}`)

@@ -2755,7 +2755,7 @@
         id: "wk_gen_tax",
         cond: (p,C)=>C.adult(p)&&com(p)&&free(p),
         title: "The tax-collector",
-        text: p=>`The ${A.pick(["tax-farmer","royal collector","reeve","count's receiver"])} comes down the street with two spearmen and a book. ${A.cap(A.pick(["the hearth tax","the war levy","a new tax on salt","the head tax"]))} is due — for ${A.realmShort(p.realm)}, he says, and for the ruler.`,
+        text: p=>`The ${A.pick(["tax-farmer","royal collector","reeve","count's receiver"])} comes down the street with two spearmen and a book. ${A.cap(A.pick(["the hearth tax","the war tax","a new tax on salt","the head tax"]))} is due — for ${A.realmShort(p.realm)}, he says, and for the ruler.`,
         choices: [
           {t:"Pay what he asks",r:"You pay. The realm goes on.",fx:{coinPct:-.1}},
           {

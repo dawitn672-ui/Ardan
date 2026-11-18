@@ -13,6 +13,10 @@ with file and line. Line numbers below are as of the W1-2 merge with `v2-integra
 | A wrong lights a feeling, a hot one calls the council | `src/people/9999950-why/why.core.js` `W.wrong` (the release's incidents), `warEnd` (shame) | the incident itself, as the cause |
 | A great house joins, stays in or leaves a faction | `src/core/release/core/13-factions-and-decisions.js` `A.factionsYear`, `W.factionChoice` | grievance (opinion), the faction's own want, houses already sworn, the throne's firmness, old loyalties, his word given |
 | The crown names its first host's General | `src/nobility/999990-posts/posts.core.js` `P.fillGenerals`, `W.appointGeneral` | merit (command, renown, grade), kin of the king's house, a wary king's fear of a famous man |
+| **W1-3:** the crown's General for a new army | `10-companies-and-war-staff-b.js` `A.wsGeneralFor`, `A.CMD.generalChoice` | a great name, merit, the king's kin, the house's loyalty, a house of the sword, a lord who leads his own command; against raising a man of no house |
+| **W1-3:** the crown's judgment on an ignored summons | `12-nobility-and-politics.js` `ignoreSummons`, `A.CMD.pcJudge` / `A.CMD.sentence` | the law and refusals before, the king's anger and pride, a true excuse, the crown's strength against the lord's |
+| **W1-3:** a league member joins a war on a conqueror | `17-careers-and-event-engine-a.js` `A.callExtra`, `A.CMD.leagueJoins` | the league's oath, the conqueror's infamy; against the cost and the realm's weariness |
+| **W1-3 (new):** the summons, the king's command, the seasons, the lord's answer, the border | `src/war/9999951-commands` | see its README |
 
 ## What is left, by kind, and the reasons each should use
 
@@ -25,8 +29,7 @@ their cracks; the ten quarrels; the four causal chains) is the catalogue for the
 
 | Where | What it decides | Reasons it should use |
 |---|---|---|
-| `03-engine-base.js:2161`, `:2171` `A.startWar` | an ally joins the defence (0.55) or the attack (0.3) | the pact sworn (duty, honour), the ally's opinion of each side, its own wars and weariness, its strength beside the enemy's, a debt (68), a grudge (55). 20's `A.aiAnswerCall` already holds most: route it |
-| `17-careers-and-event-engine-a.js:1574` `A.callExtra` | a league member joins a war against a conqueror (0.4) | the league's oath, fear of the conqueror (infamy, nearness), its own wars |
+| `03-engine-base.js:2161`, `:2171` `A.startWar` | an ally joins the defence (0.55) or the attack (0.3) | the pact sworn (duty, honour), the ally's opinion of each side, its own wars and weariness, its strength beside the enemy's, a debt (68), a grudge (55). 20's `A.aiAnswerCall` already holds most: route it. *W1-3 found this branch dead: it runs only when `A.callToArms` is missing, and `callToArmsNow` answers every call; W1-5 may retire it* |
 | `04-realms-and-war-years-a.js:564`, `:569` `A.successionWar` | a meddling neighbour backs a claimant (0.35), a friend backs the crown (0.4) | the claimant's blood and backers, the neighbour's want or grudge, marriage ties, opinion |
 | `04-realms-and-war-years-a.js:297`, `:384` `A.settleWar` | a rebel claimant takes the throne (0.65), a crushed realm is annexed (0.7) | the victor's appetite (68), the land's people and faith, infamy |
 | `11-armies-divisions-and-council-b.js:173` `A.rulerAction` | an AI ruler accepts peace (0.25 + score) | W1-5's surrender: the two pans read monthly on what he has been told |
@@ -69,14 +72,12 @@ their cracks; the ten quarrels; the four causal chains) is the catalogue for the
 
 | Where | What it decides | Reasons it should use |
 |---|---|---|
-| `10-companies-and-war-staff-b.js:1115` `A.wsGeneralFor` | a General raised from a great house (0.7) or made | the house's standing, kin of the king, merit |
 | `src/nobility/56-court-and-treasury/court.core.js:404` `RI.fillCouncil` | a new ruler replaces a councillor (0.35) | his favourites, the councillor's record and loyalty |
 | `src/nobility/9996-polity/a-polity.core.js:482` `fillOfficesOf` | a reeve keeps his office (0.6) | his record, the lord's favour, a better man at hand |
 | `17-careers-and-event-engine-a.js:580` `A.seatOffers`, `:664`, `:696` `A.councilMonth`, `12-nobility-and-politics.js:190` `A.nobleAction` | the crown offers the player a seat, keeps or dismisses him | the king's opinion of him (R2's base), his skill, renown, a rival's word |
 | `17-careers-and-event-engine-a.js:986` `A.councilPropose` | a proposal at council passes | the councillors' stances (56's tally) |
-| `12-nobility-and-politics.js:76` `ignoreSummons` | the crown punishes a summons ignored (0.25) | W1-3's summons: the lord's reason given and the true one, the king's temper |
 | `17-careers-and-event-engine-a.js:2230` `A.justifyMonth` | a forged claim is found out | the spymasters' skills on both sides |
-| `src/core/engine/game.js:85` `nextMonth` | v2 kit's call to serve | W1-3's muster |
+| ~~`src/core/engine/game.js:85` `nextMonth`~~ | v2 kit's call to serve | **Routed in W1-4**: the why engine's `decide` (the war needs men, against the standing men being enough), the same pace |
 | `src/nobility/999993-crown-crimes` (P3) | sentences and forgiveness (dice within named reasons) | already named: route `CC.forgiveOdds` and the sentence through `A.WHY.decide` with the ruler as decider (his temper and feelings at the criminal), the first users after W1-2 |
 
 ### Not decisions (heuristic hits), for the lint's next pass

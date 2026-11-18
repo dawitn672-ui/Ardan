@@ -72,6 +72,8 @@
   G.of = function (a) {
     if (!a) return 'steady';
     if (a.gtForce && G.DIALS[a.gtForce]) return a.gtForce;   // for tests
+    // W1-3: the king in person decides the army's moves (his temper); a council of war has no one temper
+    if (A.CMD && A.CMD.armyBy) { const by = A.CMD.armyBy(a); if (by === 'king') { const k = A.P(a.king); return k && k.id !== A.S.pc ? G.temper(k) : 'steady'; } if (by === 'council') return 'steady'; }
     if (!a.gen || a.gen === A.S.pc) return 'steady';
     return G.temper(A.P(a.gen));
   };
@@ -79,7 +81,8 @@
   G.spear = a => G.DIALS[G.of(a)].spear;
   G.weak = a => G.DIALS[G.of(a)].weak;
   G.prep = a => G.DIALS[G.of(a)].prep;
-  G.every = a => G.DIALS[G.of(a)].every || 3;
+  // W1-3: a council of war takes a day longer to agree each joint order (A.CMD.slow)
+  G.every = a => (G.DIALS[G.of(a)].every || 3) + (A.CMD && A.CMD.slow ? A.CMD.slow(a) : 0);
   G.opens = (a, ratio) => !G.DIALS[G.of(a)].open || ratio > 1.15 * G.need(a);
   G.commit = a => G.DIALS[G.of(a)].commit || 4;
   G.fortNeed = function (a, P) {

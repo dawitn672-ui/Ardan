@@ -1283,7 +1283,7 @@ const battleStageOutcome = function (m, pc, ch, tier, mates) {
       T === "joke" &&
         ((out = t ? "The men around you laugh. The fear loosens." : "Nobody laughs."),
         t && mate && A.addOp(pc, mate, 5)),
-      T === "study" && (out = t ? "You spot it: their left is all green levies." : "You see nothing but spears."),
+      T === "study" && (out = t ? "You spot it: their left is all green conscripts." : "You see nothing but spears."),
       T === "endure" &&
         (out = t
           ? "Arrows thud into your shield. None find you."

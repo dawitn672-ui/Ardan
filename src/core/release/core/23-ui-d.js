@@ -157,21 +157,21 @@ A.wrAdvice = function (pc, R2) {
   }
   if (
     (R2.recruit &&
-      (r.levy < (r.levyCap || r.levy) * 0.15
+      (r.roll < (r.rollCap || r.roll) * 0.15
         ? out.push({
             lv: "warn",
             ic: "users",
-            t: `Manpower is running dry (${A.fmt(r.levy)} left). Heavier levies would raise more men, at a cost.`,
+            t: `Manpower is running dry (${A.fmt(r.roll)} left). A call to arms would raise more men, at a cost.`,
             a: "wrTab",
             v: "mp",
             b: "Manpower",
           })
         : war &&
           !r.forces.queue.length &&
-          r.levy > 2e4 &&
+          r.roll > 2e4 &&
           out.push({
             ic: "users",
-            t: `${A.fmt(r.levy)} men could be called up. Train new divisions in the Manpower tab.`,
+            t: `${A.fmt(r.roll)} men could be called up. Train new divisions in the Manpower tab.`,
             a: "wrTab",
             v: "mp",
             b: "Train",
@@ -201,7 +201,7 @@ UI.wrForces = function () {
   const all = r.forces.divs,
     men = all.reduce((x, d) => x + d.men, 0),
     full = all.reduce((x, d) => x + A.divS(d).men, 0);
-  let h = `<div class="card small"><div class="row"><b>The host of ${UI.esc(r.short)}</b><span class="right muted">${all.length} divisions</span></div>${UI.barRow("Men", men, Math.max(1, full), "", null, `${UI.kfmt(men)}/${UI.kfmt(full)}`)}<div class="tiny muted">Manpower pool ${A.fmt(r.levy)} · ${r.forces.queue.length} in training · army experience ${Math.floor(r.forces.xp)}</div></div>`;
+  let h = `<div class="card small"><div class="row"><b>The host of ${UI.esc(r.short)}</b><span class="right muted">${all.length} divisions</span></div>${UI.barRow("Men", men, Math.max(1, full), "", null, `${UI.kfmt(men)}/${UI.kfmt(full)}`)}<div class="tiny muted">Manpower pool ${A.fmt(r.roll)} · ${r.forces.queue.length} in training · army experience ${Math.floor(r.forces.xp)}</div></div>`;
   const row = d => {
       const rr = A.realm(d.r),
         s = A.divS(d),
@@ -341,10 +341,10 @@ UI.wrManpower = function () {
     r = A.realm(UI.wrMyR(pc));
   if (!r) return "";
   A.F(r);
-  const cap = r.levyCap || Math.max(r.levy, 1);
-  let h = `<div class="card small"><div class="row"><b>Manpower</b><span class="right muted">${UI.esc(r.short)}</span></div>${UI.barRow("Pool", r.levy, Math.max(cap, r.levy), r.levy < cap * 0.2 ? "hpbar" : "", null, `${UI.kfmt(r.levy)}/${UI.kfmt(cap)}`)}<div class="tiny muted">The pool refills each year toward what your land and levy law can give (${r.levy >= cap * 0.98 ? "it is full now" : `about +${A.fmt(Math.max(0, Math.round((cap - r.levy) * 0.2)))} next year`}). Training a division takes its men at once; refits draw on the pool all the time.</div></div>`;
-  if (A.LEVY)
-    h += `<div class="group-h">Levy law</div><div class="wr-laws">${A.LEVY.map(([n, mul, op, d], i) => `<button class="small ${r.laws.levy === i ? "on" : ""}" data-a="setLaw" data-v="levy|${i}" ${pc.ruler ? "" : "disabled"}><b>${UI.esc(n)}</b><small>${UI.esc(d)} Pool ×${mul}.</small></button>`).join("")}</div>`;
+  const cap = r.rollCap || Math.max(r.roll, 1);
+  let h = `<div class="card small"><div class="row"><b>Manpower</b><span class="right muted">${UI.esc(r.short)}</span></div>${UI.barRow("The roll", r.roll, Math.max(cap, r.roll), r.roll < cap * 0.2 ? "hpbar" : "", null, `${UI.kfmt(r.roll)}/${UI.kfmt(cap)}`)}<div class="tiny muted">The roll is the volunteers who drill and march when mustered; it fills each year toward one man in a hundred of your people (${r.roll >= cap * 0.98 ? "it is full now" : `about +${A.fmt(Math.max(0, Math.round((cap - r.roll) * 0.2)))} next year`}). Training a regiment takes its men at once; refits draw on the roll all the time. Conscripts come only by a call to arms.</div></div>`;
+  if (A.CONSCRIPT_LAW)
+    h += `<div class="group-h">Conscription law</div><div class="wr-laws">${A.CONSCRIPT_LAW.map(([n, mul, op, d], i) => `<button class="small ${r.laws.conscript === i ? "on" : ""}" data-a="setLaw" data-v="conscript|${i}" ${pc.ruler ? "" : "disabled"}><b>${UI.esc(n)}</b><small>${UI.esc(d)}</small></button>`).join("")}</div>`;
   h += '<div class="group-h">Train a division</div>';
   for (const t of Object.values(r.forces.tpl)) {
     const s = A.tplS(r.id, t.id),
@@ -1600,7 +1600,7 @@ UI.forcesSummary = function (r) {
   A.indCount(r);
   const ds = r.forces.divs,
     men = ds.reduce((x, d) => x + d.men, 0);
-  return `<div class="card small wr-sum" style="margin-top:6px"><div class="row">${UI.wrIcon("shield")}<b>The host</b><span class="right muted">${ds.length} divisions · ${A.fmt(men)} men</span></div><div class="tiny muted">Manpower ${A.fmt(r.levy)} · ${r.forces.queue.length} in training · ${r.ind.mil} forges · ${r.ind.civ} workshops · ${GD.ECON[r.ind.law].name}${r.forces.auto ? " · quartermasters in charge" : ""}</div><button class="small primary" style="margin-top:6px" data-a="warRoomView">${UI.wrIcon("target")}Open the War Room — forces, industry</button></div>`;
+  return `<div class="card small wr-sum" style="margin-top:6px"><div class="row">${UI.wrIcon("shield")}<b>The host</b><span class="right muted">${ds.length} divisions · ${A.fmt(men)} men</span></div><div class="tiny muted">Manpower ${A.fmt(r.roll)} · ${r.forces.queue.length} in training · ${r.ind.mil} forges · ${r.ind.civ} workshops · ${GD.ECON[r.ind.law].name}${r.forces.auto ? " · quartermasters in charge" : ""}</div><button class="small primary" style="margin-top:6px" data-a="warRoomView">${UI.wrIcon("target")}Open the War Room — forces, industry</button></div>`;
 };
 
 UI.promoBoardHtml = function (pc) {

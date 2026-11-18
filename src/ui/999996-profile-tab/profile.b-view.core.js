@@ -129,8 +129,8 @@
     body: p => {
       const rows = PF.skills(p, true); // Records holds all of them
       let s = '';
-      if (VS && VS.levyWords && A.age(p) >= 6) {
-        try { const lv = VS.shownLevies(p); s += `<div class="pf-fight">${trig(['worth', p.id], '<span class="pf-k">In a fight</span> <span class="pf-w">' + esc(VS.levyRank(lv)) + '</span> <span class="pf-m2">' + esc(VS.levyWords(lv)) + '</span>', 'pf-row', 'div')}</div>`; } catch (e) {}
+      if (VS && VS.conscriptWords && A.age(p) >= 6) {
+        try { const lv = VS.shownConscripts(p); s += `<div class="pf-fight">${trig(['worth', p.id], '<span class="pf-k">In a fight</span> <span class="pf-w">' + esc(VS.conscriptRank(lv)) + '</span> <span class="pf-m2">' + esc(VS.conscriptWords(lv)) + '</span>', 'pf-row', 'div')}</div>`; } catch (e) {}
       }
       s += '<h4 class="pf-h2">Fighting styles</h4>';
       const st = PF.styles(p);

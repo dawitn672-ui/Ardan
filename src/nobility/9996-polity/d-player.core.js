@@ -29,10 +29,10 @@ POL.pcHouse = function (pc) {
 // the player's oath: their house's contract, or (a landless knight's) the realm's default; pure
 POL.pcOath = function (pc) {
   const r = POL.myRealm(pc); if (!r || !pc.noble || pc.ruler) return null;
-  const h = POL.pcHouse(pc), c = h ? POL.contractOf(h, r) : (pc.pol && pc.pol.contract) || { tax: POL.pos(r, 'obl'), levy: POL.pos(r, 'obl'), rights: [] };
+  const h = POL.pcHouse(pc), c = h ? POL.contractOf(h, r) : (pc.pol && pc.pol.contract) || { tax: POL.pos(r, 'obl'), men: POL.pos(r, 'obl'), rights: [] };
   // GD.NOBLE_RUNGS runs from the franklin (rung 0) to the duke (rung 8): a knight owes 5 men, a count 4,000
   const R = GD.NOBLE_RUNGS[Math.max(0, Math.min(GD.NOBLE_RUNGS.length - 1, pc.noble.rung || 0))] || {};
-  return { r, h, c, men: Math.round((R.levy || 0) * POL.OBL_LEVY[c.tax != null ? c.levy : 1]), share: POL.OBL_TAX[c.tax] };
+  return { r, h, c, men: Math.round((R.men || 0) * POL.OBL_MEN[c.tax != null ? c.men : 1]), share: POL.OBL_TAX[c.tax] };
 };
 const oathOf = pc => { const o = POL.pcOath(pc); if (!o) return null; if (o.h) { o.h.contract = o.c; return o.c; } POL.pcPol(pc).contract = o.c; return o.c; };
 // PO-OBL: the crown's share of a lord's rents follows the oath (56's tenth on rents is the Medium oath)
@@ -151,7 +151,7 @@ POL.pcYear = function (pc) {
   if (oath && oath.c.tax < 2 && A.EV.po_raise_oath && A.chance(.06 + .1 * Math.max(0, (A.rulerPersona ? A.rulerPersona(oath.r.id).greed : 0)))) A.queue({ type: 'event', ev: 'po_raise_oath', ctx: { pid: oath.r.ruler, rid: oath.r.id, realmT: oath.r.short } });
 };
 
-// a war: a landed lord's levy is called (po_muster)
+// a war: a landed lord's muster is called (po_muster)
 POL.MUSTER_QUIET = 6;
 POL.musterCall = function (w) {
   try {
@@ -173,7 +173,8 @@ POL.musterCall = function (w) {
     if (A.EV.po_muster && !A.S.queue.some(q => q.ev === 'po_muster')) A.queue({ type: 'event', ev: 'po_muster', ctx });
   } catch (e) { console.error('[po] muster', e); }
 };
-A.on && A.on('warStart', w => POL.musterCall(w));
+// W1-3: with the commands built (9999951-commands), the summons has six answers and is A.CMD.pcSummons, on the same warStart
+A.on && A.on('warStart', w => { if (!(A.CMD && A.CMD.on)) POL.musterCall(w); });
 // PO-CEDE: the player's home passes to another crown at a peace (A.polOnTransfer emits provTransfer)
 A.on && A.on('provTransfer', function (prov, from, to) {
   try {
@@ -230,7 +231,7 @@ Object.assign(UI.A, {
     A.log(`Your task this year: ${T[v].toLowerCase()}.`, 'good');
     refresh();
   },
-  // the ruler changes a house's oath: v = "hid|tax|1", "hid|levy|-1" or "hid|right|seat"
+  // the ruler changes a house's oath: v = "hid|tax|1", "hid|men|-1" or "hid|right|seat"
   poOath(v) {
     const pc = A.pc(), r = POL.myRealm(pc);
     if (!pc || !r || pc.ruler !== r.id) return warn('Only the crown changes an oath.');
@@ -239,7 +240,7 @@ Object.assign(UI.A, {
     if (key === 'right') { if (POL.grantRight(r, h, d)) A.log(`You grant ${h.name} a right: ${POL.RIGHTS[d].toLowerCase()}.`, 'good'); refresh(); return; }
     const q = POL.changeObl(r, h, key, +d, pc);
     if (!q.ok) return warn(q.why);
-    A.log(`${h.name}'s ${key === 'tax' ? 'tax' : 'levy'} obligation is now ${['Low', 'Medium', 'High'][h.contract[key]]}.${q.free ? ' The favour it owed you is spent.' : q.tyr ? ' The other houses call it tyranny.' : ''}`, q.tyr ? 'warn' : 'good');
+    A.log(`${h.name}'s ${key === 'tax' ? 'tax' : 'men'} obligation is now ${['Low', 'Medium', 'High'][h.contract[key]]}.${q.free ? ' The favour it owed you is spent.' : q.tyr ? ' The other houses call it tyranny.' : ''}`, q.tyr ? 'warn' : 'good');
     refresh();
   },
   // the election: v = "kind|pid" with kind vote, visit, promise, gift, slander, withdraw
@@ -319,7 +320,7 @@ A.addStage('A.applyFx', 'polity.po', baseFx => function (pc, fx, ctx) {
     if (fx.poMuster && ctx && r) {
       const ru = A.P(r.ruler);
       pc.poMusterLast = fx.poMuster;   // how the last summons was answered (send, scutage, refuse)
-      if (fx.poMuster === 'scutage') { const n = Math.min(pc.coin, ctx.scutN || 0); pc.coin -= n; r.treasury += n; if (RI.purse) RI.purse(pc, 'taxes', -n, 'Scutage instead of your levy'); }
+      if (fx.poMuster === 'scutage') { const n = Math.min(pc.coin, ctx.scutN || 0); pc.coin -= n; r.treasury += n; if (RI.purse) RI.purse(pc, 'taxes', -n, 'Scutage instead of your men'); }
       if (fx.poMuster === 'refuse') {
         if (ru && pc.rel[ru.id]) A.addOp(pc, ru, -20);
         const P = POL.pcPol(pc), prev = P.breach; P.breach = A.S.year;

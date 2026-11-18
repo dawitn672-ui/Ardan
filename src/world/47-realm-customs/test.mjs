@@ -96,7 +96,7 @@ export default {
       const pc = RBT.life(401, { status: 'artisan' });
       const undo = RBT.bible(pc.realm, [
         { kind: 'year', m: 3, who: 'adult' }, { kind: 'rite', age: 21, who: 'all' }, { kind: 'wed', dowry: -1 }, { kind: 'mourn', share: 'equal' },
-        { kind: 'name', by: 'grandparent' }, { kind: 'levy', who: 'adult' }, { kind: 'law' }, { kind: 'ward', when: 'armed' },
+        { kind: 'name', by: 'grandparent' }, { kind: 'call', who: 'adult' }, { kind: 'law' }, { kind: 'ward', when: 'armed' },
         { kind: 'market', cut: 0.1 }, { kind: 'grave' }]);
       const met = id => !!(pc.rb && pc.rb[id]);
       try {
@@ -111,9 +111,9 @@ export default {
         out.name = met('tst_name4'); out.named = k ? (k.sex === fa.sex ? k.given === fa.given : true) : false; out.child = k && k.given;
         // mourn: an equal share of the father's estate
         const c1 = pc.coin; A.kill(fa, 'age'); out.mourn = met('tst_mourn3'); out.share = pc.coin - c1 + 1;   // the custom's own fx is coin -1
-        // levy
-        const en = A.neighbors(pc.realm)[0]; A.startWar(pc.realm, en, null, 'conquest'); pc.mil = null; A.BIBLE.month(pc); out.levy = met('tst_levy5');
-        const n1 = pc.rb.tst_levy5.n; A.BIBLE.month(pc); out.levyOnce = pc.rb.tst_levy5.n === n1;
+        // muster
+        const en = A.neighbors(pc.realm)[0]; A.startWar(pc.realm, en, null, 'conquest'); pc.mil = null; A.BIBLE.month(pc); out.call = met('tst_call5');
+        const n1 = pc.rb.tst_call5.n; A.BIBLE.month(pc); out.musterOnce = pc.rb.tst_call5.n === n1;
         // law
         A.punish(pc, 'theft'); out.law = met('tst_law6');
         // ward
@@ -126,10 +126,10 @@ export default {
       } finally { undo(); }
       return out;
     });
-    const want = ['year', 'rite', 'wed', 'mourn', 'name', 'levy', 'law', 'ward', 'market', 'grave'];
+    const want = ['year', 'rite', 'wed', 'mourn', 'name', 'call', 'law', 'ward', 'market', 'grave'];
     const miss = want.filter(k => !r[k]);
-    const ok = !miss.length && r.named && r.levyOnce && r.share > 0;
-    return { ok, detail: `fired: ${want.filter(k => r[k]).join(', ')}${miss.length ? '; MISSING ' + miss.join(', ') : ''}. Bride price paid ${r.wedPaid}; the child named ${r.child} (for a grandparent: ${r.named}); the father's estate shared: ${r.share}; the levy once a war: ${r.levyOnce}; sold for ${r.sold} after the market's cut` };
+    const ok = !miss.length && r.named && r.musterOnce && r.share > 0;
+    return { ok, detail: `fired: ${want.filter(k => r[k]).join(', ')}${miss.length ? '; MISSING ' + miss.join(', ') : ''}. Bride price paid ${r.wedPaid}; the child named ${r.child} (for a grandparent: ${r.named}); the father's estate shared: ${r.share}; the muster once a war: ${r.musterOnce}; sold for ${r.sold} after the market's cut` };
   },
 
   // who takes a parent's estate follows the custom
@@ -190,7 +190,7 @@ export default {
     return { ok: two >= 7, detail: `${two} of ${r.length} lives of 30+ years met at least 2 of their realm's customs: ${r.map(x => `${x.rid} ${x.met} (${x.years}y)`).join(', ')}. tools/bench/realm-customs.mjs measures all 34 realms` };
   },
   // cycle 2 (design A6): "free" counted nobles and rulers, so the Emperor of Aldmark heard the reeve knock for the
-  // hearth mark. Dues and levies now ask the commons; a ruler hears that the due came in
+  // hearth mark. Dues and calls to arms now ask the commons; a ruler hears that the due came in
   async rbCommonsDues(pg) {
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {

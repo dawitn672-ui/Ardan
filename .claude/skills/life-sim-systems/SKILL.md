@@ -45,14 +45,14 @@ Use this when building or reviewing character, family, politics or war systems f
 ## 2. Races are different bodies
 Humans are the yardstick. Square-cube law: a 5.6 m giant has about 10× human strength, is slow to react (420 ms) and is very tough (×14). Orcs carry about 2.2× human lift and ×1.9 toughness, and mature by 16. Dwarves are dense and tough with long lives; elves are fast and fragile.
 
-**Fighting worth, measured in levies** (1 levy = an untrained spearman in a padded coat):
+**Fighting worth, measured in conscripts** (1 conscript = an untrained spearman in a padded coat):
 `worth = 0.662 × might^0.5 × speed^0.5 × toughness^0.6 × skillMult[tier] × gear`, where might = lift/130 and speed = (sprint/7.2) × (250/reaction).
-- skillMult by tier: 1, 1.15, 1.35, 1.6, 1.95, 2.4, 3.0, 3.8, 4.8. Gear: none 1, levy 1.25, mail 1.6, plate 2.0, order panoply 2.2.
+- skillMult by tier: 1, 1.15, 1.35, 1.6, 1.95, 2.4, 3.0, 3.8, 4.8. Gear: none 1, a conscript's spear and padded coat 1.25, mail 1.6, plate 2.0, order panoply 2.2.
 - Calibration targets, which the tests enforce:
 
-  | Fighter | Worth (levies) |
+  | Fighter | Worth (conscripts) |
   |---|---|
-  | Levy | about 1 |
+  | Conscript | about 1 |
   | Man-at-arms | 2 to 3.2 |
   | Knight | 5 to 7 |
   | Elite order member | 12 to 32 |
@@ -118,7 +118,7 @@ Each realm has: king > dukes (at most 3; ≥24 counties → 3, ≥14 → 2, ≥7
 - Outsiders hear news only about 35% of the time, about 25% of that is garbled, and it is phrased as rumour.
 
 ## 9. Elite orders and war
-- **Orders:** keep about 5 in the world, each with 150–350 members worth 14–26 levies each, plus `terror`, which deals morale damage. Joining means passing three trials with the odds engine.
+- **Orders:** keep about 5 in the world, each with 150–350 members worth 14–26 conscripts each, plus `terror`, which deals morale damage. Joining means passing three trials with the odds engine.
 - **Battles:** 4 phases (Skirmish, Clash, Press, Decision).
   - Only the frontage fights (open ground about 1,400 men, a pass about 250). Units under 400 men engage almost fully, so elites punch far above their numbers. This is Lanchester's linear law.
   - Losses scale with incoming power ÷ worth^0.75 ÷ the tactic's defence.
@@ -130,10 +130,20 @@ Each realm has: king > dukes (at most 3; ≥24 counties → 3, ≥14 → 2, ≥7
   - The test requires the high-value choice to beat the low one at every rank by 4 points or more at sergeant and above.
 - **After-action report:** the three biggest signed contributions in words (the ground, tactics, numbers, quality, elites, your part).
 - **Not your war?** Then the player gets no view of it, only rumour.
+- **Commands and the summons (built, W1-3, D-081 to D-085; `src/war/9999951-commands`):**
+  - Every armed man (a division of the war map) is in exactly one command: the crown's (first host, orders, regiments, its share), or a tenant-in-chief's (a duke; a marquis or count with no duke over him), whose first host he leads by right or gives to a General he names. Commands are a reading of the houses; the one field written is `d.own`. Old saves deal the hosts once by `GD.NOBLE_RUNGS`' full strength (largest remainder, ids, no dice). A contingent is kept in one army.
+  - The king commands an army of two hosts or more in person (his temper moves it), by a commission (`army:<id>`, for that war), or through a council of war (a day slower, no one temper), chosen through `A.WHY` from his skill, trust, kin, fear of a famous man, the great lords' pride.
+  - The summons: six answers (full, part, late, deputy, coin, refusal), each from named reasons (opinion of the crown, its fear and right, feelings, a faction, the enemy or a hostile neighbour at his border, the harvest, his purse, his oath by his honour, what the others did). The muster keeps the excuse given and the true reason. First season at the lord's cost; then the crown pays or he weighs going home each season.
+  - A refusal is a grievance; the king's sentence (accept, fine, hostages, strip, forsworn, attaint) reaches only as far as his strength, and an unenforced one costs stability; the lord submits, sulks or seeks a league. A march lord rises for his border unsummoned. `w.kind` on every war; private, army and border disputes have hooks and are W1-6's.
+  - The player lord gets the six answers as a card (riding with his men puts him in the war); a General in a great lord's host answers to that lord; the muster's news and the War tab's roll are cut to what his place lets him know.
 - **Where the design is going (D-064, `docs/design/war.md` part two; not built yet, so the lines above still describe the code):**
-  - (W1-1 built the five ranks, above.) The king in person, or a council of war when nobody is named, with reasons for the choice (W1-3).
-  - Every armed man is in one command (the crown's, or a great lord's own under officers he names); the king summons and each lord answers from named reasons; contingents are kept whole. Private wars, refused summonses and border lords' wars follow from it.
-  - No levies: sworn men, enlisted men and the roll; conscription by proclamation in real need, with a cost in fields and a remembered grievance.
+  - No levies (W1-4, built: `src/war/9999952-men`, D-086 to D-090): sworn men (about 1 in 400, `A.MEN.of`), enlisted
+    regiments and the roll (`r.roll`, 1 in 100, volunteers), conscripts only by a call (`A.CALLS`): a named need (the
+    enemy on home soil, a siege, a host lost, fewer spears, the king's will under a harsh law), a decision through
+    `A.WHY`, three calls by lot (1 hearth in 20, 10, 5: 3, 6 and 12 in 100 working men), raised by each lord in his lands,
+    a cost in the fields (doubled at the reaping) and a remembered grievance. A company's ledger of holds and pulls works
+    out desertion without dice (conscripts most, sworn men least, each with its reasons); a mutiny needs a grievance, a
+    voice and an occasion.
   - (W1-2 built the minds, section 9a below.) A war ends only by surrender or defeat (W1-5).
   - You see from where you stand; everything else is a report with a sender, a road, a day and a slant.
   - Stability is the sum of named pressures; a faction needs a shared grievance, a tie and a leader; a coup needs a motive, access and an opening.

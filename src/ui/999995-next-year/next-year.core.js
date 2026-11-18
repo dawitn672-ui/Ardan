@@ -40,7 +40,7 @@
   Y.COIN = 120;
   // topics in an event's id (split at _ and digits): a marriage, a birth, a death, sickness, war, the law, an exam
   Y.STEMS = ['marri', 'wed', 'betroth', 'birth', 'baby', 'born', 'death', 'dying', 'dies', 'funeral', 'inherit', 'heir', 'crown', 'exam', 'trial',
-    'oath', 'summon', 'plague', 'fever', 'illness', 'sick', 'war', 'battle', 'siege', 'muster', 'levy', 'ransom', 'treaty', 'deadline', 'debt',
+    'oath', 'summon', 'plague', 'fever', 'illness', 'sick', 'war', 'battle', 'siege', 'muster', 'conscript', 'ransom', 'treaty', 'deadline', 'debt',
     'tax', 'repay', 'murder', 'poison', 'famine', 'raid', 'bandit', 'arrest', 'prison', 'wound', 'injur', 'kidnap', 'exile', 'coup', 'rebel', 'revolt',
     'succession', 'vassal', 'ordain', 'vow', 'accus', 'sentence', 'verdict'];
   const memo = Object.create(null);

@@ -23,7 +23,7 @@ Object.assign(A.CHOICE_FN, {
       A.log("You keep your oath and lose your lands. Honor is cold comfort, but it is yours.");
     }
   },
-  levyBattle(arg) {
+  summonsBattle(arg) {
     const pc = A.pc();
     if (!pc.noble) {
       A.log("The summons no longer concerns you.");
@@ -38,7 +38,7 @@ Object.assign(A.CHOICE_FN, {
         war: arg.war,
         sideA: {
           realm: pc.noble.realm,
-          name: `your levy and the ${r ? r.short : ""} host`,
+          name: `your muster and the ${r ? r.short : ""} host`,
           men: Math.round(men * A.rf(3, 8)),
           q: r ? r.armyQ : 0.9,
           commander: pc.id,
@@ -54,11 +54,11 @@ Object.assign(A.CHOICE_FN, {
       type: "battle",
       b: B,
     });
-    pc.noble.levied = A.S.year;
+    pc.noble.summoned = A.S.year;
   },
-  scutage(levy) {
+  scutage(muster) {
     const pc = A.pc(),
-      c = Math.round(levy * 3 + 20);
+      c = Math.round(muster * 3 + 20);
     pc.coin -= c;
     A.log(`You pay ${A.coin(c)} in shield-money and stay home.`);
     if (pc.coin < 0) {
@@ -73,10 +73,11 @@ Object.assign(A.CHOICE_FN, {
     if (ru) A.addOp(pc, ru, -25);
     pc.honor = A.clamp(pc.honor - 12, 0, 100);
     A.log("You ignore the summons. The crown will remember.", "bad");
-    if (A.chance(0.25)) {
-      pc.noble.rung = Math.max(0, pc.noble.rung - 1);
-      A.log(`The crown strips you of a rung: you are now ${A.nobleTitle(pc) || "landless"}.`, "bad");
-    }
+    // [W1-3] the crown decides how far it dares punish a refusal, for reasons (A.CMD.pcJudge: the ladder of fine,
+    // hostages, a rung stripped, forsworn, attainder, as far as its strength reaches; D-081). Before: a rung in 1 of 4.
+    const was = pc.noble.rung;
+    if (A.CMD && A.CMD.pcJudge) A.CMD.pcJudge(pc);
+    if (pc.noble && pc.noble.rung < was) A.log(`The crown strips you of a rung: you are now ${A.nobleTitle(pc) || "landless"}.`, "bad");
   },
 });
 
@@ -258,7 +259,7 @@ A.polInit = function (r) {
         : /republic|league|confederacy|council|elect/i.test(r.gov || "")
           ? 0
           : 1),
-    r.laws.levy == null && (r.laws.levy = 1),
+    r.laws.conscript == null && (r.laws.conscript = 1),
     (r.marriages = r.marriages || {}),
     r)
   );

@@ -347,7 +347,7 @@
     // the ladder of rungs (drawn highest first)
     h = h.replace('<div class="group-h">The ladder (Part 12)</div>', `<div class="group-h">${UI.tt('rungs', '', 'The ladder (Part 12)')}</div>`);
     const NR = GD.NOBLE_RUNGS || []; let i = NR.length;
-    h = TT.within(h, 'The ladder (Part 12)</span></div>', '</table>', seg => seg.replace(/<tr><td>([^<]*)<\/td><td>([^<]*suns\/yr, levy [^<]*)<\/td><\/tr>/g, (m, t, v) => { i--; return `<tr><td>${t}</td><td${UI.ttAttrs('rung', i)}>${v}</td></tr>`; }));
+    h = TT.within(h, 'The ladder (Part 12)</span></div>', '</table>', seg => seg.replace(/<tr><td>([^<]*)<\/td><td>([^<]*suns\/yr, men owed [^<]*)<\/td><\/tr>/g, (m, t, v) => { i--; return `<tr><td>${t}</td><td${UI.ttAttrs('rung', i)}>${v}</td></tr>`; }));
     // 47-realm-customs's customs
     const B = A.BIBLE, D0 = B && r && B.of(r.id);
     if (D0 && D0.customs) { let j = 0; h = TT.within(h, '<div class="card small rb"', '</div></div>', seg => seg.replace(/<span class="muted">\((met \d+×, first in \d+|not met yet)\)<\/span>/g, (m, t) => { const c = D0.customs[j++]; return c ? `<span class="muted">(${N('custom', c.id, t)})</span>` : m; })); }

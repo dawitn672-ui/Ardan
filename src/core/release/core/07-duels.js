@@ -2039,7 +2039,7 @@ A.COMPANY_NAMES = [
   "the Last Ford Company",
 ];
 
-A.UNIT_NAMES = ["Foot", "Spears", "Shields", "Bows", "Guard", "Watch", "Levy", "Wardens", "Company", "Lances"];
+A.UNIT_NAMES = ["Foot", "Spears", "Shields", "Bows", "Guard", "Watch", "Muster", "Wardens", "Company", "Lances"];
 
 A.milTitle = p => (p.mil ? GD.MIL[p.mil.rank].title : "");
 
@@ -2141,7 +2141,7 @@ const enlistNow = function (pc, merc) {
     }
     pc.flags.famUnit = A.house(pc.house).military.unit;
   }
-  if (pc.flags.unfree === "serf") pc.flags.leviedSerf = true;
+  if (pc.flags.unfree === "serf") pc.flags.calledSerf = true;
   const r = A.realm(realm);
   if (pc.job && !merc) {
     A.log(`You leave your work as ${GD.CAREERS[pc.job.c].ranks[pc.job.r][0].toLowerCase()} behind.`);

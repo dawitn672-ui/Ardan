@@ -247,7 +247,7 @@
   JR.newsLine = function (e) {
     const P = e.p != null ? P_(e.p) : null, a = rs(e.a), b = rs(e.b), pn = P ? P.name : null;
     switch (e.k) {
-      case 'war': return a && b ? `${a} has gone to war with ${b}, and the levies are out round ${pn}.` : null;
+      case 'war': return a && b ? `${a} has gone to war with ${b}, and the musters are out round ${pn}.` : null;
       case 'peace': return a && b ? `${a} and ${b} have made peace, and the soldiers are walking home past ${pn}.` : null;
       case 'battle': return pn && a && b ? `there was a battle at ${pn} between ${a} and ${b}, and the crows are still at it.` : null;
       case 'siege': return pn ? `${pn} is under siege, and bread there costs its weight in copper.` : null;

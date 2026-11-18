@@ -211,16 +211,16 @@ export default {
       out.year = { why: y.why, waited: y.waited, waiting: y.waiting, d: y.d1 - y.d0, digest: !!document.querySelector('.year-sum'), text: (document.querySelector('.year-sum') || {}).textContent || '', modal: !!document.querySelector('#modal') };
       __nyAnswer();
       // more than the year keeps: the rest pass, and say so
-      // a quiet year: since A2 re-rolled the world, an enemy reaches this seed's home in December and the levy is called
-      // (72's call to the spear, truly notable, stops the year); the levy is held back so the test sees only its nine cards.
+      // a quiet year: since A2 re-rolled the world, an enemy reaches this seed's home in December and the muster is called
+      // (72's call to the spear, truly notable, stops the year); the muster is held back so the test sees only its nine cards.
       // A2 stage 2 re-rolled it again (seed 9532 falls ill in January, which rightly stops the year): the first of a few
       // seeds whose year nothing notable stops
       let m;
       for (const seed of [9532, 9534, 9536, 9538]) {
         __nyEnter(Object.assign({}, base, { seed }));
-        const levyOk = A.TS && A.TS.levyOk; if (levyOk) A.TS.levyOk = () => false;
+        const musterOk = A.TS && A.TS.musterOk; if (musterOk) A.TS.musterOk = () => false;
         for (let i = 0; i < 9; i++) { const id = __nyEv('ny_many' + i, { happy: 1 }); A.schedule({ type: 'event', ev: id }, 20 + i * 30); }
-        try { m = await __nyPress('v2Year', { hold: true }); } finally { if (levyOk) A.TS.levyOk = levyOk; }
+        try { m = await __nyPress('v2Year', { hold: true }); } finally { if (musterOk) A.TS.musterOk = musterOk; }
         if (!m.why || seed === 9538) break;
         __nyAnswer();
       }

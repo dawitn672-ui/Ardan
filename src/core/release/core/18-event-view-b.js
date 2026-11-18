@@ -227,7 +227,7 @@ A.migrateOrders = function (S) {
     const gone = r.forces.divs.filter(x => x.elite && !GD.ORDERS[x.elite]);
     if (gone.length) {
       const ids = new Set(gone.map(d => d.id));
-      for (const d of gone) r.levy = (r.levy || 0) + Math.round(d.men * 0.9);
+      for (const d of gone) r.roll = (r.roll || 0) + Math.round(d.men * 0.9);
       r.forces.divs = r.forces.divs.filter(d => !ids.has(d.id));
       for (const a of S.armies || []) if (a.divs) a.divs = a.divs.filter(x => !ids.has(x));
       const pc0 = S.people && S.people[S.pc];
@@ -1595,7 +1595,7 @@ GD.CROWD = {
   1: {
     w: 46,
     sta: 26,
-    n: "green levies or toughs",
+    n: "green conscripts or toughs",
   },
   2: {
     w: 56,

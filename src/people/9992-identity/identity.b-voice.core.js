@@ -44,7 +44,7 @@
       talk: ['Lower your voice. Make him lean in to hear it.', 'He looks away first. He always will.'], fight: ['He has already lost. Show him he knows it.'] } },
     war: { name: 'The Captain', skills: ['command', 'tactics', 'logistics', 'siegecraft'], lines: {
       any: ['Who holds the high ground here, and who wants it?'],
-      fight: ['Bread first, then glory. Men march on bread.', 'Never fight with a river at your back.', 'Hold the reserve. The battle is not where it looks.', 'Their left is green levies. Hit the left.'],
+      fight: ['Bread first, then glory. Men march on bread.', 'Never fight with a river at your back.', 'Hold the reserve. The battle is not where it looks.', 'Their left is green conscripts. Hit the left.'],
       court: ['A council is a battle where nobody bleeds until later.'], money: ['Count the carts, not the coin.'] } },
     ledger: { name: 'The Ledger', skills: ['stewardship', 'trade'], lines: {
       any: ['Somebody is paying for all of this. Find out who.', 'A tenth here, a tenth there. It adds up.'],

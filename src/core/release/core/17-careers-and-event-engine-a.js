@@ -1572,7 +1572,11 @@ A.callExtra = function (w) {
         !w.def.includes(m) &&
         !A.atWar(m).length &&
         !(A.outOfReach && A.outOfReach(m, att)) &&
-        A.chance(0.4)
+        // [W1-3] each league member decides for its reasons (A.CMD.leagueJoins: the league's oath, the conqueror's black
+        // name, the cost, its weariness), at the old pace. Before: A.chance(0.4)
+        A.CMD &&
+        A.CMD.leagueJoins &&
+        A.CMD.leagueJoins(m, att, w)
       ) {
         w.def.push(m);
         A.news(`${o.name} joins the war against ${ra.short}, as the league agreed.`, "war");

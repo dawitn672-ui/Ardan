@@ -405,9 +405,9 @@
         id: "lf_lover_to_war",
         cond: p=>C.adult(p)&&C.hasRel(p,"lover","betrothed","spouse")&&C.atWar(p)&&!C.soldier(p),
         cool: 8,
-        title: "Called to the levy",
+        title: "Called to the muster",
         setup: (p,ctx)=>{const x=relP(p,["lover","betrothed","spouse"]);setPid(p,ctx,x)},
-        text: "The levy has called {them} against {enemy}. {theyHe} will march in three days with a spear and a borrowed helmet. Tonight {them} sits by your fire, trying very hard to look brave.",
+        text: "The muster has called {them} against {enemy}. {theyHe} will march in three days with a spear and a borrowed helmet. Tonight {them} sits by your fire, trying very hard to look brave.",
         choices: [
           {
             t: "Pay for a substitute (30 suns)",
@@ -421,14 +421,14 @@
             fx: (p,ctx)=>{bump(p,T(ctx),15),A.willGrow(p,1,"waiting");const t=T(ctx);return t&&A.chance(.12)?(A.kill(t,"war against "+A.realmShort(A.enemyRealmOf(p.realm)||p.realm)),hp(p,-20),A.willGrow(p,2,"grief"),"(Months later the keepsake comes back alone, carried by a man from the same file. "+t.given+" fell in the war.)"):"(Months later, a letter in a stranger's hand: alive, cold, missing you.)"},
           },
           {
-            t: "Hide {themHim} in the loft until the levy passes",
+            t: "Hide {themHim} in the loft until the muster passes",
             check: {s:"deception",s2:"stealth",d:47},
             win: {
               r: "The reeve's men search the barn and not the loft. {them} owes you everything, and knows it.",
               fx: {them:{op:30},honor:-2,skill:{deception:1}},
             },
             lose: {
-              r: "They find {themHim}. {them} is dragged off in the levy anyway, and you are fined for hiding a deserter.",
+              r: "They find {themHim}. {them} is dragged off in the muster anyway, and you are fined for hiding a deserter.",
               fx: {coin:-10,honor:-5,them:{op:10},happy:-8},
             },
           },
@@ -1057,7 +1057,7 @@
         cool: 12,
         w: .7,
         title: "A knock at midnight",
-        setup: (p,ctx)=>{setPid(p,ctx,friendOf(p)),ctx.deed=A.pick(["killed a man in a brawl over dice","struck a lord's steward who struck first","run from a debt-bond","deserted the levy after a flogging"]),ctx.sanct=law(p)==="sun"?"the temple bell-rope and forty days of sanctuary":law(p)==="orc"?"a stranger's fire, where a guest cannot be given":"the border"},
+        setup: (p,ctx)=>{setPid(p,ctx,friendOf(p)),ctx.deed=A.pick(["killed a man in a brawl over dice","struck a lord's steward who struck first","run from a debt-bond","deserted the muster after a flogging"]),ctx.sanct=law(p)==="sun"?"the temple bell-rope and forty days of sanctuary":law(p)==="orc"?"a stranger's fire, where a guest cannot be given":"the border"},
         text: '{them} is at your door, soaked and shaking. {theyHe} has {deed}, and the hue and cry is two villages behind. "One night. Just one night, and then I go for {sanct}."',
         choices: [
           {
@@ -4922,8 +4922,8 @@
         cond: p=>C.adult(p)&&C.atWar(p)&&!C.soldier(p),
         cool: 8,
         title: "A boy in the barn",
-        setup: (p,ctx)=>{const x=setPid(p,ctx,mk(p,{sex:"M",ageAdj:16+A.ri(0,3)}));x.occ="a deserter from the levy"},
-        text: "A boy is hiding in your barn: {themFull}, sixteen if a day, a deserter from the levy against {enemy}. He has a festering cut on his arm and the look of someone who has seen a battle. Deserters hang.",
+        setup: (p,ctx)=>{const x=setPid(p,ctx,mk(p,{sex:"M",ageAdj:16+A.ri(0,3)}));x.occ="a deserter from the muster"},
+        text: "A boy is hiding in your barn: {themFull}, sixteen if a day, a deserter from the muster against {enemy}. He has a festering cut on his arm and the look of someone who has seen a battle. Deserters hang.",
         choices: [
           {
             t: "Clean his wound and hide him",
@@ -6534,7 +6534,7 @@
         cond: p=>C.adult(p)&&["gentry","noble"].includes(p.status)&&!C.ruler(p),
         cool: 7,
         title: "A tenant at the gate",
-        setup: (p,ctx)=>{const x=setPid(p,ctx,mk(p,{status:"peasant",ageAdj:C.ageAdj(p)+A.ri(-5,20)}));ctx.plea=A.pick(["the rent cannot be paid after the hail",'the steward has been taking a "fee" on top of the rent',"a son was taken by the levy and the farm cannot be worked","the mill has been charging double"])},
+        setup: (p,ctx)=>{const x=setPid(p,ctx,mk(p,{status:"peasant",ageAdj:C.ageAdj(p)+A.ri(-5,20)}));ctx.plea=A.pick(["the rent cannot be paid after the hail",'the steward has been taking a "fee" on top of the rent',"a son was taken by the lot and the farm cannot be worked","the mill has been charging double"])},
         text: "{themFull}, one of your tenants, is at the gate with {theirHis} cap in both hands. {them} says {plea}. Your steward stands behind you with a look that says not to believe a word.",
         choices: [
           {

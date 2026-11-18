@@ -13,7 +13,7 @@ import { sdfGroup } from './hair.js';
 // a piece: { slot, mat, col, t (mm), neck: 'round'|'v'|'square'|'high'|'open'|'none', hem (share of stature from the feet),
 // sleeve: 'long'|'short'|'none', trim: { col, mat, w }, folds, wear (patches, fray), pattern, charge }
 export const STATIONS = ['slave', 'serf', 'peasant', 'artisan', 'merchant', 'gentry', 'noble', 'royal'];
-export const ROLES = ['levy', 'archer', 'infantry', 'knight', 'clergy'];
+export const ROLES = ['conscript', 'archer', 'infantry', 'knight', 'clergy'];
 export function kit(look) {
   const K = kit0(look);
   // legs and feet for the figure: hose and shoes under every cut (bare feet for the unfree)
@@ -35,7 +35,7 @@ function kit0(look) {
     acc.push({ k: 'cowl' }, { k: 'cord' });
     return { pieces: P, acc, st, w };
   }
-  if (role === 'levy') {
+  if (role === 'conscript') {
     shirt(DYES.linen); P.push({ slot: 'tunic', mat: 'wool', col: pick([DYES.russet, DYES.brown, DYES.grey], 'lt'), t: 3, neck: 'round', nlDrop: 14, hem: 0.42, sleeve: 'long', folds: 3 });
     P.push({ slot: 'gambeson', mat: 'padded', col: '#b9a57e', t: 9, neck: 'high', hem: 0.4, sleeve: 'long', folds: 1.2, badge: look.badge || DYES.madder });
     acc.push({ k: 'kettle' }, { k: 'belt', col: '#4a3322' });
@@ -250,7 +250,7 @@ export function shadeCloth(PS, G, L, n, ao, sh, c, Wp) {
     if (pc.pattern === 'cloth-of-gold') { const pm = Math.sin(u * 0.2) * Math.sin(v * 0.2); col = mix3(col, lin('#d8b25a'), pm > 0.3 ? 0.6 : 0.15); spec += 0.3; metal = pm > 0.3; }
     if (trimK && pc.trim.emb) { const zz = Math.abs(((u * 0.25) % 2 + 2) % 2 - 1); if (zz < 0.25 || Math.abs(Math.sin(v * 0.6)) > 0.92) { col = mix3(col, lin(DYES.or), 0.7); spec += 0.25; } }
     col = col.map(q => q * shade);
-    // the badge of a levy's lord
+    // the badge of a conscript's lord
     if (pc.badge && z > 30 && Math.abs(x + 60 * hs) < 18 * hs && Math.abs(y - (PS.ctx.bm.chest + 25 * hs)) < 18 * hs) col = lin(pc.badge);
     // a surcoat's arms, painted as cloth
     if (pc.charge && z > -20) col = heraldry(pc.charge, x / hs, (y - PS.ctx.bm.chest + 30 * hs) / hs * 0.8, col);

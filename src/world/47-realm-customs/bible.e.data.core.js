@@ -101,7 +101,7 @@
         fx: { happy: -2 }, keepT: 'Let the elder count them in', keep: 'You hand over the halters one by one. The elder gives you back the old mare, as is allowed.',
         defy: { t: 'Drive the best horses off before the count', r: 'The elder sends riders after you. They bring the horses back and do not speak to you at the next gathering.', fx: { honor: -4, happy: -2, wil: 1 } },
         log: '{parent}\'s horses go back into the {w2}; you get {got} and a saddle.' },
-      { id: 'hrd_remount', name: 'A remount for the Line', kind: 'levy', who: 'adult',
+      { id: 'hrd_remount', name: 'A remount for the Line', kind: 'call', who: 'adult',
         rule: 'In war, whoever does not ride sends a remount to the Line of Gorath, and the {w3} of every raid is the war-chief\'s first.',
         text: 'War, and the drums at Urgol carry from camp to camp. Whoever does not ride with the relays owes a remount to the Line of Gorath, and the {w3} of whatever the riders bring back is the war-chief\'s before it is anyone else\'s.',
         fx: { coin: -8 }, keepT: 'Give up a remount', keep: 'A rider takes your second horse on a lead and does not look back. Your string is one horse shorter.',

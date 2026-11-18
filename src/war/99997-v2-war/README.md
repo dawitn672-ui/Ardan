@@ -7,7 +7,7 @@
 **No view of a war you are not in** (`a-gate.core.js`)
 
 - **A war is yours** when you fight in it. That means your realm as its ruler, the realm you serve in (enlisted, an officer, a general, an order's member), or a sell-sword's employer. Being born in a realm at war is not enough (`A.V2W.inWar`, `fightsIn`, `myWars`).
-  - 72-one-battle-two-scales' levy counts while its scene runs: you stand in that fight.
+  - 72-one-battle-two-scales' muster counts while its scene runs: you stand in that fight.
 - **The War Room** belongs to your post (`A.V2W.canRoom`, D10 below): the crown in peace and war (W1-1: no Marshal); in your war a commander, or a captain in the field.
   - In war it is drawn with only your wars in `A.S.wars`.
   - For a life outside the army it stays shut (`UI.warRoomOpen`, `A.warRoomView`, a queued `warroom`). The War tab loses its War Room button and reads "is at war, but you are not in it" in place of the release's "is at peace".
@@ -40,7 +40,7 @@
 - **The soldier's and sergeant's line** (`wsLine`) and **the captain's company** (`wsPart`) are now v2's battle (`A.V2.war.battlePhase`). It is played phase by phase: Skirmish, Clash, Press, Decision. It is a queued `v2battle` card, so the clock stops until it's done.
 - **The armies come from the real fight.**
   - Each army has its divisions, at most 6 a side with the rest grouped. Each division's order sets its morale.
-  - Worth in levies comes from the troop types: attack + defence + toughness per man against a levy's (`GD.BN.LV`), times experience.
+  - Worth in conscripts comes from the troop types: attack + defence + toughness per man against a conscript's (`GD.BN.LV`), times experience.
   - An order adds its worth and terror. Your company (about 200 men) is its own unit.
   - When we defend, the ground's defender bonus is ours.
 - **Choices are v2's `CHOICES`.**
@@ -65,7 +65,7 @@
   - **Worth per member:** 14 + 1.2 × (experience − 80), within 14–26.
   - **Terror:** 0.25–0.45.
   - Both are fixed by the order's record, not drawn.
-- **Division simulator:** every order battalion (`A.orderBuildCompanies`) is scaled so that its attack, defence and toughness per man are its worth times a levy's. That is about 6× the release's (which had about 3 levies a knight). In `A.fightDay` an order of 260 fights like 3,600–6,800 levies and takes no more front than its few men.
+- **Division simulator:** every order battalion (`A.orderBuildCompanies`) is scaled so that its attack, defence and toughness per man are its worth times a conscript's. That is about 6× the release's (which had about 3 conscripts a knight). In `A.fightDay` an order of 260 fights like 3,600–6,800 conscripts and takes no more front than its few men.
 - **Terror:** each day of a war-map fight with an order in it, the divisions facing it lose terror × 3% of their full order.
 - **Joining:** `A.orderJoin` first runs v2's three trials (the endurance march, the weapon trial, the oath night) on `attempt()`. Failing one sends you away for 2 years (`p.flags.v2w_trial_<id>`).
 
@@ -86,7 +86,7 @@
 | `v2wShirkCosts` | At every rank, a working choice that takes from the army (keeping the company back, drifting to the rear) grades below zero and below every other working choice; a failure costs the same whatever was tried |
 | `v2wAfterAction` | Three distinct causes in 23's shape, in the story |
 | `v2wByPost` | D10: 14 lives (child, peasant, noble, soldier, sergeant, captain in the field and left behind, general, ruler; in peace and in a war of theirs) get the War Room, the War place, Arms, the map's Wars mode and the War Room button by post; the map draws only what the rank may reach; drawing is pure; the War tab lists only orders heard of; enemy counters are estimates |
-| `v2wOrders` | 150–350 members × 14–26 levies, 10× their numbers or more; in the division simulator 21–44 a member against an ordinary division of the realm (the simulator adds the orders' own bonuses: the Shadow's +35% soft attack, the Last Door's +45% defence); 250 knights beat 3,000 levies; three trials |
+| `v2wOrders` | 150–350 members × 14–26 conscripts, 10× their numbers or more; in the division simulator 21–44 a member against an ordinary division of the realm (the simulator adds the orders' own bonuses: the Shadow's +35% soft attack, the Last Door's +45% defence); 250 knights beat 3,000 conscripts; three trials |
 | `v2wPure` | Drawing the scene changes neither the state nor the dice; no percentage |
 | `v2wSeenRestores` | Round 2: `W.withSeen` puts back exactly what was there: the same `S.wars` and `S.fights`, and no key at all where there was none (it put back `S.wars = undefined`, as it once did `S.fights`, commit 0451bd1) |
 | `v2wFightWaits` | Every ask at a v2 rank (soldier, sergeant, captain) opens a scene of a live fight not yet fought, asked once; a gone key opens no v2 scene |
@@ -105,7 +105,7 @@
 - `99992-v2-time` `v2tNoPlay`: the noble enlists before he opens the War Room (a life outside the army has none).
 - `99992-v2-time` `v2tPlaces`: the noble enlists when his realm declares war (the War place is for a war you fight in).
 - `58-event-cut` `warRoomByRank`: the peasant enlists before his War Room tabs are read.
-- `72-one-battle-two-scales` (all its tests): the soldier's line and the captain's way into 72's scene now start v2's battle. 72's scene stays for the levy, and its tests and its lab (`lab.mjs`, used by `twoScalesMovesFront`) reach the old entry through `A.V2W.classic.wsLine` / `.wsPart`.
+- `72-one-battle-two-scales` (all its tests): the soldier's line and the captain's way into 72's scene now start v2's battle. 72's scene stays for the muster, and its tests and its lab (`lab.mjs`, used by `twoScalesMovesFront`) reach the old entry through `A.V2W.classic.wsLine` / `.wsPart`.
 
 ## Playtest round 1 (`e-words.core.js` and small changes)
 
@@ -139,7 +139,7 @@ What each rank may know, and what outsiders hear (playtest 2 findings 3, 4, 5 an
   - the hearsay dice are v2's `makeRng`, seeded from the game seed and the entry: pure, the same every draw.
   - cost: each entry's lag is kept in a cache outside `A.S` (dropped when `A.S` is replaced), and `tellOf`'s line is a getter made only when read, so the Annals and The Book draw about as fast as before (25 years, 1,412 entries: rows 4.3 ms against 3.8, The Book's legends 6.2 ms against 10.2).
 - **64-npc-beliefs:** a battle you had no part in and did not see is not one you know (`NB.pcKnows` returns null for it: a neighbour's war no longer counts), and "The record" where you do know it (`NB.recordLine`: the belief cards, the Tales, the Chronicle, the scene that puts you right) gives the counts at your rank's precision.
-- **72-one-battle-two-scales' levy** reads `TS.told` (this feature's `W.levyCount`): the call to arms ("about 6,500 against about 30,000"), the front's words, the standards' slips ("~5.5k"), their titles and the day's tally are estimates.
+- **72-one-battle-two-scales' muster** reads `TS.told` (this feature's `W.musterCount`): the call to arms ("about 6,500 against about 30,000"), the front's words, the standards' slips ("~5.5k"), their titles and the day's tally are estimates.
 - **The commander's battle** (the release's modal, 9997-companies' panel, 60-unit-drill's tags): his own side exactly, the enemy's as an estimate (the side line, the opening line, volleys and the wings' losses in the log, the result); morale in words ("steady", "eager"); drill in words ("drilled", "Drill: the charge (drilled)"), no 0–100 number. 59's tooltip on the two side lines goes with the numbers it explained. The release's closing log line ("X hold the field. Y are beaten. Dead: n of A, m of B.", and the drawn field's "n dead for A, m for B.") gives the enemy's dead as an estimate too, and 59's popovers on the same screen (`bSide`, `bMorale`, `bWing`, `bDead`) are redrawn in `f-told.core.js`: the enemy's counts as an estimate (their units not listed), morale in words. `v2wRankCounts` reads every screen of the battle (as it opens, a pulse in, fought out) and every tooltip on it.
 - **Tests:** `v2wAnnalsHearsay`, `v2wBeliefRecord`, `v2wRankCounts`.
 
