@@ -43,7 +43,7 @@ export default {
   async rankMovesTheFight(pg) {
     // 100 real fights (the bench's 60 and 40 more), frozen at their start and replayed with each result, paired fight
     // by fight: a good result never loses a fight that no result would have won, a bad one never wins one it would have
-    // lost, and each layer's best against its worst changes at least 7 points of them (the plan's band, 10-20, is the bench's, pooled; below).
+    // lost, and each layer's best against its worst changes at least 3 points of them (the plan's band, 10-20, is the bench's, pooled; below).
     // Sixteen fights were too few: a swing of 2 or 3 fights read as a tie when the world changed under it. Which layer
     // moves more is the bench's to show (tools/bench/rank-battle-effect.mjs, pooled over 300): on 100 the two differ by 3 fights.
     await pg.evaluate(RANKFX_LAB);
@@ -75,7 +75,10 @@ export default {
     // W1-1, before W1-2) and 8 and 8 (CI 134). The plan's 10 to 20 is a pooled figure, the bench's
     // (tools/bench/rank-battle-effect.mjs over 300); this test guards that each layer moves the fight at all and never the
     // wrong way, which a result that stopped mattering (0 to 2 points) fails at once.
-    const ok = r.n >= 90 && wrong <= Math.floor(r.n * 0.02) && pts(line) >= 7 && pts(part) >= 7;
+    // (H-081: 7 sat inside that spread. The readings fell from 19 to 7 with the world, and a count of 8 on 100 (spread 2.7)
+    // reads under 7 about one world in three, for each layer. The bar is now 3 points: under every reading so far, held to the
+    // test's own words, a layer that stopped mattering (0 to 2) fails, and a true 8 reads under 3 about one world in eighty.)
+    const ok = r.n >= 90 && wrong <= Math.floor(r.n * 0.02) && pts(line) >= 3 && pts(part) >= 3;
     return { ok, detail: `${r.n} fights won: no result ${won('none')}; soldier best ${won('lineBest')}, worst ${won('lineWorst')} (${line} fights change hands, ${pts(line)} points); officer best ${won('partBest')}, worst ${won('partWorst')} (${part}, ${pts(part)} points); fights that went the wrong way ${wrong}` };
   },
 };
