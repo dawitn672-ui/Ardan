@@ -289,8 +289,8 @@ VM.build = function (seed, base, v = VM.VERSION) {
     cost[k] = 1 + sl * 300 + (gen.acc[gi[k]] > 500 ? 5 : 0) + e * 6 + hash01(k) * 0.8;
   }
   // the dry cells, and the rivers on the game's grid (the drawn paths, so a town on a river is on the line you see)
-  const arid = new Uint8Array(N); let nArid = 0;
-  for (let k = 0; k < N; k++) if (land[k] && VM.aridCell(gen.biome[gi[k]], gen.temp[gi[k]])) { arid[k] = 1; nArid++; }
+  const arid = new Uint8Array(N), aridList = []; let nArid = 0;
+  for (let k = 0; k < N; k++) if (land[k] && VM.aridCell(gen.biome[gi[k]], gen.temp[gi[k]])) { arid[k] = 1; nArid++; aridList.push(k); }
   const rivers = C.riverPaths(gen, VM.STREAM_T).map(pts => { const a = new Float32Array(pts.length * 3); pts.forEach(([u, v, f], i) => { a[3 * i] = (u + 0.5) / fx * 10; a[3 * i + 1] = (v + 0.5) / fy * 10; a[3 * i + 2] = f; }); return a; });
   const riv = VM.riverRaster(rivers, gw, gh);
   T.land = now() - T.t0;
@@ -339,20 +339,26 @@ VM.build = function (seed, base, v = VM.VERSION) {
       for (let f = 0.7; k < 0 && f > 0.01; f -= 0.15) for (let j = 0; j < N; j++) {
         if (!land[j] || used[j] || toSea[j] > 1) continue;
         const jx = j % gw, jy = (j / gw) | 0;
-        if (placedU.some(s => { const d = f * (r + s.r); return (s.x - jx) ** 2 + (s.y - jy) ** 2 < d * d; })) continue;
+        // the score first, the spacing test only for a cell that would win: the same cell, at a fraction of the cost
         const sc = (u.sea === 'peninsula' ? 2 : 0.6) * expo(j) - Math.hypot(jx - nx, jy - ny) / (gw * 0.35);
-        if (sc > best) { best = sc; k = j; }
+        if (!(sc > best)) continue;
+        if (placedU.some(s => { const d = f * (r + s.r); return (s.x - jx) ** 2 + (s.y - jy) ** 2 < d * d; })) continue;
+        best = sc; k = j;
       }
       if (k >= 0) placedU.push({ x: k % gw, y: (k / gw) | 0, r });
     }
     if (k < 0 && u.arid) {   // D9 (v3): the dry realm's seat is the dry cell with the most dry land around it, not far from the warp's
       const R = Math.max(4, Math.round(r)), dd = dryAround(R); let best = -Infinity;
-      for (let f = 0.7; k < 0 && f > 0.01; f -= 0.15) for (let j = 0; j < N; j++) {
-        if (!arid[j] || used[j]) continue;
+      // over the dry cells only, in the same order (the whole grid was scanned for each dry realm: speed, CI long run 12)
+      for (let f = 0.7; k < 0 && f > 0.01; f -= 0.15) for (const j of aridList) {
+        if (used[j]) continue;
         const jx = j % gw, jy = (j / gw) | 0;
-        if (placedU.some(s => { const d = f * (r + s.r); return (s.x - jx) ** 2 + (s.y - jy) ** 2 < d * d; })) continue;
+        // the score first, the spacing test only for a cell that would win (the same cell as testing every one, at a
+        // fraction of the cost: the spacing test against every seat placed was most of a new game's map time, CI long run 12)
         const sc = 4 * dd(j) - Math.hypot(jx - nx, jy - ny) / (gw * 0.35);
-        if (sc > best) { best = sc; k = j; }
+        if (!(sc > best)) continue;
+        if (placedU.some(s => { const d = f * (r + s.r); return (s.x - jx) ** 2 + (s.y - jy) ** 2 < d * d; })) continue;
+        best = sc; k = j;
       }
       if (k >= 0) placedU.push({ x: k % gw, y: (k / gw) | 0, r });
     }
@@ -481,8 +487,19 @@ VM.build = function (seed, base, v = VM.VERSION) {
   T.ms = now() - T.t0;
   const w = { seed, v, gw, gh, grid, prov, gen, rivers, riv, ocean, land: nLand, units: units.map((u, i) => ({ key: u.key, seat: u.seat, target: targetsU[i] })), T };
   // D9: the ground the game reads (roads, crossings, passes, cover, named features), from this world alone
-  if (A.V2.ground && typeof A.V2.ground.buildGround === 'function') { w.ground = A.V2.ground.buildGround(w, { elev, gi, metres: VM.ELEV_M,
-    places: P.map(p => ({ type: (prov[p.id].retype || {}).type || p.type, realm: p.realm })), params: { STREAM_T: VM.STREAM_T, RIVER_T: VM.RIVER_T } }); T.ground = now() - T.t0 - T.ms; }
+  // Made when first read, not with the world (CI long run 12: it was a sixth of every new game, about 0.25 s, paid by every
+  // life a test or the title screen makes and never plays; a life that plays reads it in its first month, for supply). The
+  // inputs are taken now, so the ground is the same whenever it is made; w.ground is an enumerable getter, so a world the
+  // worker builds (e-ahead) makes its ground there, off the page, when it is posted.
+  if (A.V2.ground && typeof A.V2.ground.buildGround === 'function') {
+    const G0 = A.V2.ground, args = { elev, gi, metres: VM.ELEV_M,
+      places: P.map(p => ({ type: (prov[p.id].retype || {}).type || p.type, realm: p.realm })), params: { STREAM_T: VM.STREAM_T, RIVER_T: VM.RIVER_T } };
+    const snap = { seed, gw, gh, grid, riv, ocean, rivers, gen: { biome: gen.biome, moist: gen.moist }, prov: prov.map(q => ({ sx: q.sx, sy: q.sy, adj: q.adj })) };
+    let ground;
+    Object.defineProperty(w, 'ground', { enumerable: true, configurable: true,
+      get() { if (ground === undefined) { const t0 = now(); ground = G0.buildGround(snap, args); T.ground = now() - t0; args.elev = args.gi = null; } return ground; },
+      set(v) { ground = v; } });
+  }
   return w;
 };
 };

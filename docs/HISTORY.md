@@ -1439,3 +1439,47 @@ Each failure, its cause and the fix:
 - **Undo:** revert the branch's commits, newest first. Saves keep only the map's seed and version. An older build reads a
   version 3 save's map as version 2 (its towns' sites would not match), so undo before version 3 saves are kept; version 2
   saves are unaffected either way.
+
+### H-078 · 2026-11-18 · Speed: a new world after D9 (CI long run 12's timeouts)
+*Numbered H-078: H-069 to H-077 may be taken by agents working in parallel.*
+- **Asked:** on `c2e9e0a`, long run 12 timed out `localEventsUseWords` (734 s on CI before) and `temperMovesTheWar` (about
+  1,000 to 1,220 s) at 1,800 s. Bisect the merges, find the hot spot, fix it.
+- **Measured** (this container, main-thread CPU; new games of seeds 5201, 5302, 5403 and three years of a noble's bot life;
+  then 20 new games and a probe of `localEventsUseWords`' first pass: 164 new lives and 821 scenes drawn):
+
+  | Build | New game | A year played | 164 lives (CPU) |
+  |---|---|---|---|
+  | `3d33c43` (W1-2 merged) | 1.19 s | 1.2 to 1.6 s | |
+  | `eb3eac7` (S1b) | 1.22 s | 1.4 to 2.0 s | |
+  | `b78fac1` | 1.25 s | 1.6 to 1.9 s | |
+  | `d1305c5` (R2) | 1.21 s (961 ms CPU of 20) | 1.6 to 2.1 s | 72.0 s |
+  | `a56b5b6` (D9) | 1.55 s | 0.9 to 1.6 s | |
+  | `97dd3ef` (why-ci) | 1.56 s | 0.8 to 2.0 s | |
+  | `c2e9e0a` (s1b-ci2) | 1.59 s (1,356 ms CPU of 20) | 0.7 to 1.9 s | 88.0 s |
+  | this fix | 1,015 ms CPU of 20 | | 76.5 s |
+
+  The step is D9 (+30 to 40% a new game); nothing after it moved here. CI's own times agree: `localEventsUseWords`
+  1,007 s (CI 133) and 982 s (CI 134), then 1,332 s on D9 (long run 10); `temperMovesTheWar` 989 and 970, then 1,223 s.
+  Long run 12's further step past 1,800 s is not reproduced in this container: no later commit costs more here.
+  Six wars as `temperMovesTheWar` runs them (a new game, then 300 days): 11.5 s CPU before D9, 12.6 s on `c2e9e0a` and on the fix.
+- **Cause** (CDP profiles of six new games): in `A.V2MAP.build`, D9's seat for each dry realm scanned the whole grid and
+  tested every dry cell's spacing against every seat placed before scoring it (the same for the sea realms, from v2);
+  and D9's ground (`A.V2.ground.buildGround`: cover, 826 road searches, high roads, crossings, passes) was made with every
+  world, about 0.23 s, though a life reads it only from its first month (supply) and a test's new life never does.
+- **Fix** (the same worlds and ground to the bit: the grid, the provinces, the fingerprint of six seeds and realms, and a
+  hash of a ground's edges, crossings, passes and cover are identical before and after):
+  - `src/map/99991-v2-map/a-world.core.js`: `w.ground` is an enumerable getter that makes the ground when first read, from
+    inputs taken when the world is made (a world the worker builds makes it there, when posted: `v2mapAhead` passes);
+    the dry and sea seat searches compute the score first and test spacing only for a cell that would win, and the dry
+    one runs over the dry cells only, in the same order.
+  - `src/map/engine/ground.js`: the cover's three-octave noise is read only for the cells whose cover it decides; the
+    road search reads `Math.hypot` of whole offsets from a table made with `Math.hypot`.
+- **Left:** the ground still costs about 0.17 s in a life's first month, so a test that plays a war in each of hundreds
+  of new lives (`temperMovesTheWar`) gains little; the continent itself (`generateContinent`, erosion) is two thirds of a
+  new game, as before D9.
+- **Checks:** `node --test tests/v2` 118/118, `build-v2 --check`; the D9 and v2-map tests (`d9Ground`, `d9Terrain`,
+  `d9Play`, `d9AttackAcross`, `d9RealmColors`, `d9OneMap`, `d9SaveAndPure`, `v2mapOneContinent`, `v2mapSameSeed`,
+  `v2mapSaveLoad`, `v2mapRenders`, `v2mapNoFarLands`, `v2mapLabels`, `v2mapSeaRealms`, `v2mapAhead`), `renderRng`,
+  `replayWithRender`, `savesStillLoad`: 18 of 18 pass.
+- **Commits:** `9cdb5b3` (the fix), then this entry and `index.html`.
+- **Undo:** revert `9cdb5b3`; the worlds are the same either way.

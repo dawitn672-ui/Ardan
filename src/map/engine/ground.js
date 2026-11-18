@@ -63,6 +63,18 @@ function heap() {
   };
 }
 
+// Math.hypot of two whole cell offsets, from a table made with Math.hypot itself (the same numbers, so the same roads), kept
+// for the grid's size: the search below asks it for every cell it reaches, and the call was a third of a world's ground
+// (speed, CI long run 12)
+let HYP = null;
+const hypTable = (gw, gh) => {
+  if (HYP && HYP.gw === gw && HYP.gh === gh) return HYP.t;
+  const t = new Float64Array(gw * gh);
+  for (let x = 0; x < gw; x++) for (let y = 0; y < gh; y++) t[x * gh + y] = Math.hypot(x, y);
+  HYP = { gw, gh, t };
+  return t;
+};
+
 export function buildGround(w, o = {}) {
   const C = Object.assign({}, DEFAULTS, o.params || {});
   const gw = w.gw, gh = w.gh, N = gw * gh, grid = w.grid, gen = w.gen, gi = o.gi, riv = w.riv, ocean = w.ocean;
@@ -75,10 +87,12 @@ export function buildGround(w, o = {}) {
   const nz = makeNoise(String(w.seed) + ':d9-cover'), cover = new Uint8Array(N);
   for (let k = 0; k < N; k++) {
     if (grid[k] < 0) continue;
-    const g = gi[k], b = gen.biome[g], x = k % gw, y = (k / gw) | 0, n = nz.fbm(x / 16, y / 16, 3);
+    // the noise (three octaves, the dearest step here) is read only for the cells whose cover it decides; it is pure,
+    // so the cover is the same as when every cell read it (a world built 2026-11-18 on: the same ground, sooner)
+    const g = gi[k], b = gen.biome[g];
     if (b === BIOME.WETLAND || (riv[k] >= 400 && hm[k] < 90 && gen.moist[g] > 0.7)) cover[k] = COVER.MARSH;
-    else if (b === BIOME.TEMPERATE_FOREST || b === BIOME.BOREAL_FOREST || b === BIOME.RAINFOREST) cover[k] = n < -0.16 ? COVER.OPEN : COVER.WOOD;
-    else if ((b === BIOME.GRASSLAND || b === BIOME.SCRUB) && n > 0.3) cover[k] = COVER.WOOD;
+    else if (b === BIOME.TEMPERATE_FOREST || b === BIOME.BOREAL_FOREST || b === BIOME.RAINFOREST) cover[k] = nz.fbm((k % gw) / 16, ((k / gw) | 0) / 16, 3) < -0.16 ? COVER.OPEN : COVER.WOOD;
+    else if ((b === BIOME.GRASSLAND || b === BIOME.SCRUB) && nz.fbm((k % gw) / 16, ((k / gw) | 0) / 16, 3) > 0.3) cover[k] = COVER.WOOD;
   }
   for (const s of sites) {   // the fields round every town
     const x0 = s % gw, y0 = (s / gw) | 0, R = C.CLEAR_R;
@@ -88,6 +102,7 @@ export function buildGround(w, o = {}) {
 
   // ---- 2. the cheapest way between two neighbouring towns, inside their two provinces (8 directions)
   const dist = new Float64Array(N), prev = new Int32Array(N), stamp = new Int32Array(N), done = new Int32Array(N), H = heap();
+  const HT = hypTable(gw, gh), hyp = (dx, dy) => HT[(dx < 0 ? -dx : dx) * gh + (dy < 0 ? -dy : dy)];
   let tick = 0;
   const DX = [1, -1, 0, 0, 1, 1, -1, -1], DY = [0, 0, 1, -1, 1, -1, 1, -1];
   // a road already made is cheaper to follow (C.SHARE), so roads share their corridors and meet at forks, rather than
@@ -103,7 +118,7 @@ export function buildGround(w, o = {}) {
   function way(a, b) {
     const s = sites[a], t = sites[b], tx = t % gw, ty = (t / gw) | 0;
     tick++; H.clear();
-    dist[s] = 0; prev[s] = -1; stamp[s] = tick; H.push(Math.hypot(s % gw - tx, ((s / gw) | 0) - ty), s);
+    dist[s] = 0; prev[s] = -1; stamp[s] = tick; H.push(hyp(s % gw - tx, ((s / gw) | 0) - ty), s);
     while (H.n) {
       const k = H.pop();
       if (done[k] === tick) continue; done[k] = tick;
@@ -114,14 +129,14 @@ export function buildGround(w, o = {}) {
         const j = yy * gw + xx, g = grid[j]; if (g !== a && g !== b) continue;
         if (d >= 4 && grid[y * gw + xx] < 0 && grid[yy * gw + x] < 0) continue;   // no slipping across a strait
         const nd = dk + stepCost(k, j, d >= 4);
-        if (stamp[j] !== tick || nd < dist[j]) { stamp[j] = tick; dist[j] = nd; prev[j] = k; H.push(nd + Math.hypot(xx - tx, yy - ty), j); }
+        if (stamp[j] !== tick || nd < dist[j]) { stamp[j] = tick; dist[j] = nd; prev[j] = k; H.push(nd + hyp(xx - tx, yy - ty), j); }
       }
     }
     if (done[t] !== tick) return null;
     const path = []; for (let k = t; k >= 0; k = prev[k]) path.push(k);
     path.reverse();
     let km = 0; for (let i = 1; i < path.length; i++) { const p = path[i - 1], q = path[i]; km += (p % gw !== q % gw && ((p / gw) | 0) !== ((q / gw) | 0)) ? 14.14 : 10; }
-    return { path: Int32Array.from(path), cost: dist[t], km, straight: Math.hypot(s % gw - tx, ((s / gw) | 0) - ty) };
+    return { path: Int32Array.from(path), cost: dist[t], km, straight: hyp(s % gw - tx, ((s / gw) | 0) - ty) };
   }
   const edges = [];
   for (let a = 0; a < M; a++) for (const b of prov[a].adj) {
