@@ -1355,6 +1355,11 @@ because §15 and order 62 (rule 21) want nothing that grows without bound and `S
 the rest `A.rand`); the remaining 66 (W1-3 to W1-6, `docs/design/r1-audit.md`). Whether more wars declared at under even
 strength (11 to 31 in three 40-year test worlds, H-064; above the ruler's nerve or for a feeling) is right: W1-5 and the
 balance stage (D12b-7) judge it.
+**Addendum (CI 140, H-064):** the court's reasons (68's plan and moment, an old wrong or want; 55's feud ledger) keep the
+meaning they were tuned for, a multiplier on the chance of a hostile month turning to war: a factor above 1 weighs
+logit(min(.97, .35 x m)) - logit(.35) (`A.WHY.courtW`), a factor below 1 ln m; a plan's moment is kind `want`. *Why:*
+as plain ln m they were outweighed by reasons the old roll never had, and the wars answering a memory or a want fell
+below their share with 68 switched off.
 
 ### D-070 · Order 59: growth has no timetable; concepts, grasp, discipline and breakthroughs (2026-11-15 23:12 ET; amends D-067)
 The growth standard's fixed timetable (an ordinary talent at Master in about 27 years of full-time drill) is dropped.
