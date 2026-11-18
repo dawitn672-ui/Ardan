@@ -1357,6 +1357,17 @@ Each failure, its cause and the fix:
 - **Undo:** revert the branch `r2`'s commits (base `3d33c43`); delete `src/people/9999960-reach` and
   `src/people/engine/reach.js`, take the `reach` line out of `src/core/engine/index.js` and rebuild the bundle; every
   release hook is guarded by `A.REACH`, so a build without the feature runs as before.
+- **Addendum (CI 140, long run 10, after the merge with D9 at a56b5b6; branch `r2-ci`).**
+  `reachNeedOpens` failed with "closed (null)": the game was right and the test was stale. It set `pc.skills.sword = 75`.
+  Since S1 (D-072), the player's skills live in `pc.sk` and `p.skills` only mirrors them. Since C9 (D-040), a skill also
+  works only at the level the body holds up, and a fresh peasant's body holds a sword at 30, under the 40 a lord counts as
+  a sword worth having. The test now sets the level through `A.SK.set` and lifts `A.skillCap` for the question, with the
+  reason written there.
+  `nmTwins` failed with "Sofia of Camia twice in Camia" (world 9117). The cause was in 999981-names-and-cultures, not in
+  reach or circles: `N.settle` renames a newcomer who twins a townsman, but its `avoid` set held only the kin's names. So
+  when the first draw gave the same name back, `N.rename` stopped at once and the twin stayed. That is about one draw in
+  twenty, depending on the pool. The shift in the world from the R2 and D9 merge only brought such a draw to light. The
+  name being replaced is now avoided too, and world 9117 has no twins.
 
 ### H-077 · 2026-11-16 ET · D9: the map's ground, read by the game and drawn (D-061)
 - **Branch** `d9-map` from `v2-integration` (`7aee21c`), not pushed. Steps: `aec5924` the ground engine

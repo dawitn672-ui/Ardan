@@ -90,11 +90,16 @@ export default {
       const count = RH.lord(6, 'noble');
       const before = A.REACH.view(pc, count, 'audience');
       const atWar = A.atWar; A.atWar = rid => (rid === count.realm ? [{ id: 'test' }] : atWar(rid));
-      pc.skills.sword = 75;
-      try { const after = A.REACH.view(pc, count, 'audience'); return { before: before.state, after: after.state, why: after.top, yes: after.yes }; } finally { A.atWar = atWar; }
+      // S1 (D-072): the player's skills live in pc.sk and p.skills is only their mirror, so a level is set through A.SK
+      if (A.SK && A.SK.set) A.SK.set(pc, 'sword', A.SK.lvOfValue(75), 'test'); else pc.skills.sword = 75;
+      // C9 (D-040): a skill works only at the level the body holds up, and this fresh peasant's body holds a sword at 30
+      // (below the 40 a lord counts as a sword worth having). The test is about need, not the body: the cap is lifted
+      // for the question and put back after
+      const cap = A.skillCap; A.skillCap = null;
+      try { const after = A.REACH.view(pc, count, 'audience'); return { before: before.state, after: after.state, why: after.top, yes: after.yes, arm: A.skill(pc, 'sword') }; } finally { A.atWar = atWar; A.skillCap = cap; }
     }).toString() + ')()');
     const ok = r.before === 'closed' && r.after !== 'closed' && /needs your sword/.test(r.why);
-    return { ok, detail: `without need: ${r.before}; with a war and a sword arm: ${r.after} ("${r.why}")` };
+    return { ok, detail: `without need: ${r.before}; with a war and a sword arm (${r.arm}): ${r.after} ("${r.why}")` };
   },
 
   // NPC to NPC: the pull of a bond across a wide gap is small and below the pull across a narrow one; patronage and a
