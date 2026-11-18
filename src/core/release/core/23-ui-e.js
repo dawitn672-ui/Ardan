@@ -1040,9 +1040,11 @@ UI.rosterCard = function (pc) {
 };
 
 UI.TAB.people = function (pc) {
+  // (CI 144, H-080: the line said the same in 24 words, and a ruler's People page, its council above, went one word over
+  // B5's desktop budget of 270 in view; 15 words now)
   return (
     UI.rosterCard(pc) +
-    '<p class="small muted" style="margin-top:0">These are the people you have chosen to know. Bonds you never tend fade after a few years; the ones you care for last.</p>' +
+    '<p class="small muted" style="margin-top:0">The people you have chosen to know. A bond left untended fades within a few years.</p>' +
     UI.peopleBonds(pc)
   );
 };

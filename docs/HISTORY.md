@@ -1525,3 +1525,23 @@ market fix) where it mattered. Three were real gaps in the game; the other five 
 - **Commits:** `8a8da9e`, `c7de014`, `181e489`, `5409c94`, `a9a6160`, `4a275f5`, `f513060`, `a2d1ccf`, then this entry and
   `index.html`.
 - **Undo:** revert the commits; `f513060` changes which story arcs a life meets (worlds stay deterministic).
+
+### H-080 · 2026-11-18 · CI check run 144: the last three quick-tier failures
+
+After `fa1e665` (ci-2599 merged; long run 14 green) the quick tier failed three tests.
+
+- **`lfDoors`** ("refills by door undefined"), a draw. Seed 9711's priest died in month 36 of the 80 (ci-2599's
+  `ak_inherit` change moved which story arcs a life meets, and so the stream); a dead man is refused every refill
+  (`LF.refill` wants the living player), so the doors were never tried and `A.S.lf.by` never made. The test plays a life
+  that dies inside the eighty months again on the next seed: seed 9712, 38 fresh refills (duty 24, flow 16), all unseen.
+- **`b5Budget`** (desk/ruler/people 271 words, max 270), trimmed, not raised. Reproduced in CI's Chromium 141 (271; 268
+  in the container's newer one), and on `2599744` as well, so it sat at the edge of the budget. The People tab's line
+  under the council said in 24 words what 15 say: "The people you have chosen to know. A bond left untended fades
+  within a few years." (`src/core/release/core/23-ui-e.js`). 78 screens within budget in both browsers.
+- **`scPhone`** ("a wheel scrolls the sheet 0 px"), the test's timing. The sheet was as before (full screen, its own
+  scroller, taller than its box); the wheel scrolls it 432 px here in both browsers and could not be made to fail. In a
+  touch-emulating context the wheel's scroll lands on the compositor's time, which a loaded runner stretches past the
+  test's fixed 150 ms. The scroll is now waited for (up to 3 s), then 100 ms more for the page behind to move if it would.
+- **Checks:** the three tests (b5Budget and scPhone in both browsers), `scPhoneFit`.
+- **Commits:** `3752182`, `0023746`, `4d9ed03`, then this entry and `index.html`.
+- **Undo:** revert them; only `0023746` changes what the player reads.
