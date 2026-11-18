@@ -1,0 +1,117 @@
+// The unknown die (D-107; X5 found it, D-106). An NPC died of his years only if he ruled a realm (A.worldYear), the
+// player knew him (A.familyYear) or he held a title (A.V2N.yearOfDeaths); every other person (officials, members of the
+// great houses, kin the player never met, craftsmen of a town) aged for ever: 1,023 of 1,669 living people at year 100
+// were past their people's greatest age, the oldest human 185. Owner's rule 1: nothing without reason; everyone ages and
+// dies by his body and his circumstances.
+//
+// Each New Year, after the release's passes and the court's (A.onYear), every living NPC those passes do not cover
+// meets the release's own odds for his body (A.deathChance: his age against his people's span, his health, a blood
+// that shortens life), raised by the year just past where the game knows it: an epidemic in his home province (57's
+// S.prov[].plague), a failed harvest in his realm (57's famine record), more for the poor in a famine. Anyone, covered
+// or not (the player apart), who has passed his people's greatest age (GD.RACES[race].maxLife) dies of it: the body ends.
+//
+// The draw is from a stream seeded by the year and the person (A.V2F.rng, as V2N.yearOfDeaths), and the death runs in a
+// sandbox (A.V2F.sandbox), so the game's own stream does not move and the order of the people does not matter. The death
+// goes through A.kill, so posts are left (A.POSTS.leaveAll), a widow is a widow, a ruler's realm passes (A.rulerDies),
+// titles and the house's headship pass by the house's law (A.V2F.inherit), and the family tree keeps the dead.
+// A blood relative of the player within two steps whom he never met (a grandparent, an uncle, a nephew: the tree's
+// kin, not his acquaintances) is told in the year's story as a line; one of the household is caught by 999995-next-year's
+// digest as "A death in the household", which never stops a year (the time rule, D-062).
+// MORT.OFF stops it (the tests compare).
+(function () {
+  const F = A.V2F; if (!F || !F.rng || !F.sandbox) return;
+  const M = A.MORT = A.MORT || {};
+  M.PLAGUE = 1.8;            // an epidemic in his home province in the year past
+  M.FAMINE = { low: 1.4, mid: 1.2, high: 1.05 };   // a failed harvest in his realm, by estate
+  M.KIN_TOLD = 2;            // blood kin within this many steps, unmet, are told
+  M.stats = { died: 0, aged: 0, told: 0, years: 0 };
+  const LOW = new Set(['serf', 'slave', 'peasant']), HIGH = new Set(['noble', 'royal', 'gentry']);
+  const CAUSE_AGE = ['old age', 'old age, in sleep', 'a failing heart', 'the weight of years'];
+
+  // a person's greatest age: his people's (GD.RACES[race].maxLife). The lore begins the world in 1105 with a few already past
+  // it (Queen Ithrien of Sylvaran at 587, an elf's span being 520): they meet the release's own odds past the span (0.6 a
+  // year, A.deathChance) and the body's end ELDER_GRACE years on, so the world opens as the lore wrote it
+  M.YEAR0 = 1105; M.ELDER_GRACE = 10;
+  M.maxLife = p => {
+    const R = GD.RACES[p.race], span = R && R.maxLife ? R.maxLife : 100, at0 = M.YEAR0 - p.born;
+    return at0 > span ? at0 + M.ELDER_GRACE : span;
+  };
+  M.pastSpan = p => !!(p && p.alive && A.age(p) > M.maxLife(p));
+
+  // who the older passes already weigh: the rulers, the player's acquaintances, the court's title holders
+  M.covered = function () {
+    const S = A.S, pc = A.pc(), out = new Set();
+    if (pc) { out.add(pc.id); for (const id in pc.rel || {}) out.add(id); }
+    for (const id in S.realms) { const r = S.realms[id]; if (r && r.alive && r.ruler) out.add(r.ruler); }
+    const N = A.V2N;
+    if (S.court && N && N.holderOf) for (const c of Object.values(S.court.realms || {})) for (const t of c.titles || []) {
+      if (t.crown || t.heldWith || t.rank === 'king') continue;
+      const h = N.holderOf(t); if (h) out.add(h.id);
+    }
+    return out;
+  };
+  // the year just past, where the game knows it: provinces with an epidemic, realms with a failed harvest
+  M.hardYear = function () {
+    const S = A.S, y = S.year - 1, plague = new Set(), famine = new Set();
+    for (const P of S.prov || []) if (P && P.plague === y) plague.add(P.id);
+    const E = S.wrec && Array.isArray(S.wrec.e) ? S.wrec.e : [];
+    for (let i = E.length - 1; i >= 0; i--) { const e = E[i]; if (!e) continue; if (e[1] < y) break; if (e[0] === 'famine' && e[1] === y && e[4]) famine.add(e[4]); }
+    return { plague, famine };
+  };
+  // the odds for one person this year, and what they come of
+  M.odds = function (p, hard) {
+    let q = A.deathChance(p), plague = false, famine = false;
+    if (hard.plague.has(p.home)) { q *= M.PLAGUE; plague = true; }
+    if (hard.famine.has(p.realm)) { q *= LOW.has(p.status) ? M.FAMINE.low : HIGH.has(p.status) ? M.FAMINE.high : M.FAMINE.mid; famine = true; }
+    return { q: Math.min(0.95, q), plague, famine, base: A.deathChance(p) };
+  };
+  const causeOf = (p, o, r) => {
+    if (o.plague && r.next() < 1 - o.base / Math.max(o.q, 1e-9)) return 'the sickness that came to ' + (A.provName ? A.provName(p.home) : 'his town');
+    if (o.famine && r.next() < 0.5 * (1 - o.base / Math.max(o.q, 1e-9))) return 'the hunger of a failed harvest';
+    return null;
+  };
+
+  // tell the player of a near blood relative he never met
+  M.tell = function (p) {
+    const pc = A.pc(); if (!pc || !pc.alive || !F.kinOf) return false;
+    let k = null; try { k = F.kinOf(pc, p); } catch (e) { k = null; }
+    if (!k || !k.term || !(k.degree <= M.KIN_TOLD) || k.line === 'affinal') return false;
+    A.log(`Word comes that your ${k.term}, ${A.fullName(p, false)}, has died, aged ${A.age(p)}, of ${p.cause}.`, '');
+    M.stats.told++;
+    return true;
+  };
+
+  M.year = function () {
+    const S = A.S; if (M.OFF || !S || !S.people) return [];
+    const pc = A.pc(), covered = M.covered(), hard = M.hardYear(), out = [];
+    M.stats.years++;
+    for (const id of Object.keys(S.people)) {
+      const p = S.people[id];
+      if (!p || !p.alive || id === S.pc || p.npcTemp) continue;
+      const aged = M.pastSpan(p);
+      if (!aged && covered.has(id)) continue;
+      const r = F.rng(`mort|${S.year}|${id}`);
+      let cause = null;
+      if (aged) cause = CAUSE_AGE[Math.floor(r.next() * CAUSE_AGE.length)];
+      else {
+        const o = M.odds(p, hard);
+        if (!(r.next() < o.q)) continue;
+        cause = causeOf(p, o, r);
+      }
+      F.sandbox(`mort|${S.year}|${id}`, () => {
+        A.kill(p, cause || (A.naturalCause ? A.naturalCause(p) : 'a fever'));
+        if (!p.alive && pc && !(pc.rel && pc.rel[id])) M.tell(p);
+      });
+      if (!p.alive) { out.push(id); M.stats.died++; if (aged) M.stats.aged++; }
+    }
+    return out;
+  };
+  (A.onYear = A.onYear || []).push(function () { try { M.year(); } catch (e) { console.error('mortality', e); } });
+
+  // the check: no one but the player outlives his people's greatest age (held at 0, tests/coherency-baseline.json)
+  if (A.COHERENCY && A.COHERENCY.add) A.COHERENCY.add('alive past the greatest age', () => {
+    const S = A.S, out = [];
+    for (const id in S.people) { const p = S.people[id]; if (id !== S.pc && M.pastSpan(p) && out.length < 12) out.push(`${p.given} (${id}), ${p.race}, aged ${A.age(p)} (greatest age ${M.maxLife(p)})`); }
+    return out;
+  }, { owner: 'src/people/999994-generations' });
+})();
