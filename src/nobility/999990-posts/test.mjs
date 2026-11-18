@@ -199,8 +199,10 @@ export default {
       if (count) {
         const ck = count.noble.court;
         A.kill(count, 'a test', false);
-        const to = P.holder(P.titleKey(ck));
-        out.title = { moved: !!to && to !== count.id, carries: !!to && A.P(to).noble && (A.P(to).noble.court === ck || (A.P(to).noble.more || []).includes(ck)) };
+        // his heir by the law carries it, or (no heir the law takes: CI 140's count after D9 left only a daughter) the
+        // title stands vacant for the crown to regrant, and the registry says so at once, naming the dead man as its last
+        const to = P.holder(P.titleKey(ck)), rec = A.S.posts.h[P.titleKey(ck)], last = rec && rec.prev && rec.prev[rec.prev.length - 1];
+        out.title = { moved: to !== count.id, carries: to ? !!(A.P(to).noble && (A.P(to).noble.court === ck || (A.P(to).noble.more || []).includes(ck))) : !!(last && last[0] === count.id && last[3] === 'died'), vacant: !to };
       }
       // a free company: resigning the commission leaves every field post; the company's captaincy is a post kept in prison
       if (A.atWar('POL-01').length) for (const w of A.atWar('POL-01').slice()) A.S.wars = A.S.wars.filter(x => x !== w);

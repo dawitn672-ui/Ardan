@@ -1313,6 +1313,26 @@ Each failure, its cause and the fix:
     same way on `32aef7a`, the integration branch just before W1-2 was merged: the line was the "Mind your infamy"
     suggestion at the top of Life, which P3's fix 2 removed (nothing handed). **Not W1-2's; left to the P3 agent.**
   - **Commits:** `f02c1ba` (the two tests), then this addendum and `index.html`.
+- **Addendum, CI 140 (check run 140, long run 10, on `a56b5b6`, S1b, R2 and D9 merged; branch `why-ci`).**
+  - `csWorlds` (68): wars that cite a memory or a want, 17.1% of 76 AI wars (by world 13, 24, 13%) against a bar of 18%,
+    and 23.3% with 68 switched off. **Cause, the game (W1-2's):** 68's court reasons (a plan's moment x1 to x9, an old
+    wrong or want x1 to x4) and 55's feud ledger (up to x2.1) were tuned as multipliers on a probability, capped at
+    certainty, in v2 diplomacy's roll; W1-2 entered them as plain log-odds (ln m) beside reasons that roll never had (the
+    count's margin, no accepted cause, temper), so a planned war at its moment was no longer all but sure, and memory and
+    want lost ground to strong, warlike attackers (31.4% on W1-2's own build, 17.1% once D9 and R2 changed the worlds).
+    **Fix:** `A.WHY.courtW`: a court factor above 1 weighs as the multiplier it was, at the old roll's base chance (.35,
+    capped .97): x9 weighs 4.1 (was 2.2), x4 4.1 (1.4), x2 1.5 (0.7), x1.5 0.7 (0.4); a factor below 1 stays ln m; a
+    plan's moment is the crown's resolve (kind `want`, never discounted by heat). Not re-run here (CI: about 10 minutes;
+    the long tier judges it); the browser tests that read the war's reasons pass (below).
+  - `postsStage2Kinds` (999990-posts): "FAILED title, FAILED strict". **Cause, the game (not W1-2's; D9's world showed
+    it):** a count died leaving only a daughter; no heir took the title, 99995 marked it vacant for the crown's regrant,
+    but the post registry went on naming the dead count until the New Year's pass (titles are synced by law only then),
+    so the strict audit flagged it, and still three months on. **Fix:** 99995's `F.inherit` tells `A.POSTS.note` the
+    title is vacant at once ('died'); the test accepts a vacancy recorded with the dead man as its last holder. Passes
+    with `postsDeathVacates`, `postsHandover`, `postsPure`, `postsSeniorGeneralFill`, `postsSaveMigration` and 99995's
+    `v2nCaps`, `v2nCounties`, `v2nLowerSame`, `v2nRegrant`, `v2nRegrantHeadless`, `v2nOneRankWord`, `v2nCourtView`.
+  - Also: `bondsFeudInherited` read the ledger's pull as a ratio of chances (x1.5), which a logistic share cannot reach from a high start (0.65 to 0.86: x1.32); it reads the odds now (x3.3), the reason in the test. Passes, with the why, cs and v2Dip tests touched (11 of 11).
+  - **Commits:** `6000636` (the title), `e70d1b7` (the court's reasons, the feud test), then this addendum and `index.html`.
 
 
 ### H-073 · 2026-11-16 · R2: every relationship needs a base (order 55, rule 19, D-065, D-080)
