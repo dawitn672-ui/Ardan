@@ -333,6 +333,17 @@ order is replaced, strike it through and say by what.
     towns and places, the Codex, the names of seas and regions, the stories and events that name a place) is brought into
     line with the one map, so the map and the words never disagree. M1 merges once, whole.
 
+72. **One designed map, clean and realistic; no country encased in another** (D-152) · recorded 2026-11-19 15:35 ET. The owner's words, verbatim:
+
+    > some of the examples show borders that are unacceptable. theres no reason for one country to be encased within another make the map clean and realistic taking into account every possible factor. dont give me 30 continents take all the good components of a fantasy world and its design and build one singular map that i can critique once it is completely done
+
+    **Read as:** no more candidate continents chosen by score. One map is designed on purpose, drawing on what makes
+    good fantasy-world maps and real geography: land shaped by its causes (plates, ranges, rain shadows, river basins,
+    the Middle Sea), realms whose territory follows natural borders (ridges, rivers, forests, coasts) and history, no
+    realm enclosed by another, each realm whole unless history explains a piece apart, cities where trade, water and
+    defence put them. It is built in full (map version 4, with order 71's lore made to match it), and only then shown to
+    the owner for his critique.
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
