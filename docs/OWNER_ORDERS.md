@@ -323,6 +323,16 @@ order is replaced, strike it through and say by what.
     the listing, App Review) start on the owner's word, at any point. Until then the build rules keep the route open and
     I1-1 (speed) is done within v2, so the stages can start at a day's notice.
 
+71. **Finish the one continent in its entirety, and make the world's lore match the map** (D-151) · recorded 2026-11-19 15:20 ET. Asked whether to merge the M1 winner as it was (every candidate put the six Middle Sea realms inland, Drevna "the Lakeland" had no lakes, Aldmark no plains) or teach the map-maker first, the owner's words, verbatim:
+
+    > 1. finish it in its entirety aswell as recalibrating the lore and all information of the world its people, kingdoms and places to match the map
+
+    **Read as:** option 1, and more. The map-maker learns what the lore needs (the Middle Sea, Drevna's lakes, realms
+    placed on the ground their lore names); the best continent is chosen again; and then everything the world says about
+    itself (the realms' and peoples' descriptions, their terrain, coasts, seas and compass words, neighbours, capitals,
+    towns and places, the Codex, the names of seas and regions, the stories and events that name a place) is brought into
+    line with the one map, so the map and the words never disagree. M1 merges once, whole.
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,

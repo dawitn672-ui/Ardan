@@ -2553,3 +2553,14 @@ The league's time grows by about a third (24 more lives of 72).
    The test now counts a clash only between two who are close kin of each other, by the namer's own `A.NAMES.closeKin`.
    **Considered:** widening the namer to a cousin's cousins (both sides of every marriage): stricter than the rule and
    than history, and the pools are small.
+
+### D-151 · M1 finished whole: a map-maker that serves the lore, then lore that matches the map (2026-11-19; order 71)
+**Context.** M1 (`work/m1`, D-148 to D-150) chose `m1-02` of 30 candidates, but no seed could place the six Middle Sea
+realms on a sea, give Drevna lakes, or put Aldmark on plains: the generator has no inland sea and places realms by the
+release's cells. **Chosen.** (1) Map version 4: the generator learns an inland Middle Sea, lakes where the lore keeps them,
+and realm heartlands placed on the terrain their lore names (coast, mountain, steppe, forest, dry). (2) The candidates are
+scored again (M1's chooser, lore fit first) and the best taken. (3) One source of truth: the world's facts are read from
+the chosen map (`data/map/one-continent.json`), and every place the world describes itself (lore JSON, the Codex, realm
+and people descriptions, sea and region names, capitals, towns, neighbours, compass words, events and stories that name a
+place or its ground) is recalibrated to it; a lint holds words and map together from then on. (4) M1 merges once, whole.
+
