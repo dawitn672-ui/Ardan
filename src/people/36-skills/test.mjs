@@ -20,7 +20,7 @@ const LOAD = async (b) => {
   return { raw, ok, ver: d.S.ver };
 };
 
-export const limits = { s1Mirror: 2400, s1Reasons: 2400, s1Ledger: 2400, s1NotLinear: 3600, s1NoProficiency: 3600, s1Census: 7200 };
+export const limits = { s1Mirror: 2400, s1Reasons: 2400, s1Ledger: 2400, s1NotLinear: 7200, s1NoProficiency: 3600, s1Census: 7200 };
 export default {
   // §9 row by row, on every save in tests/saves/ (and press/)
   async s1Migrate(pg) {
@@ -160,11 +160,11 @@ export default {
   },
 
   // not a straight line: a month at Beginner III buys twenty times the share of a step a month at Master III buys, and
-  // a life climbs steps three times as fast while Intermediate as while Expert (12 bot lives)
+  // a life climbs steps three times as fast while Intermediate as while Expert (24 bot lives)
   async s1NotLinear(pg) {
     const r = await pg.evaluate(() => {
       const SK = A.SK, rate = { 1: [0, 0], 3: [0, 0] };
-      for (let i = 0; i < 12; i++) {
+      for (let i = 0; i < 24; i++) {
         T.enter({ seed: 900 + i * 37, race: 'human', realm: 'POL-01', status: ['peasant', 'artisan', 'noble', 'merchant'][i % 4], sex: i % 2 ? 'M' : 'F', startAge: 14 });
         const pc = A.pc();
         let last = {};
@@ -185,7 +185,9 @@ export default {
     // the bar on the ratio of the two climbs is set from its measured spread (CI 148 read 0.81 against 0.27, 2.99, and failed
     // on the rounding at 3): four sets of twelve lives on the same build read 2.99 (seeds from 900), 3.24 (1400), 3.91 (2100)
     // and 3.09 (3300), 3.3 pooled. A straight line climbs as fast at Expert as at Intermediate (a ratio near 1); 2.5 sits
-    // under every reading and far above that
+    // under every reading and far above that. (w17-ci: long 38 read 2.52 on twelve lives, 72 Expert skill-years; twelve
+    // lives are too few for a bar this close, so the reading now pools twenty-four, the seeds of the first set and the
+    // next twelve, H-082)
     const ok = r.ratio >= 20 && (r.n[1] < 5 || r.int >= 2.5 * r.exp);
     return { ok, detail: `a month at Beginner III buys ${r.ratio.toFixed(0)} times the share of a step it buys at Master III; steps a year while Intermediate ${r.int.toFixed(2)} (${r.n[0]} skill-years), while Expert ${r.exp.toFixed(2)} (${r.n[1]} skill-years)` };
   },

@@ -27,7 +27,8 @@ release (`02-game-data-a.js`, `09-missions-and-line-battles.js`), 99999-v2-renow
   quartermaster to master of the train; pay rises with the rung; a quartermaster keeps the post as a captain, a master
   of the train as a commander.
 - **Pay rebased** (W11, `GD.MIL[].pay`): a soldier 100 a year (a farmhand 60, a yeoman 220), a sergeant 140 and 180, a
-  captain 300 and 450, a commander 900, a General 2,000 and 3,500. Wealth in arms is loot and ransom.
+  captain 400 and 800, a commander 2,000, a General 5,000 and 9,000 (the officers' pay restored toward the release's by
+  D-144). Wealth in arms is also loot and ransom.
 - **The world's companies, not only the player's** (D-126, `c-world.core.js`): every company's seed role-holders (one in
   three companies for each role) and every battalion's own drill work in aggregate: morale at rest, the wounded kept, a
   foraging party's bread and the land's anger, a day's bread (Quartermasters, clerks), holds on the desertion ledger, an

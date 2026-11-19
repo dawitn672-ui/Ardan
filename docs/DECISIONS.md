@@ -2361,3 +2361,107 @@ a pushed branch survives restarts; the list makes deleting safe.
 6. **Considered:** a CI step that commits the file to `release/*` (it needs write permission for the workflow token, and
    D-134 keeps the branch at the tested commit); each shard building for itself (10 s each, but eight builds are not one tested artifact); keeping the
    committed file only on the integration branches (the growth is the same).
+### D-135 · Honest odds with room for upsets from will, circumstance, adaptability and talent (2026-11-18; order 66)
+**Context.** The odds engine (`src/people/engine/odds.js`) already has two of the four: surges of will under stakes and
+blunders from judgment, fatigue and overconfidence; the duel's shown odds were refit to match results (H-077's honestOdds,
+the seat term). Circumstance, adaptability and talent are not yet named sources of upsets. **Chosen.**
+1. *The scale stays honest:* what is known before the fight is shown and matches results pooled (the honestOdds tests
+   keep their bars).
+2. *Upsets carry reasons:* the spread around the scale comes from four named sources, each recorded on the result and told
+   in the after-fight words: will (the existing surge), circumstance (ground, light, weather, footing, a wound or fatigue,
+   the unseen: drawn from what the world holds that day, partly hidden when the scale is read), adaptability (judgment and
+   experience reading the foe across exchanges: a fighter who adapts gains as the fight lengthens, a rigid one loses
+   ground), talent (a talent letter widens the ceiling and the chance of a surge turning into a breakthrough).
+3. *Room, bounded:* an underdog by one tier still wins about one fight in four; by two tiers about one in ten; by three
+   tiers rarely, and only with a named reason; no upset without a reason on the record.
+4. *Order:* built as item **U1** after the current batch clears (D-134), duels first, then the odds engine's other
+   attempts. Measured by a test that pools upsets by source and checks each source moves results the right way.
+
+### D-136 · The world's masters brought down to what their years allow (2026-11-18; order 67 b; closes D-078's open point)
+Councillors, mentors and order masters rolled at 70 to 96 on the old scale are re-set, on load and at world-making, by
+the closed form of S1 growth: their age, talent letters, training of their post and the concepts a level asks; a few
+stay great where their years and gifts truly carry them. Built inside item **PA** (parity, D-140).
+
+### D-137 · Every trial says what the deed is (2026-11-18; order 67 c; D-067 item 3 confirmed)
+The trials at Expert and Master stand. Each trial card names the deed in plain words: the task, before whom, and what
+counts as passing ("Hold the line's left file for a full charge, before your captain: stand, and keep the file whole").
+A trial's wording comes from data per skill and per level, linted for the three parts. Built inside item **LC**.
+
+### D-138 · Legends and crowns as hard as the world makes them (2026-11-18; order 67 d)
+The census stays a count (D-078). Measure how often a life reaches Legend and how often a commoner, a lord or a soldier
+reaches a crown, and set each against what the world's logic allows (the concepts and proofs a Legend asks over a
+lifetime; a throne by blood, election, conquest or a coup, each needing what it needs in A.WHY and A.PAX). Fix the
+shortcuts found; no flat penalty. Built as item **LC** with D-137.
+
+### D-139 · One economy, every figure set against the others (2026-11-18; order 67 e)
+An audit of every money figure (wages by trade, soldiers' pay (D-127), prices of goods, food, gear, horses, rents,
+dowries, fines, bribes, upkeep of households, hosts and courts, loot and ransom, treasuries and taxes) as one table in a
+day's wage; incoherent ones are re-based from a few anchors (a labourer's day, a loaf, a horse, a sword), the balance
+bands re-read. Built as item **E0** after PA and LC.
+
+### D-140 · Everyone ages and grows by the player's rules; no friendship shortcuts (2026-11-18; order 67)
+People the player never meets age and die (X5's death pass, `x5-deaths`). Every person and group (a company, a household,
+a house) grows by the same rules and margins as the player: the same S1 experience, concepts, proofs and breakthroughs
+for anyone the world tracks as a person, and the same aggregate rules for groups. Promotion and appointment read merit
+and reasons (A.WHY), and a friendship is one reason among many, never enough alone (a sergeant's friend does not become a
+General). Built as item **PA**.
+
+### D-141 · Clear before building; a sample game in every version that shows what changed (2026-11-18; order 67 1 and 4)
+1. Nothing new starts while a known failure is open: the current batch's fixes, then the next batch's, then new items in
+   the order PA, LC, E0, U1. A merge needs its own tests and the touched features' tests passing locally first.
+2. *Why sample saves stopped:* the rule lived in two places that disagreed. CLAUDE.md asked for a sample game only for
+   "milestones", while every version from alpha.1 to alpha.10 had one by habit; from alpha.11 the version steps were
+   written from memory into scheduled check-ins, and the sample save was left out of them. The fix: the version tool
+   makes it (D-134) and `version.mjs check` fails without it, so it no longer depends on memory.
+3. *A sample game shows the version's difference:* each is played to a moment where that version's change is in play
+   (alpha.12: a landed lord answering the summons; alpha.13: a ruler at the peace table; alpha.14: a soldier at the muster
+   with his company's card), and `tests/saves/README.md` lists what each one shows and how to see it.
+
+**D-135 addendum (2026-11-18, the owner's alpha.9 survey):** he found upsets "too common" while the odds shown matched
+"mostly". U1 sets its bands from that: rarer upsets than point 3 first said (to be measured against today's rate, which
+has moved since alpha.9), each with its named reason; the honest scale stays.
+
+### D-142 · One fixed continent for every life (2026-11-18; order 68; over D-054's and D-061's per-seed ground)
+**Context.** Since the v2 map, `A.V2MAP.world(seedOf(S.seed))` built a new continent for every game seed, and map
+versions 1 to 3 redrew it again; the title screen showed seed 7's world, the life another. Nobody had chosen a new
+continent per life; it came with the generator. The owner noticed the map "keeps on changing" and chose one geography.
+**Chosen.**
+1. The continent's shape (land, sea, height, rivers, lakes, provinces' cells, seats' sites, roads and fords) is built
+   from one canonical map seed for every life; the game's seed still decides everything that happens on it (people,
+   history, wars, borders as they move). The title shows the same continent.
+2. The canonical seed is chosen once, by measured quality (D9's legibility reading, realm heartlands that fit the lore,
+   one connected landmass), and recorded here with the readings when chosen.
+3. A new map version (a better generator) redraws the one continent once; saves carry `A.S.v2map = { seed, v }` and keep
+   the map they were made on, as today.
+4. The worker that built each new life's continent ahead (D-054) builds the one continent once and caches it; the load
+   gets faster.
+Built as item **M1**, first after alpha.14 (every world shifts, so it is its own batch, D-134/D-141).
+
+### D-143 · The map in depth, after the one continent (2026-11-18; order 69)
+**Chosen.** Item **M2**, right after M1, in two stages: **M2a**, a design (the owner's model plan, D-009: the big designs
+at the highest effort) of places, borders, disputes, alliances, trade routes and what else belongs (customs posts, toll
+bridges, march lands, pilgrim roads, smuggling paths, grazing rights, river rights), each tied to systems that already
+exist or are queued: `A.PAX` (the realm's peace: border wars, private wars), `A.WAR` and the reasons for war (claims,
+grudges), `A.CMD`/`A.MEN` (march lords, garrisons), D9's ground (roads, fords, passes), and **E0** (trade routes are the
+economy's veins, so E0 and M2 are designed together). **M2b** and on: built in stages, each its own batch. What the
+player sees follows his rank and what he could know (a peasant knows his valley and the road to market; a merchant the
+routes and tolls; a lord his borders and disputes; a king the realm's).
+
+
+### D-144 · d11-ci: an officer's pay restored toward the release's (2026-11-19; revises D-127)
+`GD.MIL[].pay`: soldier 100, sergeant 140 and 180 (D-127's rebase stands for the ranks), captain 400 and 800, commander
+2,000, General 5,000 and 9,000 (the release 1,200 / 2,400 / 4,000 / 7,000 / 12,000; D-127 300 / 450 / 900 / 2,000 /
+3,500). *Why:* a landless noble's career in arms is his living and his station's; D-127 cut it to about a third. Long 38's
+noble band (median peak coin 21,617 against 30,000) was not this (the median life never served; slots 12 to 23 of the same
+build read 131,469), but the league's officers showed it: a General's career paid 131,877 at the restored pay against
+86,311 at D-127's (slot 0 and slot 8 of two builds), a captain's 1,568 in a lifetime at 450 a year. W11's complaint was
+the ranks' pay ("a Squad Captain earns 1,200 at 16; a pedlar 80"); the ranks' rebase stands.
+
+### D-145 · d11-ci: the balance league plays 24 lives for the artisan and the noble (2026-11-19; tools/bench/targets.mjs)
+A path may set `lives` (tools/bench/balance.mjs, `--lives-per` still sets all). The artisan and the noble play 24. *Why:*
+the same build (4707b7d) read, over the artisan's slots 0 to 11 and 12 to 23: median death age 26 and 67, peak coin 4,790
+and 54,128, notable share 33.3% and 83.3%; the noble's peak coin 21,617 and 131,469. Twelve lives put the median on either
+hump of a two-humped spread (targets.mjs's own words since round 5). Over 24: the artisan 39 / 21,051 / 58.3%, the noble
+45,602, all inside the bands, which stay as they were. Of the artisans' twelve young deaths in slots 0 to 11 two had
+enlisted; the rest were hangings from the release's crime scenes, beasts and fever: D11's systems did not send them to war.
+The league's time grows by about a third (24 more lives of 72).

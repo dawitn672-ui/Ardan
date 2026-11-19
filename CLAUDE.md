@@ -221,6 +221,8 @@ with no packfile, repacked to 18 MB); rounds no longer add them, but repacking s
 
 - Work on a branch named `work/<item>` (D-133, order 64), push it early and often, and leave it for the integrator, who
   merges it whole into `v2-integration` and lists it under "Deletable" in `docs/BRANCHES.md`.
+- Take decision and history numbers (`D-`, `H-`) only from the range your brief reserves; with none given, write
+  `D-NEW-1`, `H-NEW` and the integrator numbers them at the merge (parallel branches clashed on D-142, H-083, H-085).
 - Build to `--out=` a private scratch path such as `/tmp/ardan/<name>/`, never to `index.html`.
 - Unpack only to a private `--unpack=` folder. The shared `.build/` is the fix layer, for reading.
 - Don't edit another feature, `src/core/release/`, `tools/`, `tests/`, `tools/bench/` or `vendor/` unless that is your

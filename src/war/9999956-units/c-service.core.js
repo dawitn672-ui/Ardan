@@ -56,8 +56,26 @@
     if (!rec) return null;
     const D = U.duties().find(x => x.id === rec.chose);
     m.duty = { k: D.id, d0: day(), d1: day() + U.T.dutyDays, why: rec.why.slice(0, 2).map(x => x[0]) };
+    // a duty he has done before, and done willingly, is done as before without a card, within 97's quiet (two years,
+    // doubling with each card: A.lfSpaced); a new duty, or one he shirked, comes as the card (w17-ci, H-094: a soldier's
+    // life met the same card fifty times, a season at a time)
+    const way = m.dutyWay && m.dutyWay[D.id];
+    if ((way === 'well' || way === 'share') && A.lfSpaced && !A.lfSpaced(pc, 'un_duty', 2)) {
+      U.dutyDone(pc, D, way);
+      A.log(`${C.name} sets the company to ${D.name.toLowerCase()} for the season. You do it as you did before.`, 'muted');
+      return m.duty;
+    }
     A.queue({ type: 'event', ev: 'un_duty', forced: true, ctx: { dutyT: D.name, whyT: m.duty.why.join(', and ') || D.why, capT: C.name, dk: D.id } });
     return m.duty;
+  };
+
+  // what a season's duty does, by how he did it: 'well', 'share', 'shirk' or 'caught'
+  U.dutyDone = function (pc, D, how) {
+    const m = pc.mil;
+    if (A.gainXp) A.gainXp(pc, D.skill, how === 'well' ? 1 : how === 'share' ? .5 : 0, { q: how === 'well' ? 'stretch' : 'practice', why: D.name });
+    if (how === 'well') m.merit = (m.merit || 0) + 2;
+    if (m.duty && m.duty.k === D.id) m.duty.q = how;   // how it was done, for the board (D11-3)
+    if (how === 'caught') m.merit = Math.max(0, (m.merit || 0) - 2);
   };
 
   // ---------------------------------------------------------------- transfers
@@ -163,16 +181,15 @@
       if (!fx || typeof fx !== 'object' || !pc || pc.id !== A.S.pc || !ctx || !pc.mil) return out;
       const m = pc.mil;
       if (fx.unDrill) {
+        m.drillWay = fx.unDrill;   // how he goes at a drill: a drill done before passes the same way (b-syllabus)
         if (fx.unDrill === 'hard' && A.gainXp) { A.gainXp(pc, ctx.tk || 'command', 1.2, { q: 'stretch', why: `the company's drill: ${ctx.drillT}` }); m.merit = (m.merit || 0) + 1; }
         if (fx.unDrill === 'teach' && A.gainXp) { A.gainXp(pc, 'command', .8, { q: 'stretch', why: 'teaching the raw men' }); m.merit = (m.merit || 0) + 1.5; }
         if (fx.unDrill === 'easy' && A.gainXp) A.gainXp(pc, ctx.tk || 'command', .3, { q: 'practice', why: `the company's drill: ${ctx.drillT}` });
       }
       if (fx.unDuty) {
         const D = U.duties().find(x => x.id === ctx.dk);
-        if (D && A.gainXp) A.gainXp(pc, D.skill, fx.unDuty === 'well' ? 1 : fx.unDuty === 'share' ? .5 : 0, { q: fx.unDuty === 'well' ? 'stretch' : 'practice', why: D.name });
-        if (fx.unDuty === 'well') m.merit = (m.merit || 0) + 2;
-        if (m.duty && m.duty.k === ctx.dk) m.duty.q = fx.unDuty;   // how it was done, for the board (D11-3)
-        if (fx.unDuty === 'caught') m.merit = Math.max(0, (m.merit || 0) - 2);
+        if (D) U.dutyDone(pc, D, fx.unDuty);
+        (m.dutyWay = m.dutyWay || {})[ctx.dk] = fx.unDuty;
       }
       if (fx.unTransfer === 'go' && ctx.tb && MU.assign) MU.assign(pc, ctx.tb);
     } catch (e) { console.error('[units] fx', e); }

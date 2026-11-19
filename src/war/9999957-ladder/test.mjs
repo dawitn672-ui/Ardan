@@ -159,7 +159,7 @@ export default {
   },
 
   // W11: pay rebased: a soldier a few suns a month, near a farmhand's wage and not five times it; an officer's pay rises
-  // with his command; the year's pay is the rank's
+  // with his command (a captain at most four yeomen, D-144); the year's pay is the rank's
   async lcPay(pg) {
     await pg.evaluate(SOLDIER);
     const r = await pg.evaluate(() => {
@@ -170,7 +170,7 @@ export default {
       return out;
     });
     const p = r.pay, rising = p.every((x, i) => i === 0 || x >= p[i - 1]);
-    const ok = rising && p[0] >= r.farmhand && p[0] <= 2 * r.farmhand && p[4] <= 3 * r.yeoman && (r.year == null || (r.year >= p[0] * .4 && r.year <= p[0] * 3));
+    const ok = rising && p[0] >= r.farmhand && p[0] <= 2 * r.farmhand && p[4] <= 4 * r.yeoman && (r.year == null || (r.year >= p[0] * .4 && r.year <= p[0] * 3));
     return { ok, detail: JSON.stringify(r) };
   },
 
