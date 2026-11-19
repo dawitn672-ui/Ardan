@@ -6,6 +6,7 @@
 //      the skills (tools/lint-skills.mjs)
 //      that no new decision in AI code is a bare roll of the dice (tools/lint-reasons.mjs)
 //      and that no event names kin who are not in the tree (tools/lint-kin.mjs)
+//      and that docs/README.md lists every doc and links no missing file (tools/lint-docs-index.mjs)
 //   4. run every browser test
 //   5. play the balance league and hold each path's numbers to their bands (tools/bench/balance.mjs, tools/bench/targets.mjs)
 //   6. (retired in v2 step 2 with the Far Lands: the Great Continent league)
@@ -49,6 +50,9 @@ try { execFileSync(process.execPath, ['tools/lint-lore-map.mjs'], { cwd: root, s
 catch (e) { lintFailed++; console.error(`lore-map FAIL\n${String(e.stdout || '').slice(0, 2000)}${String(e.stderr || '').slice(0, 2000)}`); }
 try { execFileSync(process.execPath, ['tools/lint-reasons.mjs'], { cwd: root, stdio: 'pipe' }); console.log('reasons ok (tools/lint-reasons.mjs)'); }
 catch (e) { lintFailed++; console.error(`reasons FAIL\n${String(e.stdout || '').slice(0, 2000)}${String(e.stderr || '').slice(0, 4000)}`); }
+// the docs index is whole and true: every doc under docs/ is listed in docs/README.md, no link in it is dead
+try { execFileSync(process.execPath, ['tools/lint-docs-index.mjs'], { cwd: root, stdio: 'pipe' }); console.log('docs index ok (tools/lint-docs-index.mjs)'); }
+catch (e) { lintFailed++; console.error(`docs index FAIL\n${String(e.stderr || '').slice(0, 2000)}${String(e.stdout || '').slice(0, 2000)}`); }
 // the long list is honest: a test over the threshold on CI is in tests/long-tests.json (T1, D-063)
 // the versions agree (D-134, order 65): rows, release branches (read from origin when it answers), changelog headings,
 // sample saves; offline and in a shallow clone the parts it cannot see are skipped

@@ -2564,3 +2564,32 @@ Branch `work/x5-ci`, from `origin/v2-integration` at `578da51`. The long run on 
   realms on each, regions, rivers, and the denied claims by realm), the texts by file, the data that holds geography as
   fields, the code that hard-codes it, the order of the lore pass, and what the lint does not read yet.
 - **Undo:** revert the step's commits. `f-facts` is read only by the tool and the test.
+
+### H-106 · 2026-11-19 · Repository tidy: README, docs index and its lint, branches, test times, archive notes
+Branch `work/repo-tidy`, from `origin/v2-integration` at `2f2d7a9`. Documentation and hygiene only; no game code, no player-facing change (no CHANGELOG line).
+- **README.md** rewritten for a visitor (the old one was of Nov 12: it said the source was not here, features carry patches, `index.html`
+  is committed and CI checks it, `vendor/` is the input). Now: what Ardan is, how to play (`node tools/build.mjs`, or
+  `node tools/version.mjs get <v>`, tried on alpha.15: rebuilt, build hash checked), where to start reading, the layout, versions
+  and branches, the two test tiers. 103 lines.
+- **docs/README.md** lists every doc: added `design/households.md`, `design/names-and-cultures.md`, `v2/playtest-owner-alpha9.md`,
+  `research/ardan-codex-old.html`, `reviews/round-2/b5/numbers.md`, `tools/delete-old-branches.sh`, the demo and map folders of
+  `design/`. New **`tools/lint-docs-index.mjs`** (run by `tools/check.mjs`) fails when a tracked `.md`/`.html`/`.sh`/`.txt` under `docs/`
+  (outside the subfolders of `design/`) is neither linked in the index nor inside a folder it links, or when an index link is dead.
+- **Stale docs marked historical** (a note at the top with a pointer to PROGRESS.md, nothing removed): `v2/STATUS.md`, `v2/LANES.md`,
+  `v2/README.md`, `v2/v2-kit-integration-prompt.md`, `plan/road-to-ten-status.md`, `plan/world-expansion-architecture.md`.
+- **CLAUDE.md**: tests 852 -> 961 (898 quick, 63 long, by `--tier=... --plan`), long tests "54 of 852" -> "63 of 961" and their length
+  "200 to 1,800 s" -> "200 to 1,500 s" (longest 1,529 s), a quick shard "about 11" -> "about 13" minutes, the "Repack after each
+  round" paragraph (the 468 MB pack is old `index.html` builds in history, which `git gc` cannot shrink), the lane and status docs
+  named as historical, the docs-index lint added to the commands.
+- **docs/BRANCHES.md** matches `git ls-remote` (39 branches): PR #1 open, PR #2 merged at alpha.9, the active branches (`work/m1`;
+  `work/m1-design` is not on GitHub), 17 merged branches (each tip proven an ancestor of `v2-integration`) as Deletable with a line to
+  paste, the stale `v2-lane-*` rows dropped.
+- **tests/test-times.json** replaced by the `test-times` artifact of long run 74 (success, `b405db5a`; downloadable without more than
+  `gh api`): 843 tests, 9 new, none dropped; `--check-tiers` still ok; the quick plan unchanged.
+- **archive/**: a `NOTE.md` in every folder (four READMEs renamed, `w1-6-faction-dice/` written) and the four missing rows in `archive/README.md`.
+- **Checked and found fine**: no tracked file is ignored by `.gitignore`; no empty directory; no broken relative link in 289 markdown files.
+- **Left for the owner** (not done): the pack is 468 MiB, of which 243 MiB is 189 old `index.html` builds and 158 MiB the past
+  versions of `docs/design` images; only a history rewrite shrinks it. Also `tools/critique-probes/*/tmp/ardan/...` (nested scratch paths
+  kept as a record) and the old reports in `tools/bench/reports/`.
+- **Not used**: no D- number.
+- **Undo:** revert the branch's commits; nothing else depends on them.

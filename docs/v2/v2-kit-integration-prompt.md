@@ -1,3 +1,5 @@
+> **Historical (as of 2026-11-19).** This is the prompt that came with the v2 kit on Nov 1, used once to start the integration. It is done: the steps ran on `v2-integration` and are recorded in [HISTORY.md](../HISTORY.md), with the checklist in [PROGRESS.md](../PROGRESS.md). Do not follow it today. Kept for the record.
+
 Paste this into your Claude Code session that has the Ardan repo open, after unzipping `ardan-v2-kit.zip` into the repo root (it creates `ardan-v2/`).
 
 ---

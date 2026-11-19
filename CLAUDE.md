@@ -86,7 +86,7 @@ when the stage comes: `.claude/skills/ios-capacitor-release`. **The build rules 
 | `vendor/ardan-b593143.html` | The untouched original release, minified. **Never edit.** The build no longer reads it |
 | `tests/` | `run.mjs` (browser tests: `tests/suites/` and every feature's `test.mjs`), `v2/` (engine unit tests), `saves/` (sample saves of every version; they must keep loading) |
 | `tools/` | `build.mjs`, `build-v2.mjs`, `check.mjs`, linters, `show.mjs`, `version.mjs`, `lib/features.mjs` (where features live), `rename-pass.mjs` + `rename-map.json` (the naming pass: renames and the references to them), `bench/` (measurement harnesses; reports in `tools/bench/reports/`), `v2/` (the v2 kit's playtest and map scripts) |
-| `docs/` | `README.md` (an index of every doc), `NAMES.md` (old name -> new name), `HISTORY.md`, `DECISIONS.md`, `IDEAS.md`, `CRITIQUE.md`, `V2_SPEC.md`, `VERSIONS.md`; `v2/` (v2 status, lanes, playtests), `plan/`, `reviews/`, `benchmarks/`, `research/`, `design/`, `north-star/`, `art/` |
+| `docs/` | `README.md` (an index of every doc), `NAMES.md` (old name -> new name), `HISTORY.md`, `DECISIONS.md`, `IDEAS.md`, `CRITIQUE.md`, `V2_SPEC.md`, `VERSIONS.md`; `v2/` (the Nov 1 to 6 status and lanes, historical; playtests), `plan/`, `reviews/`, `benchmarks/`, `research/`, `design/`, `north-star/`, `art/` |
 | `archive/` | Retired features and code (`x1-patch-layer/`: the old patches.mjs files), each with a note on what it was and why it was replaced. Never built. |
 | `CHANGELOG.md` | Player-facing changes in plain words, one section per version |
 | `.claude/skills/` | `life-sim-systems`, `realistic-continent-maps`, `game-ux-playtest-loop`, `ios-capacitor-release` (keep them true to the code) |
@@ -118,13 +118,14 @@ node --test tests/v2/*.test.js                            # the engine's unit te
 node tools/lint-events.mjs --feature=my-feature --html=/tmp/me.html
 node tools/lint-choices.mjs --feature=my-feature --html=/tmp/me.html   # no obviously best choice
 node tools/lint-kin.mjs                                   # no event mints kin or names one it did not take from the tree (C6)
+node tools/lint-docs-index.mjs                            # docs/README.md lists every doc under docs/ and links nothing that is gone: add a line when you add a doc
 node tools/lint-skills.mjs                                # S1: no proficiency a player reads, the skills data whole, older code's skill writes only falling
 node tools/lint-reasons.mjs [--list]                      # no new bare-dice decision in AI code (R1, W1-2): the count may only fall
 node tests/run.mjs /tmp/me.html --features=my-feature     # core suites + that feature's tests
 node tests/run.mjs --only=testA,testB --workers=4         # some tests by name
 node tests/run.mjs --tier=quick --shard=0/8 --plan        # T1: the tier split and each shard's estimated time, runs nothing
 node tests/run.mjs --check-tiers                          # a test over the threshold on CI must be in tests/long-tests.json
-node tests/run.mjs                                        # everything (both tiers) against index.html (852 tests)
+node tests/run.mjs                                        # everything (both tiers) against index.html (961 tests on 2026-11-19: 898 quick, 63 long)
 node tools/bench/balance.mjs /tmp/me.html                 # each path's numbers within tools/bench/targets.mjs
 node tools/bench/next-month-speed.mjs /tmp/me.html --save=tests/saves/press/y50-noble.ardan [--death] [--throttle=4]   # real Next month presses, in CPU time
 node tools/bench/press-gate.mjs /tmp/me.html [--report]   # the A1 gate (CI): year 0 and 50, fresh and after a death, held to budgets
@@ -141,15 +142,16 @@ node tools/version.mjs get v2.0.0-beta.1                  # any version, playabl
 git gc --prune=now                                        # after every integration round (see below)
 ```
 
-**Two test tiers (T1, D-063).** `tests/long-tests.json` lists the long tests (bot lives and replays of 200 to 1,800 s: 54 of
-852, over half of the suite's CPU time); `tests/test-times.json` holds each test's seconds on CI. **Quick** (everything not
-listed) runs on every push and pull request (`check.yml`, `--tier=quick --shard=k/8`, about 11 minutes of tests a shard);
+**Two test tiers (T1, D-063).** `tests/long-tests.json` lists the long tests (bot lives and replays of 200 to 1,500 s: 63 of
+961 on 2026-11-19, about 60% of the suite's CPU time; `node tests/run.mjs --tier=long --plan` gives today's count); `tests/test-times.json` holds each test's seconds on CI. **Quick** (everything not
+listed) runs on every push and pull request (`check.yml`, `--tier=quick --shard=k/8`, about 13 minutes of tests a shard);
 **long** runs in `long.yml`: every night, by hand (workflow_dispatch), on a push whose commit message has `[full ci]`, on
 `release/*`, and from other workflows. **A version needs both tiers green on the commit** (`check.yml` and `long.yml`) before
 `tools/version.mjs new`. Shards are split by measured time, longest first, not by count. A new test with no time is planned at
 30 s; if a test takes over the threshold (200 s) add it to `tests/long-tests.json` (`--check-tiers`, run by `tools/check.mjs`,
-fails until you do). The long run's `test-times` artifact (`tools/test-times.mjs` merges the shards' `--times-out=` files)
-is committed back now and then so the plan stays true. A local `node tests/run.mjs` still runs both tiers; `[skip ci]` skips both workflows.
+fails until you do). The long run's `test-times` artifact (`tools/test-times.mjs` merges the shards' `--times-out=` files;
+it is already merged onto the file as it stood at that commit, so it can replace `tests/test-times.json` whole) is committed
+back now and then so the plan stays true (last: long run 74, 2026-11-19). A local `node tests/run.mjs` still runs both tiers; `[skip ci]` skips both workflows.
 
 **The net (round 2 A3a).** A test, bench, soak or coherency run fails on any uncaught error *and any `console.error`*
 (the few messages that are not the game's faults are listed with reasons in `tools/lib/page-errors.mjs`; a test that
@@ -201,7 +203,8 @@ Every foundational or significant change is a version (`docs/VERSIONS.md`, `tool
 
 ## The v2 engine
 
-The owner's v2 spec is `docs/V2_SPEC.md`; lanes follow `docs/v2/LANES.md`; status is `docs/v2/STATUS.md`. The engine
+The owner's v2 spec is `docs/V2_SPEC.md`; what is done and next is `docs/PROGRESS.md` (`docs/v2/LANES.md` and
+`docs/v2/STATUS.md` are the Nov 1 to 6 lane era, marked historical). The engine
 modules live with their systems (`src/people/engine/body.js`, `src/war/engine/war.js`, ...; entry
 `src/core/engine/index.js`), bundled by `node tools/build-v2.mjs` into `src/core/99990-v2-engine/a-v2.core.js` (on the page
 as `A.V2`; never edit the bundle). Their unit tests are `tests/v2/` (`tools/check.mjs` runs them).
@@ -214,10 +217,11 @@ test shards, the press gate, the long tier and the nightly runs as an artifact. 
 version from its commit's own source (checking the build hash its row records). A release branch points at exactly the
 version's commit (D-134), so it holds no built file either. Never `git add -f index.html`.
 
-**Repack after each round.** The last step of an integration round, after the push, is `git gc --prune=now`. Until X5
-every round committed a rebuilt `index.html` of about 3.7 MB, which git kept as loose objects (twenty had `.git` at 74 MB
-with no packfile, repacked to 18 MB); rounds no longer add them, but repacking stays cheap and safe on a pushed branch
-(it touches only local object storage, never history), and skipping it makes later clones slower.
+**Repack after each round.** The last step of an integration round, after the push, is `git gc --prune=now`: it packs the
+loose objects a round leaves (cheap, safe on a pushed branch, touches no history). It cannot shrink what history already
+holds: until X5 every round committed a rebuilt `index.html` of about 3.7 MB, and those old builds make the pack about
+470 MB (`git count-objects -vH`, 2026-11-19), so a fresh clone is large (`git clone --depth=1` or `--filter=blob:none`
+avoids it). Only a history rewrite would shrink it; that is the owner's decision (docs/BRANCHES.md), not a thing to do in a round.
 
 **Parallel safety.** When several agents work at once, each owns **only its own `src/<system>/NN-name/` folder** (or its own `data/` files).
 
