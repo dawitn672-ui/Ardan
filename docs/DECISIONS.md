@@ -2390,6 +2390,27 @@ a pushed branch survives restarts; the list makes deleting safe.
    until the current one is green or every red test is owned by a fix branch; fix branches may merge any time. A version
    is cut from each green batch. The promise to the owner names the batch, not what may land later.
 
+### D-109 · X5: the built game is not committed; CI builds it once a run (2026-11-19; carries out D-018's second half; proposed in H-087, approved by the coordinator)
+1. **`index.html` leaves git:** `/index.html` in `.gitignore`, `git rm --cached index.html`. Every round committed a
+   rebuilt file of 3.7 to 5.7 MB (D-018: 104 MB of built files by then). `node tools/build.mjs` still writes it, to play
+   and to test.
+2. **CI builds once and shares it:** a `game` job in `check.yml` (artifact `game`), `long.yml` (`game-long`: its own name,
+   since a workflow that calls it may have a `game`) and `nightly.yml` (`game-nightly`) builds the file and uploads it; the
+   eight quick shards, the press gate, the long shards, the balance league and the nightly league and net download it
+   (`needs: game`). The `game` jobs of check and long build twice and compare the bytes (the reproducibility check that
+   `long.yml`'s `git diff --exit-code index.html` was). `check.yml`'s `build` job (linters, the v2 engine's tests) is as before.
+3. **`tools/check.mjs`** builds and no longer fails on a stale committed file.
+4. **`tools/version.mjs`:** `get` takes the committed `index.html` of a version up to X5; for a commit without one it
+   unpacks the commit with `git archive` into a scratch folder and runs that commit's own `tools/build.mjs` there (checked:
+   `4707b7d`'s rebuild equals its committed file byte for byte), and checks the result against the hash in the row. `new`
+   builds the commit the same way and writes `· build sha256:...` (in backticks) at the end of the row's title (`list`
+   shows it).
+5. **Release branches:** D-134 (order 65, landed meanwhile) has `release/<version>` point at exactly the version's commit,
+   so it holds no built file; `get` rebuilds it from that commit and checks the row's hash. (The first draft had release
+   branches carry the file with `git add -f`; D-134 supersedes that.)
+6. **Considered:** a CI step that commits the file to `release/*` (it needs write permission for the workflow token, and
+   D-134 keeps the branch at the tested commit); each shard building for itself (10 s each, but eight builds are not one tested artifact); keeping the
+   committed file only on the integration branches (the growth is the same).
 ### D-135 · Honest odds with room for upsets from will, circumstance, adaptability and talent (2026-11-18; order 66)
 **Context.** The odds engine (`src/people/engine/odds.js`) already has two of the four: surges of will under stakes and
 blunders from judgment, fatigue and overconfidence; the duel's shown odds were refit to match results (H-077's honestOdds,

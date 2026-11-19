@@ -102,7 +102,7 @@ all systems (`00-security` first, `999999-one-redraw` last: its redraw wrappers 
 ## Build, test, play
 
 ```sh
-node tools/build.mjs                                      # everything -> index.html (open it in a browser to play)
+node tools/build.mjs                                      # everything -> index.html (not committed, D-109; open it in a browser to play)
 node tools/build.mjs --out=/tmp/me.html --only=my-feature # the default build plus a work-in-progress feature, somewhere private
 node tools/show.mjs --where A.fightWorth                  # which src/core/release/ file and line defines a release function
 node --stack-size=65500 tools/release/verify.mjs a.html b.html   # two builds are the same program (for a neutral refactor)
@@ -206,7 +206,16 @@ as `A.V2`; never edit the bundle). Their unit tests are `tests/v2/` (`tools/chec
 
 ## Rules that keep the build working
 
-**Repack after each round.** The last step of an integration round, after the push, is `git gc --prune=now`. Every round commits a rebuilt `index.html` of about 3.7 MB, and git keeps each one as a loose object: twenty of them had `.git` at 74 MB with no packfile at all, which repacked to 18 MB. Repacking is cheap, it is safe on a pushed branch (it touches only local object storage, never history), and skipping it makes every later clone slower.
+**The built game is not committed** (X5, D-109). `index.html` is in `.gitignore`: build it with `node tools/build.mjs`
+to play or test it. CI builds it once a run (the `game` job, twice to prove the bytes the same) and shares it with the
+test shards, the press gate, the long tier and the nightly runs as an artifact. `tools/version.mjs get` rebuilds an old
+version from its commit's own source (checking the build hash its row records). A release branch points at exactly the
+version's commit (D-134), so it holds no built file either. Never `git add -f index.html`.
+
+**Repack after each round.** The last step of an integration round, after the push, is `git gc --prune=now`. Until X5
+every round committed a rebuilt `index.html` of about 3.7 MB, which git kept as loose objects (twenty had `.git` at 74 MB
+with no packfile, repacked to 18 MB); rounds no longer add them, but repacking stays cheap and safe on a pushed branch
+(it touches only local object storage, never history), and skipping it makes later clones slower.
 
 **Parallel safety.** When several agents work at once, each owns **only its own `src/<system>/NN-name/` folder** (or its own `data/` files).
 

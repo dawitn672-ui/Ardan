@@ -2285,6 +2285,45 @@ that could be made use of in context"); orders 59 and 63 (growth is not a timeta
   man who changes branch keeps his trials (they count at the rung, not the branch); NPC soldiers have no road (no persons
   below the seeds).
 - **Undo:** revert branch `d11p`'s commits; nothing was retired.
+### H-091 · 2026-11-19 · X5: the built game leaves git (D-109)
+D-018's second half, proposed in H-087 and approved by the coordinator. Branch `x5-build`, from `origin/v2-integration` at
+`4707b7d`.
+- **Done:** `/index.html` in `.gitignore` and removed from the index (`git rm --cached`; the file stays on disk and is
+  rebuilt by `node tools/build.mjs`). `check.yml`, `long.yml` and `nightly.yml` each gain a `game` job that builds the file
+  once and uploads it (artifacts `game`, `game-long`, `game-nightly`); every job that read the committed file now
+  `needs: game` and downloads it: the eight quick shards and the press gate; the eight long shards and the balance league;
+  the nightly league and net. The `game` jobs of check and long build a second time and `cmp` the bytes (the
+  reproducibility check that was `git diff --exit-code index.html`). `tools/check.mjs` builds without the stale-file
+  failure. `tools/version.mjs get` rebuilds a commit with no `index.html` from `git archive` in a scratch folder with that
+  commit's own build and checks the row's hash; `new` writes the build's sha256 into the row; `list` shows it.
+  `docs/VERSIONS.md` and CLAUDE.md say so (a new note "The built game is not committed", the repack note, the build
+  line, and that a release branch, at exactly the version's commit by D-134, holds no built file).
+- **Checked:** `4707b7d` rebuilt from `git archive` equals its committed `index.html` byte for byte (5,725,564 bytes);
+  `version.mjs get v2.1.0-alpha.13` still takes the committed file; the row parser reads a row with a build hash
+  (a sample row). The three workflows through actionlint (the npm WASM build, 2.0.6): no finding but `ubuntu-24.04`
+  being unknown to that old label list (the workflows already ran on it), and each read twice by hand.
+- **D-134 folded in (order 65):** `version.mjs new <v> "title" --at=<sha>` (default HEAD; a dirty tree refused only for
+  HEAD) tags and records the tested commit, warns without `--ci=<check run>,<long run>`, moves the Unreleased bullets
+  under `## <v> (<date> <time> ET) · <title>` (with `--only-before=<sha>`, only those whose lines came with that commit's
+  history, by `git blame`), saves `tests/saves/<v>-noble.ardan` from the version's own game (`tools/make-save.mjs`, as
+  alpha.2 to alpha.10's were made), and prints `git push origin <sha>:refs/heads/release/<v>`; every git look-up is quiet
+  (no "fatal: Needed a single revision"); `make-save <v>`; `check` (rows' commits, `release/<v>` at the row's commit from
+  alpha.10 on via `git ls-remote`, changelog headings and sample saves from alpha.1 on; offline and shallow-safe), run by
+  `tools/check.mjs`. The missing saves of alpha.11, .12 and .13 made from their commits (`65eb7ba`, `059d686`, `a88513b`;
+  remade below as D-141's scenarios); `check` passes (31 rows, release branches as recorded). The changelog move tried on a copy: all 26 Unreleased bullets,
+  or 9 of 26 with `--only-before=aa0fdd8`.
+- **D-141 folded in (order 67):** a sample game shows what its version changed: `new --sample=<recipe>` and
+  `make-save <v> [--sample=<recipe>]` play a recipe of the new `tools/version-samples.json` (start, seeds tried in turn,
+  the life taken on as the realm's ruler or a landed lord, the moment: `summoned`, `peaceTable`, `any`) through
+  `tools/make-save.mjs --recipe` (which now waits for the content to be loaded before playing: an old build's
+  half-loaded page had dropped the summons card), and write the save's line into the new `tests/saves/README.md` (every
+  save, what it shows, how to see it). `check` also needs that line from alpha.1 on. The three noble saves made earlier
+  are replaced: `v2.1.0-alpha.11-phone.ardan` (a life to look at at 375 x 667), `v2.1.0-alpha.12-summoned-lord.ardan`
+  (seed 77, Sigurd Greymane, head of his house, with the crown's summons waiting), `v2.1.0-alpha.13-peace-table.ardan`
+  (seed 77, Emperor Aldwin Ironside with "Gorath asks for terms" waiting); `savesStillLoad` opens all 17 in this build.
+- **Not run here:** the workflows themselves (the first push of this branch, and the first nightly, are their test); the
+  `new` command (it tags; tried only through its parts).
+- **Undo:** revert the branch's commits and `git add index.html` again from a build.
 
 ### H-094 · 2026-11-19 · CI 154 and long 38 after W1-6, D11-1 and w16-ci: seven failures read (branch `w17-ci`)
 Read on `7499906` (D11-2) and, after merging the new head, `b7f6461` (D11-3, D11+), in this container

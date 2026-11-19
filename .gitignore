@@ -7,3 +7,5 @@ tools/bench/reports/debug.json
 canon/
 .claude/worktrees/
 versions/
+# X5 (D-109): the built game is not committed; node tools/build.mjs writes it, CI builds it once per run and shares it
+/index.html

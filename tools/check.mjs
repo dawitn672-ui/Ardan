@@ -1,5 +1,6 @@
 // Everything a change must pass, in one command (CI runs this):
-//   1. build index.html from src/core/release/ (the release's own source, X1) + src/<system>/NN-name/ features and confirm the committed index.html is current
+//   1. build index.html from src/core/release/ (the release's own source, X1) + src/<system>/NN-name/ features (X5, D-109: it is not
+//      committed; CI builds it once a run and shares it; a stale copy is simply rebuilt)
 //   2. lint and play-test every feature's event packs
 //   3. check that no feature event has an obviously best choice (tools/lint-choices.mjs), the named stages (tools/lint-stages.mjs),
 //      the skills (tools/lint-skills.mjs)
@@ -18,14 +19,11 @@ import { featureDirs, featurePath } from './lib/features.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const run = (args, opts = {}) => execFileSync(process.execPath, args, { cwd: root, stdio: 'inherit', ...opts });
-const before = fs.existsSync(path.join(root, 'index.html')) ? fs.readFileSync(path.join(root, 'index.html')) : null;
 // Ardan v2's engine: its bundle must match src/*/engine/, and its own unit tests (tests/v2) must pass (a failure blocks a release)
 try { run(['tools/build-v2.mjs', '--check']); } catch { process.exitCode = 1; }
 try { execFileSync(process.execPath, ['--test', ...fs.readdirSync(path.join(root, 'tests/v2')).filter(f => f.endsWith('.test.js')).map(f => 'tests/v2/' + f)], { cwd: root, stdio: 'pipe' }); console.log('v2 tests ok (tests/v2)'); }
 catch (e) { console.error('v2 tests FAILED (node --test tests/v2):\n' + String(e.stdout || '').split('\n').filter(l => /^not ok|# (pass|fail)/.test(l)).join('\n')); process.exitCode = 1; }
 run(['tools/build.mjs']);
-const after = fs.readFileSync(path.join(root, 'index.html'));
-if (before && !before.equals(after)) { console.error('index.html was out of date with src/: rebuilt it. Commit the new index.html.'); process.exitCode = 1; }
 let lintFailed = 0;
 for (const d of featureDirs().sort()) {
   const dir = featurePath(d);
@@ -49,6 +47,10 @@ catch (e) { lintFailed++; console.error(`skills FAIL\n${String(e.stdout || '').s
 try { execFileSync(process.execPath, ['tools/lint-reasons.mjs'], { cwd: root, stdio: 'pipe' }); console.log('reasons ok (tools/lint-reasons.mjs)'); }
 catch (e) { lintFailed++; console.error(`reasons FAIL\n${String(e.stdout || '').slice(0, 2000)}${String(e.stderr || '').slice(0, 4000)}`); }
 // the long list is honest: a test over the threshold on CI is in tests/long-tests.json (T1, D-063)
+// the versions agree (D-134, order 65): rows, release branches (read from origin when it answers), changelog headings,
+// sample saves; offline and in a shallow clone the parts it cannot see are skipped
+try { execFileSync(process.execPath, ['tools/version.mjs', 'check'], { cwd: root, stdio: 'pipe' }); console.log('versions ok (tools/version.mjs check)'); }
+catch (e) { lintFailed++; console.error(`versions FAIL\n${String(e.stderr || '').slice(0, 2000)}${String(e.stdout || '').slice(0, 2000)}`); }
 try { execFileSync(process.execPath, ['tests/run.mjs', '--check-tiers'], { cwd: root, stdio: 'pipe' }); console.log('tiers ok (tests/long-tests.json)'); }
 catch (e) { lintFailed++; console.error(`tiers FAIL\n${String(e.stderr || '').slice(0, 4000)}`); }
 if (lintFailed) process.exitCode = 1;

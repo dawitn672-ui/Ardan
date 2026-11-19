@@ -7,7 +7,24 @@ on:
     - cron: '17 3 * * *'
   workflow_dispatch:
 jobs:
+  # X5 (D-109): index.html is not committed; built once here and shared with both jobs as the `game-nightly` artifact
+  game:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tools/build.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: game-nightly
+          path: index.html
+          if-no-files-found: error
+          retention-days: 7
   league:
+    needs: game
     runs-on: ubuntu-24.04   # Playwright 1.56 has no Chromium for ubuntu-latest (26.04) yet
     timeout-minutes: 330
     steps:
@@ -18,7 +35,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: node tools/build.mjs
+      - uses: actions/download-artifact@v4
+        with:
+          name: game-nightly
+          path: .
       # 167 lives on each of the six starting paths: 1,002 lives, engaged and passive, four personalities in turn
       - run: node tools/bench/balance.mjs index.html --lives-per=167 --workers=4 --json=tools/bench/reports/nightly-balance.json
         continue-on-error: true
@@ -38,6 +58,7 @@ jobs:
   # counts of tests/coherency-baseline.json; seed 7's 60-year life audited every month (tools/bench/long-life-audit.mjs); and the
   # soak, a monkey clicking through the real screens. Each fails on any page error or console.error.
   net:
+    needs: game
     runs-on: ubuntu-24.04   # Playwright 1.56 has no Chromium for ubuntu-latest (26.04) yet
     timeout-minutes: 300
     steps:
@@ -48,6 +69,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      - uses: actions/download-artifact@v4
+        with:
+          name: game-nightly
+          path: .
       - run: mkdir -p tools/bench/reports
       - run: node tools/coherency.mjs index.html --baseline=nightly --workers=4 --json=tools/bench/reports/nightly-coherency.json
       - if: always()
