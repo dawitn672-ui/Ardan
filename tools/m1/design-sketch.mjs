@@ -25,6 +25,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
+import zlib from 'node:zlib';
 const require = createRequire(import.meta.url);
 let pw; try { pw = require('playwright'); } catch { pw = require(process.env.PLAYWRIGHT_PATH || '/opt/node-tools/node_modules/playwright'); }
 const args = process.argv.slice(2), opt = (k, d) => { const a = args.find(x => x.startsWith('--' + k + '=')); return a ? a.slice(k.length + 3) : d; };
@@ -688,21 +689,25 @@ if (opt('crops', '')) {
     await (await pg.$('#c')).screenshot({ path: file }); say('crop ' + file);
   }
 }
-// the grid as pictures, one pixel a cell:
+// The grid as pictures, one pixel a cell, written byte for byte by this file (no browser, no colour management):
 //   provinces.png  red + 256 * green = province id + 1 (0 on water); blue 0 land, 1 lake, 2 sea
-//   ground.png     the ground word of each cell, in the colours of GROUND_RGB below (the index is also in the red channel's low nibble)
+//   ground.png     the ground word of each cell in the colours of GROUND_RGB; the index is the low four bits of red
 //   relief.png     the height guide: grey = 360 * height, height in the engine's measure (0 sea, 0.36 alpine, 0.5 snow)
 //   land.png       the same grid to look at
 const GROUND_RGB = [[32, 64, 112], [112, 176, 224], [240, 244, 248], [208, 216, 200], [160, 144, 128], [112, 152, 120], [128, 176, 112], [80, 168, 96], [208, 224, 160], [216, 200, 136], [232, 216, 120], [248, 224, 168], [176, 96, 80], [144, 200, 192]].map((c, i) => [(c[0] & 0xf0) | i, c[1], c[2]]);
-await pg.evaluate(({ D, GROUND_RGB, elev }) => {
-  const { GW, GH } = D, u8 = s => Uint8Array.from(atob(s), ch => ch.charCodeAt(0)), water = u8(D.water), prov = new Int16Array(u8(D.prov).buffer), ground = u8(D.ground), el = u8(elev);
-  const mk = (id, fn) => { let c = document.getElementById(id); if (!c) { c = document.createElement('canvas'); c.id = id; document.body.appendChild(c); } c.width = GW; c.height = GH; const g = c.getContext('2d'), im = g.createImageData(GW, GH); for (let i = 0; i < GW * GH; i++) { const [r, gg, b] = fn(i); im.data[i * 4] = r; im.data[i * 4 + 1] = gg; im.data[i * 4 + 2] = b; im.data[i * 4 + 3] = 255; } g.putImageData(im, 0, 0); };
-  mk('land', i => { const c = GROUND_RGB[ground[i]], sh = water[i] ? 1 : 1.06 - el[i] / 600; return [c[0] * sh, c[1] * sh, c[2] * sh]; });
-  mk('provs', i => { const v = water[i] ? 0 : prov[i] + 1; return [v & 255, v >> 8, water[i] === 2 ? 1 : water[i] === 1 ? 2 : 0]; });
-  mk('ground', i => GROUND_RGB[ground[i]]);
-  mk('relief', i => [el[i], el[i], el[i]]);
-}, { D: drawData, GROUND_RGB, elev: b64(Uint8Array.from(elevGuide, v => Math.round(v * 360))) });
-for (const [id, name] of [['land', 'land.png'], ['provs', 'provinces.png'], ['ground', 'ground.png'], ['relief', 'relief.png']]) await (await pg.$('#' + id)).screenshot({ path: path.join(DIR, 'design', name) });
+const writePng = (file, w, h, rgb) => { // 8-bit RGB, no filter, one IDAT
+  const raw = Buffer.alloc(h * (1 + w * 3)); let o = 0;
+  for (let y = 0; y < h; y++) { raw[o++] = 0; for (let x = 0; x < w; x++) { const c = rgb(y * w + x); raw[o++] = c[0]; raw[o++] = c[1]; raw[o++] = c[2]; } }
+  const crcT = new Int32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; crcT[n] = c; }
+  const crc = buf => { let c = -1; for (const v of buf) c = crcT[(c ^ v) & 255] ^ (c >>> 8); return (c ^ -1) >>> 0; };
+  const chunk = (type, data) => { const len = Buffer.alloc(4); len.writeUInt32BE(data.length); const td = Buffer.concat([Buffer.from(type, 'ascii'), data]); const cr = Buffer.alloc(4); cr.writeUInt32BE(crc(td)); return Buffer.concat([len, td, cr]); };
+  const ihdr = Buffer.alloc(13); ihdr.writeUInt32BE(w, 0); ihdr.writeUInt32BE(h, 4); ihdr[8] = 8; ihdr[9] = 2;
+  fs.writeFileSync(file, Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk('IHDR', ihdr), chunk('IDAT', zlib.deflateSync(raw, { level: 9 })), chunk('IEND', Buffer.alloc(0))])); };
+const elevByte = Uint8Array.from(elevGuide, v => Math.round(v * 360));
+writePng(path.join(DIR, 'design/provinces.png'), GW, GH, i => { const v = water[i] ? 0 : prov[i] + 1; return [v & 255, v >> 8, water[i] === 2 ? 1 : water[i] === 1 ? 2 : 0]; });
+writePng(path.join(DIR, 'design/ground.png'), GW, GH, i => GROUND_RGB[ground[i]]);
+writePng(path.join(DIR, 'design/relief.png'), GW, GH, i => [elevByte[i], elevByte[i], elevByte[i]]);
+writePng(path.join(DIR, 'design/land.png'), GW, GH, i => { const c = GROUND_RGB[ground[i]], sh = water[i] ? 1 : 1.06 - elevByte[i] / 600; return [Math.min(255, Math.round(c[0] * sh)), Math.min(255, Math.round(c[1] * sh)), Math.min(255, Math.round(c[2] * sh))]; });
 if (opt('debug', '')) { // working pictures: the cells' mean colour and the roughness
   fs.mkdirSync(opt('debug', ''), { recursive: true });
   await pg.evaluate(({ GW, GH, r, g, b, rug }) => { const u8 = s => Uint8Array.from(atob(s), ch => ch.charCodeAt(0)), R = u8(r), G = u8(g), B = u8(b), U = u8(rug);

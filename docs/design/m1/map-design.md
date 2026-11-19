@@ -1396,7 +1396,7 @@ The full table of all 306, with seat, area, ground and reason, is `design/tables
 
 | File | Format |
 | --- | --- |
-| `design/provinces.png` | 700 x 450, one pixel a cell. `id = red + 256 * green - 1` (so 0 means no province); blue is 0 on land, 1 on an enclosed water, 2 on the sea. Read it with any PNG reader; the tool writes it without colour management |
+| `design/provinces.png` | 700 x 450, one pixel a cell. `id = red + 256 * green - 1` (so 0 means no province); blue is 0 on land, 1 on an enclosed water, 2 on the sea. The tool writes it byte for byte (8-bit RGB, no colour management), so any PNG reader gets the exact numbers |
 | `design/ground.png` | 700 x 450. The ground's index is the low four bits of the red channel: 0 sea, 1 lake, 2 ice, 3 tundra, 4 rock, 5 taiga, 6 forest, 7 jungle, 8 grass, 9 scrub, 10 steppe, 11 desert, 12 ash, 13 marsh |
 | `design/relief.png` | 700 x 450, grey. `height = grey / 360` in the engine's measure: 0 is sea level, 0.36 the alpine line, 0.5 the snow line. It is a guide: it says where the ground is high, not how the valleys run |
 | `design/build.json` | `frame`, `transform`, `latitude`, `land`, `waters` (name, kind, `enclosed`, `countsAsCoast`, a point inside it in km, area), `realms` (capital and its province, area, waters, neighbours), `wilds`, `provinces` (seat in km, cells, ground, cover, height, `adj`, `sea`, waters, rivers, site), `rivers` (the line in km, `big`, `ships`, `boats`, `border`), `ranges`, `peaks`, `passes`, `regions`, `roads`, `seaLanes`, `isles`, `ferries`, `borders`, `checks` |
@@ -1448,7 +1448,7 @@ A province is `hills` when its core stands at 0.3 or more on the height guide an
 ### 8.4 The steps
 
 1. Add `data/map/design/` (or read from `docs/design/m1/design/`): the three rasters and `build.json`. They are data,
-   put on the page as `A.DATA`, small enough to ship: the three PNGs are 160 kB together, and `build.json` can be cut
+   put on the page as `A.DATA`, small enough to ship: the three PNGs are 165 kB together, and `build.json` can be cut
    to what the engine reads.
 2. In `VM.build`, for `v >= 4`: read the grid and masks; take provinces from `LORE.map` with the design's seats; skip
    `grow()` (the grid already says which cell is whose).
