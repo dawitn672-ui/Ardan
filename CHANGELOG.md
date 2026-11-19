@@ -5,6 +5,13 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **People grow old and die, and the great houses go on.** Before, only rulers, title holders and people you knew ever
+  died of their years: a century in, the court was full of men of 150 and more. Now everyone ages and dies by his body
+  and his luck, more in a plague year or a famine, and no one outlives his people's span. The families of the world
+  marry and have children: a house's heir takes a wife, a couple wants an heir and a spare, so the houses carry on
+  instead of dying out. When a grandparent, an uncle or a nephew you never met dies, word reaches you in the story; a
+  death in your household goes into the year's summary and does not stop the year.
+
 ## v2.1.0-alpha.14 (2026-11-19 05:20 ET) · The realm's peace (stability, factions, coups, private wars, all with reasons); the military path (the muster, units that differ, careers, each weapon's road); a lighter save
 
 - **Officers are paid like officers again.** A soldier still earns a few suns a month, but a captain, a commander and a

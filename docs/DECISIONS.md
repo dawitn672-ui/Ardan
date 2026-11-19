@@ -2161,6 +2161,56 @@ his own already.
    wants its own step, its tests (one holder per post through the extra deaths, the press gate at year 50 and 100) and
    the owner's yes. A coherency check "alive past the greatest age" would count it (0 at year 0 by design).
 
+### D-107 · The unknown die (2026-11-18; owner's rule 1 "nothing without reason"; carries out D-106; approved by the coordinator)
+1. **The pass** (`src/people/999994-generations/a-deaths.core.js`, `A.MORT`): each New Year, after the release's passes and
+   the court's (`A.onYear`), every living NPC that `A.worldYear` (rulers), `A.familyYear` (the player's acquaintances) and
+   `A.V2N.yearOfDeaths` (the court's title holders) do not weigh meets `A.deathChance` (his age against his people's span,
+   health, a blood that shortens life), times 1.8 when an epidemic struck his home province in the year past (57's
+   `S.prov[].plague`) and 1.4 / 1.2 / 1.05 (poor, middle, great) when his realm's harvest failed (57's famine record). The
+   cause follows the odds that raised it. Wounds and illness reach it through health.
+2. **The body's end:** anyone but the player who has passed his people's greatest age (`GD.RACES[race].maxLife`) dies of
+   it at the New Year, covered or not. The lore's elders of 1105 (Queen Ithrien of Sylvaran at 587; Sildil Oakborn at 530;
+   an elf's span is 520) keep the release's odds (0.6 a year past the span) and meet the body's end ten years after the
+   age they had in 1105, so the world opens as the lore wrote it. The player keeps the difficulty's odds (his own path).
+3. **Seeded, sandboxed:** the draw is `A.V2F.rng('mort|<year>|<id>')`, and the death runs in `A.V2F.sandbox`, so the
+   game's stream does not move and the order of the people does not matter (`genPure`). The death goes through `A.kill`:
+   posts are left (`A.POSTS.leaveAll`), a widow is widowed, a ruler's realm passes (`A.rulerDies`), titles and the headship
+   pass by the house's law (`A.V2F.inherit`), the family tree keeps the dead (`A.gcPeople` keeps what the tree needs).
+4. **What the player hears:** a blood relative within two steps he never met (a grandparent, an uncle, a nephew), as a
+   line of the story; a death in the household through 999995-next-year's digest ("A death in the household"), which
+   stops nothing (D-062). A custom of mourning (47-realm-customs) asks about a parent's estate whichever way the parent
+   died, as before (`genHouseholdDeath` holds that the pass queues nothing `A.kill` would not).
+5. **The check** "alive past the greatest age" (the player apart) is held at 0 in both baselines of
+   `tests/coherency-baseline.json`.
+6. **Found on the way:** with the world shifted, seed 7101 (coherency, quick) had the crown dismiss Dario Montaro from
+   Varenna's first host; his lore style "Senior General; War Party" stood beside the new "Senior General of Varenna" until
+   the next New Year. `A.POSTS.unstyle` now retires a style that names the seat among other words (999990-posts).
+7. **The save's bars** (D-105) rise with the living world: y50 5,650 / 1,180 KB, y100 6,100 / 1,270 KB (packed / gzipped),
+   a sixth over three lives' largest reading; the century moved to the long tier (`dietSaveBars100`), since a century of
+   play ran 199.8 s on CI (the quick tier's threshold is 200).
+
+### D-108 · The houses go on: marriages and children for the world's families (2026-11-18; with D-107)
+1. **Why:** with the unknown dying, a world where no one but the player's family marries or bears a child empties: in the
+   first trial (deaths alone) the living fell from 983 to 618 by year 75 and 117 of the 530 house records had no head. Ten of
+   983 people were married at the start; the release married and brought children only to the player's family. A house
+   without children is as much outside reason as a man of 185.
+2. **Marriage** (`b-houses.core.js`, `A.HOUSES_GO_ON`): the heir of a line (the eldest living son of his father, by the
+   father's id; a man with no father on record is the first of his line) takes a wife at 0.2 a year between his people's
+   majority + 2 and the end of a woman's fertile years - 4; a younger son at a twentieth of that (the church, the army and
+   the road took most younger sons). The wife: a free woman of his realm, estate within one step, people (`A.fertilePair`),
+   age within ten years, of no blood within three steps (the tree, `A.V2F.kinOf`); else an outsider made as
+   `A.familyYear` makes a spouse for the player's child. Priests and prisoners do not marry.
+3. **Children:** a married couple who can have children has one a year at 0.26, 0.20, 0.09, 0.03, 0.01 by the children it
+   has living (a house wants an heir and a spare), times `A.pairFert`, through `A.birth` (house, name, blood, the mother's
+   risk).
+4. **Calibrated** on seed 7 to 200 years: the first rates (0.30 to 0.02, any free adult of a house or the great estates
+   marrying, younger sons at 0.15) grew the living to 8,035 by year 100; with lines and these rates they rise to about
+   1,650 in the first decades (the start's 364 unmarried adults marry) and hold: 1,639 at year 50, 1,708 at 100, 1,796 at
+   150, 1,825 at 200. Seeds 11 and 31 at year 100: 1,452 and 1,740.
+5. **The player's family** keeps the release's rules (`A.familyYear`): the player, his spouse, his parents, his children
+   and their spouses are left out of both passes. Seeded and sandboxed as D-107.
+6. **Not built:** marriages arranged between houses as alliances with reasons through `A.WHY` (a later step: today's match
+   is by realm, estate and age); illegitimate children. A widow of fertile age is free to marry as any free woman.
 ### D-116 · D11-2: a company is its make-up, abilities and tendencies; most are read, few are stored (2026-11-18; war.md §14.2, §14.3; rule 21)
 1. **Drills as data** (`data/military/drills.json`): 36 drills in §14.2's eight families, each with its branches, the
    war-map drill it feeds (60-unit-drill's `GD.DRILLS`), its ground, its teacher's skill, the tendency it mends, the task

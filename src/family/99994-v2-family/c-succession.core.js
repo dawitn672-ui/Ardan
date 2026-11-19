@@ -192,30 +192,46 @@
     if (pc && to.id === pc.id && pc.alive) A.log(`You inherit ${dead.given}'s rung: you are now ${A.nobleTitle(pc)}.`, 'big');
   }
   // F.inherit(dead): at a death, every title moves down its line. F.inherit(old, heir): a life goes on as `heir`.
+  // the houses a person heads: his own first, then any other whose head he is (a lore head written outside his house, as
+  // Ada Stonefoot of seed 7104, head of the Stonefoot kin with no house of her own; a man who heads his own house and,
+  // through his wife or a kinsman's line, another, as Urunk of seed 7100, Hidegnawer and Skullbiter). D-107's deaths
+  // reached them: the release passed only the house of his own name, and the other stood headless
+  F.headedHouses = function (p) {
+    const S = A.S, out = []; if (!p) return out;
+    const is = h => !!h && (h.headPid === p.id || h._v2head === p.id);
+    const own = p.house && S.houses[p.house];
+    if (is(own)) out.push(own);
+    for (const k of (A.POSTS && A.POSTS.held ? A.POSTS.held(p.id) : [])) if (k.startsWith('house:')) { const h = S.houses[k.slice(6)]; if (is(h) && !out.includes(h)) out.push(h); }
+    for (const id in S.houses) { const h = S.houses[id]; if (is(h) && !out.includes(h)) out.push(h); }
+    return out;
+  };
   F.inherit = function (from, heir) {
     const moved = [];
     if (!from) return moved;
-    const S = A.S, h = from.house && S.houses[from.house];
-    const lawOf = () => (h ? F.houseLaw(h.id) : { law: 'male-preference', fitness: 'none' });
+    const S = A.S, own = from.house && S.houses[from.house];
+    const lawOf = h => (h ? F.houseLaw(h.id) : { law: 'male-preference', fitness: 'none' });
     const first = (L, but) => (L.line.find(e => live(e.p) && (!but || e.p.id !== but.id)) || {}).p || null;
     if (heir === undefined) {
-      if (h && (h.headPid === from.id || h._v2head === from.id)) {
+      const hs = F.headedHouses(from);
+      for (const h of hs) {
         delete h._v2head;
         const next = HO.successor(h.id, from, 3);
         giveHeadship(h, next, from);
         moved.push({ k: 'house', id: h.id, to: next ? next.id : null });
-        if (next) giveLordship(from, next);
-      } else if (from.noble && from.noble.rung >= 2 && !from.noble.passed) {
-        const L = F.line(from, lawOf(), 3), next = first(L);
+        if (next && h === own) giveLordship(from, next);
+      }
+      // the rung goes with his own house's headship, as before; without it, down his line
+      if (!hs.includes(own) && from.noble && from.noble.rung >= 2 && !from.noble.passed) {
+        const L = F.line(from, lawOf(own), 3), next = first(L);
         if (next) { giveLordship(from, next); moved.push({ k: 'lordship', to: next.id }); }
       }
       return moved;
     }
     // a life goes on as `heir`: the lordship goes where the law sends it
     if (from.noble && from.noble.rung >= 2 && !from.noble.passed) {
-      const L = F.line(from, lawOf(), 4), next = first(L) || heir;
+      const L = F.line(from, lawOf(own), 4), next = first(L) || heir;
       giveLordship(from, next);
-      if (next.id !== heir.id) A.log(`By ${(SU.LAWS[lawOf().law] || {}).name || 'the law'}, ${A.fullName(next)} inherits ${from.given}'s rung, not you.`, 'muted');
+      if (next.id !== heir.id) A.log(`By ${(SU.LAWS[lawOf(own).law] || {}).name || 'the law'}, ${A.fullName(next)} inherits ${from.given}'s rung, not you.`, 'muted');
       moved.push({ k: 'lordship', to: next.id });
     }
     return moved;
@@ -223,10 +239,10 @@
 
   const kill = A.kill;
   A.kill = function (p) {
-    const was = !!(p && p.alive), h = was && p.house && A.S.houses[p.house];
-    if (h && h.headPid === p.id) h._v2head = p.id;
+    const was = !!(p && p.alive), hs = was ? F.headedHouses(p) : [];
+    for (const h of hs) if (h.headPid === p.id) h._v2head = p.id;
     const r = kill.apply(this, arguments);
-    try { if (was && !p.alive) F.inherit(p); else if (h) delete h._v2head; } catch (e) { console.error('v2-family inherit', e); }
+    try { if (was && !p.alive) F.inherit(p); else for (const h of hs) delete h._v2head; } catch (e) { console.error('v2-family inherit', e); }
     return r;
   };
 

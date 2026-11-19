@@ -29,7 +29,9 @@
       faithForbidsDivorce = p=>["REL-01","REL-02"].includes(p.faith)&&!p.ruler,
       divorce = p=>{const s=spouseOf(p);s&&(p.spouse=null,s.spouse=null,p.rel[s.id]&&(p.rel[s.id].type="ex"),s.rel[p.id]&&(s.rel[p.id].type="ex"),A.addOp(p,s,-40),p.exSpouses.push(s.id),hon(p,-5))},
       bury = (p,x,cause,grief,wil)=>{x&&x.alive&&A.kill(x,cause),hp(p,-grief),A.willGrow(p,wil,"grief")},
-      addChild = (p,x,op,bastard)=>{if(!x)return;x.sur=p.sur||x.sur,bastard&&(x.flags.bastard=1),p.children.includes(x.id)||p.children.push(x.id),A.link(p,x,"child",op,p.sex==="M"?"father":"mother");const s=spouseOf(p);s&&!bastard&&(s.children.includes(x.id)||s.children.push(x.id),A.link(s,x,"child",op-10,s.sex==="M"?"father":"mother"))},
+      // D-107 (found when the world shifted): a child taken in (an orphan, "An empty cradle") was in the parents' lists of
+      // children but had no parents of its own (coherency, family links agree); one with none takes them now
+      addChild = (p,x,op,bastard)=>{if(!x)return;x.sur=p.sur||x.sur,bastard&&(x.flags.bastard=1),p.children.includes(x.id)||p.children.push(x.id),A.link(p,x,"child",op,p.sex==="M"?"father":"mother");const s=spouseOf(p);s&&!bastard&&(s.children.includes(x.id)||s.children.push(x.id),A.link(s,x,"child",op-10,s.sex==="M"?"father":"mother"));if(!(x.parents||[]).length)x.parents=[p].concat(s&&!bastard?[s]:[]).sort((a,b)=>(a.sex==="M"?0:1)-(b.sex==="M"?0:1)).map(q=>q.id)},
       aft = p=>{const f=A.faith(p.faith);return f&&f.afterlife?f.afterlife.split(". ")[0].replace(/\.$/,"")+".":"The dead go where the gods send them."},
       fname = p=>(A.faith(p.faith)||{}).name||"the old gods",
       mixedSpouse = p=>{const s=spouseOf(p);return s&&s.race!==p.race?s:null},

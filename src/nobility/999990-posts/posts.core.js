@@ -364,6 +364,14 @@
     // (seed 7101) kept a "Chancellor" beside the new "Chancellor of Morhaven" (coherency, one office, one styled holder)
     if (typeof p.occ === 'string' && (p.occ === style || style.startsWith(p.occ + ' of '))) p.occ = 'once ' + style;
     if (typeof p.title === 'string' && p.title && (p.title === style || style.startsWith(p.title + ' of '))) p.title = 'once ' + p.title;
+    // a lore style that names the seat among other words ("Senior General; War Party") is the same post: when D-107's
+    // deaths shifted seed 7101's world, the crown dismissed Dario Montaro from the first host and he kept it beside the new
+    // "Senior General of Varenna" until the next New Year's restyle (coherency, one office, one styled holder)
+    const styled = A.COHERENCY && A.COHERENCY.styledAs;
+    if (styled) for (const w of Object.values(SEATW)) if (style.startsWith(w)) for (const f of ['occ', 'title']) {
+      const s = p[f];
+      if (typeof s === 'string' && s && !/^once\b/.test(s) && styled(s, w)) p[f] = 'once ' + s;
+    }
   };
   const say = (t, c) => { if (A.log) A.log(t, c || 'warn'); };
 

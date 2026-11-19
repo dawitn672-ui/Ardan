@@ -963,9 +963,13 @@ A.famMembers = function (hid) {
     if (F.rung && i === 0 && F.kind === "noble") p.title = F.title;
     h.members.push(p.id);
   });
+  // D-107 (999994-generations): a house first met long after 1105 finds the lore's members as old as the lore's years make
+  // them; one past his people's greatest age died before the story reached the house, and the head is the first living
+  if (A.MORT && A.MORT.lateBorn) A.MORT.lateBorn(h.members);
   const ms = h.members.map(A.P);
   for (let i = 1; i < ms.length; i++) A.link(ms[0], ms[i], "cousin", A.ri(20, 70), "cousin");
-  A.setHead(h, h.members[0], "law");
+  const head = ms.find(q => q && q.alive);
+  A.setHead(h, head ? head.id : null, "law");
   return ms;
 };
 
