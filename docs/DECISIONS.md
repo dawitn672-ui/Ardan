@@ -2396,3 +2396,7 @@ General). Built as item **P1**.
    (alpha.12: a landed lord answering the summons; alpha.13: a ruler at the peace table; alpha.14: a soldier at the muster
    with his company's card), and `tests/saves/README.md` lists what each one shows and how to see it.
 
+**D-135 addendum (2026-11-18, the owner's alpha.9 survey):** he found upsets "too common" while the odds shown matched
+"mostly". U1 sets its bands from that: rarer upsets than point 3 first said (to be measured against today's rate, which
+has moved since alpha.9), each with its named reason; the honest scale stays.
+
