@@ -111,6 +111,8 @@ node tools/build.mjs --unpack && node tools/show.mjs A.fightWorth UI.refresh    
 node tools/build.mjs --out=/tmp/ardan/me/x.html --only=me --unpack=/tmp/ardan/me/blobs
 node tools/show.mjs --dir=/tmp/ardan/me/blobs A.fightWorth                         # your own build, privately
 node tools/build-v2.mjs                                   # rebundle the v2 engine (src/*/engine) after editing it
+node tools/m1/choose-seed.mjs /tmp/me.html --png         # M1: score candidate map seeds for the one continent (docs/design/m1)
+node tools/m1/facts.mjs /tmp/me.html                      # after a new map seed or version: the creation screen's facts (data/map)
 node docs/design/demo-2d/c8c/sheet.mjs                    # the dress sheets (stations x peoples, soldiers, occasions, the 24 cultures) from the figure library
 node --test tests/v2/*.test.js                            # the engine's unit tests
 node tools/lint-events.mjs --feature=my-feature --html=/tmp/me.html

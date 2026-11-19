@@ -17,7 +17,10 @@ const findFight = `
       if (!pc.mil) return null; // the war ended in peace before he saw a field and he went home: try the next seed
       const d = A.divById(pc.mil.div);
       if (!d) continue;
-      for (const pid in A.S.fights) { const f = A.S.fights[pid]; if ((f.aIds.includes(d.id) || f.dIds.includes(d.id)) && (d.atk === +pid || d.loc === +pid)) { A.CO.place(pc); return { F: f, pc, w }; } }
+      // a fight with men on the other side: a field the enemy has left empty (M1, seed 9706 on the one continent: an elite
+      // order's division of no men, its companies gone, held the town) gives a battle with no enemy to read
+      const foeMen = f => (f.aIds.includes(d.id) ? f.dIds : f.aIds).map(A.divById).some(x => x && (x.men || 0) > 0);
+      for (const pid in A.S.fights) { const f = A.S.fights[pid]; if ((f.aIds.includes(d.id) || f.dIds.includes(d.id)) && (d.atk === +pid || d.loc === +pid) && foeMen(f)) { A.CO.place(pc); return { F: f, pc, w }; } }
     }
     return null;
   };

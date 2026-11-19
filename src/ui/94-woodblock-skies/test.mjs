@@ -188,19 +188,28 @@ export default {
   async skyClimate(pg) {
     const r = await pg.evaluate(() => {
       const SK = UI.SKIES;
-      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent
-      A.newGame({ seed: 7101, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
-      const provs = Object.values(A.S.prov);
-      const pick = re => provs.find(pv => re.test(pv.biome || '') && pv.terr !== 'mountains');
-      const out = {};
-      for (const [k, re] of [['tropic', /Tropical (rainforest|monsoon)/], ['savanna', /Savanna/], ['dry', /Dry woodland/], ['temperate', /Temperate forest/], ['taiga', /Taiga/]]) {
-        const pv = pick(re); if (!pv) { out[k] = 'none'; continue; }
-        const pc = A.pc(); pc.home = pv.id;
-        const q = { type: 'event', ev: 'lf_love_potion', ctx: {} };
-        const o = SK.optsFor(q);
-        const svgs = ['faith', 'road', 'beast', 'kin'].map(sh => SK.svg(sh, 'clim|1105', 0, Object.assign({}, o, { hour: 'day' })));
-        out[k] = { terr: o.terr, clim: o.clim || '', pal: SK.palette('day', o.terr, 0, false, SK.climOf ? SK.climOf(pv) : undefined).snow, drawn: svgs.filter(x => x.includes('data-snow="1"')).length };
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent.
+      // M1: every life is on the one continent, which has no taiga; each climate is read on the first world that has it,
+      // the one continent first, then other map seeds (A.V2MAP.ONE switched for the life): the rule, not one world
+      const VM = A.V2MAP, one = VM.ONE, out = {};
+      const KINDS = [['tropic', /Tropical (rainforest|monsoon)/], ['savanna', /Savanna/], ['dry', /Dry woodland/], ['temperate', /Temperate forest/], ['taiga', /Taiga/]];
+      for (const ms of [one, VM.seedOf(7101), VM.seedOf(7102), VM.seedOf(7103), VM.seedOf(7104)]) {
+        if (KINDS.every(([k]) => out[k])) break;
+        VM.ONE = ms;
+        try { A.newGame({ seed: 7101, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 }); } finally { VM.ONE = one; }
+        const provs = Object.values(A.S.prov);
+        const pick = re => provs.find(pv => re.test(pv.biome || '') && pv.terr !== 'mountains');
+        for (const [k, re] of KINDS) {
+          if (out[k]) continue;
+          const pv = pick(re); if (!pv) continue;
+          const pc = A.pc(); pc.home = pv.id;
+          const q = { type: 'event', ev: 'lf_love_potion', ctx: {} };
+          const o = SK.optsFor(q);
+          const svgs = ['faith', 'road', 'beast', 'kin'].map(sh => SK.svg(sh, 'clim|1105', 0, Object.assign({}, o, { hour: 'day' })));
+          out[k] = { terr: o.terr, clim: o.clim || '', pal: SK.palette('day', o.terr, 0, false, SK.climOf ? SK.climOf(pv) : undefined).snow, drawn: svgs.filter(x => x.includes('data-snow="1"')).length, map: ms.replace('ardan-v2-map:', '') };
+        }
       }
+      for (const [k] of KINDS) if (!out[k]) out[k] = 'none';
       return out;
     });
     const ok = ['tropic', 'savanna', 'dry'].every(k => r[k] !== 'none' && !r[k].pal && !r[k].drawn) && ['temperate', 'taiga'].every(k => r[k] !== 'none' && r[k].pal && r[k].drawn === 4);

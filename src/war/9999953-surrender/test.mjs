@@ -143,7 +143,9 @@ export default {
       const [a, b] = found.res.pr, WAR = A.WAR, out = { seed: found.seed };
       // 1. surrender: the defender asks (a cautious king, his land half held)
       let w = W5.war(a, b, 'conquest');
-      const back = W5.temper(b, ['cautious', 'calm']);
+      // the asker a cautious king, the victor a calm one: a proud or greedy victor may send the envoys back ("no terms
+      // yet", the press option, a reasoned choice: M1, world 6601 on the one continent); this test reads the road to a peace
+      const back = W5.temper(b, ['cautious', 'calm']), backV = W5.temper(a, ['calm', 'cautious']);
       W5.beat(w, .5, false, .4);
       for (let i = 0; i < 3; i++) w.battles.push({ y: A.S.year, name: 'Battle of Test ' + i, win: 'att', lossW: 100, lossL: 900 });
       let asked = false;
@@ -151,8 +153,10 @@ export default {
       asked = !!(w.ask && w.ask.s === 'def');
       out.asked = asked; out.ride = w.ask ? w.ask.due - w.ask.d0 : null;
       const provs0 = A.realmProvs(b).length;
-      for (let g = 0; g < 8 && w.ask && WAR.live(w); g++) { w.ask.due = A.absDay(); WAR.day(); }
-      back();
+      let legs = '';
+      for (let g = 0; g < 8 && w.ask && WAR.live(w); g++) { const leg = w.ask.leg, k = w.ask.k; w.ask.due = A.absDay(); WAR.day(); legs += `${k}${leg}>${w.ask ? w.ask.k + w.ask.leg : WAR.live(w) ? 'refused' : 'ended'} `; }
+      out.legs = legs.trim();
+      back(); backV();
       out.ended = !WAR.live(w);
       out.end = w.end && typeof w.end === 'object' ? { kind: w.end.kind, by: w.end.by, path: w.end.path, terms: w.end.terms.map(t => t.k), why: w.end.why.map(x => x[0]).slice(0, 2), signed: w.end.signed.length } : null;
       out.lost = provs0 - A.realmProvs(b).length;
@@ -174,7 +178,7 @@ export default {
     const e = r.end || {}, d = r.defeat || {};
     const ok = r.asked && r.ride >= 2 && r.ended && e.kind === 'surrender' && e.by === 'def' && e.path >= 1 && e.path <= 8 && e.terms.includes('peace') && e.why.length >= 1 && e.signed === 2 &&
       /asks .* for terms/.test(r.news) && !/%/.test(r.news) && (!r.defeat || (d.kind === 'defeat' && [1, 3, 8].includes(d.path)));
-    return { ok, detail: `world ${r.seed}: asked ${r.asked} (envoys ${r.ride} days on the road); ended ${r.ended}: ${JSON.stringify(e)}; ${r.lost} provinces passed; "${r.news.slice(0, 200)}"; defeat: ${JSON.stringify(r.defeat)}` };
+    return { ok, detail: `world ${r.seed}: asked ${r.asked} (envoys ${r.ride} days on the road); ended ${r.ended} (the legs: ${r.legs}): ${JSON.stringify(e)}; ${r.lost} provinces passed; "${r.news.slice(0, 200)}"; defeat: ${JSON.stringify(r.defeat)}` };
   },
 
   // the player who rules a side: the peace table in words (no percentage, no number standing for the odds, a tipped scale,

@@ -47,6 +47,16 @@ A map a game plays on needs more than heights and rivers. From the finished cont
 - Draw roads solid and cased (a red line in a pale casing; a pale line in a dark casing), never dashed or dotted, which belong to
   borders. Lay them into a cached picture of the view, not every frame (drawn directly they tripled a frame's cost).
 
+## One continent for a game, chosen by measurement (Ardan M1, D-142)
+A world the player learns should not redraw itself each game. Build every life on one canonical map seed (Ardan:
+`A.V2MAP.ONE`); let the game's own seed decide only what happens on the land. Choose the seed by reading candidates, not by
+eye alone (`tools/m1/choose-seed.mjs`): how well the realms' heartlands fit their lore (coast, heights, grass, desert, wood,
+the compass words of their descriptions), roads that do not run beside borders, old neighbours kept, rivers reaching the
+sea, region sizes in range; gate out any candidate that breaks a rule the tests hold for every world. Save the map seed and
+version with each game, so a better generator redraws the one continent once and old saves keep theirs. Cache the built
+continent (in memory for the session, and in the worker's IndexedDB between visits, keyed by a hash of the code that builds
+it) so a phone builds it once.
+
 ## Rendering, satellite style
 - **Land colour is a continuous palette** over temperature × moisture, interpolated bilinearly. Discrete biome colours make hard blobs. The palette rows run from cold to hot, with dry, mid and wet columns of muted albedos (for example temperate wet = 60, 90, 50 and hot dry = 212, 184, 134).
 - Mottle the colour with fBm (±16%) plus fine fBm when zoomed in. Add bare rock on steep high ground and snow above a temperature-dependent snow line.
