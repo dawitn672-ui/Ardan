@@ -17,8 +17,10 @@ export default {
             A.continueAs(h.id); UI.ov = null;
           }
           const past = (A.COHERENCY.checks.find(c => c.name === 'alive past the greatest age') || { fn: () => ['no check'] }).fn();
+          // the posts' rules as the coherency check reads them (strict also asks every mirror to equal its record, which holds
+          // only right after A.POSTS.sync: a player who died mid-year still held his march in the registry until the next one)
           pts.push({ year: A.S.year, alive: Object.values(A.S.people).filter(p => p.alive).length, past: past.length, pastEx: past[0] || '',
-            posts: A.POSTS && A.POSTS.audit ? A.POSTS.audit({ strict: true }).length : 0, titles: A.V2F && A.V2F.audit ? A.V2F.audit().length : 0 });
+            posts: A.POSTS && A.POSTS.audit ? A.POSTS.audit().length : 0, titles: A.V2F && A.V2F.audit ? A.V2F.audit().length : 0 });
         }
         return { n0, pts, died: A.MORT.stats.died - d0, wed: A.HOUSES_GO_ON.stats.wed - w0, births: A.HOUSES_GO_ON.stats.births - b0 };
       });
