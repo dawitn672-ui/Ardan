@@ -2426,3 +2426,21 @@ economy's veins, so E1 and M2 are designed together). **M2b** and on: built in s
 player sees follows his rank and what he could know (a peasant knows his valley and the road to market; a merchant the
 routes and tolls; a lord his borders and disputes; a king the realm's).
 
+
+### D-142 · d11-ci: an officer's pay restored toward the release's (2026-11-19; revises D-127)
+`GD.MIL[].pay`: soldier 100, sergeant 140 and 180 (D-127's rebase stands for the ranks), captain 400 and 800, commander
+2,000, General 5,000 and 9,000 (the release 1,200 / 2,400 / 4,000 / 7,000 / 12,000; D-127 300 / 450 / 900 / 2,000 /
+3,500). *Why:* a landless noble's career in arms is his living and his station's; D-127 cut it to about a third. Long 38's
+noble band (median peak coin 21,617 against 30,000) was not this (the median life never served; slots 12 to 23 of the same
+build read 131,469), but the league's officers showed it: a General's career paid 131,877 at the restored pay against
+86,311 at D-127's (slot 0 and slot 8 of two builds), a captain's 1,568 in a lifetime at 450 a year. W11's complaint was
+the ranks' pay ("a Squad Captain earns 1,200 at 16; a pedlar 80"); the ranks' rebase stands.
+
+### D-143 · d11-ci: the balance league plays 24 lives for the artisan and the noble (2026-11-19; tools/bench/targets.mjs)
+A path may set `lives` (tools/bench/balance.mjs, `--lives-per` still sets all). The artisan and the noble play 24. *Why:*
+the same build (4707b7d) read, over the artisan's slots 0 to 11 and 12 to 23: median death age 26 and 67, peak coin 4,790
+and 54,128, notable share 33.3% and 83.3%; the noble's peak coin 21,617 and 131,469. Twelve lives put the median on either
+hump of a two-humped spread (targets.mjs's own words since round 5). Over 24: the artisan 39 / 21,051 / 58.3%, the noble
+45,602, all inside the bands, which stay as they were. Of the artisans' twelve young deaths in slots 0 to 11 two had
+enlisted; the rest were hangings from the release's crime scenes, beasts and fever: D11's systems did not send them to war.
+The league's time grows by about a third (24 more lives of 72).

@@ -37,6 +37,11 @@ export const TARGETS = {
       // 39,206), after it 3 (316,805). Over 24 seeds the medians are 51,386 before and 191,715 after, and seeds 12-23 alone
       // give 147,534 before and 129,066 after: the war pace did not make artisans richer.
       bands: { medianDeathAge: [30, 85], medianPeakCoin: [5000, 340000], medianPeakFame: [5, 80], notableSharePct: [40, 100] },
+      // 24 lives, not 12 (d11-ci, H-096): long 38 on 4707b7d read median death age 26, peak coin 4,790 and notable share
+      // 33.3% from slots 0-11, while slots 12-23 of the same build read 67, 54,128 and 83.3% (and the base f802f13: 63 /
+      // 61,079 / 91.7 and 66 / 16,867 / 75.0). Of the 12 young deaths behind it, two lives enlisted; the rest were hangings
+      // from the release's crime scenes, beasts and fever: the two humps, not a rule. Over 24 lives: 39 / 21,051 / 58.3%.
+      lives: 24,
       note: 'The median age at death read 42 in one run and 61 in another: the noisiest path.',
     },
     merchant: {
@@ -45,6 +50,9 @@ export const TARGETS = {
     },
     noble: {
       start: { race: 'human', realm: 'POL-01', status: 'noble', startAge: 16 },
+      // 24 lives (d11-ci, H-096): long 38 read median peak coin 21,617 from slots 0-11 (the median life never served; an
+      // officer of state); slots 12-23 of the same build read 131,469, and 24 lives 45,602 (base f802f13, slots 0-11: 174,097)
+      lives: 24,
       bands: { medianDeathAge: [30, 85], medianPeakCoin: [30000, 700000], medianPeakFame: [40, 100], notableSharePct: [60, 100] },
     },
     royal: {
