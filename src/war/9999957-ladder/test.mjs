@@ -159,7 +159,7 @@ export default {
   },
 
   // W11: pay rebased: a soldier a few suns a month, near a farmhand's wage and not five times it; an officer's pay rises
-  // with his command (a captain at most four yeomen, D-133); the year's pay is the rank's
+  // with his command (a captain at most four yeomen, D-142); the year's pay is the rank's
   async lcPay(pg) {
     await pg.evaluate(SOLDIER);
     const r = await pg.evaluate(() => {
