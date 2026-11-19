@@ -31,15 +31,15 @@ queued or new.
 
 1. **Rising is far too easy:** Legend and emperor in one life of under thirty years; rising in station "too easy";
    getting rich "too easy". *Since:* S1 skills with concepts, proofs and breakthroughs (alpha.10); W1 the realm's
-   politics; D11 careers. *Queued:* **P2** (D-138, Legends and crowns as hard as the world makes them), **E1** (D-139).
+   politics; D11 careers. *Queued:* **LC** (D-138, Legends and crowns as hard as the world makes them), **E0** (D-139).
 2. **Growth is linear and the stats simple;** growth "rarely" felt earned and was "a bit fast". *Since:* S1 retired the
-   proficiencies (alpha.10: experience, concepts, grasp, proofs, breakthroughs; order 59, 61, 63). *Queued:* **P1**
-   (everyone by the same rules), **P2**. To check in play: does S1 read as non-linear to the owner?
+   proficiencies (alpha.10: experience, concepts, grasp, proofs, breakthroughs; order 59, 61, 63). *Queued:* **PA**
+   (everyone by the same rules), **LC**. To check in play: does S1 read as non-linear to the owner?
 3. **Relationships are useless;** family felt real "not at all"; the village's people mattered "never". *Since:* C6
    households (alpha.7, before his test), R2 every relationship needs a base (alpha.10). *New:* **R3**, relationships
    that change a life: kin, friends, rivals and the parish acting on you and on each other for their reasons.
-4. **The economy is boring, pointless and barely makes sense.** *Queued:* **E1** (one coherent economy); *new
-   part of E1:* a market worth using (what trade, craft and land give a life that nothing else does).
+4. **The economy is boring, pointless and barely makes sense.** *Queued:* **E0** (one coherent economy); *new
+   part of E0:* a market worth using (what trade, craft and land give a life that nothing else does).
 5. **Things happen for no reason, often.** *Since:* W1-2 `A.WHY` and everything routed through it (alpha.10 to 14:
    summons, surrender, the realm's peace, the muster); lint-reasons 66 to 41. *Left:* 41 bare-dice decisions (R1).
 6. **A card got his station wrong:** "i was a duke and i got a card stating that some high ranking person came and
@@ -65,5 +65,5 @@ queued or new.
 ## What this changes in the order of work
 
 The owner's first ask is immersion and depth in every part of a life. After the current fixes and alpha.14, the next
-step is a playtest of alpha.14 against this list (what the work since alpha.9 already answers), then P1, P2, R3, E1,
+step is a playtest of alpha.14 against this list (what the work since alpha.9 already answers), then PA, LC, R3, E0,
 K1, U1, with the depth of careers and daily life as the measure of each.
