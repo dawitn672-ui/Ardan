@@ -293,6 +293,15 @@ order is replaced, strike it through and say by what.
     - **4.** Find out why sample saves stopped, and add one to every version, chosen to show what that version changed
       in play (D-141).
 
+68. **One fixed continent** (D-142) · recorded 2026-11-18 22:20 ET. The owner's words, verbatim, then his answer:
+
+    > ive noticed the map keeps on changing
+
+    Asked how the map of Ardan should work (each new life built a fresh continent from its seed, and again whenever the
+    map generator changed), he chose **"One fixed continent"**: Ardan has one geography, the same coasts, rivers,
+    mountains and realm heartlands every life, learned like a real world; history, wars and borders still play out
+    differently each game; a map improvement redraws it once, and old saves keep the map they were made on.
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,

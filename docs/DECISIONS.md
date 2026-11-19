@@ -2400,3 +2400,19 @@ General). Built as item **P1**.
 "mostly". U1 sets its bands from that: rarer upsets than point 3 first said (to be measured against today's rate, which
 has moved since alpha.9), each with its named reason; the honest scale stays.
 
+### D-142 · One fixed continent for every life (2026-11-18; order 68; over D-054's and D-061's per-seed ground)
+**Context.** Since the v2 map, `A.V2MAP.world(seedOf(S.seed))` built a new continent for every game seed, and map
+versions 1 to 3 redrew it again; the title screen showed seed 7's world, the life another. Nobody had chosen a new
+continent per life; it came with the generator. The owner noticed the map "keeps on changing" and chose one geography.
+**Chosen.**
+1. The continent's shape (land, sea, height, rivers, lakes, provinces' cells, seats' sites, roads and fords) is built
+   from one canonical map seed for every life; the game's seed still decides everything that happens on it (people,
+   history, wars, borders as they move). The title shows the same continent.
+2. The canonical seed is chosen once, by measured quality (D9's legibility reading, realm heartlands that fit the lore,
+   one connected landmass), and recorded here with the readings when chosen.
+3. A new map version (a better generator) redraws the one continent once; saves carry `A.S.v2map = { seed, v }` and keep
+   the map they were made on, as today.
+4. The worker that built each new life's continent ahead (D-054) builds the one continent once and caches it; the load
+   gets faster.
+Built as item **M1**, first after alpha.14 (every world shifts, so it is its own batch, D-134/D-141).
+
