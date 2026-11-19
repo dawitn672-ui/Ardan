@@ -2318,3 +2318,31 @@ Branch `d11-ci`, from `origin/v2-integration` at `b7f6461`, merged with `49beb69
   --baseline=quick`: no check rose. The balance league itself was not run whole here (measured with the probe above,
   the same bot and seeds); CI's long tier will run it with 24 lives for the two paths.
 - **Undo:** revert branch `d11-ci`'s commits.
+
+### H-097 · 2026-11-19 · w18-ci: one ruler for every standing realm (the nightly's "one ruler per realm", seed 7104)
+- **Found** by the X5 agent on the merged world: the nightly coherency run (`tools/coherency.mjs --baseline=nightly`,
+  8 lives × 60 years) reported "one ruler per realm" in seed 7104's life (a merchant of POL-04): Sabra's crown on Jamila
+  Sabrani, dead.
+- **Traced** (scratch probes on `c42b7bb`): in 1108 a war of succession made her claimant faction realm (NEW-1), named
+  hers by `A.successionWar` without her being crowned in it (`nr.ruler`, her `p.ruler` empty). The realm outlived the
+  war and stood on its own. In 1121 another war's terms crowned her in Sabra (W1-5's `crown` term, `WAR.apply`); NEW-1
+  was no longer a rebel, so it was not folded in, and went on naming her. When she died in 1125, `A.kill` settled only
+  the realm her record pointed at, and Sabra kept a dead ruler. The cause is the release's half-crowned claimant; W1-6
+  made claims commoner (D-099).
+- **Fixed in the game** (D-146): `A.orphanCrowns` in `04-realms-and-war-years-a.js`, called by `A.kill` and
+  `A.makeRuler`, settles every other standing realm that names a dead or newly crowned man its ruler (its succession, or
+  it disperses when it holds no land; a rising still at war is its war's); `A.rulerDies` marks the realm it settles
+  (`A._crownKeep`), after the first version settled Mirdrin's cause twice and crowned two men (seed 7103); W1-5's crown
+  term takes a claimant's own standing faction realm into the crown he wins (`src/war/9999953-surrender/b-end.core.js`).
+  Release files edited: `03-engine-base.js` (`A.makeRuler`), `04-realms-and-war-years-a.js` (`A.kill`, `A.rulerDies`,
+  `A.orphanCrowns`).
+- **Found on the way:** the moved world showed "one office, one styled holder" in seed 7103 (Drevna, 1135): a lore cast
+  member still titled "Senior General; Warden of the Steppe March" beside the seated Senior General. 999990-posts now runs
+  its restyle at each month's end as well as the New Year.
+- **Test:** `peOneRulerLab` (9999954-realm-peace): a faction realm that stands on its own, its lord dead with land (passes
+  to an heir), dead without land (disperses), crowned in the realm he claimed (no longer named). It fails on `c42b7bb`
+  ("a dead ruler true" twice, "still named true") and passes after.
+- **Runs** (`/tmp/ardan/w16/g.html`): `coherency --baseline=nightly` no check rose ("one ruler per realm" 0; "family links
+  agree" fell to 3 of its baseline's 10, left for the integrator); `coherency --baseline=quick` no check rose; the quick
+  tier of realm-peace, surrender, posts, fresh-realms-and-tensions, v2-nobility and v2-family with the core suites 73 of 73.
+- **Undo:** revert the branch's commits.
