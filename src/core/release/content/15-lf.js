@@ -2095,7 +2095,7 @@
             check: {s:"int",s2:"etiquette",d:35},
             win: {
               r: "A long supper. You see what {them} sees. You give your blessing, and mean it.",
-              fx: (p,ctx)=>{const m=A.P(ctx.mid);m&&A.link(p,m,"inlaw",30,"inlaw"),bump(p,T(ctx),20)},
+              fx: (p,ctx)=>{const c=T(ctx),m=A.P(ctx.mid);bump(p,c,20),c&&m&&!spouseOf(c)&&(c.spouse=m.id,m.spouse=c.id,A.link(c,m,"spouse",50,"spouse"),A.link(p,m,"inlaw",30,"inlaw"))},
             },
             lose: {r:"You see exactly what you feared. {them} sees only that you disapprove.",fx:{them:{op:-12}}},
           },
