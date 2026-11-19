@@ -5,6 +5,12 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **People grow old and die, and the great houses go on.** Before, only rulers, title holders and people you knew ever
+  died of their years: a century in, the court was full of men of 150 and more. Now everyone ages and dies by his body
+  and his luck, more in a plague year or a famine, and no one outlives his people's span. The families of the world
+  marry and have children: a house's heir takes a wife, a couple wants an heir and a spare, so the houses carry on
+  instead of dying out. When a grandparent, an uncle or a nephew you never met dies, word reaches you in the story; a
+  death in your household goes into the year's summary and does not stop the year.
 - **Joining the army is a muster now, not a click.** Go to your lord's muster or the crown's (whoever holds the land you
   live in), or to a free company's table. The muster-master looks you over and says what he sees: the weapon you know
   and what you carry, how you are built to fight, and anything else of use (a horse, letters, a trade, the sea, tracking,
