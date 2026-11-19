@@ -13,6 +13,7 @@ version also gets a `release/<version>` branch (the git proxy refuses tag pushes
 | `release/v2.0.0-beta.1`, `release/v2.1.0-alpha.1` … | One per version: the restorable record | Yes, always |
 | `v2-lane-*` (8: diplomacy, family, map, nobility, saves, stats, time, war) | The v2 lanes of Nov 1-4; each holds 4-45 commits not in `v2-integration` (READMEs, tests and small fixes that were superseded during integration) | Kept until looked through |
 | `v2-wf-repeats` | One commit not in `v2-integration` (a README line, Nov 6) | Kept until looked through |
+| `work/<item>` | Working branches from 2026-11-19 on (order 64, D-133): one per agent's task, merged whole into `v2-integration`, then listed under **Deletable** below | Delete once listed |
 | `v2-fix-*` (9), `v2-wf-*` (26) | Working branches of Nov 1-6, **every commit already inside `v2-integration`** | Can go (owner's yes needed; tips listed below so any can be restored) |
 
 ## Tips of the fully merged working branches (to restore one: `git push origin <sha>:refs/heads/<name>`)
@@ -59,3 +60,17 @@ version also gets a `release/<version>` branch (the git proxy refuses tag pushes
 
 **Done (2026-11-16):** the owner deleted the 44 old branches. GitHub now holds 15: `main`, `claude/dreamy-sagan-anwszt`,
 `v2-integration`, `archive/v2-lanes` and the 11 `release/*` branches.
+
+## Deletable: merged working branches of 2026-11-18 (order 64; the owner may delete them; restore one with `git push origin <sha>:refs/heads/<name>`)
+Every commit of these is inside `v2-integration`. (Their names come from `docs/PROGRESS.md`: W1-5/W1-6 the war's stages,
+D11 the military branches, X5 the state diet, `-ci` a round of CI fixes.)
+- `w1-5` · `21ca5e3` · merged into `v2-integration`
+- `w14-ci2` · `cfe8ced` · merged into `v2-integration`
+- `w15-ci` · `c272d87` · merged into `v2-integration`
+- `w1-6` · `bb9502c` · merged into `v2-integration`
+- `w16-ci` · `de7623a` · merged into `v2-integration`
+- `d11-1` · `fecc5a7` · merged into `v2-integration`
+- `x5` · `3624776` · merged into `v2-integration`
+- `d11-2` · `0ba92d4` · merged into `v2-integration`
+- `d11-3` · `f2ec930` · merged into `v2-integration`
+- `d11p` · `e648c10` · merged into `v2-integration`

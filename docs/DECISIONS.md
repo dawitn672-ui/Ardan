@@ -2304,3 +2304,13 @@ road opens it at this rung" as a small reason for).
 `A.LADDER.mod` reads `A.PATHS.wants(next rung)` (two skills at most, each a factor 0.6 to 1.5) and the trials stood at
 this rung, in place of the branch's one key skill and command; without a road it falls back to D-122. *Why:* an
 archer's captaincy wants command and the bow, a sapper's command wants tactics and craft, the train's stewardship.
+
+### D-133 · Working branches: `work/<item>`, merged whole, then listed as deletable (2026-11-18 21:20 ET; order 64)
+**Context.** The owner asked why oddly named branches appeared (`w1-5`, `d11-2`, `w16-ci`...) and ordered: as many
+branches as needed, properly integrated, and deletable. **Chosen:** every agent's branch is named `work/<item>` with the
+PROGRESS item's code; it is merged whole into `v2-integration` (no cherry-picks, so nothing stays only on it); after the
+merge the integrator adds it with its tip to `docs/BRANCHES.md` under "Deletable". Agents push their branch early and
+often (a container restart loses unpushed work). The session cannot delete refs (the proxy refuses; the permissions rule
+stands), so the owner deletes them, or leaves them: they cost nothing. **Why:** parallel agents need separate branches;
+a pushed branch survives restarts; the list makes deleting safe.
+

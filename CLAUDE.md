@@ -203,6 +203,8 @@ as `A.V2`; never edit the bundle). Their unit tests are `tests/v2/` (`tools/chec
 
 **Parallel safety.** When several agents work at once, each owns **only its own `src/<system>/NN-name/` folder** (or its own `data/` files).
 
+- Work on a branch named `work/<item>` (D-133, order 64), push it early and often, and leave it for the integrator, who
+  merges it whole into `v2-integration` and lists it under "Deletable" in `docs/BRANCHES.md`.
 - Build to `--out=` a private scratch path such as `/tmp/ardan/<name>/`, never to `index.html`.
 - Unpack only to a private `--unpack=` folder. The shared `.build/` is the fix layer, for reading.
 - Don't edit another feature, `src/core/release/`, `tools/`, `tests/`, `tools/bench/` or `vendor/` unless that is your

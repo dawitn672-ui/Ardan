@@ -239,6 +239,15 @@ order is replaced, strike it through and say by what.
     change with its reason (rule 18). Old saves convert. This brings G forward: it now follows R1's core in the build
     order, before D11+, which stands on it.
 
+64. **Branches as many as needed, integrated and deletable** (D-133) · recorded 2026-11-18 21:20 ET. The owner's words, verbatim:
+
+    > use as many extra branches or files as needed but make sureto propely integrate them and make them deletable. run a quick rn through and let me know everything you need help with or want to ask
+
+    **Read as:** working branches are fine in any number. From now on each is named `work/<item>` (for example
+    `work/d11-ci`), so they sit together on GitHub; every one is merged into `v2-integration` whole, and once merged it is
+    listed in `docs/BRANCHES.md` under "Deletable" with its tip, so the owner can delete it with nothing lost (any one can be
+    restored from its tip). The session cannot delete branches itself (the git proxy refuses it; the permissions rule).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
