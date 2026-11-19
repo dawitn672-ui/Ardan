@@ -2449,3 +2449,14 @@ Branch `d11-ci`, from `origin/v2-integration` at `b7f6461`, merged with `49beb69
   citing a memory or a want; 77.9% in character against 65.0% off.
 - **Not used:** D-147 (no decision changed).
 - **Undo:** revert the branch's commit.
+
+### H-099 · 2026-11-19 · CI 160 after the second batch (x5-deaths, x5-build): the skills sweep and a save's guide line
+On `50bcdf8`. The quick tier had two faults; the long tier two more, given to the X5 agent (`work/x5-ci`, H-100).
+- **s1Migrate on the new alpha.11 sample save: a real fault.** `SK.sweepNew` (36-skills) folds legacy keys and quantizes
+  the numbers of people made since its last pass, counting by position in `S.people`; the count outlived the state, so
+  after a load (or a second game in one page) it began part-way down the new state's people and left the first ones as
+  older code wrote them (2 legacy keys, 5 numbers between levels). It now starts over whenever the state is a new one
+  (`SK.sweptS`). Idempotent for people already swept, so a played life is unchanged.
+- **The version check** (`version.mjs check`, D-134) failed the build job: the alpha.14 sample save had no line in
+  `tests/saves/README.md`. The line is written. The check did its job on its first run.
+- **Undo:** revert `578da51`.
