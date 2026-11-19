@@ -1,0 +1,1365 @@
+{
+ "about": "D11+ (D-128 to D-132): each branch's road through the five ranks: what each rung trains (a share of the month's effort by skill), the trial that proves a man at it (its skill and its words), what the board weighs for the next rung, and the role that opens at it; the specialisms the road leads to, by the man's way of fighting (his reading at the muster; '*' when his way fits none). Read by src/war/9999958-paths (A.PATHS).",
+ "paths": [
+  {
+   "branch": "lances",
+   "name": "the lancer's road",
+   "specs": {
+    "shock": [
+     "riding",
+     "the-lance"
+    ],
+    "press": [
+     "sword",
+     "the-arming-sword"
+    ],
+    "*": [
+     "riding",
+     "the-lance"
+    ]
+   },
+   "tiers": [
+    {
+     "train": {
+      "riding": 0.5,
+      "athletics": 0.2,
+      "sword": 0.3
+     },
+     "trial": [
+      "riding",
+      "the tilt before the household: three courses, the ring and the quintain"
+     ],
+     "wants": [
+      "riding"
+     ],
+     "opens": "farrier"
+    },
+    {
+     "train": {
+      "riding": 0.4,
+      "sword": 0.3,
+      "command": 0.3
+     },
+     "trial": [
+      "riding",
+      "the wedge led at the gallop and brought back whole"
+     ],
+     "wants": [
+      "riding",
+      "command"
+     ]
+    },
+    {
+     "train": {
+      "command": 0.4,
+      "riding": 0.3,
+      "tactics": 0.3
+     },
+     "trial": [
+      "command",
+      "a banner's charge timed on a field"
+     ],
+     "wants": [
+      "command",
+      "tactics"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "tactics",
+      "the moment the reserve of horse goes in"
+     ],
+     "wants": [
+      "command",
+      "tactics"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "command",
+      "a host's horse used once, at the right hour"
+     ],
+     "wants": [
+      "command"
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "light_horse",
+   "name": "the rider's road",
+   "specs": {
+    "loose": [
+     "riding",
+     "the-fight-from-the-saddle"
+    ],
+    "shot": [
+     "bow",
+     "the-war-bow"
+    ],
+    "*": [
+     "riding",
+     "the-long-road"
+    ]
+   },
+   "tiers": [
+    {
+     "train": {
+      "riding": 0.5,
+      "tracking": 0.3,
+      "bow": 0.2
+     },
+     "trial": [
+      "riding",
+      "a day's ride carrying word, and back by dark"
+     ],
+     "wants": [
+      "riding",
+      "tracking"
+     ],
+     "opens": "pathfinder"
+    },
+    {
+     "train": {
+      "riding": 0.4,
+      "tracking": 0.3,
+      "command": 0.3
+     },
+     "trial": [
+      "tracking",
+      "a patrol out and home with its count of the enemy"
+     ],
+     "wants": [
+      "riding",
+      "command"
+     ]
+    },
+    {
+     "train": {
+      "command": 0.4,
+      "tactics": 0.3,
+      "riding": 0.3
+     },
+     "trial": [
+      "command",
+      "a company that harried a column for a week and lost no one"
+     ],
+     "wants": [
+      "command",
+      "tactics"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "tactics",
+      "the screen of a host held for a campaign"
+     ],
+     "wants": [
+      "command",
+      "tactics"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "command",
+      "a host never caught"
+     ],
+     "wants": [
+      "command"
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "scouts",
+   "name": "the scout's road",
+   "specs": {
+    "stealth": [
+     "stealth",
+     null
+    ],
+    "loose": [
+     "tracking",
+     "the-trail"
+    ],
+    "*": [
+     "tracking",
+     "scouting-for-a-host"
+    ]
+   },
+   "tiers": [
+    {
+     "train": {
+      "tracking": 0.4,
+      "survival": 0.3,
+      "stealth": 0.3
+     },
+     "trial": [
+      "tracking",
+      "a trail followed three days to a camp, and the count brought back"
+     ],
+     "wants": [
+      "tracking",
+      "survival"
+     ],
+     "opens": "pathfinder"
+    },
+    {
+     "train": {
+      "tracking": 0.3,
+      "stealth": 0.3,
+      "command": 0.4
+     },
+     "trial": [
+      "stealth",
+      "a sentry taken without a sound"
+     ],
+     "wants": [
+      "tracking",
+      "command"
+     ]
+    },
+    {
+     "train": {
+      "command": 0.4,
+      "tracking": 0.3,
+      "learning": 0.3
+     },
+     "trial": [
+      "tracking",
+      "the ground of a whole valley drawn true"
+     ],
+     "wants": [
+      "command",
+      "tracking"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.3,
+      "tracking": 0.2
+     },
+     "trial": [
+      "tactics",
+      "a host that walked into nothing"
+     ],
+     "wants": [
+      "command",
+      "tactics"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "command",
+      "the realm's eyes kept open in a war"
+     ],
+     "wants": [
+      "command"
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "spears",
+   "name": "the spearman's road",
+   "specs": {
+    "wall": [
+     "spear",
+     "the-bill-and-pike"
+    ],
+    "press": [
+     "shield",
+     "the-wall"
+    ],
+    "*": [
+     "shield",
+     "the-wall"
+    ]
+   },
+   "tiers": [
+    {
+     "train": {
+      "spear": 0.4,
+      "shield": 0.4,
+      "athletics": 0.2
+     },
+     "trial": [
+      "spear",
+      "the file held against the review's charge"
+     ],
+     "wants": [
+      "spear",
+      "shield"
+     ],
+     "opens": "bearer"
+    },
+    {
+     "train": {
+      "spear": 0.3,
+      "shield": 0.3,
+      "command": 0.4
+     },
+     "trial": [
+      "shield",
+      "a section that stood when the horses came"
+     ],
+     "wants": [
+      "shield",
+      "command"
+     ]
+    },
+    {
+     "train": {
+      "command": 0.5,
+      "tactics": 0.3,
+      "spear": 0.2
+     },
+     "trial": [
+      "command",
+      "a ford held a day"
+     ],
+     "wants": [
+      "command",
+      "tactics"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "tactics",
+      "a line the host formed around"
+     ],
+     "wants": [
+      "command",
+      "tactics"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "command",
+      "a host whose wall never broke"
+     ],
+     "wants": [
+      "command"
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "foot_men_at_arms",
+   "name": "the man-at-arms' road",
+   "specs": {
+    "press": [
+     "sword",
+     "the-arming-sword"
+    ],
+    "shock": [
+     "spear",
+     "the-mace-and-hammer"
+    ],
+    "*": [
+     "melee",
+     "fighting-in-harness"
+    ]
+   },
+   "tiers": [
+    {
+     "train": {
+      "sword": 0.4,
+      "melee": 0.3,
+      "shield": 0.3
+     },
+     "trial": [
+      "sword",
+      "the bout at the barrier before the captain"
+     ],
+     "wants": [
+      "sword",
+      "melee"
+     ],
+     "opens": "provost"
+    },
+    {
+     "train": {
+      "sword": 0.3,
+      "melee": 0.3,
+      "command": 0.4
+     },
+     "trial": [
+      "melee",
+      "first through a breach, and alive"
+     ],
+     "wants": [
+      "melee",
+      "command"
+     ]
+    },
+    {
+     "train": {
+      "command": 0.5,
+      "tactics": 0.3,
+      "sword": 0.2
+     },
+     "trial": [
+      "command",
+      "a company through the grind of a day"
+     ],
+     "wants": [
+      "command",
+      "tactics"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "tactics",
+      "a wing that won the grind"
+     ],
+     "wants": [
+      "command",
+      "tactics"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "command",
+      "a host that won the press"
+     ],
+     "wants": [
+      "command"
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "archers",
+   "name": "the archer's road",
+   "specs": {
+    "shot": [
+     "bow",
+     "the-war-bow"
+    ],
+    "loose": [
+     "bow",
+     "the-hunting-bow"
+    ],
+    "*": [
+     "bow",
+     "the-war-bow"
+    ]
+   },
+   "tiers": [
+    {
+     "train": {
+      "bow": 0.6,
+      "athletics": 0.2,
+      "survival": 0.2
+     },
+     "trial": [
+      "bow",
+      "the butts before the company: twelve in the clout at two hundred paces"
+     ],
+     "wants": [
+      "bow"
+     ],
+     "opens": "signaller"
+    },
+    {
+     "train": {
+      "bow": 0.4,
+      "command": 0.4,
+      "craft": 0.2
+     },
+     "trial": [
+      "bow",
+      "the volley called and fallen together"
+     ],
+     "wants": [
+      "bow",
+      "command"
+     ]
+    },
+    {
+     "train": {
+      "command": 0.4,
+      "bow": 0.3,
+      "tactics": 0.3
+     },
+     "trial": [
+      "command",
+      "a company that broke a charge behind its stakes"
+     ],
+     "wants": [
+      "command",
+      "bow"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "tactics",
+      "the bowmen of a host placed where the charge came"
+     ],
+     "wants": [
+      "command",
+      "tactics"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "command",
+      "a host whose arrows decided a day"
+     ],
+     "wants": [
+      "command"
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "crossbows",
+   "name": "the crossbowman's road",
+   "specs": {
+    "shot": [
+     "bow",
+     "the-crossbow"
+    ],
+    "steady": [
+     "shield",
+     "the-great-shield"
+    ],
+    "*": [
+     "bow",
+     "the-crossbow"
+    ]
+   },
+   "tiers": [
+    {
+     "train": {
+      "bow": 0.5,
+      "craft": 0.3,
+      "shield": 0.2
+     },
+     "trial": [
+      "bow",
+      "the mark at a hundred paces, wound and loosed six times"
+     ],
+     "wants": [
+      "bow"
+     ],
+     "opens": "carpenter"
+    },
+    {
+     "train": {
+      "bow": 0.4,
+      "command": 0.4,
+      "craft": 0.2
+     },
+     "trial": [
+      "bow",
+      "a section that kept its loading turn under shot"
+     ],
+     "wants": [
+      "bow",
+      "command"
+     ]
+    },
+    {
+     "train": {
+      "command": 0.5,
+      "bow": 0.2,
+      "tactics": 0.3
+     },
+     "trial": [
+      "command",
+      "a wall held by a company of crossbows"
+     ],
+     "wants": [
+      "command",
+      "tactics"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "tactics",
+      "the walls of a town kept"
+     ],
+     "wants": [
+      "command",
+      "tactics"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "command",
+      "a host that held its strong places"
+     ],
+     "wants": [
+      "command"
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "engineers",
+   "name": "the sapper's road",
+   "specs": {
+    "works": [
+     "craft",
+     "carpentry"
+    ],
+    "steady": [
+     "craft",
+     "masonry"
+    ],
+    "*": [
+     "craft",
+     "carpentry"
+    ]
+   },
+   "tiers": [
+    {
+     "train": {
+      "craft": 0.5,
+      "athletics": 0.3,
+      "tactics": 0.2
+     },
+     "trial": [
+      "craft",
+      "a bridge of boats laid before the master"
+     ],
+     "wants": [
+      "craft"
+     ],
+     "opens": "carpenter"
+    },
+    {
+     "train": {
+      "craft": 0.4,
+      "tactics": 0.3,
+      "command": 0.3
+     },
+     "trial": [
+      "craft",
+      "a sap dug to the wall and not fallen in"
+     ],
+     "wants": [
+      "craft",
+      "command"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.4,
+      "craft": 0.3,
+      "command": 0.3
+     },
+     "trial": [
+      "tactics",
+      "a wall brought down"
+     ],
+     "wants": [
+      "tactics",
+      "command"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "learning": 0.2,
+      "command": 0.3
+     },
+     "trial": [
+      "tactics",
+      "a siege's works planned and done"
+     ],
+     "wants": [
+      "tactics",
+      "craft"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "command",
+      "a host that took walls"
+     ],
+     "wants": [
+      "command"
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "garrison",
+   "name": "the warden's road",
+   "specs": {
+    "steady": [
+     "command",
+     "the-garrison"
+    ],
+    "wall": [
+     "shield",
+     "the-wall"
+    ],
+    "*": [
+     "command",
+     "the-garrison"
+    ]
+   },
+   "tiers": [
+    {
+     "train": {
+      "shield": 0.4,
+      "spear": 0.3,
+      "intimidation": 0.3
+     },
+     "trial": [
+      "shield",
+      "a night watch kept through a winter"
+     ],
+     "wants": [
+      "shield"
+     ],
+     "opens": "provost"
+    },
+    {
+     "train": {
+      "command": 0.4,
+      "shield": 0.3,
+      "stewardship": 0.3
+     },
+     "trial": [
+      "command",
+      "a gate kept and its tolls true"
+     ],
+     "wants": [
+      "command",
+      "stewardship"
+     ],
+     "opens": "clerk"
+    },
+    {
+     "train": {
+      "command": 0.4,
+      "stewardship": 0.3,
+      "tactics": 0.3
+     },
+     "trial": [
+      "command",
+      "a castle kept a year"
+     ],
+     "wants": [
+      "command",
+      "stewardship"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "tactics",
+      "a siege outlasted"
+     ],
+     "wants": [
+      "command",
+      "tactics"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "command",
+      "the strong places of a realm held"
+     ],
+     "wants": [
+      "command"
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "train",
+   "name": "the quartermaster's road",
+   "specs": {
+    "works": [
+     "stewardship",
+     "supply"
+    ],
+    "steady": [
+     "stewardship",
+     "supply"
+    ],
+    "*": [
+     "stewardship",
+     "supply"
+    ]
+   },
+   "tiers": [
+    {
+     "train": {
+      "stewardship": 0.4,
+      "husbandry": 0.3,
+      "learning": 0.3
+     },
+     "trial": [
+      "stewardship",
+      "the stores counted true before the master"
+     ],
+     "wants": [
+      "stewardship"
+     ],
+     "opens": "clerk"
+    },
+    {
+     "train": {
+      "stewardship": 0.4,
+      "trade": 0.3,
+      "command": 0.3
+     },
+     "trial": [
+      "stewardship",
+      "a wagon line brought through a bad road"
+     ],
+     "wants": [
+      "stewardship",
+      "command"
+     ],
+     "opens": "forager"
+    },
+    {
+     "train": {
+      "stewardship": 0.4,
+      "command": 0.3,
+      "learning": 0.3
+     },
+     "trial": [
+      "stewardship",
+      "a company fed through a winter"
+     ],
+     "wants": [
+      "stewardship",
+      "command"
+     ]
+    },
+    {
+     "train": {
+      "stewardship": 0.4,
+      "tactics": 0.3,
+      "command": 0.3
+     },
+     "trial": [
+      "stewardship",
+      "a host fed through a campaign"
+     ],
+     "wants": [
+      "stewardship",
+      "tactics"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "command",
+      "a host that never starved"
+     ],
+     "wants": [
+      "command"
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "ships",
+   "name": "the marine's road",
+   "specs": {
+    "press": [
+     "melee",
+     "the-skirmish"
+    ],
+    "*": [
+     "sea",
+     null
+    ]
+   },
+   "tiers": [
+    {
+     "train": {
+      "sea": 0.5,
+      "athletics": 0.3,
+      "melee": 0.2
+     },
+     "trial": [
+      "sea",
+      "the stroke kept through a gale"
+     ],
+     "wants": [
+      "sea"
+     ],
+     "opens": "signaller"
+    },
+    {
+     "train": {
+      "sea": 0.3,
+      "melee": 0.3,
+      "command": 0.4
+     },
+     "trial": [
+      "melee",
+      "first over the rail"
+     ],
+     "wants": [
+      "sea",
+      "command"
+     ]
+    },
+    {
+     "train": {
+      "command": 0.4,
+      "sea": 0.3,
+      "tactics": 0.3
+     },
+     "trial": [
+      "command",
+      "a landing formed on the shore"
+     ],
+     "wants": [
+      "command",
+      "sea"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "tactics",
+      "a crossing of the sea in war"
+     ],
+     "wants": [
+      "command",
+      "tactics"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "command",
+      "a host carried over water"
+     ],
+     "wants": [
+      "command"
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "household",
+   "name": "the guard's road",
+   "specs": {
+    "press": [
+     "sword",
+     "the-long-sword"
+    ],
+    "shock": [
+     "riding",
+     "the-lance"
+    ],
+    "*": [
+     "sword",
+     "the-long-sword"
+    ]
+   },
+   "tiers": [
+    {
+     "train": {
+      "sword": 0.4,
+      "riding": 0.3,
+      "etiquette": 0.3
+     },
+     "trial": [
+      "sword",
+      "the bout before the lord"
+     ],
+     "wants": [
+      "sword",
+      "etiquette"
+     ],
+     "opens": "bearer"
+    },
+    {
+     "train": {
+      "sword": 0.3,
+      "etiquette": 0.3,
+      "command": 0.4
+     },
+     "trial": [
+      "etiquette",
+      "a feast kept without a quarrel at the door"
+     ],
+     "wants": [
+      "sword",
+      "command"
+     ]
+    },
+    {
+     "train": {
+      "command": 0.4,
+      "sword": 0.3,
+      "diplomacy": 0.3
+     },
+     "trial": [
+      "command",
+      "the lord brought out of a bad field"
+     ],
+     "wants": [
+      "command",
+      "etiquette"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "tactics",
+      "the lord's wing kept whole"
+     ],
+     "wants": [
+      "command",
+      "tactics"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "command",
+      "the lord's host commanded"
+     ],
+     "wants": [
+      "command"
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "orders",
+   "name": "the brother's road",
+   "specs": {
+    "*": [
+     "sword",
+     "the-long-sword"
+    ]
+   },
+   "tiers": [
+    {
+     "train": {
+      "sword": 0.4,
+      "faith": 0.3,
+      "riding": 0.3
+     },
+     "trial": [
+      "sword",
+      "the order's trial"
+     ],
+     "wants": [
+      "sword"
+     ]
+    },
+    {
+     "train": {
+      "sword": 0.3,
+      "faith": 0.3,
+      "command": 0.4
+     },
+     "trial": [
+      "sword",
+      "a brother's deed"
+     ],
+     "wants": [
+      "sword",
+      "command"
+     ]
+    },
+    {
+     "train": {
+      "command": 0.5,
+      "faith": 0.2,
+      "tactics": 0.3
+     },
+     "trial": [
+      "command",
+      "the order led in the field"
+     ],
+     "wants": [
+      "command"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "tactics",
+      "the order's wing"
+     ],
+     "wants": [
+      "command"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "command",
+      "the order commanded"
+     ],
+     "wants": [
+      "command"
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "hired",
+   "name": "the sellsword's road",
+   "specs": {
+    "press": [
+     "sword",
+     "the-arming-sword"
+    ],
+    "shot": [
+     "bow",
+     "the-crossbow"
+    ],
+    "*": [
+     "sword",
+     "the-arming-sword"
+    ]
+   },
+   "tiers": [
+    {
+     "train": {
+      "sword": 0.4,
+      "melee": 0.3,
+      "intimidation": 0.3
+     },
+     "trial": [
+      "sword",
+      "a bout for the company's purse"
+     ],
+     "wants": [
+      "sword"
+     ]
+    },
+    {
+     "train": {
+      "sword": 0.3,
+      "command": 0.4,
+      "trade": 0.3
+     },
+     "trial": [
+      "command",
+      "a section paid and kept"
+     ],
+     "wants": [
+      "command",
+      "trade"
+     ]
+    },
+    {
+     "train": {
+      "command": 0.4,
+      "trade": 0.3,
+      "tactics": 0.3
+     },
+     "trial": [
+      "trade",
+      "a contract won and kept"
+     ],
+     "wants": [
+      "command",
+      "trade"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "tactics",
+      "a town taken for pay"
+     ],
+     "wants": [
+      "command"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "command",
+      "a host of companies"
+     ],
+     "wants": [
+      "command"
+     ]
+    }
+   ]
+  },
+  {
+   "branch": "conscripts",
+   "name": "the conscript's road",
+   "specs": {
+    "*": [
+     "melee",
+     "the-line"
+    ]
+   },
+   "tiers": [
+    {
+     "train": {
+      "spear": 0.4,
+      "athletics": 0.4,
+      "shield": 0.2
+     },
+     "trial": [
+      "spear",
+      "the first stand in a rank"
+     ],
+     "wants": [
+      "spear"
+     ]
+    },
+    {
+     "train": {
+      "spear": 0.3,
+      "command": 0.4,
+      "shield": 0.3
+     },
+     "trial": [
+      "command",
+      "a section of raw men kept in line"
+     ],
+     "wants": [
+      "command"
+     ]
+    },
+    {
+     "train": {
+      "command": 0.5,
+      "tactics": 0.5
+     },
+     "trial": [
+      "command",
+      "a company of conscripts that held"
+     ],
+     "wants": [
+      "command"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "tactics",
+      "a wing of conscripts that did not run"
+     ],
+     "wants": [
+      "command"
+     ]
+    },
+    {
+     "train": {
+      "tactics": 0.5,
+      "command": 0.5
+     },
+     "trial": [
+      "command",
+      "a host raised by lot"
+     ],
+     "wants": [
+      "command"
+     ]
+    }
+   ]
+  }
+ ]
+}

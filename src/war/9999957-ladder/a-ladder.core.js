@@ -36,6 +36,18 @@
     const B = MU.B(MU.branchOf(pc)) || {}, next = MU.rankIdx((m.rank | 0) + 1), why = [];
     const z = k => clamp(1 + ((A.skill(pc, k) || 0) - 30) / 60, .6, 1.5);
     let f = 1;
+    // D11+: the road names what the next rung wants (A.PATHS.wants: an archer's captaincy the bow and command, a sapper's
+    // command works and stone); without it, the branch's key skill and, from sergeant up, command
+    const wants = A.PATHS && A.PATHS.wants ? A.PATHS.wants(pc, next) : [];
+    if (wants.length) {
+      for (const k of wants.slice(0, 2)) {
+        const v = z(k), nm = A.SK ? A.SK.name(k).toLowerCase() : k;
+        f *= v; why.push([k === 'command' ? (v >= 1 ? 'men follow you' : 'men do not yet follow you') : v >= 1 ? `the next rung wants ${nm}, and you have it` : `the next rung wants more ${nm} than you have`, v]);
+      }
+      const tr = A.PATHS.trialsAt ? A.PATHS.trialsAt(pc, MU.rankIdx(m.rank | 0)) : 0;
+      if (tr) { const v = 1 + .15 * Math.min(2, tr); f *= v; why.push(['you stood your rung\'s trial', v]); }
+      return { f: r2(clamp(f, .4, 2.4)), why };
+    }
     if (B.key) { const k = z(B.key); f *= k; why.push([k >= 1 ? `${B.short} want what you know` : `${B.short} want more than you know`, k]); }
     if (next >= 1) { const c = z('command'); f *= c; why.push([c >= 1 ? 'men follow you' : 'men do not yet follow you', c]); }
     return { f: r2(clamp(f, .4, 2)), why };

@@ -185,11 +185,17 @@ Every foundational or significant change is a version (`docs/VERSIONS.md`, `tool
   complaint list; v3 = `docs/V3_SPEC.md`, the living world: economy, armoury, growth in depth, D-037).
 - **Minor:** a round, cycle or step that adds or replaces a system. **Patch:** fixes only.
 - **Pre-release** (`-alpha.N`, `-beta.N`, `-rc.N`) while a major is being built.
-- Tag a clean commit whose CI is green (quick tier and `long.yml`, T1), or the end of a step the owner asked for: `node tools/version.mjs new vX.Y.Z "what changed"`, commit `docs/VERSIONS.md`, push.
-- **Milestones** also get a release branch, `release/<name>` (for example `release/v2.1-foundations`): this
-  session's git proxy refuses tag pushes, so the branch is the restorable record on GitHub. It carries the built game
-  (`node tools/build.mjs && git add -f index.html`, committed on that branch only; D-109). Save a sample game of the
-  milestone in `tests/saves/`.
+- **How a version is cut (D-134, order 65), one way only.** A version is the commit CI tested green on both tiers
+  (`check.yml` and `long.yml`). `node tools/version.mjs new vX.Y.Z "what changed" --at=<that sha>` writes its row in
+  `docs/VERSIONS.md`, moves the changelog bullets that came with it under its heading, and saves a sample game in
+  `tests/saves/`; push `release/<version>` at exactly that commit, then commit the records on `v2-integration` (`[skip ci]`
+  unless a later batch needs its run). `node tools/version.mjs check` (run by `tools/check.mjs`) fails when the rows,
+  release branches, changelog headings and sample saves disagree.
+- **Batches.** Merge features in a batch with one `[full ci]` push; the next batch waits on its pushed branches until
+  this one is green or every red test is owned by a fix branch (fix branches merge any time). Cut a version from each green
+  batch, and tell the owner what the batch holds, not what may land later.
+- **Milestones** also get a named release branch, `release/<name>` (for example `release/v2.1-foundations`): this
+  session's git proxy refuses tag pushes, so the branch is the restorable record on GitHub.
 
 ## The v2 engine
 
@@ -203,8 +209,8 @@ as `A.V2`; never edit the bundle). Their unit tests are `tests/v2/` (`tools/chec
 **The built game is not committed** (X5, D-109). `index.html` is in `.gitignore`: build it with `node tools/build.mjs`
 to play or test it. CI builds it once a run (the `game` job, twice to prove the bytes the same) and shares it with the
 test shards, the press gate, the long tier and the nightly runs as an artifact. `tools/version.mjs get` rebuilds an old
-version from its commit's own source (checking the build hash its row records); a milestone's `release/*` branch carries
-the built file (`node tools/build.mjs && git add -f index.html`). Never `git add -f index.html` anywhere else.
+version from its commit's own source (checking the build hash its row records). A release branch points at exactly the
+version's commit (D-134), so it holds no built file either. Never `git add -f index.html`.
 
 **Repack after each round.** The last step of an integration round, after the push, is `git gc --prune=now`. Until X5
 every round committed a rebuilt `index.html` of about 3.7 MB, which git kept as loose objects (twenty had `.git` at 74 MB
@@ -213,6 +219,8 @@ with no packfile, repacked to 18 MB); rounds no longer add them, but repacking s
 
 **Parallel safety.** When several agents work at once, each owns **only its own `src/<system>/NN-name/` folder** (or its own `data/` files).
 
+- Work on a branch named `work/<item>` (D-133, order 64), push it early and often, and leave it for the integrator, who
+  merges it whole into `v2-integration` and lists it under "Deletable" in `docs/BRANCHES.md`.
 - Build to `--out=` a private scratch path such as `/tmp/ardan/<name>/`, never to `index.html`.
 - Unpack only to a private `--unpack=` folder. The shared `.build/` is the fix layer, for reading.
 - Don't edit another feature, `src/core/release/`, `tools/`, `tests/`, `tools/bench/` or `vendor/` unless that is your

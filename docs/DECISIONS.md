@@ -2271,6 +2271,75 @@ less than twice a farmhand and a captain about one and a half to two yeomen. Wea
 missions' and battles' own). The balance league has no soldier's path; a peasant who enlists keeps less, and CI's long
 tier (the balance league) is where a band would show it.
 
+### D-128 · D11+: each branch has a road through the ranks, as data (2026-11-18; order 54; war.md §14.1)
+`data/military/paths.json`: for each of the fifteen branches, five rungs, each with what it trains (shares of a month's
+effort by skill), the trial that proves a man at it (its skill and its words), what the board weighs for the next rung,
+and the role it opens where it opens one; and the specialisms the road leads to by the man's way of fighting (S1's
+specialisms: the lance, the war bow, the crossbow, the bill and pike, the wall, carpentry and masonry, supply, scouting
+for a host, the garrison...). *Why:* order 54 asks that the path follow "the weapon under use, the method of combat they
+prefer, and every useful aptitude"; a lancer's, an archer's, a sapper's and a scout's careers differ in what they train,
+what proves them and what opens, which D11-3's ladder (one key skill a branch) did not yet say.
+
+### D-129 · D11+: the road trains through S1's one door, bent by talent (2026-11-18; orders 59, 63; D-072)
+The road's month is half a month's effort (`A.gainXp`, practice, the road named as the cause), split by the rung's
+shares, each multiplied by his talent (F 0.6 to SSS 1.6) and renormalised: a gifted hand spends more of the time where it
+pays, as a man does. It is small beside his drill, duty, missions and deeds, so growth stays S1's (concepts, grasp, proof;
+no timetable). The release's year in the ranks (`A.milYear`'s troop weapon) drills the rung's first skill instead, so a
+scout's year is tracking, not his light horse's riding. Aptitude is said in words (S1's `TALENT_WORD`: gifted, rare, a
+prodigy, slow...), never the letter.
+
+### D-130 · D11+: a rung's trial is S1's proof (2026-11-18; D-072 point on proofs)
+When he stands at the edge of a word in the rung's trial skill, its concepts grasped and wanting a proof (`C.ready`), the
+road's trial is set (`pa_trial`, at most one in 300 days); standing it is the `proof` key (a stretch at the next word's
+level, the engine's own crossing) and is recorded for the board (×1.15 a trial at this rung, two at most). *Why:* S1 asks
+a proving moment from Expert up; the road gives each branch its own, in its own words. A man may ask for another season.
+
+### D-131 · D11+: the road's specialism and the role a rung opens (2026-11-18)
+When the road's skill has room for a specialism (Advanced: one, Master: two) and he has none of the road's, `pa_spec`
+offers the one his way of fighting leads to (and the road's own when it differs) or none; at most one in 600 days. The
+role a rung opens is offered once at that rung by his captain through A.WHY (kind `role`, restricted to it, with "the
+road opens it at this rung" as a small reason for).
+
+### D-132 · D11+: the board weighs the road's next rung (2026-11-18; revises D-122 point 2)
+`A.LADDER.mod` reads `A.PATHS.wants(next rung)` (two skills at most, each a factor 0.6 to 1.5) and the trials stood at
+this rung, in place of the branch's one key skill and command; without a road it falls back to D-122. *Why:* an
+archer's captaincy wants command and the bow, a sapper's command wants tactics and craft, the train's stewardship.
+
+### D-133 · Working branches: `work/<item>`, merged whole, then listed as deletable (2026-11-18 21:20 ET; order 64)
+**Context.** The owner asked why oddly named branches appeared (`w1-5`, `d11-2`, `w16-ci`...) and ordered: as many
+branches as needed, properly integrated, and deletable. **Chosen:** every agent's branch is named `work/<item>` with the
+PROGRESS item's code; it is merged whole into `v2-integration` (no cherry-picks, so nothing stays only on it); after the
+merge the integrator adds it with its tip to `docs/BRANCHES.md` under "Deletable". Agents push their branch early and
+often (a container restart loses unpushed work). The session cannot delete refs (the proxy refuses; the permissions rule
+stands), so the owner deletes them, or leaves them: they cost nothing. **Why:** parallel agents need separate branches;
+a pushed branch survives restarts; the list makes deleting safe.
+
+### D-134 · How a version is cut, one way only; batches cleared before the next lands (2026-11-18 21:40 ET; order 65)
+**What went wrong (the audit).**
+1. *Three conventions for a release branch.* alpha.1-4: the version's commit is its records commit. alpha.5-9: the
+   release branch is one records commit past the version's commit. alpha.10-13: the release branch is the version's
+   commit and the records sit only on `v2-integration`. All are restorable, but nothing said which is right.
+2. *The tool could only tag HEAD.* `tools/version.mjs new` tags the current commit, so a version cut at a green commit
+   that is no longer the head (alpha.13) needed a hand-made temporary worktree and a hand-copied row; and its look-up
+   leaked git's own "fatal: Needed a single revision" to the screen, which reads as a failure though nothing failed.
+3. *No sample save since alpha.10,* though every earlier version had one and the old saves must keep loading.
+4. *Merging faster than CI clears.* On Nov 18, W1-6, D11-1, X5, D11-2, D11-3 and D11+ landed before any run on them was
+   green. Each new merge brought new red tests, each fix round met the next merge's, the failures could not be told
+   apart by cause, and alpha.14's promised contents changed four times. The changelog had to be split by hand.
+**Chosen.**
+1. *A version is the commit CI tested green on both tiers.* Its row names that commit; `release/<version>` points at
+   exactly that commit; the records (VERSIONS row, CHANGELOG section, PROGRESS row, sample save) are one commit on
+   `v2-integration` after it, never on the release branch. alpha.1-9 keep their branches as they are (listed as the old
+   way in `docs/VERSIONS.md`).
+2. *The tool does it.* `version.mjs new <v> "title" --at=<sha>` takes the tested commit (default HEAD), refuses one
+   without a green check and long run when it can see them, writes the row, moves the CHANGELOG's Unreleased bullets that
+   came with that commit's merges under the version's heading, saves a sample game, and prints the release-branch push.
+   Its git look-ups are quiet. `version.mjs check` fails when a row, a release branch, a changelog heading or a sample
+   save disagree; `tools/check.mjs` runs it.
+3. *Batches.* Features merge in a batch with one `[full ci]` push. The next batch waits on its branches (pushed, safe)
+   until the current one is green or every red test is owned by a fix branch; fix branches may merge any time. A version
+   is cut from each green batch. The promise to the owner names the batch, not what may land later.
+
 ### D-109 · X5: the built game is not committed; CI builds it once a run (2026-11-19; carries out D-018's second half; proposed in H-087, approved by the coordinator)
 1. **`index.html` leaves git:** `/index.html` in `.gitignore`, `git rm --cached index.html`. Every round committed a
    rebuilt file of 3.7 to 5.7 MB (D-018: 104 MB of built files by then). `node tools/build.mjs` still writes it, to play
@@ -2286,8 +2355,9 @@ tier (the balance league) is where a band would show it.
    `4707b7d`'s rebuild equals its committed file byte for byte), and checks the result against the hash in the row. `new`
    builds the commit the same way and writes `· build sha256:...` (in backticks) at the end of the row's title (`list`
    shows it).
-5. **Milestones:** a `release/*` branch carries the built file (`node tools/build.mjs && git add -f index.html`), the
-   restorable record on GitHub while the proxy refuses tags. Nowhere else.
-6. **Considered:** a CI step that commits the file to `release/*` (it needs write permission for the workflow token: by
-   hand instead); each shard building for itself (10 s each, but eight builds are not one tested artifact); keeping the
+5. **Release branches:** D-134 (order 65, landed meanwhile) has `release/<version>` point at exactly the version's commit,
+   so it holds no built file; `get` rebuilds it from that commit and checks the row's hash. (The first draft had release
+   branches carry the file with `git add -f`; D-134 supersedes that.)
+6. **Considered:** a CI step that commits the file to `release/*` (it needs write permission for the workflow token, and
+   D-134 keeps the branch at the tested commit); each shard building for itself (10 s each, but eight builds are not one tested artifact); keeping the
    committed file only on the integration branches (the growth is the same).

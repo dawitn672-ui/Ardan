@@ -2207,6 +2207,37 @@ revisit D-120 under order 54's first rule (the world is not built around the pla
   persons below the seeds); transfers between commands; a foreign contract as peace service (R12's third example).
 - **Undo:** revert branch `d11-3`'s commits; nothing was retired (the release's mission draw stays as the fallback).
 
+### H-095 · 2026-11-19 · D11+: the military path
+Order 54 on the military path ("the weapon under use, the method of combat they prefer, their aptitude across any skill
+that could be made use of in context"); orders 59 and 63 (growth is not a timetable; S1); `docs/design/war.md` §14.1 and
+§14.2; PROGRESS's D11+; decisions D-128 to D-132. Branch `d11p`, from `origin/v2-integration` at `4707b7d`. New feature
+`src/war/9999958-paths` (`A.PATHS`: `a-paths`, `b-view`, `pa.events.js`, README, tests) and `data/military/paths.json`.
+"Training tailored to each unit's make-up" was D11-2's syllabus (D-118); this item adds the man's own road.
+- **Built:** each branch's road through the five rungs (what each trains, its trial, the next rung's wants, the role it
+  opens, its specialisms by way of fighting) (D-128); the month's training through `A.gainXp` bent by talent, said in
+  words, and the release's year in the ranks drilling the road (D-129); the rung's trial as S1's proof (D-130); the
+  road's specialism and the rung's role (D-131); the board weighing the next rung's wants and the trials stood (D-132);
+  the War tab's *Your road* card.
+- **Release files edited:** `08-soldiering.js` (`A.milYear` drills the road's first skill), `23-ui-e.js` (the card).
+  **Features edited:** 9999955-muster (`MU.roleOptions` takes `only`), 9999957-ladder (`L.mod` reads the road), 01-stages
+  (the `paths` stage of `A.applyFx`). No skill engine or S1 test file touched (w17-ci's).
+- **Measured** (`paRoadsDiffer`: the same man as a lancer, an archer, a sapper and a scout, two years at peace, his
+  four key skills set equal): each road grew its own key skill most: riding 2,044 for the lancer (the scout's 2,031, the
+  others none), the bow 4,018 for the archer, craft 2,011 for the sapper (the archer 6), tracking 1,028 for the scout
+  (the archer's 1,002 from a patrol duty); in level-thousandths of growth. The plan's share for the bow: 0.54 slow, 0.58
+  ordinary, 0.65 rare. `paTrial`: a man at the edge of Expert in the bow is set the butts, stands them, S1's proof is called
+  once, and the board's factor rises 0.81 → 0.93. `paBoardAndRole`: an archer's board 0.77 with command alone, 1.88 with
+  the bow too; a sapper's board does not read the bow; the scout's road opens the pathfinder's work.
+- **Tests:** new `paData`, `paRoadsDiffer`, `paTrial`, `paSpec`, `paBoardAndRole`, `paView`, `paOldSaves` (14 saves),
+  `paDeterministic`. Core suites with the touched features' quick tests (paths, muster, ladder, units, v2-renown,
+  careers, unit-work; 72 tests, under a machine load of about 21): 72 of 72.
+- **Checks:** lint-events (paths) 0 errors, 0 warnings; lint-choices (paths) 0 obviously best; lint-reasons 41; lint-stages,
+  lint-kin, lint-skills ok; `--check-tiers` ok; `coherency --baseline=quick`: no contradiction, no check rose. No engine
+  module touched; no long test added or run.
+- **Left:** a road's later rungs for the orders and hired companies stay thin (their own features' doors); a road for a
+  man who changes branch keeps his trials (they count at the rung, not the branch); NPC soldiers have no road (no persons
+  below the seeds).
+- **Undo:** revert branch `d11p`'s commits; nothing was retired.
 ### H-091 · 2026-11-19 · X5: the built game leaves git (D-109)
 D-018's second half, proposed in H-087 and approved by the coordinator. Branch `x5-build`, from `origin/v2-integration` at
 `4707b7d`.
@@ -2219,7 +2250,7 @@ D-018's second half, proposed in H-087 and approved by the coordinator. Branch `
   failure. `tools/version.mjs get` rebuilds a commit with no `index.html` from `git archive` in a scratch folder with that
   commit's own build and checks the row's hash; `new` writes the build's sha256 into the row; `list` shows it.
   `docs/VERSIONS.md` and CLAUDE.md say so (a new note "The built game is not committed", the repack note, the build
-  line, milestones: a `release/*` branch carries the file with `git add -f`).
+  line, and that a release branch, at exactly the version's commit by D-134, holds no built file).
 - **Checked:** `4707b7d` rebuilt from `git archive` equals its committed `index.html` byte for byte (5,725,564 bytes);
   `version.mjs get v2.1.0-alpha.13` still takes the committed file; the row parser reads a row with a build hash
   (a sample row). The three workflows through actionlint (the npm WASM build, 2.0.6): no finding but `ubuntu-24.04`
