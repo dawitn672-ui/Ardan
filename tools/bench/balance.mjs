@@ -44,7 +44,10 @@ const out = { file: path.relative(root, file), build: await pages[0].evaluate(()
 const jobs = [];
 // --paths=a,b plays only those groups (a quick look; the global numbers are then of those lives alone)
 const ONLY = opt('paths') ? opt('paths').split(',') : null;
-for (const [name, P] of Object.entries(TARGETS.paths)) if (!ONLY || ONLY.includes(name)) for (let i = 0; i < PER; i++) jobs.push({ name, P, i });
+// a path may play more lives than the league's default (P.lives: the noisiest paths, whose median of 12 falls on either
+// side of a two-humped spread; d11-ci, H-096); --lives-per sets every path's count
+const livesOf = P => (opt('lives-per') ? PER : P.lives || PER);
+for (const [name, P] of Object.entries(TARGETS.paths)) if (!ONLY || ONLY.includes(name)) for (let i = 0; i < livesOf(P); i++) jobs.push({ name, P, i });
 const played = new Array(jobs.length);
 const playLife = (page, { name, P, i }) => {
   // engaged and passive alternate; personalities rotate; seeds are fixed per path and slot

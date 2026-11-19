@@ -5,6 +5,12 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Officers are paid like officers again.** A soldier still earns a few suns a month, but a captain, a commander and a
+  General earn enough to keep their station.
+- **The company's drill no longer repeats itself.** A drill your company has done before passes in a line of the story;
+  the scene comes for a new drill, a hard month, or one that matters.
+- **The chronicle's boasts make sense:** after a victory it never claims fewer enemy dead than our own.
+
 - **Your road through the ranks follows your weapon and your way of fighting.** A lancer rides and learns the sword, then
   commands horse; an archer shoots; a sapper works timber and stone, then plans the works; a scout tracks and keeps
   quiet. The War tab's *Your road* card says what your rung trains, with your gift for each in words ("tracking (gifted)").

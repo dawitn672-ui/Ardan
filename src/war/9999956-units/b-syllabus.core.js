@@ -127,7 +127,20 @@
     // a soldier's or sergeant's company drill is a scene he is in, every fourth session (a count, not a die)
     if ((m.rank | 0) <= 2 && m.unN % 4 === 1 && !(A.S.queue || []).some(q => q && q.ev === 'un_drill')) {
       const X = U.D(P.ids[0]), op = S.offers.find(x => x.id === P.ids[0]);
-      A.queue({ type: 'event', ev: 'un_drill', forced: true, ctx: { drillT: X.name.replace(/^The /, 'the '), whyT: op && op.why.length ? op.why.join(', and ') : 'the captain wants it', teachT: op ? op.teacher : 'a sergeant', capT: P.by || 'Your captain', dk: X.id, tk: X.teacher || 'command' } });
+      // the card for a drill new to him, a hard month, or one that matters (a tendency to mend, horse among the enemy, a
+      // siege ahead), within 97's quiet (A.lfSpaced, two years doubling); a drill the company has done before passes as
+      // a log line, done as he did it last (d11-ci, H-096: lfRepeats read un_drill at 14.1% against its 15% bar)
+      const seen = m.unSeen = m.unSeen || {};
+      const matters = !!(op && op.why.some(w => /the enemy has horse|a siege is ahead|broke|chase|slow to form|lost a quarter/.test(w)));
+      const isNew = !seen[X.id];
+      if (isNew || ((hard > 1 || matters) && (!A.lfSpaced || A.lfSpaced(pc, 'un_drill', 2)))) {
+        seen[X.id] = (seen[X.id] || 0) + 1;
+        A.queue({ type: 'event', ev: 'un_drill', forced: true, ctx: { drillT: X.name.replace(/^The /, 'the '), whyT: op && op.why.length ? op.why.join(', and ') : 'the captain wants it', teachT: op ? op.teacher : 'a sergeant', capT: P.by || 'Your captain', dk: X.id, tk: X.teacher || 'command' } });
+      } else {
+        const way = m.drillWay || 'easy', nm = X.name.replace(/^The /, 'the ');
+        if (A.gainXp) A.gainXp(pc, way === 'teach' ? 'command' : X.teacher || 'command', way === 'hard' ? .8 : way === 'teach' ? .5 : .3, { q: 'practice', why: `the company's drill: ${nm}` });
+        A.log(`The company drills ${nm} again. You go at it as you did before.`, 'muted');
+      }
     }
     return { ids: P.ids, by: P.by, out };
   };
