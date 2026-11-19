@@ -186,6 +186,7 @@
     const war = A.atWar ? A.atWar(m.realm || pc.realm).length > 0 : false;
     const FIT = { farrier: ['lances', 'light_horse', 'household'], pathfinder: ['scouts', 'light_horse'], carpenter: ['engineers', 'train'], clerk: ['train', 'garrison'], forager: ['train', 'light_horse'], signaller: ['spears', 'foot_men_at_arms'] };
     for (const R of MU.roles()) {
+      if (o.only && R.id !== o.only) continue;   // D11+: a rung of the road opens this one role (A.PATHS)
       const lvl = A.skill(pc, R.skill) || 0;
       if (lvl < R.min) continue;
       const rs = [{ kind: 'merit', weight: Math.round((.4 + (lvl - R.min) / 15) * 100) / 100, label: R.say || MU.SAY[R.skill], source: { t: 'skill', id: R.skill, r: Math.round(lvl) }, pub: 1 }];
@@ -200,6 +201,7 @@
     }
     const none = [{ kind: 'cost', weight: 1.1, label: 'the line wants every man in it', source: { t: 'line' }, pub: 1 }];
     if ((m.rank | 0) >= 1) none.push({ kind: 'cost', weight: .4, label: 'a sergeant has his section to mind', source: { t: 'rank', r: m.rank }, pub: 1 });
+    if (o.only) none.push({ kind: 'cost', weight: -.3, label: 'the road opens it at this rung', source: { t: 'path', id: o.only }, pub: 1 });
     if (!o.muster && m.joinD != null && day() - m.joinD < 60) none.push({ kind: 'cost', weight: .5, label: 'he is new', source: { t: 'joined' }, pub: 1 });
     out.push({ id: 'none', reasons: none });
     return out;
