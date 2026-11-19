@@ -2539,3 +2539,28 @@ Branch `work/x5-ci`, from `origin/v2-integration` at `578da51`. The long run on 
 - **Undo:** revert the branch's commits, newest first. Saves keep their map's seed: a save made on the one continent
   carries `ardan-v2-map:m1-02` and loads on any build since v2's map. Clear the worker's store by deleting the browser's
   `ardan-map` IndexedDB (or let the tag miss).
+
+### H-102 · 2026-11-19 · M1, order 71 and 72: the map's facts, the lore lint, the lore inventory (interim, before the design)
+- **Branch** `work/m1`, merged with `origin/v2-integration` at `c406759`, where D-151 conflicted with D-148 to D-150 in the
+  records only and both were kept. Order 72 (D-152) stopped the seed search: the continent is designed on `work/m1-design`.
+  This step does the work that does not depend on the map's shape.
+- **The facts:** `A.V2MAP.factsOf(w)` (`src/map/99991-v2-map/f-facts.core.js`) reads any built map.
+  - For each realm (its heartland as the release wrote it), it records: the capital (coast, river, stream, lake, terrain);
+    its place on the compass (u and v, and the words they earn); its coastal provinces; the seas and lakes it touches; its
+    terrain mix; its high ground (from 1,000 m); the named rivers, ranges and forests; its neighbours; and its towns.
+  - For the map it records the waters (D9's named sea sectors, and each enclosed lake or inland sea from 400 cells) and every
+    named river (the realms it crosses and the water it reaches), range, forest and pass.
+  - `tools/m1/facts.mjs` writes it all into `data/map/one-continent.json`, for any map (`--map=`, `--v=`). The file is 39 KB.
+  - `m1OneContinent` checks that the file is the built map's own.
+- **The lint:** `tools/lint-lore-map.mjs`, with its rules in `tools/lib/lore-map.mjs` and unit tests in
+  `tests/v2/lore-map.test.js` (6 tests). It reads the lore JSON, `data/`, and the string literals of every built source file.
+  - A realm's own texts are its Codex entry, titles and houses, an object keyed by its id in code, and an event whose
+    condition asks for that realm alone.
+  - It reads claims of coast, named water, high ground, plains, dry land, wood, lakes, rivers (named or not), compass
+    place ("the northern plains"; "north of X") and borders.
+  - The count may only fall (`tests/lore-map-baseline.json`). It stands at 1,303 on today's map (`m1-02`, v3, with no Middle
+    Sea), out of 3,195 claims in 41 files. M1 ends at 0. `tools/check.mjs` runs it.
+- **The inventory:** `docs/design/m1/lore-inventory.md`. It covers what the lore asks of the map (the named waters with the
+  realms on each, regions, rivers, and the denied claims by realm), the texts by file, the data that holds geography as
+  fields, the code that hard-codes it, the order of the lore pass, and what the lint does not read yet.
+- **Undo:** revert the step's commits. `f-facts` is read only by the tool and the test.

@@ -44,6 +44,9 @@ catch (e) { lintFailed++; console.error(`kin FAIL\n${String(e.stdout || '').slic
 try { execFileSync(process.execPath, ['tools/lint-skills.mjs'], { cwd: root, stdio: 'pipe' }); console.log('skills ok (tools/lint-skills.mjs)'); }
 catch (e) { lintFailed++; console.error(`skills FAIL\n${String(e.stdout || '').slice(0, 2000)}${String(e.stderr || '').slice(0, 4000)}`); }
 // nothing without reason (R1, rule 18, D-069): no more bare-dice decisions in AI code than tests/reasons-baseline.json
+// the world's words agree with the one map (M1, order 71, D-151): no more claims the map denies than tests/lore-map-baseline.json
+try { execFileSync(process.execPath, ['tools/lint-lore-map.mjs'], { cwd: root, stdio: 'pipe' }); console.log('lore-map ok (tools/lint-lore-map.mjs)'); }
+catch (e) { lintFailed++; console.error(`lore-map FAIL\n${String(e.stdout || '').slice(0, 2000)}${String(e.stderr || '').slice(0, 2000)}`); }
 try { execFileSync(process.execPath, ['tools/lint-reasons.mjs'], { cwd: root, stdio: 'pipe' }); console.log('reasons ok (tools/lint-reasons.mjs)'); }
 catch (e) { lintFailed++; console.error(`reasons FAIL\n${String(e.stdout || '').slice(0, 2000)}${String(e.stderr || '').slice(0, 4000)}`); }
 // the long list is honest: a test over the threshold on CI is in tests/long-tests.json (T1, D-063)
