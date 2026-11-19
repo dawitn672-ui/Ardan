@@ -5,6 +5,16 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **One continent, the same in every life.** Ardan no longer redraws its land for every new game: the coasts, rivers,
+  mountains, the realms' heartlands, the towns and the roads between them are the same each time, to be learned like a
+  real country. Who is born, who rules and which wars move the borders still differ from life to life. The continent was
+  chosen from thirty candidates for how well it fits the realms' histories and how clearly its roads read. A life saved
+  before keeps the land it was played on.
+- **The creation screen shows that continent:** each home town is listed with its ground (hills, forest, steppe...) as
+  you will find it.
+- **Faster on the second visit.** The continent is kept between visits, so it is ready a few seconds sooner on a phone,
+  and continuing a saved life no longer stops to rebuild the map.
+
 ## v2.1.0-alpha.15 (2026-11-19 09:00 ET) · Everyone ages and the houses go on; the game built by CI; versions cut one way
 
 - **People grow old and die, and the great houses go on.** Before, only rulers, title holders and people you knew ever

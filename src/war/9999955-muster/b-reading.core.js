@@ -263,6 +263,9 @@
       const s = scoreOf(id);
       if (id !== rec.chose && (s < top - MU.T.gap || sum(op) < MU.T.floor)) continue;
       const why = op.reasons.filter(x => x.weight > 0).sort((a, b) => b.weight - a.weight).slice(0, 2).map(x => x.label);
+      // a branch he has nothing to say for is not offered beside one he has (order 54: nothing without a reason). M1: on the
+      // one continent Frostholm's command lacked no scouts, and a gentleman with no weapon was offered them with no reason
+      if (id !== rec.chose && !why.length) continue;
       offers.push({ b: id, name: MU.nameOf(B, c), why, score: r2(s) });
       if (offers.length >= MU.T.max) break;
     }

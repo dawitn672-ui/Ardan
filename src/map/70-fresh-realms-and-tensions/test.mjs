@@ -34,7 +34,8 @@ export default {
         // the same varied world without the split: what the parents had before
         A.newGame(__frStart(700 + s, { fresh: false }));
         const before = {};
-        for (const r of Object.values(A.S.realms)) before[r.id] = { tre: r.treasury, inc: r.baseIncome, pop: A.realmProvs(r.id).reduce((a, P) => a + P.pop, 0), pieces: FR.pieces(r.id) };
+        const scutOf = id => (A.S.musters || []).filter(m => m.r === id).reduce((a, m) => a + (m.e || []).reduce((b, e) => b + (e.c || 0), 0), 0);
+        for (const r of Object.values(A.S.realms)) before[r.id] = { tre: r.treasury - scutOf(r.id), inc: r.baseIncome, pop: A.realmProvs(r.id).reduce((a, P) => a + P.pop, 0), pieces: FR.pieces(r.id) };
         A.newGame(__frStart(700 + s));
         const S = A.S, F = Object.values(S.realms).filter(r => r.fresh);
         counts.push(F.length);
@@ -68,7 +69,12 @@ export default {
         // treasuries and incomes are shared out, not made
         for (const pid of new Set(F.map(r => r.fresh.from))) {
           const kids = F.filter(r => r.fresh.from === pid), p = A.realm(pid);
-          const tre = p.treasury + kids.reduce((a, r) => a + r.treasury, 0);
+          // shield money (9999951-commands): a breakaway's war musters the parent's lords, and a lord who answers with
+          // coin pays the crown from his rents. That is the crown's own revenue for the war, not money the split made
+          // (M1: on the one continent, world 701 split Sabra and Sarabad at war, and its lords paid 48,000)
+          const ids = new Set([pid].concat(kids.map(r => r.id)));
+          const scut = (A.S.musters || []).filter(m => ids.has(m.r)).reduce((a, m) => a + (m.e || []).reduce((b, e) => b + (e.c || 0), 0), 0);
+          const tre = p.treasury + kids.reduce((a, r) => a + r.treasury, 0) - scut;   // both sides net of shield money
           const inc = A.realmProvs(pid).reduce((a, P) => a + P.pop, 0) / before[pid].pop * before[pid].inc + kids.reduce((a, r) => a + r.baseIncome, 0);
           sumN++;
           if (Math.abs(tre - before[pid].tre) <= 2 && Math.abs(inc / before[pid].inc - 1) < 0.12) sumOk++;

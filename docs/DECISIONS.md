@@ -2486,6 +2486,31 @@ continent per life; it came with the generator. The owner noticed the map "keeps
 4. The worker that built each new life's continent ahead (D-054) builds the one continent once and caches it; the load
    gets faster.
 Built as item **M1**, first after alpha.14 (every world shifts, so it is its own batch, D-134/D-141).
+**Addendum (2026-11-19, M1, branch `work/m1`): the seed chosen, `ardan-v2-map:m1-02`** (map version 3; `A.V2MAP.ONE`).
+Thirty candidates (`m1-01` to `m1-30`) were built by the game's own code and read by `tools/m1/choose-seed.mjs` on seven
+counts, 0 to 100. Lore (weight 30) is how well the realm heartlands fit the Codex, 29 realms' words from their names and
+primers. Roads (20) is D9-2's legibility, read as the share of road length that does not run beside a border. The blind
+readings 69 to 75 cannot be given per seed, but the strangers' mistakes were roads and borders side by side. Borders (15)
+is the release's realm borders kept. Rivers (10) is the river flow that reaches the open sea. Sizes (10) is provinces
+within half to twice the release's. One piece (5) is the land in the one continent. Towns (10) is towns on a road and on
+water. One gate: the sea realms on the shore (the test `v2mapSeaRealms`).
+**Readings of `m1-02`:** total 68.8, lore 67.1 (the best of the field, 53.8 to 67.1), roads 68.4 (fifth; 15.7% of road
+length runs beside a realm border), borders 43.6 (17 of 39 kept), rivers 100 (35 of 35 mouths at the sea), sizes 46.7,
+one piece 100 (no islets), towns 88.1 (306 of 306 on a road, 233 on water). The terrain is 90 steppe, 80 forest, 60
+hills, 43 plains, 19 mountains, 12 marsh and 2 desert, with 66 provinces on the coast. Runners-up: `m1-08` (68.3) and
+`m1-27` (68.3). `m1-22` (70.3) is out: the spice islands hold one coastal province of three. The table, the pictures and
+the reasons are in `docs/design/m1/README.md`.
+**Found on every seed (left to M2 or the next map version):** the Middle Sea realms (Lucerna, Ostra, Greyhaven, Sabra,
+Ulun, Qadir) are inland on 25 to 30 of the 30. The generated land has no inland sea, and only realms named for the sea
+are seated on the shore. Drevna "the Lakeland" has no lake shore on 26. On `m1-02`, Aldmark "of the northern plains" has
+no plains province (D-061's terrain cap), and Gorath "of the southern grass" lies north of the centre.
+**How each point was built:**
+1. **Point 1:** `VM.mapSeed(gameSeed)` gives `VM.ONE`.
+2. **Point 2:** above.
+3. **Point 3:** unchanged; a save's `v2map.seed` is the continent it was made on.
+4. **Point 4:** see D-148.
+5. **"The title shows the same continent":** the title draws no map (86's fold and X7), so the one continent is shown
+   before a life on the creation screen. Each home town is offered with its terrain on it (D-149).
 
 ### D-143 · The map in depth, after the one continent (2026-11-18; order 69)
 **Chosen.** Item **M2**, right after M1, in two stages: **M2a**, a design (the owner's model plan, D-009: the big designs
@@ -2553,3 +2578,38 @@ The league's time grows by about a third (24 more lives of 72).
    The test now counts a clash only between two who are close kin of each other, by the namer's own `A.NAMES.closeKin`.
    **Considered:** widening the namer to a cousin's cousins (both sides of every marriage): stricter than the rule and
    than history, and the pools are small.
+
+### D-148 · M1: the one continent built once, and kept between visits in the worker's own store (2026-11-19; D-142 point 4, D-054)
+1. **In the page:** the cache never lets the one continent go (`VM.pinned`, `VM.trim`; the last three other worlds are
+   kept as before). A second life, a typed seed, a replay or a Continue builds nothing.
+2. **Between visits:** the worker that builds it ahead (D-054) stores it in its own IndexedDB (`ardan-map`). There is one
+   entry, replaced and never added to: the world (8.7 MB of typed arrays) under a tag of its key and a hash of the code
+   and settings that build it (the v2 engine, `A.V2MAP.define`, the posted settings and the map as written). The next
+   visit reads it back in the worker (about 150 ms) instead of building it (1.4 to 1.7 s here; 6 to 10 s scaled on a
+   slowed phone). A build whose map code changed misses the tag and builds afresh, so a stale continent can never be
+   read. A refused, missing or wiped store (a private window, iOS clearing a WebView's data under pressure) costs only
+   the build. The worker is let go only after it has stored.
+3. **Saves are not here.** A continent can always be made again, so it is a cache, not a save. Saves stay with `SAVES`,
+   which the iPhone build may move to Capacitor's storage. IndexedDB works in a worker inside WKWebView, so this keeps
+   the iPhone route open (CLAUDE.md's build rules): if a WebView refused it, the game would build the continent as it did
+   before.
+**Measured** (`tools/bench/phone-load.mjs`, Pixel 7, median of 3; reports `tools/bench/reports/phone-m1-*.md`):
+- A first visit is unchanged within the noise: to the first Life screen 3,310 / 12,817 / 17,464 ms before and
+  3,035 / 11,828 / 16,884 ms after, at 1x / 4x / 6x.
+- On a second visit (`--warm`, new), the continent is ready at 752 / 2,374 / 3,797 ms against 2,678 / 8,212 / 10,426
+  before. The first Life screen comes at 2,401 / 8,834 / 13,396 against 3,443 / 10,554 / 13,803. At 6x it is now bound
+  by the event packs and the title's world, not the continent.
+- Continuing a life saved on that visit's continent took 2.0 to 2.4 s with one build on the page; it now takes 0.6 to
+  0.7 s with none (1x, three lives).
+**Considered:** baking the continent into the page at build time (fastest, but 8.7 MB of arrays in a 5.6 MB page);
+storing it through `SAVES` (its store rotates save slots, and a cache does not belong among saves).
+
+### D-149 · M1: the creation screen shows the one continent; its facts kept as data (2026-11-19; D-142 point 1)
+The title draws no map (86's fold, X7). Before a life, the one continent is seen on the creation screen's home towns,
+which named each town's terrain as the map was written (the release's LORE.map). They now read the one continent's
+words, and an oasis the land renamed takes its new name. Both come from `data/map/one-continent.json`
+(`A.DATA['map/one-continent']`, 306 words), written from the built world by `node tools/m1/facts.mjs <built.html>`, so
+the screen needs no build. The test `m1OneContinent` fails when the file no longer matches the built world (a new seed or
+map version: run the tool). `VM.oneFacts()` is null unless the file's seed and version are the map in play.
+**Considered:** reading the cached world (the words would change on screen when the worker finished); building the world
+for the creation screen (seconds on a phone, which X7 took out).

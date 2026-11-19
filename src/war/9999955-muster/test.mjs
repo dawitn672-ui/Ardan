@@ -74,7 +74,7 @@ export default {
         if (!M || !M.offers.length) continue;
         out.n++;
         out.offers += M.offers.length;
-        for (const o of M.offers) if (!o.why.length) out.noReason++;
+        for (const o of M.offers) if (!o.why.length) { out.noReason++; if (!out.bare) out.bare = { b: o.b, weapon: w, apts, status: pc.status, rid, offers: M.offers.map(x => x.b + ' (' + x.why.length + ')') }; }
         first[M.offers[0].b] = (first[M.offers[0].b] || 0) + 1;
         const wk = w || 'none';
         (out.byWeapon[wk] = out.byWeapon[wk] || {})[M.offers[0].b] = ((out.byWeapon[wk] || {})[M.offers[0].b] || 0) + 1;
