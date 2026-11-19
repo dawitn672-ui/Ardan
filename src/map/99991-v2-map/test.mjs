@@ -38,15 +38,16 @@ const FACTS = () => {
 
 export default {
   // one continent: every province reachable by land, at least 98.5% of the land in one piece, sea all round the frame,
-  // the realms' province counts kept, no Far Lands
+  // the realms' province counts kept, no Far Lands; on the one continent (M1) and on two other map seeds (the rule, not
+  // one world: A.V2MAP.ONE switched for the life)
   async v2mapOneContinent(pg) {
-    const r = await pg.evaluate(`(() => { const out = []; for (const seed of [11, 4242, 90001]) { A.newGame({ seed, realm: 'POL-01', status: 'peasant' }); out.push((${FACTS})()); } return out; })()`);
+    const r = await pg.evaluate(`(() => { const out = [], VM = A.V2MAP, one = VM.ONE; try { for (const ms of [one, VM.seedOf(11), VM.seedOf(4242)]) { VM.ONE = ms; A.newGame({ seed: 11, realm: 'POL-01', status: 'peasant' }); out.push((${FACTS})()); } } finally { VM.ONE = one; } return out; })()`);
     const bad = r.filter(f => !(f.v2 && f.reach === f.n && f.mainPct >= 98.5 && f.frame === 0 && f.cellsOk && f.sym && f.inFrame && f.countsOk && f.realmsOk && !f.far && f.sea === 0));
     return { ok: !bad.length, detail: r.map(f => `${f.v2 && f.v2.seed}: ${f.reach}/${f.n} provinces reached by land, ${f.pieces} land piece(s), main ${f.mainPct}%, ${f.frame} land cells on the frame, cells ${f.cellsOk}, adjacency symmetric ${f.sym}, sites inside ${f.inFrame}, realm counts kept ${f.countsOk}, realms ${f.realmsOk}, far lands ${f.far}, ${f.coast} coastal, terrain ${JSON.stringify(f.terr)}`).join(' | ') };
   },
 
-  // the same seed gives the same map (built again from nothing), another seed another; building it moves neither the
-  // game's state nor its random stream; and the time it takes
+  // the same map seed gives the same map (built again from nothing), another map seed another; building it moves neither
+  // the game's state nor its random stream; and the time it takes
   async v2mapSameSeed(pg) {
     const r = await pg.evaluate(() => {
       A.newGame({ seed: 777, realm: 'POL-03', status: 'peasant' });
@@ -58,7 +59,7 @@ export default {
       const c = key(VM.build(VM.seedOf(778), VM.release()));
       return { same: a === b, differ: a !== c, inert: T.hash(A.S) === h0 && A.rngState === r0, ms: Math.round(ms), parts: Object.fromEntries(Object.entries(w2.T).map(([k, v]) => [k, Math.round(v)])) };
     });
-    return { ok: r.same && r.differ && r.inert, detail: `same seed same map ${r.same}; another seed another map ${r.differ}; state and stream untouched ${r.inert}; built in ${r.ms} ms (${JSON.stringify(r.parts)})` };
+    return { ok: r.same && r.differ && r.inert, detail: `same map seed same map ${r.same}; another map seed another map ${r.differ}; state and stream untouched ${r.inert}; built in ${r.ms} ms (${JSON.stringify(r.parts)})` };
   },
 
   // a save keeps the map: the state round-trips exactly, and after a load (with the cache emptied) the grid is built
@@ -72,8 +73,10 @@ export default {
       const g0 = gh(MAP.grid), seed = A.S.v2map.seed, prov0 = T.hash(A.S.prov);
       const enc = await SAVES.encode(A.S, A.J), a = JSON.stringify(A.packState ? A.packState(A.S) : A.S);
       const d = await SAVES.decode(enc.bytes), b = JSON.stringify(A.packState ? A.packState(d.S) : d.S);
-      // another world in between, then the save
-      A.newGame({ seed: 12, realm: 'POL-01', status: 'peasant' }); MAP.init(); const g1 = gh(MAP.grid);
+      // another world in between (on another continent: M1 puts every life on the one), then the save
+      const VM = A.V2MAP, one = VM.ONE; VM.ONE = VM.seedOf(12);
+      try { A.newGame({ seed: 12, realm: 'POL-01', status: 'peasant' }); MAP.init(); } finally { VM.ONE = one; }
+      const g1 = gh(MAP.grid);
       A.V2MAP.cache.clear();
       UI.enterSave(d);
       MAP.init();
@@ -193,9 +196,11 @@ export default {
   // the shore: its capital is coastal, and (for the isles) most of its provinces are, on several seeds
   async v2mapSeaRealms(pg) {
     const r = await pg.evaluate(() => {
-      const VM = A.V2MAP, out = [];
+      const VM = A.V2MAP, out = [], one = VM.ONE;
+      // the one continent (M1) and three other map seeds: the rule, not one world's luck
       for (const seed of [11, 4242, 90001, 7]) {
-        A.newGame({ seed, realm: 'POL-01', status: 'peasant' });
+        VM.ONE = seed === 11 ? one : VM.seedOf(seed);
+        try { A.newGame({ seed, realm: 'POL-01', status: 'peasant' }); } finally { VM.ONE = one; }
         for (const id in LORE.realms) {
           // the realms 99999-v2-names renamed keep their sea by id (VM.SEA_ID)
           const nm = LORE.realms[id].name, sea = VM.SEA_ID && VM.SEA_ID[id];
@@ -266,8 +271,10 @@ export default {
         const inside = (l, b) => l.x < b[0] + b[2] && l.x + l.w > b[0] && l.y < b[1] + b[3] && l.y + l.h > b[1];
         // seed 17: since the B5 and C8b round, 11-16 no longer place a name where the rose stands
         // even with the rose hidden, so the control (underHidden > 0) needs a world that does (17 at 420 px)
+        // M1: every life is on the one continent; the rule is held on the old seeds' continents (A.V2MAP.ONE switched)
         for (const seed of [11, 12, 13, 14, 15, 16, 17]) {
-          A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+          const one = VM.ONE; VM.ONE = VM.seedOf(seed);
+          try { A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 }); } finally { VM.ONE = one; }
           UI.screen = 'game'; UI.set.hints = false; UI.tab = 'world'; UI.worldView = 'map'; UI.set.atlasFog = false; UI.render();
           const wm = document.querySelector('#worldmap'), rose = wm && wm.parentElement.querySelector(':scope > .il-compass');
           if (!wm || !rose) continue;
@@ -299,7 +306,7 @@ export default {
       const t0 = performance.now();
       while (!(H.built || H.failed) && performance.now() - t0 < 120000) await new Promise(r => setTimeout(r, 50));
       if (H.failed) return { failed: H.err };
-      const seed = UI.lifeSeed(UI.cr, false), key = VM.seedOf(seed) + '#' + VM.VERSION, w1 = VM.cache.get(key);
+      const seed = UI.lifeSeed(UI.cr, false), key = VM.mapSeed(seed) + '#' + VM.VERSION, w1 = VM.cache.get(key);
       // every field of the two worlds, typed arrays included, hashed in order (the cache key and the timings aside)
       const hw = w => { let h = 2166136261; const mix = s => { for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } };
         const walk = (v, top) => { if (ArrayBuffer.isView(v)) { mix(v.constructor.name + v.length); for (let i = 0; i < v.length; i++) mix(String(v[i])); return; }
@@ -307,7 +314,7 @@ export default {
           if (v && typeof v === 'object') { for (const k of Object.keys(v)) { if (top && (k === 'T' || k === 'key')) continue; mix(k); walk(v[k]); } return; }
           mix(typeof v + String(v)); };
         walk(w, true); return (h >>> 0).toString(16); };
-      const w0 = VM.build(VM.seedOf(seed), VM.release());
+      const w0 = VM.build(VM.mapSeed(seed), VM.release());
       const same = !!w1 && hw(w0) === hw(w1);
       // Begin with no seed typed
       UI.A.newLife(); UI.cr.seed = '';
@@ -326,5 +333,78 @@ export default {
     if (r.skip) return { ok: true, skip: r.skip };
     if (r.failed) return { ok: false, detail: 'the worker failed: ' + r.failed };
     return { ok: r.same && r.builds === 0 && r.again, detail: `the worker's world is the page's to the bit ${r.same} (built in ${r.ms} ms off the page); continents built after Begin ${r.builds}; seed ${r.seed}: the same world state on the worker's continent as on the page's ${r.again}` };
+  },
+
+  // M1 (order 68, D-142): every life is on the one continent. Lives of other seeds, other realms and stations (one begun from
+  // the creation screen with a typed seed) have the same grid and the same ground on every province, built at most once;
+  // their people differ; the state carries the one continent's map seed; a save made on another continent (before M1)
+  // keeps its own; and the creation screen offers each home town with its terrain on the one continent (the facts in
+  // data/map/one-continent.json are the built world's: when the map's seed or version changes, run tools/m1/facts.mjs)
+  async m1OneContinent(pg) {
+    const r = await pg.evaluate(async () => {
+      const VM = A.V2MAP, H = VM.AHEAD;
+      if (H) { const t0 = performance.now(); while ((H.wait.size || H.storing) && performance.now() - t0 < 120000) await new Promise(r => setTimeout(r, 50)); }
+      const gh = g => { let h = 2166136261; for (const v of g) { h ^= v + 1; h = Math.imul(h, 16777619); } return (h >>> 0).toString(16); };
+      const geo = () => T.hash(A.S.prov.map(p => [p.x, p.y, p.sx, p.sy, p.cells, p.terr, p.coast, p.elev, p.adj, p.biome]));
+      const look = () => { MAP.init(); return { grid: gh(MAP.grid), geo: geo(), map: A.S.v2map && A.S.v2map.seed, v: A.S.v2map && A.S.v2map.v, pc: T.hash([A.pc().given, A.pc().home, A.pc().born, A.S.seed]) }; };
+      const b0 = VM.stats.builds, lives = [];
+      A.newGame({ seed: 4101, realm: 'POL-03', status: 'peasant' }); lives.push(look());
+      A.newGame({ seed: 9912, realm: 'POL-14', status: 'noble', sex: 'F' }); lives.push(look());
+      // from the creation screen, a typed seed
+      UI.A.newLife(); UI.cr.seed = 'harrow-77'; UI.cr.realm = 'POL-27';
+      UI._newLifeOk = true; try { UI.startLife(); } finally { UI._newLifeOk = false; }
+      lives.push(look());
+      const builds = VM.stats.builds - b0;
+      // a save made on another continent (a life begun before M1, on its own seed's map) keeps it
+      const one = VM.ONE; VM.ONE = VM.seedOf(4101);
+      try { A.newGame({ seed: 4101, realm: 'POL-03', status: 'peasant' }); } finally { VM.ONE = one; }
+      const old = look(), enc = await SAVES.encode(A.S, A.J), d = await SAVES.decode(enc.bytes);
+      A.newGame({ seed: 4101, realm: 'POL-03', status: 'peasant' });
+      UI.enterSave(d); const back = look();
+      // the creation screen's home towns: the one continent's terrain words
+      const D = VM.oneFacts(), w = VM.world(VM.ONE), F = A.DATA && A.DATA['map/one-continent'];
+      const factsOk = !!D && w.prov.every(q => D.terr[q.id] === q.terr && (!q.retype || D.names[q.id] === q.retype.name)) && Object.keys(D.names).every(id => w.prov[id].retype);
+      UI.screen = 'title'; UI.render(); UI.A.newLife(); UI.cr.realm = 'POL-01';
+      const html = UI.crStepBirth();   // the full screens' first step, where the home town is chosen
+      UI.screen = 'title'; UI.render();
+      const homes = LORE.map.provinces.filter(p => p.realm === 'POL-01'), shown = homes.filter(p => D && html.includes(`>${UI.esc((D.names && D.names[p.id]) || p.name)} (${UI.esc(D.terr[p.id])},`)).length;
+      return { lives, builds, one: VM.ONE, old, back, factsOk, facts: F ? F.seed + ' v' + F.v : 'none', v: VM.VERSION, homes: homes.length, shown };
+    });
+    const L = r.lives, same = L.every(l => l.grid === L[0].grid && l.geo === L[0].geo && l.map === r.one && l.v === r.v);
+    const differ = new Set(L.map(l => l.pc)).size === L.length;
+    const kept = r.old.map !== r.one && r.back.map === r.old.map && r.back.grid === r.old.grid && r.back.geo === r.old.geo && r.old.grid !== L[0].grid;
+    const ok = same && differ && r.builds <= 1 && kept && r.factsOk && r.shown === r.homes;
+    return { ok, detail: `${L.length} lives (seeds 4101, 9912 and a typed one) on one continent (${r.one} v${r.v}): same grid and ground ${same}, their people differ ${differ}, continents built ${r.builds}; ` +
+      `a save on another continent (${r.old.map}) keeps it ${kept}; the facts (${r.facts}) are the built world's ${r.factsOk}${r.factsOk ? '' : ' (run tools/m1/facts.mjs)'}; home towns shown with the one continent's terrain ${r.shown}/${r.homes}` };
+  },
+
+  // M1: the one continent built ahead is kept between visits (the worker's IndexedDB): the next load reads it back instead of
+  // building it, and it is the page's own build to the bit
+  async m1KeptContinent(pg) {
+    const wait = () => pg.evaluate(async () => {
+      const H = A.V2MAP.AHEAD; if (!H || typeof A.V2MAP.ahead !== 'function') return { skip: 'no worker in this build' };
+      const t0 = performance.now();
+      while (!(H.built || H.failed) && performance.now() - t0 < 120000) await new Promise(r => setTimeout(r, 50));
+      while (H.storing && performance.now() - t0 < 150000) await new Promise(r => setTimeout(r, 50));
+      return { built: H.built, kept: H.kept, stored: H.stored || 0, failed: H.failed && H.err, ms: H.ms[0], has: A.V2MAP.cache.has(A.V2MAP.ONE + '#' + A.V2MAP.VERSION) };
+    });
+    const a = await wait();
+    if (a.skip) return { ok: true, skip: a.skip };
+    if (a.failed) return { ok: false, detail: 'the worker failed: ' + a.failed };
+    await pg.reload();
+    await pg.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
+    const b = await wait();
+    const same = await pg.evaluate(() => {
+      const VM = A.V2MAP, w1 = VM.cache.get(VM.ONE + '#' + VM.VERSION); if (!w1) return false;
+      const hw = w => { let h = 2166136261; const mix = s => { for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } };
+        const walk = (v, top) => { if (ArrayBuffer.isView(v)) { mix(v.constructor.name + v.length); for (let i = 0; i < v.length; i++) mix(String(v[i])); return; }
+          if (v && typeof v === 'object') { for (const k of Object.keys(v)) { if (top && (k === 'T' || k === 'key')) continue; mix(k); walk(v[k]); } return; }
+          mix(typeof v + String(v)); };
+        walk(w, true); return (h >>> 0).toString(16); };
+      return hw(w1) === hw(VM.build(VM.ONE, VM.release()));
+    });
+    // a first visit stores it (in a browser that refuses the store, the second builds again: only the wait is lost)
+    const ok = a.has && b.has && same && (a.stored ? b.kept === 1 : true);
+    return { ok, detail: `first visit: built in ${a.ms} ms, stored ${a.stored}; next visit: read back ${b.kept} (in ${b.ms} ms); the kept continent is the page's build to the bit ${same}` };
   },
 };

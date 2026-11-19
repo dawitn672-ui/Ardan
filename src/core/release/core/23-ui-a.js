@@ -905,7 +905,12 @@ UI.crStepBirth = function () {
     .join("")}</select>`;
   const L = LORE.realms[c.realm];
   h += `<div class="card" style="margin-top:6px"><div class="lore-text">${UI.esc((L.primer && L.primer.intro) || "")}</div><div class="small" style="margin-top:4px"><b>Ruler:</b> ${UI.esc((L.primer && L.primer.ruler) || "")}</div><div class="small muted" style="margin-top:2px">${UI.esc(L.gov)} · ${A.fmt(L.pop)} people · army ${A.fmt(L.army)} · stability: ${UI.esc(L.stability)}</div></div></div>`;
-  const provs = LORE.map.provinces.filter(p => p.realm === c.realm);
+  // M1 (D-142): every life is on the one continent, so each home town is offered with its terrain (and, for an oasis the
+  // continent left off dry ground, its name) on that continent (A.V2MAP.oneFacts), not the map as written's
+  const one = A.V2MAP && A.V2MAP.oneFacts ? A.V2MAP.oneFacts() : null;
+  const provs = LORE.map.provinces
+    .filter(p => p.realm === c.realm)
+    .map(p => (one ? Object.assign({}, p, { terr: one.terr[p.id] || p.terr, name: (one.names && one.names[p.id]) || p.name }) : p));
   // [X1 baked patch family/99994-v2-family V2F-PICKER-COMMON] UI.crStepBirth offered "Place in the family" (heir,
   // younger child, cousin's branch) for a commoner family. The owner removed the choice (complaint 14): the field is
   // no longer drawn, and a short note says the family decides.

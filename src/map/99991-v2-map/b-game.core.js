@@ -2,12 +2,14 @@
 //   - A.initWorld (patch V2MAP-PROV) hands the freshly made provinces to A.V2MAP.onProv, which writes the generated
 //     geometry into them before anything reads them (the realms' seats, Tessaria's split, the varied worlds of 43 and
 //     70, the scale index of 09) and marks the state with its map: A.S.v2map = { seed, v }.
-//   - The seed is the game's own seed, salted (A.V2MAP.seedOf): building the map never draws A.rand, so the game's
-//     dice fall as they would on the release's map.
+//   - The map's seed is the one continent's (M1, D-142: A.V2MAP.ONE, the same for every life; A.V2MAP.mapSeed): building
+//     the map never draws A.rand, so the game's dice fall as they would on the release's map. Before M1 it was the game's
+//     own seed, salted (A.V2MAP.seedOf); such a save keeps that seed in A.S.v2map and so its own continent.
 //   - MAP.init is wrapped: the grid on screen is the loaded world's. A save carries only the seed; its provinces carry
 //     their own geometry, and the grid is regenerated from the seed the first time the map is drawn after a load.
 //     A state without A.S.v2map (a save from before, or the 09-engine-at-scale clone harness) keeps the map as written.
-//   - Worlds are cached by seed (the last few), so a reload, a replay or a second look costs nothing.
+//   - Worlds are cached by seed (the last few, and the one continent always), so a reload, a replay, a second life or a
+//     second look costs nothing.
 const VM = A.V2MAP;
 VM.OFF = false;
 VM.cache = new Map(); VM.CACHE = 3;
@@ -35,8 +37,13 @@ VM.world = function (seed, v = VM.VERSION) {
   w = VM.build(seed, VM.release(), v); w.key = key;
   VM.stats.builds++; VM.stats.ms.push(Math.round(w.T.ms)); if (VM.stats.ms.length > 20) VM.stats.ms.shift();
   VM.cache.set(key, w);
-  while (VM.cache.size > VM.CACHE) VM.cache.delete(VM.cache.keys().next().value);
+  VM.trim();
   return w;
+};
+// M1: the cache keeps the last VM.CACHE worlds besides the one continent, which is never let go (every life is on it)
+VM.pinned = key => !!VM.ONE && key === VM.ONE + '#' + VM.VERSION;
+VM.trim = function () {
+  for (const k of [...VM.cache.keys()]) { if (VM.cache.size <= VM.CACHE + (VM.cache.has(VM.ONE + '#' + VM.VERSION) ? 1 : 0)) break; if (!VM.pinned(k)) VM.cache.delete(k); }
 };
 
 // the fields the map decides, on the state's provinces
@@ -44,7 +51,7 @@ VM.FIELDS = ['x', 'y', 'sx', 'sy', 'coast', 'terr', 'biome', 'elev', 'cells'];
 VM.onProv = function (S) {
   if (!S || !Array.isArray(S.prov)) return;
   if (!VM.on()) { delete S.v2map; return; }
-  const seed = VM.seedOf(S.seed), w = VM.world(seed);
+  const seed = VM.mapSeed(S.seed), w = VM.world(seed);
   for (const p of S.prov) {
     const q = w.prov[p.id]; if (!q) continue;
     for (const f of VM.FIELDS) p[f] = q[f];
@@ -54,6 +61,14 @@ VM.onProv = function (S) {
   }
   S.v2map = { seed, v: VM.VERSION };
   VM.use(w);
+};
+
+// M1: the one continent's facts the creation screen shows before any world is built: each home town's terrain word, and the
+// new name of an oasis the land left off dry ground (data/map/one-continent.json, written by tools/m1/facts.mjs from the built
+// world and checked against it by the test m1OneContinent). Null when the data is not this map's (another seed or version).
+VM.oneFacts = function () {
+  const D = A.DATA && A.DATA['map/one-continent'];
+  return D && VM.ONE && D.seed === VM.ONE && D.v === VM.VERSION && Array.isArray(D.terr) && VM.on() ? D : null;
 };
 
 // which world the grid shows: the loaded state's

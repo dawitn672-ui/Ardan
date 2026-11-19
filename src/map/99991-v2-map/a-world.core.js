@@ -42,7 +42,15 @@ VM.COAST_RX = /\b(coast|shore|bay|strand|sea)\b|reef\b/i;       // a realm named
 // the realms C7 renamed (D-058) keep the sea their old names promised, by id
 VM.SEA_ID = { 'POL-32': 'peninsula', 'POL-21': 'coast', 'POL-33': 'coast' };
 VM.seedOf = s => 'ardan-v2-map:' + String(s);
-const now = () => (typeof performance !== 'undefined' ? performance.now() : 0);
+// M1 (owner order 68, D-142): one continent for every life. The land, sea, heights, rivers, lakes, provinces' cells, seats'
+// sites, roads, fords and passes are built from this one map seed, whatever the game's seed; the game's seed still decides
+// everything that happens on it. Chosen by measured quality among 24 candidates (tools/m1/choose-seed.mjs,
+// docs/design/m1/README.md, D-142's addendum). A save keeps the map it was made on (A.S.v2map = { seed, v }), so a life
+// begun before M1 keeps its own seed's continent. A new map version (VM.VERSION) redraws this one continent once.
+// VM.ONE = null builds a continent from each game's seed again (the old way; tools and tests that want other lands).
+VM.ONE = VM.seedOf('m1-02');
+VM.mapSeed = s => VM.ONE || VM.seedOf(s);
+const now =() => (typeof performance !== 'undefined' ? performance.now() : 0);
 
 // a hash of a cell index in [0, 1): the costs' grain, so equal costs never fall back on scan order
 const hash01 = k => { let h = Math.imul(k ^ 0x9e3779b9, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); h ^= h >>> 16; return (h >>> 0) / 4294967296; };
