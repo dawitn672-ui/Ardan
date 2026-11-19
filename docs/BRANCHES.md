@@ -14,9 +14,9 @@ version also gets a `release/<version>` branch (the git proxy refuses tag pushes
 | `v2-lane-*` (8: diplomacy, family, map, nobility, saves, stats, time, war) | The v2 lanes of Nov 1-4; each holds 4-45 commits not in `v2-integration` (READMEs, tests and small fixes that were superseded during integration) | Kept until looked through |
 | `v2-wf-repeats` | One commit not in `v2-integration` (a README line, Nov 6) | Kept until looked through |
 | `work/<item>` | Working branches from 2026-11-19 on (order 64, D-133): one per agent's task, merged whole into `v2-integration`, then listed under **Deletable** below | Delete once listed |
-| `v2-fix-*` (9), `v2-wf-*` (26) | Working branches of Nov 1-6, **every commit already inside `v2-integration`** | Can go (owner's yes needed; tips listed below so any can be restored) |
+| `v2-fix-*` (9), `v2-wf-*` (26) | Working branches of Nov 1-6, **every commit already inside `v2-integration`** | Deleted by the owner, 2026-11-18 (tips below restore any) |
 
-## Tips of the fully merged working branches (to restore one: `git push origin <sha>:refs/heads/<name>`)
+## Tips of the fully merged working branches, deleted by the owner on 2026-11-18 (to restore one: `git push origin <sha>:refs/heads/<name>`)
 - `v2-fix-content` · `0584ae3`
 - `v2-fix-diplomacy` · `0ae6d25`
 - `v2-fix-family` · `62ed3ab`

@@ -248,6 +248,16 @@ order is replaced, strike it through and say by what.
     listed in `docs/BRANCHES.md` under "Deletable" with its tip, so the owner can delete it with nothing lost (any one can be
     restored from its tip). The session cannot delete branches itself (the git proxy refuses it; the permissions rule).
 
+65. **Find out why versions go wrong and make sure it does not happen again** (D-134) · recorded 2026-11-18 21:40 ET. The owner's words, verbatim:
+
+    > ive deleted the 35 older ones. why are you having version error recalibrate find out why your confused and make sure it doesnt happen again
+
+    **Read as:** an audit of how versions were cut (D-134 lists what was found: three different ways a release branch was
+    set, a version tool that can only tag HEAD and prints a git error, no sample save since alpha.10, and features merged
+    faster than CI could clear them, so alpha.14 kept slipping and its contents kept changing). The fix is one written way
+    to cut a version, a tool that enforces it and a check that fails when the records disagree, and a merge rhythm where a
+    batch is cleared before the next one lands.
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,

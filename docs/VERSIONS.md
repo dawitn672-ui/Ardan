@@ -57,5 +57,10 @@ Tag a commit whose CI is green, or the end of a step the owner asked for. Say in
 | v2.1.0-alpha.13 | 2026-11-18 | `a88513b` | Wars end only by surrender or defeat: a ruler's reasons to ask for terms, envoys on the road, terms of real land, coin and crowns |
 <!-- versions:end -->
 
+**Release branches (D-134).** From v2.1.0-alpha.10 on, `release/<version>` points at exactly the row's commit, the one CI
+tested green; the records follow on `v2-integration`. The old way, kept as it is: alpha.1 to alpha.4 name their records
+commit; alpha.5 to alpha.9's release branches are one records commit past the row's commit. `node tools/version.mjs check`
+holds the rule.
+
 v1.0.0 is the release file as uploaded; from v1.1.0 on, every version's `index.html` is built from that commit's
 features (`features/` until beta.1, `src/<system>/` from round 2) by `tools/build.mjs` (CI checks the committed file matches its build).

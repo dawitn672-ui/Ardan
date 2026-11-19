@@ -2314,3 +2314,29 @@ often (a container restart loses unpushed work). The session cannot delete refs 
 stands), so the owner deletes them, or leaves them: they cost nothing. **Why:** parallel agents need separate branches;
 a pushed branch survives restarts; the list makes deleting safe.
 
+### D-134 · How a version is cut, one way only; batches cleared before the next lands (2026-11-18 21:40 ET; order 65)
+**What went wrong (the audit).**
+1. *Three conventions for a release branch.* alpha.1-4: the version's commit is its records commit. alpha.5-9: the
+   release branch is one records commit past the version's commit. alpha.10-13: the release branch is the version's
+   commit and the records sit only on `v2-integration`. All are restorable, but nothing said which is right.
+2. *The tool could only tag HEAD.* `tools/version.mjs new` tags the current commit, so a version cut at a green commit
+   that is no longer the head (alpha.13) needed a hand-made temporary worktree and a hand-copied row; and its look-up
+   leaked git's own "fatal: Needed a single revision" to the screen, which reads as a failure though nothing failed.
+3. *No sample save since alpha.10,* though every earlier version had one and the old saves must keep loading.
+4. *Merging faster than CI clears.* On Nov 18, W1-6, D11-1, X5, D11-2, D11-3 and D11+ landed before any run on them was
+   green. Each new merge brought new red tests, each fix round met the next merge's, the failures could not be told
+   apart by cause, and alpha.14's promised contents changed four times. The changelog had to be split by hand.
+**Chosen.**
+1. *A version is the commit CI tested green on both tiers.* Its row names that commit; `release/<version>` points at
+   exactly that commit; the records (VERSIONS row, CHANGELOG section, PROGRESS row, sample save) are one commit on
+   `v2-integration` after it, never on the release branch. alpha.1-9 keep their branches as they are (listed as the old
+   way in `docs/VERSIONS.md`).
+2. *The tool does it.* `version.mjs new <v> "title" --at=<sha>` takes the tested commit (default HEAD), refuses one
+   without a green check and long run when it can see them, writes the row, moves the CHANGELOG's Unreleased bullets that
+   came with that commit's merges under the version's heading, saves a sample game, and prints the release-branch push.
+   Its git look-ups are quiet. `version.mjs check` fails when a row, a release branch, a changelog heading or a sample
+   save disagree; `tools/check.mjs` runs it.
+3. *Batches.* Features merge in a batch with one `[full ci]` push. The next batch waits on its branches (pushed, safe)
+   until the current one is green or every red test is owned by a fix branch; fix branches may merge any time. A version
+   is cut from each green batch. The promise to the owner names the batch, not what may land later.
+
