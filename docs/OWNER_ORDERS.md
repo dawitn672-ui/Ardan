@@ -314,6 +314,15 @@ order is replaced, strike it through and say by what.
     taxes and who guards them; and more of the same kind. Everything reasoned (order 54), shown at the player's rank and
     knowledge, and built into what the game does, not painted on.
 
+70. **The iPhone app when the owner decides to test it** · recorded 2026-11-18 22:55 ET. Asked whether the app stages
+    should come at the end of v2 or after v3, the owner's words, verbatim:
+
+    > just whnever i decide to test it
+
+    **Read as:** the App Store stages (I1-3 to I1-7: the `www/` build, the Capacitor shell, Codemagic and TestFlight,
+    the listing, App Review) start on the owner's word, at any point. Until then the build rules keep the route open and
+    I1-1 (speed) is done within v2, so the stages can start at a day's notice.
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
