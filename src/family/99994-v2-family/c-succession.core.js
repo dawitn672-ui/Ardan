@@ -213,15 +213,21 @@
     const first = (L, but) => (L.line.find(e => live(e.p) && (!but || e.p.id !== but.id)) || {}).p || null;
     if (heir === undefined) {
       const hs = F.headedHouses(from);
+      // the lordship goes with the house seated in the county he holds (one holder for a county and its seat: F.audit's
+      // lordship-seat), else with his own house. M1 (seed 7, 1163): Leonor Wickham headed her own house and House Dovefield,
+      // seated at Frosthollow, her county; the county went with Wickham's headship and Dovefield to another heir, so two
+      // people held one seat
+      const hold = from.noble && from.noble.holding != null ? from.noble.holding : null;
+      const seatH = hold != null ? hs.find(h => greatLanded(h) && seatProv(h) === hold) : null;
       for (const h of hs) {
         delete h._v2head;
         const next = HO.successor(h.id, from, 3);
         giveHeadship(h, next, from);
         moved.push({ k: 'house', id: h.id, to: next ? next.id : null });
-        if (next && h === own) giveLordship(from, next);
+        if (next && h === (seatH || own)) giveLordship(from, next);
       }
-      // the rung goes with his own house's headship, as before; without it, down his line
-      if (!hs.includes(own) && from.noble && from.noble.rung >= 2 && !from.noble.passed) {
+      // the rung goes with his own house's headship (or the seat's), as before; without it, down his line
+      if (!hs.includes(seatH || own) && from.noble && from.noble.rung >= 2 && !from.noble.passed) {
         const L = F.line(from, lawOf(own), 3), next = first(L);
         if (next) { giveLordship(from, next); moved.push({ k: 'lordship', to: next.id }); }
       }

@@ -248,7 +248,7 @@ export default {
       const scroll = await p.evaluate(() => document.documentElement.scrollWidth);
       await ctx.close();
       const ok = b1.length === 1 && b2.length === 2 && b3.length === 3 && fits && b4.length === 2 && b5.length === 0 && scroll <= 375;
-      return { ok, detail: `taps open ${b1.length}, ${b2.length}, ${b3.length}; all inside 375 px: ${fits} (${JSON.stringify(b3)}); the close button leaves ${b4.length}; a tap outside leaves ${b5.length}; page width ${scroll}` };
+      return { ok, detail: `taps open ${b1.length}, ${b2.length}, ${b3.length}; all inside 375 px: ${fits} (${JSON.stringify(b3)}; after one tap ${JSON.stringify(b1)}, two ${JSON.stringify(b2)}); the close button leaves ${b4.length}; a tap outside leaves ${b5.length}; page width ${scroll}` };
     } catch (e) { await ctx.close(); throw e; }
   },
 

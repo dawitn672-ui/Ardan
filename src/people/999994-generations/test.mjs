@@ -20,7 +20,8 @@ export default {
           // the posts' rules as the coherency check reads them (strict also asks every mirror to equal its record, which holds
           // only right after A.POSTS.sync: a player who died mid-year still held his march in the registry until the next one)
           pts.push({ year: A.S.year, alive: Object.values(A.S.people).filter(p => p.alive).length, past: past.length, pastEx: past[0] || '',
-            posts: A.POSTS && A.POSTS.audit ? A.POSTS.audit().length : 0, titles: A.V2F && A.V2F.audit ? A.V2F.audit().length : 0 });
+            posts: A.POSTS && A.POSTS.audit ? A.POSTS.audit().length : 0, titles: A.V2F && A.V2F.audit ? A.V2F.audit().length : 0,
+            titleEx: A.V2F && A.V2F.audit && A.V2F.audit().length ? JSON.stringify(A.V2F.audit()[0]).slice(0, 160) : '' });
         }
         return { n0, pts, died: A.MORT.stats.died - d0, wed: A.HOUSES_GO_ON.stats.wed - w0, births: A.HOUSES_GO_ON.stats.births - b0 };
       });
@@ -32,7 +33,7 @@ export default {
     // houses' unmarried marry and bear children, then hold (1,700 to 1,830 at years 100 to 200, seed 7). Before (no deaths):
     // 1,250 at year 50 and 1,770 at 100, still rising, a third of them past their span.
     const ok = x.pts.every(p => !p.past && !p.posts && !p.titles) && x.died >= 200 && x.wed >= 100 && x.births >= 100 && last.alive <= 2.4 * x.n0 && last.alive >= 0.8 * x.n0;
-    return { ok, detail: `seed ${r.seed}: ${x.n0} living at the start; ` + x.pts.map(p => `${p.year}: ${p.alive} living, ${p.past} past their span${p.pastEx ? ' (' + p.pastEx + ')' : ''}, post faults ${p.posts}, title faults ${p.titles}`).join('; ') +
+    return { ok, detail: `seed ${r.seed}: ${x.n0} living at the start; ` + x.pts.map(p => `${p.year}: ${p.alive} living, ${p.past} past their span${p.pastEx ? ' (' + p.pastEx + ')' : ''}, post faults ${p.posts}, title faults ${p.titles}${p.titleEx ? ' (' + p.titleEx + ')' : ''}`).join('; ') +
       `; ${x.died} of the unknown died, ${x.wed} marriages, ${x.births} births` };
   },
 

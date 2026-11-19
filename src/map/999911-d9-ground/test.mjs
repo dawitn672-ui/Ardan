@@ -38,7 +38,8 @@ export default {
   // done-when 1: roads in two ranks, a ford or bridge at every crossing, named passes, rivers with tributaries, woods and
   // marsh, names for seas, ranges, rivers and forests; 70% of towns on water
   async d9Ground(pg) {
-    const r = await pg.evaluate(`(() => { const out = []; for (const seed of [620, 4242, 90001]) { A.newGame({ seed, realm: 'POL-01', status: 'peasant' }); out.push((${GROUND})()); } return out; })()`);
+    // M1: the one continent and two other map seeds (A.V2MAP.ONE switched for the life): the rule, not one world
+    const r = await pg.evaluate(`(() => { const out = [], VM = A.V2MAP, one = VM.ONE; try { for (const seed of [620, 4242, 90001]) { VM.ONE = seed === 620 ? one : VM.seedOf(seed); A.newGame({ seed, realm: 'POL-01', status: 'peasant' }); out.push((${GROUND})()); } } finally { VM.ONE = one; } return out; })()`);
     const bad = r.filter(f => !(f.ranks[1] > 0 && f.ranks[2] > 0 && f.onRoad >= f.n * 0.97 && f.waters > 0 && f.missing === 0 && f.kinds.ford > 0 && f.kinds.bridge > 0 && f.passes > 0 && f.tribs >= 20 &&
       f.wood > 5 && f.marsh > 0 && f.names.seas >= 4 && f.names.ranges >= 1 && f.names.rivers >= 8 && f.names.forests >= 1 && f.names.passes > 0 && f.distinct));
     const wet = r.reduce((a, f) => a + f.wet, 0) / r.length;
@@ -154,7 +155,9 @@ export default {
         }
         return { realms: Object.keys(hex).length, distinct: new Set(Object.values(hex)).size, pairs: pairs.size, same, close, min: Math.round(min * 1000) / 1000 };
       };
-      for (const seed of [620, 4242, 90001]) { A.newGame({ seed, realm: 'POL-01', status: 'peasant' }); out.push(check()); }
+      // M1: the one continent and two other map seeds (A.V2MAP.ONE switched for the life); the last played on twenty years
+      const VM = A.V2MAP, one = VM.ONE;
+      try { for (const seed of [4242, 90001, 620]) { VM.ONE = seed === 620 ? one : VM.seedOf(seed); A.newGame({ seed, realm: 'POL-01', status: 'peasant' }); out.push(check()); } } finally { VM.ONE = one; }
       T.play(20); out.push(check());
       return out;
     });
@@ -212,7 +215,10 @@ export default {
       const sig = () => { const G = A.D9.ground(); return G.edges.length + ':' + G.edges.reduce((a, e) => a + e.rank * 7 + e.km, 0) + ':' + G.crossings.length + ':' + A.D9.names().rivers.join(','); };
       const s0 = sig(), saved = /"(crossings|riverLinks|rivId)"/.test(JSON.stringify(A.S));   // the ground's own fields (a fight's report has a 'ground' cause of its own)
       const enc = await SAVES.encode(A.S, A.J), d = await SAVES.decode(enc.bytes);
-      A.newGame({ seed: 12, realm: 'POL-01', status: 'peasant' }); const other = sig();
+      // another continent's ground differs (M1: every life is on the one continent, so another map seed is switched in)
+      const VM = A.V2MAP, one = VM.ONE; VM.ONE = VM.seedOf(12);
+      try { A.newGame({ seed: 12, realm: 'POL-01', status: 'peasant' }); } finally { VM.ONE = one; }
+      const other = sig();
       A.V2MAP.cache.clear(); UI.enterSave(d);
       const s1 = sig();
       // drawing every map changes neither the state nor the stream
