@@ -2141,6 +2141,12 @@ D-106 approved by the coordinator. Branch `x5-deaths`, from `origin/v2-integrati
   treasury and relations did not move in six years), not this step's; `mapEaseCheap` and `scoreCpu` failed once on a
   machine at load 25 (wall-clock timing) and pass re-run. `coherency --baseline=quick` and `--baseline=nightly`: no
   contradiction. lint-reasons 42, lint-stages, lint-kin, lint-skills, `--check-tiers` ok. Not run: the long tier.
+- **On `v2-integration` (`c42b7bb`, merged into the branch):** the quick tests of generations, state-diet, v2-family,
+  posts, households and chronicle with the core suites, 56 of 56 (`genGenerations` now reads the posts' rules as the
+  coherency check does: the strict audit failed right after the player's death mid-year, before the registry's sync);
+  `coherency --baseline=quick` clean; `--baseline=nightly` one fault, "one ruler per realm" (seed 7104, Jamila Sabrani of a
+  landless faction dead and not succeeded), which `c42b7bb` alone shows too (with a second, "one office, one styled
+  holder", that this branch's `P.unstyle` fix removes): not this step's, left for its owner.
 - **Left:** marriages arranged between houses as alliances with reasons through `A.WHY` (today's match is by realm,
   estate and age); illegitimate children; trimming the dead the tree keeps (D-104's diet could take their play fields).
 - **Undo:** revert the branch's commits; the feature folder goes, and the three fixes stand on their own.
