@@ -2473,7 +2473,7 @@ Branch `work/x5-ci`, from `origin/v2-integration` at `578da51`. The long run on 
   of 37), `coherency --baseline=quick` clean, lint-skills, lint-stages, lint-reasons (41) ok.
 - **Undo:** revert the branch's commit.
 
-### H-101 · 2026-11-19 · M1: one fixed continent for every life (order 68; D-142's addendum, D-148, D-149)
+### H-101 · 2026-11-19 · M1: one fixed continent for every life (order 68; D-142's addendum, D-148, D-149, D-150)
 - **Branch** `work/m1` from `origin/v2-integration` at `0f5f96e` (the alpha.15 records). Not merged; no PR.
 - **The one continent** (`src/map/99991-v2-map`):
   - `A.V2MAP.ONE` = `ardan-v2-map:m1-02`, and `VM.mapSeed(gameSeed)` gives it. Every new life is built on it.
