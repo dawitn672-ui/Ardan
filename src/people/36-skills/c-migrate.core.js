@@ -150,6 +150,9 @@
   SK.sweepNew = function () {
     const S = A.S; if (!S || !S.people) return 0;
     const ids = Object.keys(S.people);
+    // a loaded game or a new one is another state: its people are all unswept (the count of the last state, kept,
+    // skipped the first people of a loaded save; found by s1Migrate on the alpha.11 sample save, CI 160)
+    if (SK.sweptS !== S) { SK.sweptS = S; SK.swept = 0; }
     if (SK.swept > ids.length) SK.swept = 0;
     let n = 0;
     for (let i = SK.swept; i < ids.length; i++) {
