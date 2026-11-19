@@ -36,8 +36,12 @@ does not matter. `A.MORT.OFF` and `A.HOUSES_GO_ON.OFF` turn them off.
 
 **Measured** (`tools/bench/state-size.mjs`, seed 7 noble; living people, packed state KB): before, 983 / 1,839 at year 0,
 1,219 / 4,046 at 50, 1,766 / 4,781 at 100, 1,930 at 134 (still rising, a third past their span); after, 983 / 1,839,
-1,639 / 4,828, 1,708 / 5,191, 1,796 / 5,500 at 150, 1,825 / 5,649 at 200 (the living hold; what grows is the world record
-and the journal). Seeds 11 and 31 at year 100: 1,452 and 1,740 living. The passes cost 4 to 20 ms a New Year at year 100.
+1,639 / 4,826 at 50, 1,687 / 5,281 at 100, none past his span, the oldest human 83 (an earlier cut of the same rules to
+200 years: 1,796 at 150, 1,825 at 200: the living hold; what grows is the world record and the journal). Seeds 11 and 31 at
+year 100: 1,452 and 1,740 living. The passes cost 4 to 20 ms a New Year at year 100. Fixes found on the shifted world, in
+other features: every house the dead headed passes (99994-v2-family), a child taken in has parents (04-fm), a lore
+style beside the seat is retired (999990-posts); a house met late makes its lore members past their span already dead
+(the release's `A.famMembers`). See H-090.
 
 **Tests** (`test.mjs`): `genGenerations` (60 years: deaths, marriages, births; no one past his span; one holder per post
 and title; the living within bounds), `genPure` (the game's stream untouched; the same twice), `genHouseholdDeath` (a

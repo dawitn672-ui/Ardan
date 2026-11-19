@@ -2102,3 +2102,45 @@ D-110 to D-115. Branch `d11-1`, from `origin/v2-integration` at `3584e49`. New f
   wants the annals to drop anything); the index.html change above.
 - **Undo:** revert the branch's commits (the feature folder, the one line in `A.deserialize`, the two functions in
   22-chronicle); saves made meanwhile load in the older build (the marks `0` in the log are skipped by every reader of it).
+
+### H-090 · 2026-11-19 · X5: the unknown die, the houses go on (D-107, D-108)
+D-106 approved by the coordinator. Branch `x5-deaths`, from `origin/v2-integration` at `cc004dd`. New feature
+`src/people/999994-generations` (`A.MORT`, `A.HOUSES_GO_ON`: `a-deaths`, `b-houses`, README, tests).
+- **Built:** each New Year every living NPC the older passes do not weigh meets `A.deathChance`, raised by an epidemic in
+  his home province or a failed harvest in his realm the year past; anyone but the player past his people's greatest age
+  dies of it (each month too, for people made during the year: a house's lore members met late are made already dead,
+  `A.MORT.lateBorn`); the lore's elders of 1105 keep the release's odds for ten years. Seeded by year and person, run in
+  `A.V2F.sandbox`, through `A.kill`. An unmet blood relative within two steps is told in the story; a death in the
+  household goes to the year's digest. The heir of a line takes a wife (a free woman of his realm, estate and people, no
+  blood within three steps, else an outsider); a couple has children at odds that fall with the children living. The
+  coherency check "alive past the greatest age" held at 0 (quick and nightly).
+- **Found and fixed on the way** (the nightly coherency run, 8 lives of 60 years, on the shifted world): a house whose
+  head was not of its name (Ada Stonefoot, seed 7104) or a man heading two houses (Urunk, seed 7100) left the other house
+  headless at his death (a dead head, then a stranger seated where the new marquis sat): `A.V2F.inherit` passes every
+  house the dead headed (`F.headedHouses`, 99994-v2-family); a child taken in ("An empty cradle", 04-fm) had no parents of
+  its own (family links agree: the nightly baseline 10 -> 0); a lore style "Senior General; War Party" stayed beside the
+  new Senior General when the crown dismissed its holder (`A.POSTS.unstyle`, 999990-posts). The first trial (deaths
+  alone) emptied the world (983 living -> 618 by year 75, 117 house records headless); the first birth rates grew it to
+  8,035 by year 100: calibrated to lines and wants (D-108 point 4).
+- **Release files edited:** `content/04-fm.js` (addChild), `core/04-realms-and-war-years-a.js` (`A.famMembers`: the lore's
+  late-met members, the first living as head). **Features edited:** 99994-v2-family, 999990-posts, 999996-state-diet
+  (dietSaveBars split: years 0 and 50 quick, year 100 long as `dietSaveBars100`; bars raised; dietSameAsPlayed on an
+  8-year story window, about half its time), `tests/long-tests.json`, `tests/coherency-baseline.json`.
+- **Measured** (`state-size.mjs`, seed 7 noble; living / packed state KB / save KB gzipped): before (`cc004dd`) year 50
+  1,219 / 4,046 / 848, year 100 1,766 / 4,781 / 1,027 (1,023 of them past their span, the oldest human 185); after,
+  year 50 1,639 / 4,826 / 999, year 100 1,687 / 5,281 / 1,106 (none past his span, the oldest human 83); to year 200 on an
+  earlier cut of the same rules 1,796 at 150 and 1,825 at 200 (the living hold). The state is about a tenth larger at
+  year 100: the dead the tree keeps (709, of whom some 330 lore figures, a bounded set, and the parents of the living) and
+  more of the living young; what still grows is the world record and the journal. The passes cost 4 to 20 ms a New Year
+  at year 100. Next month (`next-month-speed`, y50 press save, 24 presses, quiet machine, two runs each): quiet month
+  188 and 197 ms before, 164 and 164 after; months with cards differ because the worlds differ after the first New
+  Year (other cards). `press-gate --report`: the same budgets over as before (full redraws, y50 over y0), not this
+  step's.
+- **Tests** (`/tmp/ardan/x5b/final-a.html`): the new `genGenerations`, `genPure`, `genHouseholdDeath`; the whole quick tier
+  in eight shards (869 tests): 868 pass; `freshRealmsRun` fails here and on `cc004dd` alike (seed 813: a fresh realm whose
+  treasury and relations did not move in six years), not this step's; `mapEaseCheap` and `scoreCpu` failed once on a
+  machine at load 25 (wall-clock timing) and pass re-run. `coherency --baseline=quick` and `--baseline=nightly`: no
+  contradiction. lint-reasons 42, lint-stages, lint-kin, lint-skills, `--check-tiers` ok. Not run: the long tier.
+- **Left:** marriages arranged between houses as alliances with reasons through `A.WHY` (today's match is by realm,
+  estate and age); illegitimate children; trimming the dead the tree keeps (D-104's diet could take their play fields).
+- **Undo:** revert the branch's commits; the feature folder goes, and the three fixes stand on their own.
