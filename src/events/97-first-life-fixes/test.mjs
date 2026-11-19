@@ -2,6 +2,9 @@
 // shows) and passes with it.
 import { BOT } from '../../../tools/bench/bot.mjs';
 
+// lfRepeats plays eighteen 40-year bot lives: 767 s on CI before D11, 1592 s after it (long 38); room under the limit (w17-ci)
+export const limits = { lfRepeats: 3600 };
+
 export default {
   // 1. Repeats: the share of the scenes a life shows that it had already shown, over everything the player sees
   //    (rolls, duties, flows, NPC moves, a superior's scenes, gatherings, activities), with the feature off and on in

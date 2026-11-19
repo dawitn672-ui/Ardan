@@ -1,240 +1,1103 @@
 {
-  "about": "D11-1, the muster (docs/design/war.md §14.1, §14.3; D-012 feudal armies; D-110). The branches of a realm's armed men, as data: the arm each belongs to (GD.ARMS key), the war map's troops it fills (GD.TROOPS codes, in order of preference) and the support companies it mans (GD.SUP keys), the weapon skills it uses, its ways of fighting, the aptitudes a muster-master prizes in it, what it needs, what it beats and loses to, its drills (war.md §14.2's families), duties in peace, missions and a way out. Read by src/war/9999955-muster (A.MUSTER). Drafted from docs/research/d11-military-branches.json, with conscript foot in place of the old call-up and the train and ships' companies added. Rank and unit words follow the one glossary (ranks, below; R14).",
-  "ranks": [
-    { "rank": "Soldier", "unit": "", "men": 1, "leads": "himself" },
-    { "rank": "Sergeant", "unit": "section", "men": 12, "leads": "a section of about 12" },
-    { "rank": "Captain", "unit": "company", "men": 200, "leads": "a company of about 200" },
-    { "rank": "Commander", "unit": "wing", "men": 800, "leads": "a wing of 600 to 3,000" },
-    { "rank": "General", "unit": "host", "men": 3000, "leads": "a host of 3,000 to 12,000" }
-  ],
-  "ways": {
-    "shock": "the shock: one great blow, knee to knee",
-    "wall": "standing in a rank: the wall that does not move",
-    "press": "the close press, blade to blade",
-    "loose": "loose order: harry, wheel and ride off",
-    "shot": "the shot: kill them before they reach you",
-    "stealth": "stealth: the silent march and the night",
-    "works": "works: ditches, ladders and bridges",
-    "steady": "steadiness: the watch kept and the wall held"
+ "about": "D11-1, the muster (docs/design/war.md \u00a714.1, \u00a714.3; D-012 feudal armies; D-110). The branches of a realm's armed men, as data: the arm each belongs to (GD.ARMS key), the war map's troops it fills (GD.TROOPS codes, in order of preference) and the support companies it mans (GD.SUP keys), the weapon skills it uses, its ways of fighting, the aptitudes a muster-master prizes in it, what it needs, what it beats and loses to, its drills (war.md \u00a714.2's families), duties in peace, missions and a way out. Read by src/war/9999955-muster (A.MUSTER). Drafted from docs/research/d11-military-branches.json, with conscript foot in place of the old call-up and the train and ships' companies added. Rank and unit words follow the one glossary (ranks, below; R14). D11-3 (D-122, D-123): each branch's mtypes (its missions as the war gives them: a phrase and an A.MISSION_TYPES key), its key skill (a promotion weighs it with command) and its ladder (what each of the five ranks does in it).",
+ "ranks": [
+  {
+   "rank": "Soldier",
+   "unit": "",
+   "men": 1,
+   "leads": "himself"
   },
-  "musters": {
-    "crown": "the crown's muster",
-    "house": "a great lord's muster",
-    "company": "a free company's table",
-    "trials": "an order's trials",
-    "lot": "the lot"
+  {
+   "rank": "Sergeant",
+   "unit": "section",
+   "men": 12,
+   "leads": "a section of about 12"
   },
-  "branches": [
-    {
-      "id": "lances", "name": "The lances", "short": "the lances", "man": "lancer", "arm": "horse",
-      "troops": ["HC", "MC"], "sup": [], "muster": ["crown", "house"],
-      "weapon": ["riding", "sword"], "ways": ["shock"],
-      "prizes": { "riding": 1, "command": 0.5, "etiquette": 0.3 },
-      "needs": { "mount": "pref", "armor": "pref", "station": ["gentry", "noble", "royal"] },
-      "beats": "archers in the open, loose foot, light horse caught standing",
-      "loses": "a set wall of spears, archers behind stakes, broken ground",
-      "drills": ["shock", "march"],
-      "duties": ["the lord's escort", "the tourney and the practice field", "riding the bounds"],
-      "missions": ["lead the charge", "hold the flank", "run down a broken foe"],
-      "wayOut": "a knight's fee and a hall, or a grave in a field the charge did not cross",
-      "desc": "Knights and mounted men-at-arms: a few hundred armoured riders who win a battle in one moment or lose it. A horse, harness and birth open the door."
-    },
-    {
-      "id": "light_horse", "name": "The light horse", "short": "the light horse", "man": "rider", "arm": "horse",
-      "troops": ["LC", "HA", "CM", "OR"], "sup": [], "muster": ["crown", "house"],
-      "weapon": ["riding", "bow"], "ways": ["loose"],
-      "prizes": { "riding": 1, "tracking": 0.6, "husbandry": 0.4 },
-      "needs": { "mount": "pref" },
-      "beats": "archers in the open, the baggage, a broken line",
-      "loses": "anything armoured and set, horse in close order",
-      "drills": ["loose", "fieldcraft", "march"],
-      "duties": ["patrols on the roads", "carrying letters", "chasing raiders"],
-      "missions": ["screen the march", "raid the foe's carts", "pursue a rout"],
-      "wayOut": "a horse of your own and a name on the border, or a fall in a ditch at a gallop",
-      "desc": "Riders in light harness who scout, raid, harry and pursue. They win by never fighting the whole army."
-    },
-    {
-      "id": "scouts", "name": "The Scout Regiment", "short": "the scouts", "man": "scout", "arm": "skirm",
-      "troops": ["LC", "LI"], "sup": ["scouts"], "muster": ["crown", "house"],
-      "weapon": ["bow", "spear"], "ways": ["stealth", "loose"],
-      "prizes": { "tracking": 1.1, "survival": 0.8, "stealth": 0.7, "riding": 0.3 },
-      "needs": { "tongues": "pref" },
-      "beats": "plans: they choose where, when and whether",
-      "loses": "any line that stands and fights",
-      "drills": ["fieldcraft", "loose", "march"],
-      "duties": ["watching the border fords", "mapping the hills", "hunting brigands"],
-      "missions": ["count the enemy", "find the ford", "take a prisoner who talks"],
-      "wayOut": "the realm's eyes, hated and needed; or a knife in the dark",
-      "desc": "The army's eyes: trackers, woodsmen and riders who go ahead, count the enemy, find the ford and come back. Tongues help."
-    },
-    {
-      "id": "spears", "name": "The spears", "short": "the spears", "man": "spearman", "arm": "line",
-      "troops": ["SP", "PK", "LI"], "sup": [], "muster": ["crown", "house"],
-      "weapon": ["spear", "shield"], "ways": ["wall"],
-      "prizes": { "athletics": 0.6, "shield": 0.6 },
-      "needs": {},
-      "base": 0.6,
-      "beats": "horse that charges a set wall",
-      "loses": "archers who shoot a wall that cannot move, armoured foot in the grind",
-      "drills": ["standing", "march", "works"],
-      "duties": ["the castle watch", "escorting the tax", "mending the road"],
-      "missions": ["hold the ford", "hold the pass", "stand when the horses come"],
-      "wayOut": "a sergeant's stripe and a pension of bread; or a mound in a long field",
-      "desc": "Spears and pikes: the wall the army forms around. Anyone of size can be taught to hold a file; few are taught to hold it when the horses come."
-    },
-    {
-      "id": "foot_men_at_arms", "name": "The men-at-arms on foot", "short": "the men-at-arms", "man": "man-at-arms", "arm": "line",
-      "troops": ["HI", "AX"], "sup": [], "muster": ["crown", "house"],
-      "weapon": ["sword", "spear", "shield"], "ways": ["press"],
-      "prizes": { "sword": 0.6, "unarmed": 0.3, "athletics": 0.4 },
-      "needs": { "armor": "pref" },
-      "beats": "spears and conscripts in the grind",
-      "loses": "archers they cannot catch, a flank turned",
-      "drills": ["standing", "works", "march"],
-      "duties": ["the lord's door", "the drill yard", "the assault on a wall in a bad year"],
-      "missions": ["storm the breach", "break the line", "guard the banner"],
-      "wayOut": "a captaincy, or a name among the men who went first through a breach",
-      "desc": "Armoured foot who win the grind: sword, axe and shield in the close press. A man who brings mail and can use a blade is wanted here."
-    },
-    {
-      "id": "archers", "name": "The bows", "short": "the bows", "man": "bowman", "arm": "bow",
-      "troops": ["LB", "AR", "EA", "SL"], "sup": [], "muster": ["crown", "house"],
-      "weapon": ["bow"], "ways": ["shot"],
-      "prizes": { "bow": 1.1, "survival": 0.4 },
-      "needs": { "ranged": "pref" },
-      "beats": "a wall that cannot move, horse that charges stakes",
-      "loses": "horse in the open, rain on the strings",
-      "drills": ["shot", "march"],
-      "duties": ["the butts on feast days", "the border watch", "hunting for the lord's table"],
-      "missions": ["break their charge", "shoot them off the ford", "cover the retreat"],
-      "wayOut": "a master of bowmen's place, or a hand that cannot draw any more",
-      "desc": "Bowmen in companies, behind stakes: they break charges and thin walls. A man who can draw a war bow is worth his bread from the first day."
-    },
-    {
-      "id": "crossbows", "name": "The crossbows", "short": "the crossbows", "man": "crossbowman", "arm": "bow",
-      "troops": ["XB"], "sup": [], "muster": ["crown", "house"],
-      "weapon": ["bow"], "ways": ["shot", "steady"],
-      "prizes": { "bow": 0.8, "craft": 0.5 },
-      "needs": { "ranged": "pref" },
-      "beats": "armour at short range, a wall that cannot move",
-      "loses": "horse that reaches them before the reload",
-      "drills": ["shot", "standing"],
-      "duties": ["the walls of a town", "the gate", "the castle's towers"],
-      "missions": ["hold the wall", "pick off the knights", "cover the engineers"],
-      "wayOut": "a town's hire and a house by the gate, or a bolt the other way",
-      "desc": "Crossbowmen behind pavises: slow to load, but a bolt goes through mail. Patient men and men who keep a mechanism in order."
-    },
-    {
-      "id": "engineers", "name": "The siege engineers", "short": "the engineers", "man": "engineer", "arm": "engineers",
-      "troops": ["SP", "HI"], "sup": ["eng", "engines"], "muster": ["crown", "house"],
-      "weapon": ["craft", "tactics"], "ways": ["works"],
-      "prizes": { "craft": 1.1, "tactics": 0.6, "learning": 0.4 },
-      "needs": {},
-      "beats": "walls, rivers and earthworks",
-      "loses": "crossbows on a wall, a sally by night",
-      "drills": ["works", "march"],
-      "duties": ["the castle's walls", "bridges and roads", "the crown's mills"],
-      "missions": ["dig the sap", "bridge the river", "raise the ladders"],
-      "wayOut": "a master engineer's name on a wall, or the mine that fell in",
-      "desc": "Masons, carpenters and miners under arms: they take walls, cross rivers and dig the camp. A trade is worth more here than a sword."
-    },
-    {
-      "id": "garrison", "name": "The garrisons", "short": "the garrison", "man": "guard", "arm": "line",
-      "troops": ["GA"], "sup": [], "muster": ["crown", "house"],
-      "weapon": ["spear", "shield", "bow"], "ways": ["steady", "wall"],
-      "prizes": { "stewardship": 0.4, "shield": 0.4, "intimidation": 0.3 },
-      "needs": {},
-      "beats": "an assault on a wall they know",
-      "loses": "hunger, a long siege and treachery",
-      "drills": ["standing", "shot", "works"],
-      "duties": ["the castle watch", "the gate and its tolls", "the town's peace"],
-      "missions": ["hold the gate", "sally against the engines", "keep the town quiet"],
-      "wayOut": "a castellan's keys, or a long life at a gate",
-      "desc": "The men who hold castles and town walls in peace and war: steady, older, known in the town."
-    },
-    {
-      "id": "train", "name": "The train", "short": "the train", "man": "carter", "arm": "engineers",
-      "troops": ["SP"], "sup": ["quart"], "muster": ["crown", "house"],
-      "weapon": [], "ways": ["works"],
-      "prizes": { "stewardship": 1.1, "trade": 0.6, "husbandry": 0.5, "learning": 0.4 },
-      "needs": {},
-      "beats": "hunger: an army marches on its bread",
-      "loses": "raiders on the road behind",
-      "drills": ["march"],
-      "duties": ["the stores", "the wagon lines", "buying grain at the markets"],
-      "missions": ["bring the bread up", "save the wagons", "find forage in a bare land"],
-      "wayOut": "master of the train, a man the Generals cannot do without",
-      "desc": "Quartermasters, clerks and carters: bread, arrows and the wagon line. Numbers, letters and a trader's eye are worth more here than a strong arm."
-    },
-    {
-      "id": "ships", "name": "The ships' companies", "short": "the ships' companies", "man": "marine", "arm": "line",
-      "troops": ["MR"], "sup": [], "muster": ["crown", "house"],
-      "weapon": ["spear", "bow"], "ways": ["press"],
-      "prizes": { "sea": 1.3, "athletics": 0.4 },
-      "needs": { "coast": "must" },
-      "beats": "ships, landings and a river crossing",
-      "loses": "a long march inland",
-      "drills": ["sea", "standing"],
-      "duties": ["the harbour watch", "escorting merchantmen", "chasing pirates"],
-      "missions": ["board the enemy", "land on the shore", "hold the harbour mouth"],
-      "wayOut": "a master's berth or a captain's deck, or the sea",
-      "desc": "Fighting men on ships and in harbours: boarding, rowing in stroke and the landing. Only a realm with a coast keeps them, and it wants men who know the sea."
-    },
-    {
-      "id": "household", "name": "The household guard", "short": "the guard", "man": "guardsman", "arm": "horse",
-      "troops": ["HC", "MC", "HI"], "sup": ["guard"], "muster": ["crown", "house"],
-      "weapon": ["sword", "riding"], "ways": ["press", "shock"],
-      "prizes": { "sword": 0.6, "riding": 0.4, "etiquette": 0.6 },
-      "needs": { "station": ["gentry", "noble", "royal"], "sworn": "must" },
-      "beats": "anything that comes for their lord",
-      "loses": "nothing, while their lord lives",
-      "drills": ["shock", "standing"],
-      "duties": ["the lord's door", "the hall at feasts", "the lord's journeys"],
-      "missions": ["guard the banner", "bring the lord out", "ride as escort"],
-      "wayOut": "a sworn man's land, or death at his lord's side",
-      "desc": "Sworn men of a lord's household, or the crown's royal knights: they guard their lord and stand at the banner. Birth, a patron or a famous deed opens the door."
-    },
-    {
-      "id": "orders", "name": "The elite orders", "short": "the orders", "man": "sworn brother", "arm": "line",
-      "troops": [], "sup": [], "muster": ["trials"],
-      "weapon": ["sword", "spear", "riding"], "ways": ["press", "shock"],
-      "prizes": { "sword": 0.8, "faith": 0.4 },
-      "needs": {},
-      "beats": "anything they can reach",
-      "loses": "hunger and great numbers",
-      "drills": ["shock", "standing"],
-      "duties": ["the order's house", "the crown's errands"],
-      "missions": ["hold where others broke", "ride as the crown's hand"],
-      "wayOut": "a Grand Master's chair, or a name on the order's wall",
-      "desc": "The few hundred men of the elite orders, who serve the crown and take the best of the whole kingdom by trial. Not entered at a muster: by their own trials."
-    },
-    {
-      "id": "hired", "name": "The hired companies", "short": "the hired men", "man": "hired man", "arm": "line",
-      "troops": [], "sup": [], "muster": ["company"],
-      "weapon": ["sword", "spear", "bow"], "ways": ["press"],
-      "prizes": { "intimidation": 0.3 },
-      "needs": {},
-      "beats": "whoever they are paid to beat",
-      "loses": "an empty purse",
-      "drills": ["standing", "march"],
-      "duties": ["guarding a merchant", "a town's walls for a season"],
-      "missions": ["take the town", "hold the bridge for pay"],
-      "wayOut": "a fortune, a captaincy-general, or the gallows",
-      "desc": "Free companies who fight for whoever pays, as long as he pays. Signed at a company's table, not a muster."
-    },
-    {
-      "id": "conscripts", "name": "The conscript foot", "short": "the conscript foot", "man": "conscript", "arm": "line",
-      "troops": ["LV"], "sup": [], "muster": ["lot"],
-      "weapon": ["spear"], "ways": ["wall"],
-      "prizes": {},
-      "needs": {},
-      "beats": "nothing, unless there are a great many of them",
-      "loses": "almost everything, and first",
-      "drills": ["standing", "march", "works"],
-      "duties": ["drill by the sworn men", "digging"],
-      "missions": ["fill the line", "dig the camp"],
-      "wayOut": "home when the need ends, or a transfer when someone wants you",
-      "desc": "Men taken by lot for a named need, raw and armed from their lord's store. No offers: the lot puts a man here, though aptitude is noticed in service."
-    }
-  ]
+  {
+   "rank": "Captain",
+   "unit": "company",
+   "men": 200,
+   "leads": "a company of about 200"
+  },
+  {
+   "rank": "Commander",
+   "unit": "wing",
+   "men": 800,
+   "leads": "a wing of 600 to 3,000"
+  },
+  {
+   "rank": "General",
+   "unit": "host",
+   "men": 3000,
+   "leads": "a host of 3,000 to 12,000"
+  }
+ ],
+ "ways": {
+  "shock": "the shock: one great blow, knee to knee",
+  "wall": "standing in a rank: the wall that does not move",
+  "press": "the close press, blade to blade",
+  "loose": "loose order: harry, wheel and ride off",
+  "shot": "the shot: kill them before they reach you",
+  "stealth": "stealth: the silent march and the night",
+  "works": "works: ditches, ladders and bridges",
+  "steady": "steadiness: the watch kept and the wall held"
+ },
+ "musters": {
+  "crown": "the crown's muster",
+  "house": "a great lord's muster",
+  "company": "a free company's table",
+  "trials": "an order's trials",
+  "lot": "the lot"
+ },
+ "branches": [
+  {
+   "id": "lances",
+   "name": "The lances",
+   "short": "the lances",
+   "man": "lancer",
+   "arm": "horse",
+   "troops": [
+    "HC",
+    "MC"
+   ],
+   "sup": [],
+   "muster": [
+    "crown",
+    "house"
+   ],
+   "weapon": [
+    "riding",
+    "sword"
+   ],
+   "ways": [
+    "shock"
+   ],
+   "prizes": {
+    "riding": 1,
+    "command": 0.5,
+    "etiquette": 0.3
+   },
+   "needs": {
+    "mount": "pref",
+    "armor": "pref",
+    "station": [
+     "gentry",
+     "noble",
+     "royal"
+    ]
+   },
+   "beats": "archers in the open, loose foot, light horse caught standing",
+   "loses": "a set wall of spears, archers behind stakes, broken ground",
+   "drills": [
+    "shock",
+    "march"
+   ],
+   "duties": [
+    "the lord's escort",
+    "the tourney and the practice field",
+    "riding the bounds"
+   ],
+   "missions": [
+    "lead the charge",
+    "hold the flank",
+    "run down a broken foe"
+   ],
+   "wayOut": "a knight's fee and a hall, or a grave in a field the charge did not cross",
+   "desc": "Knights and mounted men-at-arms: a few hundred armoured riders who win a battle in one moment or lose it. A horse, harness and birth open the door.",
+   "mtypes": [
+    [
+     "lead the charge",
+     "raid"
+    ],
+    [
+     "hold the flank",
+     "hold"
+    ],
+    [
+     "run down a broken foe",
+     "raid"
+    ]
+   ],
+   "key": "riding",
+   "ladder": [
+    "rides knee to knee in the lance",
+    "keeps a section of lances in the wedge",
+    "leads a company of lances and picks the moment",
+    "holds a wing of horse and says when it goes in",
+    "commands a host whose horse is its hammer"
+   ]
+  },
+  {
+   "id": "light_horse",
+   "name": "The light horse",
+   "short": "the light horse",
+   "man": "rider",
+   "arm": "horse",
+   "troops": [
+    "LC",
+    "HA",
+    "CM",
+    "OR"
+   ],
+   "sup": [],
+   "muster": [
+    "crown",
+    "house"
+   ],
+   "weapon": [
+    "riding",
+    "bow"
+   ],
+   "ways": [
+    "loose"
+   ],
+   "prizes": {
+    "riding": 1,
+    "tracking": 0.6,
+    "husbandry": 0.4
+   },
+   "needs": {
+    "mount": "pref"
+   },
+   "beats": "archers in the open, the baggage, a broken line",
+   "loses": "anything armoured and set, horse in close order",
+   "drills": [
+    "loose",
+    "fieldcraft",
+    "march"
+   ],
+   "duties": [
+    "patrols on the roads",
+    "carrying letters",
+    "chasing raiders"
+   ],
+   "missions": [
+    "screen the march",
+    "raid the foe's carts",
+    "pursue a rout"
+   ],
+   "wayOut": "a horse of your own and a name on the border, or a fall in a ditch at a gallop",
+   "desc": "Riders in light harness who scout, raid, harry and pursue. They win by never fighting the whole army.",
+   "mtypes": [
+    [
+     "screen the march",
+     "scout"
+    ],
+    [
+     "raid the foe's carts",
+     "raid"
+    ],
+    [
+     "pursue a rout",
+     "raid"
+    ]
+   ],
+   "key": "riding",
+   "ladder": [
+    "rides with the screen and carries word back",
+    "leads a section of riders out and home",
+    "leads a company that harries the march",
+    "holds a wing of light horse ahead of the host",
+    "commands a host that is never caught"
+   ]
+  },
+  {
+   "id": "scouts",
+   "name": "The Scout Regiment",
+   "short": "the scouts",
+   "man": "scout",
+   "arm": "skirm",
+   "troops": [
+    "LC",
+    "LI"
+   ],
+   "sup": [
+    "scouts"
+   ],
+   "muster": [
+    "crown",
+    "house"
+   ],
+   "weapon": [
+    "bow",
+    "spear"
+   ],
+   "ways": [
+    "stealth",
+    "loose"
+   ],
+   "prizes": {
+    "tracking": 1.1,
+    "survival": 0.8,
+    "stealth": 0.7,
+    "riding": 0.3
+   },
+   "needs": {
+    "tongues": "pref"
+   },
+   "beats": "plans: they choose where, when and whether",
+   "loses": "any line that stands and fights",
+   "drills": [
+    "fieldcraft",
+    "loose",
+    "march"
+   ],
+   "duties": [
+    "watching the border fords",
+    "mapping the hills",
+    "hunting brigands"
+   ],
+   "missions": [
+    "count the enemy",
+    "find the ford",
+    "take a prisoner who talks"
+   ],
+   "wayOut": "the realm's eyes, hated and needed; or a knife in the dark",
+   "desc": "The army's eyes: trackers, woodsmen and riders who go ahead, count the enemy, find the ford and come back. Tongues help.",
+   "mtypes": [
+    [
+     "count the enemy",
+     "scout"
+    ],
+    [
+     "find the ford",
+     "scout"
+    ],
+    [
+     "take a prisoner who talks",
+     "nightraid"
+    ]
+   ],
+   "key": "tracking",
+   "ladder": [
+    "goes alone in the dark and comes back",
+    "leads a patrol of six",
+    "leads a company of scouts that chooses where and when",
+    "holds a wing of the realm's eyes",
+    "commands a host that is seldom surprised"
+   ]
+  },
+  {
+   "id": "spears",
+   "name": "The spears",
+   "short": "the spears",
+   "man": "spearman",
+   "arm": "line",
+   "troops": [
+    "SP",
+    "PK",
+    "LI"
+   ],
+   "sup": [],
+   "muster": [
+    "crown",
+    "house"
+   ],
+   "weapon": [
+    "spear",
+    "shield"
+   ],
+   "ways": [
+    "wall"
+   ],
+   "prizes": {
+    "athletics": 0.6,
+    "shield": 0.6
+   },
+   "needs": {},
+   "base": 0.6,
+   "beats": "horse that charges a set wall",
+   "loses": "archers who shoot a wall that cannot move, armoured foot in the grind",
+   "drills": [
+    "standing",
+    "march",
+    "works"
+   ],
+   "duties": [
+    "the castle watch",
+    "escorting the tax",
+    "mending the road"
+   ],
+   "missions": [
+    "hold the ford",
+    "hold the pass",
+    "stand when the horses come"
+   ],
+   "wayOut": "a sergeant's stripe and a pension of bread; or a mound in a long field",
+   "desc": "Spears and pikes: the wall the army forms around. Anyone of size can be taught to hold a file; few are taught to hold it when the horses come.",
+   "mtypes": [
+    [
+     "hold the ford",
+     "hold"
+    ],
+    [
+     "hold the pass",
+     "hold"
+    ],
+    [
+     "stand when the horses come",
+     "hold"
+    ],
+    [
+     "guard the baggage on the march",
+     "escort"
+    ]
+   ],
+   "key": "spear",
+   "ladder": [
+    "holds his file",
+    "keeps a section in line when the horses come",
+    "leads a company that holds a ford or a pass",
+    "holds a wing the line forms around",
+    "commands a host built on its wall"
+   ]
+  },
+  {
+   "id": "foot_men_at_arms",
+   "name": "The men-at-arms on foot",
+   "short": "the men-at-arms",
+   "man": "man-at-arms",
+   "arm": "line",
+   "troops": [
+    "HI",
+    "AX"
+   ],
+   "sup": [],
+   "muster": [
+    "crown",
+    "house"
+   ],
+   "weapon": [
+    "sword",
+    "spear",
+    "shield"
+   ],
+   "ways": [
+    "press"
+   ],
+   "prizes": {
+    "sword": 0.6,
+    "unarmed": 0.3,
+    "athletics": 0.4
+   },
+   "needs": {
+    "armor": "pref"
+   },
+   "beats": "spears and conscripts in the grind",
+   "loses": "archers they cannot catch, a flank turned",
+   "drills": [
+    "standing",
+    "works",
+    "march"
+   ],
+   "duties": [
+    "the lord's door",
+    "the drill yard",
+    "the assault on a wall in a bad year"
+   ],
+   "missions": [
+    "storm the breach",
+    "break the line",
+    "guard the banner"
+   ],
+   "wayOut": "a captaincy, or a name among the men who went first through a breach",
+   "desc": "Armoured foot who win the grind: sword, axe and shield in the close press. A man who brings mail and can use a blade is wanted here.",
+   "mtypes": [
+    [
+     "storm the breach",
+     "siege"
+    ],
+    [
+     "break the line",
+     "raid"
+    ],
+    [
+     "guard the banner",
+     "hold"
+    ]
+   ],
+   "key": "sword",
+   "ladder": [
+    "fights in the press",
+    "leads a section through the breach",
+    "leads a company in the grind",
+    "holds a wing of armoured foot",
+    "commands a host that wins the grind"
+   ]
+  },
+  {
+   "id": "archers",
+   "name": "The bows",
+   "short": "the bows",
+   "man": "bowman",
+   "arm": "bow",
+   "troops": [
+    "LB",
+    "AR",
+    "EA",
+    "SL"
+   ],
+   "sup": [],
+   "muster": [
+    "crown",
+    "house"
+   ],
+   "weapon": [
+    "bow"
+   ],
+   "ways": [
+    "shot"
+   ],
+   "prizes": {
+    "bow": 1.1,
+    "survival": 0.4
+   },
+   "needs": {
+    "ranged": "pref"
+   },
+   "beats": "a wall that cannot move, horse that charges stakes",
+   "loses": "horse in the open, rain on the strings",
+   "drills": [
+    "shot",
+    "march"
+   ],
+   "duties": [
+    "the butts on feast days",
+    "the border watch",
+    "hunting for the lord's table"
+   ],
+   "missions": [
+    "break their charge",
+    "shoot them off the ford",
+    "cover the retreat"
+   ],
+   "wayOut": "a master of bowmen's place, or a hand that cannot draw any more",
+   "desc": "Bowmen in companies, behind stakes: they break charges and thin walls. A man who can draw a war bow is worth his bread from the first day.",
+   "mtypes": [
+    [
+     "break their charge",
+     "hold"
+    ],
+    [
+     "shoot them off the ford",
+     "ambush"
+    ],
+    [
+     "cover the retreat",
+     "hold"
+    ]
+   ],
+   "key": "bow",
+   "ladder": [
+    "picks his mark and minds the stakes",
+    "calls the volley for a section",
+    "leads a company that knows when to shoot and when to fall back",
+    "holds a wing of bowmen",
+    "commands a host whose arrows break charges"
+   ]
+  },
+  {
+   "id": "crossbows",
+   "name": "The crossbows",
+   "short": "the crossbows",
+   "man": "crossbowman",
+   "arm": "bow",
+   "troops": [
+    "XB"
+   ],
+   "sup": [],
+   "muster": [
+    "crown",
+    "house"
+   ],
+   "weapon": [
+    "bow"
+   ],
+   "ways": [
+    "shot",
+    "steady"
+   ],
+   "prizes": {
+    "bow": 0.8,
+    "craft": 0.5
+   },
+   "needs": {
+    "ranged": "pref"
+   },
+   "beats": "armour at short range, a wall that cannot move",
+   "loses": "horse that reaches them before the reload",
+   "drills": [
+    "shot",
+    "standing"
+   ],
+   "duties": [
+    "the walls of a town",
+    "the gate",
+    "the castle's towers"
+   ],
+   "missions": [
+    "hold the wall",
+    "pick off the knights",
+    "cover the engineers"
+   ],
+   "wayOut": "a town's hire and a house by the gate, or a bolt the other way",
+   "desc": "Crossbowmen behind pavises: slow to load, but a bolt goes through mail. Patient men and men who keep a mechanism in order.",
+   "mtypes": [
+    [
+     "hold the wall",
+     "hold"
+    ],
+    [
+     "pick off the knights",
+     "ambush"
+    ],
+    [
+     "cover the engineers",
+     "siege"
+    ]
+   ],
+   "key": "bow",
+   "ladder": [
+    "shoots from behind his pavise",
+    "keeps a section loading in turn",
+    "leads a company on a wall",
+    "holds a wing of crossbows",
+    "commands a host that holds walls"
+   ]
+  },
+  {
+   "id": "engineers",
+   "name": "The siege engineers",
+   "short": "the engineers",
+   "man": "engineer",
+   "arm": "engineers",
+   "troops": [
+    "SP",
+    "HI"
+   ],
+   "sup": [
+    "eng",
+    "engines"
+   ],
+   "muster": [
+    "crown",
+    "house"
+   ],
+   "weapon": [
+    "craft",
+    "tactics"
+   ],
+   "ways": [
+    "works"
+   ],
+   "prizes": {
+    "craft": 1.1,
+    "tactics": 0.6,
+    "learning": 0.4
+   },
+   "needs": {},
+   "beats": "walls, rivers and earthworks",
+   "loses": "crossbows on a wall, a sally by night",
+   "drills": [
+    "works",
+    "march"
+   ],
+   "duties": [
+    "the castle's walls",
+    "bridges and roads",
+    "the crown's mills"
+   ],
+   "missions": [
+    "dig the sap",
+    "bridge the river",
+    "raise the ladders"
+   ],
+   "wayOut": "a master engineer's name on a wall, or the mine that fell in",
+   "desc": "Masons, carpenters and miners under arms: they take walls, cross rivers and dig the camp. A trade is worth more here than a sword.",
+   "mtypes": [
+    [
+     "dig the sap",
+     "siege"
+    ],
+    [
+     "bridge the river",
+     "escort"
+    ],
+    [
+     "raise the ladders",
+     "siege"
+    ]
+   ],
+   "key": "craft",
+   "ladder": [
+    "digs and carries",
+    "leads a gang at the sap",
+    "leads a company of engineers at the walls",
+    "holds the host's works and engines",
+    "commands a host that takes walls"
+   ]
+  },
+  {
+   "id": "garrison",
+   "name": "The garrisons",
+   "short": "the garrison",
+   "man": "guard",
+   "arm": "line",
+   "troops": [
+    "GA"
+   ],
+   "sup": [],
+   "muster": [
+    "crown",
+    "house"
+   ],
+   "weapon": [
+    "spear",
+    "shield",
+    "bow"
+   ],
+   "ways": [
+    "steady",
+    "wall"
+   ],
+   "prizes": {
+    "stewardship": 0.4,
+    "shield": 0.4,
+    "intimidation": 0.3
+   },
+   "needs": {},
+   "beats": "an assault on a wall they know",
+   "loses": "hunger, a long siege and treachery",
+   "drills": [
+    "standing",
+    "shot",
+    "works"
+   ],
+   "duties": [
+    "the castle watch",
+    "the gate and its tolls",
+    "the town's peace"
+   ],
+   "missions": [
+    "hold the gate",
+    "sally against the engines",
+    "keep the town quiet"
+   ],
+   "wayOut": "a castellan's keys, or a long life at a gate",
+   "desc": "The men who hold castles and town walls in peace and war: steady, older, known in the town.",
+   "mtypes": [
+    [
+     "hold the gate",
+     "hold"
+    ],
+    [
+     "sally against the engines",
+     "nightraid"
+    ],
+    [
+     "keep the town quiet",
+     "patrol"
+    ]
+   ],
+   "key": "shield",
+   "ladder": [
+    "keeps the watch",
+    "keeps a section at the gate",
+    "leads the castle's company",
+    "holds a wing of the realm's walls",
+    "commands a host of strong places"
+   ]
+  },
+  {
+   "id": "train",
+   "name": "The train",
+   "short": "the train",
+   "man": "carter",
+   "arm": "engineers",
+   "troops": [
+    "SP"
+   ],
+   "sup": [
+    "quart"
+   ],
+   "muster": [
+    "crown",
+    "house"
+   ],
+   "weapon": [],
+   "ways": [
+    "works"
+   ],
+   "prizes": {
+    "stewardship": 1.1,
+    "trade": 0.6,
+    "husbandry": 0.5,
+    "learning": 0.4
+   },
+   "needs": {},
+   "beats": "hunger: an army marches on its bread",
+   "loses": "raiders on the road behind",
+   "drills": [
+    "march"
+   ],
+   "duties": [
+    "the stores",
+    "the wagon lines",
+    "buying grain at the markets"
+   ],
+   "missions": [
+    "bring the bread up",
+    "save the wagons",
+    "find forage in a bare land"
+   ],
+   "wayOut": "master of the train, a man the Generals cannot do without",
+   "desc": "Quartermasters, clerks and carters: bread, arrows and the wagon line. Numbers, letters and a trader's eye are worth more here than a strong arm.",
+   "mtypes": [
+    [
+     "bring the bread up",
+     "escort"
+    ],
+    [
+     "save the wagons",
+     "escort"
+    ],
+    [
+     "find forage in a bare land",
+     "patrol"
+    ]
+   ],
+   "key": "stewardship",
+   "ladder": [
+    "drives a cart and counts the sacks",
+    "keeps a section of carts in the line",
+    "leads a company of the train",
+    "holds the host's stores and wagons",
+    "commands a host that never starves"
+   ]
+  },
+  {
+   "id": "ships",
+   "name": "The ships' companies",
+   "short": "the ships' companies",
+   "man": "marine",
+   "arm": "line",
+   "troops": [
+    "MR"
+   ],
+   "sup": [],
+   "muster": [
+    "crown",
+    "house"
+   ],
+   "weapon": [
+    "spear",
+    "bow"
+   ],
+   "ways": [
+    "press"
+   ],
+   "prizes": {
+    "sea": 1.3,
+    "athletics": 0.4
+   },
+   "needs": {
+    "coast": "must"
+   },
+   "beats": "ships, landings and a river crossing",
+   "loses": "a long march inland",
+   "drills": [
+    "sea",
+    "standing"
+   ],
+   "duties": [
+    "the harbour watch",
+    "escorting merchantmen",
+    "chasing pirates"
+   ],
+   "missions": [
+    "board the enemy",
+    "land on the shore",
+    "hold the harbour mouth"
+   ],
+   "wayOut": "a master's berth or a captain's deck, or the sea",
+   "desc": "Fighting men on ships and in harbours: boarding, rowing in stroke and the landing. Only a realm with a coast keeps them, and it wants men who know the sea.",
+   "mtypes": [
+    [
+     "board the enemy",
+     "raid"
+    ],
+    [
+     "land on the shore",
+     "raid"
+    ],
+    [
+     "hold the harbour mouth",
+     "hold"
+    ]
+   ],
+   "key": "sea",
+   "ladder": [
+    "pulls an oar and goes over the rail",
+    "leads a section in the boarding",
+    "leads a ship's company",
+    "holds a wing of ships' companies",
+    "commands a host that crosses water"
+   ]
+  },
+  {
+   "id": "household",
+   "name": "The household guard",
+   "short": "the guard",
+   "man": "guardsman",
+   "arm": "horse",
+   "troops": [
+    "HC",
+    "MC",
+    "HI"
+   ],
+   "sup": [
+    "guard"
+   ],
+   "muster": [
+    "crown",
+    "house"
+   ],
+   "weapon": [
+    "sword",
+    "riding"
+   ],
+   "ways": [
+    "press",
+    "shock"
+   ],
+   "prizes": {
+    "sword": 0.6,
+    "riding": 0.4,
+    "etiquette": 0.6
+   },
+   "needs": {
+    "station": [
+     "gentry",
+     "noble",
+     "royal"
+    ],
+    "sworn": "must"
+   },
+   "beats": "anything that comes for their lord",
+   "loses": "nothing, while their lord lives",
+   "drills": [
+    "shock",
+    "standing"
+   ],
+   "duties": [
+    "the lord's door",
+    "the hall at feasts",
+    "the lord's journeys"
+   ],
+   "missions": [
+    "guard the banner",
+    "bring the lord out",
+    "ride as escort"
+   ],
+   "wayOut": "a sworn man's land, or death at his lord's side",
+   "desc": "Sworn men of a lord's household, or the crown's royal knights: they guard their lord and stand at the banner. Birth, a patron or a famous deed opens the door.",
+   "mtypes": [
+    [
+     "guard the banner",
+     "hold"
+    ],
+    [
+     "bring the lord out",
+     "rescue"
+    ],
+    [
+     "ride as escort",
+     "escort"
+    ]
+   ],
+   "key": "sword",
+   "ladder": [
+    "stands at his lord's door",
+    "leads a section of the guard",
+    "leads the guard's company",
+    "holds the lord's own wing",
+    "commands the lord's host"
+   ]
+  },
+  {
+   "id": "orders",
+   "name": "The elite orders",
+   "short": "the orders",
+   "man": "sworn brother",
+   "arm": "line",
+   "troops": [],
+   "sup": [],
+   "muster": [
+    "trials"
+   ],
+   "weapon": [
+    "sword",
+    "spear",
+    "riding"
+   ],
+   "ways": [
+    "press",
+    "shock"
+   ],
+   "prizes": {
+    "sword": 0.8,
+    "faith": 0.4
+   },
+   "needs": {},
+   "beats": "anything they can reach",
+   "loses": "hunger and great numbers",
+   "drills": [
+    "shock",
+    "standing"
+   ],
+   "duties": [
+    "the order's house",
+    "the crown's errands"
+   ],
+   "missions": [
+    "hold where others broke",
+    "ride as the crown's hand"
+   ],
+   "wayOut": "a Grand Master's chair, or a name on the order's wall",
+   "desc": "The few hundred men of the elite orders, who serve the crown and take the best of the whole kingdom by trial. Not entered at a muster: by their own trials.",
+   "mtypes": [
+    [
+     "hold where others broke",
+     "hold"
+    ],
+    [
+     "ride as the crown's hand",
+     "raid"
+    ]
+   ],
+   "key": "sword",
+   "ladder": [
+    "a sworn brother",
+    "leads brothers in the field",
+    "a captain of the order",
+    "holds the order's wing",
+    "commands the order in the field"
+   ]
+  },
+  {
+   "id": "hired",
+   "name": "The hired companies",
+   "short": "the hired men",
+   "man": "hired man",
+   "arm": "line",
+   "troops": [],
+   "sup": [],
+   "muster": [
+    "company"
+   ],
+   "weapon": [
+    "sword",
+    "spear",
+    "bow"
+   ],
+   "ways": [
+    "press"
+   ],
+   "prizes": {
+    "intimidation": 0.3
+   },
+   "needs": {},
+   "beats": "whoever they are paid to beat",
+   "loses": "an empty purse",
+   "drills": [
+    "standing",
+    "march"
+   ],
+   "duties": [
+    "guarding a merchant",
+    "a town's walls for a season"
+   ],
+   "missions": [
+    "take the town",
+    "hold the bridge for pay"
+   ],
+   "wayOut": "a fortune, a captaincy-general, or the gallows",
+   "desc": "Free companies who fight for whoever pays, as long as he pays. Signed at a company's table, not a muster.",
+   "mtypes": [
+    [
+     "take the town",
+     "siege"
+    ],
+    [
+     "hold the bridge for pay",
+     "hold"
+    ]
+   ],
+   "key": "sword",
+   "ladder": [
+    "fights for pay",
+    "leads a section of hired men",
+    "leads a free company",
+    "holds a wing of hired men",
+    "commands a host of companies"
+   ]
+  },
+  {
+   "id": "conscripts",
+   "name": "The conscript foot",
+   "short": "the conscript foot",
+   "man": "conscript",
+   "arm": "line",
+   "troops": [
+    "LV"
+   ],
+   "sup": [],
+   "muster": [
+    "lot"
+   ],
+   "weapon": [
+    "spear"
+   ],
+   "ways": [
+    "wall"
+   ],
+   "prizes": {},
+   "needs": {},
+   "beats": "nothing, unless there are a great many of them",
+   "loses": "almost everything, and first",
+   "drills": [
+    "standing",
+    "march",
+    "works"
+   ],
+   "duties": [
+    "drill by the sworn men",
+    "digging"
+   ],
+   "missions": [
+    "fill the line",
+    "dig the camp"
+   ],
+   "wayOut": "home when the need ends, or a transfer when someone wants you",
+   "desc": "Men taken by lot for a named need, raw and armed from their lord's store. No offers: the lot puts a man here, though aptitude is noticed in service.",
+   "mtypes": [
+    [
+     "fill the line",
+     "hold"
+    ],
+    [
+     "dig the camp",
+     "siege"
+    ]
+   ],
+   "key": "spear",
+   "ladder": [
+    "stands where he is put",
+    "keeps a section of the raw men in line",
+    "leads a company of conscripts",
+    "holds a wing of conscript foot",
+    "commands a host raised by lot"
+   ]
+  }
+ ]
 }

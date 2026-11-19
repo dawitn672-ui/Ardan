@@ -64,7 +64,9 @@
       (aar && aar.causes && aar.causes.length ? ' The captains reckon it: ' + aar.causes.map(c => `${c.label.toLowerCase()} ${c.pct > 0 ? '+' : '−'}${Math.abs(c.pct)}%`).join(', ') + '.' : '');
     // what the chronicle will say: your realm's chronicler, generous with their dead and sparing with yours
     const f = 1.6 + (hash(key) % 10) / 10;
-    const theirsTold = round2(deadTheirs * f), oursTold = round2(Math.max(1, deadOurs / f));
+    // (a fight whose dead were a handful once had the chronicle say "some 0 of the enemy fell, against 2 of ours" after a
+    // famous victory: a chronicler who inflates their dead never tells fewer of theirs than of ours, nor none at all; CI 155)
+    const oursTold = round2(Math.max(1, deadOurs / f)), theirsTold = round2(Math.max(deadTheirs, deadOurs + 1, 3) * f);
     const R = A.realm(ours);
     const chron = won
       ? `"At ${P.name} the men of ${R ? R.short : 'the realm'} won a famous victory over ${A.realmShort(theirs)}. Some ${A.fmt(theirsTold)} of the enemy fell, against ${A.fmt(oursTold)} of ours, and the rest fled."`

@@ -148,8 +148,9 @@ export default {
         for (const p of Object.values(S.people)) if (p.alive && p.noble) for (const k of [p.noble.court, ...(p.noble.more || [])].filter(Boolean)) (by[k] = by[k] || []).push(p.id);
         for (const k in by) if (by[k].length > 1) bad.push(`${seed} ${k}: two holders`);
         if (A.V2F.audit().length) bad.push(`${seed}: ${JSON.stringify(A.V2F.audit()[0])}`);
-        // a vacant duchy in words: force one and draw the card
-        const d = ts.find(t => t.rank === 'duke' && t.k.startsWith('POL-01:'));
+        // a vacant duchy in words: force one and draw the card (a duchy held now: one may stand vacant at the moment the
+        // twenty years end, between a death and the regrant, as seed 202's Easterham does after W1-6 moved the world)
+        const d = ts.find(t => t.rank === 'duke' && t.k.startsWith('POL-01:') && N.holderOf(t));
         if (d) {
           const p = N.holderOf(d), keep = p.noble; p.noble = null; d.vacant = S.year;
           const html = UI.v2nCourtCard(A.realm('POL-01'), A.pc()), row = html.split('v2n-row').find(x => x.includes(d.name.replace('Duchy of ', '')) && /vacant since/.test(x)) || '';

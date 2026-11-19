@@ -2022,7 +2022,9 @@ A.drillMonth = function (pc) {
     ((pc.mil.drillMonths = (pc.mil.drillMonths || 0) + 1),
     A.trainSkill(pc, "command", 0.25 * [0.5, 1, 1.4][pc.mil.drill.hard]),
     pc.mil.drill.hard === 2 && (pc.mil.merit += 1.5),
-    A.chance(0.12))
+    // [D11-2] the drill's scene comes every eighth month of drilling (a count kept on pc.mil), not on a roll of 12 in
+    // 100 (D-118; lint-reasons)
+    pc.mil.drillMonths % 8 === 0)
   ) {
     // [X1 baked patch events/97-first-life-fixes LF-POOL-PICK] A.councilMonth and A.drillMonth pick a councillor's or
     // a drilling soldier's business from a pool with only a 2- or 3-year cooldown, so the same war vote and the same

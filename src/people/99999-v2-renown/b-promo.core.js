@@ -96,6 +96,9 @@
     // the deed row is soft, and the board halved the chance when it was not met: the hazard counts deeds already
     const row = (board || []).find(b => b.k === 'deed');
     if (row && !row.ok) mods *= 2;
+    // D11-3: the post's own aptitudes and peace service (A.LADDER.boardMod: the branch's key skill, command, duties done,
+    // long service at one rank)
+    if (A.LADDER && A.LADDER.boardMod) { const bm = A.LADDER.boardMod(pc); mods *= bm.f; RN.ladderWhy = bm.why; }
     const canSkip = !!GD.MIL[r + 2] && r + 2 < 7;
     const res = RN.promoRoll(pc, { kind: 'mil', rank: r, ladder: GD.MIL.map(t => t.title), vacancy: RN.milVacancy(pc), patron: RN.milPatron(pc), mods: clamp(mods, 0.02, 3),
       months: A._promoBoard ? 3 : 1, canSkip });
@@ -112,6 +115,9 @@
       const m = pc && pc.mil;
       if (P && m && m.rank === r0 + 1) {
         if (P.why && /^for /.test(P.why) && !/\{/.test(P.why)) A.log(`The board's reason: ${P.why}.`, 'good');
+        // D11-3: what else it weighed (the post's aptitudes, peace service, long service), the two that moved it most
+        const lw = (RN.ladderWhy || []).filter(x => x[1] > 1).sort((a, b) => b[1] - a[1]).slice(0, 2).map(x => x[0]);
+        if (lw.length) A.log(`The board weighed too: ${lw.join('; ')}.`);
         if (P.jump === 2 && GD.MIL[m.rank + 1] && m.rank + 1 < 7) {
           const skipped = GD.MIL[m.rank].title;
           m.rank++; m.rankSince = A.absDay();

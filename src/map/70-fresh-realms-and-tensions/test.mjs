@@ -104,9 +104,13 @@ export default {
   async freshRealmsRun(pg) {
     const cerr = watch(pg);
     await pg.evaluate(HELP);
+    // standby lives (H-082): a life that ends before the six years stops its world's clock, so its fresh realms are
+    // not read; the next seed's life stands in, until four full lives (w16-ci: seed 813's peasant died early once W1-6
+    // moved the world, and one fresh realm's treasury and relations had not yet moved)
     const r = await pg.evaluate(() => {
-      const out = [], seeds = [811, 812, 813, 814];
+      const out = [], seeds = [811, 812, 813, 814, 815, 816, 817, 818, 819, 820];
       for (const seed of seeds) {
+        if (out.filter(x => x.alive).length >= 4) break;
         A.newGame(__frStart(seed));
         const F = Object.values(A.S.realms).filter(r => r.fresh), ids = F.map(r => r.id);
         const t0 = {}; for (const r of F) t0[r.id] = { tre: Math.round(r.treasury), divs: r.forces.divs.length, rel: JSON.stringify(r.rel) };
@@ -122,8 +126,9 @@ export default {
       }
       return out;
     });
-    const ok = (r.every(x => x.n >= 1 && x.mk && x.treMoved + x.relMoved >= x.still) && r.reduce((a, x) => a + x.news, 0) >= 4) && !cerr.length;
-    return { ok, detail: (cerr.length ? `console errors: ${cerr.slice(0, 2).join(' | ')}; ` : '') + r.map(x => `seed ${x.seed}: ${x.n} fresh, ${x.still} still standing after 6 years, treasury moved in ${x.treMoved}, relations in ${x.relMoved}, divisions ${x.divs}, markets ${x.mk}, ${x.news} news lines, ${x.wars} wars now`).join('; ') };
+    const full = r.filter(x => x.alive);
+    const ok = full.length >= 4 && r.every(x => x.n >= 1 && x.mk) && full.every(x => x.treMoved + x.relMoved >= x.still) && full.reduce((a, x) => a + x.news, 0) >= 4 && !cerr.length;
+    return { ok, detail: (cerr.length ? `console errors: ${cerr.slice(0, 2).join(' | ')}; ` : '') + r.map(x => `seed ${x.seed}${x.alive ? '' : ' (the life ended early: a standby follows)'}: ${x.n} fresh, ${x.still} still standing after 6 years, treasury moved in ${x.treMoved}, relations in ${x.relMoved}, divisions ${x.divs}, markets ${x.mk}, ${x.news} news lines, ${x.wars} wars now`).join('; ') };
   },
 
   async freshRealmsRender(pg) {

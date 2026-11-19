@@ -176,7 +176,12 @@ A.wsDay = function () {
       A.wsRaise(w);
     } else if (S.warClock % 7 === 1)
       for (const rid of w.att.concat(w.def))
-        if (!A.armiesOf(rid).length || A.divsOf(rid).some(d => !d.army)) A.wsMobilize(rid);
+        if (!A.armiesOf(rid).length || A.divsOf(rid).some(d => !d.army)) {
+          A.wsMobilize(rid);
+          // [W1-3, D-081 point 4; w16-ci] hosts raised after the war's start (a lord's conscripts formed at his seat, W1-4)
+          // join their lord's contingent, which is kept whole, as at the raise
+          if (A.CMD && A.CMD.keepWhole) A.CMD.keepWhole(rid);
+        }
   for (const a of S.armies.slice()) {
     const r = A.realm(a.realm);
     if (!r || !r.alive || !A.atWar(a.realm).length) {

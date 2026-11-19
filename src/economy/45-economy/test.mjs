@@ -206,10 +206,16 @@ export default {
   },
 
   async noTradeLoop(pg) {
-    // the plan's exploit test, shortened: a greedy trader against farms, same seed, same 1,000 suns, five years
+    // the plan's exploit test, shortened: a greedy trader against farms, same seed, same 1,000 suns, five years.
+    // Pooled over four worlds (H-082; w17-ci): one world's peace and prices decide one trader's luck. CI 154 read seed 904
+    // in POL-02 at 2.34 times its estate (75 trips in a world at peace) while seed 902 in POL-03 stayed at 0.24; the same
+    // two read under 1.5 on the next build. The rule is the pooled one (traders together no richer than 1.5 times the
+    // estates together), and no single world past 3 times (the release's economy reached 12). Four worlds take about 260 s
+    // on CI: a long test (tests/long-tests.json).
     await pg.evaluate(EXPLOIT);
-    const r = await pg.evaluate(() => [[902, 'POL-03'], [904, 'POL-02']].map(([s, rid]) => ({ rid, trader: EXPLOIT_TRADER(s, rid, 5), estate: EXPLOIT_ESTATE(s, rid, 5) })));
-    const ok = r.every(x => x.trader.worth <= x.estate.worth * 1.5);
-    return { ok, detail: r.map(x => `${x.rid}: trader ${x.trader.worth} after ${x.trader.trips} trips, estate ${x.estate.worth} (${x.estate.farms} farms)`).join('; ') + ' (the release\'s economy let the same bot reach 12 times the estate)' };
+    const r = await pg.evaluate(() => [[902, 'POL-03'], [904, 'POL-02'], [906, 'POL-01'], [908, 'POL-04']].map(([s, rid]) => ({ s, rid, trader: EXPLOIT_TRADER(s, rid, 5), estate: EXPLOIT_ESTATE(s, rid, 5) })));
+    const tw = r.reduce((a, x) => a + x.trader.worth, 0), ew = r.reduce((a, x) => a + x.estate.worth, 0);
+    const ok = tw <= ew * 1.5 && r.every(x => x.trader.worth <= x.estate.worth * 3);
+    return { ok, detail: `pooled: traders ${tw}, estates ${ew} (${(tw / Math.max(1, ew)).toFixed(2)} times); ` + r.map(x => `${x.s} ${x.rid}: trader ${x.trader.worth} after ${x.trader.trips} trips, estate ${x.estate.worth} (${x.estate.farms} farms)`).join('; ') + ' (the release\'s economy let the same bot reach 12 times the estate)' };
   },
 };

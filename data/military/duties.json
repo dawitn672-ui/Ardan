@@ -1,0 +1,133 @@
+{
+ "about": "D11-2, a company's duties in peace (docs/design/war.md \u00a714.1: a unit always has something to do; D-119). Each names the branches that do it, the skill it uses and its plain reason. Its captain chooses one for his reasons (A.UNITS, A.WHY kind 'duty').",
+ "duties": [
+  {
+   "id": "watch",
+   "name": "the castle watch",
+   "branches": [
+    "spears",
+    "garrison",
+    "crossbows",
+    "foot_men_at_arms",
+    "conscripts",
+    "household"
+   ],
+   "skill": "shield",
+   "why": "the gate and the walls want men day and night"
+  },
+  {
+   "id": "patrol",
+   "name": "a patrol against brigands",
+   "branches": [
+    "light_horse",
+    "scouts",
+    "spears",
+    "archers",
+    "hired"
+   ],
+   "skill": "tracking",
+   "why": "brigands on the roads"
+  },
+  {
+   "id": "escort",
+   "name": "escorting the tax",
+   "branches": [
+    "lances",
+    "light_horse",
+    "household",
+    "spears",
+    "crossbows"
+   ],
+   "skill": "riding",
+   "why": "the tax carts go to the crown this season"
+  },
+  {
+   "id": "road",
+   "name": "mending the road and its bridges",
+   "branches": [
+    "engineers",
+    "spears",
+    "conscripts",
+    "train"
+   ],
+   "skill": "craft",
+   "why": "the road is broken after the winter"
+  },
+  {
+   "id": "errand",
+   "name": "the lord's errand",
+   "branches": [
+    "household",
+    "lances",
+    "light_horse",
+    "scouts"
+   ],
+   "skill": "etiquette",
+   "why": "the lord rides out and wants an escort"
+  },
+  {
+   "id": "camp",
+   "name": "the drill camp",
+   "branches": [
+    "lances",
+    "light_horse",
+    "scouts",
+    "spears",
+    "foot_men_at_arms",
+    "archers",
+    "crossbows",
+    "engineers",
+    "garrison",
+    "train",
+    "ships",
+    "household",
+    "conscripts",
+    "hired"
+   ],
+   "skill": "command",
+   "why": "the company is raw, and the season is right for it"
+  },
+  {
+   "id": "stores",
+   "name": "counting the stores",
+   "branches": [
+    "train",
+    "garrison"
+   ],
+   "skill": "stewardship",
+   "why": "the stores are to be counted before the harvest comes in"
+  },
+  {
+   "id": "harbour",
+   "name": "the harbour watch",
+   "branches": [
+    "ships"
+   ],
+   "skill": "sea",
+   "why": "ships come and go, and some carry trouble"
+  },
+  {
+   "id": "border",
+   "name": "the border watch",
+   "branches": [
+    "light_horse",
+    "scouts",
+    "archers",
+    "spears",
+    "garrison"
+   ],
+   "skill": "survival",
+   "why": "the border is uneasy"
+  },
+  {
+   "id": "butts",
+   "name": "the butts on feast days",
+   "branches": [
+    "archers",
+    "crossbows"
+   ],
+   "skill": "bow",
+   "why": "the law wants every bowman at the butts"
+  }
+ ]
+}

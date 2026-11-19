@@ -64,6 +64,7 @@
   "s1Mirror",
   "s1Census",
   "w5TwoCenturies",
-  "dietSaveBars100"
+  "dietSaveBars100",
+  "noTradeLoop"
  ]
 }

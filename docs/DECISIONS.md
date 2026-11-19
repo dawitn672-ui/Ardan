@@ -2211,3 +2211,286 @@ his own already.
    and their spouses are left out of both passes. Seeded and sandboxed as D-107.
 6. **Not built:** marriages arranged between houses as alliances with reasons through `A.WHY` (a later step: today's match
    is by realm, estate and age); illegitimate children. A widow of fertile age is free to marry as any free woman.
+### D-116 · D11-2: a company is its make-up, abilities and tendencies; most are read, few are stored (2026-11-18; war.md §14.2, §14.3; rule 21)
+1. **Drills as data** (`data/military/drills.json`): 36 drills in §14.2's eight families, each with its branches, the
+   war-map drill it feeds (60-unit-drill's `GD.DRILLS`), its ground, its teacher's skill, the tendency it mends, the task
+   it prepares. *Why:* §14.3's `drills.json`; a drill that feeds the war map's record changes the battle that exists now.
+2. **Abilities are read, not stored, for the world's companies:** a company's grade in a drill is the division's drill of
+   that family (×70), its experience (×0.35) and its own difference by its seed (±10). Only a company the player drills
+   in keeps grades of its own (`b.dg`, about a dozen numbers). *Why:* about 2,000 company records a world; storing forty
+   grades on each would undo X5's state diet (D-104). NPC companies' training stays the division's monthly drill (60).
+3. **Tendencies from the ledger:** after every war-map fight each company that lost men writes what it did (broke before
+   horse, held, chased, lost a quarter) with the place and year, three at most a record (`b.td`); its captain's temper
+   and its men add the rest as a reading. *Why:* §14.2, "above all its own history in the ledger".
+
+### D-117 · D11-2: support branches stand in the support company they man (2026-11-18; replaces D-113)
+A scout, an engineer, a man of the train or the guard (soldier to captain) stands in his host's Outriders, Sappers,
+Siege train, Quartermasters or Banner guard, when the host has one (9997's `CO.place`, through `A.UNITS.supFor`); a
+captain there holds its one captain's slot (the registry's `coy:<div>:<b>:0`, which `A.POSTS` already allows for a
+support record). A commander leads a wing of a combat battalion: a support record has no wing. Elsewhere he stands in a
+battalion of his troop, as before.
+
+### D-118 · D11-2: the syllabus is worked out with reasons; the drill is a decision; the drill scene is a count (2026-11-18; war.md §14.2; D-069)
+1. **The syllabus** is a pure reading (worked out when the page opens: §16's budget, "the syllabus nothing"): the branch's
+   drills it lacks or holds low; the task (a war, the enemy's horse, a siege, a march); a tendency's remedy; cut where
+   the ground or a teacher is lacking (each cut said with its reason). Four to six offers.
+2. **The month's drill** of the player's company: his own pick as captain or above (one or two, the War tab), else his
+   captain's `A.WHY.decide` (kind `drill`; at captain rank and no pick, the sergeants'). Gain `(100 − grade) × 0.09 ×
+   teacher × hardness ÷ drills`, so less each time; others fade 0.4 a month; the war-map drill gains the company's share;
+   a hard month costs organisation.
+3. **The release's drill scene** (`A.drillMonth`, a roll of 12 in 100 each month) comes every eighth month of drilling;
+   a soldier's company drill scene (`un_drill`) every fourth session. *Why:* the owner asked that lint-reasons fall;
+   a scene that comes on a count is a reasoned schedule, not luck. lint-reasons 42 → 41.
+
+### D-119 · D11-2: a duty in peace, always (2026-11-18; war.md §14.1; order 54)
+The player's company has a duty whenever his realm is at peace and he is not a conscript: chosen by its captain through
+`A.WHY` (kind `duty`) from `data/military/duties.json` for named reasons (the branch's own work, unrest in the province,
+the season, the lord, a raw company, the coast, a hostile border, the law; not the duty just done), three months long,
+practised monthly, its card when it starts. At war the war gives the work (99972-unit-work, the war map). *Why:* §14.3,
+"a new soldier has a duty or a task within three months in 19 careers of 20"; measured 20 of 20.
+
+### D-120 · D11-2: what a role changes, and where (2026-11-18; war.md §14.1; D-112 point 2)
+A role is the player's, so its effects are on his company or division only, each read where the measure lives:
+morale at rest (bearer +4, signaller +3, cook +2, farrier +3 in horse), named among the morale's parts; the wounded kept
+from a battle's dead (surgeon's mate ×1.6 of the third); a foraging party's bread (forager ×1.7) and the land's anger
+(×0.6); a day's bread eaten (the train's branch or a clerk ×0.85); holds on the ledger (provost's man 0.6, clerk 0.4,
+bearer 0.3); sight on campaign (pathfinder or scout, one march further); an attack over a river (carpenter's or
+engineers' division: the loss of the crossing ×0.6). The NPC companies' seed role-holders (D-112) carry no effect: an
+effect for every company in the world would move every world's war for a man the player never meets.
+
+### D-121 · D11-2: transfers, and what is left (2026-11-18)
+1. **Transfers:** once a year, for a soldier or sergeant (not a conscript), the muster-master's reading is taken again;
+   when another branch leads his own by a margin (1 in log-odds), that branch's officer decides through `A.WHY` (kind
+   `transfer`) whether to ask for him (the reading's reasons, that branch's need; against, his captain's want and his
+   section). The card lets him go or stay.
+2. **Left for D11-3:** each branch's ladder, missions and pay; a role's promotion line; peace service counting toward
+   promotion (the duty's merit is a start); campaign measures of the NPC companies' roles.
+
+### D-122 · D11-3: each branch's ladder, and a promotion that weighs the post (2026-11-18; war.md §14.1; CRITIQUE item 19)
+1. **The ladder** is what each of the five ranks does in a branch (`ladder` in the branches' data); the rank and unit
+   words stay the glossary's (R14, D-114). *Why:* a "ladder of registry posts" per branch would be fifteen ladders of
+   new words; the posts already exist (W1-1's ranks, A2's registry), and what differs by branch is the work.
+2. **The board weighs the post's aptitudes:** the branch's key skill (`key`) and, from sergeant up, command, each a
+   factor 0.6 to 1.5 on the board's hazard (99999-v2-renown's `RN.milRoll`). *Why:* §14.1, "a captaincy wants command;
+   the train wants numbers; the scouts want fieldcraft; a fine swordsman with no voice stays a fine swordsman". The
+   factor bends the existing hazard; it adds no roll.
+
+### D-123 · D11-3: a branch's missions are its commander's choice (2026-11-18; CRITIQUE item 19, W2)
+The release drew a mission's kind from a list (`A.newMission`, `A.pick`). Now the commander decides through `A.WHY`
+(kind `mission`): the branch's own work (`mtypes`, weight 2.2), the war's asks (a siege 1.2, the enemy on our soil 0.8,
+attacking 0.5), the rest 0.2; the draw's band (2.3) lets other work come now and then. A mission of the branch's own
+work is titled with it. Measured (`lcMissions`): of 330 missions at war, as a soldier and a captain, the branch's own
+were between 0.57 (spears, engineers) and 1.0 (lances, light horse) for every branch (CRITIQUE asks a half).
+
+### D-124 · D11-3: peace service counts (2026-11-18; CRITIQUE R12)
+A duty seen through (D-119) is a deed of service on the army's field, which the board reads (half of what the next rank
+asks when done well, a quarter when done, nothing when caught shirking); each duty done at a rank multiplies the
+board's hazard by 1.12 (four at most); and long, clean service at one rank (3, 4, 5, 6, 8 years by rank, no desertion)
+multiplies it by 1.6, said in the promotion's log. *Why:* R12 ("a Captain sat 79 months with every gate met"): a floor
+that raises the odds without handing the rank over (a post must still fall open).
+
+### D-125 · D11-3: a role's line (2026-11-18; war.md §14.1; D-112 point 2)
+Once a year, after two years in a role, the captain decides through `A.WHY` (kind `role`) whether to raise its holder a
+rung of its line (data): his skill against the role's least plus 15 a rung, his years; against, the battalion's own
+holder of the post above (a seed man, by hash: one holder a post). Pay is the role's times (1 + rung). A quartermaster's
+rung is kept by a captain, a master of the train's by a commander; otherwise an officer hands the role on.
+
+### D-126 · D11-3: the world's companies have role-holders and drills of their own (2026-11-18; order 54; revises D-120)
+1. **Every company's seed role-holders work** (one in three companies for each role, D-112's hash; the player in place of
+   his own): morale at rest (bearer +4, signaller +3, cook +2, farrier +3 in horse), the wounded kept (×(1 + 0.6 × the
+   battalion's share of surgeon's mates)), a foraging party's bread (×(1 + 0.7 × the division's foragers)) and the land's
+   anger (×(1 − 0.4 ×)), a day's bread (Quartermasters ×0.9; clerks ×(1 − 0.1 ×)), holds on the ledger (provost's men,
+   clerks, bearers by their share), an attack over a river (Sappers, or carpenters by share, up to 0.4 of the loss).
+   **Every battalion's drill** is its own (its stored grades when the player drills in it, else the division's ± 8 by its
+   seed) in 9997's morale and line battle. *Why:* the owner's first rule; D-120 had made roles the player's alone.
+2. **Cheap:** no man is simulated; a battalion's roles are a bitmask a company and a morale vector, worked out from ids
+   once and kept beside the record (a WeakMap, never saved); a division's shares beside the division. Nothing grows the
+   save. Measured (in-page, under a machine load of 16 to 18 on 4 cores, best of three; seed 7, two years from a new world,
+   six wars): about 31,000 calls a month, about 4 ms a month in all at the best run (role morale 0.28 µs a call, 10,300
+   calls), where H-075 found this machine 3 to 4 times CI's: about 1 to 1.5 ms on CI, inside W1 and D11's 2 ms.
+3. **How much it moves the world's wars** (four worlds, seeds 7 to 10, 15 years, the world's part off and on, the same
+   build): wars 45 against 55, ended 43 against 52; the men lost in all 8.04 million against 9.46 million, so per war
+   178,700 against 172,000 (−4%; by world −14%, −22%, −30%, +60%); mean length of an ended war 4.3 against 3.8 years. Each
+   world diverges from its first changed fight (as any change does), so the pooled figures are a reading, not a law; no
+   measure left the range the worlds span between themselves. `A.LADDER.T.npc = false` turns it off.
+
+### D-127 · D11-3: pay rebased (2026-11-18; CRITIQUE W11)
+`GD.MIL[].pay`: soldier 100 a year (was 300), sergeant 140 and 180 (420, 600), captain 300 and 450 (1,200, 2,400),
+commander 900 (4,000), General 2,000 and 3,500 (7,000, 12,000). A farmhand earns 60, a yeoman 220: a soldier now earns
+less than twice a farmhand and a captain about one and a half to two yeomen. Wealth in arms is loot and ransom (the
+missions' and battles' own). The balance league has no soldier's path; a peasant who enlists keeps less, and CI's long
+tier (the balance league) is where a band would show it.
+
+### D-128 · D11+: each branch has a road through the ranks, as data (2026-11-18; order 54; war.md §14.1)
+`data/military/paths.json`: for each of the fifteen branches, five rungs, each with what it trains (shares of a month's
+effort by skill), the trial that proves a man at it (its skill and its words), what the board weighs for the next rung,
+and the role it opens where it opens one; and the specialisms the road leads to by the man's way of fighting (S1's
+specialisms: the lance, the war bow, the crossbow, the bill and pike, the wall, carpentry and masonry, supply, scouting
+for a host, the garrison...). *Why:* order 54 asks that the path follow "the weapon under use, the method of combat they
+prefer, and every useful aptitude"; a lancer's, an archer's, a sapper's and a scout's careers differ in what they train,
+what proves them and what opens, which D11-3's ladder (one key skill a branch) did not yet say.
+
+### D-129 · D11+: the road trains through S1's one door, bent by talent (2026-11-18; orders 59, 63; D-072)
+The road's month is half a month's effort (`A.gainXp`, practice, the road named as the cause), split by the rung's
+shares, each multiplied by his talent (F 0.6 to SSS 1.6) and renormalised: a gifted hand spends more of the time where it
+pays, as a man does. It is small beside his drill, duty, missions and deeds, so growth stays S1's (concepts, grasp, proof;
+no timetable). The release's year in the ranks (`A.milYear`'s troop weapon) drills the rung's first skill instead, so a
+scout's year is tracking, not his light horse's riding. Aptitude is said in words (S1's `TALENT_WORD`: gifted, rare, a
+prodigy, slow...), never the letter.
+
+### D-130 · D11+: a rung's trial is S1's proof (2026-11-18; D-072 point on proofs)
+When he stands at the edge of a word in the rung's trial skill, its concepts grasped and wanting a proof (`C.ready`), the
+road's trial is set (`pa_trial`, at most one in 300 days); standing it is the `proof` key (a stretch at the next word's
+level, the engine's own crossing) and is recorded for the board (×1.15 a trial at this rung, two at most). *Why:* S1 asks
+a proving moment from Expert up; the road gives each branch its own, in its own words. A man may ask for another season.
+
+### D-131 · D11+: the road's specialism and the role a rung opens (2026-11-18)
+When the road's skill has room for a specialism (Advanced: one, Master: two) and he has none of the road's, `pa_spec`
+offers the one his way of fighting leads to (and the road's own when it differs) or none; at most one in 600 days. The
+role a rung opens is offered once at that rung by his captain through A.WHY (kind `role`, restricted to it, with "the
+road opens it at this rung" as a small reason for).
+
+### D-132 · D11+: the board weighs the road's next rung (2026-11-18; revises D-122 point 2)
+`A.LADDER.mod` reads `A.PATHS.wants(next rung)` (two skills at most, each a factor 0.6 to 1.5) and the trials stood at
+this rung, in place of the branch's one key skill and command; without a road it falls back to D-122. *Why:* an
+archer's captaincy wants command and the bow, a sapper's command wants tactics and craft, the train's stewardship.
+
+### D-133 · Working branches: `work/<item>`, merged whole, then listed as deletable (2026-11-18 21:20 ET; order 64)
+**Context.** The owner asked why oddly named branches appeared (`w1-5`, `d11-2`, `w16-ci`...) and ordered: as many
+branches as needed, properly integrated, and deletable. **Chosen:** every agent's branch is named `work/<item>` with the
+PROGRESS item's code; it is merged whole into `v2-integration` (no cherry-picks, so nothing stays only on it); after the
+merge the integrator adds it with its tip to `docs/BRANCHES.md` under "Deletable". Agents push their branch early and
+often (a container restart loses unpushed work). The session cannot delete refs (the proxy refuses; the permissions rule
+stands), so the owner deletes them, or leaves them: they cost nothing. **Why:** parallel agents need separate branches;
+a pushed branch survives restarts; the list makes deleting safe.
+
+### D-134 · How a version is cut, one way only; batches cleared before the next lands (2026-11-18 21:40 ET; order 65)
+**What went wrong (the audit).**
+1. *Three conventions for a release branch.* alpha.1-4: the version's commit is its records commit. alpha.5-9: the
+   release branch is one records commit past the version's commit. alpha.10-13: the release branch is the version's
+   commit and the records sit only on `v2-integration`. All are restorable, but nothing said which is right.
+2. *The tool could only tag HEAD.* `tools/version.mjs new` tags the current commit, so a version cut at a green commit
+   that is no longer the head (alpha.13) needed a hand-made temporary worktree and a hand-copied row; and its look-up
+   leaked git's own "fatal: Needed a single revision" to the screen, which reads as a failure though nothing failed.
+3. *No sample save since alpha.10,* though every earlier version had one and the old saves must keep loading.
+4. *Merging faster than CI clears.* On Nov 18, W1-6, D11-1, X5, D11-2, D11-3 and D11+ landed before any run on them was
+   green. Each new merge brought new red tests, each fix round met the next merge's, the failures could not be told
+   apart by cause, and alpha.14's promised contents changed four times. The changelog had to be split by hand.
+**Chosen.**
+1. *A version is the commit CI tested green on both tiers.* Its row names that commit; `release/<version>` points at
+   exactly that commit; the records (VERSIONS row, CHANGELOG section, PROGRESS row, sample save) are one commit on
+   `v2-integration` after it, never on the release branch. alpha.1-9 keep their branches as they are (listed as the old
+   way in `docs/VERSIONS.md`).
+2. *The tool does it.* `version.mjs new <v> "title" --at=<sha>` takes the tested commit (default HEAD), refuses one
+   without a green check and long run when it can see them, writes the row, moves the CHANGELOG's Unreleased bullets that
+   came with that commit's merges under the version's heading, saves a sample game, and prints the release-branch push.
+   Its git look-ups are quiet. `version.mjs check` fails when a row, a release branch, a changelog heading or a sample
+   save disagree; `tools/check.mjs` runs it.
+3. *Batches.* Features merge in a batch with one `[full ci]` push. The next batch waits on its branches (pushed, safe)
+   until the current one is green or every red test is owned by a fix branch; fix branches may merge any time. A version
+   is cut from each green batch. The promise to the owner names the batch, not what may land later.
+
+### D-135 · Honest odds with room for upsets from will, circumstance, adaptability and talent (2026-11-18; order 66)
+**Context.** The odds engine (`src/people/engine/odds.js`) already has two of the four: surges of will under stakes and
+blunders from judgment, fatigue and overconfidence; the duel's shown odds were refit to match results (H-077's honestOdds,
+the seat term). Circumstance, adaptability and talent are not yet named sources of upsets. **Chosen.**
+1. *The scale stays honest:* what is known before the fight is shown and matches results pooled (the honestOdds tests
+   keep their bars).
+2. *Upsets carry reasons:* the spread around the scale comes from four named sources, each recorded on the result and told
+   in the after-fight words: will (the existing surge), circumstance (ground, light, weather, footing, a wound or fatigue,
+   the unseen: drawn from what the world holds that day, partly hidden when the scale is read), adaptability (judgment and
+   experience reading the foe across exchanges: a fighter who adapts gains as the fight lengthens, a rigid one loses
+   ground), talent (a talent letter widens the ceiling and the chance of a surge turning into a breakthrough).
+3. *Room, bounded:* an underdog by one tier still wins about one fight in four; by two tiers about one in ten; by three
+   tiers rarely, and only with a named reason; no upset without a reason on the record.
+4. *Order:* built as item **U1** after the current batch clears (D-134), duels first, then the odds engine's other
+   attempts. Measured by a test that pools upsets by source and checks each source moves results the right way.
+
+### D-136 · The world's masters brought down to what their years allow (2026-11-18; order 67 b; closes D-078's open point)
+Councillors, mentors and order masters rolled at 70 to 96 on the old scale are re-set, on load and at world-making, by
+the closed form of S1 growth: their age, talent letters, training of their post and the concepts a level asks; a few
+stay great where their years and gifts truly carry them. Built inside item **PA** (parity, D-140).
+
+### D-137 · Every trial says what the deed is (2026-11-18; order 67 c; D-067 item 3 confirmed)
+The trials at Expert and Master stand. Each trial card names the deed in plain words: the task, before whom, and what
+counts as passing ("Hold the line's left file for a full charge, before your captain: stand, and keep the file whole").
+A trial's wording comes from data per skill and per level, linted for the three parts. Built inside item **LC**.
+
+### D-138 · Legends and crowns as hard as the world makes them (2026-11-18; order 67 d)
+The census stays a count (D-078). Measure how often a life reaches Legend and how often a commoner, a lord or a soldier
+reaches a crown, and set each against what the world's logic allows (the concepts and proofs a Legend asks over a
+lifetime; a throne by blood, election, conquest or a coup, each needing what it needs in A.WHY and A.PAX). Fix the
+shortcuts found; no flat penalty. Built as item **LC** with D-137.
+
+### D-139 · One economy, every figure set against the others (2026-11-18; order 67 e)
+An audit of every money figure (wages by trade, soldiers' pay (D-127), prices of goods, food, gear, horses, rents,
+dowries, fines, bribes, upkeep of households, hosts and courts, loot and ransom, treasuries and taxes) as one table in a
+day's wage; incoherent ones are re-based from a few anchors (a labourer's day, a loaf, a horse, a sword), the balance
+bands re-read. Built as item **E0** after PA and LC.
+
+### D-140 · Everyone ages and grows by the player's rules; no friendship shortcuts (2026-11-18; order 67)
+People the player never meets age and die (X5's death pass, `x5-deaths`). Every person and group (a company, a household,
+a house) grows by the same rules and margins as the player: the same S1 experience, concepts, proofs and breakthroughs
+for anyone the world tracks as a person, and the same aggregate rules for groups. Promotion and appointment read merit
+and reasons (A.WHY), and a friendship is one reason among many, never enough alone (a sergeant's friend does not become a
+General). Built as item **PA**.
+
+### D-141 · Clear before building; a sample game in every version that shows what changed (2026-11-18; order 67 1 and 4)
+1. Nothing new starts while a known failure is open: the current batch's fixes, then the next batch's, then new items in
+   the order PA, LC, E0, U1. A merge needs its own tests and the touched features' tests passing locally first.
+2. *Why sample saves stopped:* the rule lived in two places that disagreed. CLAUDE.md asked for a sample game only for
+   "milestones", while every version from alpha.1 to alpha.10 had one by habit; from alpha.11 the version steps were
+   written from memory into scheduled check-ins, and the sample save was left out of them. The fix: the version tool
+   makes it (D-134) and `version.mjs check` fails without it, so it no longer depends on memory.
+3. *A sample game shows the version's difference:* each is played to a moment where that version's change is in play
+   (alpha.12: a landed lord answering the summons; alpha.13: a ruler at the peace table; alpha.14: a soldier at the muster
+   with his company's card), and `tests/saves/README.md` lists what each one shows and how to see it.
+
+**D-135 addendum (2026-11-18, the owner's alpha.9 survey):** he found upsets "too common" while the odds shown matched
+"mostly". U1 sets its bands from that: rarer upsets than point 3 first said (to be measured against today's rate, which
+has moved since alpha.9), each with its named reason; the honest scale stays.
+
+### D-142 · One fixed continent for every life (2026-11-18; order 68; over D-054's and D-061's per-seed ground)
+**Context.** Since the v2 map, `A.V2MAP.world(seedOf(S.seed))` built a new continent for every game seed, and map
+versions 1 to 3 redrew it again; the title screen showed seed 7's world, the life another. Nobody had chosen a new
+continent per life; it came with the generator. The owner noticed the map "keeps on changing" and chose one geography.
+**Chosen.**
+1. The continent's shape (land, sea, height, rivers, lakes, provinces' cells, seats' sites, roads and fords) is built
+   from one canonical map seed for every life; the game's seed still decides everything that happens on it (people,
+   history, wars, borders as they move). The title shows the same continent.
+2. The canonical seed is chosen once, by measured quality (D9's legibility reading, realm heartlands that fit the lore,
+   one connected landmass), and recorded here with the readings when chosen.
+3. A new map version (a better generator) redraws the one continent once; saves carry `A.S.v2map = { seed, v }` and keep
+   the map they were made on, as today.
+4. The worker that built each new life's continent ahead (D-054) builds the one continent once and caches it; the load
+   gets faster.
+Built as item **M1**, first after alpha.14 (every world shifts, so it is its own batch, D-134/D-141).
+
+### D-143 · The map in depth, after the one continent (2026-11-18; order 69)
+**Chosen.** Item **M2**, right after M1, in two stages: **M2a**, a design (the owner's model plan, D-009: the big designs
+at the highest effort) of places, borders, disputes, alliances, trade routes and what else belongs (customs posts, toll
+bridges, march lands, pilgrim roads, smuggling paths, grazing rights, river rights), each tied to systems that already
+exist or are queued: `A.PAX` (the realm's peace: border wars, private wars), `A.WAR` and the reasons for war (claims,
+grudges), `A.CMD`/`A.MEN` (march lords, garrisons), D9's ground (roads, fords, passes), and **E0** (trade routes are the
+economy's veins, so E0 and M2 are designed together). **M2b** and on: built in stages, each its own batch. What the
+player sees follows his rank and what he could know (a peasant knows his valley and the road to market; a merchant the
+routes and tolls; a lord his borders and disputes; a king the realm's).
+
+
+### D-144 · d11-ci: an officer's pay restored toward the release's (2026-11-19; revises D-127)
+`GD.MIL[].pay`: soldier 100, sergeant 140 and 180 (D-127's rebase stands for the ranks), captain 400 and 800, commander
+2,000, General 5,000 and 9,000 (the release 1,200 / 2,400 / 4,000 / 7,000 / 12,000; D-127 300 / 450 / 900 / 2,000 /
+3,500). *Why:* a landless noble's career in arms is his living and his station's; D-127 cut it to about a third. Long 38's
+noble band (median peak coin 21,617 against 30,000) was not this (the median life never served; slots 12 to 23 of the same
+build read 131,469), but the league's officers showed it: a General's career paid 131,877 at the restored pay against
+86,311 at D-127's (slot 0 and slot 8 of two builds), a captain's 1,568 in a lifetime at 450 a year. W11's complaint was
+the ranks' pay ("a Squad Captain earns 1,200 at 16; a pedlar 80"); the ranks' rebase stands.
+
+### D-145 · d11-ci: the balance league plays 24 lives for the artisan and the noble (2026-11-19; tools/bench/targets.mjs)
+A path may set `lives` (tools/bench/balance.mjs, `--lives-per` still sets all). The artisan and the noble play 24. *Why:*
+the same build (4707b7d) read, over the artisan's slots 0 to 11 and 12 to 23: median death age 26 and 67, peak coin 4,790
+and 54,128, notable share 33.3% and 83.3%; the noble's peak coin 21,617 and 131,469. Twelve lives put the median on either
+hump of a two-humped spread (targets.mjs's own words since round 5). Over 24: the artisan 39 / 21,051 / 58.3%, the noble
+45,602, all inside the bands, which stay as they were. Of the artisans' twelve young deaths in slots 0 to 11 two had
+enlisted; the rest were hangings from the release's crime scenes, beasts and fever: D11's systems did not send them to war.
+The league's time grows by about a third (24 more lives of 72).
