@@ -2340,3 +2340,19 @@ a pushed branch survives restarts; the list makes deleting safe.
    until the current one is green or every red test is owned by a fix branch; fix branches may merge any time. A version
    is cut from each green batch. The promise to the owner names the batch, not what may land later.
 
+### D-135 · Honest odds with room for upsets from will, circumstance, adaptability and talent (2026-11-18; order 66)
+**Context.** The odds engine (`src/people/engine/odds.js`) already has two of the four: surges of will under stakes and
+blunders from judgment, fatigue and overconfidence; the duel's shown odds were refit to match results (H-077's honestOdds,
+the seat term). Circumstance, adaptability and talent are not yet named sources of upsets. **Chosen.**
+1. *The scale stays honest:* what is known before the fight is shown and matches results pooled (the honestOdds tests
+   keep their bars).
+2. *Upsets carry reasons:* the spread around the scale comes from four named sources, each recorded on the result and told
+   in the after-fight words: will (the existing surge), circumstance (ground, light, weather, footing, a wound or fatigue,
+   the unseen: drawn from what the world holds that day, partly hidden when the scale is read), adaptability (judgment and
+   experience reading the foe across exchanges: a fighter who adapts gains as the fight lengthens, a rigid one loses
+   ground), talent (a talent letter widens the ceiling and the chance of a surge turning into a breakthrough).
+3. *Room, bounded:* an underdog by one tier still wins about one fight in four; by two tiers about one in ten; by three
+   tiers rarely, and only with a named reason; no upset without a reason on the record.
+4. *Order:* built as item **U1** after the current batch clears (D-134), duels first, then the odds engine's other
+   attempts. Measured by a test that pools upsets by source and checks each source moves results the right way.
+

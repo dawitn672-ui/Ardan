@@ -258,6 +258,17 @@ order is replaced, strike it through and say by what.
     to cut a version, a tool that enforces it and a check that fails when the records disagree, and a merge rhythm where a
     batch is cleared before the next one lands.
 
+66. **Honest odds, with room for the unexpected** (D-135) · recorded 2026-11-18 21:55 ET. The owner's words, verbatim (his answer to "keep honest duel odds?"):
+
+    > a. match the real chances but keep enoug room for unexpeted results that come from willpower circumstance adaptability and talent
+
+    **Read as:** the scale keeps telling the truth about what can be known before the fight (shown odds match results
+    in aggregate). The spread around it is not blind dice: upsets come from four named sources, each a reason the after-fight
+    account gives: **willpower** (a surge under real stakes), **circumstance** (ground, light, weather, wounds and fatigue,
+    footing, a slip, what was not known when the scale was read), **adaptability** (reading the foe and changing course as
+    the fight goes, judgment over exchanges), and **talent** (a gifted fighter's ceiling and leaps, breakthroughs). Applies to
+    duels first, then to every attempt read through the odds engine.
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
