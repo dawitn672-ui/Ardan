@@ -143,7 +143,16 @@ A.rulerDies = function (r, cause) {
   const S = A.S,
     ru = A.P(r.ruler);
   if (ru) {
-    if (ru.alive) A.kill(ru, cause || "old age", true);
+    // [w18-ci, D-146] the realm being settled here is this one, whatever his own record says (a claimant named ruler of
+    // his faction realm was never crowned in it): A.kill leaves it to us and settles only his other crowns
+    if (ru.alive) {
+      A._crownKeep = r.id;
+      try {
+        A.kill(ru, cause || "old age", true);
+      } finally {
+        A._crownKeep = null;
+      }
+    }
     ru.ruler = null;
   }
   r.ruler = null;
@@ -411,7 +420,7 @@ A.kill = function (p, cause, silent) {
   // [A2 posts] death vacates every post at once (before, dead councillors sat until the yearly sweep)
   if (A.POSTS) A.POSTS.leaveAll(p.id, "died");
   const sp = A.P(p.spouse);
-  const crown = p.ruler;
+  const crown = A._crownKeep || p.ruler;
   if (
     (sp &&
       sp.spouse === p.id &&
