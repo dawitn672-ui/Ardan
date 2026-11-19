@@ -169,3 +169,7 @@ Lore pages of the Codex (faiths, bloodlines, songs, secrets, families) and the W
 - **Notes** (`descriptions.note.core.js`). `UI.TIPS.note`, `UI.note(text, label)`, `UI.noteBtn(text, about)` (the info button), and `TT.sweepTitles`, which lifts any `title` of more than three words and any `data-note` under a node: onto the element when it is plain text (underlined when inline, a trailing `ⓘ` when a block), into an info button beside it when it is a button or a link, inside it when it is a table part. It runs after every redraw and, through a `MutationObserver`, after any change a feature makes on its own. Features write `data-note="..."` (or `UI.noteBtn`), never a `title=` over three words; a short label may stay (three words or fewer) or be an `aria-label`. Text for assistive technology alone (the time dock's buttons) is `aria-description`.
 - **Sheets** (`src/ui/99998-click-open`). An activity tile opens a sheet before it commits; its answer is whole.
 - **Tests**: `clickNoHover`, `clickOpens`, `clickLint`, `clickActSheet` (in `99998-click-open`); `ttNestedClick`, `ttNested2`, `ttAxe2` here now press where they once hovered.
+
+**M1 (H-101).** A popover that grows after it is placed is placed again (a `ResizeObserver` on each popover and the fonts'
+`loadingdone`). In a busy browser its text could be set in the fallback face and grow when the game's fonts came, and on a
+375 x 740 phone the first popover ran to 752 px (`ttPhoneTap`, shard 2).

@@ -2520,13 +2520,19 @@ Branch `work/x5-ci`, from `origin/v2-integration` at `578da51`. The long run on 
     - `w5AiEnding` gives the victor a calm temper. A proud victor may send the envoys back ("no terms yet").
     - `v2svOldCycle2` lets the migrated life end in its two years (hanged at 21).
     - `d9SaveAndPure` switches the map seed for "another world".
-    - `ttPhoneTap` failed once under the shard's load and passed 5 times after, on both builds. Its detail now shows the
-      first two taps.
+    - `ttPhoneTap` failed in shard 2 on both passes: the first popover's bottom was at 752 px on a 740 px phone. Run alone
+      it passed every time. In a busy browser the profile's anchor sits about 300 px lower, and the popover grew after
+      it was placed. The build before M1 read 735 there, 5 px inside the screen, and M1's taller profile tipped it over.
+      A popover that grows after it is placed is now placed again (`59-descriptions`: a ResizeObserver, and the fonts'
+      `loadingdone`). Shard 2 then read 733 and passed 113 of 113. The test's detail shows the first two taps.
   - **Failing before M1:** `w4OldSaves` failed on the alpha.15 sample save (year 1140), whose 8 realms have rolls above
     the cap. A roll above the cap drains a tenth of the excess a year (`A.forcesYear`), so the test now bars the cap only
     for converted old saves.
 - **Run on the final build:** the 23 tests above and the map tests: 23 of 23. `coherency --baseline=quick`: no check
   rose.
+- **Second quick pass, all eight shards on the build with every fix but the popover's:** 899 of 900 (only
+  `ttPhoneTap`, above). `coherency --baseline=nightly` (8 lives x 60 years): no check rose, and "family links agree" fell
+  from 3 to 0. The baseline is left as it is, since one run is too little to lower it on.
 - **Long tier, once each, for the suspects** (the map, the ways, the one-holder rule): `journeysPure`,
   `twoScalesMovesFront`, `v2nOneHolder`, `noTradeLoop`, `localEventsUseWords` and `w5TwoCenturies` passed. `v2fOneHolder`
   failed, which is the purge above.
