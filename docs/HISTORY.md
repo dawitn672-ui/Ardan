@@ -2285,3 +2285,36 @@ times CI's).
   9999956-units (with the core suites) 33 of 33; lint-kin ok, lint-reasons 41, lint-stages ok, `--check-tiers` ok (62 long), lint-events (units)
   clean.
 - **Undo:** revert the branch's commits.
+
+### H-096 · 2026-11-19 · d11-ci: CI 155 and long 38 after D11-2 and D11-3
+Branch `d11-ci`, from `origin/v2-integration` at `b7f6461`, merged with `49beb69` (w17-ci). Decisions D-142, D-143.
+- **`bothScalesReckoning` (CI 155):** the two accounts truly disagreed the wrong way. A one-day fight of 10,000 men with a
+  handful dead had the chronicle say "Some 0 of the enemy fell, against 2 of ours" after "a famous victory". The chronicler
+  inflates their dead from the front's count; with none counted he inflated nothing. **Fix**
+  (`34-squad-and-front-panels/scales.core.js`): the told count of theirs is at least ours plus one, and three, before the
+  inflation ("Some 13 of the enemy fell, against 2 of ours"). Passes.
+- **Long 38's balance bands** (on `4707b7d`): artisan median death age 26, peak coin 4,790, notable share 33.3%; noble
+  peak coin 21,617. Measured with the league's own bot and seeds on the base `f802f13` and on `4707b7d`, life by life
+  (arc, age and cause of death, service, pay):
+  - **Artisans:** of the twelve, two enlisted (one by lot); the young deaths were hangings from the release's crime
+    scenes (a reckless bot's choices), the Cave Bear and the Hell Boar, fever. Slots 12 to 23 of the same build read 67 /
+    54,128 / 83.3% (the base: 63 / 61,079 / 91.7% and 66 / 16,867 / 75.0%); over 24 lives 39 / 21,051 / 58.3%, inside the
+    bands. No D11 system sent them to war; the D11 builds' worlds differ from the base's from the first changed fight
+    (D-126), and the twelve-life median fell on the low hump.
+  - **Nobles:** the median life (an officer of state) never served; slots 12 to 23 read 131,469, 24 lives 45,602. But the
+    league's officers showed D-127's cut: a General's career paid 86,311 against the release's 327,680, a captain's 1,568
+    in a lifetime. **Fix (D-142):** an officer's pay restored toward the release's (captain 400 and 800, commander 2,000,
+    General 5,000 and 9,000; the soldier's and sergeant's rebase stands): the same General's career now pays 131,877.
+  - **The league (D-143):** a path may play its own count of lives (`lives` in `tools/bench/targets.mjs`,
+    `tools/bench/balance.mjs`); the artisan and the noble play 24, with the readings in the file. The bands are unchanged.
+    The league's time grows by about a third.
+- **`un_drill`'s repeats** (w17-ci's lfRepeats at 14.1% against 15%): a drill the company has done before passes as a log
+  line, done the way he did it last (`pc.mil.drillWay`, the experience of his last way); the card comes for a drill new to
+  him, a hard month, or one that matters (a tendency to mend, horse among the enemy, a siege ahead), within 97's quiet
+  (`A.lfSpaced`, two years doubling). lfRepeats: 12.9% of scenes seen before (was 14.1%).
+- **Tests:** bothScalesReckoning, lfRepeats, unDrillMonth, unDeterministic, lcPay (its bound: a captain at most four
+  yeomen), lcDeterministic, paDeterministic: pass; the quick tier of units, ladder, squad-and-front-panels and paths with the
+  core suites: 53 of 53. lint-reasons 41; lint-stages, lint-kin, lint-skills ok; `--check-tiers` ok; `coherency
+  --baseline=quick`: no check rose. The balance league itself was not run whole here (measured with the probe above,
+  the same bot and seeds); CI's long tier will run it with 24 lives for the two paths.
+- **Undo:** revert branch `d11-ci`'s commits.
