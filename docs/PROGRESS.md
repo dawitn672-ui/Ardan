@@ -59,6 +59,7 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [x] **v2.1.0-alpha.11** · cut on green CI 146 and long 17 at `65eb7ba` (I1-2 iPhone readiness), `release/v2.1.0-alpha.11` pushed · 2026-11-18 07:34 ET
 - [x] **v2.1.0-alpha.12** · cut on green CI 149 and long 22 at `059d686` (W1-3 commands and the summons, W1-4 no levies, world-robust tests H-082/H-083), `release/v2.1.0-alpha.12` pushed · 2026-11-18 12:45 ET
 - [x] **v2.1.0-alpha.13** · cut on green CI 151 and long 29 at `a88513b` (W1-5 surrender or defeat, H-084, H-085), `release/v2.1.0-alpha.13` pushed · 2026-11-18 15:25 ET
+- [x] **v2.1.0-alpha.14** · cut on green CI and long at `6f325bf` (W1-6 the realm's peace; D11-1, D11-2, D11-3, D11+ the military path; X5 part 1; fix rounds w14-ci to w19-ci and d11-ci), `release/v2.1.0-alpha.14` pushed; sample save `tests/saves/v2.1.0-alpha.14-muster.ardan` (a peasant of 18 at the muster, the muster-master's card waiting) · 2026-11-19 05:20 ET
 
 ### Open, in build order (re-sorted 2026-11-16 by what the rest stands on; owner: "start with the more important or more
 structurally necessary things")

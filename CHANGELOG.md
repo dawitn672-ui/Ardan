@@ -5,6 +5,8 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+## v2.1.0-alpha.14 (2026-11-19 05:20 ET) · The realm's peace (stability, factions, coups, private wars, all with reasons); the military path (the muster, units that differ, careers, each weapon's road); a lighter save
+
 - **Officers are paid like officers again.** A soldier still earns a few suns a month, but a captain, a commander and a
   General earn enough to keep their station.
 - **The company's drill no longer repeats itself.** A drill your company has done before passes in a line of the story;
