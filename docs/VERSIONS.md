@@ -8,10 +8,12 @@ session's git proxy refuses tag pushes, so the table is the record). Any version
 ```sh
 node tools/version.mjs list                         # every version
 node tools/version.mjs get v1.5.0                   # writes versions/ardan-v1.5.0.html (ignored by git); open it in a browser
-node tools/version.mjs new v2.1.0-alpha.14 "Title" --at=<sha> [--ci=<check run>,<long run>] [--only-before=<sha>]
+node tools/version.mjs new v2.1.0-alpha.14 "Title" --at=<sha> [--ci=<check run>,<long run>] [--only-before=<sha>] [--sample=<recipe>]
                                                     # D-134: the tested commit: tag, row (with the build's hash), CHANGELOG
                                                     # section, sample save; prints the release-branch push
-node tools/version.mjs make-save v2.1.0-alpha.13    # a version's sample save, from its own game
+node tools/version.mjs make-save v2.1.0-alpha.13 [--sample=<recipe>]   # a version's sample save, from its own game,
+                                                    # played to a moment that shows its change (tools/version-samples.json;
+                                                    # tests/saves/README.md lists each save and how to see it, D-141)
 node tools/version.mjs check                        # rows, release branches, changelog headings, sample saves agree
 ```
 

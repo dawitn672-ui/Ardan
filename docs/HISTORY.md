@@ -2262,9 +2262,18 @@ D-018's second half, proposed in H-087 and approved by the coordinator. Branch `
   alpha.2 to alpha.10's were made), and prints `git push origin <sha>:refs/heads/release/<v>`; every git look-up is quiet
   (no "fatal: Needed a single revision"); `make-save <v>`; `check` (rows' commits, `release/<v>` at the row's commit from
   alpha.10 on via `git ls-remote`, changelog headings and sample saves from alpha.1 on; offline and shallow-safe), run by
-  `tools/check.mjs`. The missing saves of alpha.11, .12 and .13 made from their commits (`65eb7ba`, `059d686`, `a88513b`);
-  `check` passes (31 rows, release branches as recorded). The changelog move tried on a copy: all 26 Unreleased bullets,
+  `tools/check.mjs`. The missing saves of alpha.11, .12 and .13 made from their commits (`65eb7ba`, `059d686`, `a88513b`;
+  remade below as D-141's scenarios); `check` passes (31 rows, release branches as recorded). The changelog move tried on a copy: all 26 Unreleased bullets,
   or 9 of 26 with `--only-before=aa0fdd8`.
+- **D-141 folded in (order 67):** a sample game shows what its version changed: `new --sample=<recipe>` and
+  `make-save <v> [--sample=<recipe>]` play a recipe of the new `tools/version-samples.json` (start, seeds tried in turn,
+  the life taken on as the realm's ruler or a landed lord, the moment: `summoned`, `peaceTable`, `any`) through
+  `tools/make-save.mjs --recipe` (which now waits for the content to be loaded before playing: an old build's
+  half-loaded page had dropped the summons card), and write the save's line into the new `tests/saves/README.md` (every
+  save, what it shows, how to see it). `check` also needs that line from alpha.1 on. The three noble saves made earlier
+  are replaced: `v2.1.0-alpha.11-phone.ardan` (a life to look at at 375 x 667), `v2.1.0-alpha.12-summoned-lord.ardan`
+  (seed 77, Sigurd Greymane, head of his house, with the crown's summons waiting), `v2.1.0-alpha.13-peace-table.ardan`
+  (seed 77, Emperor Aldwin Ironside with "Gorath asks for terms" waiting); `savesStillLoad` opens all 17 in this build.
 - **Not run here:** the workflows themselves (the first push of this branch, and the first nightly, are their test); the
   `new` command (it tags; tried only through its parts).
 - **Undo:** revert the branch's commits and `git add index.html` again from a build.

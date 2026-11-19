@@ -1,0 +1,90 @@
+{
+  "about": "Sample games for versions (D-134, D-141, order 67): each is played by code (tools/make-save.mjs --recipe=<name>) to a moment where that version's change is in play, and listed in tests/saves/README.md with what it shows and how to see it. A recipe: o, the new game's options; seeds, the worlds tried in turn (the first that reaches the moment is saved); as, who the life is played as once the world is made ('lord': the head of a landed house of the realm, a tenant-in-chief; 'ruler': the realm's ruler; absent: the player made); until, the moment ('any': the end of years; 'summoned': a summons to war waits as a card; 'peaceTable': a peace card of the war waits, envoys asking terms or terms offered); years, the most played in each world. version.mjs new --sample=<name> uses one; versions names the one each version was made with.",
+  "recipes": {
+    "noble-life": {
+      "o": {
+        "race": "human",
+        "realm": "POL-01",
+        "status": "noble",
+        "sex": "M",
+        "startAge": 20
+      },
+      "seeds": [
+        77
+      ],
+      "until": "any",
+      "years": 3,
+      "shows": "a noble's first three years: any version's world, loaded and played on",
+      "see": "Load it from the Menu (Load save file); the Life tab"
+    },
+    "phone": {
+      "o": {
+        "race": "human",
+        "realm": "POL-01",
+        "status": "noble",
+        "sex": "M",
+        "startAge": 20
+      },
+      "seeds": [
+        77
+      ],
+      "until": "any",
+      "years": 3,
+      "shows": "a noble's life to look at on a phone-sized screen: safe areas, no zoom or bounce, fingertip-wide controls, one sound engine",
+      "see": "Open the game at 375 x 667 (a phone, or the browser's device view), load it, and press through the Life, People and World tabs and the Menu: every control at least 44 points, nothing under the notch or the home bar, no text selected by a long press, no pinch zoom; turn sound on from the Menu and it plays after the first tap"
+    },
+    "summoned-lord": {
+      "o": {
+        "race": "human",
+        "realm": "POL-01",
+        "status": "noble",
+        "sex": "M",
+        "startAge": 20
+      },
+      "seeds": [
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84
+      ],
+      "as": "lord",
+      "until": "summoned",
+      "years": 25,
+      "shows": "a landed lord, head of his house, summoned by his crown to a war: the summons and its answers (in full, with part, a deputy, coin, excuses, refusal), with his reasons",
+      "see": "Load it: the summons card is the first thing that waits (the crown's war and what each answer costs); answer it, and the War tab shows the host he sent"
+    },
+    "peace-table": {
+      "o": {
+        "race": "human",
+        "realm": "POL-01",
+        "status": "royal",
+        "sex": "M",
+        "startAge": 30
+      },
+      "seeds": [
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84
+      ],
+      "as": "ruler",
+      "until": "peaceTable",
+      "years": 25,
+      "shows": "a ruler whose war has come to terms: envoys asking for terms, or terms offered him, as real land, coin and crowns, with how the other crown leans in words",
+      "see": "Load it: the war's card waits (envoys at court, or terms offered); the War tab's peace table lists the terms he may ask, with the other crown's lean"
+    }
+  },
+  "versions": {
+    "v2.1.0-alpha.11": "phone",
+    "v2.1.0-alpha.12": "summoned-lord",
+    "v2.1.0-alpha.13": "peace-table"
+  }
+}

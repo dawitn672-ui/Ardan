@@ -7,19 +7,22 @@
 //
 //   node tools/version.mjs list                      every version, newest last
 //   node tools/version.mjs get v1.5.0 [--out=f.html] write that version's playable game (default versions/ardan-v1.5.0.html)
-//   node tools/version.mjs new v2.1.0-alpha.14 "Title" [--at=<sha>] [--ci=<check run>,<long run>] [--only-before=<sha>]
+//   node tools/version.mjs new v2.1.0-alpha.14 "Title" [--at=<sha>] [--ci=<check run>,<long run>] [--only-before=<sha>] [--sample=<recipe>]
 //                                                    cut a version (D-134, order 65): the commit CI tested green on both
 //                                                    tiers (--at, default HEAD; a dirty tree is refused only for HEAD).
 //                                                    Tags it, writes its row (with the build's sha256), moves the
 //                                                    CHANGELOG's Unreleased bullets under its heading (with --only-before,
 //                                                    only the bullets whose lines came with commits in that sha's
-//                                                    history), saves a sample game (tests/saves/<v>-noble.ardan) from its
-//                                                    build, and prints the release-branch push. Without --ci it warns that
+//                                                    history), saves a sample game (tests/saves/<v>-<recipe>.ardan, a recipe
+//                                                    of tools/version-samples.json played to a moment that shows the
+//                                                    version's change, D-141) with its line in tests/saves/README.md, and
+//                                                    prints the release-branch push. Without --ci it warns that
 //                                                    a version needs check.yml and long.yml green on the commit.
-//   node tools/version.mjs make-save <version>       a sample save for a version, from its own game (tools/make-save.mjs)
+//   node tools/version.mjs make-save <version> [--sample=<recipe>]   a version's sample save, from its own game
 //   node tools/version.mjs check                     every row's commit exists; from v2.1.0-alpha.10 on, release/<v> points
 //                                                    at exactly the row's commit (read with git ls-remote; skipped offline);
-//                                                    from v2.1.0-alpha.1 on, a CHANGELOG heading and a sample save for each.
+//                                                    from v2.1.0-alpha.1 on, a CHANGELOG heading, a sample save and its line in
+//                                                    tests/saves/README.md for each.
 //                                                    tools/check.mjs runs it. Exit 1 on a disagreement.
 //
 // Rules (CLAUDE.md, "Versions", "How a version is cut"): a version is the commit CI tested green on both tiers.
@@ -72,15 +75,26 @@ function gameAt(sha) {
   for (const f of ['vendor/ardan-b593143.html', 'ardan (1).html']) if (hasFile(sha, f)) return { html: execFileSync('git', ['show', `${sha}:${f}`], { cwd: root, maxBuffer: 64 << 20, stdio: ['ignore', 'pipe', 'ignore'] }), how: 'the release as uploaded' };
   return null;
 }
-// a sample save of a version: its game, a noble's life of three years played by code (tools/make-save.mjs, the way
-// alpha.2 to alpha.10's were made)
-function makeSave(v, sha) {
+// a sample save of a version (D-134, D-141): its game, played by tools/make-save.mjs to the moment of a recipe of
+// tools/version-samples.json that shows what the version changed; saved as tests/saves/<v>-<recipe>.ardan, its recipe
+// written into the file's versions and its line into tests/saves/README.md
+const SAMPLES = path.join(root, 'tools/version-samples.json'), README = path.join(SAVES, 'README.md');
+const samples = () => JSON.parse(fs.readFileSync(SAMPLES, 'utf8'));
+function makeSave(v, sha, recipe) {
+  const S = samples(); recipe = recipe || S.versions[v] || 'noble-life';
+  const R = S.recipes[recipe]; if (!R) throw new Error(`no recipe "${recipe}" in tools/version-samples.json (${Object.keys(S.recipes).join(', ')})`);
   const g = gameAt(sha); if (!g) throw new Error(`no playable game at ${sha}`);
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ardan-save-'));
   try {
     const html = path.join(dir, 'game.html'); fs.writeFileSync(html, g.html);
-    const out = path.join('tests/saves', `${v}-noble.ardan`);
-    execFileSync(process.execPath, ['tools/make-save.mjs', html, `--out=${out}`], { cwd: root, stdio: ['ignore', 'inherit', 'inherit'] });
+    const name = `${v}-${recipe}.ardan`, out = path.join('tests/saves', name);
+    execFileSync(process.execPath, ['tools/make-save.mjs', html, `--out=${out}`, `--recipe=${recipe}`], { cwd: root, stdio: ['ignore', 'inherit', 'inherit'] });
+    S.versions[v] = recipe; fs.writeFileSync(SAMPLES, JSON.stringify(S, null, 2) + '\n');
+    // its line in tests/saves/README.md: the table ends at the marker
+    const line = `| \`${name}\` | ${v} | ${R.shows} | ${R.see} |`;
+    let t = fs.readFileSync(README, 'utf8').split('\n').filter(l => !l.startsWith(`| \`${name}\``)).join('\n');
+    t = t.replace(/(<!-- saves:end -->)/, line + '\n$1');
+    fs.writeFileSync(README, t);
     return out;
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 }
@@ -132,8 +146,8 @@ if (cmd === 'list') {
   fs.writeFileSync(out, g.html);
   console.log(`${ver} -> ${path.relative(root, out)} (${Math.round(g.html.length / 1024)} KB, ${g.how}${want ? ', build hash checked' : ''})`);
 } else if (cmd === 'make-save') {
-  const sha = ver && commitOf(ver); if (!sha) throw new Error('usage: node tools/version.mjs make-save <version in docs/VERSIONS.md>');
-  console.log(`${ver}: ${makeSave(ver, sha)} from ${sha}`);
+  const sha = ver && commitOf(ver); if (!sha) throw new Error('usage: node tools/version.mjs make-save <version in docs/VERSIONS.md> [--sample=<recipe>]');
+  console.log(`${ver}: ${makeSave(ver, sha, opt('sample') || null)} from ${sha}`);
 } else if (cmd === 'new') {
   const title = positional.join(' ').trim();
   if (!VER_RX.test(ver || '') || !title) throw new Error('usage: node tools/version.mjs new vX.Y.Z[-alpha.N] "Title" [--at=<sha>] [--ci=<check run>,<long run>] [--only-before=<sha>]');
@@ -150,12 +164,13 @@ if (cmd === 'list') {
   const row = `| ${ver} | ${date} | \`${sha}\` | ${title} · build \`sha256:${build}\` |\n`;
   fs.writeFileSync(DOC, fs.readFileSync(DOC, 'utf8').replace(/(<!-- versions:end -->)/, row + '$1'));
   const ch = moveChangelog(ver, title, opt('only-before') || null);
-  const save = makeSave(ver, sha);
+  const save = makeSave(ver, sha, opt('sample') || null);
   console.log(`${ver} at ${sha}${/^\d+,\d+$/.test(ci) ? ` (check run ${ci.split(',')[0]}, long run ${ci.split(',')[1]})` : ''}: its row is in docs/VERSIONS.md; ` +
     `CHANGELOG: ${ch.moved} bullets under its heading${ch.kept ? `, ${ch.kept} kept under Unreleased` : ''}; sample save ${save}; a local tag.`);
   console.log(`Push its release branch at exactly that commit, then commit the records on v2-integration:\n  git push origin ${git('rev-parse', `${sha}^{commit}`)}:refs/heads/release/${ver}`);
 } else if (cmd === 'check') {
   const bad = [], notes = [], R = rows(), log = fs.readFileSync(LOG, 'utf8'), saves = fs.existsSync(SAVES) ? fs.readdirSync(SAVES) : [];
+  const readme = fs.existsSync(README) ? fs.readFileSync(README, 'utf8') : '';
   // a shallow clone (CI's checkout) does not hold old commits: their existence is checked where the history is whole
   const shallow = gitOk('rev-parse', '--is-shallow-repository') === 'true';
   if (shallow) notes.push('shallow clone: the rows\' commits not looked up');
@@ -173,12 +188,14 @@ if (cmd === 'list') {
       else if (!s.startsWith(r.sha)) bad.push(`${r.ver}: release/${r.ver} is ${s.slice(0, 7)}, the row says ${r.sha}`);
     }
     if (!log.includes(`\n## ${r.ver} (`)) bad.push(`${r.ver}: no "## ${r.ver} (" heading in CHANGELOG.md`);
-    if (!saves.some(f => f.startsWith(r.ver + '-') && f.endsWith('.ardan'))) bad.push(`${r.ver}: no sample save tests/saves/${r.ver}-*.ardan`);
+    const mine = saves.filter(f => f.startsWith(r.ver + '-') && f.endsWith('.ardan'));
+    if (!mine.length) bad.push(`${r.ver}: no sample save tests/saves/${r.ver}-*.ardan`);
+    for (const f of mine) if (!readme.includes(`| \`${f}\` | ${r.ver} |`)) bad.push(`${r.ver}: ${f} has no line in tests/saves/README.md`);
   }
   for (const n of notes) console.log('note: ' + n);
   for (const b of bad) console.error('version check: ' + b);
   console.log(bad.length ? `versions: ${bad.length} disagreements over ${R.length} rows` : `versions ok: ${R.length} rows${remote ? ', release branches as recorded' : ''}`);
   process.exitCode = bad.length ? 1 : 0;
 } else {
-  console.log('usage: node tools/version.mjs list | get <version> [--out=f.html] | new <version> "Title" [--at=<sha>] [--ci=a,b] [--only-before=<sha>] | make-save <version> | check');
+  console.log('usage: node tools/version.mjs list | get <version> [--out=f.html] | new <version> "Title" [--at=<sha>] [--ci=a,b] [--only-before=<sha>] [--sample=<recipe>] | make-save <version> [--sample=<recipe>] | check');
 }
