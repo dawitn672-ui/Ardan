@@ -3,7 +3,7 @@
 # px, py are pixels of docs/design/m1/reference/owner-continent.webp (1536 x 1024); km = 229.2 + 4.27*px, 78.7 + 4.27*py.
 # name is checked against src/core/release/core/00-lore.json by tools/m1/design-sketch.mjs; realm and type come from there.
 # --- Solenne (POL-02): the north-west shore of the Middle Sea, under the Marble Mountains
-0	Solenne	703	499	the sun-city at the north-west corner of the Middle Sea, where the Crown Road comes down from the Marble Mountains to the water
+0	Solenne	703	499	the sun-city at the north-west corner of the Middle Sea, where the Coast Road comes down from the Marble Mountains to the water
 1	Lorina	719	493	castle harbour east of the city, the galley squadron's port, on the road to Lucerna
 2	Mireria	668	512	the sea's western arm, where the Mirona comes down from the Marble Mountains
 3	Brunentia	690	468	hill market on the road north to the Skardush Gap
@@ -48,7 +48,7 @@
 39	Kabale	682	737	the deep gold mines of the Southern Hills
 40	Seduna Walls	668	812	remount fort on the coast plain
 41	Omamba	774	776	town of the upper Lotapa
-42	Owana	880	768	hill town on the upper Tedana
+42	Owana	880	779	hill town on the upper Tedana
 43	Tefude	800	814	the cattle fair between the Mosawa lands and the capital
 44	Fort Zuafa	722	762	fort on the Salt Road
 45	Jiwamo	902	800	town on the middle Mosawa
@@ -67,7 +67,7 @@
 57	Ekapur	1176	722	shore town south of the capital
 # --- Varenna (POL-03): the Lion Gulf coast and the Palella lowland, with the Northern Lakes on the Glenmere
 58	Varenna	313	597	the Palella's mouth on the Lion Gulf, the only river gate through the coast hills
-59	Ardata	598	414	march town at the east end of the Glenmere, under the Albora Sill
+59	Ardata	598	414	march town at the east end of the Glenmere, under the Albora Pass
 60	Camia	447	546	weaving town on the middle Palella
 61	Vitina	324	570	port on the Crown Coast, north of the capital
 62	Castella	548	406	chief town of the Northern Lakes, on the Glenmere's south shore
@@ -160,7 +160,7 @@
 142	Lirith	412	266	the yew groves west of the Calara
 143	Aravel	385	342	the high south-west, under the Bleakfold
 144	Thalandor	512	304	the western slope of the Tusk Hills
-145	Lirthil	500	284	groves under the Tusk Hills
+145	Lirthil	535	292	groves on the Tusk Hills
 146	Aressa	548	248	town of the eastern edge
 147	Silande	515	180	the Marsh Isles off the Greenmire
 148	Aerion	432	338	city south of the lake
@@ -168,7 +168,7 @@
 150	Rineron	448	246	the boat sheds on the Calara
 151	Syleron	462	340	market of the south
 152	Mirlas	488	304	the night fishers' city on Lake Silara
-153	Elwen	486	326	town of the south-east wood
+153	Elwen	464	318	town of the southern wood, by the lake
 154	Eriavel	455	274	the deep valleys
 155	Erilas	553	276	the rangers' yard on the Eastern Edge
 # --- Ashmere (POL-05): the ash soils round Mount Cinder
@@ -192,7 +192,7 @@
 172	Gorur Caravanserai	832	316	camp on the Goroth grass
 173	Vrakhul Oasis	760	395	wells of the upper Gordush, under the Crown Range
 174	Kagdush Oasis	616	350	the Gashmar fords on the Glenwash
-175	Yagrak Caravanserai	922	338	the Salt Edge, at the Coldbarrow Bridge
+175	Yagrak Caravanserai	936	334	the Salt Edge, at the Coldbarrow Bridge
 # --- Ulun (POL-12): the Salt Steppe between the Salt Sea and the Grey Channel
 176	Kharsa	985	395	the khan's camp where the yam roads cross
 177	Kultau	906	380	the sturgeon grounds on the Salt Sea's south-east shore
@@ -222,12 +222,12 @@
 # --- Greyhaven (POL-14): the west bank of the Grey Channel and the oak forest behind it
 197	Greyhaven	1078	336	the Toll-House on the Narrows of the channel, facing Sevany
 198	Wrendale	1058	313	timber harbour at the head of ship water
-199	Highwell	984	316	walled city of the inland forest, on the Dromir's east bank
+199	Highwell	994	300	walled city of the inland forest, on the Dromir's east bank
 200	Hawkcester	1070	324	market on the upper channel
 201	Deepwatch Castle	1040	300	castle at the Lake Portage, facing Kamogda
 202	Wrenreach	1040	340	city on the Yarbek
 203	Briarhollow	1024	322	city of the Rift Heights, under Smokewell
-204	Silverdale	950	334	city on the Dromir where the steppe begins
+204	Silverdale	994	334	city at the Dromir's bend, where the steppe begins
 # --- Corvasse (POL-33): the Corsair Isles in the Strait of Hael
 205	Corvasse	157	466	the harbour inside the shoals
 206	Ratrock	124	497	the toll boats' rock at the strait's southern mouth

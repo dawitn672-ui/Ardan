@@ -89,7 +89,7 @@
     {"name": "the Millrun", "from": "the Iron Mountains", "to": "the Glenwash below Kingsmere", "line": [[790, 305], [750, 304], [716, 298], [694, 282]]},
     {"name": "the Gordush", "from": "the Crown Range", "to": "the Glenwash", "border": true, "line": [[800, 385], [765, 372], [745, 350], [705, 337], [668, 330], [644, 330]]},
     {"name": "the Stagflow", "from": "the Pinewild's fells", "to": "the Cold Narrows", "line": [[800, 172], [768, 184], [738, 192], [714, 198]], "border": true},
-    {"name": "the Skardush", "from": "the Albora Sill", "to": "the Middle Sea, as the Palena below the Gap", "line": [[612, 414], [636, 420], [660, 426], [700, 430], [722, 431], [728, 450], [733, 472], [735, 490]]},
+    {"name": "the Skardush", "from": "the Albora Pass", "to": "the Middle Sea, as the Palena below the Gap", "line": [[612, 414], [636, 420], [660, 426], [700, 430], [722, 431], [728, 450], [733, 472], [735, 490]], "border": true},
     {"name": "the Mirona", "from": "the Marble Mountains", "to": "the Middle Sea", "line": [[620, 540], [645, 522], [672, 514], [690, 512]]},
     {"name": "the Santora", "from": "the sill east of the Monuti's delta", "to": "the Grey Water", "line": [[872, 566], [905, 566], [925, 549], [958, 532], [1000, 518], [1045, 507], [1070, 500]]},
     {"name": "the Castina", "from": "the Crown Range", "to": "the Santora", "line": [[938, 470], [940, 505], [927, 546]]},
@@ -101,7 +101,7 @@
     {"name": "the Gnarzag", "from": "the Crown Range", "to": "the Salt Sea", "line": [[800, 400], [830, 402], [852, 398]]},
     {"name": "the Tolek", "from": "the Lake Portage", "to": "the Grey Channel", "border": true, "line": [[1042, 300], [1062, 306], [1078, 314], [1090, 322]]},
     {"name": "the Grey Channel", "from": "the Tolek", "to": "the Grey Water", "big": true, "border": true, "channel": true, "boats": "ships from Droin down", "line": [[1090, 322], [1095, 333], [1084, 341], [1074, 348], [1070, 362], [1074, 378], [1086, 394], [1100, 408], [1108, 422], [1106, 436], [1100, 447], [1112, 458], [1128, 466], [1126, 476]]},
-    {"name": "the Yarbek", "from": "the Salt Edge", "to": "the Grey Channel", "border": true, "line": [[985, 356], [1010, 352], [1040, 346], [1060, 344], [1074, 348]]},
+    {"name": "the Yarbek", "from": "the Salt Edge", "to": "the Grey Channel", "border": true, "line": [[990, 354], [1010, 352], [1040, 346], [1060, 344], [1074, 348]]},
     {"name": "the Ostec", "from": "the Mirovo Gap", "to": "the Grey Channel", "line": [[1195, 385], [1160, 392], [1135, 398], [1115, 410], [1104, 414]]},
     {"name": "the Gullet", "from": "the Grey Water", "to": "the Eastern Gulf", "big": true, "channel": true, "boats": "ships from the gulf to Tessar", "line": [[1112, 550], [1114, 566], [1110, 582], [1124, 598], [1138, 606], [1160, 616], [1178, 626], [1194, 634], [1205, 645]]},
     {"name": "the Tirana", "from": "the knot where the Roof meets the Ember Mountains", "to": "the Grey Water", "line": [[1228, 532], [1195, 528], [1160, 522], [1128, 518]]},
@@ -147,7 +147,7 @@
     {"name": "Mount Roktar", "at": [836, 422]}
   ],
   "passes": [
-    {"name": "the Albora Sill", "at": [618, 414], "note": "the low divide between the Glenmere and the Skardush: the Amber Road's way to the Sunlands"},
+    {"name": "the Albora Pass", "at": [618, 414], "note": "the low divide between the Glenmere and the Skardush, shut by snow from November: the Amber Road ends and the Crown Road begins at its three towers"},
     {"name": "the Montessa Gate", "at": [540, 452], "note": "through the hills between the Northern Lakes and the Palella lowland"},
     {"name": "the Skardush Gap", "at": [727, 456], "note": "the corridor between the Marble Mountains and the Crown Range, the northern plains' gate to the Middle Sea"},
     {"name": "the Horse Gate", "at": [1024, 456], "note": "the gap between the Crown Range's east end and the Grey Water, where the steppe meets the Sunlands"},
@@ -162,7 +162,8 @@
     {"name": "the Deep Gate", "at": [820, 254]},
     {"name": "the Koyako Stair", "at": [955, 756]},
     {"name": "the White Stair", "at": [1234, 446]},
-    {"name": "the Tharmund Gate", "at": [1262, 588]}
+    {"name": "the Tharmund Gate", "at": [1262, 588]},
+    {"name": "the Falconhaven Pass", "at": [1048, 318], "note": "the walled pass through the Rift Heights, between Briarhollow and the channel shore"}
   ],
   "regions": [
     {"name": "THE WESTLAND", "at": [600, 226], "size": 3},
@@ -190,11 +191,12 @@
     {"name": "the Northern Lakes", "at": [540, 420], "size": 1}
   ],
   "roads": [
-    {"name": "the Amber Road", "note": "Cold Bay to the Sunlands: Easterham, Kingsmere, Thornstone, the Glenmere's east end, the Albora Sill, Castella, the Montessa Gate, Vitia, Camia, down the Palella to Varenna", "line": [[704, 263], [672, 282], [626, 304], [600, 304], [598, 345], [590, 378], [586, 404], [548, 406], [540, 452], [535, 495], [480, 548], [447, 546], [372, 592], [313, 597]]},
+    {"name": "the Amber Road", "note": "Cold Bay to the Albora Pass: Easterham, Kingsmere, Carrness, Thornstone (the toll), over the Wolf clans' hills to the Glenmere's east end", "line": [[704, 263], [672, 282], [626, 304], [600, 304], [598, 345], [592, 378], [606, 404], [618, 414]]},
+    {"name": "the Crown Road", "note": "the Albora Pass to Varenna: Ardata, Castella, the Montessa Gate, Vitia, Torossa, Camia, and down the Palella", "line": [[618, 414], [598, 414], [548, 406], [540, 452], [535, 495], [480, 548], [447, 546], [372, 592], [313, 597]]},
+    {"name": "the Coast Road", "note": "Varenna to Morhaven: Ambalia, Valia, Venina, the Mirona Pass, Solenne, Lucerna, Ostra, along the Holy Coast", "line": [[372, 592], [425, 585], [505, 575], [572, 520], [632, 524], [668, 512], [703, 499], [738, 496], [768, 497], [788, 502], [812, 511], [828, 519]]},
     {"name": "the Skardush Road", "note": "the Grass Sea to Aldmark's markets by the Gordush fords, and south down the Skardush Gap to the Middle Sea", "line": [[806, 350], [702, 362], [668, 318], [672, 282]]},
-    {"name": "the Gap Road", "note": "the Albora Sill along the Skardush to Highwold, and down the Palena to Lucerna", "line": [[618, 414], [660, 426], [700, 430], [745, 434], [733, 472], [738, 496]]},
+    {"name": "the Gap Road", "note": "the Albora Pass along the Skardush to Highwold, and down the Palena to Lucerna", "line": [[618, 414], [660, 426], [700, 430], [745, 434], [733, 472], [738, 496]]},
     {"name": "the Iron Road", "note": "the Deep Gate to Eagleburg, Brookcliff and Kingsmere", "line": [[832, 252], [772, 264], [748, 290], [672, 282]]},
-    {"name": "the Crown Road", "note": "Varenna to Solenne by the Mirona Pass, and on along the Holy Coast to Morhaven", "line": [[313, 597], [372, 592], [425, 585], [505, 575], [572, 520], [632, 524], [668, 512], [703, 499], [738, 496], [768, 497], [788, 502], [812, 511], [828, 519]]},
     {"name": "the Horse Road", "note": "Kharsa through the Horse Gate to Castel Ascino, and down the Santora March to Morhaven", "line": [[985, 395], [1012, 436], [1024, 456], [962, 492], [905, 551], [828, 519]]},
     {"name": "the Neck Road", "note": "Tamar to Tessar, over the bridge and up the east shore to Velgrad: the only land road from the south to the Eastland", "line": [[868, 622], [857, 591], [902, 590], [975, 598], [1030, 566], [1098, 552], [1142, 505], [1140, 455], [1128, 428], [1140, 385]]},
     {"name": "the Santora Road", "note": "Morhaven to Tessar along the river", "line": [[905, 551], [958, 532], [1030, 536], [1098, 552]]},
@@ -204,12 +206,12 @@
     {"name": "the Salt Road", "note": "Zanara to Mirah, the Well of Samar, Zarak and the Middle Sea at Janiya", "line": [[705, 795], [722, 762], [742, 732], [735, 685], [780, 648], [755, 585], [750, 547]]},
     {"name": "the Gold Road", "note": "Zanara to Sabra through the Southern Hills and the Sabun Pass", "line": [[705, 795], [660, 764], [640, 746], [600, 722], [540, 705], [470, 688], [470, 702], [428, 712]]},
     {"name": "the Nagora Road", "note": "Ranpur to the Gullet crossing at Tessar", "line": [[1188, 694], [1140, 668], [1138, 628], [1114, 620], [1098, 552]]},
-    {"name": "the Coast Road", "note": "Varenna to Qadira and Sabra", "line": [[313, 597], [320, 622], [340, 650], [345, 690], [385, 698], [428, 712]]},
     {"name": "the Eastern Road", "note": "Zanara to Atani and the Koyako Stair, the way to the Monuti that passes by Kesh's ports", "line": [[705, 795], [752, 806], [800, 814], [828, 792], [908, 770], [948, 797], [960, 752], [920, 745]]},
     {"name": "the Yam Road", "note": "the khan's post from the Salt Sea to the channel", "line": [[906, 380], [948, 368], [985, 395], [1064, 392], [1090, 424], [1080, 452], [1060, 470]]},
     {"name": "the Monsoon Road", "note": "Ranpur down the coast to the Thornveld and Kesh", "line": [[1188, 694], [1176, 722], [1181, 752], [1196, 842], [1150, 852], [1120, 880]]},
     {"name": "the Pepper Road", "note": "Kesh up the Monundi to Abara", "line": [[1120, 880], [1100, 846], [1078, 805], [1048, 770]]},
-    {"name": "the Lakes Road", "note": "Greyhaven to Wrendale, the Lake Portage and Drevna", "line": [[1078, 336], [1058, 313], [1040, 300], [1030, 277], [1008, 271]]}
+    {"name": "the Lakes Road", "note": "Greyhaven to Wrendale, the Lake Portage and Drevna", "line": [[1078, 336], [1058, 313], [1040, 300], [1030, 277], [1008, 271]]},
+    {"name": "the Sunwall Road", "note": "Varenna to Qadira and Sabra, under the coast range", "line": [[313, 597], [320, 622], [340, 650], [345, 690], [392, 704], [428, 712]]}
   ],
   "sealanes": [
     {"name": "the Elder run", "note": "Silverbough round the Strait of Hael to Tibata, Varenna, Qadira and Sabra", "line": [[285, 302], [215, 330], [196, 420], [184, 480], [226, 548], [290, 596], [262, 660], [268, 702], [360, 742], [424, 716]]},
@@ -225,7 +227,9 @@
     {"name": "the Stagflow watershed", "note": "Northreach's land border with Aldmark's Crossmarch", "line": [[722, 214], [755, 206], [790, 196]]},
     {"name": "the Lake Portage ridge", "note": "Drevna's border with Greyhaven and Velgrad", "line": [[985, 290], [1020, 292], [1045, 285], [1056, 272]]},
     {"name": "the Crown Wall (west)", "note": "Aldmark's southern border west of the Glenwash, from the Gordush's mouth to the Tusk Hills", "line": [[644, 330], [622, 324], [600, 320], [584, 304]]},
-    {"name": "the Millrun watershed", "note": "Aldmark's eastern border with the Goroth clans, from the upper Gordush to the Iron Mountains", "line": [[792, 334], [797, 316], [802, 298], [806, 282]]}
+    {"name": "the Millrun watershed", "note": "Aldmark's eastern border with the Goroth clans, from the upper Gordush to the Iron Mountains", "line": [[792, 334], [797, 316], [802, 298], [806, 282]]},
+    {"name": "the Yarbek's head", "note": "the low rise between the Coldbarrow's bend and the Yarbek's springs: Greyhaven's corner with Ulun", "line": [[977, 334], [984, 346], [990, 354]]},
+    {"name": "the Feleria rise", "note": "the western edge of the cedar hills, where the Santora March ends and the Neck begins", "line": [[972, 524], [968, 546], [966, 570]]}
   ],
   "groundSet": [
     {"name": "the pale plain under the Tusk Hills", "ground": "steppe", "from": ["grass", "scrub", "forest"], "why": "the Wolf clans' dry grass", "poly": [[468, 316], [524, 312], [528, 352], [470, 354]]},
@@ -253,7 +257,9 @@
     {"name": "the Mirun Pines", "ground": "forest", "from": ["grass", "scrub", "desert"], "why": "pine hills", "poly": [[565, 700], [636, 700], [642, 746], [565, 746]]},
     {"name": "the Deep Green", "ground": "jungle", "from": ["grass", "scrub", "forest"], "why": "the rainforest cape", "poly": [[985, 845], [1036, 845], [1040, 926], [985, 926]]},
     {"name": "the teak coast", "ground": "forest", "from": ["grass", "scrub"], "why": "Ranpur's monsoon forest south of the Chanpur", "poly": [[1140, 712], [1200, 706], [1206, 790], [1150, 796]]},
-    {"name": "the Drukgar woods", "ground": "taiga", "from": ["grass", "scrub", "steppe", "forest"], "why": "the forest edge of the eastern steppe", "poly": [[1212, 206], [1300, 206], [1296, 252], [1214, 256]]}
+    {"name": "the Drukgar woods", "ground": "taiga", "from": ["grass", "scrub", "steppe", "forest"], "why": "the forest edge of the eastern steppe", "poly": [[1212, 206], [1300, 206], [1296, 252], [1214, 256]]},
+    {"name": "the Palella lowland", "ground": "grass", "from": ["desert", "scrub", "steppe"], "why": "the bright farmland of Varenna, which the picture paints yellow-green", "poly": [[410, 482], [520, 472], [600, 520], [592, 600], [500, 640], [420, 626], [380, 560]]},
+    {"name": "the Highveld's wet slope", "ground": "forest", "from": ["desert", "scrub", "grass"], "why": "the coffee forests of the slope that faces the gulf's rain", "poly": [[1092, 706], [1140, 700], [1152, 792], [1100, 800]]}
   ],
   "labels": {
     "about": "Where a word is drawn on the sketches when its own place collides with another: realm and wild names at a picture pixel [x, y(, turn in radians)], capital names by an offset in cells from the dot, waters by an offset in pixels. Drawing only: nothing here moves a border.",
@@ -266,6 +272,7 @@
     {"name": "the Roof", "min": 0.42, "why": "a high plateau of dry lakes and yak pasture: the picture paints its floor green between snow ridges", "poly": [[1186, 428], [1215, 410], [1262, 400], [1290, 425], [1282, 470], [1250, 492], [1215, 492], [1190, 468]]},
     {"name": "the Highveld", "min": 0.34, "why": "the plateau Abara's terraces stand on", "poly": [[960, 720], [1000, 700], [1070, 710], [1110, 740], [1100, 800], [1040, 820], [985, 805], [955, 765]]},
     {"name": "the Ember Mountains", "min": 0.4, "why": "the cape's volcanic range: the picture paints it dark with white ridges", "poly": [[1246, 548], [1290, 540], [1338, 560], [1350, 596], [1310, 610], [1262, 604], [1244, 578]]},
-    {"name": "the Lion Hills", "min": 0.36, "why": "the snow-ridged knot behind the Crown Coast", "poly": [[332, 468], [372, 462], [408, 480], [412, 512], [380, 522], [340, 505]]}
+    {"name": "the Lion Hills", "min": 0.36, "why": "the snow-ridged knot behind the Crown Coast", "poly": [[332, 468], [372, 462], [408, 480], [412, 512], [380, 522], [340, 505]]},
+    {"name": "the Worldspine", "min": 0.4, "why": "the rift's southern shoulder: the picture paints it brown between snow crests", "poly": [[1022, 596], [1070, 590], [1108, 620], [1112, 690], [1070, 702], [1035, 680], [1020, 640]]}
   ]
 }

@@ -34,30 +34,60 @@
   {
    "name": "the Western Ocean",
    "kind": "ocean",
+   "enclosed": false,
+   "countsAsCoast": true,
+   "km": [
+    870,
+    2811
+   ],
    "cells": 56703,
    "km2": 5670300
   },
   {
    "name": "the Northern Ocean",
    "kind": "ocean",
+   "enclosed": false,
+   "countsAsCoast": true,
+   "km": [
+    3987,
+    138
+   ],
    "cells": 35833,
    "km2": 3583300
   },
   {
    "name": "the Southern Ocean",
    "kind": "ocean",
+   "enclosed": false,
+   "countsAsCoast": true,
+   "km": [
+    3731,
+    4199
+   ],
    "cells": 26565,
    "km2": 2656500
   },
   {
    "name": "the Sunrise Sea",
    "kind": "ocean",
+   "enclosed": false,
+   "countsAsCoast": true,
+   "km": [
+    6463,
+    1915
+   ],
    "cells": 46390,
    "km2": 4639000
   },
   {
    "name": "the Lion Gulf",
    "kind": "gulf",
+   "enclosed": false,
+   "countsAsCoast": true,
+   "km": [
+    1203,
+    2666
+   ],
    "cells": 2357,
    "km2": 235700,
    "note": "the bight between the Ashlands and the Bone Coast: Varenna's and Qadir's sea"
@@ -65,6 +95,12 @@
   {
    "name": "the Long Firth",
    "kind": "bay",
+   "enclosed": false,
+   "countsAsCoast": true,
+   "km": [
+    1459,
+    1676
+   ],
    "cells": 264,
    "km2": 26400,
    "note": "Ashmere's bay and the inlet at its head, where the Brightwash and the Bleak Water come in"
@@ -72,6 +108,12 @@
   {
    "name": "the Strait of Hael",
    "kind": "strait",
+   "enclosed": false,
+   "countsAsCoast": true,
+   "km": [
+    1015,
+    2128
+   ],
    "cells": 59,
    "km2": 5900,
    "note": "between the Ashlands' cape and the Corsair Isles"
@@ -79,6 +121,12 @@
   {
    "name": "Tibata Bay",
    "kind": "bay",
+   "enclosed": false,
+   "countsAsCoast": true,
+   "km": [
+    1348,
+    2367
+   ],
    "cells": 105,
    "km2": 10500,
    "note": "the bay under the Ashlands; its mouth past Gull Isle is the Tibata Strait"
@@ -86,12 +134,24 @@
   {
    "name": "the Gulf of Sands",
    "kind": "gulf",
+   "enclosed": false,
+   "countsAsCoast": true,
+   "km": [
+    1732,
+    3247
+   ],
    "cells": 2432,
    "km2": 243200
   },
   {
    "name": "the North Fjords",
    "kind": "bay",
+   "enclosed": false,
+   "countsAsCoast": true,
+   "km": [
+    2279,
+    924
+   ],
    "cells": 817,
    "km2": 81700,
    "note": "the bays the Calara runs into"
@@ -99,6 +159,12 @@
   {
    "name": "the Elder Sea",
    "kind": "sea",
+   "enclosed": false,
+   "countsAsCoast": true,
+   "km": [
+    1237,
+    1317
+   ],
    "cells": 3777,
    "km2": 377700,
    "note": "the island-strewn sea off the north-west"
@@ -106,6 +172,12 @@
   {
    "name": "Amber Bay",
    "kind": "bay",
+   "enclosed": false,
+   "countsAsCoast": true,
+   "km": [
+    3082,
+    779
+   ],
    "cells": 177,
    "km2": 17700,
    "note": "the outer bay at the mouth of the Cold Narrows"
@@ -113,12 +185,24 @@
   {
    "name": "the Cold Narrows",
    "kind": "strait",
+   "enclosed": false,
+   "countsAsCoast": true,
+   "km": [
+    3252,
+    907
+   ],
    "cells": 53,
    "km2": 5300
   },
   {
    "name": "Cold Bay",
    "kind": "bay",
+   "enclosed": false,
+   "countsAsCoast": true,
+   "km": [
+    3372,
+    1112
+   ],
    "cells": 457,
    "km2": 45700,
    "note": "the picture's northern water, a bay of the sea through the Cold Narrows"
@@ -126,30 +210,60 @@
   {
    "name": "Whale Sound",
    "kind": "sound",
+   "enclosed": false,
+   "countsAsCoast": true,
+   "km": [
+    5259,
+    625
+   ],
    "cells": 877,
    "km2": 87700
   },
   {
    "name": "the Eastern Gulf",
    "kind": "gulf",
+   "enclosed": false,
+   "countsAsCoast": true,
+   "km": [
+    5618,
+    3068
+   ],
    "cells": 5691,
    "km2": 569100
   },
   {
    "name": "the Spice Sea",
    "kind": "sea",
+   "enclosed": false,
+   "countsAsCoast": true,
+   "km": [
+    4883,
+    4092
+   ],
    "cells": 3095,
    "km2": 309500
   },
   {
    "name": "the Amber Strait",
    "kind": "strait",
+   "enclosed": false,
+   "countsAsCoast": true,
+   "km": [
+    5302,
+    3947
+   ],
    "cells": 24,
    "km2": 2400
   },
   {
    "name": "the Middle Sea",
    "kind": "inland sea",
+   "enclosed": true,
+   "countsAsCoast": true,
+   "km": [
+    3338,
+    2308
+   ],
    "cells": 309,
    "km2": 30900,
    "note": "the picture's long central lake: the last water of the old sea, brackish, sweet at the Monuti's mouth and salt at its western end"
@@ -157,6 +271,12 @@
   {
    "name": "the Salt Sea",
    "kind": "salt lake",
+   "enclosed": true,
+   "countsAsCoast": true,
+   "km": [
+    4004,
+    1603
+   ],
    "cells": 154,
    "km2": 15400,
    "note": "the steppe's sea with no outlet; the Western Lakes drain into it"
@@ -164,6 +284,12 @@
   {
    "name": "the Western Lakes",
    "kind": "lake",
+   "enclosed": true,
+   "countsAsCoast": false,
+   "km": [
+    4585,
+    1095
+   ],
    "cells": 479,
    "km2": 47900,
    "note": "the Lakeland's water"
@@ -171,6 +297,12 @@
   {
    "name": "the Grey Water",
    "kind": "lake",
+   "enclosed": true,
+   "countsAsCoast": true,
+   "km": [
+    4909,
+    2248
+   ],
    "cells": 211,
    "km2": 21100,
    "note": "the lake the Grey Channel runs into and the Gullet runs out of"
@@ -178,6 +310,12 @@
   {
    "name": "the Glenmere",
    "kind": "lake",
+   "enclosed": true,
+   "countsAsCoast": false,
+   "km": [
+    2514,
+    1693
+   ],
    "cells": 334,
    "km2": 33400,
    "note": "the long western lake, the Glenwash's source; Varenna calls its south shore the Northern Lakes"
@@ -185,12 +323,24 @@
   {
    "name": "Lake Silara",
    "kind": "lake",
+   "enclosed": true,
+   "countsAsCoast": false,
+   "km": [
+    2151,
+    1381
+   ],
    "cells": 192,
    "km2": 19200
   },
   {
    "name": "the Amber Lagoon",
    "kind": "lagoon",
+   "enclosed": true,
+   "countsAsCoast": false,
+   "km": [
+    2877,
+    916
+   ],
    "cells": 40,
    "km2": 4000,
    "note": "the north coast lagoon behind the Amber Strand"
@@ -198,6 +348,12 @@
   {
    "name": "the Iron Tarn",
    "kind": "lake",
+   "enclosed": true,
+   "countsAsCoast": false,
+   "km": [
+    3872,
+    1027
+   ],
    "cells": 48,
    "km2": 4800,
    "note": "the mountain lake above the Deep Gate"
@@ -205,6 +361,12 @@
   {
    "name": "the Crowmere",
    "kind": "lake",
+   "enclosed": true,
+   "countsAsCoast": false,
+   "km": [
+    2099,
+    2218
+   ],
    "cells": 35,
    "km2": 3500,
    "note": "the lake in the gate between Mount Cinder and the Lion Hills; the Palella runs through it"
@@ -212,6 +374,12 @@
   {
    "name": "the Reed Water",
    "kind": "lake",
+   "enclosed": true,
+   "countsAsCoast": false,
+   "km": [
+    5127,
+    2679
+   ],
    "cells": 36,
    "km2": 3600,
    "note": "the widening of the Gullet below the Nagora road"
@@ -219,6 +387,12 @@
   {
    "name": "the Veld Lagoon",
    "kind": "lagoon",
+   "enclosed": true,
+   "countsAsCoast": false,
+   "km": [
+    2450,
+    3495
+   ],
    "cells": 121,
    "km2": 12100,
    "note": "the lagoon of the south-west peninsula"
@@ -226,6 +400,12 @@
   {
    "name": "the Seal Lagoon",
    "kind": "lagoon",
+   "enclosed": true,
+   "countsAsCoast": false,
+   "km": [
+    5737,
+    843
+   ],
    "cells": 39,
    "km2": 3900,
    "note": "the lagoon of the Whale Woods"
@@ -236,8 +416,8 @@
    "id": "POL-01",
    "name": "Aldmark",
    "provinces": 20,
-   "cells": 5816,
-   "km2": 581600,
+   "cells": 5780,
+   "km2": 578000,
    "coastal": 9,
    "capital": {
     "name": "Kingsmere",
@@ -264,8 +444,8 @@
    "id": "POL-02",
    "name": "Solenne",
    "provinces": 5,
-   "cells": 2642,
-   "km2": 264200,
+   "cells": 2445,
+   "km2": 244500,
    "coastal": 0,
    "capital": {
     "name": "Solenne",
@@ -288,8 +468,8 @@
    "id": "POL-03",
    "name": "Varenna",
    "provinces": 21,
-   "cells": 11395,
-   "km2": 1139500,
+   "cells": 11294,
+   "km2": 1129400,
    "coastal": 5,
    "capital": {
     "name": "Varenna",
@@ -317,8 +497,8 @@
    "id": "POL-04",
    "name": "Lucerna",
    "provinces": 1,
-   "cells": 238,
-   "km2": 23800,
+   "cells": 272,
+   "km2": 27200,
    "coastal": 0,
    "capital": {
     "name": "Lucerna",
@@ -339,8 +519,8 @@
    "id": "POL-05",
    "name": "Ashmere",
    "provinces": 9,
-   "cells": 3156,
-   "km2": 315600,
+   "cells": 3073,
+   "km2": 307300,
    "coastal": 4,
    "capital": {
     "name": "Ashmere",
@@ -364,8 +544,8 @@
    "id": "POL-06",
    "name": "Sylvaran",
    "provinces": 22,
-   "cells": 4015,
-   "km2": 401500,
+   "cells": 3960,
+   "km2": 396000,
    "coastal": 6,
    "capital": {
     "name": "Evenglade",
@@ -391,8 +571,8 @@
    "id": "POL-07",
    "name": "Eldergrove",
    "provinces": 7,
-   "cells": 2339,
-   "km2": 233900,
+   "cells": 2344,
+   "km2": 234400,
    "coastal": 6,
    "capital": {
     "name": "Silverbough",
@@ -416,8 +596,8 @@
    "id": "POL-08",
    "name": "Northreach",
    "provinces": 3,
-   "cells": 2231,
-   "km2": 223100,
+   "cells": 2309,
+   "km2": 230900,
    "coastal": 3,
    "capital": {
     "name": "Wolfhaven",
@@ -480,8 +660,8 @@
    "id": "POL-11",
    "name": "Gorath",
    "provinces": 11,
-   "cells": 6988,
-   "km2": 698800,
+   "cells": 7539,
+   "km2": 753900,
    "coastal": 0,
    "capital": {
     "name": "Urgol",
@@ -497,7 +677,6 @@
     "Aldmark",
     "Brannoch",
     "Drevna",
-    "Greyhaven",
     "Irondeep",
     "Solenne",
     "Sylvaran",
@@ -512,8 +691,8 @@
    "id": "POL-12",
    "name": "Ulun",
    "provinces": 8,
-   "cells": 4452,
-   "km2": 445200,
+   "cells": 4616,
+   "km2": 461600,
    "coastal": 0,
    "capital": {
     "name": "Kharsa",
@@ -526,6 +705,7 @@
    ],
    "neighbours": [
     "Brannoch",
+    "Drevna",
     "Gorath",
     "Greyhaven",
     "Morhaven",
@@ -539,8 +719,8 @@
    "id": "POL-13",
    "name": "Brannoch",
    "provinces": 4,
-   "cells": 1362,
-   "km2": 136200,
+   "cells": 1413,
+   "km2": 141300,
    "coastal": 0,
    "capital": {
     "name": "Highcastle",
@@ -562,8 +742,8 @@
    "id": "POL-14",
    "name": "Greyhaven",
    "provinces": 8,
-   "cells": 1462,
-   "km2": 146200,
+   "cells": 1084,
+   "km2": 108400,
    "coastal": 0,
    "capital": {
     "name": "Greyhaven",
@@ -573,7 +753,6 @@
    "waters": [],
    "neighbours": [
     "Drevna",
-    "Gorath",
     "Ulun",
     "Velgrad"
    ],
@@ -583,8 +762,8 @@
    "id": "POL-15",
    "name": "Morhaven",
    "provinces": 3,
-   "cells": 2868,
-   "km2": 286800,
+   "cells": 2855,
+   "km2": 285500,
    "coastal": 0,
    "capital": {
     "name": "Morhaven",
@@ -677,8 +856,8 @@
    "id": "POL-19",
    "name": "Sahrim",
    "provinces": 22,
-   "cells": 11452,
-   "km2": 1145200,
+   "cells": 11620,
+   "km2": 1162000,
    "coastal": 0,
    "capital": {
     "name": "Zarak",
@@ -707,8 +886,8 @@
    "id": "POL-20",
    "name": "Zanara",
    "provinces": 22,
-   "cells": 7248,
-   "km2": 724800,
+   "cells": 7148,
+   "km2": 714800,
    "coastal": 10,
    "capital": {
     "name": "Zanara",
@@ -755,8 +934,8 @@
    "id": "POL-22",
    "name": "Abara",
    "provinces": 14,
-   "cells": 4517,
-   "km2": 451700,
+   "cells": 4835,
+   "km2": 483500,
    "coastal": 2,
    "capital": {
     "name": "Abara",
@@ -829,8 +1008,8 @@
    "id": "POL-25",
    "name": "Velgrad",
    "provinces": 14,
-   "cells": 4587,
-   "km2": 458700,
+   "cells": 4595,
+   "km2": 459500,
    "coastal": 0,
    "capital": {
     "name": "Velgrad",
@@ -856,8 +1035,8 @@
    "id": "POL-26",
    "name": "Drevna",
    "provinces": 13,
-   "cells": 5516,
-   "km2": 551600,
+   "cells": 5557,
+   "km2": 555700,
    "coastal": 1,
    "capital": {
     "name": "Drevna",
@@ -877,6 +1056,7 @@
     "The Mammoth Downs",
     "The Whale Woods",
     "Ughrak",
+    "Ulun",
     "Velgrad"
    ],
    "islands": 0
@@ -912,8 +1092,8 @@
    "id": "POL-28",
    "name": "Stonehold",
    "provinces": 6,
-   "cells": 2612,
-   "km2": 261200,
+   "cells": 1853,
+   "km2": 185300,
    "coastal": 0,
    "capital": {
     "name": "Stonehold",
@@ -957,8 +1137,8 @@
    "id": "POL-30",
    "name": "Ranpur",
    "provinces": 5,
-   "cells": 2587,
-   "km2": 258700,
+   "cells": 2666,
+   "km2": 266600,
    "coastal": 3,
    "capital": {
     "name": "Ranpur",
@@ -983,8 +1163,8 @@
    "id": "POL-31",
    "name": "Tessaria",
    "provinces": 3,
-   "cells": 2967,
-   "km2": 296700,
+   "cells": 3260,
+   "km2": 326000,
    "coastal": 0,
    "capital": {
     "name": "Tessar",
@@ -1154,8 +1334,8 @@
   {
    "id": 288,
    "name": "The Burning Waste",
-   "cells": 428,
-   "km2": 42800,
+   "cells": 442,
+   "km2": 44200,
    "neighbours": [
     "Abara",
     "Sahrim",
@@ -1213,8 +1393,8 @@
   {
    "id": 294,
    "name": "The Pinewild",
-   "cells": 856,
-   "km2": 85600,
+   "cells": 857,
+   "km2": 85700,
    "neighbours": [
     "Northreach",
     "The Frostfells",
@@ -1265,8 +1445,8 @@
   {
    "id": 299,
    "name": "The Mammoth Downs",
-   "cells": 1324,
-   "km2": 132400,
+   "cells": 1241,
+   "km2": 124100,
    "neighbours": [
     "Aldmark",
     "Drevna",
@@ -1376,7 +1556,7 @@
     3
    ],
    "sea": [],
-   "site": "the sun-city at the north-west corner of the Middle Sea, where the Crown Road comes down from the Marble Mountains to the water"
+   "site": "the sun-city at the north-west corner of the Middle Sea, where the Coast Road comes down from the Marble Mountains to the water"
   },
   {
    "id": 1,
@@ -1389,7 +1569,7 @@
     "xKm": 3295,
     "yKm": 2185
    },
-   "cells": 223,
+   "cells": 178,
    "coast": false,
    "lake": true,
    "waters": [
@@ -1402,7 +1582,7 @@
    "cover": [
     "grass"
    ],
-   "height": 0.1,
+   "height": 0.08,
    "adj": [
     0,
     3,
@@ -1462,7 +1642,7 @@
     "xKm": 3175,
     "yKm": 2075
    },
-   "cells": 1180,
+   "cells": 1028,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -1472,9 +1652,9 @@
    "ground": "plains",
    "cover": [
     "grass",
-    "steppe"
+    "forest"
    ],
-   "height": 0.15,
+   "height": 0.13,
    "adj": [
     0,
     1,
@@ -1482,7 +1662,6 @@
     59,
     67,
     168,
-    173,
     262
    ],
    "sea": [],
@@ -1986,7 +2165,7 @@
     "xKm": 3565,
     "yKm": 1025
    },
-   "cells": 363,
+   "cells": 367,
    "coast": true,
    "lake": false,
    "waters": [
@@ -2080,7 +2259,7 @@
     "xKm": 3085,
     "yKm": 1435
    },
-   "cells": 285,
+   "cells": 253,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -2093,7 +2272,7 @@
     "grass",
     "forest"
    ],
-   "height": 0.09,
+   "height": 0.08,
    "adj": [
     5,
     6,
@@ -2181,7 +2360,7 @@
     "xKm": 3385,
     "yKm": 1455
    },
-   "cells": 454,
+   "cells": 446,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -2560,7 +2739,7 @@
     "xKm": 3825,
     "yKm": 3325
    },
-   "cells": 264,
+   "cells": 294,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -2571,12 +2750,11 @@
    "cover": [
     "scrub"
    ],
-   "height": 0.24,
+   "height": 0.23,
    "adj": [
     36,
     38,
     42,
-    46,
     221
    ],
    "sea": [],
@@ -2611,6 +2789,7 @@
     35,
     38,
     41,
+    42,
     43,
     46
    ],
@@ -2794,28 +2973,28 @@
    "type": "town",
    "seat": {
     "px": 880,
-    "py": 768,
+    "py": 779,
     "xKm": 3985,
-    "yKm": 3355
+    "yKm": 3405
    },
-   "cells": 440,
+   "cells": 339,
    "coast": false,
    "lake": false,
    "waters": [],
    "rivers": [],
-   "ground": "desert",
+   "ground": "plains",
    "cover": [
     "scrub",
     "desert"
    ],
-   "height": 0.16,
+   "height": 0.21,
    "adj": [
     35,
+    36,
     45,
     46,
     52,
     221,
-    230,
     231
    ],
    "sea": [],
@@ -2898,7 +3077,7 @@
     "xKm": 4085,
     "yKm": 3495
    },
-   "cells": 278,
+   "cells": 263,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -2910,7 +3089,7 @@
     "scrub",
     "jungle"
    ],
-   "height": 0.15,
+   "height": 0.14,
    "adj": [
     32,
     37,
@@ -2934,7 +3113,7 @@
     "xKm": 3915,
     "yKm": 3635
    },
-   "cells": 471,
+   "cells": 456,
    "coast": true,
    "lake": false,
    "waters": [
@@ -2949,9 +3128,8 @@
     "jungle",
     "scrub"
    ],
-   "height": 0.17,
+   "height": 0.16,
    "adj": [
-    35,
     36,
     37,
     42,
@@ -3138,7 +3316,7 @@
     "xKm": 4075,
     "yKm": 3405
    },
-   "cells": 49,
+   "cells": 50,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -3147,7 +3325,7 @@
    "cover": [
     "scrub"
    ],
-   "height": 0.35,
+   "height": 0.34,
    "adj": [
     42,
     45,
@@ -3203,7 +3381,7 @@
     "xKm": 5095,
     "yKm": 2935
    },
-   "cells": 759,
+   "cells": 837,
    "coast": false,
    "lake": true,
    "waters": [
@@ -3218,7 +3396,7 @@
     "grass",
     "scrub"
    ],
-   "height": 0.1,
+   "height": 0.11,
    "adj": [
     53,
     55,
@@ -3242,7 +3420,7 @@
     "xKm": 5085,
     "yKm": 2765
    },
-   "cells": 223,
+   "cells": 224,
    "coast": false,
    "lake": true,
    "waters": [
@@ -3379,21 +3557,20 @@
     "xKm": 2785,
     "yKm": 1845
    },
-   "cells": 799,
+   "cells": 615,
    "coast": false,
    "lake": true,
    "waters": [
     "the Glenmere"
    ],
    "rivers": [
-    "the Glenwash",
     "the Skardush"
    ],
    "ground": "plains",
    "cover": [
     "grass"
    ],
-   "height": 0.18,
+   "height": 0.17,
    "adj": [
     3,
     62,
@@ -3402,7 +3579,7 @@
     174
    ],
    "sea": [],
-   "site": "march town at the east end of the Glenmere, under the Albora Sill"
+   "site": "march town at the east end of the Glenmere, under the Albora Pass"
   },
   {
    "id": 60,
@@ -3415,7 +3592,7 @@
     "xKm": 2135,
     "yKm": 2415
    },
-   "cells": 464,
+   "cells": 462,
    "coast": false,
    "lake": true,
    "waters": [
@@ -3481,7 +3658,7 @@
     "xKm": 2565,
     "yKm": 1815
    },
-   "cells": 379,
+   "cells": 378,
    "coast": false,
    "lake": true,
    "waters": [
@@ -3514,7 +3691,7 @@
     "xKm": 2275,
     "yKm": 2415
    },
-   "cells": 573,
+   "cells": 575,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -3524,7 +3701,6 @@
    "ground": "plains",
    "cover": [
     "grass",
-    "scrub",
     "forest"
    ],
    "height": 0.08,
@@ -3588,7 +3764,6 @@
    "ground": "hills",
    "cover": [
     "grass",
-    "scrub",
     "rock",
     "forest"
    ],
@@ -3614,7 +3789,7 @@
     "xKm": 2365,
     "yKm": 1835
    },
-   "cells": 340,
+   "cells": 341,
    "coast": false,
    "lake": true,
    "waters": [
@@ -3859,10 +4034,9 @@
    "lake": false,
    "waters": [],
    "rivers": [],
-   "ground": "desert",
+   "ground": "plains",
    "cover": [
     "grass",
-    "scrub",
     "forest"
    ],
    "height": 0.18,
@@ -3889,7 +4063,7 @@
     "xKm": 2035,
     "yKm": 2185
    },
-   "cells": 475,
+   "cells": 547,
    "coast": false,
    "lake": true,
    "waters": [
@@ -3905,10 +4079,11 @@
     "grass",
     "forest"
    ],
-   "height": 0.19,
+   "height": 0.2,
    "adj": [
     60,
     65,
+    75,
     76,
     158,
     159,
@@ -3928,7 +4103,7 @@
     "xKm": 1515,
     "yKm": 2205
    },
-   "cells": 923,
+   "cells": 934,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -3940,10 +4115,11 @@
     "forest",
     "grass"
    ],
-   "height": 0.22,
+   "height": 0.21,
    "adj": [
     64,
     68,
+    74,
     76,
     156,
     160,
@@ -3981,8 +4157,7 @@
     65,
     69,
     74,
-    75,
-    164
+    75
    ],
    "sea": [],
    "site": "castle in the coast hills between the bay and the lowland"
@@ -4042,8 +4217,7 @@
    "cover": [
     "grass",
     "rock",
-    "forest",
-    "scrub"
+    "forest"
    ],
    "height": 0.39,
    "adj": [
@@ -4195,7 +4369,7 @@
     "xKm": 4705,
     "yKm": 3365
    },
-   "cells": 356,
+   "cells": 365,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -4212,8 +4386,7 @@
     91,
     92,
     94,
-    96,
-    242
+    96
    ],
    "sea": [],
    "site": "the royal ancestor houses on the high plateau, south of the snow peaks"
@@ -4318,7 +4491,6 @@
     230,
     231,
     232,
-    242,
     288
    ],
    "sea": [],
@@ -4376,7 +4548,8 @@
    "rivers": [],
    "ground": "hills",
    "cover": [
-    "scrub"
+    "scrub",
+    "forest"
    ],
    "height": 0.33,
    "adj": [
@@ -4434,17 +4607,19 @@
     "xKm": 4975,
     "yKm": 3195
    },
-   "cells": 587,
+   "cells": 879,
    "coast": false,
    "lake": false,
    "waters": [],
-   "rivers": [],
-   "ground": "desert",
+   "rivers": [
+    "the Chanpur"
+   ],
+   "ground": "forest",
    "cover": [
-    "desert",
+    "forest",
     "scrub"
    ],
-   "height": 0.13,
+   "height": 0.2,
    "adj": [
     54,
     56,
@@ -4452,6 +4627,7 @@
     83,
     88,
     91,
+    94,
     95,
     239,
     242
@@ -4570,7 +4746,7 @@
     "xKm": 4435,
     "yKm": 3225
    },
-   "cells": 415,
+   "cells": 432,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -4580,14 +4756,16 @@
     "scrub",
     "grass"
    ],
-   "height": 0.37,
+   "height": 0.38,
    "adj": [
     83,
     84,
     86,
     87,
+    90,
     96,
-    242
+    242,
+    288
    ],
    "sea": [],
    "site": "western fort above the desert"
@@ -4610,10 +4788,9 @@
    "rivers": [
     "the Madora"
    ],
-   "ground": "plains",
+   "ground": "forest",
    "cover": [
-    "scrub",
-    "grass"
+    "forest"
    ],
    "height": 0.15,
    "adj": [
@@ -4734,7 +4911,7 @@
     "xKm": 4895,
     "yKm": 1555
    },
-   "cells": 56,
+   "cells": 59,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -4746,7 +4923,7 @@
     "grass",
     "forest"
    ],
-   "height": 0.28,
+   "height": 0.27,
    "adj": [
     101,
     102,
@@ -4781,8 +4958,7 @@
    "adj": [
     103,
     105,
-    108,
-    200
+    108
    ],
    "sea": [],
    "site": "forest city of the north, on the Tolek's east bank"
@@ -4830,12 +5006,13 @@
     "xKm": 4895,
     "yKm": 1685
    },
-   "cells": 333,
+   "cells": 334,
    "coast": false,
    "lake": false,
    "waters": [],
    "rivers": [
-    "the Grey Channel"
+    "the Grey Channel",
+    "the Yarbek"
    ],
    "ground": "forest",
    "cover": [
@@ -4866,7 +5043,7 @@
     "xKm": 4765,
     "yKm": 1315
    },
-   "cells": 232,
+   "cells": 234,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -4878,9 +5055,10 @@
     "forest",
     "grass"
    ],
-   "height": 0.14,
+   "height": 0.15,
    "adj": [
     100,
+    105,
     108,
     109,
     122,
@@ -4935,7 +5113,7 @@
     "xKm": 4955,
     "yKm": 1445
    },
-   "cells": 380,
+   "cells": 382,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -4954,6 +5132,7 @@
     99,
     100,
     101,
+    103,
     106,
     108,
     197,
@@ -5266,8 +5445,7 @@
     120,
     122,
     126,
-    199,
-    201
+    199
    ],
    "sea": [],
    "site": "the capital where the Dromir leaves the Western Lakes, at the foot of ship water on the lake"
@@ -5406,6 +5584,7 @@
     126,
     166,
     169,
+    175,
     299
    ],
    "sea": [],
@@ -5454,7 +5633,7 @@
     "xKm": 4345,
     "yKm": 1355
    },
-   "cells": 292,
+   "cells": 333,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -5470,7 +5649,8 @@
     114,
     118,
     126,
-    169,
+    175,
+    180,
     199,
     204
    ],
@@ -5540,6 +5720,7 @@
     103,
     109,
     114,
+    199,
     201
    ],
    "sea": [],
@@ -5730,7 +5911,7 @@
     "xKm": 2095,
     "yKm": 1015
    },
-   "cells": 212,
+   "cells": 217,
    "coast": true,
    "lake": false,
    "waters": [
@@ -5744,7 +5925,7 @@
    "cover": [
     "forest"
    ],
-   "height": 0.1,
+   "height": 0.11,
    "adj": [
     132,
     137,
@@ -5929,7 +6110,7 @@
     "xKm": 2305,
     "yKm": 1185
    },
-   "cells": 219,
+   "cells": 225,
    "coast": true,
    "lake": false,
    "waters": [],
@@ -5941,7 +6122,6 @@
    "height": 0.23,
    "adj": [
     138,
-    145,
     149,
     152,
     154
@@ -6061,17 +6241,16 @@
     "xKm": 2455,
     "yKm": 1225
    },
-   "cells": 274,
+   "cells": 249,
    "coast": false,
    "lake": false,
    "waters": [],
    "rivers": [],
    "ground": "forest",
    "cover": [
-    "forest",
-    "rock"
+    "forest"
    ],
-   "height": 0.28,
+   "height": 0.25,
    "adj": [
     134,
     136,
@@ -6079,8 +6258,8 @@
     144,
     145,
     146,
-    155,
-    170
+    152,
+    155
    ],
    "sea": [],
    "site": "city of the eastern wood"
@@ -6202,7 +6381,7 @@
     "xKm": 1985,
     "yKm": 1215
    },
-   "cells": 527,
+   "cells": 542,
    "coast": false,
    "lake": true,
    "waters": [
@@ -6215,7 +6394,7 @@
    "cover": [
     "forest"
    ],
-   "height": 0.21,
+   "height": 0.22,
    "adj": [
     128,
     129,
@@ -6271,7 +6450,7 @@
     "xKm": 2415,
     "yKm": 1375
    },
-   "cells": 153,
+   "cells": 158,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -6279,8 +6458,8 @@
    "ground": "forest",
    "cover": [
     "forest",
-    "steppe",
-    "rock"
+    "rock",
+    "steppe"
    ],
    "height": 0.31,
    "adj": [
@@ -6299,29 +6478,31 @@
    "realm": "POL-06",
    "type": "city",
    "seat": {
-    "px": 500,
-    "py": 284,
-    "xKm": 2365,
-    "yKm": 1295
+    "px": 535,
+    "py": 292,
+    "xKm": 2515,
+    "yKm": 1325
    },
-   "cells": 37,
+   "cells": 51,
    "coast": false,
    "lake": false,
    "waters": [],
-   "rivers": [],
+   "rivers": [
+    "the Fairrush"
+   ],
    "ground": "mountains",
    "cover": [
     "rock"
    ],
-   "height": 0.55,
+   "height": 0.63,
    "adj": [
-    134,
     138,
     144,
-    152
+    155,
+    170
    ],
    "sea": [],
-   "site": "groves under the Tusk Hills"
+   "site": "groves on the Tusk Hills"
   },
   {
    "id": 146,
@@ -6460,7 +6641,7 @@
     "xKm": 2145,
     "yKm": 1125
    },
-   "cells": 46,
+   "cells": 37,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -6494,7 +6675,7 @@
     "xKm": 2205,
     "yKm": 1535
    },
-   "cells": 163,
+   "cells": 147,
    "coast": false,
    "lake": true,
    "waters": [
@@ -6529,7 +6710,7 @@
     "xKm": 2315,
     "yKm": 1375
    },
-   "cells": 216,
+   "cells": 233,
    "coast": false,
    "lake": true,
    "waters": [
@@ -6540,11 +6721,11 @@
    "cover": [
     "forest"
    ],
-   "height": 0.24,
+   "height": 0.25,
    "adj": [
     134,
+    138,
     144,
-    145,
     153,
     154,
     167
@@ -6558,20 +6739,21 @@
    "realm": "POL-06",
    "type": "town",
    "seat": {
-    "px": 486,
-    "py": 326,
-    "xKm": 2305,
-    "yKm": 1475
+    "px": 464,
+    "py": 318,
+    "xKm": 2215,
+    "yKm": 1435
    },
-   "cells": 116,
+   "cells": 74,
    "coast": false,
    "lake": true,
    "waters": [
     "Lake Silara"
    ],
    "rivers": [],
-   "ground": "steppe",
+   "ground": "forest",
    "cover": [
+    "forest",
     "steppe"
    ],
    "height": 0.11,
@@ -6581,7 +6763,7 @@
     167
    ],
    "sea": [],
-   "site": "town of the south-east wood"
+   "site": "town of the southern wood, by the lake"
   },
   {
    "id": 154,
@@ -6594,7 +6776,7 @@
     "xKm": 2175,
     "yKm": 1245
    },
-   "cells": 111,
+   "cells": 100,
    "coast": false,
    "lake": true,
    "waters": [
@@ -6608,7 +6790,7 @@
     "rock",
     "forest"
    ],
-   "height": 0.47,
+   "height": 0.48,
    "adj": [
     134,
     142,
@@ -6630,7 +6812,7 @@
     "xKm": 2595,
     "yKm": 1255
    },
-   "cells": 84,
+   "cells": 75,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -6641,11 +6823,12 @@
    "cover": [
     "rock"
    ],
-   "height": 0.66,
+   "height": 0.65,
    "adj": [
     12,
     14,
     138,
+    145,
     146,
     170
    ],
@@ -6663,7 +6846,7 @@
     "xKm": 1745,
     "yKm": 1805
    },
-   "cells": 255,
+   "cells": 256,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -6672,8 +6855,8 @@
    ],
    "ground": "hills",
    "cover": [
-    "ash",
     "grass",
+    "ash",
     "rock"
    ],
    "height": 0.4,
@@ -6934,7 +7117,7 @@
     "xKm": 1905,
     "yKm": 1955
    },
-   "cells": 482,
+   "cells": 398,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -6946,11 +7129,10 @@
     "ash",
     "grass"
    ],
-   "height": 0.35,
+   "height": 0.38,
    "adj": [
     74,
     75,
-    76,
     156,
     159,
     162,
@@ -6970,7 +7152,7 @@
     "xKm": 3675,
     "yKm": 1575
    },
-   "cells": 714,
+   "cells": 717,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -7042,7 +7224,7 @@
     "xKm": 2345,
     "yKm": 1495
    },
-   "cells": 346,
+   "cells": 399,
    "coast": false,
    "lake": true,
    "waters": [
@@ -7054,7 +7236,7 @@
     "steppe",
     "grass"
    ],
-   "height": 0.14,
+   "height": 0.13,
    "adj": [
     135,
     144,
@@ -7078,7 +7260,7 @@
     "xKm": 3225,
     "yKm": 1625
    },
-   "cells": 914,
+   "cells": 1095,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -7090,7 +7272,7 @@
     "steppe",
     "forest"
    ],
-   "height": 0.15,
+   "height": 0.17,
    "adj": [
     3,
     11,
@@ -7098,7 +7280,8 @@
     24,
     59,
     173,
-    174
+    174,
+    262
    ],
    "sea": [],
    "site": "wells of the middle grass"
@@ -7114,7 +7297,7 @@
     "xKm": 4075,
     "yKm": 1455
    },
-   "cells": 344,
+   "cells": 378,
    "coast": false,
    "lake": true,
    "waters": [
@@ -7131,7 +7314,6 @@
    "height": 0.1,
    "adj": [
     118,
-    120,
     166,
     171,
     172,
@@ -7151,7 +7333,7 @@
     "xKm": 2625,
     "yKm": 1535
    },
-   "cells": 736,
+   "cells": 733,
    "coast": false,
    "lake": true,
    "waters": [
@@ -7163,11 +7345,11 @@
     "forest",
     "grass"
    ],
-   "height": 0.15,
+   "height": 0.14,
    "adj": [
     14,
-    138,
     144,
+    145,
     155,
     167,
     174
@@ -7257,7 +7439,7 @@
     "xKm": 3475,
     "yKm": 1765
    },
-   "cells": 846,
+   "cells": 854,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -7271,7 +7453,6 @@
    ],
    "height": 0.18,
    "adj": [
-    3,
     24,
     165,
     168,
@@ -7293,7 +7474,7 @@
     "xKm": 2855,
     "yKm": 1575
    },
-   "cells": 757,
+   "cells": 901,
    "coast": false,
    "lake": true,
    "waters": [
@@ -7309,7 +7490,7 @@
     "forest",
     "steppe"
    ],
-   "height": 0.15,
+   "height": 0.16,
    "adj": [
     6,
     14,
@@ -7327,30 +7508,30 @@
    "realm": "POL-11",
    "type": "caravanserai",
    "seat": {
-    "px": 922,
-    "py": 338,
-    "xKm": 4165,
-    "yKm": 1525
+    "px": 936,
+    "py": 334,
+    "xKm": 4225,
+    "yKm": 1505
    },
-   "cells": 164,
+   "cells": 295,
    "coast": false,
-   "lake": true,
-   "waters": [
-    "the Salt Sea"
-   ],
+   "lake": false,
+   "waters": [],
    "rivers": [
     "the Dromir (the Coldbarrow on the steppe)"
    ],
    "ground": "steppe",
    "cover": [
+    "forest",
     "steppe"
    ],
-   "height": 0.1,
+   "height": 0.08,
    "adj": [
+    118,
+    120,
     169,
     177,
-    180,
-    204
+    180
    ],
    "sea": [],
    "site": "the Salt Edge, at the Coldbarrow Bridge"
@@ -7366,7 +7547,7 @@
     "xKm": 4435,
     "yKm": 1765
    },
-   "cells": 959,
+   "cells": 988,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -7377,14 +7558,13 @@
    "cover": [
     "steppe"
    ],
-   "height": 0.19,
+   "height": 0.18,
    "adj": [
     179,
     180,
     181,
-    199,
     202,
-    203,
+    204,
     209
    ],
    "sea": [],
@@ -7401,13 +7581,15 @@
     "xKm": 4095,
     "yKm": 1705
    },
-   "cells": 827,
+   "cells": 831,
    "coast": false,
    "lake": true,
    "waters": [
     "the Salt Sea"
    ],
-   "rivers": [],
+   "rivers": [
+    "the Dromir (the Coldbarrow on the steppe)"
+   ],
    "ground": "steppe",
    "cover": [
     "steppe",
@@ -7472,12 +7654,13 @@
     "xKm": 4775,
     "yKm": 1755
    },
-   "cells": 576,
+   "cells": 663,
    "coast": false,
    "lake": false,
    "waters": [],
    "rivers": [
-    "the Grey Channel"
+    "the Grey Channel",
+    "the Yarbek"
    ],
    "ground": "steppe",
    "cover": [
@@ -7508,7 +7691,7 @@
     "xKm": 4275,
     "yKm": 1655
    },
-   "cells": 458,
+   "cells": 501,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -7521,10 +7704,10 @@
    ],
    "height": 0.1,
    "adj": [
+    120,
     175,
     176,
     177,
-    199,
     204,
     209
    ],
@@ -7575,7 +7758,7 @@
     "xKm": 4885,
     "yKm": 1885
    },
-   "cells": 243,
+   "cells": 244,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -7646,7 +7829,7 @@
     "xKm": 5585,
     "yKm": 1405
    },
-   "cells": 382,
+   "cells": 383,
    "coast": true,
    "lake": false,
    "waters": [
@@ -7744,7 +7927,7 @@
     "xKm": 5415,
     "yKm": 1515
    },
-   "cells": 671,
+   "cells": 670,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -7969,7 +8152,7 @@
     "xKm": 4915,
     "yKm": 2435
    },
-   "cells": 1013,
+   "cells": 1085,
    "coast": false,
    "lake": true,
    "waters": [
@@ -7982,9 +8165,9 @@
    "ground": "plains",
    "cover": [
     "grass",
-    "forest"
+    "scrub"
    ],
-   "height": 0.09,
+   "height": 0.11,
    "adj": [
     55,
     195,
@@ -8045,7 +8228,7 @@
     "xKm": 4625,
     "yKm": 2365
    },
-   "cells": 1071,
+   "cells": 1292,
    "coast": false,
    "lake": true,
    "waters": [
@@ -8056,8 +8239,7 @@
    ],
    "ground": "plains",
    "cover": [
-    "grass",
-    "forest"
+    "grass"
    ],
    "height": 0.08,
    "adj": [
@@ -8084,7 +8266,7 @@
     "xKm": 4835,
     "yKm": 1515
    },
-   "cells": 104,
+   "cells": 85,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -8120,7 +8302,7 @@
     "xKm": 4745,
     "yKm": 1415
    },
-   "cells": 92,
+   "cells": 91,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -8148,18 +8330,17 @@
    "realm": "POL-14",
    "type": "city",
    "seat": {
-    "px": 984,
-    "py": 316,
-    "xKm": 4435,
-    "yKm": 1425
+    "px": 994,
+    "py": 300,
+    "xKm": 4475,
+    "yKm": 1355
    },
-   "cells": 331,
+   "cells": 168,
    "coast": false,
    "lake": false,
    "waters": [],
    "rivers": [
-    "the Dromir (the Coldbarrow on the steppe)",
-    "the Yarbek"
+    "the Dromir (the Coldbarrow on the steppe)"
    ],
    "ground": "forest",
    "cover": [
@@ -8169,8 +8350,7 @@
    "adj": [
     114,
     120,
-    176,
-    180,
+    122,
     201,
     203,
     204
@@ -8189,7 +8369,7 @@
     "xKm": 4795,
     "yKm": 1465
    },
-   "cells": 97,
+   "cells": 94,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -8200,9 +8380,8 @@
    "cover": [
     "forest"
    ],
-   "height": 0.1,
+   "height": 0.09,
    "adj": [
-    100,
     103,
     105,
     197,
@@ -8223,7 +8402,7 @@
     "xKm": 4665,
     "yKm": 1355
    },
-   "cells": 136,
+   "cells": 125,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -8237,7 +8416,6 @@
    "height": 0.07,
    "adj": [
     103,
-    114,
     122,
     198,
     199,
@@ -8257,7 +8435,7 @@
     "xKm": 4665,
     "yKm": 1535
    },
-   "cells": 258,
+   "cells": 155,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -8266,17 +8444,17 @@
    ],
    "ground": "forest",
    "cover": [
-    "forest",
-    "steppe"
+    "forest"
    ],
-   "height": 0.09,
+   "height": 0.08,
    "adj": [
     176,
     179,
     197,
     198,
     200,
-    203
+    203,
+    204
    ],
    "sea": [],
    "site": "city on the Yarbek"
@@ -8292,24 +8470,22 @@
     "xKm": 4605,
     "yKm": 1455
    },
-   "cells": 232,
+   "cells": 157,
    "coast": false,
    "lake": false,
    "waters": [],
-   "rivers": [
-    "the Yarbek"
-   ],
+   "rivers": [],
    "ground": "forest",
    "cover": [
     "forest"
    ],
    "height": 0.07,
    "adj": [
-    176,
     198,
     199,
     201,
-    202
+    202,
+    204
    ],
    "sea": [],
    "site": "city of the Rift Heights, under Smokewell"
@@ -8320,31 +8496,34 @@
    "realm": "POL-14",
    "type": "city",
    "seat": {
-    "px": 950,
+    "px": 994,
     "py": 334,
-    "xKm": 4285,
+    "xKm": 4475,
     "yKm": 1505
    },
-   "cells": 212,
+   "cells": 209,
    "coast": false,
    "lake": false,
    "waters": [],
    "rivers": [
-    "the Dromir (the Coldbarrow on the steppe)"
+    "the Dromir (the Coldbarrow on the steppe)",
+    "the Yarbek"
    ],
    "ground": "forest",
    "cover": [
     "forest"
    ],
-   "height": 0.07,
+   "height": 0.08,
    "adj": [
     120,
-    175,
+    176,
     180,
-    199
+    199,
+    202,
+    203
    ],
    "sea": [],
-   "site": "city on the Dromir where the steppe begins"
+   "site": "city at the Dromir's bend, where the steppe begins"
   },
   {
    "id": 205,
@@ -8452,7 +8631,7 @@
     "xKm": 4095,
     "yKm": 2435
    },
-   "cells": 1014,
+   "cells": 1009,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -8489,7 +8668,7 @@
     "xKm": 4335,
     "yKm": 2175
    },
-   "cells": 1374,
+   "cells": 1366,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -8894,7 +9073,7 @@
     "xKm": 3825,
     "yKm": 3185
    },
-   "cells": 450,
+   "cells": 479,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -8915,7 +9094,8 @@
     42,
     219,
     226,
-    230
+    230,
+    231
    ],
    "sea": [],
    "site": "wells of the southern lobe"
@@ -9009,7 +9189,8 @@
    "ground": "desert",
    "cover": [
     "desert",
-    "scrub"
+    "scrub",
+    "grass"
    ],
    "height": 0.26,
    "adj": [
@@ -9202,7 +9383,7 @@
     "xKm": 4095,
     "yKm": 3085
    },
-   "cells": 734,
+   "cells": 746,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -9217,7 +9398,6 @@
    "height": 0.09,
    "adj": [
     27,
-    42,
     86,
     221,
     231,
@@ -9237,7 +9417,7 @@
     "xKm": 4175,
     "yKm": 3285
    },
-   "cells": 419,
+   "cells": 478,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -9258,6 +9438,7 @@
     52,
     86,
     87,
+    221,
     230
    ],
    "sea": [],
@@ -9274,7 +9455,7 @@
     "xKm": 4175,
     "yKm": 2815
    },
-   "cells": 1030,
+   "cells": 1098,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -9284,7 +9465,7 @@
     "desert",
     "scrub"
    ],
-   "height": 0.11,
+   "height": 0.12,
    "adj": [
     25,
     27,
@@ -9293,6 +9474,7 @@
     196,
     230,
     238,
+    240,
     288
    ],
    "sea": [],
@@ -9446,7 +9628,7 @@
     "xKm": 4765,
     "yKm": 2825
    },
-   "cells": 205,
+   "cells": 237,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -9456,7 +9638,7 @@
     "rock",
     "scrub"
    ],
-   "height": 0.55,
+   "height": 0.56,
    "adj": [
     238,
     239,
@@ -9478,26 +9660,25 @@
     "xKm": 4665,
     "yKm": 2665
    },
-   "cells": 804,
+   "cells": 410,
    "coast": false,
    "lake": false,
    "waters": [],
    "rivers": [],
-   "ground": "plains",
+   "ground": "hills",
    "cover": [
     "scrub",
-    "grass",
-    "desert"
+    "desert",
+    "grass"
    ],
-   "height": 0.2,
+   "height": 0.31,
    "adj": [
     194,
     196,
     232,
     237,
     240,
-    241,
-    288
+    241
    ],
    "sea": [],
    "site": "hold of the north-west, the Kardeep mines"
@@ -9513,19 +9694,19 @@
     "xKm": 4935,
     "yKm": 2915
    },
-   "cells": 322,
+   "cells": 208,
    "coast": false,
    "lake": false,
    "waters": [],
    "rivers": [
     "the Chanpur"
    ],
-   "ground": "plains",
+   "ground": "hills",
    "cover": [
     "scrub",
     "rock"
    ],
-   "height": 0.28,
+   "height": 0.43,
    "adj": [
     54,
     90,
@@ -9547,7 +9728,7 @@
     "xKm": 4605,
     "yKm": 2815
    },
-   "cells": 276,
+   "cells": 354,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -9557,8 +9738,9 @@
     "rock",
     "scrub"
    ],
-   "height": 0.5,
+   "height": 0.47,
    "adj": [
+    232,
     237,
     238,
     242,
@@ -9578,17 +9760,17 @@
     "xKm": 4905,
     "yKm": 2735
    },
-   "cells": 298,
+   "cells": 263,
    "coast": false,
    "lake": false,
    "waters": [],
    "rivers": [],
    "ground": "mountains",
    "cover": [
-    "scrub",
-    "rock"
+    "rock",
+    "scrub"
    ],
-   "height": 0.42,
+   "height": 0.48,
    "adj": [
     54,
     55,
@@ -9611,20 +9793,20 @@
     "xKm": 4835,
     "yKm": 3005
    },
-   "cells": 707,
+   "cells": 381,
    "coast": false,
    "lake": false,
    "waters": [],
-   "rivers": [],
-   "ground": "plains",
+   "rivers": [
+    "the Chanpur"
+   ],
+   "ground": "hills",
    "cover": [
     "rock",
     "scrub"
    ],
-   "height": 0.38,
+   "height": 0.46,
    "adj": [
-    83,
-    86,
     90,
     94,
     237,
@@ -9915,7 +10097,7 @@
     "xKm": 5525,
     "yKm": 1965
    },
-   "cells": 199,
+   "cells": 200,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -10014,7 +10196,7 @@
     "xKm": 5435,
     "yKm": 1875
    },
-   "cells": 132,
+   "cells": 130,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -10046,7 +10228,7 @@
     "xKm": 5315,
     "yKm": 1915
    },
-   "cells": 103,
+   "cells": 104,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -10276,7 +10458,7 @@
     "xKm": 3415,
     "yKm": 1935
    },
-   "cells": 301,
+   "cells": 352,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -10287,10 +10469,11 @@
    "cover": [
     "grass"
    ],
-   "height": 0.33,
+   "height": 0.32,
    "adj": [
     1,
     3,
+    168,
     173,
     259,
     261,
@@ -10506,7 +10689,7 @@
     "xKm": 3385,
     "yKm": 885
    },
-   "cells": 442,
+   "cells": 499,
    "coast": true,
    "lake": false,
    "waters": [
@@ -10521,11 +10704,12 @@
     "taiga",
     "grass"
    ],
-   "height": 0.12,
+   "height": 0.16,
    "adj": [
     18,
     270,
     271,
+    294,
     299
    ],
    "sea": [],
@@ -10577,7 +10761,7 @@
     "xKm": 3395,
     "yKm": 625
    },
-   "cells": 1293,
+   "cells": 1314,
    "coast": true,
    "lake": false,
    "waters": [
@@ -10596,8 +10780,7 @@
     269,
     270,
     294,
-    298,
-    299
+    298
    ],
    "sea": [],
    "site": "tower on the Flintwall Capes of the north coast"
@@ -10613,7 +10796,7 @@
     "xKm": 3385,
     "yKm": 2195
    },
-   "cells": 238,
+   "cells": 272,
    "coast": false,
    "lake": true,
    "waters": [
@@ -11149,7 +11332,7 @@
     "xKm": 4435,
     "yKm": 2905
    },
-   "cells": 428,
+   "cells": 442,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -11162,8 +11345,8 @@
    "height": 0.38,
    "adj": [
     86,
+    94,
     232,
-    238,
     240,
     242
    ],
@@ -11346,7 +11529,7 @@
     "xKm": 3775,
     "yKm": 765
    },
-   "cells": 856,
+   "cells": 857,
    "coast": false,
    "lake": false,
    "waters": [],
@@ -11358,6 +11541,7 @@
    ],
    "height": 0.49,
    "adj": [
+    269,
     271,
     282,
     298,
@@ -11506,7 +11690,7 @@
     "xKm": 3645,
     "yKm": 895
    },
-   "cells": 1324,
+   "cells": 1241,
    "coast": false,
    "lake": true,
    "waters": [
@@ -11521,7 +11705,7 @@
     "grass",
     "rock"
    ],
-   "height": 0.27,
+   "height": 0.26,
    "adj": [
     18,
     118,
@@ -11529,7 +11713,6 @@
     166,
     193,
     269,
-    271,
     282,
     294
    ],
@@ -11965,11 +12148,11 @@
   },
   {
    "name": "the Skardush",
-   "from": "the Albora Sill",
+   "from": "the Albora Pass",
    "to": "the Middle Sea, as the Palena below the Gap",
    "big": false,
    "ships": false,
-   "border": false,
+   "border": true,
    "km": [
     [
      2842,
@@ -12423,8 +12606,8 @@
    "border": true,
    "km": [
     [
-     4435,
-     1599
+     4456,
+     1590
     ],
     [
      4542,
@@ -13311,8 +13494,8 @@
  ],
  "passes": [
   {
-   "name": "the Albora Sill",
-   "note": "the low divide between the Glenmere and the Skardush: the Amber Road's way to the Sunlands",
+   "name": "the Albora Pass",
+   "note": "the low divide between the Glenmere and the Skardush, shut by snow from November: the Amber Road ends and the Crown Road begins at its three towers",
    "km": [
     2868,
     1846
@@ -13431,6 +13614,14 @@
    "km": [
     5618,
     2589
+   ]
+  },
+  {
+   "name": "the Falconhaven Pass",
+   "note": "the walled pass through the Rift Heights, between Briarhollow and the channel shore",
+   "km": [
+    4704,
+    1437
    ]
   }
  ],
@@ -13600,7 +13791,7 @@
  "roads": [
   {
    "name": "the Amber Road",
-   "note": "Cold Bay to the Sunlands: Easterham, Kingsmere, Thornstone, the Glenmere's east end, the Albora Sill, Castella, the Montessa Gate, Vitia, Camia, down the Palella to Varenna",
+   "note": "Cold Bay to the Albora Pass: Easterham, Kingsmere, Carrness, Thornstone (the toll), over the Wolf clans' hills to the Glenmere's east end",
    "byWater": false,
    "km": [
     [
@@ -13624,12 +13815,31 @@
      1552
     ],
     [
-     2748,
+     2757,
      1693
     ],
     [
-     2731,
+     2817,
      1804
+    ],
+    [
+     2868,
+     1846
+    ]
+   ]
+  },
+  {
+   "name": "the Crown Road",
+   "note": "the Albora Pass to Varenna: Ardata, Castella, the Montessa Gate, Vitia, Torossa, Camia, and down the Palella",
+   "byWater": false,
+   "km": [
+    [
+     2868,
+     1846
+    ],
+    [
+     2783,
+     1846
     ],
     [
      2569,
@@ -13662,6 +13872,61 @@
    ]
   },
   {
+   "name": "the Coast Road",
+   "note": "Varenna to Morhaven: Ambalia, Valia, Venina, the Mirona Pass, Solenne, Lucerna, Ostra, along the Holy Coast",
+   "byWater": false,
+   "km": [
+    [
+     1818,
+     2607
+    ],
+    [
+     2044,
+     2577
+    ],
+    [
+     2386,
+     2534
+    ],
+    [
+     2672,
+     2299
+    ],
+    [
+     2928,
+     2316
+    ],
+    [
+     3082,
+     2265
+    ],
+    [
+     3231,
+     2209
+    ],
+    [
+     3380,
+     2197
+    ],
+    [
+     3509,
+     2201
+    ],
+    [
+     3594,
+     2222
+    ],
+    [
+     3696,
+     2261
+    ],
+    [
+     3765,
+     2295
+    ]
+   ]
+  },
+  {
    "name": "the Skardush Road",
    "note": "the Grass Sea to Aldmark's markets by the Gordush fords, and south down the Skardush Gap to the Middle Sea",
    "byWater": false,
@@ -13686,7 +13951,7 @@
   },
   {
    "name": "the Gap Road",
-   "note": "the Albora Sill along the Skardush to Highwold, and down the Palena to Lucerna",
+   "note": "the Albora Pass along the Skardush to Highwold, and down the Palena to Lucerna",
    "byWater": false,
    "km": [
     [
@@ -13735,65 +14000,6 @@
     [
      3099,
      1283
-    ]
-   ]
-  },
-  {
-   "name": "the Crown Road",
-   "note": "Varenna to Solenne by the Mirona Pass, and on along the Holy Coast to Morhaven",
-   "byWater": false,
-   "km": [
-    [
-     1566,
-     2628
-    ],
-    [
-     1818,
-     2607
-    ],
-    [
-     2044,
-     2577
-    ],
-    [
-     2386,
-     2534
-    ],
-    [
-     2672,
-     2299
-    ],
-    [
-     2928,
-     2316
-    ],
-    [
-     3082,
-     2265
-    ],
-    [
-     3231,
-     2209
-    ],
-    [
-     3380,
-     2197
-    ],
-    [
-     3509,
-     2201
-    ],
-    [
-     3594,
-     2222
-    ],
-    [
-     3696,
-     2261
-    ],
-    [
-     3765,
-     2295
     ]
    ]
   },
@@ -14145,37 +14351,6 @@
    ]
   },
   {
-   "name": "the Coast Road",
-   "note": "Varenna to Qadira and Sabra",
-   "byWater": false,
-   "km": [
-    [
-     1566,
-     2628
-    ],
-    [
-     1596,
-     2735
-    ],
-    [
-     1681,
-     2854
-    ],
-    [
-     1702,
-     3025
-    ],
-    [
-     1873,
-     3059
-    ],
-    [
-     2057,
-     3119
-    ]
-   ]
-  },
-  {
    "name": "the Eastern Road",
    "note": "Zanara to Atani and the Koyako Stair, the way to the Monuti that passes by Kesh's ports",
    "byWater": false,
@@ -14327,6 +14502,37 @@
     [
      4533,
      1236
+    ]
+   ]
+  },
+  {
+   "name": "the Sunwall Road",
+   "note": "Varenna to Qadira and Sabra, under the coast range",
+   "byWater": false,
+   "km": [
+    [
+     1566,
+     2628
+    ],
+    [
+     1596,
+     2735
+    ],
+    [
+     1681,
+     2854
+    ],
+    [
+     1702,
+     3025
+    ],
+    [
+     1903,
+     3085
+    ],
+    [
+     2057,
+     3119
     ]
    ]
   }
@@ -14754,14 +14960,14 @@
   {
    "a": "Northreach",
    "b": "The Pinewild",
-   "km": 180,
+   "km": 280,
    "at": [
-    801,
-    117
+    802,
+    127
    ],
    "river": {},
    "line": {},
-   "highGround": 18,
+   "highGround": 28,
    "open": 0
   },
   {
@@ -14804,36 +15010,6 @@
    "open": 0
   },
   {
-   "a": "The Pinewild",
-   "b": "The Mammoth Downs",
-   "km": 560,
-   "at": [
-    833,
-    164
-   ],
-   "river": {},
-   "line": {},
-   "highGround": 56,
-   "open": 0
-  },
-  {
-   "a": "Northreach",
-   "b": "The Mammoth Downs",
-   "km": 490,
-   "at": [
-    778,
-    166
-   ],
-   "river": {
-    "the Stagflow": 14
-   },
-   "line": {
-    "the Stagflow watershed": 2
-   },
-   "highGround": 22,
-   "open": 11
-  },
-  {
    "a": "Drevna",
    "b": "The Frostfells",
    "km": 340,
@@ -14857,6 +15033,36 @@
    "river": {},
    "line": {},
    "highGround": 23,
+   "open": 0
+  },
+  {
+   "a": "Northreach",
+   "b": "The Mammoth Downs",
+   "km": 470,
+   "at": [
+    774,
+    179
+   ],
+   "river": {
+    "the Stagflow": 30
+   },
+   "line": {
+    "the Stagflow watershed": 3
+   },
+   "highGround": 11,
+   "open": 3
+  },
+  {
+   "a": "The Pinewild",
+   "b": "The Mammoth Downs",
+   "km": 480,
+   "at": [
+    838,
+    168
+   ],
+   "river": {},
+   "line": {},
+   "highGround": 48,
    "open": 0
   },
   {
@@ -14957,14 +15163,14 @@
   {
    "a": "Aldmark",
    "b": "The Mammoth Downs",
-   "km": 370,
+   "km": 430,
    "at": [
-    788,
-    211
+    784,
+    210
    ],
    "river": {},
    "line": {
-    "the Stagflow watershed": 14
+    "the Stagflow watershed": 20
    },
    "highGround": 11,
    "open": 12
@@ -14987,14 +15193,14 @@
   {
    "a": "Aldmark",
    "b": "Northreach",
-   "km": 160,
+   "km": 100,
    "at": [
-    747,
-    207
+    741,
+    209
    ],
    "river": {},
    "line": {
-    "the Stagflow watershed": 16
+    "the Stagflow watershed": 10
    },
    "highGround": 0,
    "open": 0
@@ -15015,13 +15221,13 @@
   {
    "a": "Sylvaran",
    "b": "Eldergrove",
-   "km": 930,
+   "km": 950,
    "at": [
-    400,
+    401,
     263
    ],
    "river": {
-    "the Calara": 15
+    "the Calara": 17
    },
    "line": {},
    "highGround": 4,
@@ -15043,15 +15249,17 @@
   {
    "a": "Gorath",
    "b": "Drevna",
-   "km": 590,
+   "km": 880,
    "at": [
-    897,
-    269
+    915,
+    285
    ],
-   "river": {},
+   "river": {
+    "the Dromir": 4
+   },
    "line": {},
    "highGround": 13,
-   "open": 46
+   "open": 71
   },
   {
    "a": "Irondeep",
@@ -15099,15 +15307,15 @@
   {
    "a": "Aldmark",
    "b": "Gorath",
-   "km": 1800,
+   "km": 1720,
    "at": [
-    698,
-    327
+    700,
+    326
    ],
    "river": {
     "the Millrun": 5,
     "the Glenwash": 4,
-    "the Gordush": 62
+    "the Gordush": 66
    },
    "line": {
     "the Millrun watershed": 8,
@@ -15115,37 +15323,37 @@
     "the Crown Wall (west)": 28
    },
    "highGround": 10,
-   "open": 60
+   "open": 48
   },
   {
    "a": "Greyhaven",
    "b": "Drevna",
-   "km": 800,
+   "km": 600,
    "at": [
-    985,
-    302
+    999,
+    299
    ],
    "river": {
-    "the Dromir": 26
+    "the Dromir": 31
    },
    "line": {
     "the Lake Portage ridge": 29
    },
    "highGround": 0,
-   "open": 25
+   "open": 0
   },
   {
    "a": "Greyhaven",
    "b": "Velgrad",
-   "km": 600,
+   "km": 560,
    "at": [
     1073,
-    319
+    317
    ],
    "river": {
     "the Tolek": 28,
-    "the Grey Channel": 21,
-    "the Yarbek": 3
+    "the Grey Channel": 19,
+    "the Yarbek": 1
    },
    "line": {
     "the Lake Portage ridge": 3
@@ -15156,34 +15364,19 @@
   {
    "a": "Sylvaran",
    "b": "Gorath",
-   "km": 770,
+   "km": 810,
    "at": [
-    511,
-    321
+    508,
+    320
    ],
    "river": {
-    "the Fairrush": 7
+    "the Fairrush": 4
    },
    "line": {
-    "the Tusk Hills crest": 8
+    "the Tusk Hills crest": 11
    },
    "highGround": 10,
-   "open": 52
-  },
-  {
-   "a": "Gorath",
-   "b": "Greyhaven",
-   "km": 210,
-   "at": [
-    933,
-    328
-   ],
-   "river": {
-    "the Dromir": 3
-   },
-   "line": {},
-   "highGround": 0,
-   "open": 18
+   "open": 56
   },
   {
    "a": "Eldergrove",
@@ -15241,31 +15434,29 @@
   },
   {
    "a": "Ulun",
-   "b": "Greyhaven",
-   "km": 790,
+   "b": "Drevna",
+   "km": 10,
    "at": [
-    1007,
-    354
+    973,
+    332
    ],
    "river": {
-    "the Dromir": 12,
-    "the Yarbek": 18,
-    "the Grey Channel": 2
+    "the Dromir": 1
    },
    "line": {},
    "highGround": 0,
-   "open": 47
+   "open": 0
   },
   {
    "a": "Gorath",
    "b": "Ulun",
-   "km": 360,
+   "km": 550,
    "at": [
-    893,
-    381
+    916,
+    367
    ],
    "river": {
-    "the Dromir": 14
+    "the Dromir": 33
    },
    "line": {},
    "highGround": 18,
@@ -15273,14 +15464,33 @@
   },
   {
    "a": "Ulun",
-   "b": "Velgrad",
-   "km": 790,
+   "b": "Greyhaven",
+   "km": 580,
    "at": [
-    1096,
-    415
+    1019,
+    348
    ],
    "river": {
-    "the Grey Channel": 76,
+    "the Dromir": 2,
+    "the Yarbek": 36
+   },
+   "line": {
+    "the Yarbek's head": 10
+   },
+   "highGround": 0,
+   "open": 10
+  },
+  {
+   "a": "Ulun",
+   "b": "Velgrad",
+   "km": 830,
+   "at": [
+    1095,
+    412
+   ],
+   "river": {
+    "the Yarbek": 2,
+    "the Grey Channel": 78,
     "the Ostec": 3
    },
    "line": {},
@@ -15384,19 +15594,6 @@
   },
   {
    "a": "Varenna",
-   "b": "Gorath",
-   "km": 370,
-   "at": [
-    632,
-    389
-   ],
-   "river": {},
-   "line": {},
-   "highGround": 15,
-   "open": 22
-  },
-  {
-   "a": "Varenna",
    "b": "The Firststone Hills",
    "km": 340,
    "at": [
@@ -15420,6 +15617,21 @@
    "line": {},
    "highGround": 55,
    "open": 4
+  },
+  {
+   "a": "Varenna",
+   "b": "Gorath",
+   "km": 460,
+   "at": [
+    623,
+    398
+   ],
+   "river": {
+    "the Skardush": 4
+   },
+   "line": {},
+   "highGround": 22,
+   "open": 20
   },
   {
    "a": "Skyhold",
@@ -15463,43 +15675,30 @@
   {
    "a": "Solenne",
    "b": "Gorath",
-   "km": 340,
+   "km": 280,
    "at": [
-    691,
-    411
-   ],
-   "river": {},
-   "line": {},
-   "highGround": 4,
-   "open": 30
-  },
-  {
-   "a": "Solenne",
-   "b": "Varenna",
-   "km": 1170,
-   "at": [
-    621,
-    494
+    676,
+    420
    ],
    "river": {
-    "the Skardush": 7
+    "the Skardush": 13
    },
    "line": {},
-   "highGround": 78,
-   "open": 32
+   "highGround": 5,
+   "open": 10
   },
   {
    "a": "Gorath",
    "b": "Brannoch",
-   "km": 930,
+   "km": 1020,
    "at": [
-    799,
-    425
+    792,
+    424
    ],
    "river": {},
    "line": {},
-   "highGround": 84,
-   "open": 9
+   "highGround": 87,
+   "open": 15
   },
   {
    "a": "Ulun",
@@ -15530,34 +15729,49 @@
   {
    "a": "Solenne",
    "b": "Brannoch",
-   "km": 290,
+   "km": 280,
    "at": [
-    731,
-    442
+    718,
+    436
    ],
    "river": {
-    "the Skardush": 18
+    "the Skardush": 25
    },
    "line": {},
-   "highGround": 5,
-   "open": 6
+   "highGround": 1,
+   "open": 2
+  },
+  {
+   "a": "Solenne",
+   "b": "Varenna",
+   "km": 1080,
+   "at": [
+    619,
+    500
+   ],
+   "river": {
+    "the Skardush": 4
+   },
+   "line": {},
+   "highGround": 76,
+   "open": 28
   },
   {
    "a": "Varenna",
    "b": "Ashmere",
-   "km": 1970,
+   "km": 1770,
    "at": [
-    418,
-    468
+    424,
+    467
    ],
    "river": {
-    "the Brightwash": 44,
+    "the Brightwash": 56,
     "the Palella": 5,
     "the Whitewater": 16
    },
    "line": {},
-   "highGround": 63,
-   "open": 69
+   "highGround": 37,
+   "open": 63
   },
   {
    "a": "Ashmere",
@@ -15627,15 +15841,17 @@
   {
    "a": "Lucerna",
    "b": "Brannoch",
-   "km": 170,
+   "km": 270,
    "at": [
-    757,
-    468
+    751,
+    463
    ],
-   "river": {},
+   "river": {
+    "the Skardush": 2
+   },
    "line": {},
-   "highGround": 14,
-   "open": 3
+   "highGround": 17,
+   "open": 8
   },
   {
    "a": "Ulun",
@@ -15679,17 +15895,17 @@
   {
    "a": "Solenne",
    "b": "Lucerna",
-   "km": 350,
+   "km": 290,
    "at": [
-    733,
-    482
+    729,
+    486
    ],
    "river": {
-    "the Skardush": 10
+    "the Skardush": 15
    },
    "line": {},
    "highGround": 0,
-   "open": 25
+   "open": 14
   },
   {
    "a": "Morhaven",
@@ -15831,9 +16047,11 @@
     "the Monuti": 3,
     "the Santora": 17
    },
-   "line": {},
+   "line": {
+    "the Feleria rise": 4
+   },
    "highGround": 0,
-   "open": 80
+   "open": 76
   },
   {
    "a": "Skyhold",
@@ -15877,17 +16095,19 @@
   {
    "a": "Morhaven",
    "b": "Tessaria",
-   "km": 290,
+   "km": 310,
    "at": [
-    975,
-    545
+    973,
+    546
    ],
    "river": {
     "the Santora": 5
    },
-   "line": {},
+   "line": {
+    "the Feleria rise": 18
+   },
    "highGround": 0,
-   "open": 24
+   "open": 8
   },
   {
    "a": "Tamar",
@@ -15919,19 +16139,6 @@
    "open": 24
   },
   {
-   "a": "Stonehold",
-   "b": "Tessaria",
-   "km": 870,
-   "at": [
-    1049,
-    586
-   ],
-   "river": {},
-   "line": {},
-   "highGround": 17,
-   "open": 70
-  },
-  {
    "a": "Tamar",
    "b": "Tessaria",
    "km": 70,
@@ -15958,30 +16165,30 @@
    "open": 6
   },
   {
-   "a": "Sahrim",
+   "a": "Stonehold",
    "b": "Tessaria",
-   "km": 20,
+   "km": 790,
    "at": [
-    974,
-    587
+    1051,
+    596
    ],
    "river": {},
    "line": {},
-   "highGround": 0,
-   "open": 2
+   "highGround": 35,
+   "open": 44
   },
   {
    "a": "Sahrim",
-   "b": "Stonehold",
-   "km": 240,
+   "b": "Tessaria",
+   "km": 200,
    "at": [
-    982,
-    610
+    985,
+    598
    ],
    "river": {},
    "line": {},
    "highGround": 0,
-   "open": 24
+   "open": 20
   },
   {
    "a": "Ranpur",
@@ -15999,19 +16206,32 @@
    "open": 8
   },
   {
+   "a": "Sahrim",
+   "b": "Stonehold",
+   "km": 100,
+   "at": [
+    997,
+    619
+   ],
+   "river": {},
+   "line": {},
+   "highGround": 4,
+   "open": 6
+  },
+  {
    "a": "Stonehold",
    "b": "Ranpur",
-   "km": 450,
+   "km": 430,
    "at": [
-    1113,
-    652
+    1108,
+    649
    ],
    "river": {
-    "the Chanpur": 5
+    "the Chanpur": 4
    },
    "line": {},
-   "highGround": 23,
-   "open": 17
+   "highGround": 35,
+   "open": 4
   },
   {
    "a": "Varenna",
@@ -16047,28 +16267,28 @@
   {
    "a": "Sahrim",
    "b": "The Burning Waste",
-   "km": 330,
+   "km": 370,
    "at": [
-    971,
-    649
+    974,
+    647
    ],
    "river": {},
    "line": {},
-   "highGround": 20,
-   "open": 13
+   "highGround": 23,
+   "open": 14
   },
   {
    "a": "Stonehold",
    "b": "The Burning Waste",
-   "km": 400,
+   "km": 390,
    "at": [
-    1008,
-    657
+    1010,
+    659
    ],
    "river": {},
    "line": {},
-   "highGround": 36,
-   "open": 4
+   "highGround": 34,
+   "open": 5
   },
   {
    "a": "Qadir",
@@ -16127,14 +16347,14 @@
   {
    "a": "Abara",
    "b": "The Burning Waste",
-   "km": 370,
+   "km": 380,
    "at": [
-    989,
+    990,
     686
    ],
    "river": {},
    "line": {},
-   "highGround": 23,
+   "highGround": 24,
    "open": 14
   },
   {
@@ -16168,17 +16388,33 @@
   {
    "a": "Abara",
    "b": "Stonehold",
-   "km": 780,
+   "km": 530,
    "at": [
-    1065,
-    713
+    1063,
+    695
    ],
    "river": {
-    "the Chanpur": 2
+    "the Chanpur": 4
    },
    "line": {},
-   "highGround": 53,
-   "open": 23
+   "highGround": 37,
+   "open": 12
+  },
+  {
+   "a": "Abara",
+   "b": "Ranpur",
+   "km": 800,
+   "at": [
+    1142,
+    739
+   ],
+   "river": {
+    "the Chanpur": 23,
+    "the Madora": 7
+   },
+   "line": {},
+   "highGround": 0,
+   "open": 50
   },
   {
    "a": "Sabra",
@@ -16192,22 +16428,6 @@
    "line": {},
    "highGround": 5,
    "open": 26
-  },
-  {
-   "a": "Abara",
-   "b": "Ranpur",
-   "km": 720,
-   "at": [
-    1145,
-    744
-   ],
-   "river": {
-    "the Chanpur": 15,
-    "the Madora": 7
-   },
-   "line": {},
-   "highGround": 0,
-   "open": 50
   },
   {
    "a": "Qadir",
@@ -16225,18 +16445,17 @@
   {
    "a": "Sahrim",
    "b": "Zanara",
-   "km": 2120,
+   "km": 2060,
    "at": [
-    795,
-    740
+    791,
+    742
    ],
    "river": {
-    "the Monuti": 2,
     "the Mosawa": 14
    },
    "line": {},
-   "highGround": 39,
-   "open": 157
+   "highGround": 40,
+   "open": 152
   },
   {
    "a": "Zanara",

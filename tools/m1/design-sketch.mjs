@@ -291,7 +291,7 @@ const elevGuide = Float32Array.from(height, (h, c) => (water[c] ? 0 : Math.min(0
 
 // rivers and border lines on the grid
 const riverAt = new Int16Array(N).fill(-1), barrier = new Float32Array(N);
-F.rivers.forEach((r, i) => cutLine(r.line, 1, c => { if (!water[c]) { riverAt[c] = i; if (r.border) barrier[c] = Math.max(barrier[c], 7); } }));
+F.rivers.forEach((r, i) => cutLine(r.line, 1, c => { if (!water[c]) { riverAt[c] = i; if (r.border) barrier[c] = Math.max(barrier[c], 16); } }));
 const lineAt = new Int16Array(N).fill(-1);
 F.borderLines.forEach((l, i) => cutLine(l.line, 1.2, c => { if (!water[c]) { barrier[c] = Math.max(barrier[c], 26); lineAt[c] = i; } }));
 
@@ -408,7 +408,7 @@ const build = {
   about: 'Built by tools/m1/design-sketch.mjs from the owner\'s picture, design/seats.tsv and design/features.json. Cells are 10 km squares of the 700 x 450 grid; km are the game\'s frame.',
   frame: F.frame, transform: F.transform, latitude: F.latitude,
   land: { cells: landCells, share: r1(100 * landCells / N), mainland: mainland.n, islands: landC.list.length - 1, edits: edited },
-  waters: W.map((w, i) => ({ name: w.name, kind: w.kind, cells: waterCells[i], km2: waterCells[i] * 100, note: w.note || undefined })),
+  waters: W.map((w, i) => ({ name: w.name, kind: w.kind, enclosed: lakeKinds.has(w.kind), countsAsCoast: !lakeKinds.has(w.kind) || !!w.coast, km: km(w.at), cells: waterCells[i], km2: waterCells[i] * 100, note: w.note || undefined })),
   realms: Object.values(realms).filter(R => !R.wild).sort((x, y) => (x.id < y.id ? -1 : 1)).map(R => ({ id: R.id, name: R.name, provinces: R.provs.length, cells: R.cells, km2: R.cells * 100, coastal: R.coastal,
     capital: { name: LORE.realms[R.id].capital, province: R.capital.id, provinceName: R.capital.name }, waters: [...R.waters].sort(), neighbours: [...R.nb].map(n => realms[n].name).sort(), islands: R.islands })),
   wilds: Object.values(realms).filter(R => R.wild).map(R => ({ id: R.provs[0].id, name: R.name, cells: R.cells, km2: R.cells * 100, neighbours: [...R.nb].map(n => realms[n].name).sort() })),
