@@ -52,8 +52,9 @@ queued or new.
 9. **The map is confusing.** *Open:* D9-2 roads legibility; the art pass waits for the image key.
 10. **Screens cluttered;** descriptions on a tap "helpful". *Since:* B5 parts; *open:* a declutter pass after alpha.14.
 11. **Pace too slow,** and "slowness at time". Next month and Next year felt slow (the step's length, the press's speed,
-    or both). *Queued:* X7 part 2 and I1-1 (press speed); to ask: is the slowness the wait for a press, or too little
-    happening in a year?
+    or both). **Asked, answered "both":** the wait after a press is too long, and too little happens in a year.
+    *Queued:* X7 part 2 and I1-1 (press speed, raised in the queue), and **Y1**, a year worth living (what fills a
+    month and a year of each life, from its station, career and people).
 12. **The look:** figures "plain", dress tells class "sometimes", "far more differentiation and attention to detai".
     *Waits:* the image key (order 60): C8d, L2, the visual gaps.
 13. **Writing weak;** an obviously best choice "sometimes"; repeats "sometimes". *New:* **K1** also covers a writing
