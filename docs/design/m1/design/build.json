@@ -1,0 +1,10044 @@
+{
+ "about": "Built by tools/m1/design-sketch.mjs from the owner's picture, design/seats.tsv and design/features.json. Cells are 10 km squares of the 700 x 450 grid; km are the game's frame.",
+ "frame": {
+  "widthKm": 7000,
+  "heightKm": 4500,
+  "cellKm": 10,
+  "gridW": 700,
+  "gridH": 450
+ },
+ "transform": {
+  "about": "km = origin + scale * pixel, the same scale both ways: the picture's continent, islands and all, is centred in the game's frame with at least 200 km of sea on every side",
+  "kmPerPx": 4.27,
+  "originXKm": 229.2,
+  "originYKm": 78.7
+ },
+ "latitude": {
+  "about": "degrees north at the frame's top and bottom, for the climate model (Ardan's degree is about 83 km)",
+  "top": 65,
+  "bottom": 11
+ },
+ "land": {
+  "cells": 126643,
+  "share": 40.2,
+  "mainland": 124282,
+  "islands": 53,
+  "edits": {
+   "carved": 132,
+   "opened": 46,
+   "added": 208,
+   "filled": 616
+  }
+ },
+ "waters": [
+  {
+   "name": "the Western Ocean",
+   "kind": "ocean",
+   "cells": 22625,
+   "km2": 2262500
+  },
+  {
+   "name": "the Northern Ocean",
+   "kind": "ocean",
+   "cells": 5835,
+   "km2": 583500
+  },
+  {
+   "name": "the Southern Ocean",
+   "kind": "ocean",
+   "cells": 15543,
+   "km2": 1554300
+  },
+  {
+   "name": "the Sunrise Sea",
+   "kind": "ocean",
+   "cells": 22753,
+   "km2": 2275300
+  },
+  {
+   "name": "the Lion Gulf",
+   "kind": "gulf",
+   "cells": 2552,
+   "km2": 255200,
+   "note": "the bight between the Ashlands and the Bone Coast: Varenna's and Qadir's sea"
+  },
+  {
+   "name": "the Strait of Hael",
+   "kind": "strait",
+   "cells": 11093,
+   "km2": 1109300,
+   "note": "between the Ashlands' cape and the Corsair Isles"
+  },
+  {
+   "name": "Tibata Bay",
+   "kind": "bay",
+   "cells": 950,
+   "km2": 95000,
+   "note": "the bay under the Ashlands; its mouth past Gull Isle is the Tibata Strait"
+  },
+  {
+   "name": "the Gulf of Sands",
+   "kind": "gulf",
+   "cells": 17581,
+   "km2": 1758100
+  },
+  {
+   "name": "the North Fjords",
+   "kind": "bay",
+   "cells": 9300,
+   "km2": 930000,
+   "note": "the bays the Calara runs into"
+  },
+  {
+   "name": "the Elder Sea",
+   "kind": "sea",
+   "cells": 23885,
+   "km2": 2388500,
+   "note": "the island-strewn sea off the north-west"
+  },
+  {
+   "name": "Amber Bay",
+   "kind": "bay",
+   "cells": 4353,
+   "km2": 435300,
+   "note": "the outer bay at the mouth of the Cold Narrows"
+  },
+  {
+   "name": "the Cold Narrows",
+   "kind": "strait",
+   "cells": 84,
+   "km2": 8400
+  },
+  {
+   "name": "Cold Bay",
+   "kind": "bay",
+   "cells": 437,
+   "km2": 43700,
+   "note": "the picture's northern water, a bay of the sea through the Cold Narrows"
+  },
+  {
+   "name": "Whale Sound",
+   "kind": "sound",
+   "cells": 16089,
+   "km2": 1608900
+  },
+  {
+   "name": "the Eastern Gulf",
+   "kind": "gulf",
+   "cells": 13597,
+   "km2": 1359700
+  },
+  {
+   "name": "the Spice Sea",
+   "kind": "sea",
+   "cells": 5732,
+   "km2": 573200
+  },
+  {
+   "name": "the Amber Strait",
+   "kind": "strait",
+   "cells": 13950,
+   "km2": 1395000
+  },
+  {
+   "name": "the Middle Sea",
+   "kind": "inland sea",
+   "cells": 309,
+   "km2": 30900,
+   "note": "the picture's long central lake: the last water of the old sea, brackish, sweet at the Monuti's mouth and salt at its western end"
+  },
+  {
+   "name": "the Salt Sea",
+   "kind": "salt lake",
+   "cells": 154,
+   "km2": 15400,
+   "note": "the steppe's sea with no outlet; the Western Lakes drain into it"
+  },
+  {
+   "name": "the Western Lakes",
+   "kind": "lake",
+   "cells": 479,
+   "km2": 47900,
+   "note": "the Lakeland's water"
+  },
+  {
+   "name": "the Grey Water",
+   "kind": "lake",
+   "cells": 211,
+   "km2": 21100,
+   "note": "the lake the Grey Channel runs into and the Gullet runs out of"
+  },
+  {
+   "name": "the Glenmere",
+   "kind": "lake",
+   "cells": 334,
+   "km2": 33400,
+   "note": "the long western lake, the Glenwash's source; Varenna calls its south shore the Northern Lakes"
+  },
+  {
+   "name": "Lake Silara",
+   "kind": "lake",
+   "cells": 192,
+   "km2": 19200
+  },
+  {
+   "name": "the Amber Lagoon",
+   "kind": "lagoon",
+   "cells": 40,
+   "km2": 4000,
+   "note": "the north coast lagoon behind the Amber Strand"
+  },
+  {
+   "name": "the Iron Tarn",
+   "kind": "lake",
+   "cells": 48,
+   "km2": 4800,
+   "note": "the mountain lake above the Deep Gate"
+  },
+  {
+   "name": "the Crowmere",
+   "kind": "lake",
+   "cells": 35,
+   "km2": 3500,
+   "note": "the lake in the gate between Mount Cinder and the Lion Hills; the Palella runs through it"
+  },
+  {
+   "name": "the Reed Water",
+   "kind": "lake",
+   "cells": 36,
+   "km2": 3600,
+   "note": "the widening of the Gullet below the Nagora road"
+  },
+  {
+   "name": "the Veld Lagoon",
+   "kind": "lagoon",
+   "cells": 121,
+   "km2": 12100,
+   "note": "the lagoon of the south-west peninsula"
+  },
+  {
+   "name": "the Seal Lagoon",
+   "kind": "lagoon",
+   "cells": 39,
+   "km2": 3900,
+   "note": "the lagoon of the Whale Woods"
+  }
+ ],
+ "realms": [
+  {
+   "id": "POL-01",
+   "name": "Aldmark",
+   "provinces": 20,
+   "cells": 5743,
+   "km2": 574300,
+   "coastal": 9,
+   "waters": [
+    "Amber Bay",
+    "Cold Bay",
+    "the Amber Lagoon",
+    "the Cold Narrows",
+    "the North Fjords"
+   ],
+   "neighbours": [
+    "Gorath",
+    "Irondeep",
+    "Northreach",
+    "Sylvaran",
+    "The Mammoth Downs"
+   ],
+   "islands": 0
+  },
+  {
+   "id": "POL-02",
+   "name": "Solenne",
+   "provinces": 5,
+   "cells": 2790,
+   "km2": 279000,
+   "coastal": 0,
+   "waters": [
+    "the Middle Sea"
+   ],
+   "neighbours": [
+    "Brannoch",
+    "Gorath",
+    "Lucerna",
+    "Sahrim",
+    "Varenna"
+   ],
+   "islands": 0
+  },
+  {
+   "id": "POL-03",
+   "name": "Varenna",
+   "provinces": 21,
+   "cells": 11239,
+   "km2": 1123900,
+   "coastal": 5,
+   "waters": [
+    "Tibata Bay",
+    "the Crowmere",
+    "the Glenmere",
+    "the Lion Gulf"
+   ],
+   "neighbours": [
+    "Ashmere",
+    "Gorath",
+    "Qadir",
+    "Sabra",
+    "Sahrim",
+    "Solenne",
+    "The Ashlands",
+    "The Firststone Hills"
+   ],
+   "islands": 1
+  },
+  {
+   "id": "POL-04",
+   "name": "Lucerna",
+   "provinces": 1,
+   "cells": 187,
+   "km2": 18700,
+   "coastal": 0,
+   "waters": [
+    "the Middle Sea"
+   ],
+   "neighbours": [
+    "Brannoch",
+    "Ostra",
+    "Solenne"
+   ],
+   "islands": 0
+  },
+  {
+   "id": "POL-05",
+   "name": "Ashmere",
+   "provinces": 9,
+   "cells": 3370,
+   "km2": 337000,
+   "coastal": 4,
+   "waters": [
+    "the Crowmere",
+    "the Strait of Hael"
+   ],
+   "neighbours": [
+    "Sylvaran",
+    "The Ashlands",
+    "The Bleakfold",
+    "The Firststone Hills",
+    "Varenna"
+   ],
+   "islands": 0
+  },
+  {
+   "id": "POL-06",
+   "name": "Sylvaran",
+   "provinces": 22,
+   "cells": 3744,
+   "km2": 374400,
+   "coastal": 5,
+   "waters": [
+    "Lake Silara",
+    "the North Fjords"
+   ],
+   "neighbours": [
+    "Aldmark",
+    "Ashmere",
+    "Eldergrove",
+    "Gorath",
+    "The Bleakfold",
+    "The Firststone Hills"
+   ],
+   "islands": 2
+  },
+  {
+   "id": "POL-07",
+   "name": "Eldergrove",
+   "provinces": 7,
+   "cells": 2405,
+   "km2": 240500,
+   "coastal": 6,
+   "waters": [
+    "the Elder Sea",
+    "the North Fjords",
+    "the Strait of Hael"
+   ],
+   "neighbours": [
+    "Sylvaran",
+    "The Bleakfold",
+    "The Western Highlands"
+   ],
+   "islands": 4
+  },
+  {
+   "id": "POL-08",
+   "name": "Northreach",
+   "provinces": 3,
+   "cells": 2250,
+   "km2": 225000,
+   "coastal": 3,
+   "waters": [
+    "Amber Bay",
+    "Cold Bay",
+    "the Cold Narrows",
+    "the Northern Ocean"
+   ],
+   "neighbours": [
+    "Aldmark",
+    "The Mammoth Downs",
+    "The Pinewild"
+   ],
+   "islands": 1
+  },
+  {
+   "id": "POL-09",
+   "name": "Frostholm",
+   "provinces": 2,
+   "cells": 250,
+   "km2": 25000,
+   "coastal": 2,
+   "waters": [
+    "Amber Bay",
+    "the North Fjords"
+   ],
+   "neighbours": [],
+   "islands": 0
+  },
+  {
+   "id": "POL-10",
+   "name": "Irondeep",
+   "provinces": 1,
+   "cells": 478,
+   "km2": 47800,
+   "coastal": 0,
+   "waters": [
+    "the Iron Tarn"
+   ],
+   "neighbours": [
+    "Aldmark",
+    "Drevna",
+    "Gorath",
+    "The Mammoth Downs"
+   ],
+   "islands": 0
+  },
+  {
+   "id": "POL-11",
+   "name": "Gorath",
+   "provinces": 11,
+   "cells": 6662,
+   "km2": 666200,
+   "coastal": 0,
+   "waters": [
+    "the Glenmere",
+    "the Salt Sea"
+   ],
+   "neighbours": [
+    "Aldmark",
+    "Brannoch",
+    "Drevna",
+    "Greyhaven",
+    "Irondeep",
+    "Solenne",
+    "Sylvaran",
+    "The Firststone Hills",
+    "Ulun",
+    "Varenna"
+   ],
+   "islands": 0
+  },
+  {
+   "id": "POL-12",
+   "name": "Ulun",
+   "provinces": 8,
+   "cells": 4356,
+   "km2": 435600,
+   "coastal": 0,
+   "waters": [
+    "the Grey Water",
+    "the Salt Sea"
+   ],
+   "neighbours": [
+    "Brannoch",
+    "Gorath",
+    "Greyhaven",
+    "Morhaven",
+    "Tessaria",
+    "The Dobava Wilds",
+    "The Lunora Woods",
+    "Velgrad"
+   ],
+   "islands": 0
+  },
+  {
+   "id": "POL-13",
+   "name": "Brannoch",
+   "provinces": 4,
+   "cells": 1600,
+   "km2": 160000,
+   "coastal": 0,
+   "waters": [],
+   "neighbours": [
+    "Gorath",
+    "Lucerna",
+    "Morhaven",
+    "Ostra",
+    "Solenne",
+    "Ulun"
+   ],
+   "islands": 0
+  },
+  {
+   "id": "POL-14",
+   "name": "Greyhaven",
+   "provinces": 8,
+   "cells": 1592,
+   "km2": 159200,
+   "coastal": 0,
+   "waters": [],
+   "neighbours": [
+    "Drevna",
+    "Gorath",
+    "Ulun",
+    "Velgrad"
+   ],
+   "islands": 0
+  },
+  {
+   "id": "POL-15",
+   "name": "Morhaven",
+   "provinces": 3,
+   "cells": 2292,
+   "km2": 229200,
+   "coastal": 0,
+   "waters": [
+    "the Middle Sea"
+   ],
+   "neighbours": [
+    "Brannoch",
+    "Ostra",
+    "Tamar",
+    "The Lunora Woods",
+    "Ulun"
+   ],
+   "islands": 0
+  },
+  {
+   "id": "POL-16",
+   "name": "Ostra",
+   "provinces": 4,
+   "cells": 634,
+   "km2": 63400,
+   "coastal": 0,
+   "waters": [
+    "the Middle Sea"
+   ],
+   "neighbours": [
+    "Brannoch",
+    "Lucerna",
+    "Morhaven"
+   ],
+   "islands": 1
+  },
+  {
+   "id": "POL-17",
+   "name": "Qadir",
+   "provinces": 8,
+   "cells": 2261,
+   "km2": 226100,
+   "coastal": 4,
+   "waters": [
+    "the Gulf of Sands",
+    "the Lion Gulf"
+   ],
+   "neighbours": [
+    "Sabra",
+    "The Bone Coast",
+    "Varenna"
+   ],
+   "islands": 2
+  },
+  {
+   "id": "POL-18",
+   "name": "Tamar",
+   "provinces": 6,
+   "cells": 3422,
+   "km2": 342200,
+   "coastal": 0,
+   "waters": [
+    "the Middle Sea"
+   ],
+   "neighbours": [
+    "Morhaven",
+    "Sahrim",
+    "Stonehold",
+    "Tessaria",
+    "The Burning Waste",
+    "The Lunora Woods"
+   ],
+   "islands": 0
+  },
+  {
+   "id": "POL-19",
+   "name": "Sahrim",
+   "provinces": 22,
+   "cells": 9653,
+   "km2": 965300,
+   "coastal": 0,
+   "waters": [
+    "the Middle Sea"
+   ],
+   "neighbours": [
+    "Abara",
+    "Sabra",
+    "Solenne",
+    "Tamar",
+    "The Burning Waste",
+    "The Mirun Pines",
+    "Varenna",
+    "Zanara"
+   ],
+   "islands": 0
+  },
+  {
+   "id": "POL-20",
+   "name": "Zanara",
+   "provinces": 22,
+   "cells": 7006,
+   "km2": 700600,
+   "coastal": 10,
+   "waters": [
+    "the Gulf of Sands",
+    "the Southern Ocean",
+    "the Spice Sea"
+   ],
+   "neighbours": [
+    "Abara",
+    "Sabra",
+    "Sahrim",
+    "The Mirun Pines",
+    "The Samuma Uplands"
+   ],
+   "islands": 7
+  },
+  {
+   "id": "POL-21",
+   "name": "Kesh",
+   "provinces": 5,
+   "cells": 1934,
+   "km2": 193400,
+   "coastal": 4,
+   "waters": [
+    "the Amber Strait",
+    "the Eastern Gulf",
+    "the Spice Sea"
+   ],
+   "neighbours": [
+    "Abara",
+    "Ranpur",
+    "The Thornveld"
+   ],
+   "islands": 5
+  },
+  {
+   "id": "POL-22",
+   "name": "Abara",
+   "provinces": 14,
+   "cells": 4983,
+   "km2": 498300,
+   "coastal": 2,
+   "waters": [
+    "the Spice Sea"
+   ],
+   "neighbours": [
+    "Kesh",
+    "Ranpur",
+    "Sahrim",
+    "Stonehold",
+    "The Burning Waste",
+    "The Deep Green",
+    "The Thornveld",
+    "Zanara"
+   ],
+   "islands": 0
+  },
+  {
+   "id": "POL-23",
+   "name": "Hrimfell",
+   "provinces": 4,
+   "cells": 2456,
+   "km2": 245600,
+   "coastal": 3,
+   "waters": [
+    "Whale Sound",
+    "the Northern Ocean"
+   ],
+   "neighbours": [
+    "Drevna",
+    "The Frostfells"
+   ],
+   "islands": 1
+  },
+  {
+   "id": "POL-24",
+   "name": "Sabra",
+   "provinces": 8,
+   "cells": 2403,
+   "km2": 240300,
+   "coastal": 6,
+   "waters": [
+    "the Gulf of Sands"
+   ],
+   "neighbours": [
+    "Qadir",
+    "Sahrim",
+    "The Mirun Pines",
+    "The Samuma Uplands",
+    "Varenna",
+    "Zanara"
+   ],
+   "islands": 0
+  },
+  {
+   "id": "POL-25",
+   "name": "Velgrad",
+   "provinces": 14,
+   "cells": 4303,
+   "km2": 430300,
+   "coastal": 0,
+   "waters": [
+    "the Western Lakes"
+   ],
+   "neighbours": [
+    "Drevna",
+    "Greyhaven",
+    "Skyhold",
+    "The Dobava Wilds",
+    "The Stairwood",
+    "Ughrak",
+    "Ulun"
+   ],
+   "islands": 0
+  },
+  {
+   "id": "POL-26",
+   "name": "Drevna",
+   "provinces": 13,
+   "cells": 5734,
+   "km2": 573400,
+   "coastal": 1,
+   "waters": [
+    "Whale Sound",
+    "the Western Lakes"
+   ],
+   "neighbours": [
+    "Gorath",
+    "Greyhaven",
+    "Hrimfell",
+    "Irondeep",
+    "The Frostfells",
+    "The Mammoth Downs",
+    "The Whale Woods",
+    "Ughrak",
+    "Velgrad"
+   ],
+   "islands": 0
+  },
+  {
+   "id": "POL-27",
+   "name": "Skyhold",
+   "provinces": 8,
+   "cells": 2648,
+   "km2": 264800,
+   "coastal": 2,
+   "waters": [
+    "the Sunrise Sea"
+   ],
+   "neighbours": [
+    "Emberdeep",
+    "Tessaria",
+    "The Dobava Wilds",
+    "The Free Marches",
+    "The High Wastes",
+    "The Stairwood",
+    "Ughrak",
+    "Velgrad"
+   ],
+   "islands": 0
+  },
+  {
+   "id": "POL-28",
+   "name": "Stonehold",
+   "provinces": 6,
+   "cells": 2853,
+   "km2": 285300,
+   "coastal": 0,
+   "waters": [],
+   "neighbours": [
+    "Abara",
+    "Ranpur",
+    "Tamar",
+    "Tessaria",
+    "The Burning Waste"
+   ],
+   "islands": 0
+  },
+  {
+   "id": "POL-29",
+   "name": "Emberdeep",
+   "provinces": 3,
+   "cells": 2134,
+   "km2": 213400,
+   "coastal": 3,
+   "waters": [
+    "the Eastern Gulf",
+    "the Sunrise Sea"
+   ],
+   "neighbours": [
+    "Skyhold",
+    "The Free Marches"
+   ],
+   "islands": 5
+  },
+  {
+   "id": "POL-30",
+   "name": "Ranpur",
+   "provinces": 5,
+   "cells": 2461,
+   "km2": 246100,
+   "coastal": 4,
+   "waters": [
+    "the Eastern Gulf",
+    "the Reed Water"
+   ],
+   "neighbours": [
+    "Abara",
+    "Kesh",
+    "Stonehold",
+    "Tessaria",
+    "The Free Marches"
+   ],
+   "islands": 3
+  },
+  {
+   "id": "POL-31",
+   "name": "Tessaria",
+   "provinces": 3,
+   "cells": 2552,
+   "km2": 255200,
+   "coastal": 0,
+   "waters": [
+    "the Grey Water",
+    "the Reed Water"
+   ],
+   "neighbours": [
+    "Ranpur",
+    "Skyhold",
+    "Stonehold",
+    "Tamar",
+    "The Dobava Wilds",
+    "The Free Marches",
+    "The Lunora Woods",
+    "Ulun"
+   ],
+   "islands": 0
+  },
+  {
+   "id": "POL-32",
+   "name": "Ambrel",
+   "provinces": 3,
+   "cells": 821,
+   "km2": 82100,
+   "coastal": 3,
+   "waters": [
+    "the Amber Strait",
+    "the Spice Sea"
+   ],
+   "neighbours": [
+    "The Amber Wilds"
+   ],
+   "islands": 1
+  },
+  {
+   "id": "POL-33",
+   "name": "Corvasse",
+   "provinces": 2,
+   "cells": 193,
+   "km2": 19300,
+   "coastal": 2,
+   "waters": [
+    "the Strait of Hael"
+   ],
+   "neighbours": [],
+   "islands": 3
+  },
+  {
+   "id": "POL-34",
+   "name": "Ughrak",
+   "provinces": 6,
+   "cells": 4348,
+   "km2": 434800,
+   "coastal": 3,
+   "waters": [
+    "Whale Sound",
+    "the Sunrise Sea"
+   ],
+   "neighbours": [
+    "Drevna",
+    "Skyhold",
+    "The High Wastes",
+    "The Stairwood",
+    "The Tverko Woods",
+    "The Whale Woods",
+    "Velgrad"
+   ],
+   "islands": 0
+  }
+ ],
+ "wilds": [
+  {
+   "id": 281,
+   "name": "The Free Marches",
+   "cells": 1903,
+   "km2": 190300,
+   "neighbours": [
+    "Emberdeep",
+    "Ranpur",
+    "Skyhold",
+    "Tessaria"
+   ]
+  },
+  {
+   "id": 282,
+   "name": "The Frostfells",
+   "cells": 1131,
+   "km2": 113100,
+   "neighbours": [
+    "Drevna",
+    "Hrimfell",
+    "The Mammoth Downs",
+    "The Pinewild",
+    "The Trolness Fells"
+   ]
+  },
+  {
+   "id": 283,
+   "name": "The Whale Woods",
+   "cells": 646,
+   "km2": 64600,
+   "neighbours": [
+    "Drevna",
+    "The Tverko Woods",
+    "Ughrak"
+   ]
+  },
+  {
+   "id": 284,
+   "name": "The High Wastes",
+   "cells": 308,
+   "km2": 30800,
+   "neighbours": [
+    "Skyhold",
+    "Ughrak"
+   ]
+  },
+  {
+   "id": 285,
+   "name": "The Amber Wilds",
+   "cells": 197,
+   "km2": 19700,
+   "neighbours": [
+    "Ambrel"
+   ]
+  },
+  {
+   "id": 286,
+   "name": "The Isle of Pearls",
+   "cells": 49,
+   "km2": 4900,
+   "neighbours": []
+  },
+  {
+   "id": 287,
+   "name": "The Bone Coast",
+   "cells": 184,
+   "km2": 18400,
+   "neighbours": [
+    "Qadir"
+   ]
+  },
+  {
+   "id": 288,
+   "name": "The Burning Waste",
+   "cells": 822,
+   "km2": 82200,
+   "neighbours": [
+    "Abara",
+    "Sahrim",
+    "Stonehold",
+    "Tamar"
+   ]
+  },
+  {
+   "id": 289,
+   "name": "The Western Veld",
+   "cells": 376,
+   "km2": 37600,
+   "neighbours": [
+    "The Samuma Uplands"
+   ]
+  },
+  {
+   "id": 290,
+   "name": "The Thornveld",
+   "cells": 309,
+   "km2": 30900,
+   "neighbours": [
+    "Abara",
+    "Kesh"
+   ]
+  },
+  {
+   "id": 291,
+   "name": "The Deep Green",
+   "cells": 490,
+   "km2": 49000,
+   "neighbours": [
+    "Abara"
+   ]
+  },
+  {
+   "id": 292,
+   "name": "The Western Highlands",
+   "cells": 198,
+   "km2": 19800,
+   "neighbours": [
+    "Eldergrove",
+    "The Bleakfold"
+   ]
+  },
+  {
+   "id": 293,
+   "name": "The Ashlands",
+   "cells": 1322,
+   "km2": 132200,
+   "neighbours": [
+    "Ashmere",
+    "Varenna"
+   ]
+  },
+  {
+   "id": 294,
+   "name": "The Pinewild",
+   "cells": 1004,
+   "km2": 100400,
+   "neighbours": [
+    "Northreach",
+    "The Frostfells",
+    "The Mammoth Downs",
+    "The Trolness Fells"
+   ]
+  },
+  {
+   "id": 295,
+   "name": "The Little Amber Wilds",
+   "cells": 13,
+   "km2": 1300,
+   "neighbours": []
+  },
+  {
+   "id": 296,
+   "name": "The Bleakfold",
+   "cells": 344,
+   "km2": 34400,
+   "neighbours": [
+    "Ashmere",
+    "Eldergrove",
+    "Sylvaran",
+    "The Western Highlands"
+   ]
+  },
+  {
+   "id": 297,
+   "name": "The Tverko Woods",
+   "cells": 343,
+   "km2": 34300,
+   "neighbours": [
+    "The Whale Woods",
+    "Ughrak"
+   ]
+  },
+  {
+   "id": 298,
+   "name": "The Trolness Fells",
+   "cells": 921,
+   "km2": 92100,
+   "neighbours": [
+    "The Frostfells",
+    "The Pinewild"
+   ]
+  },
+  {
+   "id": 299,
+   "name": "The Mammoth Downs",
+   "cells": 1128,
+   "km2": 112800,
+   "neighbours": [
+    "Aldmark",
+    "Drevna",
+    "Irondeep",
+    "Northreach",
+    "The Frostfells",
+    "The Pinewild"
+   ]
+  },
+  {
+   "id": 300,
+   "name": "The Dobava Wilds",
+   "cells": 403,
+   "km2": 40300,
+   "neighbours": [
+    "Skyhold",
+    "Tessaria",
+    "Ulun",
+    "Velgrad"
+   ]
+  },
+  {
+   "id": 301,
+   "name": "The Stairwood",
+   "cells": 272,
+   "km2": 27200,
+   "neighbours": [
+    "Skyhold",
+    "Ughrak",
+    "Velgrad"
+   ]
+  },
+  {
+   "id": 302,
+   "name": "The Mirun Pines",
+   "cells": 742,
+   "km2": 74200,
+   "neighbours": [
+    "Sabra",
+    "Sahrim",
+    "Zanara"
+   ]
+  },
+  {
+   "id": 303,
+   "name": "The Samuma Uplands",
+   "cells": 502,
+   "km2": 50200,
+   "neighbours": [
+    "Sabra",
+    "The Western Veld",
+    "Zanara"
+   ]
+  },
+  {
+   "id": 304,
+   "name": "The Lunora Woods",
+   "cells": 721,
+   "km2": 72100,
+   "neighbours": [
+    "Morhaven",
+    "Tamar",
+    "Tessaria",
+    "Ulun"
+   ]
+  },
+  {
+   "id": 305,
+   "name": "The Firststone Hills",
+   "cells": 558,
+   "km2": 55800,
+   "neighbours": [
+    "Ashmere",
+    "Gorath",
+    "Sylvaran",
+    "Varenna"
+   ]
+  }
+ ],
+ "provinces": [
+  {
+   "id": 0,
+   "name": "Solenne",
+   "realm": "POL-02",
+   "type": "capital city",
+   "seat": {
+    "px": 703,
+    "py": 499,
+    "xKm": 3235,
+    "yKm": 2205
+   },
+   "cells": 114,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Middle Sea"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    1,
+    2,
+    3
+   ],
+   "site": "the sun-city at the north-west corner of the Middle Sea, where the Crown Road comes down from the Marble Mountains to the water"
+  },
+  {
+   "id": 1,
+   "name": "Lorina",
+   "realm": "POL-02",
+   "type": "city",
+   "seat": {
+    "px": 719,
+    "py": 493,
+    "xKm": 3295,
+    "yKm": 2185
+   },
+   "cells": 240,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Middle Sea"
+   ],
+   "rivers": [
+    "the Skardush"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    0,
+    3,
+    261,
+    262,
+    272
+   ],
+   "site": "castle harbour east of the city, the galley squadron's port, on the road to Lucerna"
+  },
+  {
+   "id": 2,
+   "name": "Mireria",
+   "realm": "POL-02",
+   "type": "town",
+   "seat": {
+    "px": 668,
+    "py": 512,
+    "xKm": 3085,
+    "yKm": 2265
+   },
+   "cells": 885,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Middle Sea"
+   ],
+   "rivers": [
+    "the Mirona"
+   ],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    0,
+    3,
+    4,
+    67,
+    78,
+    217,
+    236
+   ],
+   "site": "the sea's western arm, where the Mirona comes down from the Marble Mountains"
+  },
+  {
+   "id": 3,
+   "name": "Brunentia",
+   "realm": "POL-02",
+   "type": "market town",
+   "seat": {
+    "px": 690,
+    "py": 468,
+    "xKm": 3175,
+    "yKm": 2075
+   },
+   "cells": 1335,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Skardush"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    0,
+    1,
+    2,
+    59,
+    67,
+    168,
+    173,
+    262
+   ],
+   "site": "hill market on the road north to the Skardush Gap"
+  },
+  {
+   "id": 4,
+   "name": "Venella",
+   "realm": "POL-02",
+   "type": "town",
+   "seat": {
+    "px": 684,
+    "py": 537,
+    "xKm": 3145,
+    "yKm": 2375
+   },
+   "cells": 216,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    2,
+    217
+   ],
+   "site": "the salt pans of the sea's salt south-west corner"
+  },
+  {
+   "id": 5,
+   "name": "Kingsmere",
+   "realm": "POL-01",
+   "type": "capital city",
+   "seat": {
+    "px": 672,
+    "py": 282,
+    "xKm": 3095,
+    "yKm": 1285
+   },
+   "cells": 242,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Fairrush",
+    "the Glenwash",
+    "the Millrun"
+   ],
+   "ground": "plains",
+   "height": 0.1,
+   "adj": [
+    6,
+    10,
+    11,
+    21,
+    22
+   ],
+   "site": "just below the meeting of the Fairrush and the Glenwash, the head of barge water from Cold Bay"
+  },
+  {
+   "id": 6,
+   "name": "Carrness",
+   "realm": "POL-01",
+   "type": "market town",
+   "seat": {
+    "px": 626,
+    "py": 304,
+    "xKm": 2905,
+    "yKm": 1375
+   },
+   "cells": 261,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Fairrush",
+    "the Glenwash"
+   ],
+   "ground": "forest",
+   "height": 0.2,
+   "adj": [
+    5,
+    14,
+    15,
+    21,
+    22,
+    174
+   ],
+   "site": "march farmland between the Glenwash and the Tusk Hills"
+  },
+  {
+   "id": 7,
+   "name": "Eagleburg",
+   "realm": "POL-01",
+   "type": "city",
+   "seat": {
+    "px": 772,
+    "py": 264,
+    "xKm": 3525,
+    "yKm": 1205
+   },
+   "cells": 292,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "Cold Bay"
+   ],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.5,
+   "adj": [
+    9,
+    18,
+    172,
+    193
+   ],
+   "site": "the end of the Iron Road on the south-east shore of Cold Bay, where iron takes to barges"
+  },
+  {
+   "id": 8,
+   "name": "Frosthollow Castle",
+   "realm": "POL-01",
+   "type": "castle",
+   "seat": {
+    "px": 662,
+    "py": 206,
+    "xKm": 3055,
+    "yKm": 955
+   },
+   "cells": 484,
+   "coast": true,
+   "lake": true,
+   "waters": [
+    "Amber Bay",
+    "the Amber Lagoon",
+    "the Cold Narrows"
+   ],
+   "rivers": [],
+   "ground": "forest",
+   "height": 0.2,
+   "adj": [
+    13,
+    16,
+    22,
+    23
+   ],
+   "site": "keeps the watershed stones on the Northreach border, above the inner Narrows"
+  },
+  {
+   "id": 9,
+   "name": "Brookcliff",
+   "realm": "POL-01",
+   "type": "town",
+   "seat": {
+    "px": 748,
+    "py": 290,
+    "xKm": 3425,
+    "yKm": 1315
+   },
+   "cells": 451,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "Cold Bay"
+   ],
+   "rivers": [
+    "the Millrun"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    7,
+    10,
+    11,
+    24,
+    165,
+    172
+   ],
+   "site": "hill town under the Iron Mountains' south-west foot, on the Millrun"
+  },
+  {
+   "id": 10,
+   "name": "Easterham",
+   "realm": "POL-01",
+   "type": "city",
+   "seat": {
+    "px": 704,
+    "py": 263,
+    "xKm": 3235,
+    "yKm": 1205
+   },
+   "cells": 234,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "Cold Bay"
+   ],
+   "rivers": [
+    "the Glenwash",
+    "the Millrun"
+   ],
+   "ground": "plains",
+   "height": 0.1,
+   "adj": [
+    5,
+    9,
+    11,
+    22,
+    23
+   ],
+   "site": "the Glenwash's mouth on Cold Bay, port of the squadron"
+  },
+  {
+   "id": 11,
+   "name": "Copperham",
+   "realm": "POL-01",
+   "type": "town",
+   "seat": {
+    "px": 700,
+    "py": 310,
+    "xKm": 3215,
+    "yKm": 1405
+   },
+   "cells": 308,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Gordush",
+    "the Millrun"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    5,
+    9,
+    10,
+    21,
+    24,
+    168
+   ],
+   "site": "seat of the Southern March, behind the Gordush"
+  },
+  {
+   "id": 12,
+   "name": "Larkton Tower",
+   "realm": "POL-01",
+   "type": "castle",
+   "seat": {
+    "px": 590,
+    "py": 262,
+    "xKm": 2745,
+    "yKm": 1195
+   },
+   "cells": 223,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Fairrush"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    14,
+    15,
+    19,
+    146,
+    155
+   ],
+   "site": "watch tower on the Oak Line"
+  },
+  {
+   "id": 13,
+   "name": "Copperton Tower",
+   "realm": "POL-01",
+   "type": "castle",
+   "seat": {
+    "px": 604,
+    "py": 192,
+    "xKm": 2805,
+    "yKm": 895
+   },
+   "cells": 358,
+   "coast": true,
+   "lake": true,
+   "waters": [
+    "Amber Bay",
+    "the Amber Lagoon",
+    "the North Fjords"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    8,
+    16,
+    17
+   ],
+   "site": "cog yard on the north coast lagoon"
+  },
+  {
+   "id": 14,
+   "name": "Thornstone",
+   "realm": "POL-01",
+   "type": "town",
+   "seat": {
+    "px": 600,
+    "py": 304,
+    "xKm": 2795,
+    "yKm": 1375
+   },
+   "cells": 407,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Fairrush"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    6,
+    12,
+    15,
+    155,
+    170,
+    174
+   ],
+   "site": "the westernmost Crown Wall fort, at the east end of the Tusk Hills, on the Amber Road"
+  },
+  {
+   "id": 15,
+   "name": "Yewmarch",
+   "realm": "POL-01",
+   "type": "city",
+   "seat": {
+    "px": 622,
+    "py": 274,
+    "xKm": 2885,
+    "yKm": 1245
+   },
+   "cells": 161,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Fairrush"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    6,
+    12,
+    14,
+    16,
+    19,
+    22
+   ],
+   "site": "toll town on the Fairrush"
+  },
+  {
+   "id": 16,
+   "name": "Silverhollow",
+   "realm": "POL-01",
+   "type": "market town",
+   "seat": {
+    "px": 640,
+    "py": 228,
+    "xKm": 2965,
+    "yKm": 1055
+   },
+   "cells": 257,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "forest",
+   "height": 0.2,
+   "adj": [
+    8,
+    13,
+    15,
+    17,
+    19,
+    22
+   ],
+   "site": "market of the northern plain"
+  },
+  {
+   "id": 17,
+   "name": "Foxhurst",
+   "realm": "POL-01",
+   "type": "town",
+   "seat": {
+    "px": 574,
+    "py": 216,
+    "xKm": 2685,
+    "yKm": 1005
+   },
+   "cells": 242,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the North Fjords"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    13,
+    16,
+    19,
+    20,
+    146
+   ],
+   "site": "forest-road town on the Oak Line"
+  },
+  {
+   "id": 18,
+   "name": "Crossmarch",
+   "realm": "POL-01",
+   "type": "town",
+   "seat": {
+    "px": 782,
+    "py": 222,
+    "xKm": 3565,
+    "yKm": 1025
+   },
+   "cells": 356,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "Cold Bay"
+   ],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    7,
+    193,
+    269,
+    299
+   ],
+   "site": "the north-east march between Cold Bay and the Pinewild"
+  },
+  {
+   "id": 19,
+   "name": "Northmoor",
+   "realm": "POL-01",
+   "type": "city",
+   "seat": {
+    "px": 584,
+    "py": 240,
+    "xKm": 2725,
+    "yKm": 1105
+   },
+   "cells": 241,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    12,
+    15,
+    16,
+    17,
+    146
+   ],
+   "site": "seat of the Oak Line Shires"
+  },
+  {
+   "id": 20,
+   "name": "Amberwick",
+   "realm": "POL-01",
+   "type": "town",
+   "seat": {
+    "px": 567,
+    "py": 197,
+    "xKm": 2645,
+    "yKm": 915
+   },
+   "cells": 110,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the North Fjords"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    17,
+    140,
+    146
+   ],
+   "site": "the Amber Strand on the north coast"
+  },
+  {
+   "id": 21,
+   "name": "Galemere Tower",
+   "realm": "POL-01",
+   "type": "castle",
+   "seat": {
+    "px": 668,
+    "py": 318,
+    "xKm": 3085,
+    "yKm": 1435
+   },
+   "cells": 290,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Glenwash",
+    "the Gordush"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    5,
+    6,
+    11,
+    168,
+    174
+   ],
+   "site": "tower on the Gordush, at the Gashmar road's ford"
+  },
+  {
+   "id": 22,
+   "name": "Goldburg",
+   "realm": "POL-01",
+   "type": "town",
+   "seat": {
+    "px": 652,
+    "py": 252,
+    "xKm": 3015,
+    "yKm": 1155
+   },
+   "cells": 274,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Fairrush"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    5,
+    6,
+    8,
+    10,
+    15,
+    16,
+    23
+   ],
+   "site": "river town on the lower Glenwash plain"
+  },
+  {
+   "id": 23,
+   "name": "Briarbrook",
+   "realm": "POL-01",
+   "type": "town",
+   "seat": {
+    "px": 698,
+    "py": 238,
+    "xKm": 3205,
+    "yKm": 1095
+   },
+   "cells": 319,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "Cold Bay",
+    "the Cold Narrows"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    8,
+    10,
+    22
+   ],
+   "site": "fen town on Cold Bay's west shore"
+  },
+  {
+   "id": 24,
+   "name": "Hazelhollow",
+   "realm": "POL-01",
+   "type": "town",
+   "seat": {
+    "px": 738,
+    "py": 322,
+    "xKm": 3385,
+    "yKm": 1455
+   },
+   "cells": 233,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Gordush"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    9,
+    11,
+    165,
+    168
+   ],
+   "site": "march town by Fenny Ford on the Gordush"
+  },
+  {
+   "id": 25,
+   "name": "Tamar",
+   "realm": "POL-18",
+   "type": "capital city",
+   "seat": {
+    "px": 868,
+    "py": 622,
+    "xKm": 3935,
+    "yKm": 2735
+   },
+   "cells": 375,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Monuti"
+   ],
+   "ground": "desert",
+   "height": 0.2,
+   "adj": [
+    27,
+    28,
+    29,
+    30,
+    234
+   ],
+   "site": "the capital in the middle valley, where the rift is widest and the flood plain is broadest"
+  },
+  {
+   "id": 26,
+   "name": "Rashira",
+   "realm": "POL-18",
+   "type": "town",
+   "seat": {
+    "px": 833,
+    "py": 542,
+    "xKm": 3785,
+    "yKm": 2395
+   },
+   "cells": 409,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Middle Sea"
+   ],
+   "rivers": [
+    "the Monuti"
+   ],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    28,
+    207,
+    208,
+    209,
+    227,
+    234
+   ],
+   "site": "the delta's western mouth on the Middle Sea, the grain harbour"
+  },
+  {
+   "id": 27,
+   "name": "Talim",
+   "realm": "POL-18",
+   "type": "town",
+   "seat": {
+    "px": 866,
+    "py": 650,
+    "xKm": 3925,
+    "yKm": 2855
+   },
+   "cells": 583,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Monuti"
+   ],
+   "ground": "desert",
+   "height": 0.2,
+   "adj": [
+    25,
+    29,
+    221,
+    230,
+    288
+   ],
+   "site": "the Flood Temple at the Flood Stairs, where the water's height is read"
+  },
+  {
+   "id": 28,
+   "name": "Akayn",
+   "realm": "POL-18",
+   "type": "market town",
+   "seat": {
+    "px": 857,
+    "py": 591,
+    "xKm": 3885,
+    "yKm": 2605
+   },
+   "cells": 478,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Monuti",
+    "the Santora"
+   ],
+   "ground": "desert",
+   "height": 0.2,
+   "adj": [
+    25,
+    26,
+    30,
+    208,
+    234
+   ],
+   "site": "market at the delta's apex, where the Neck Road leaves the river"
+  },
+  {
+   "id": 29,
+   "name": "Khaiyah",
+   "realm": "POL-18",
+   "type": "market town",
+   "seat": {
+    "px": 838,
+    "py": 656,
+    "xKm": 3805,
+    "yKm": 2875
+   },
+   "cells": 558,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Hazir",
+    "the Monuti"
+   ],
+   "ground": "desert",
+   "height": 0.2,
+   "adj": [
+    25,
+    27,
+    215,
+    219,
+    221,
+    234
+   ],
+   "site": "natron market on the valley's western desert edge"
+  },
+  {
+   "id": 30,
+   "name": "Fort Halifa",
+   "realm": "POL-18",
+   "type": "castle",
+   "seat": {
+    "px": 902,
+    "py": 590,
+    "xKm": 4085,
+    "yKm": 2595
+   },
+   "cells": 1019,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Santora"
+   ],
+   "ground": "desert",
+   "height": 0.2,
+   "adj": [
+    25,
+    28,
+    196,
+    208,
+    209,
+    238,
+    288,
+    304
+   ],
+   "site": "the east-bank fort where the Neck Road enters the valley"
+  },
+  {
+   "id": 31,
+   "name": "Zanara",
+   "realm": "POL-20",
+   "type": "capital city",
+   "seat": {
+    "px": 705,
+    "py": 795,
+    "xKm": 3235,
+    "yKm": 3475
+   },
+   "cells": 286,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Southern Ocean"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    40,
+    44,
+    49,
+    51
+   ],
+   "site": "the Ancestor Hill above the Lotapa pastures, a day from the coast"
+  },
+  {
+   "id": 32,
+   "name": "Atani",
+   "realm": "POL-20",
+   "type": "town",
+   "seat": {
+    "px": 948,
+    "py": 797,
+    "xKm": 4275,
+    "yKm": 3485
+   },
+   "cells": 339,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    45,
+    47,
+    48,
+    84,
+    85,
+    87,
+    231
+   ],
+   "site": "the eastern road's end under the Highveld"
+  },
+  {
+   "id": 33,
+   "name": "Jiamo",
+   "realm": "POL-20",
+   "type": "town",
+   "seat": {
+    "px": 600,
+    "py": 764,
+    "xKm": 2795,
+    "yKm": 3345
+   },
+   "cells": 354,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Gulf of Sands",
+    "the Southern Ocean"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    34,
+    50,
+    248,
+    302,
+    303
+   ],
+   "site": "western hill town above the western bay"
+  },
+  {
+   "id": 34,
+   "name": "Jitamo",
+   "realm": "POL-20",
+   "type": "town",
+   "seat": {
+    "px": 640,
+    "py": 746,
+    "xKm": 2965,
+    "yKm": 3265
+   },
+   "cells": 372,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "forest",
+   "height": 0.3,
+   "adj": [
+    33,
+    39,
+    50,
+    51,
+    216,
+    233,
+    302
+   ],
+   "site": "hill town of the Southern Hills"
+  },
+  {
+   "id": 35,
+   "name": "Datula Walls",
+   "realm": "POL-20",
+   "type": "castle",
+   "seat": {
+    "px": 842,
+    "py": 760,
+    "xKm": 3825,
+    "yKm": 3325
+   },
+   "cells": 171,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Tedana"
+   ],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    36,
+    38,
+    42,
+    221,
+    230
+   ],
+   "site": "fort at the desert's edge on the Salt Road's eastern branch"
+  },
+  {
+   "id": 36,
+   "name": "Osezi",
+   "realm": "POL-20",
+   "type": "town",
+   "seat": {
+    "px": 828,
+    "py": 792,
+    "xKm": 3765,
+    "yKm": 3465
+   },
+   "cells": 191,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Tedana"
+   ],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    35,
+    38,
+    41,
+    42,
+    43,
+    46
+   ],
+   "site": "town of the middle plains"
+  },
+  {
+   "id": 37,
+   "name": "Bayalo",
+   "realm": "POL-20",
+   "type": "town",
+   "seat": {
+    "px": 890,
+    "py": 846,
+    "xKm": 4025,
+    "yKm": 3695
+   },
+   "cells": 278,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Southern Ocean"
+   ],
+   "rivers": [
+    "the Mosawa"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    45,
+    46,
+    48
+   ],
+   "site": "coast town east of the Mosawa's mouth"
+  },
+  {
+   "id": 38,
+   "name": "Asilo Oasis",
+   "realm": "POL-20",
+   "type": "oasis",
+   "seat": {
+    "px": 798,
+    "py": 748,
+    "xKm": 3635,
+    "yKm": 3275
+   },
+   "cells": 250,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Lotapa",
+    "the Tedana"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    35,
+    36,
+    41,
+    221,
+    226
+   ],
+   "site": "the last water south of the Red Waste, the gold-dust market"
+  },
+  {
+   "id": 39,
+   "name": "Kabale",
+   "realm": "POL-20",
+   "type": "city",
+   "seat": {
+    "px": 682,
+    "py": 737,
+    "xKm": 3145,
+    "yKm": 3225
+   },
+   "cells": 198,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    34,
+    44,
+    51,
+    216,
+    223
+   ],
+   "site": "the deep gold mines of the Southern Hills"
+  },
+  {
+   "id": 40,
+   "name": "Seduna Walls",
+   "realm": "POL-20",
+   "type": "castle",
+   "seat": {
+    "px": 668,
+    "py": 812,
+    "xKm": 3085,
+    "yKm": 3545
+   },
+   "cells": 678,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Southern Ocean"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    31,
+    50,
+    51
+   ],
+   "site": "remount fort on the coast plain"
+  },
+  {
+   "id": 41,
+   "name": "Omamba",
+   "realm": "POL-20",
+   "type": "town",
+   "seat": {
+    "px": 774,
+    "py": 776,
+    "xKm": 3535,
+    "yKm": 3395
+   },
+   "cells": 365,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Lotapa"
+   ],
+   "ground": "plains",
+   "height": 0.1,
+   "adj": [
+    36,
+    38,
+    43,
+    44,
+    49,
+    223,
+    226
+   ],
+   "site": "town of the upper Lotapa"
+  },
+  {
+   "id": 42,
+   "name": "Owana",
+   "realm": "POL-20",
+   "type": "town",
+   "seat": {
+    "px": 880,
+    "py": 768,
+    "xKm": 3985,
+    "yKm": 3355
+   },
+   "cells": 255,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "desert",
+   "height": 0.3,
+   "adj": [
+    35,
+    36,
+    45,
+    46,
+    52,
+    230
+   ],
+   "site": "hill town on the upper Tedana"
+  },
+  {
+   "id": 43,
+   "name": "Tefude",
+   "realm": "POL-20",
+   "type": "market town",
+   "seat": {
+    "px": 800,
+    "py": 814,
+    "xKm": 3645,
+    "yKm": 3555
+   },
+   "cells": 597,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Southern Ocean"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    36,
+    41,
+    46,
+    49
+   ],
+   "site": "the cattle fair between the Mosawa lands and the capital"
+  },
+  {
+   "id": 44,
+   "name": "Fort Zuafa",
+   "realm": "POL-20",
+   "type": "castle",
+   "seat": {
+    "px": 722,
+    "py": 762,
+    "xKm": 3315,
+    "yKm": 3335
+   },
+   "cells": 399,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.1,
+   "adj": [
+    31,
+    39,
+    41,
+    49,
+    51,
+    223
+   ],
+   "site": "fort on the Salt Road"
+  },
+  {
+   "id": 45,
+   "name": "Jiwamo",
+   "realm": "POL-20",
+   "type": "town",
+   "seat": {
+    "px": 902,
+    "py": 800,
+    "xKm": 4085,
+    "yKm": 3495
+   },
+   "cells": 258,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Mosawa"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    32,
+    37,
+    42,
+    46,
+    48,
+    52,
+    231
+   ],
+   "site": "town on the middle Mosawa"
+  },
+  {
+   "id": 46,
+   "name": "Tandi",
+   "realm": "POL-20",
+   "type": "city",
+   "seat": {
+    "px": 864,
+    "py": 834,
+    "xKm": 3915,
+    "yKm": 3635
+   },
+   "cells": 524,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Southern Ocean"
+   ],
+   "rivers": [
+    "the Mosawa",
+    "the Tedana"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    36,
+    37,
+    42,
+    43,
+    45
+   ],
+   "site": "the Tedana kings' city on the lower Mosawa, below the Tedana's mouth"
+  },
+  {
+   "id": 47,
+   "name": "Fort Nisi",
+   "realm": "POL-20",
+   "type": "castle",
+   "seat": {
+    "px": 950,
+    "py": 843,
+    "xKm": 4285,
+    "yKm": 3675
+   },
+   "cells": 156,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Southern Ocean",
+    "the Spice Sea"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    32,
+    48,
+    85
+   ],
+   "site": "fort at the edge of the Deep Green"
+  },
+  {
+   "id": 48,
+   "name": "Wahabo",
+   "realm": "POL-20",
+   "type": "market town",
+   "seat": {
+    "px": 925,
+    "py": 828,
+    "xKm": 4175,
+    "yKm": 3615
+   },
+   "cells": 276,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Southern Ocean"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    32,
+    37,
+    45,
+    47
+   ],
+   "site": "market town of the eastern plains"
+  },
+  {
+   "id": 49,
+   "name": "Anumba",
+   "realm": "POL-20",
+   "type": "city",
+   "seat": {
+    "px": 752,
+    "py": 806,
+    "xKm": 3445,
+    "yKm": 3525
+   },
+   "cells": 426,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Southern Ocean"
+   ],
+   "rivers": [
+    "the Lotapa"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    31,
+    41,
+    43,
+    44
+   ],
+   "site": "cattle city on the Lotapa"
+  },
+  {
+   "id": 50,
+   "name": "Tetamba",
+   "realm": "POL-20",
+   "type": "market town",
+   "seat": {
+    "px": 622,
+    "py": 800,
+    "xKm": 2885,
+    "yKm": 3495
+   },
+   "cells": 233,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Southern Ocean"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    33,
+    34,
+    40,
+    51
+   ],
+   "site": "market of the western plains"
+  },
+  {
+   "id": 51,
+   "name": "Samandi",
+   "realm": "POL-20",
+   "type": "town",
+   "seat": {
+    "px": 660,
+    "py": 764,
+    "xKm": 3045,
+    "yKm": 3345
+   },
+   "cells": 308,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    31,
+    34,
+    39,
+    40,
+    44,
+    50
+   ],
+   "site": "mountain town of the Southern Hills"
+  },
+  {
+   "id": 52,
+   "name": "Juwalo",
+   "realm": "POL-20",
+   "type": "market town",
+   "seat": {
+    "px": 908,
+    "py": 770,
+    "xKm": 4105,
+    "yKm": 3365
+   },
+   "cells": 92,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "desert",
+   "height": 0.3,
+   "adj": [
+    42,
+    45,
+    230,
+    231
+   ],
+   "site": "market on the eastern road"
+  },
+  {
+   "id": 53,
+   "name": "Ranpur",
+   "realm": "POL-30",
+   "type": "capital city",
+   "seat": {
+    "px": 1188,
+    "py": 694,
+    "xKm": 5305,
+    "yKm": 3045
+   },
+   "cells": 433,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Eastern Gulf"
+   ],
+   "rivers": [
+    "the Chanpur"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    54,
+    57,
+    90
+   ],
+   "site": "the Chanpur's mouth on the Eastern Gulf"
+  },
+  {
+   "id": 54,
+   "name": "Chanari",
+   "realm": "POL-30",
+   "type": "city",
+   "seat": {
+    "px": 1140,
+    "py": 668,
+    "xKm": 5095,
+    "yKm": 2935
+   },
+   "cells": 842,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Eastern Gulf"
+   ],
+   "rivers": [
+    "the Chanpur",
+    "the Gullet"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    53,
+    55,
+    90,
+    239,
+    241,
+    281
+   ],
+   "site": "the steel town in the Worldspine's foothills, on the Chanpur"
+  },
+  {
+   "id": 55,
+   "name": "Tiravi",
+   "realm": "POL-30",
+   "type": "town",
+   "seat": {
+    "px": 1138,
+    "py": 628,
+    "xKm": 5085,
+    "yKm": 2765
+   },
+   "cells": 283,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Reed Water"
+   ],
+   "rivers": [
+    "the Gullet"
+   ],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    54,
+    194,
+    241,
+    281
+   ],
+   "site": "the Nagora March under the pass (Tirpur fort)"
+  },
+  {
+   "id": 56,
+   "name": "Madora",
+   "realm": "POL-30",
+   "type": "market town",
+   "seat": {
+    "px": 1181,
+    "py": 752,
+    "xKm": 5275,
+    "yKm": 3285
+   },
+   "cells": 567,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Eastern Gulf"
+   ],
+   "rivers": [
+    "the Madora"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    57,
+    90,
+    95,
+    214
+   ],
+   "site": "the river-mouth fort and teak harbour of the south coast"
+  },
+  {
+   "id": 57,
+   "name": "Ekapur",
+   "realm": "POL-30",
+   "type": "market town",
+   "seat": {
+    "px": 1176,
+    "py": 722,
+    "xKm": 5255,
+    "yKm": 3165
+   },
+   "cells": 336,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Eastern Gulf"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    53,
+    56,
+    90
+   ],
+   "site": "shore town south of the capital"
+  },
+  {
+   "id": 58,
+   "name": "Varenna",
+   "realm": "POL-03",
+   "type": "capital city",
+   "seat": {
+    "px": 313,
+    "py": 597,
+    "xKm": 1565,
+    "yKm": 2625
+   },
+   "cells": 186,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "Tibata Bay",
+    "the Lion Gulf"
+   ],
+   "rivers": [
+    "the Palella"
+   ],
+   "ground": "forest",
+   "height": 0.3,
+   "adj": [
+    61,
+    69,
+    70
+   ],
+   "site": "the Palella's mouth on the Lion Gulf, the only river gate through the coast hills"
+  },
+  {
+   "id": 59,
+   "name": "Ardata",
+   "realm": "POL-03",
+   "type": "town",
+   "seat": {
+    "px": 592,
+    "py": 410,
+    "xKm": 2755,
+    "yKm": 1835
+   },
+   "cells": 747,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Glenmere"
+   ],
+   "rivers": [
+    "the Glenwash",
+    "the Skardush"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    3,
+    62,
+    67,
+    168,
+    174
+   ],
+   "site": "march town at the east end of the Glenmere, under the Albora Sill"
+  },
+  {
+   "id": 60,
+   "name": "Camia",
+   "realm": "POL-03",
+   "type": "city",
+   "seat": {
+    "px": 447,
+    "py": 546,
+    "xKm": 2135,
+    "yKm": 2415
+   },
+   "cells": 461,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Crowmere"
+   ],
+   "rivers": [
+    "the Palella"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    63,
+    65,
+    71,
+    73,
+    74,
+    158
+   ],
+   "site": "weaving town on the middle Palella"
+  },
+  {
+   "id": 61,
+   "name": "Vitina",
+   "realm": "POL-03",
+   "type": "city",
+   "seat": {
+    "px": 324,
+    "py": 570,
+    "xKm": 1615,
+    "yKm": 2515
+   },
+   "cells": 130,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "Tibata Bay"
+   ],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    58,
+    64,
+    69,
+    76
+   ],
+   "site": "port on the Crown Coast, north of the capital"
+  },
+  {
+   "id": 62,
+   "name": "Castella",
+   "realm": "POL-03",
+   "type": "city",
+   "seat": {
+    "px": 548,
+    "py": 406,
+    "xKm": 2565,
+    "yKm": 1815
+   },
+   "cells": 402,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Glenmere"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.1,
+   "adj": [
+    59,
+    66,
+    67,
+    72
+   ],
+   "site": "chief town of the Northern Lakes, on the Glenmere's south shore"
+  },
+  {
+   "id": 63,
+   "name": "Torossa",
+   "realm": "POL-03",
+   "type": "town",
+   "seat": {
+    "px": 480,
+    "py": 548,
+    "xKm": 2275,
+    "yKm": 2415
+   },
+   "cells": 456,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Whitewater"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    60,
+    73,
+    77,
+    158
+   ],
+   "site": "plain town of the eastern lowland"
+  },
+  {
+   "id": 64,
+   "name": "Norona",
+   "realm": "POL-03",
+   "type": "town",
+   "seat": {
+    "px": 327,
+    "py": 545,
+    "xKm": 1625,
+    "yKm": 2405
+   },
+   "cells": 290,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "Tibata Bay"
+   ],
+   "rivers": [],
+   "ground": "forest",
+   "height": 0.3,
+   "adj": [
+    61,
+    68,
+    75,
+    76
+   ],
+   "site": "harbour town at the head of Tibata Bay"
+  },
+  {
+   "id": 65,
+   "name": "Casteria",
+   "realm": "POL-03",
+   "type": "town",
+   "seat": {
+    "px": 392,
+    "py": 514,
+    "xKm": 1905,
+    "yKm": 2275
+   },
+   "cells": 281,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    60,
+    71,
+    74,
+    76
+   ],
+   "site": "hill town on the south face of the Lion Hills"
+  },
+  {
+   "id": 66,
+   "name": "Calena",
+   "realm": "POL-03",
+   "type": "city",
+   "seat": {
+    "px": 500,
+    "py": 412,
+    "xKm": 2365,
+    "yKm": 1835
+   },
+   "cells": 388,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Glenmere"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    62,
+    72,
+    158,
+    305
+   ],
+   "site": "the Calena woods at the Glenmere's west end"
+  },
+  {
+   "id": 67,
+   "name": "Pertello",
+   "realm": "POL-03",
+   "type": "town",
+   "seat": {
+    "px": 566,
+    "py": 446,
+    "xKm": 2645,
+    "yKm": 1985
+   },
+   "cells": 502,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "steppe",
+   "height": 0.4,
+   "adj": [
+    2,
+    3,
+    59,
+    62,
+    72,
+    77,
+    78
+   ],
+   "site": "town of the Montessa Hills"
+  },
+  {
+   "id": 68,
+   "name": "Tibata",
+   "realm": "POL-03",
+   "type": "town",
+   "seat": {
+    "px": 284,
+    "py": 518,
+    "xKm": 1445,
+    "yKm": 2295
+   },
+   "cells": 348,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "Tibata Bay"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    64,
+    75,
+    293
+   ],
+   "site": "harbour at the mouth of Tibata Bay, its tower on the strait"
+  },
+  {
+   "id": 69,
+   "name": "Tarona",
+   "realm": "POL-03",
+   "type": "town",
+   "seat": {
+    "px": 372,
+    "py": 592,
+    "xKm": 1815,
+    "yKm": 2605
+   },
+   "cells": 663,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Palella"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    58,
+    61,
+    70,
+    71,
+    76,
+    275,
+    279
+   ],
+   "site": "toll town on the lower Palella, in the gap through the coast hills"
+  },
+  {
+   "id": 70,
+   "name": "Aurora",
+   "realm": "POL-03",
+   "type": "town",
+   "seat": {
+    "px": 320,
+    "py": 622,
+    "xKm": 1595,
+    "yKm": 2735
+   },
+   "cells": 144,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Lion Gulf"
+   ],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    58,
+    69,
+    273,
+    279
+   ],
+   "site": "the southern coast town, toward Qadir"
+  },
+  {
+   "id": 71,
+   "name": "Ambalia",
+   "realm": "POL-03",
+   "type": "market town",
+   "seat": {
+    "px": 425,
+    "py": 585,
+    "xKm": 2045,
+    "yKm": 2575
+   },
+   "cells": 1152,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Palella"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    60,
+    65,
+    69,
+    73,
+    76,
+    275,
+    276
+   ],
+   "site": "market of the southern lowland"
+  },
+  {
+   "id": 72,
+   "name": "Taria",
+   "realm": "POL-03",
+   "type": "town",
+   "seat": {
+    "px": 520,
+    "py": 446,
+    "xKm": 2445,
+    "yKm": 1985
+   },
+   "cells": 367,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "forest",
+   "height": 0.2,
+   "adj": [
+    62,
+    66,
+    67,
+    77,
+    158
+   ],
+   "site": "hill town under the Montessa Gate"
+  },
+  {
+   "id": 73,
+   "name": "Valia",
+   "realm": "POL-03",
+   "type": "town",
+   "seat": {
+    "px": 505,
+    "py": 575,
+    "xKm": 2385,
+    "yKm": 2535
+   },
+   "cells": 1500,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    60,
+    63,
+    71,
+    77,
+    78,
+    224,
+    236,
+    244,
+    248,
+    276
+   ],
+   "site": "plain town under the Marble Mountains' western foot"
+  },
+  {
+   "id": 74,
+   "name": "Lunium",
+   "realm": "POL-03",
+   "type": "town",
+   "seat": {
+    "px": 422,
+    "py": 494,
+    "xKm": 2035,
+    "yKm": 2185
+   },
+   "cells": 486,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Crowmere"
+   ],
+   "rivers": [
+    "the Brightwash",
+    "the Palella"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    60,
+    65,
+    75,
+    76,
+    158,
+    159,
+    164
+   ],
+   "site": "hill town on the Brightwash border"
+  },
+  {
+   "id": 75,
+   "name": "Tarium",
+   "realm": "POL-03",
+   "type": "town",
+   "seat": {
+    "px": 300,
+    "py": 498,
+    "xKm": 1515,
+    "yKm": 2205
+   },
+   "cells": 940,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Brightwash"
+   ],
+   "ground": "forest",
+   "height": 0.3,
+   "adj": [
+    64,
+    68,
+    74,
+    76,
+    156,
+    160,
+    161,
+    164,
+    293
+   ],
+   "site": "coast town at the Ashlands' edge, on Tibata Bay"
+  },
+  {
+   "id": 76,
+   "name": "Rocca Pavice",
+   "realm": "POL-03",
+   "type": "castle",
+   "seat": {
+    "px": 352,
+    "py": 540,
+    "xKm": 1735,
+    "yKm": 2385
+   },
+   "cells": 471,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    61,
+    64,
+    65,
+    69,
+    71,
+    74,
+    75
+   ],
+   "site": "castle in the coast hills between the bay and the lowland"
+  },
+  {
+   "id": 77,
+   "name": "Vitia",
+   "realm": "POL-03",
+   "type": "city",
+   "seat": {
+    "px": 535,
+    "py": 495,
+    "xKm": 2515,
+    "yKm": 2195
+   },
+   "cells": 620,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Whitewater"
+   ],
+   "ground": "forest",
+   "height": 0.3,
+   "adj": [
+    63,
+    67,
+    72,
+    73,
+    78,
+    158
+   ],
+   "site": "the citadel of the uplands, on the Crown Road"
+  },
+  {
+   "id": 78,
+   "name": "Venina",
+   "realm": "POL-03",
+   "type": "city",
+   "seat": {
+    "px": 572,
+    "py": 520,
+    "xKm": 2675,
+    "yKm": 2295
+   },
+   "cells": 705,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    2,
+    67,
+    73,
+    77
+   ],
+   "site": "marble town under the Marble Mountains"
+  },
+  {
+   "id": 79,
+   "name": "Ostra",
+   "realm": "POL-16",
+   "type": "capital city",
+   "seat": {
+    "px": 788,
+    "py": 502,
+    "xKm": 3595,
+    "yKm": 2225
+   },
+   "cells": 99,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Middle Sea"
+   ],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    80,
+    81,
+    82,
+    261
+   ],
+   "site": "the deep harbour east of the Narrows of the Middle Sea"
+  },
+  {
+   "id": 80,
+   "name": "Fort Barica",
+   "realm": "POL-16",
+   "type": "castle",
+   "seat": {
+    "px": 812,
+    "py": 511,
+    "xKm": 3695,
+    "yKm": 2265
+   },
+   "cells": 115,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Middle Sea"
+   ],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    79,
+    81,
+    207
+   ],
+   "site": "fort on the eastern arm's north shore, toward Morhaven"
+  },
+  {
+   "id": 81,
+   "name": "Miressa",
+   "realm": "POL-16",
+   "type": "town",
+   "seat": {
+    "px": 800,
+    "py": 478,
+    "xKm": 3645,
+    "yKm": 2115
+   },
+   "cells": 320,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    79,
+    80,
+    207,
+    259,
+    260,
+    261
+   ],
+   "site": "timber and murex town in the foothills"
+  },
+  {
+   "id": 82,
+   "name": "Novice",
+   "realm": "POL-16",
+   "type": "market town",
+   "seat": {
+    "px": 768,
+    "py": 497,
+    "xKm": 3505,
+    "yKm": 2205
+   },
+   "cells": 100,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Middle Sea"
+   ],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.5,
+   "adj": [
+    79,
+    261,
+    272
+   ],
+   "site": "market on the Narrows, facing the Isle of Vines"
+  },
+  {
+   "id": 83,
+   "name": "Abara",
+   "realm": "POL-22",
+   "type": "capital city",
+   "seat": {
+    "px": 1048,
+    "py": 770,
+    "xKm": 4705,
+    "yKm": 3365
+   },
+   "cells": 323,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    86,
+    88,
+    89,
+    90,
+    91,
+    96,
+    242
+   ],
+   "site": "the royal ancestor houses on the high plateau, south of the snow peaks"
+  },
+  {
+   "id": 84,
+   "name": "Jimba",
+   "realm": "POL-22",
+   "type": "town",
+   "seat": {
+    "px": 992,
+    "py": 785,
+    "xKm": 4465,
+    "yKm": 3435
+   },
+   "cells": 273,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Monuti"
+   ],
+   "ground": "forest",
+   "height": 0.3,
+   "adj": [
+    32,
+    85,
+    87,
+    89,
+    93,
+    94,
+    96
+   ],
+   "site": "valley town of the south-west"
+  },
+  {
+   "id": 85,
+   "name": "Fort Makale",
+   "realm": "POL-22",
+   "type": "castle",
+   "seat": {
+    "px": 985,
+    "py": 818,
+    "xKm": 4435,
+    "yKm": 3575
+   },
+   "cells": 229,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Spice Sea"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    32,
+    47,
+    84,
+    93
+   ],
+   "site": "fort on the forest road by the Matazi Ford"
+  },
+  {
+   "id": 86,
+   "name": "Okilo",
+   "realm": "POL-22",
+   "type": "town",
+   "seat": {
+    "px": 975,
+    "py": 715,
+    "xKm": 4395,
+    "yKm": 3135
+   },
+   "cells": 763,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    83,
+    87,
+    94,
+    96,
+    240,
+    242,
+    288
+   ],
+   "site": "town of the northern highlands"
+  },
+  {
+   "id": 87,
+   "name": "Koyako",
+   "realm": "POL-22",
+   "type": "town",
+   "seat": {
+    "px": 960,
+    "py": 752,
+    "xKm": 4325,
+    "yKm": 3285
+   },
+   "cells": 354,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Monuti"
+   ],
+   "ground": "desert",
+   "height": 0.3,
+   "adj": [
+    32,
+    84,
+    86,
+    94,
+    231,
+    288
+   ],
+   "site": "the Koyako Stair down to the Monuti"
+  },
+  {
+   "id": 88,
+   "name": "Balona",
+   "realm": "POL-22",
+   "type": "city",
+   "seat": {
+    "px": 1095,
+    "py": 760,
+    "xKm": 4905,
+    "yKm": 3325
+   },
+   "cells": 256,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    83,
+    90,
+    91,
+    92,
+    95,
+    290
+   ],
+   "site": "city of the eastern valleys"
+  },
+  {
+   "id": 89,
+   "name": "Yandi",
+   "realm": "POL-22",
+   "type": "city",
+   "seat": {
+    "px": 1030,
+    "py": 795,
+    "xKm": 4625,
+    "yKm": 3475
+   },
+   "cells": 347,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Monundi"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    83,
+    84,
+    91,
+    92,
+    93,
+    96
+   ],
+   "site": "city of the southern valleys"
+  },
+  {
+   "id": 90,
+   "name": "Kasani",
+   "realm": "POL-22",
+   "type": "town",
+   "seat": {
+    "px": 1112,
+    "py": 730,
+    "xKm": 4975,
+    "yKm": 3195
+   },
+   "cells": 636,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "desert",
+   "height": 0.4,
+   "adj": [
+    53,
+    54,
+    56,
+    57,
+    83,
+    88,
+    95,
+    239,
+    242
+   ],
+   "site": "coffee forest town on the wet eastern slope"
+  },
+  {
+   "id": 91,
+   "name": "Nusalo",
+   "realm": "POL-22",
+   "type": "city",
+   "seat": {
+    "px": 1075,
+    "py": 775,
+    "xKm": 4815,
+    "yKm": 3385
+   },
+   "cells": 186,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    83,
+    88,
+    89,
+    92
+   ],
+   "site": "the second court"
+  },
+  {
+   "id": 92,
+   "name": "Tezenga",
+   "realm": "POL-22",
+   "type": "market town",
+   "seat": {
+    "px": 1078,
+    "py": 805,
+    "xKm": 4835,
+    "yKm": 3515
+   },
+   "cells": 192,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.5,
+   "adj": [
+    88,
+    89,
+    91,
+    93,
+    213,
+    290
+   ],
+   "site": "pastures and horse market, at the head of the Monundi"
+  },
+  {
+   "id": 93,
+   "name": "Londi Walls",
+   "realm": "POL-22",
+   "type": "castle",
+   "seat": {
+    "px": 1015,
+    "py": 825,
+    "xKm": 4565,
+    "yKm": 3605
+   },
+   "cells": 513,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Spice Sea"
+   ],
+   "rivers": [
+    "the Monundi"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    84,
+    85,
+    89,
+    92,
+    213,
+    291
+   ],
+   "site": "southern fort"
+  },
+  {
+   "id": 94,
+   "name": "Kokuka Walls",
+   "realm": "POL-22",
+   "type": "castle",
+   "seat": {
+    "px": 985,
+    "py": 738,
+    "xKm": 4435,
+    "yKm": 3225
+   },
+   "cells": 205,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    84,
+    86,
+    87,
+    96
+   ],
+   "site": "western fort above the desert"
+  },
+  {
+   "id": 95,
+   "name": "Selomba",
+   "realm": "POL-22",
+   "type": "city",
+   "seat": {
+    "px": 1128,
+    "py": 778,
+    "xKm": 5045,
+    "yKm": 3405
+   },
+   "cells": 461,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Madora"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    56,
+    88,
+    90,
+    211,
+    214,
+    290
+   ],
+   "site": "archers' city on the eastern slope"
+  },
+  {
+   "id": 96,
+   "name": "Wamazi",
+   "realm": "POL-22",
+   "type": "city",
+   "seat": {
+    "px": 1015,
+    "py": 768,
+    "xKm": 4565,
+    "yKm": 3355
+   },
+   "cells": 245,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    83,
+    84,
+    86,
+    89,
+    94
+   ],
+   "site": "city of the terraces"
+  },
+  {
+   "id": 97,
+   "name": "Velgrad",
+   "realm": "POL-25",
+   "type": "capital city",
+   "seat": {
+    "px": 1140,
+    "py": 385,
+    "xKm": 5095,
+    "yKm": 1725
+   },
+   "cells": 254,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Ostec"
+   ],
+   "ground": "forest",
+   "height": 0.2,
+   "adj": [
+    101,
+    102,
+    104,
+    106,
+    107,
+    110
+   ],
+   "site": "the Bear Keep on the Ostec, in the middle of the green uplands, where the roads from Sevany, the Mirovo Gap and the south meet"
+  },
+  {
+   "id": 98,
+   "name": "Mirgrad",
+   "realm": "POL-25",
+   "type": "city",
+   "seat": {
+    "px": 1186,
+    "py": 352,
+    "xKm": 5295,
+    "yKm": 1585
+   },
+   "cells": 238,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    104,
+    106,
+    187,
+    301
+   ],
+   "site": "town below the Mirovo Gap"
+  },
+  {
+   "id": 99,
+   "name": "Sevina",
+   "realm": "POL-25",
+   "type": "city",
+   "seat": {
+    "px": 1092,
+    "py": 346,
+    "xKm": 4895,
+    "yKm": 1555
+   },
+   "cells": 73,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Grey Channel"
+   ],
+   "ground": "plains",
+   "height": 0.4,
+   "adj": [
+    101,
+    102,
+    105,
+    197
+   ],
+   "site": "Sevany: the toll fort and chain towers on the Narrows of the channel, facing Greyhaven"
+  },
+  {
+   "id": 100,
+   "name": "Velany",
+   "realm": "POL-25",
+   "type": "city",
+   "seat": {
+    "px": 1090,
+    "py": 298,
+    "xKm": 4885,
+    "yKm": 1355
+   },
+   "cells": 100,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "forest",
+   "height": 0.4,
+   "adj": [
+    103,
+    105,
+    108,
+    200
+   ],
+   "site": "forest city of the north, on the Tolek's east bank"
+  },
+  {
+   "id": 101,
+   "name": "Belovo",
+   "realm": "POL-25",
+   "type": "city",
+   "seat": {
+    "px": 1126,
+    "py": 350,
+    "xKm": 5035,
+    "yKm": 1575
+   },
+   "cells": 261,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "forest",
+   "height": 0.2,
+   "adj": [
+    97,
+    99,
+    102,
+    105,
+    106
+   ],
+   "site": "upland city between the channel and the capital"
+  },
+  {
+   "id": 102,
+   "name": "Vyova",
+   "realm": "POL-25",
+   "type": "market town",
+   "seat": {
+    "px": 1092,
+    "py": 376,
+    "xKm": 4895,
+    "yKm": 1685
+   },
+   "cells": 327,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Grey Channel"
+   ],
+   "ground": "plains",
+   "height": 0.1,
+   "adj": [
+    97,
+    99,
+    101,
+    110,
+    179,
+    182
+   ],
+   "site": "channel market on the bend below the Narrows"
+  },
+  {
+   "id": 103,
+   "name": "Kamogda Kremlin",
+   "realm": "POL-25",
+   "type": "castle",
+   "seat": {
+    "px": 1062,
+    "py": 290,
+    "xKm": 4765,
+    "yKm": 1315
+   },
+   "cells": 212,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Tolek"
+   ],
+   "ground": "forest",
+   "height": 0.2,
+   "adj": [
+    100,
+    108,
+    109,
+    122,
+    198,
+    200,
+    201
+   ],
+   "site": "castle at the Lake Portage, on the Tolek, facing Drevna"
+  },
+  {
+   "id": 104,
+   "name": "Belina",
+   "realm": "POL-25",
+   "type": "city",
+   "seat": {
+    "px": 1172,
+    "py": 378,
+    "xKm": 5235,
+    "yKm": 1695
+   },
+   "cells": 128,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Ostec"
+   ],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    97,
+    98,
+    106,
+    107,
+    301
+   ],
+   "site": "city of the eastern uplands"
+  },
+  {
+   "id": 105,
+   "name": "Droin",
+   "realm": "POL-25",
+   "type": "town",
+   "seat": {
+    "px": 1106,
+    "py": 320,
+    "xKm": 4955,
+    "yKm": 1445
+   },
+   "cells": 427,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Grey Channel",
+    "the Tolek"
+   ],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    99,
+    100,
+    101,
+    106,
+    108,
+    197,
+    200
+   ],
+   "site": "channel town at the head of ship water"
+  },
+  {
+   "id": 106,
+   "name": "Lubyn Kremlin",
+   "realm": "POL-25",
+   "type": "castle",
+   "seat": {
+    "px": 1152,
+    "py": 334,
+    "xKm": 5145,
+    "yKm": 1505
+   },
+   "cells": 474,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    97,
+    98,
+    101,
+    104,
+    105,
+    108,
+    187
+   ],
+   "site": "beacon castle at the southern foot of the East Rift Heights"
+  },
+  {
+   "id": 107,
+   "name": "Velin",
+   "realm": "POL-25",
+   "type": "city",
+   "seat": {
+    "px": 1168,
+    "py": 418,
+    "xKm": 5215,
+    "yKm": 1865
+   },
+   "cells": 277,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Ostec"
+   ],
+   "ground": "plains",
+   "height": 0.1,
+   "adj": [
+    97,
+    104,
+    110,
+    255,
+    300,
+    301
+   ],
+   "site": "city of the Ostec March"
+  },
+  {
+   "id": 108,
+   "name": "Belansk",
+   "realm": "POL-25",
+   "type": "city",
+   "seat": {
+    "px": 1092,
+    "py": 260,
+    "xKm": 4895,
+    "yKm": 1185
+   },
+   "cells": 1087,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Western Lakes"
+   ],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    100,
+    103,
+    105,
+    106,
+    109,
+    121,
+    125,
+    185
+   ],
+   "site": "the Redcrown Heights and their sulfur pits"
+  },
+  {
+   "id": 109,
+   "name": "Dobina",
+   "realm": "POL-25",
+   "type": "city",
+   "seat": {
+    "px": 1062,
+    "py": 264,
+    "xKm": 4765,
+    "yKm": 1205
+   },
+   "cells": 132,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Western Lakes"
+   ],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.6,
+   "adj": [
+    103,
+    108,
+    122
+   ],
+   "site": "the North Woods on the south-east shore of the Western Lakes"
+  },
+  {
+   "id": 110,
+   "name": "Yarec",
+   "realm": "POL-25",
+   "type": "city",
+   "seat": {
+    "px": 1128,
+    "py": 428,
+    "xKm": 5045,
+    "yKm": 1905
+   },
+   "cells": 313,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Grey Channel",
+    "the Ostec"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    97,
+    102,
+    107,
+    182,
+    183,
+    300
+   ],
+   "site": "seat of the Ostec March, on the road south to the Neck"
+  },
+  {
+   "id": 111,
+   "name": "Amberport",
+   "realm": "POL-32",
+   "type": "capital city",
+   "seat": {
+    "px": 1215,
+    "py": 918,
+    "xKm": 5415,
+    "yKm": 3995
+   },
+   "cells": 382,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Amber Strait"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    112,
+    113,
+    285
+   ],
+   "site": "the sheltered north harbour of Great Amber, on the Amber Strait"
+  },
+  {
+   "id": 112,
+   "name": "Ruhu",
+   "realm": "POL-32",
+   "type": "market town",
+   "seat": {
+    "px": 1190,
+    "py": 950,
+    "xKm": 5315,
+    "yKm": 4135
+   },
+   "cells": 333,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Amber Strait",
+    "the Spice Sea"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    111,
+    285
+   ],
+   "site": "Ruhu Bay on the west coast"
+  },
+  {
+   "id": 113,
+   "name": "Paamu",
+   "realm": "POL-32",
+   "type": "town",
+   "seat": {
+    "px": 1246,
+    "py": 938,
+    "xKm": 5545,
+    "yKm": 4085
+   },
+   "cells": 106,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Amber Strait"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    111,
+    285
+   ],
+   "site": "the east coast harbour, toward the Isle of Pearls"
+  },
+  {
+   "id": 114,
+   "name": "Drevna",
+   "realm": "POL-26",
+   "type": "capital city",
+   "seat": {
+    "px": 1008,
+    "py": 271,
+    "xKm": 4535,
+    "yKm": 1235
+   },
+   "cells": 129,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Western Lakes"
+   ],
+   "rivers": [
+    "the Dromir (the Coldbarrow on the steppe)"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    120,
+    122,
+    126,
+    199,
+    201
+   ],
+   "site": "the capital where the Dromir leaves the Western Lakes, at the foot of ship water on the lake"
+  },
+  {
+   "id": 115,
+   "name": "Belek",
+   "realm": "POL-26",
+   "type": "town",
+   "seat": {
+    "px": 966,
+    "py": 213,
+    "xKm": 4355,
+    "yKm": 985
+   },
+   "cells": 1067,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Western Lakes"
+   ],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.6,
+   "adj": [
+    117,
+    118,
+    119,
+    123,
+    264,
+    265,
+    282
+   ],
+   "site": "hill town above the lake's north-west arm"
+  },
+  {
+   "id": 116,
+   "name": "Dobin",
+   "realm": "POL-26",
+   "type": "city",
+   "seat": {
+    "px": 1160,
+    "py": 157,
+    "xKm": 5185,
+    "yKm": 745
+   },
+   "cells": 665,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "Whale Sound"
+   ],
+   "rivers": [
+    "the Dromir"
+   ],
+   "ground": "mountains",
+   "height": 0.7,
+   "adj": [
+    121,
+    185,
+    266,
+    283
+   ],
+   "site": "the whaling harbour at the head of Whale Sound"
+  },
+  {
+   "id": 117,
+   "name": "Kraina",
+   "realm": "POL-26",
+   "type": "city",
+   "seat": {
+    "px": 976,
+    "py": 240,
+    "xKm": 4395,
+    "yKm": 1105
+   },
+   "cells": 250,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Western Lakes"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    115,
+    123,
+    126
+   ],
+   "site": "town of the west shore"
+  },
+  {
+   "id": 118,
+   "name": "Zorek",
+   "realm": "POL-26",
+   "type": "city",
+   "seat": {
+    "px": 930,
+    "py": 268,
+    "xKm": 4205,
+    "yKm": 1225
+   },
+   "cells": 1124,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    115,
+    120,
+    123,
+    126,
+    166,
+    169,
+    193,
+    204,
+    282,
+    299
+   ],
+   "site": "the Zorek Hills"
+  },
+  {
+   "id": 119,
+   "name": "Brodava",
+   "realm": "POL-26",
+   "type": "city",
+   "seat": {
+    "px": 1050,
+    "py": 208,
+    "xKm": 4715,
+    "yKm": 965
+   },
+   "cells": 402,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Western Lakes"
+   ],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.7,
+   "adj": [
+    115,
+    125,
+    265
+   ],
+   "site": "the lake town and its island fort, in the north-east arm"
+  },
+  {
+   "id": 120,
+   "name": "Polgrad",
+   "realm": "POL-26",
+   "type": "city",
+   "seat": {
+    "px": 964,
+    "py": 300,
+    "xKm": 4345,
+    "yKm": 1355
+   },
+   "cells": 271,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Dromir (the Coldbarrow on the steppe)"
+   ],
+   "ground": "plains",
+   "height": 0.1,
+   "adj": [
+    114,
+    118,
+    126,
+    199,
+    204
+   ],
+   "site": "granary town on the lower Dromir, on the road to the steppe"
+  },
+  {
+   "id": 121,
+   "name": "Ugava Fort",
+   "realm": "POL-26",
+   "type": "castle",
+   "seat": {
+    "px": 1136,
+    "py": 160,
+    "xKm": 5075,
+    "yKm": 765
+   },
+   "cells": 311,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Dromir"
+   ],
+   "ground": "mountains",
+   "height": 0.6,
+   "adj": [
+    108,
+    116,
+    124,
+    125,
+    185,
+    266
+   ],
+   "site": "fort on the Whale Road"
+  },
+  {
+   "id": 122,
+   "name": "Tversk Fort",
+   "realm": "POL-26",
+   "type": "castle",
+   "seat": {
+    "px": 1030,
+    "py": 277,
+    "xKm": 4625,
+    "yKm": 1265
+   },
+   "cells": 151,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Western Lakes"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.1,
+   "adj": [
+    103,
+    109,
+    114,
+    201
+   ],
+   "site": "the south-shore fort facing Velgrad's corner of the lake"
+  },
+  {
+   "id": 123,
+   "name": "Darsky",
+   "realm": "POL-26",
+   "type": "market town",
+   "seat": {
+    "px": 951,
+    "py": 240,
+    "xKm": 4285,
+    "yKm": 1105
+   },
+   "cells": 244,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "forest",
+   "height": 0.3,
+   "adj": [
+    115,
+    117,
+    118,
+    126
+   ],
+   "site": "market of the western farmland"
+  },
+  {
+   "id": 124,
+   "name": "Dobnik Fort",
+   "realm": "POL-26",
+   "type": "castle",
+   "seat": {
+    "px": 1110,
+    "py": 172,
+    "xKm": 4965,
+    "yKm": 815
+   },
+   "cells": 357,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Dromir"
+   ],
+   "ground": "mountains",
+   "height": 0.6,
+   "adj": [
+    121,
+    125,
+    265,
+    266
+   ],
+   "site": "the fort in the Lake Gate"
+  },
+  {
+   "id": 125,
+   "name": "Lubevo Kremlin",
+   "realm": "POL-26",
+   "type": "castle",
+   "seat": {
+    "px": 1070,
+    "py": 193,
+    "xKm": 4795,
+    "yKm": 905
+   },
+   "cells": 507,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Western Lakes"
+   ],
+   "rivers": [
+    "the Dromir"
+   ],
+   "ground": "mountains",
+   "height": 0.6,
+   "adj": [
+    108,
+    119,
+    121,
+    124,
+    265
+   ],
+   "site": "castle on the upper Dromir, with Lubany and its silk staple"
+  },
+  {
+   "id": 126,
+   "name": "Radov",
+   "realm": "POL-26",
+   "type": "city",
+   "seat": {
+    "px": 989,
+    "py": 263,
+    "xKm": 4455,
+    "yKm": 1205
+   },
+   "cells": 256,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Western Lakes"
+   ],
+   "rivers": [
+    "the Dromir (the Coldbarrow on the steppe)"
+   ],
+   "ground": "plains",
+   "height": 0.1,
+   "adj": [
+    114,
+    117,
+    118,
+    120,
+    123
+   ],
+   "site": "city of the south-west shore"
+  },
+  {
+   "id": 127,
+   "name": "Silverbough",
+   "realm": "POL-07",
+   "type": "capital city",
+   "seat": {
+    "px": 292,
+    "py": 298,
+    "xKm": 1475,
+    "yKm": 1355
+   },
+   "cells": 304,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Elder Sea"
+   ],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    130,
+    131,
+    133
+   ],
+   "site": "the capital in the sheltered south bay of the fjord coast"
+  },
+  {
+   "id": 128,
+   "name": "Ithira",
+   "realm": "POL-07",
+   "type": "city",
+   "seat": {
+    "px": 438,
+    "py": 219,
+    "xKm": 2095,
+    "yKm": 1015
+   },
+   "cells": 204,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the North Fjords"
+   ],
+   "rivers": [
+    "the Calara"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    132,
+    137,
+    142,
+    150
+   ],
+   "site": "harbour city by the Calara's mouth"
+  },
+  {
+   "id": 129,
+   "name": "Mirandor",
+   "realm": "POL-07",
+   "type": "city",
+   "seat": {
+    "px": 345,
+    "py": 305,
+    "xKm": 1705,
+    "yKm": 1385
+   },
+   "cells": 246,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    130,
+    132,
+    133,
+    139,
+    296
+   ],
+   "site": "the hill groves inland"
+  },
+  {
+   "id": 130,
+   "name": "Falavel",
+   "realm": "POL-07",
+   "type": "town",
+   "seat": {
+    "px": 335,
+    "py": 278,
+    "xKm": 1655,
+    "yKm": 1265
+   },
+   "cells": 480,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Elder Sea"
+   ],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    127,
+    129,
+    132
+   ],
+   "site": "the Yew Ridges"
+  },
+  {
+   "id": 131,
+   "name": "Fenandor",
+   "realm": "POL-07",
+   "type": "city",
+   "seat": {
+    "px": 240,
+    "py": 292,
+    "xKm": 1255,
+    "yKm": 1325
+   },
+   "cells": 279,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Elder Sea"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    127,
+    133
+   ],
+   "site": "the far western cape"
+  },
+  {
+   "id": 132,
+   "name": "Aerdor",
+   "realm": "POL-07",
+   "type": "city",
+   "seat": {
+    "px": 385,
+    "py": 240,
+    "xKm": 1875,
+    "yKm": 1105
+   },
+   "cells": 509,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Elder Sea",
+    "the North Fjords"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    128,
+    129,
+    130,
+    139,
+    142
+   ],
+   "site": "the fir coast of the north"
+  },
+  {
+   "id": 133,
+   "name": "Nimion",
+   "realm": "POL-07",
+   "type": "city",
+   "seat": {
+    "px": 298,
+    "py": 325,
+    "xKm": 1505,
+    "yKm": 1465
+   },
+   "cells": 383,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Elder Sea",
+    "the Strait of Hael"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    127,
+    129,
+    131,
+    292,
+    296
+   ],
+   "site": "the ship-houses of the West Strand"
+  },
+  {
+   "id": 134,
+   "name": "Evenglade",
+   "realm": "POL-06",
+   "type": "capital city",
+   "seat": {
+    "px": 485,
+    "py": 255,
+    "xKm": 2305,
+    "yKm": 1165
+   },
+   "cells": 135,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "forest",
+   "height": 0.3,
+   "adj": [
+    138,
+    145,
+    147,
+    149,
+    150,
+    154
+   ],
+   "site": "the First Oak, between the lake and the northern bays"
+  },
+  {
+   "id": 135,
+   "name": "Fenali",
+   "realm": "POL-06",
+   "type": "city",
+   "seat": {
+    "px": 455,
+    "py": 352,
+    "xKm": 2175,
+    "yKm": 1585
+   },
+   "cells": 261,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Clarora"
+   ],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    141,
+    148,
+    151,
+    162,
+    167,
+    305
+   ],
+   "site": "Fenali Watch over the southern Oak Line"
+  },
+  {
+   "id": 136,
+   "name": "Falessa",
+   "realm": "POL-06",
+   "type": "town",
+   "seat": {
+    "px": 492,
+    "py": 226,
+    "xKm": 2335,
+    "yKm": 1035
+   },
+   "cells": 35,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the North Fjords"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.1,
+   "adj": [
+    140
+   ],
+   "site": "the Greenmire on the north bay"
+  },
+  {
+   "id": 137,
+   "name": "Loriel",
+   "realm": "POL-06",
+   "type": "city",
+   "seat": {
+    "px": 462,
+    "py": 222,
+    "xKm": 2205,
+    "yKm": 1025
+   },
+   "cells": 90,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the North Fjords"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    128,
+    149,
+    150
+   ],
+   "site": "grove city on the north coast"
+  },
+  {
+   "id": 138,
+   "name": "Eridor",
+   "realm": "POL-06",
+   "type": "city",
+   "seat": {
+    "px": 520,
+    "py": 262,
+    "xKm": 2445,
+    "yKm": 1195
+   },
+   "cells": 224,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.4,
+   "adj": [
+    134,
+    140,
+    144,
+    145,
+    146,
+    147,
+    155
+   ],
+   "site": "city of the eastern wood"
+  },
+  {
+   "id": 139,
+   "name": "Vaelion",
+   "realm": "POL-06",
+   "type": "city",
+   "seat": {
+    "px": 405,
+    "py": 320,
+    "xKm": 1955,
+    "yKm": 1445
+   },
+   "cells": 440,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "Lake Silara"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    129,
+    132,
+    141,
+    142,
+    143,
+    148,
+    296
+   ],
+   "site": "city south-west of the lake"
+  },
+  {
+   "id": 140,
+   "name": "Fenarin",
+   "realm": "POL-06",
+   "type": "town",
+   "seat": {
+    "px": 518,
+    "py": 234,
+    "xKm": 2445,
+    "yKm": 1075
+   },
+   "cells": 309,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the North Fjords"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    20,
+    136,
+    138,
+    146
+   ],
+   "site": "marsh town on the north coast"
+  },
+  {
+   "id": 141,
+   "name": "Calandor",
+   "realm": "POL-06",
+   "type": "town",
+   "seat": {
+    "px": 415,
+    "py": 345,
+    "xKm": 2005,
+    "yKm": 1555
+   },
+   "cells": 128,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    135,
+    139,
+    143,
+    148,
+    162
+   ],
+   "site": "hill town of the south-west"
+  },
+  {
+   "id": 142,
+   "name": "Lirith",
+   "realm": "POL-06",
+   "type": "city",
+   "seat": {
+    "px": 415,
+    "py": 268,
+    "xKm": 2005,
+    "yKm": 1225
+   },
+   "cells": 407,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "Lake Silara"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    128,
+    132,
+    139,
+    150,
+    154
+   ],
+   "site": "the yew groves west of the Calara"
+  },
+  {
+   "id": 143,
+   "name": "Aravel",
+   "realm": "POL-06",
+   "type": "town",
+   "seat": {
+    "px": 385,
+    "py": 345,
+    "xKm": 1875,
+    "yKm": 1555
+   },
+   "cells": 205,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Bleak Water"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    139,
+    141,
+    157,
+    162,
+    296
+   ],
+   "site": "the high south-west, under the Bleakfold"
+  },
+  {
+   "id": 144,
+   "name": "Thalandor",
+   "realm": "POL-06",
+   "type": "city",
+   "seat": {
+    "px": 505,
+    "py": 300,
+    "xKm": 2385,
+    "yKm": 1355
+   },
+   "cells": 148,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    138,
+    145,
+    152,
+    155,
+    167,
+    170
+   ],
+   "site": "the western slope of the Tusk Hills"
+  },
+  {
+   "id": 145,
+   "name": "Lirthil",
+   "realm": "POL-06",
+   "type": "city",
+   "seat": {
+    "px": 492,
+    "py": 282,
+    "xKm": 2335,
+    "yKm": 1285
+   },
+   "cells": 66,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    134,
+    138,
+    144,
+    152,
+    154
+   ],
+   "site": "groves under the Tusk Hills"
+  },
+  {
+   "id": 146,
+   "name": "Aressa",
+   "realm": "POL-06",
+   "type": "town",
+   "seat": {
+    "px": 545,
+    "py": 252,
+    "xKm": 2555,
+    "yKm": 1155
+   },
+   "cells": 235,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    12,
+    17,
+    19,
+    20,
+    138,
+    140,
+    155
+   ],
+   "site": "town of the eastern edge"
+  },
+  {
+   "id": 147,
+   "name": "Silande",
+   "realm": "POL-06",
+   "type": "town",
+   "seat": {
+    "px": 500,
+    "py": 248,
+    "xKm": 2365,
+    "yKm": 1135
+   },
+   "cells": 43,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the North Fjords"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    134,
+    138,
+    149
+   ],
+   "site": "the marsh islands"
+  },
+  {
+   "id": 148,
+   "name": "Aerion",
+   "realm": "POL-06",
+   "type": "city",
+   "seat": {
+    "px": 430,
+    "py": 335,
+    "xKm": 2065,
+    "yKm": 1505
+   },
+   "cells": 159,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "Lake Silara"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    135,
+    139,
+    141,
+    151
+   ],
+   "site": "city south of the lake"
+  },
+  {
+   "id": 149,
+   "name": "Rinthil",
+   "realm": "POL-06",
+   "type": "town",
+   "seat": {
+    "px": 478,
+    "py": 238,
+    "xKm": 2275,
+    "yKm": 1095
+   },
+   "cells": 97,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the North Fjords"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    134,
+    137,
+    147,
+    150
+   ],
+   "site": "marsh town"
+  },
+  {
+   "id": 150,
+   "name": "Rineron",
+   "realm": "POL-06",
+   "type": "market town",
+   "seat": {
+    "px": 452,
+    "py": 240,
+    "xKm": 2155,
+    "yKm": 1105
+   },
+   "cells": 121,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Calara"
+   ],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    128,
+    134,
+    137,
+    142,
+    149,
+    154
+   ],
+   "site": "the boat sheds on the Calara"
+  },
+  {
+   "id": 151,
+   "name": "Syleron",
+   "realm": "POL-06",
+   "type": "market town",
+   "seat": {
+    "px": 455,
+    "py": 338,
+    "xKm": 2175,
+    "yKm": 1525
+   },
+   "cells": 101,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "Lake Silara"
+   ],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    135,
+    148,
+    153,
+    167
+   ],
+   "site": "market of the south"
+  },
+  {
+   "id": 152,
+   "name": "Mirlas",
+   "realm": "POL-06",
+   "type": "city",
+   "seat": {
+    "px": 485,
+    "py": 300,
+    "xKm": 2305,
+    "yKm": 1355
+   },
+   "cells": 136,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "Lake Silara"
+   ],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    144,
+    145,
+    153,
+    154
+   ],
+   "site": "the night fishers' city on Lake Silara"
+  },
+  {
+   "id": 153,
+   "name": "Elwen",
+   "realm": "POL-06",
+   "type": "town",
+   "seat": {
+    "px": 480,
+    "py": 318,
+    "xKm": 2275,
+    "yKm": 1435
+   },
+   "cells": 105,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "Lake Silara"
+   ],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    151,
+    152,
+    167
+   ],
+   "site": "town of the south-east wood"
+  },
+  {
+   "id": 154,
+   "name": "Eriavel",
+   "realm": "POL-06",
+   "type": "town",
+   "seat": {
+    "px": 470,
+    "py": 275,
+    "xKm": 2235,
+    "yKm": 1255
+   },
+   "cells": 142,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "Lake Silara"
+   ],
+   "rivers": [
+    "the Calara"
+   ],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    134,
+    142,
+    145,
+    150,
+    152
+   ],
+   "site": "the deep valleys"
+  },
+  {
+   "id": 155,
+   "name": "Erilas",
+   "realm": "POL-06",
+   "type": "market town",
+   "seat": {
+    "px": 552,
+    "py": 272,
+    "xKm": 2585,
+    "yKm": 1245
+   },
+   "cells": 157,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Fairrush"
+   ],
+   "ground": "mountains",
+   "height": 0.6,
+   "adj": [
+    12,
+    14,
+    138,
+    144,
+    146,
+    170
+   ],
+   "site": "the rangers' yard on the Eastern Edge"
+  },
+  {
+   "id": 156,
+   "name": "Ashmere",
+   "realm": "POL-05",
+   "type": "capital city",
+   "seat": {
+    "px": 356,
+    "py": 404,
+    "xKm": 1745,
+    "yKm": 1805
+   },
+   "cells": 286,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Brightwash"
+   ],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    75,
+    157,
+    160,
+    162,
+    164
+   ],
+   "site": "the Crown Vale under Mount Cinder's western slope, on the Brightwash"
+  },
+  {
+   "id": 157,
+   "name": "Chasethwaite Tower",
+   "realm": "POL-05",
+   "type": "castle",
+   "seat": {
+    "px": 360,
+    "py": 381,
+    "xKm": 1765,
+    "yKm": 1705
+   },
+   "cells": 185,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Strait of Hael"
+   ],
+   "rivers": [
+    "the Brightwash"
+   ],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    143,
+    156,
+    160,
+    162,
+    296
+   ],
+   "site": "tower on the Long Firth, the northern border"
+  },
+  {
+   "id": 158,
+   "name": "Stagley",
+   "realm": "POL-05",
+   "type": "city",
+   "seat": {
+    "px": 470,
+    "py": 468,
+    "xKm": 2235,
+    "yKm": 2075
+   },
+   "cells": 740,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Crowmere"
+   ],
+   "rivers": [
+    "the Palella",
+    "the Whitewater"
+   ],
+   "ground": "forest",
+   "height": 0.2,
+   "adj": [
+    60,
+    63,
+    66,
+    72,
+    74,
+    77,
+    159,
+    305
+   ],
+   "site": "the walled town on the upper Palella, facing Varenna"
+  },
+  {
+   "id": 159,
+   "name": "Ashwell Tower",
+   "realm": "POL-05",
+   "type": "castle",
+   "seat": {
+    "px": 428,
+    "py": 458,
+    "xKm": 2055,
+    "yKm": 2035
+   },
+   "cells": 445,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Brightwash"
+   ],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    74,
+    158,
+    162,
+    164,
+    305
+   ],
+   "site": "tower above the Brightwash copper mines"
+  },
+  {
+   "id": 160,
+   "name": "Brightkeep",
+   "realm": "POL-05",
+   "type": "city",
+   "seat": {
+    "px": 322,
+    "py": 396,
+    "xKm": 1605,
+    "yKm": 1765
+   },
+   "cells": 425,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Strait of Hael"
+   ],
+   "rivers": [
+    "the Brightwash"
+   ],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    75,
+    156,
+    157,
+    161,
+    163
+   ],
+   "site": "arrow town of the coast hills, above the Long Firth"
+  },
+  {
+   "id": 161,
+   "name": "Alderwick",
+   "realm": "POL-05",
+   "type": "town",
+   "seat": {
+    "px": 286,
+    "py": 412,
+    "xKm": 1455,
+    "yKm": 1835
+   },
+   "cells": 302,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Strait of Hael"
+   ],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    75,
+    160,
+    163,
+    293
+   ],
+   "site": "coast town where the shore turns west to the Ashlands"
+  },
+  {
+   "id": 162,
+   "name": "Heroncliff",
+   "realm": "POL-05",
+   "type": "town",
+   "seat": {
+    "px": 412,
+    "py": 376,
+    "xKm": 1985,
+    "yKm": 1685
+   },
+   "cells": 407,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.5,
+   "adj": [
+    135,
+    141,
+    143,
+    156,
+    157,
+    159,
+    164,
+    305
+   ],
+   "site": "town below the Hawkmarch Pass"
+  },
+  {
+   "id": 163,
+   "name": "Sun Temple of Aldminster",
+   "realm": "POL-05",
+   "type": "monastery",
+   "seat": {
+    "px": 294,
+    "py": 388,
+    "xKm": 1485,
+    "yKm": 1735
+   },
+   "cells": 151,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Strait of Hael"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    160,
+    161
+   ],
+   "site": "the temple on the sea cliff"
+  },
+  {
+   "id": 164,
+   "name": "Saltmoor",
+   "realm": "POL-05",
+   "type": "market town",
+   "seat": {
+    "px": 392,
+    "py": 440,
+    "xKm": 1905,
+    "yKm": 1955
+   },
+   "cells": 429,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Brightwash"
+   ],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    74,
+    75,
+    156,
+    159,
+    162
+   ],
+   "site": "market of the Stag Downs"
+  },
+  {
+   "id": 165,
+   "name": "Urgol",
+   "realm": "POL-11",
+   "type": "capital city",
+   "seat": {
+    "px": 772,
+    "py": 352,
+    "xKm": 3525,
+    "yKm": 1585
+   },
+   "cells": 620,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Gordush"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    9,
+    24,
+    168,
+    171,
+    172,
+    173
+   ],
+   "site": "the hearth herd's winter ground, central to every clan"
+  },
+  {
+   "id": 166,
+   "name": "Nagdur Stockade",
+   "realm": "POL-11",
+   "type": "ring-fort",
+   "seat": {
+    "px": 872,
+    "py": 300,
+    "xKm": 3955,
+    "yKm": 1355
+   },
+   "cells": 428,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    118,
+    169,
+    171,
+    172,
+    193
+   ],
+   "site": "fort under the Iron Mountains"
+  },
+  {
+   "id": 167,
+   "name": "Ughdur Ring",
+   "realm": "POL-11",
+   "type": "ring-fort",
+   "seat": {
+    "px": 495,
+    "py": 332,
+    "xKm": 2345,
+    "yKm": 1495
+   },
+   "cells": 335,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    135,
+    144,
+    151,
+    153,
+    170,
+    305
+   ],
+   "site": "ring-fort of the Wolf clans on the pale plain under the Tusk Hills"
+  },
+  {
+   "id": 168,
+   "name": "Grakzag Oasis",
+   "realm": "POL-11",
+   "type": "oasis",
+   "seat": {
+    "px": 702,
+    "py": 362,
+    "xKm": 3225,
+    "yKm": 1625
+   },
+   "cells": 948,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Gordush"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    3,
+    11,
+    21,
+    24,
+    59,
+    165,
+    173,
+    174
+   ],
+   "site": "wells of the middle grass"
+  },
+  {
+   "id": 169,
+   "name": "Skartar Caravanserai",
+   "realm": "POL-11",
+   "type": "caravanserai",
+   "seat": {
+    "px": 900,
+    "py": 322,
+    "xKm": 4075,
+    "yKm": 1455
+   },
+   "cells": 318,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Salt Sea"
+   ],
+   "rivers": [
+    "the Dromir (the Coldbarrow on the steppe)",
+    "the Goroth"
+   ],
+   "ground": "steppe",
+   "height": 0.3,
+   "adj": [
+    118,
+    166,
+    171,
+    175,
+    204
+   ],
+   "site": "the Salt Sea's north shore"
+  },
+  {
+   "id": 170,
+   "name": "Rushzag Oasis",
+   "realm": "POL-11",
+   "type": "oasis",
+   "seat": {
+    "px": 562,
+    "py": 340,
+    "xKm": 2625,
+    "yKm": 1535
+   },
+   "cells": 564,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Glenmere"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    14,
+    144,
+    155,
+    167,
+    174,
+    305
+   ],
+   "site": "wells of the Urgash Hills"
+  },
+  {
+   "id": 171,
+   "name": "Rushoth Caravanserai",
+   "realm": "POL-11",
+   "type": "caravanserai",
+   "seat": {
+    "px": 838,
+    "py": 362,
+    "xKm": 3805,
+    "yKm": 1625
+   },
+   "cells": 1132,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Salt Sea"
+   ],
+   "rivers": [
+    "the Gnarzag",
+    "the Gordush",
+    "the Goroth"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    165,
+    166,
+    169,
+    172,
+    173,
+    177,
+    259,
+    260
+   ],
+   "site": "the Salt Sea's west shore"
+  },
+  {
+   "id": 172,
+   "name": "Gorur Caravanserai",
+   "realm": "POL-11",
+   "type": "caravanserai",
+   "seat": {
+    "px": 826,
+    "py": 318,
+    "xKm": 3755,
+    "yKm": 1435
+   },
+   "cells": 520,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Goroth",
+    "the Millrun"
+   ],
+   "ground": "steppe",
+   "height": 0.3,
+   "adj": [
+    7,
+    9,
+    165,
+    166,
+    171,
+    193
+   ],
+   "site": "camp on the Goroth grass"
+  },
+  {
+   "id": 173,
+   "name": "Vrakhul Oasis",
+   "realm": "POL-11",
+   "type": "oasis",
+   "seat": {
+    "px": 760,
+    "py": 395,
+    "xKm": 3475,
+    "yKm": 1765
+   },
+   "cells": 791,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Gnarzag",
+    "the Gordush"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    3,
+    165,
+    168,
+    171,
+    259,
+    262
+   ],
+   "site": "wells of the upper Gordush, under the Crown Range"
+  },
+  {
+   "id": 174,
+   "name": "Kagdush Oasis",
+   "realm": "POL-11",
+   "type": "oasis",
+   "seat": {
+    "px": 616,
+    "py": 350,
+    "xKm": 2855,
+    "yKm": 1575
+   },
+   "cells": 838,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Glenmere"
+   ],
+   "rivers": [
+    "the Glenwash",
+    "the Gordush"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    6,
+    14,
+    21,
+    59,
+    168,
+    170
+   ],
+   "site": "the Gashmar fords on the Glenwash"
+  },
+  {
+   "id": 175,
+   "name": "Yagrak Caravanserai",
+   "realm": "POL-11",
+   "type": "caravanserai",
+   "seat": {
+    "px": 922,
+    "py": 338,
+    "xKm": 4165,
+    "yKm": 1525
+   },
+   "cells": 168,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Salt Sea"
+   ],
+   "rivers": [
+    "the Dromir (the Coldbarrow on the steppe)"
+   ],
+   "ground": "steppe",
+   "height": 0.3,
+   "adj": [
+    169,
+    177,
+    180,
+    204
+   ],
+   "site": "the Salt Edge, at the Coldbarrow Bridge"
+  },
+  {
+   "id": 176,
+   "name": "Kharsa",
+   "realm": "POL-12",
+   "type": "capital city",
+   "seat": {
+    "px": 985,
+    "py": 395,
+    "xKm": 4435,
+    "yKm": 1765
+   },
+   "cells": 676,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Yarbek"
+   ],
+   "ground": "steppe",
+   "height": 0.3,
+   "adj": [
+    179,
+    180,
+    181,
+    199,
+    202,
+    203,
+    209
+   ],
+   "site": "the khan's camp where the yam roads cross"
+  },
+  {
+   "id": 177,
+   "name": "Kultau",
+   "realm": "POL-12",
+   "type": "city",
+   "seat": {
+    "px": 906,
+    "py": 380,
+    "xKm": 4095,
+    "yKm": 1705
+   },
+   "cells": 753,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Salt Sea"
+   ],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    171,
+    175,
+    180,
+    209,
+    260
+   ],
+   "site": "the sturgeon grounds on the Salt Sea's south-east shore"
+  },
+  {
+   "id": 178,
+   "name": "Bekar",
+   "realm": "POL-12",
+   "type": "town",
+   "seat": {
+    "px": 1060,
+    "py": 470,
+    "xKm": 4755,
+    "yKm": 2085
+   },
+   "cells": 580,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Grey Water"
+   ],
+   "rivers": [
+    "the Santora"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    181,
+    183,
+    196,
+    304
+   ],
+   "site": "town at the head of the Grey Water"
+  },
+  {
+   "id": 179,
+   "name": "Ozlun",
+   "realm": "POL-12",
+   "type": "town",
+   "seat": {
+    "px": 1064,
+    "py": 392,
+    "xKm": 4775,
+    "yKm": 1755
+   },
+   "cells": 691,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Grey Channel"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    102,
+    176,
+    181,
+    182,
+    183,
+    197,
+    202
+   ],
+   "site": "the channel fair of the Morning Wind"
+  },
+  {
+   "id": 180,
+   "name": "Otbash Yam",
+   "realm": "POL-12",
+   "type": "yam station",
+   "seat": {
+    "px": 948,
+    "py": 368,
+    "xKm": 4275,
+    "yKm": 1655
+   },
+   "cells": 401,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    175,
+    176,
+    177,
+    199,
+    204,
+    209
+   ],
+   "site": "yam station on the Salt Sea road"
+  },
+  {
+   "id": 181,
+   "name": "Sartobe Yam",
+   "realm": "POL-12",
+   "type": "yam station",
+   "seat": {
+    "px": 1012,
+    "py": 436,
+    "xKm": 4555,
+    "yKm": 1945
+   },
+   "cells": 552,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    176,
+    178,
+    179,
+    183,
+    209,
+    304
+   ],
+   "site": "yam station at the Horse Gate"
+  },
+  {
+   "id": 182,
+   "name": "Agbay Yam",
+   "realm": "POL-12",
+   "type": "yam station",
+   "seat": {
+    "px": 1090,
+    "py": 424,
+    "xKm": 4885,
+    "yKm": 1885
+   },
+   "cells": 226,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Grey Channel",
+    "the Ostec"
+   ],
+   "ground": "steppe",
+   "height": 0.2,
+   "adj": [
+    102,
+    110,
+    179,
+    183
+   ],
+   "site": "yam station on the channel shore"
+  },
+  {
+   "id": 183,
+   "name": "Altsa Yam",
+   "realm": "POL-12",
+   "type": "yam station",
+   "seat": {
+    "px": 1080,
+    "py": 452,
+    "xKm": 4845,
+    "yKm": 2005
+   },
+   "cells": 477,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Grey Water"
+   ],
+   "rivers": [
+    "the Grey Channel"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    110,
+    178,
+    179,
+    181,
+    182,
+    300
+   ],
+   "site": "yam station at the Erkent landings of the Sea Wind"
+  },
+  {
+   "id": 184,
+   "name": "Grakmar",
+   "realm": "POL-34",
+   "type": "capital city",
+   "seat": {
+    "px": 1255,
+    "py": 310,
+    "xKm": 5585,
+    "yKm": 1405
+   },
+   "cells": 542,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    185,
+    186,
+    187,
+    188,
+    189
+   ],
+   "site": "the War-Mother's camp in the middle of the grass"
+  },
+  {
+   "id": 185,
+   "name": "Drukgar Stockade",
+   "realm": "POL-34",
+   "type": "ring-fort",
+   "seat": {
+    "px": 1258,
+    "py": 240,
+    "xKm": 5605,
+    "yKm": 1105
+   },
+   "cells": 2016,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "Whale Sound",
+    "the Sunrise Sea"
+   ],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    108,
+    116,
+    121,
+    184,
+    187,
+    189,
+    283,
+    297
+   ],
+   "site": "northern fort at the forest edge"
+  },
+  {
+   "id": 186,
+   "name": "Oggoth Oasis",
+   "realm": "POL-34",
+   "type": "oasis",
+   "seat": {
+    "px": 1298,
+    "py": 345,
+    "xKm": 5775,
+    "yKm": 1555
+   },
+   "cells": 595,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Sunrise Sea"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    184,
+    188,
+    189,
+    284
+   ],
+   "site": "wells by the coast hills"
+  },
+  {
+   "id": 187,
+   "name": "Tukgar Stockade",
+   "realm": "POL-34",
+   "type": "ring-fort",
+   "seat": {
+    "px": 1214,
+    "py": 336,
+    "xKm": 5415,
+    "yKm": 1515
+   },
+   "cells": 644,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    98,
+    106,
+    184,
+    185,
+    188,
+    301
+   ],
+   "site": "fort under the Mirovo Gap (the Kraoth toll camp)"
+  },
+  {
+   "id": 188,
+   "name": "Vashuk Oasis",
+   "realm": "POL-34",
+   "type": "oasis",
+   "seat": {
+    "px": 1240,
+    "py": 368,
+    "xKm": 5525,
+    "yKm": 1655
+   },
+   "cells": 445,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    184,
+    186,
+    187,
+    254,
+    257,
+    284,
+    301
+   ],
+   "site": "wells of the Turquoise Hills"
+  },
+  {
+   "id": 189,
+   "name": "Roktuk Oasis",
+   "realm": "POL-34",
+   "type": "oasis",
+   "seat": {
+    "px": 1280,
+    "py": 292,
+    "xKm": 5695,
+    "yKm": 1335
+   },
+   "cells": 106,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Sunrise Sea"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    184,
+    185,
+    186
+   ],
+   "site": "wells behind the Silk Strand"
+  },
+  {
+   "id": 190,
+   "name": "Emberdeep",
+   "realm": "POL-29",
+   "type": "capital city",
+   "seat": {
+    "px": 1298,
+    "py": 572,
+    "xKm": 5775,
+    "yKm": 2525
+   },
+   "cells": 1003,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Eastern Gulf",
+    "the Sunrise Sea"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    191,
+    192,
+    253,
+    281
+   ],
+   "site": "the hold inside the hot mountain"
+  },
+  {
+   "id": 191,
+   "name": "Maghelm",
+   "realm": "POL-29",
+   "type": "market town",
+   "seat": {
+    "px": 1258,
+    "py": 590,
+    "xKm": 5605,
+    "yKm": 2595
+   },
+   "cells": 632,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Eastern Gulf"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    190,
+    281
+   ],
+   "site": "gate town on the road down to the Gulf"
+  },
+  {
+   "id": 192,
+   "name": "Gorhall",
+   "realm": "POL-29",
+   "type": "dwarven hold",
+   "seat": {
+    "px": 1330,
+    "py": 586,
+    "xKm": 5905,
+    "yKm": 2585
+   },
+   "cells": 499,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Eastern Gulf",
+    "the Sunrise Sea"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    190
+   ],
+   "site": "hold of the outer peaks"
+  },
+  {
+   "id": 193,
+   "name": "Irondeep",
+   "realm": "POL-10",
+   "type": "capital city",
+   "seat": {
+    "px": 832,
+    "py": 252,
+    "xKm": 3785,
+    "yKm": 1155
+   },
+   "cells": 478,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Iron Tarn"
+   ],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    7,
+    18,
+    118,
+    166,
+    172,
+    299
+   ],
+   "site": "the Deep Gate in the Iron Mountains, facing Cold Bay"
+  },
+  {
+   "id": 194,
+   "name": "Tessar",
+   "realm": "POL-31",
+   "type": "capital city",
+   "seat": {
+    "px": 1098,
+    "py": 552,
+    "xKm": 4915,
+    "yKm": 2435
+   },
+   "cells": 972,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Grey Water",
+    "the Reed Water"
+   ],
+   "rivers": [
+    "the Gullet"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    55,
+    195,
+    196,
+    238,
+    241,
+    281
+   ],
+   "site": "the harbour and bridge where the Grey Water narrows to the Gullet, the only crossing"
+  },
+  {
+   "id": 195,
+   "name": "Calossa",
+   "realm": "POL-31",
+   "type": "town",
+   "seat": {
+    "px": 1142,
+    "py": 505,
+    "xKm": 5105,
+    "yKm": 2235
+   },
+   "cells": 885,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Grey Water"
+   ],
+   "rivers": [
+    "the Tirana"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    194,
+    256,
+    281,
+    300
+   ],
+   "site": "the northern castle on the east shore, in the pinch between the Grey Water and the Roof"
+  },
+  {
+   "id": 196,
+   "name": "Feleria",
+   "realm": "POL-31",
+   "type": "town",
+   "seat": {
+    "px": 1030,
+    "py": 536,
+    "xKm": 4625,
+    "yKm": 2365
+   },
+   "cells": 695,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Grey Water"
+   ],
+   "rivers": [
+    "the Santora"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    30,
+    178,
+    194,
+    238,
+    304
+   ],
+   "site": "the cedar hills of the west shore"
+  },
+  {
+   "id": 197,
+   "name": "Greyhaven",
+   "realm": "POL-14",
+   "type": "capital city",
+   "seat": {
+    "px": 1078,
+    "py": 336,
+    "xKm": 4835,
+    "yKm": 1515
+   },
+   "cells": 98,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Grey Channel",
+    "the Yarbek"
+   ],
+   "ground": "forest",
+   "height": 0.2,
+   "adj": [
+    99,
+    105,
+    179,
+    200,
+    202
+   ],
+   "site": "the Toll-House on the Narrows of the channel, facing Sevany"
+  },
+  {
+   "id": 198,
+   "name": "Wrendale",
+   "realm": "POL-14",
+   "type": "city",
+   "seat": {
+    "px": 1058,
+    "py": 313,
+    "xKm": 4745,
+    "yKm": 1415
+   },
+   "cells": 82,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Tolek"
+   ],
+   "ground": "plains",
+   "height": 0.1,
+   "adj": [
+    103,
+    200,
+    201,
+    202,
+    203
+   ],
+   "site": "timber harbour at the head of ship water"
+  },
+  {
+   "id": 199,
+   "name": "Highwell",
+   "realm": "POL-14",
+   "type": "city",
+   "seat": {
+    "px": 984,
+    "py": 316,
+    "xKm": 4435,
+    "yKm": 1425
+   },
+   "cells": 340,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Dromir (the Coldbarrow on the steppe)",
+    "the Yarbek"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    114,
+    120,
+    176,
+    180,
+    201,
+    203,
+    204
+   ],
+   "site": "walled city of the inland forest, on the Dromir's east bank"
+  },
+  {
+   "id": 200,
+   "name": "Hawkcester",
+   "realm": "POL-14",
+   "type": "market town",
+   "seat": {
+    "px": 1070,
+    "py": 324,
+    "xKm": 4795,
+    "yKm": 1465
+   },
+   "cells": 109,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Tolek"
+   ],
+   "ground": "forest",
+   "height": 0.1,
+   "adj": [
+    100,
+    103,
+    105,
+    197,
+    198,
+    202
+   ],
+   "site": "market on the upper channel"
+  },
+  {
+   "id": 201,
+   "name": "Deepwatch Castle",
+   "realm": "POL-14",
+   "type": "castle",
+   "seat": {
+    "px": 1040,
+    "py": 300,
+    "xKm": 4665,
+    "yKm": 1355
+   },
+   "cells": 140,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Tolek"
+   ],
+   "ground": "plains",
+   "height": 0.1,
+   "adj": [
+    103,
+    114,
+    122,
+    198,
+    199,
+    203
+   ],
+   "site": "castle at the Lake Portage, facing Kamogda"
+  },
+  {
+   "id": 202,
+   "name": "Wrenreach",
+   "realm": "POL-14",
+   "type": "city",
+   "seat": {
+    "px": 1040,
+    "py": 340,
+    "xKm": 4665,
+    "yKm": 1535
+   },
+   "cells": 287,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Yarbek"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    176,
+    179,
+    197,
+    198,
+    200,
+    203
+   ],
+   "site": "city on the Yarbek"
+  },
+  {
+   "id": 203,
+   "name": "Briarhollow",
+   "realm": "POL-14",
+   "type": "city",
+   "seat": {
+    "px": 1024,
+    "py": 322,
+    "xKm": 4605,
+    "yKm": 1455
+   },
+   "cells": 254,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Yarbek"
+   ],
+   "ground": "plains",
+   "height": 0.1,
+   "adj": [
+    176,
+    198,
+    199,
+    201,
+    202
+   ],
+   "site": "city of the Rift Heights, under Smokewell"
+  },
+  {
+   "id": 204,
+   "name": "Silverdale",
+   "realm": "POL-14",
+   "type": "city",
+   "seat": {
+    "px": 950,
+    "py": 334,
+    "xKm": 4285,
+    "yKm": 1505
+   },
+   "cells": 282,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Dromir (the Coldbarrow on the steppe)"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    118,
+    120,
+    169,
+    175,
+    180,
+    199
+   ],
+   "site": "city on the Dromir where the steppe begins"
+  },
+  {
+   "id": 205,
+   "name": "Corvasse",
+   "realm": "POL-33",
+   "type": "capital city",
+   "seat": {
+    "px": 157,
+    "py": 466,
+    "xKm": 895,
+    "yKm": 2065
+   },
+   "cells": 149,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Strait of Hael"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [],
+   "site": "the harbour inside the shoals"
+  },
+  {
+   "id": 206,
+   "name": "Ratrock",
+   "realm": "POL-33",
+   "type": "town",
+   "seat": {
+    "px": 124,
+    "py": 497,
+    "xKm": 755,
+    "yKm": 2205
+   },
+   "cells": 44,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Strait of Hael"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [],
+   "site": "the toll boats' rock at the strait's southern mouth"
+  },
+  {
+   "id": 207,
+   "name": "Morhaven",
+   "realm": "POL-15",
+   "type": "capital city",
+   "seat": {
+    "px": 828,
+    "py": 519,
+    "xKm": 3765,
+    "yKm": 2295
+   },
+   "cells": 292,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Middle Sea"
+   ],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    26,
+    80,
+    81,
+    209,
+    260
+   ],
+   "site": "the watch city on the Middle Sea's eastern head, north of the Monuti's mouth"
+  },
+  {
+   "id": 208,
+   "name": "Lucina",
+   "realm": "POL-15",
+   "type": "town",
+   "seat": {
+    "px": 905,
+    "py": 551,
+    "xKm": 4095,
+    "yKm": 2435
+   },
+   "cells": 503,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Castina",
+    "the Santora"
+   ],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    26,
+    28,
+    30,
+    209
+   ],
+   "site": "town on the Santora, the middle of the march"
+  },
+  {
+   "id": 209,
+   "name": "Castel Ascino",
+   "realm": "POL-15",
+   "type": "castle",
+   "seat": {
+    "px": 962,
+    "py": 492,
+    "xKm": 4335,
+    "yKm": 2175
+   },
+   "cells": 1497,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Castina",
+    "the Santora"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    26,
+    30,
+    176,
+    177,
+    180,
+    181,
+    207,
+    208,
+    260,
+    304
+   ],
+   "site": "castle on the Castina, where the Horse Road comes off the steppe"
+  },
+  {
+   "id": 210,
+   "name": "Kesh",
+   "realm": "POL-21",
+   "type": "capital city",
+   "seat": {
+    "px": 1120,
+    "py": 880,
+    "xKm": 5015,
+    "yKm": 3835
+   },
+   "cells": 296,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Spice Sea"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    211,
+    212,
+    213
+   ],
+   "site": "the Pepper Hall harbour on the bay's east shore"
+  },
+  {
+   "id": 211,
+   "name": "Kioya",
+   "realm": "POL-21",
+   "type": "city",
+   "seat": {
+    "px": 1150,
+    "py": 852,
+    "xKm": 5135,
+    "yKm": 3715
+   },
+   "cells": 259,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    95,
+    210,
+    212,
+    213,
+    214,
+    290
+   ],
+   "site": "the pepper hills"
+  },
+  {
+   "id": 212,
+   "name": "Monuro",
+   "realm": "POL-21",
+   "type": "city",
+   "seat": {
+    "px": 1166,
+    "py": 892,
+    "xKm": 5205,
+    "yKm": 3885
+   },
+   "cells": 526,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Amber Strait",
+    "the Spice Sea"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    210,
+    211,
+    214
+   ],
+   "site": "shipyards on the Amber Strait, facing Great Amber"
+  },
+  {
+   "id": 213,
+   "name": "Zetu",
+   "realm": "POL-21",
+   "type": "market town",
+   "seat": {
+    "px": 1100,
+    "py": 846,
+    "xKm": 4925,
+    "yKm": 3695
+   },
+   "cells": 318,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Spice Sea"
+   ],
+   "rivers": [
+    "the Monundi"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    92,
+    93,
+    210,
+    211,
+    290
+   ],
+   "site": "market at the Monundi's mouth"
+  },
+  {
+   "id": 214,
+   "name": "Fort Zubanga",
+   "realm": "POL-21",
+   "type": "castle",
+   "seat": {
+    "px": 1196,
+    "py": 842,
+    "xKm": 5335,
+    "yKm": 3675
+   },
+   "cells": 535,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Amber Strait",
+    "the Eastern Gulf"
+   ],
+   "rivers": [],
+   "ground": "desert",
+   "height": 0.3,
+   "adj": [
+    56,
+    95,
+    211,
+    212
+   ],
+   "site": "fort on the east shore"
+  },
+  {
+   "id": 215,
+   "name": "Zarak",
+   "realm": "POL-19",
+   "type": "capital city",
+   "seat": {
+    "px": 780,
+    "py": 648,
+    "xKm": 3555,
+    "yKm": 2845
+   },
+   "cells": 519,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "desert",
+   "height": 0.3,
+   "adj": [
+    29,
+    219,
+    225,
+    228,
+    234,
+    235
+   ],
+   "site": "the salt flats and the walled salt wells, the middle of the old sea's bed"
+  },
+  {
+   "id": 216,
+   "name": "Marir",
+   "realm": "POL-19",
+   "type": "town",
+   "seat": {
+    "px": 690,
+    "py": 705,
+    "xKm": 3175,
+    "yKm": 3085
+   },
+   "cells": 264,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    34,
+    39,
+    222,
+    223,
+    228,
+    232,
+    233
+   ],
+   "site": "hill town of the south-west"
+  },
+  {
+   "id": 217,
+   "name": "Zabesh Oasis",
+   "realm": "POL-19",
+   "type": "oasis",
+   "seat": {
+    "px": 705,
+    "py": 552,
+    "xKm": 3235,
+    "yKm": 2435
+   },
+   "cells": 406,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Middle Sea"
+   ],
+   "rivers": [],
+   "ground": "desert",
+   "height": 0.3,
+   "adj": [
+    2,
+    4,
+    218,
+    220,
+    236
+   ],
+   "site": "wells on the Middle Sea's south shore"
+  },
+  {
+   "id": 218,
+   "name": "Janiya",
+   "realm": "POL-19",
+   "type": "town",
+   "seat": {
+    "px": 750,
+    "py": 547,
+    "xKm": 3435,
+    "yKm": 2415
+   },
+   "cells": 409,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Middle Sea"
+   ],
+   "rivers": [],
+   "ground": "desert",
+   "height": 0.2,
+   "adj": [
+    217,
+    227,
+    229
+   ],
+   "site": "harbour on the Middle Sea's south shore, the end of the Salt Road"
+  },
+  {
+   "id": 219,
+   "name": "Zahira",
+   "realm": "POL-19",
+   "type": "town",
+   "seat": {
+    "px": 795,
+    "py": 704,
+    "xKm": 3625,
+    "yKm": 3085
+   },
+   "cells": 373,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Hazir"
+   ],
+   "ground": "desert",
+   "height": 0.2,
+   "adj": [
+    29,
+    215,
+    221,
+    225,
+    226
+   ],
+   "site": "the Darai Bridge on the Hazir"
+  },
+  {
+   "id": 220,
+   "name": "Nahib Oasis",
+   "realm": "POL-19",
+   "type": "oasis",
+   "seat": {
+    "px": 700,
+    "py": 592,
+    "xKm": 3215,
+    "yKm": 2605
+   },
+   "cells": 413,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    217,
+    222,
+    229,
+    235,
+    236
+   ],
+   "site": "wells under the Marble Mountains' southern knot"
+  },
+  {
+   "id": 221,
+   "name": "Badayn Oasis",
+   "realm": "POL-19",
+   "type": "oasis",
+   "seat": {
+    "px": 842,
+    "py": 728,
+    "xKm": 3825,
+    "yKm": 3185
+   },
+   "cells": 355,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "desert",
+   "height": 0.3,
+   "adj": [
+    27,
+    29,
+    35,
+    38,
+    219,
+    226,
+    230
+   ],
+   "site": "wells of the southern lobe"
+  },
+  {
+   "id": 222,
+   "name": "Halai Oasis",
+   "realm": "POL-19",
+   "type": "oasis",
+   "seat": {
+    "px": 690,
+    "py": 655,
+    "xKm": 3175,
+    "yKm": 2875
+   },
+   "cells": 478,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "desert",
+   "height": 0.3,
+   "adj": [
+    216,
+    220,
+    228,
+    232,
+    235,
+    236
+   ],
+   "site": "wells of the western sands"
+  },
+  {
+   "id": 223,
+   "name": "Mirah",
+   "realm": "POL-19",
+   "type": "city",
+   "seat": {
+    "px": 742,
+    "py": 732,
+    "xKm": 3395,
+    "yKm": 3205
+   },
+   "cells": 361,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Hazir"
+   ],
+   "ground": "desert",
+   "height": 0.2,
+   "adj": [
+    39,
+    41,
+    44,
+    216,
+    225,
+    226,
+    228
+   ],
+   "site": "the last wells of the Salt Road, the Zanaran market"
+  },
+  {
+   "id": 224,
+   "name": "Najuma Oasis",
+   "realm": "POL-19",
+   "type": "oasis",
+   "seat": {
+    "px": 600,
+    "py": 646,
+    "xKm": 2795,
+    "yKm": 2835
+   },
+   "cells": 1221,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    73,
+    232,
+    233,
+    236,
+    248,
+    302
+   ],
+   "site": "wells of the far western sands"
+  },
+  {
+   "id": 225,
+   "name": "Tamuma Oasis",
+   "realm": "POL-19",
+   "type": "oasis",
+   "seat": {
+    "px": 752,
+    "py": 712,
+    "xKm": 3445,
+    "yKm": 3115
+   },
+   "cells": 256,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Hazir"
+   ],
+   "ground": "desert",
+   "height": 0.2,
+   "adj": [
+    215,
+    219,
+    223,
+    226,
+    228
+   ],
+   "site": "wells north of the Southern Hills"
+  },
+  {
+   "id": 226,
+   "name": "Qaruma Oasis",
+   "realm": "POL-19",
+   "type": "oasis",
+   "seat": {
+    "px": 802,
+    "py": 728,
+    "xKm": 3655,
+    "yKm": 3185
+   },
+   "cells": 193,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Hazir"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    38,
+    41,
+    219,
+    221,
+    223,
+    225
+   ],
+   "site": "wells on the upper Hazir"
+  },
+  {
+   "id": 227,
+   "name": "Kafam Caravanserai",
+   "realm": "POL-19",
+   "type": "caravanserai",
+   "seat": {
+    "px": 795,
+    "py": 549,
+    "xKm": 3625,
+    "yKm": 2425
+   },
+   "cells": 300,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Middle Sea"
+   ],
+   "rivers": [],
+   "ground": "desert",
+   "height": 0.4,
+   "adj": [
+    26,
+    218,
+    229,
+    234
+   ],
+   "site": "harbour camp on the Middle Sea's eastern arm"
+  },
+  {
+   "id": 228,
+   "name": "Januma Caravanserai",
+   "realm": "POL-19",
+   "type": "caravanserai",
+   "seat": {
+    "px": 735,
+    "py": 685,
+    "xKm": 3365,
+    "yKm": 3005
+   },
+   "cells": 412,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "desert",
+   "height": 0.3,
+   "adj": [
+    215,
+    216,
+    222,
+    223,
+    225,
+    235
+   ],
+   "site": "camp on the Well Road, by the Well of Samar"
+  },
+  {
+   "id": 229,
+   "name": "Dahur Oasis",
+   "realm": "POL-19",
+   "type": "oasis",
+   "seat": {
+    "px": 755,
+    "py": 585,
+    "xKm": 3455,
+    "yKm": 2575
+   },
+   "cells": 439,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "desert",
+   "height": 0.3,
+   "adj": [
+    218,
+    220,
+    227,
+    234,
+    235
+   ],
+   "site": "the great northern wells"
+  },
+  {
+   "id": 230,
+   "name": "Bahib Oasis",
+   "realm": "POL-19",
+   "type": "oasis",
+   "seat": {
+    "px": 872,
+    "py": 742,
+    "xKm": 3955,
+    "yKm": 3245
+   },
+   "cells": 522,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Monuti"
+   ],
+   "ground": "desert",
+   "height": 0.2,
+   "adj": [
+    27,
+    35,
+    42,
+    52,
+    221,
+    231,
+    288
+   ],
+   "site": "wells south of the Monuti's upper course"
+  },
+  {
+   "id": 231,
+   "name": "Zaruz Oasis",
+   "realm": "POL-19",
+   "type": "oasis",
+   "seat": {
+    "px": 918,
+    "py": 768,
+    "xKm": 4145,
+    "yKm": 3355
+   },
+   "cells": 364,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Monuti",
+    "the Mosawa"
+   ],
+   "ground": "desert",
+   "height": 0.2,
+   "adj": [
+    32,
+    45,
+    52,
+    87,
+    230,
+    288
+   ],
+   "site": "wells under the Highveld"
+  },
+  {
+   "id": 232,
+   "name": "Talabad Oasis",
+   "realm": "POL-19",
+   "type": "oasis",
+   "seat": {
+    "px": 640,
+    "py": 655,
+    "xKm": 2965,
+    "yKm": 2875
+   },
+   "cells": 473,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "desert",
+   "height": 0.3,
+   "adj": [
+    216,
+    222,
+    224,
+    233,
+    236
+   ],
+   "site": "wells of the western sands"
+  },
+  {
+   "id": 233,
+   "name": "Qasan",
+   "realm": "POL-19",
+   "type": "town",
+   "seat": {
+    "px": 640,
+    "py": 700,
+    "xKm": 2965,
+    "yKm": 3065
+   },
+   "cells": 261,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    34,
+    216,
+    224,
+    232,
+    302
+   ],
+   "site": "hill town of the Southern Hills"
+  },
+  {
+   "id": 234,
+   "name": "Marabad Oasis",
+   "realm": "POL-19",
+   "type": "oasis",
+   "seat": {
+    "px": 806,
+    "py": 596,
+    "xKm": 3675,
+    "yKm": 2625
+   },
+   "cells": 417,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "desert",
+   "height": 0.3,
+   "adj": [
+    25,
+    26,
+    28,
+    29,
+    215,
+    227,
+    229,
+    235
+   ],
+   "site": "wells west of the Monuti"
+  },
+  {
+   "id": 235,
+   "name": "Yasib Oasis",
+   "realm": "POL-19",
+   "type": "oasis",
+   "seat": {
+    "px": 745,
+    "py": 622,
+    "xKm": 3415,
+    "yKm": 2735
+   },
+   "cells": 447,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    215,
+    220,
+    222,
+    228,
+    229,
+    234
+   ],
+   "site": "wells of the Yasuz Hills"
+  },
+  {
+   "id": 236,
+   "name": "Jalar Oasis",
+   "realm": "POL-19",
+   "type": "oasis",
+   "seat": {
+    "px": 648,
+    "py": 615,
+    "xKm": 2995,
+    "yKm": 2705
+   },
+   "cells": 770,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.5,
+   "adj": [
+    2,
+    73,
+    217,
+    220,
+    222,
+    224,
+    232
+   ],
+   "site": "wells of the Haliya Hills"
+  },
+  {
+   "id": 237,
+   "name": "Stonehold",
+   "realm": "POL-28",
+   "type": "capital city",
+   "seat": {
+    "px": 1062,
+    "py": 642,
+    "xKm": 4765,
+    "yKm": 2825
+   },
+   "cells": 290,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    238,
+    239,
+    240,
+    241,
+    242
+   ],
+   "site": "the First Hall under Mount Bardun"
+  },
+  {
+   "id": 238,
+   "name": "Morhall",
+   "realm": "POL-28",
+   "type": "dwarven hold",
+   "seat": {
+    "px": 1040,
+    "py": 605,
+    "xKm": 4665,
+    "yKm": 2665
+   },
+   "cells": 924,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "desert",
+   "height": 0.3,
+   "adj": [
+    30,
+    194,
+    196,
+    237,
+    240,
+    241,
+    288
+   ],
+   "site": "hold of the north-west, the Kardeep mines"
+  },
+  {
+   "id": 239,
+   "name": "Barmark Gate",
+   "realm": "POL-28",
+   "type": "gate-fort",
+   "seat": {
+    "px": 1102,
+    "py": 665,
+    "xKm": 4935,
+    "yKm": 2915
+   },
+   "cells": 245,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Chanpur"
+   ],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    54,
+    90,
+    237,
+    241,
+    242
+   ],
+   "site": "gate-fort on the eastern face"
+  },
+  {
+   "id": 240,
+   "name": "Mormund",
+   "realm": "POL-28",
+   "type": "dwarven hold",
+   "seat": {
+    "px": 1025,
+    "py": 640,
+    "xKm": 4605,
+    "yKm": 2815
+   },
+   "cells": 453,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    86,
+    237,
+    238,
+    242,
+    288
+   ],
+   "site": "hold over the Zardeep Pass"
+  },
+  {
+   "id": 241,
+   "name": "Garbek Gate",
+   "realm": "POL-28",
+   "type": "gate-fort",
+   "seat": {
+    "px": 1094,
+    "py": 622,
+    "xKm": 4905,
+    "yKm": 2735
+   },
+   "cells": 371,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    54,
+    55,
+    194,
+    237,
+    238,
+    239
+   ],
+   "site": "gate-fort over the Nagora road"
+  },
+  {
+   "id": 242,
+   "name": "Dramhall",
+   "realm": "POL-28",
+   "type": "dwarven hold",
+   "seat": {
+    "px": 1078,
+    "py": 685,
+    "xKm": 4835,
+    "yKm": 3005
+   },
+   "cells": 570,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Chanpur"
+   ],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    83,
+    86,
+    90,
+    237,
+    239,
+    240
+   ],
+   "site": "hold of the southern galleries"
+  },
+  {
+   "id": 243,
+   "name": "Sabra",
+   "realm": "POL-24",
+   "type": "capital city",
+   "seat": {
+    "px": 428,
+    "py": 712,
+    "xKm": 2055,
+    "yKm": 3115
+   },
+   "cells": 295,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Gulf of Sands"
+   ],
+   "rivers": [
+    "the Bahesh"
+   ],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    244,
+    245,
+    247,
+    275,
+    276
+   ],
+   "site": "the Bahesh's mouth on the Gulf of Sands"
+  },
+  {
+   "id": 244,
+   "name": "Sarabad",
+   "realm": "POL-24",
+   "type": "market town",
+   "seat": {
+    "px": 470,
+    "py": 702,
+    "xKm": 2235,
+    "yKm": 3075
+   },
+   "cells": 437,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Bahesh"
+   ],
+   "ground": "forest",
+   "height": 0.3,
+   "adj": [
+    73,
+    243,
+    245,
+    246,
+    248,
+    276
+   ],
+   "site": "granary town inland, on the Bahesh"
+  },
+  {
+   "id": 245,
+   "name": "Sabira",
+   "realm": "POL-24",
+   "type": "town",
+   "seat": {
+    "px": 438,
+    "py": 728,
+    "xKm": 2095,
+    "yKm": 3185
+   },
+   "cells": 164,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Gulf of Sands"
+   ],
+   "rivers": [
+    "the Bahesh"
+   ],
+   "ground": "forest",
+   "height": 0.2,
+   "adj": [
+    243,
+    244,
+    246
+   ],
+   "site": "terraces on the gulf's east shore"
+  },
+  {
+   "id": 246,
+   "name": "Zahas",
+   "realm": "POL-24",
+   "type": "market town",
+   "seat": {
+    "px": 457,
+    "py": 741,
+    "xKm": 2185,
+    "yKm": 3245
+   },
+   "cells": 132,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Gulf of Sands"
+   ],
+   "rivers": [],
+   "ground": "forest",
+   "height": 0.2,
+   "adj": [
+    244,
+    245,
+    248,
+    249
+   ],
+   "site": "market on the gulf's east shore"
+  },
+  {
+   "id": 247,
+   "name": "Daham Tower",
+   "realm": "POL-24",
+   "type": "castle",
+   "seat": {
+    "px": 385,
+    "py": 698,
+    "xKm": 1875,
+    "yKm": 3055
+   },
+   "cells": 160,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Gulf of Sands"
+   ],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    243,
+    250,
+    278,
+    280
+   ],
+   "site": "tower on the north shore"
+  },
+  {
+   "id": 248,
+   "name": "Nahur",
+   "realm": "POL-24",
+   "type": "market town",
+   "seat": {
+    "px": 500,
+    "py": 728,
+    "xKm": 2365,
+    "yKm": 3185
+   },
+   "cells": 1070,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Bahesh"
+   ],
+   "ground": "forest",
+   "height": 0.2,
+   "adj": [
+    33,
+    73,
+    224,
+    244,
+    246,
+    249,
+    302,
+    303
+   ],
+   "site": "market of the upland"
+  },
+  {
+   "id": 249,
+   "name": "Basir",
+   "realm": "POL-24",
+   "type": "town",
+   "seat": {
+    "px": 474,
+    "py": 758,
+    "xKm": 2255,
+    "yKm": 3315
+   },
+   "cells": 116,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Gulf of Sands"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    246,
+    248,
+    303
+   ],
+   "site": "date gardens of the South March"
+  },
+  {
+   "id": 250,
+   "name": "Zariya",
+   "realm": "POL-24",
+   "type": "town",
+   "seat": {
+    "px": 342,
+    "py": 702,
+    "xKm": 1705,
+    "yKm": 3075
+   },
+   "cells": 29,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Gulf of Sands"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    247,
+    278
+   ],
+   "site": "the Oil Shore and its walled seeps"
+  },
+  {
+   "id": 251,
+   "name": "Skyhold",
+   "realm": "POL-27",
+   "type": "capital city",
+   "seat": {
+    "px": 1240,
+    "py": 442,
+    "xKm": 5525,
+    "yKm": 1965
+   },
+   "cells": 209,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    253,
+    254,
+    256,
+    257,
+    258
+   ],
+   "site": "the White Stair, central to the valleys"
+  },
+  {
+   "id": 252,
+   "name": "Quietwatch Monastery",
+   "realm": "POL-27",
+   "type": "monastery",
+   "seat": {
+    "px": 1198,
+    "py": 458,
+    "xKm": 5345,
+    "yKm": 2035
+   },
+   "cells": 127,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.5,
+   "adj": [
+    254,
+    255,
+    256,
+    300
+   ],
+   "site": "monastery of the western ridges"
+  },
+  {
+   "id": 253,
+   "name": "Starspire",
+   "realm": "POL-27",
+   "type": "town",
+   "seat": {
+    "px": 1264,
+    "py": 466,
+    "xKm": 5625,
+    "yKm": 2065
+   },
+   "cells": 700,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Sunrise Sea"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    190,
+    251,
+    256,
+    258,
+    281
+   ],
+   "site": "the Bluespire circuit, above the sea"
+  },
+  {
+   "id": 254,
+   "name": "Moonstair",
+   "realm": "POL-27",
+   "type": "town",
+   "seat": {
+    "px": 1218,
+    "py": 420,
+    "xKm": 5435,
+    "yKm": 1875
+   },
+   "cells": 317,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    188,
+    251,
+    252,
+    255,
+    256,
+    257,
+    301
+   ],
+   "site": "town of the north-west stair"
+  },
+  {
+   "id": 255,
+   "name": "Drumhaven Monastery",
+   "realm": "POL-27",
+   "type": "monastery",
+   "seat": {
+    "px": 1186,
+    "py": 432,
+    "xKm": 5295,
+    "yKm": 1925
+   },
+   "cells": 281,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    107,
+    252,
+    254,
+    300,
+    301
+   ],
+   "site": "monastery over the western pass"
+  },
+  {
+   "id": 256,
+   "name": "Bellcrest",
+   "realm": "POL-27",
+   "type": "town",
+   "seat": {
+    "px": 1226,
+    "py": 484,
+    "xKm": 5465,
+    "yKm": 2145
+   },
+   "cells": 716,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Tirana"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    195,
+    251,
+    252,
+    253,
+    254,
+    281
+   ],
+   "site": "the southern herds"
+  },
+  {
+   "id": 257,
+   "name": "Eaglespire",
+   "realm": "POL-27",
+   "type": "town",
+   "seat": {
+    "px": 1256,
+    "py": 404,
+    "xKm": 5595,
+    "yKm": 1805
+   },
+   "cells": 161,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    188,
+    251,
+    254,
+    258,
+    284
+   ],
+   "site": "the northern salt gate"
+  },
+  {
+   "id": 258,
+   "name": "Stonespire Monastery",
+   "realm": "POL-27",
+   "type": "monastery",
+   "seat": {
+    "px": 1284,
+    "py": 432,
+    "xKm": 5715,
+    "yKm": 1915
+   },
+   "cells": 137,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Sunrise Sea"
+   ],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    251,
+    253,
+    257,
+    284
+   ],
+   "site": "monastery of the eastern heights"
+  },
+  {
+   "id": 259,
+   "name": "Highcastle",
+   "realm": "POL-13",
+   "type": "capital city",
+   "seat": {
+    "px": 800,
+    "py": 440,
+    "xKm": 3645,
+    "yKm": 1955
+   },
+   "cells": 344,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.6,
+   "adj": [
+    81,
+    171,
+    173,
+    260,
+    261,
+    262
+   ],
+   "site": "the charter castle over the high valleys"
+  },
+  {
+   "id": 260,
+   "name": "Bearfold",
+   "realm": "POL-13",
+   "type": "market town",
+   "seat": {
+    "px": 862,
+    "py": 448,
+    "xKm": 3905,
+    "yKm": 1995
+   },
+   "cells": 824,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.5,
+   "adj": [
+    81,
+    171,
+    177,
+    207,
+    209,
+    259
+   ],
+   "site": "eastern valleys"
+  },
+  {
+   "id": 261,
+   "name": "Whitfield",
+   "realm": "POL-13",
+   "type": "market town",
+   "seat": {
+    "px": 775,
+    "py": 468,
+    "xKm": 3535,
+    "yKm": 2075
+   },
+   "cells": 230,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    1,
+    79,
+    81,
+    82,
+    259,
+    262,
+    272
+   ],
+   "site": "southern foothill market"
+  },
+  {
+   "id": 262,
+   "name": "Highwold",
+   "realm": "POL-13",
+   "type": "market town",
+   "seat": {
+    "px": 745,
+    "py": 434,
+    "xKm": 3415,
+    "yKm": 1935
+   },
+   "cells": 202,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    1,
+    3,
+    173,
+    259,
+    261
+   ],
+   "site": "the Skardush Gap"
+  },
+  {
+   "id": 263,
+   "name": "Jotunhall",
+   "realm": "POL-23",
+   "type": "capital city",
+   "seat": {
+    "px": 1086,
+    "py": 89,
+    "xKm": 4865,
+    "yKm": 455
+   },
+   "cells": 328,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "Whale Sound"
+   ],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.8,
+   "adj": [
+    264,
+    265,
+    266
+   ],
+   "site": "the king's hall on the White Coast"
+  },
+  {
+   "id": 264,
+   "name": "Valdhall",
+   "realm": "POL-23",
+   "type": "giant hall",
+   "seat": {
+    "px": 1012,
+    "py": 64,
+    "xKm": 4555,
+    "yKm": 355
+   },
+   "cells": 958,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "Whale Sound",
+    "the Northern Ocean"
+   ],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.7,
+   "adj": [
+    115,
+    263,
+    265,
+    282
+   ],
+   "site": "the far-west walrus beaches"
+  },
+  {
+   "id": 265,
+   "name": "Valdgard",
+   "realm": "POL-23",
+   "type": "giant hall",
+   "seat": {
+    "px": 1045,
+    "py": 140,
+    "xKm": 4695,
+    "yKm": 675
+   },
+   "cells": 832,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.8,
+   "adj": [
+    115,
+    119,
+    124,
+    125,
+    263,
+    264,
+    266
+   ],
+   "site": "the inland fells"
+  },
+  {
+   "id": 266,
+   "name": "Torholm",
+   "realm": "POL-23",
+   "type": "giant hall",
+   "seat": {
+    "px": 1122,
+    "py": 128,
+    "xKm": 5025,
+    "yKm": 625
+   },
+   "cells": 338,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "Whale Sound"
+   ],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.6,
+   "adj": [
+    116,
+    121,
+    124,
+    263,
+    265
+   ],
+   "site": "the southern shore on Whale Sound, with Hrimborg"
+  },
+  {
+   "id": 267,
+   "name": "Skarfell",
+   "realm": "POL-09",
+   "type": "capital city",
+   "seat": {
+    "px": 594,
+    "py": 133,
+    "xKm": 2765,
+    "yKm": 645
+   },
+   "cells": 151,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "Amber Bay"
+   ],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    268
+   ],
+   "site": "the chieftain's hall and the tin fair, in the lee of the isle"
+  },
+  {
+   "id": 268,
+   "name": "Helstad",
+   "realm": "POL-09",
+   "type": "giant hall",
+   "seat": {
+    "px": 572,
+    "py": 126,
+    "xKm": 2675,
+    "yKm": 615
+   },
+   "cells": 99,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "Amber Bay",
+    "the North Fjords"
+   ],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.6,
+   "adj": [
+    267
+   ],
+   "site": "the western shore"
+  },
+  {
+   "id": 269,
+   "name": "Saltbridge",
+   "realm": "POL-08",
+   "type": "city",
+   "seat": {
+    "px": 738,
+    "py": 188,
+    "xKm": 3385,
+    "yKm": 885
+   },
+   "cells": 471,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "Cold Bay",
+    "the Cold Narrows"
+   ],
+   "rivers": [
+    "the Stagflow"
+   ],
+   "ground": "forest",
+   "height": 0.2,
+   "adj": [
+    18,
+    270,
+    271,
+    299
+   ],
+   "site": "the bridge town on the Stagflow, with Wolfhaven on the Narrows shore below it"
+  },
+  {
+   "id": 270,
+   "name": "Coldhaven",
+   "realm": "POL-08",
+   "type": "city",
+   "seat": {
+    "px": 708,
+    "py": 168,
+    "xKm": 3255,
+    "yKm": 795
+   },
+   "cells": 247,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "Amber Bay",
+    "the Cold Narrows"
+   ],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    269,
+    271
+   ],
+   "site": "the Amber Capes at the mouth of the Cold Narrows"
+  },
+  {
+   "id": 271,
+   "name": "Flintwall Tower",
+   "realm": "POL-08",
+   "type": "castle",
+   "seat": {
+    "px": 742,
+    "py": 128,
+    "xKm": 3395,
+    "yKm": 625
+   },
+   "cells": 1532,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "Amber Bay",
+    "the Northern Ocean"
+   ],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.6,
+   "adj": [
+    269,
+    270,
+    294,
+    299
+   ],
+   "site": "tower on the Flintwall Capes of the north coast"
+  },
+  {
+   "id": 272,
+   "name": "Lavium",
+   "realm": "POL-04",
+   "type": "town",
+   "seat": {
+    "px": 738,
+    "py": 496,
+    "xKm": 3385,
+    "yKm": 2195
+   },
+   "cells": 187,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Middle Sea"
+   ],
+   "rivers": [
+    "the Skardush"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    1,
+    82,
+    261
+   ],
+   "site": "the lagoon city of Lucerna at the Palena's mouth, with its mainland farms"
+  },
+  {
+   "id": 273,
+   "name": "Miruma",
+   "realm": "POL-17",
+   "type": "town",
+   "seat": {
+    "px": 284,
+    "py": 652,
+    "xKm": 1445,
+    "yKm": 2865
+   },
+   "cells": 315,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Lion Gulf"
+   ],
+   "rivers": [
+    "the Saman"
+   ],
+   "ground": "forest",
+   "height": 0.2,
+   "adj": [
+    70,
+    277,
+    279
+   ],
+   "site": "the naval yard on the open coast"
+  },
+  {
+   "id": 274,
+   "name": "Ashah",
+   "realm": "POL-17",
+   "type": "market town",
+   "seat": {
+    "px": 306,
+    "py": 696,
+    "xKm": 1535,
+    "yKm": 3055
+   },
+   "cells": 162,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Gulf of Sands"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    277,
+    278,
+    279
+   ],
+   "site": "the southern coast, the West March"
+  },
+  {
+   "id": 275,
+   "name": "Faluz Tower",
+   "realm": "POL-17",
+   "type": "castle",
+   "seat": {
+    "px": 405,
+    "py": 648,
+    "xKm": 1955,
+    "yKm": 2845
+   },
+   "cells": 358,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Palella",
+    "the Saman"
+   ],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    69,
+    71,
+    243,
+    276,
+    279,
+    280
+   ],
+   "site": "tower in the Sunwall"
+  },
+  {
+   "id": 276,
+   "name": "Fort Tabir",
+   "realm": "POL-17",
+   "type": "castle",
+   "seat": {
+    "px": 455,
+    "py": 668,
+    "xKm": 2175,
+    "yKm": 2935
+   },
+   "cells": 385,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    71,
+    73,
+    243,
+    244,
+    275
+   ],
+   "site": "fort on the Sunwall's desert face"
+  },
+  {
+   "id": 277,
+   "name": "Fasun",
+   "realm": "POL-17",
+   "type": "market town",
+   "seat": {
+    "px": 292,
+    "py": 680,
+    "xKm": 1475,
+    "yKm": 2985
+   },
+   "cells": 239,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Gulf of Sands",
+    "the Lion Gulf"
+   ],
+   "rivers": [
+    "the Saman"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    273,
+    274,
+    279,
+    287
+   ],
+   "site": "the coast gardens"
+  },
+  {
+   "id": 278,
+   "name": "Nahin",
+   "realm": "POL-17",
+   "type": "market town",
+   "seat": {
+    "px": 345,
+    "py": 690,
+    "xKm": 1705,
+    "yKm": 3025
+   },
+   "cells": 193,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Gulf of Sands"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    247,
+    250,
+    274,
+    279,
+    280
+   ],
+   "site": "market below the Sabun Pass road"
+  },
+  {
+   "id": 279,
+   "name": "Hazifa",
+   "realm": "POL-17",
+   "type": "market town",
+   "seat": {
+    "px": 340,
+    "py": 650,
+    "xKm": 1685,
+    "yKm": 2855
+   },
+   "cells": 379,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Saman"
+   ],
+   "ground": "forest",
+   "height": 0.3,
+   "adj": [
+    69,
+    70,
+    273,
+    274,
+    275,
+    277,
+    278,
+    280
+   ],
+   "site": "the crown gardens, with Qadira the capital"
+  },
+  {
+   "id": 280,
+   "name": "Qarifa",
+   "realm": "POL-17",
+   "type": "market town",
+   "seat": {
+    "px": 372,
+    "py": 668,
+    "xKm": 1815,
+    "yKm": 2935
+   },
+   "cells": 230,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Saman"
+   ],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    247,
+    275,
+    278,
+    279
+   ],
+   "site": "the Saman mills"
+  },
+  {
+   "id": 281,
+   "name": "The Free Marches",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 1195,
+    "py": 572,
+    "xKm": 5335,
+    "yKm": 2525
+   },
+   "cells": 1903,
+   "coast": true,
+   "lake": true,
+   "waters": [
+    "the Eastern Gulf",
+    "the Reed Water"
+   ],
+   "rivers": [
+    "the Gullet",
+    "the Tirana"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    54,
+    55,
+    190,
+    191,
+    194,
+    195,
+    253,
+    256
+   ],
+   "site": "the forested lowland between the Gullet, the Roof and the Ember Mountains"
+  },
+  {
+   "id": 282,
+   "name": "The Frostfells",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 900,
+    "py": 150,
+    "xKm": 4075,
+    "yKm": 715
+   },
+   "cells": 1131,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Northern Ocean"
+   ],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.7,
+   "adj": [
+    115,
+    118,
+    264,
+    294,
+    298,
+    299
+   ],
+   "site": "the snow range north-west of the Western Lakes"
+  },
+  {
+   "id": 283,
+   "name": "The Whale Woods",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 1262,
+    "py": 166,
+    "xKm": 5615,
+    "yKm": 785
+   },
+   "cells": 646,
+   "coast": true,
+   "lake": true,
+   "waters": [
+    "Whale Sound",
+    "the Seal Lagoon"
+   ],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    116,
+    185,
+    297
+   ],
+   "site": "the forest cape east of Whale Sound"
+  },
+  {
+   "id": 284,
+   "name": "The High Wastes",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 1305,
+    "py": 385,
+    "xKm": 5805,
+    "yKm": 1725
+   },
+   "cells": 308,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Sunrise Sea"
+   ],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.5,
+   "adj": [
+    186,
+    188,
+    257,
+    258
+   ],
+   "site": "the coast mountains north-east of the Roof"
+  },
+  {
+   "id": 285,
+   "name": "The Amber Wilds",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 1228,
+    "py": 962,
+    "xKm": 5475,
+    "yKm": 4175
+   },
+   "cells": 197,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Amber Strait"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    111,
+    112,
+    113
+   ],
+   "site": "the hill interior of Great Amber"
+  },
+  {
+   "id": 286,
+   "name": "The Isle of Pearls",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 1298,
+    "py": 938,
+    "xKm": 5775,
+    "yKm": 4085
+   },
+   "cells": 49,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Amber Strait"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [],
+   "site": "the pearl isle east of Great Amber"
+  },
+  {
+   "id": 287,
+   "name": "The Bone Coast",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 284,
+    "py": 724,
+    "xKm": 1445,
+    "yKm": 3175
+   },
+   "cells": 184,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Gulf of Sands",
+    "the Lion Gulf"
+   ],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    277
+   ],
+   "site": "the desert headland west of the Gulf of Sands"
+  },
+  {
+   "id": 288,
+   "name": "The Burning Waste",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 950,
+    "py": 660,
+    "xKm": 4285,
+    "yKm": 2895
+   },
+   "cells": 822,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    27,
+    30,
+    86,
+    87,
+    230,
+    231,
+    238,
+    240
+   ],
+   "site": "the sands and bare ranges between the Monuti and the Worldspine"
+  },
+  {
+   "id": 289,
+   "name": "The Western Veld",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 515,
+    "py": 805,
+    "xKm": 2425,
+    "yKm": 3515
+   },
+   "cells": 376,
+   "coast": true,
+   "lake": true,
+   "waters": [
+    "the Gulf of Sands",
+    "the Southern Ocean",
+    "the Veld Lagoon"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    303
+   ],
+   "site": "the south-west peninsula"
+  },
+  {
+   "id": 290,
+   "name": "The Thornveld",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 1112,
+    "py": 815,
+    "xKm": 4975,
+    "yKm": 3555
+   },
+   "cells": 309,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.4,
+   "adj": [
+    88,
+    92,
+    95,
+    211,
+    213
+   ],
+   "site": "the dry head of the south-east peninsula"
+  },
+  {
+   "id": 291,
+   "name": "The Deep Green",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 1005,
+    "py": 870,
+    "xKm": 4525,
+    "yKm": 3795
+   },
+   "cells": 490,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Spice Sea"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    93
+   ],
+   "site": "the rainforest cape"
+  },
+  {
+   "id": 292,
+   "name": "The Western Highlands",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 310,
+    "py": 345,
+    "xKm": 1555,
+    "yKm": 1555
+   },
+   "cells": 198,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Strait of Hael"
+   ],
+   "rivers": [],
+   "ground": "hills",
+   "height": 0.5,
+   "adj": [
+    133,
+    296
+   ],
+   "site": "the coast heights between the Elder Coast and Ashmere"
+  },
+  {
+   "id": 293,
+   "name": "The Ashlands",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 250,
+    "py": 480,
+    "xKm": 1295,
+    "yKm": 2125
+   },
+   "cells": 1322,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "Tibata Bay",
+    "the Strait of Hael"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    68,
+    75,
+    161
+   ],
+   "site": "the western peninsula under Mount Hael"
+  },
+  {
+   "id": 294,
+   "name": "The Pinewild",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 830,
+    "py": 160,
+    "xKm": 3775,
+    "yKm": 765
+   },
+   "cells": 1004,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Northern Ocean"
+   ],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.5,
+   "adj": [
+    271,
+    282,
+    298,
+    299
+   ],
+   "site": "the pine fells between Cold Bay and the Frostfells"
+  },
+  {
+   "id": 295,
+   "name": "The Little Amber Wilds",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 1311,
+    "py": 955,
+    "xKm": 5825,
+    "yKm": 4155
+   },
+   "cells": 13,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Amber Strait"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [],
+   "site": "the lesser isle"
+  },
+  {
+   "id": 296,
+   "name": "The Bleakfold",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 355,
+    "py": 352,
+    "xKm": 1745,
+    "yKm": 1585
+   },
+   "cells": 344,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Strait of Hael"
+   ],
+   "rivers": [
+    "the Bleak Water"
+   ],
+   "ground": "forest",
+   "height": 0.3,
+   "adj": [
+    129,
+    133,
+    139,
+    143,
+    157,
+    292
+   ],
+   "site": "the bare heights behind the Western Highlands"
+  },
+  {
+   "id": 297,
+   "name": "The Tverko Woods",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 1318,
+    "py": 188,
+    "xKm": 5855,
+    "yKm": 885
+   },
+   "cells": 343,
+   "coast": true,
+   "lake": true,
+   "waters": [
+    "Whale Sound",
+    "the Seal Lagoon",
+    "the Sunrise Sea"
+   ],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    185,
+    283
+   ],
+   "site": "the north-east cape and the northern Sunrise Isles"
+  },
+  {
+   "id": 298,
+   "name": "The Trolness Fells",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 860,
+    "py": 70,
+    "xKm": 3905,
+    "yKm": 375
+   },
+   "cells": 921,
+   "coast": true,
+   "lake": false,
+   "waters": [
+    "the Northern Ocean"
+   ],
+   "rivers": [],
+   "ground": "mountains",
+   "height": 0.7,
+   "adj": [
+    282,
+    294
+   ],
+   "site": "the ice coast north of the Iron Mountains"
+  },
+  {
+   "id": 299,
+   "name": "The Mammoth Downs",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 800,
+    "py": 190,
+    "xKm": 3645,
+    "yKm": 895
+   },
+   "cells": 1128,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Iron Tarn"
+   ],
+   "rivers": [
+    "the Stagflow"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    18,
+    118,
+    193,
+    269,
+    271,
+    282,
+    294
+   ],
+   "site": "the downs between Northreach, the Crossmarch and the Pinewild"
+  },
+  {
+   "id": 300,
+   "name": "The Dobava Wilds",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 1140,
+    "py": 455,
+    "xKm": 5095,
+    "yKm": 2025
+   },
+   "cells": 403,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Grey Water"
+   ],
+   "rivers": [
+    "the Grey Channel"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    107,
+    110,
+    183,
+    195,
+    252,
+    255
+   ],
+   "site": "Mount Dobava and the channel's east shore above the Grey Water"
+  },
+  {
+   "id": 301,
+   "name": "The Stairwood",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 1202,
+    "py": 392,
+    "xKm": 5365,
+    "yKm": 1755
+   },
+   "cells": 272,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Ostec"
+   ],
+   "ground": "plains",
+   "height": 0.2,
+   "adj": [
+    98,
+    104,
+    107,
+    187,
+    188,
+    254,
+    255
+   ],
+   "site": "the forest stair between Velgrad and the Roof"
+  },
+  {
+   "id": 302,
+   "name": "The Mirun Pines",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 600,
+    "py": 722,
+    "xKm": 2795,
+    "yKm": 3165
+   },
+   "cells": 742,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    33,
+    34,
+    224,
+    233,
+    248
+   ],
+   "site": "the pine hills west of the Southern Hills"
+  },
+  {
+   "id": 303,
+   "name": "The Samuma Uplands",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 500,
+    "py": 775,
+    "xKm": 2365,
+    "yKm": 3385
+   },
+   "cells": 502,
+   "coast": true,
+   "lake": true,
+   "waters": [
+    "the Gulf of Sands",
+    "the Veld Lagoon"
+   ],
+   "rivers": [],
+   "ground": "forest",
+   "height": 0.2,
+   "adj": [
+    33,
+    248,
+    249,
+    289
+   ],
+   "site": "the uplands south of the Gulf of Sands"
+  },
+  {
+   "id": 304,
+   "name": "The Lunora Woods",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 1000,
+    "py": 514,
+    "xKm": 4495,
+    "yKm": 2275
+   },
+   "cells": 721,
+   "coast": false,
+   "lake": false,
+   "waters": [],
+   "rivers": [
+    "the Santora"
+   ],
+   "ground": "plains",
+   "height": 0.3,
+   "adj": [
+    30,
+    178,
+    181,
+    196,
+    209
+   ],
+   "site": "the wooded hills between the Santora March and the Grey Water"
+  },
+  {
+   "id": 305,
+   "name": "The Firststone Hills",
+   "realm": "unclaimed",
+   "type": "unclaimed land",
+   "seat": {
+    "px": 478,
+    "py": 392,
+    "xKm": 2275,
+    "yKm": 1755
+   },
+   "cells": 558,
+   "coast": false,
+   "lake": true,
+   "waters": [
+    "the Glenmere"
+   ],
+   "rivers": [
+    "the Clarora"
+   ],
+   "ground": "plains",
+   "height": 0.4,
+   "adj": [
+    66,
+    135,
+    158,
+    159,
+    162,
+    167,
+    170
+   ],
+   "site": "the ash plain at the Glenmere's west end"
+  }
+ ],
+ "checks": {
+  "problems": [],
+  "notes": [
+   "Ambrel has one land neighbour (The Amber Wilds) and the sea",
+   "53 islands beside the continent (2361 cells)"
+  ],
+  "snapped": [
+   "20 Amberwick (567,197): seat in water, moved 10 km",
+   "59 Ardata (592,410): seat in water, moved 10 km",
+   "136 Falessa (492,226): seat in water, moved 10 km",
+   "189 Roktuk Oasis (1280,292): seat in water, moved 10 km",
+   "250 Zariya (342,702): seat in water, moved 20 km",
+   "258 Stonespire Monastery (1284,432): seat in water, moved 10 km",
+   "285 The Amber Wilds (1228,962): seat in water, moved 10 km"
+  ]
+ }
+}
