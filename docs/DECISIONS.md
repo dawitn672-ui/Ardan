@@ -2640,3 +2640,12 @@ the chosen map (`data/map/one-continent.json`), and every place the world descri
 and people descriptions, sea and region names, capitals, towns, neighbours, compass words, events and stories that name a
 place or its ground) is recalibrated to it; a lint holds words and map together from then on. (4) M1 merges once, whole.
 
+### D-152 · The one continent is designed, not chosen from seeds (2026-11-19; order 72; over D-142 point 2 and D-151 point 2)
+**Chosen.** A design document first (`docs/design/m1/map-design.md`, the big-design model and effort of D-009): the
+continent's physical geography from its causes, the Middle Sea, every realm's territory with its natural borders and the
+reason for each, capitals and towns, seas, straits, ranges and regions named; rules: no enclave, each realm contiguous
+unless history gives an exclave its reason, borders on natural lines, sizes that fit each realm's lore and power. Then
+it is built in code as map version 4 (a guided generator or authored shapes with generated detail, deterministic, never
+drawing `A.rand`), the lore recalibrated to it (D-151), all tested as one world shift, and shown to the owner whole.
+D-142's seed scoring and M1's 30 candidates stay recorded as what was tried.
+
