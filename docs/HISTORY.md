@@ -2506,6 +2506,10 @@ Branch `work/x5-ci`, from `origin/v2-integration` at `578da51`. The long run on 
     - *`wcObservesOnly`, the world record acting* (`999994-generations`). The deaths read a famine from the world record,
       so the world with the record differed from the world without it. They now read the realm's market by the record's
       own rule (a yield of 0.4 or less).
+    - *`v2fOneHolder` (long tier), the same fault by another road* (`56-court-and-treasury`). When a failed claimant's
+      backer was beheaded for treason, his house had already passed by its law at his death, his county with it. The purge
+      then cleared the headship, so a stranger was made head (seed 9008, House Laurent, 1113). With the house resolver on
+      the page, the purge no longer clears it.
     - *`mdSpread`, an offer with no reason* (`9999955-muster`). A gentleman with no weapon was offered the scouts with
       nothing to say for them. A branch the muster-master has no reason for is no longer offered beside one he has.
   - **Tests that read one world's luck, fixed to read the rule (H-082):**
@@ -2523,6 +2527,9 @@ Branch `work/x5-ci`, from `origin/v2-integration` at `578da51`. The long run on 
     for converted old saves.
 - **Run on the final build:** the 23 tests above and the map tests: 23 of 23. `coherency --baseline=quick`: no check
   rose.
+- **Long tier, once each, for the suspects** (the map, the ways, the one-holder rule): `journeysPure`,
+  `twoScalesMovesFront`, `v2nOneHolder`, `noTradeLoop`, `localEventsUseWords` and `w5TwoCenturies` passed. `v2fOneHolder`
+  failed, which is the purge above.
 - **Undo:** revert the branch's commits, newest first. Saves keep their map's seed: a save made on the one continent
   carries `ardan-v2-map:m1-02` and loads on any build since v2's map. Clear the worker's store by deleting the browser's
   `ardan-map` IndexedDB (or let the tag miss).

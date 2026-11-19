@@ -2613,3 +2613,20 @@ the screen needs no build. The test `m1OneContinent` fails when the file no long
 map version: run the tool). `VM.oneFacts()` is null unless the file's seed and version are the map in play.
 **Considered:** reading the cached world (the words would change on screen when the worker finished); building the world
 for the creation screen (seconds on a phone, which X7 took out).
+
+### D-150 · M1's world shift: three rules mended where the one continent exposed them (2026-11-19; the one-holder rule, order 54; D-107, D-110)
+1. **A county passes with the house seated in it** (`99994-v2-family`, `A.V2F.inherit`). A dead lord who headed his own
+   house and also the house seated in his county left the county with his own house's headship. The other house went to
+   its own heir, so two people held one seat (F.audit's lordship-seat). The lordship now goes with the headship of the
+   house seated in its county, else with his own house's, as before.
+2. **A beheaded backer's house is not cleared after the law has passed it** (`56-court-and-treasury`, the hunt after a
+   failed claim). With the house resolver on the page, A.kill passes the headship, and the county with it, by the house's
+   law. The purge then set the head to none, and the next year a stranger was raised to head a house whose county the
+   heir still held. The purge clears the head only in a build without the resolver (the release's rule).
+3. **The world record observes and never acts** (`999994-generations`). The deaths of the unknown read a failed harvest
+   from the record's famine entries, so a world with the record differed from one without it. They now read the
+   realm's market (`r.mkt.hv`, a yield of 0.4 or less: the record's own rule) and never make one.
+4. **An offer has a reason** (`9999955-muster`): a branch the muster-master has no reason for is not offered beside the
+   one he chose.
+None of them was written for one world. Each was found on the one continent, where a test that had always read another
+world met the case.
