@@ -119,3 +119,33 @@
 - **Version 2 worlds are built exactly as before** (the same grid and provinces, hash-checked on three seeds), so a v2 save keeps
   its map; it gets the ground over it. `VM.release()` now carries each province's release biome and name (the worker's base too).
 - **One map component**: the full map and the war room lay their layers through `MAP.paint` (release, `21-map.js`).
+
+## M1: one fixed continent (owner order 68, D-142)
+
+- **One continent for every life.** Since this feature began, every game seed built its own continent
+  (`A.V2MAP.seedOf(S.seed)`). Now every new life is built on one map seed, `A.V2MAP.ONE` = `ardan-v2-map:m1-02`
+  (`A.V2MAP.mapSeed(gameSeed)` gives it). The land, sea, heights, rivers, lakes, provinces' cells, seats' sites, roads, fords
+  and passes are the same in every life. The game's seed still decides everything that happens on them: people, history,
+  wars, and the borders as they move.
+- **The seed was chosen by measured quality**: thirty candidates, read by `tools/m1/choose-seed.mjs`. See
+  `docs/design/m1/README.md` for the readings, the pictures and why `m1-02` won.
+- **Saves keep their map.** A save carries `A.S.v2map = { seed, v }`, as before. A life begun before M1 keeps its own seed's
+  continent, and a new map version (`VM.VERSION`) redraws the one continent once. `VM.ONE = null` brings back a continent
+  per game seed (for tools, and for tests that hold a rule over several worlds).
+- **Built once.** The cache never lets the one continent go (`VM.pinned`, `VM.trim`), so a second life, a typed seed or a
+  replay builds nothing.
+- **Kept between visits.** The worker that builds it ahead (`e-ahead.core.js`) stores it in its own IndexedDB
+  (`ardan-map`, one entry that is replaced, never added to). The tag is the world's key plus a hash of the code and
+  settings that build it (the v2 engine, `VM.define`, the posted settings and the map as written). The next visit reads it
+  back in about 150 ms instead of building it (1.4 to 1.7 s here, scaled to 6 to 10 s on a slowed phone). A build whose map
+  code changed builds afresh. A refused or wiped store costs only the build. Saves stay with `SAVES`.
+- **The creation screen shows the same continent.** Each home town is offered with its terrain on the one continent, and
+  an oasis the land renamed has its new name (`VM.oneFacts`, from `data/map/one-continent.json`). That file is written from
+  the built world by `node tools/m1/facts.mjs <built.html>`. The title draws no map (86, and the title strip above).
+- **Tests:**
+  - `m1OneContinent`: three lives (two seeds, and a typed seed from the creation screen) have one grid and one ground,
+    their people differ, and at most one continent is built. A save made on another continent keeps it. The facts are the
+    built world's, and the twenty Aldmark home towns are shown with them.
+  - `m1KeptContinent`: the second visit reads the continent back, and it is the page's own build to the bit.
+  - `v2mapOneContinent`, `v2mapSeaRealms` and `v2mapRoseClear` hold their rules on the one continent and on other map seeds
+    (`VM.ONE` switched for the life).

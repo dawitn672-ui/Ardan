@@ -4,12 +4,14 @@
 // 0 and year 50 (the committed saves in tests/saves/press/).
 //
 //   node tools/bench/phone-load.mjs [built.html] [--rates=1,4,6] [--runs=1] [--presses=6] [--device="Pixel 7"]
-//        [--profile] [--top=40] [--tag=x] [--out=tools/bench/reports] [--no-worker]
+//        [--profile] [--top=40] [--tag=x] [--out=tools/bench/reports] [--no-worker] [--warm]
 //
 // The new life is begun with no seed typed, as soon as the title's world is made (and, in a build that builds the
 // continent ahead in a Web Worker, 99991-v2-map/e-ahead.core.js, once the worker has answered). CDP cannot slow a
 // worker, so the worker's build time is scaled by the rate ("continent ready"), and the first Life screen counts from
 // the later of that and the title's world. --no-worker runs the page with no Worker (the page builds every world).
+// --warm: a second visit. The page is opened once before the measured load, in the same browser profile, until the worker
+// has kept the one continent (M1, D-142: e-ahead.core.js stores it in IndexedDB); the measured load reads it back.
 //
 // Two kinds of number, both per throttle rate:
 //   wait: in-page performance.now() from navigation (the boot marks of the page's own loader, window.ARDAN_BOOT, plus
@@ -38,6 +40,7 @@ const OUT = path.resolve(arg('out', path.join(root, 'tools/bench/reports')));
 const SAVES = path.join(root, 'tests/saves/press');
 const TMP = '/tmp/ardan/phone-load';
 const NOWORKER = args.includes('--no-worker');   // the page without Web Workers (the page builds every world itself)
+const WARM = args.includes('--warm');             // a second visit: the one continent already kept by the first (M1)
 const med = a => { const b = a.filter(x => x != null).sort((x, y) => x - y); return b.length ? b[b.length >> 1] : null; };
 const log = (...a) => console.log(`[${new Date().toISOString().slice(11, 19)}] ${TAG}:`, ...a);
 
@@ -88,6 +91,12 @@ const nextFrame = () => new Promise(r => requestAnimationFrame(() => setTimeout(
 async function boot(browser, rate, errs, profile) {
   const P = await openPage(browser, rate, errs, profile);
   const { page, metrics } = P;
+  if (WARM) {
+    await page.goto(pathToFileURL(HTML).href);
+    await page.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { polling: 100 });
+    await page.waitForFunction(() => { const H = A.V2MAP && A.V2MAP.AHEAD; return !H || H.failed || (H.built && !H.storing); }, null, { polling: 100 });
+    await page.goto(pathToFileURL(path.join(TMP, 'blank.html')).href);
+  }
   const m0 = await metrics();
   await page.goto(pathToFileURL(HTML).href);
   // the first frame after the title is drawn (the loader sets ARDAN_READY right after UI.init)
@@ -108,7 +117,7 @@ async function boot(browser, rate, errs, profile) {
   const ahead = await page.evaluate(async () => {
     const H = typeof A !== 'undefined' && A.V2MAP && A.V2MAP.AHEAD; if (!H) return null;
     const t0 = performance.now(); while (!(H.built || H.failed || H.err || (!H.worker && !H.wait.size)) && performance.now() - t0 < 180000) await new Promise(r => setTimeout(r, 50));
-    return { sent: H.sent || null, at: H.at || null, built: H.built, ms: H.ms[0] || null, failed: H.failed, err: H.err };
+    return { sent: H.sent || null, at: H.at || null, built: H.built, kept: H.kept || 0, ms: H.ms[0] || null, failed: H.failed, err: H.err };
   });
   // CDP cannot throttle a worker ("only supported for pages"), and a phone's other cores are about as slow as its first:
   // the worker's own build time is scaled by the rate, as if it had run throttled, from the moment it was asked (or
