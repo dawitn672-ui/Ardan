@@ -77,3 +77,4 @@ D11 the military branches, X5 the state diet, `-ci` a round of CI fixes.)
 - `w17-ci` · `ff8c416` · merged into `v2-integration`
 - `d11-ci` · `544d852` · merged into `v2-integration`
 - `work/w18-ci` · `f3998408` · merged into `v2-integration`
+- `work/w19-ci` · `454c3407` · merged into `v2-integration`

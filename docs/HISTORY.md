@@ -2346,3 +2346,20 @@ Branch `d11-ci`, from `origin/v2-integration` at `b7f6461`, merged with `49beb69
   agree" fell to 3 of its baseline's 10, left for the integrator); `coherency --baseline=quick` no check rose; the quick
   tier of realm-peace, surrender, posts, fresh-realms-and-tensions, v2-nobility and v2-family with the core suites 73 of 73.
 - **Undo:** revert the branch's commits.
+
+### H-098 · 2026-11-19 · w19-ci: csWorlds' share of decisions in character is the worlds' spread, not a drift
+- **Found:** the long run on `a1ecd57` failed `csWorlds` (68-reasons-for-war) on one clause: rulers' decisions in
+  character 77.9% against the bar of 78 (off 65.0%, 4,040 decisions with a trait's say); every other clause held.
+  Earlier readings of the same four worlds: 79.4% (CI 148), 78.4% (CI 150).
+- **Read:** a probe of the test's four worlds (606, 2424, 7, 42; 50 years each, 68 on) on `a88513b`, the build before
+  W1-6, and on `a1ecd57`, counting the rulers' log by kind (`A.aiLogAdd`'s lean, as the test does): 77.0% before W1-6
+  (76.0 to 77.8 by world) and 77.9% after (76.8 to 79.0). The decisions W1-6, w18 and the musters and ladders added
+  carry no trait's say in the log (their temper bends their weights inside `A.WHY`), so they count neither way; the
+  kinds that moved are the worlds' (court 76 → 77%, a subsidy 84 → 89%, a defensive pact 84 → 74%). The lowest kind is
+  W1-5's asking for terms (40% → 34%: a proud king who must ask), present on both builds. No drift to fix.
+- **Changed:** the bar to 74%, under every reading, with the readings in the test's comment (H-082); the relative clause
+  (on beats 68 off by 8 points or more) kept as the rule's own test.
+- **Run once:** `csWorlds` on `a1ecd57` with the new bar passes (387 s here): 161 wars, all with a casus belli; 22.4%
+  citing a memory or a want; 77.9% in character against 65.0% off.
+- **Not used:** D-147 (no decision changed).
+- **Undo:** revert the branch's commit.
