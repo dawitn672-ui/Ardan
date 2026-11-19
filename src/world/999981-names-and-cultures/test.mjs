@@ -131,7 +131,15 @@ export default {
         const done = new Set();
         for (const g of groups) {
           const seen = {};
-          for (const p of g.list) { if (seen[p.given]) { const key = [g.who, p.given, seen[p.given].id, p.id].join('|'); if (!done.has(key)) { done.add(key); bad.kin.push(`${g.who}s ${seen[p.given].id} and ${p.id} are both ${p.given} (${full(seen[p.given])} / ${full(p)}${p.castId || p.famRole || seen[p.given].castId || seen[p.given].famRole ? ', lore' : ''})`); } } else seen[p.given] = p; }
+          // two of one person's cousins are not each other's kin when they come from his two sides (D-108's marriages join
+          // houses: a child of the Natarajans and a child of the Balans are both cousins of their cousin, not of each other):
+          // the rule (D-058) is the namer's own, no brother, sister or first cousin of a person shares his name
+          const close = (a, b) => (A.NAMES && A.NAMES.closeKin ? A.NAMES.closeKin(a).has(b.id) || A.NAMES.closeKin(b).has(a.id) : true);
+          for (const p of g.list) {
+            const q = (seen[p.given] || []).find((x) => close(x, p));
+            if (q) { const key = [g.who, p.given, q.id, p.id].join('|'); if (!done.has(key)) { done.add(key); bad.kin.push(`${g.who}s ${q.id} and ${p.id} are both ${p.given} (${full(q)} / ${full(p)}${p.castId || p.famRole || q.castId || q.famRole ? ', lore' : ''})`); } }
+            (seen[p.given] = seen[p.given] || []).push(p);
+          }
         }
         return { seed: o.seed, realm: o.realm, people: people.length, alive: people.filter((p) => p.alive).length, year: S.year, bad };
       }, o));

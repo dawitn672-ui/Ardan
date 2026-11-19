@@ -2536,3 +2536,20 @@ The league's time grows by about a third (24 more lives of 72).
 4. **Found on the way:** with the world moved, a lore cast member kept the lore's title ("Senior General; Warden of the
    Steppe March") beside the realm's seated Senior General for most of a year; 999990-posts now restyles a stale seat
    style at each month's end as well as at the New Year (`P.restyle`, no dice, well under a millisecond).
+
+### D-147 · X5 CI: the skills sweep finds new people by id; the kin-name test reads the namer's own rule (2026-11-19; D-107, D-108, D-058, D-072)
+1. **s1Mirror (long 7): the sweep missed people.** `A.SK.sweepNew` took the people made since its last pass to be those past
+   its count in `S.people`. A person deleted from the record (`A.gcPeople`) moved every later one a place down, so people
+   made after a deletion fell under the old count and were never swept: p11i kept "command 81". D-107's deaths made such
+   deletions common. The sweep now reads ids (`A.uid`: "p" and `S.nextId` in base 36): a person whose id number is under
+   the `nextId` of the last sweep was swept (`SK.sweptBefore`); any other is swept now (an id of another shape always:
+   quantize is idempotent). s1Mirror reads the swept set the same way. The coordinator's `SK.sweptS` (a loaded state
+   starts over) stays.
+2. **nmTwins (long 0): two of one person's cousins.** The test grouped all the cousins of a person and failed when two
+   shared a name. When D-108's marriages joined two houses, a child of both had a cousin Ankur Natarajan on his mother's
+   side and a cousin Ankur Balan on his father's: cousins of his, not of each other, and named apart by the rule (D-058:
+   no brother, sister or first cousin of the child shares his name; `A.NAMES.kinNames` at birth, `A.NAMES.settle`
+   monthly). The births of the generations already go through that namer (`A.birth` -> `A.givenName` with the parents).
+   The test now counts a clash only between two who are close kin of each other, by the namer's own `A.NAMES.closeKin`.
+   **Considered:** widening the namer to a cousin's cousins (both sides of every marriage): stricter than the rule and
+   than history, and the pools are small.

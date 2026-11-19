@@ -2449,3 +2449,15 @@ Branch `d11-ci`, from `origin/v2-integration` at `b7f6461`, merged with `49beb69
   citing a memory or a want; 77.9% in character against 65.0% off.
 - **Not used:** D-147 (no decision changed).
 - **Undo:** revert the branch's commit.
+
+### H-100 · 2026-11-19 · X5 CI: the long run's two failures after the generations (D-147)
+Branch `work/x5-ci`, from `origin/v2-integration` at `578da51`. The long run on `50bcdf8` failed `s1Mirror` and `nmTwins`.
+- **s1Mirror:** `36-skills/c-migrate.core.js`: the month's sweep finds new people by id (`SK.sweptNid`, `SK.sweptBefore`),
+  not by place in `S.people`, which a deletion shifted (D-147 point 1); `36-skills/test.mjs` reads the swept set the same way.
+- **nmTwins:** `999981-names-and-cultures/test.mjs`: a clash counts only between two who are close kin of each other (the
+  namer's `A.NAMES.closeKin`); the failure was two cousins of one child from his two sides, named apart by the rule
+  (D-147 point 2). The generations' births already use the namer.
+- **Tests** (`/tmp/ardan/x5b/ci.html`): `s1Mirror` (1,270 people, 3,039 numbers, 0 off the mirror), `nmTwins` once (6
+  worlds, 11,444 people, no twins), the quick tests of generations, skills and names-and-cultures with the core suites (37
+  of 37), `coherency --baseline=quick` clean, lint-skills, lint-stages, lint-reasons (41) ok.
+- **Undo:** revert the branch's commit.
