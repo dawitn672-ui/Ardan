@@ -363,7 +363,10 @@ export default {
       UI.enterSave(d); const back = look();
       // the creation screen's home towns: the one continent's terrain words
       const D = VM.oneFacts(), w = VM.world(VM.ONE), F = A.DATA && A.DATA['map/one-continent'];
-      const factsOk = !!D && w.prov.every(q => D.terr[q.id] === q.terr && (!q.retype || D.names[q.id] === q.retype.name)) && Object.keys(D.names).every(id => w.prov[id].retype);
+      // the realms' facts the lore is held to (tools/lint-lore-map.mjs): read again from the map, as tools/m1/facts.mjs reads them
+      A.newGame({ seed: 1, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      const realmFacts = !!(F && F.facts) && JSON.stringify(F.facts) === JSON.stringify(VM.factsOf(w));
+      const factsOk = !!D && realmFacts && w.prov.every(q => D.terr[q.id] === q.terr && (!q.retype || D.names[q.id] === q.retype.name)) && Object.keys(D.names).every(id => w.prov[id].retype);
       UI.screen = 'title'; UI.render(); UI.A.newLife(); UI.cr.realm = 'POL-01';
       const html = UI.crStepBirth();   // the full screens' first step, where the home town is chosen
       UI.screen = 'title'; UI.render();
