@@ -1,5 +1,7 @@
 # Road to Ten: status of every step
 
+> **Historical (as of 2026-11-19).** This is the status of the Road to Ten's 94 steps on Oct 17, checked against a v1 build of 70 features. It was the plan of the v1 era; v2 (the owner's complaint list, [V2_SPEC.md](../V2_SPEC.md)) replaced it as the work order, and what is done and next is [PROGRESS.md](../PROGRESS.md). Kept for the record, not maintained.
+
 Oct 17, 2026 · checked against `index.html` (70 features, counting the fix layer) and the measured `reports/scorecard.md`
 
 Each of the plan's 94 steps is marked:

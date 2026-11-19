@@ -1,5 +1,7 @@
 # v2 integration lanes
 
+> **Historical (as of 2026-11-19).** These are the lanes of the v2 integration, Nov 1 to 6: eight agents each owning a system, in parallel. The lanes are finished and their branches gone (see [BRANCHES.md](../BRANCHES.md)). Today's rules for parallel work are in `CLAUDE.md` ("Parallel safety") and the owner's orders in [OWNER_ORDERS.md](../OWNER_ORDERS.md); what is done and next is [PROGRESS.md](../PROGRESS.md). Kept for the record, not maintained.
+
 This is the shared brief for the agents that carry out `docs/V2_SPEC.md`'s integration plan. The owner's rules (Nov 1) apply to every lane:
 
 - **Descriptions open on click, never on hover** (round 2 order B4, `docs/DECISIONS.md` D-007; replaces the older "no popup that hides a description behind a click"). Use `UI.tt`, `UI.note` or `UI.noteBtn` (src/ui/59-descriptions); write `data-note="..."`, never `title="..."` over three words; no pointerover or mouseover handler may open anything. `src/ui/99998-click-open/test.mjs` lints this.
