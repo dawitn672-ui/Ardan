@@ -239,6 +239,81 @@ order is replaced, strike it through and say by what.
     change with its reason (rule 18). Old saves convert. This brings G forward: it now follows R1's core in the build
     order, before D11+, which stands on it.
 
+64. **Branches as many as needed, integrated and deletable** (D-133) · recorded 2026-11-18 21:20 ET. The owner's words, verbatim:
+
+    > use as many extra branches or files as needed but make sureto propely integrate them and make them deletable. run a quick rn through and let me know everything you need help with or want to ask
+
+    **Read as:** working branches are fine in any number. From now on each is named `work/<item>` (for example
+    `work/d11-ci`), so they sit together on GitHub; every one is merged into `v2-integration` whole, and once merged it is
+    listed in `docs/BRANCHES.md` under "Deletable" with its tip, so the owner can delete it with nothing lost (any one can be
+    restored from its tip). The session cannot delete branches itself (the git proxy refuses it; the permissions rule).
+
+65. **Find out why versions go wrong and make sure it does not happen again** (D-134) · recorded 2026-11-18 21:40 ET. The owner's words, verbatim:
+
+    > ive deleted the 35 older ones. why are you having version error recalibrate find out why your confused and make sure it doesnt happen again
+
+    **Read as:** an audit of how versions were cut (D-134 lists what was found: three different ways a release branch was
+    set, a version tool that can only tag HEAD and prints a git error, no sample save since alpha.10, and features merged
+    faster than CI could clear them, so alpha.14 kept slipping and its contents kept changing). The fix is one written way
+    to cut a version, a tool that enforces it and a check that fails when the records disagree, and a merge rhythm where a
+    batch is cleared before the next one lands.
+
+66. **Honest odds, with room for the unexpected** (D-135) · recorded 2026-11-18 21:55 ET. The owner's words, verbatim (his answer to "keep honest duel odds?"):
+
+    > a. match the real chances but keep enoug room for unexpeted results that come from willpower circumstance adaptability and talent
+
+    **Read as:** the scale keeps telling the truth about what can be known before the fight (shown odds match results
+    in aggregate). The spread around it is not blind dice: upsets come from four named sources, each a reason the after-fight
+    account gives: **willpower** (a surge under real stakes), **circumstance** (ground, light, weather, wounds and fatigue,
+    footing, a slip, what was not known when the scale was read), **adaptability** (reading the foe and changing course as
+    the fight goes, judgment over exchanges), and **talent** (a gifted fighter's ceiling and leaps, breakthroughs). Applies to
+    duels first, then to every attempt read through the odds engine.
+
+67. **Answers to the run-through: parity, coherence, and clearing before building** (D-136 to D-141) · recorded 2026-11-18 22:05 ET. The owner's words, verbatim:
+
+    > b. yes do that. c. sure but be very clear what that deed is. d. sure but it is far too easy to progress and become a legend aswell as a king. no need to make the gmae extremely difficult just as conceptually accurate as possible e. consolidate all economic factors against it self. so everything is coherent pricing makes sense etc. keep full speed. yes people you never meet should still age. update each individual and groups data and growth margins the same way you would for a user. i shouldnt be able to make a general im friends with my sergenat and the people around and not around me should grow the same as i do.                          1. slow down properly integrate everything after your sure its right even if it requires testing. fix the current issues in evry case before moving onto new ones.  2. deal with it the best you can. 3. study review and improve it. 4. figure out why. continue adding sample games in every version to show the playable differences.
+
+    **Read as** (the letters answer the run-through's design calls; the numbers answer the four version faults of order 65):
+    - **b.** The world's masters (councillors, mentors, order masters) rolled on the old scale are brought down to what
+      their years, talent and training allow (D-136).
+    - **c.** The trials at Expert and Master stand, and every trial card says plainly what the deed is: what must be done,
+      before whom, and what counts as passing (D-137).
+    - **d.** The census stays a count, not a cap; but becoming a Legend, and becoming a king, are far too easy. Make both
+      as hard as they are in the world's own logic, not artificially hard (D-138).
+    - **e.** Every economic figure is set against the others: wages, pay, prices, rents, upkeep, loot and treasuries
+      agree, so a price makes sense beside a day's wage (D-139).
+    - **Pace:** full speed stays.
+    - **Ageing and growth for everyone:** people the player never meets age and die; every person and group (companies,
+      households, houses) grows by the same rules and margins as the player. No shortcut through a friendship: being
+      friends with one's sergeant does not make a General, and the people near and far grow as the player does (D-140).
+    - **1.** Integrate only what is known to be right, with the testing it needs; fix the current issues everywhere before
+      starting new work (D-141, tightening D-134's batches).
+    - **2.** The three release-branch conventions: handle as well as can be (D-134's note keeps alpha.1-9 as they are).
+    - **3.** The version tool: study, review and improve it (D-134 point 2, built on `x5-build`).
+    - **4.** Find out why sample saves stopped, and add one to every version, chosen to show what that version changed
+      in play (D-141).
+
+68. **One fixed continent** (D-142) · recorded 2026-11-18 22:20 ET. The owner's words, verbatim, then his answer:
+
+    > ive noticed the map keeps on changing
+
+    Asked how the map of Ardan should work (each new life built a fresh continent from its seed, and again whenever the
+    map generator changed), he chose **"One fixed continent"**: Ardan has one geography, the same coasts, rivers,
+    mountains and realm heartlands every life, learned like a real world; history, wars and borders still play out
+    differently each game; a map improvement redraws it once, and old saves keep the map they were made on.
+
+69. **The map in extreme depth** (D-143) · recorded 2026-11-18 22:25 ET. The owner's words, verbatim:
+
+    > once you do that go into extreme depth eith the map ists differnet locations border relations disputes allances trade routes and more.
+
+    **Read as:** once the one continent stands (order 68, M1), the map becomes a world in depth: its many kinds of place
+    (cities, towns, villages, castles, abbeys, mines, ports, fords, passes, markets, ruins, holy sites, wilds), each with
+    a reason to be where it is; the border between every pair of neighbours with its own state (open, watched, fortified,
+    raided, disputed) and history; disputes over land, water, roads, tolls and claims, each with its parties and cause;
+    alliances, pacts and marriages drawn where they bind; trade routes by land, river and sea with what moves on them, who
+    taxes and who guards them; and more of the same kind. Everything reasoned (order 54), shown at the player's rank and
+    knowledge, and built into what the game does, not painted on.
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
