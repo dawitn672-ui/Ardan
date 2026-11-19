@@ -5,6 +5,8 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+## v2.1.0-alpha.15 (2026-11-19 09:00 ET) · Everyone ages and the houses go on; the game built by CI; versions cut one way
+
 - **People grow old and die, and the great houses go on.** Before, only rulers, title holders and people you knew ever
   died of their years: a century in, the court was full of men of 150 and more. Now everyone ages and dies by his body
   and his luck, more in a plague year or a famine, and no one outlives his people's span. The families of the world

@@ -62,6 +62,7 @@ Tag a commit whose CI is green, or the end of a step the owner asked for. Say in
 | v2.1.0-alpha.12 | 2026-11-18 | `059d686` | Lords with their own armies: the summons and its answers, no levies, conscription only for a named need, desertion and mutiny for reasons |
 | v2.1.0-alpha.13 | 2026-11-18 | `a88513b` | Wars end only by surrender or defeat: a ruler's reasons to ask for terms, envoys on the road, terms of real land, coin and crowns |
 | v2.1.0-alpha.14 | 2026-11-19 | `6f325bf4` | The realm's peace (stability, factions, coups, private wars, all with reasons); the military path (the muster, units that differ, careers, each weapon's road); a lighter save |
+| v2.1.0-alpha.15 | 2026-11-19 | `b405db5a` | Everyone ages and the houses go on; the game built by CI; versions cut one way · build `sha256:f65cd1ebd2d1099814f04f5a68fde903d214d6d333321a8599e06f9640e7d1d1` |
 <!-- versions:end -->
 
 **Release branches (D-134).** From v2.1.0-alpha.10 on, `release/<version>` points at exactly the row's commit, the one CI
