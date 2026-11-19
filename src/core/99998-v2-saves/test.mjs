@@ -51,6 +51,7 @@ const MIGRATE = async (b64) => {
   // a fresh journal, based on the migrated state (not a replay of the old world from its start)
   out.journal = !!(A.J && A.J.o === null && A.J.base === A.fingerprint(A.jBase));
   out.play = T.play(2);
+  if (out.play === 'dead') out.play = 'dead: ' + String((A.pc() || {}).cause || '?').slice(0, 60) + ', aged ' + (A.pc() ? A.age(A.pc()) : '?');
   out.year = A.S.year;
   out.bad1 = SV.check();
   // no percentage on any screen
@@ -63,10 +64,12 @@ const MIGRATE = async (b64) => {
 };
 const verdict = (r, label) => {
   const ok = r.loaded && r.ver0 === 13 && r.last && r.last.from === 13 && r.last.steps.length === r.nSteps /* 8, and 99999-v2-names' step when it is built */ && r.rng1 === r.rng0
-    && !r.bad0.length && r.sameTwice && r.idempotent && r.reSaved && r.journal && r.play === 'ok' && !r.bad1.length && !r.pct.length;
+    // two years played on: a life may end in them (M1: on the one continent the cycle-2 life is hanged at 21 in 1106, a
+    // sentence of the auto-played years); the invariants are read after either way
+    && !r.bad0.length && r.sameTwice && r.idempotent && r.reSaved && r.journal && (r.play === 'ok' || /^dead/.test(r.play)) && !r.bad1.length && !r.pct.length;
   return {
     ok, detail: `${label}: version ${r.ver0} migrated once (${r.last && r.last.steps.join(', ')}), ${r.people0} -> ${r.people1} people, stream kept ${r.rng1 === r.rng0}; ` +
-      `invariants after load [${r.bad0.join('; ') || 'all hold'}], after 2 years to ${r.year} [${r.bad1.join('; ') || 'all hold'}]; the same twice ${r.sameTwice}, ` +
+      `invariants after load [${r.bad0.join('; ') || 'all hold'}], after 2 years (${r.play}) to ${r.year} [${r.bad1.join('; ') || 'all hold'}]; the same twice ${r.sameTwice}, ` +
       `migrating again changes nothing ${r.idempotent}, its own save exact ${r.reSaved}, fresh journal ${r.journal}; ${r.facts.court} courts, map ${r.facts.v2map && r.facts.v2map.seed}; ` +
       `percentages on screen: ${r.pct.length ? r.pct.join(' | ') : 'none'}`,
   };
