@@ -47,6 +47,10 @@ catch (e) { lintFailed++; console.error(`skills FAIL\n${String(e.stdout || '').s
 try { execFileSync(process.execPath, ['tools/lint-reasons.mjs'], { cwd: root, stdio: 'pipe' }); console.log('reasons ok (tools/lint-reasons.mjs)'); }
 catch (e) { lintFailed++; console.error(`reasons FAIL\n${String(e.stdout || '').slice(0, 2000)}${String(e.stderr || '').slice(0, 4000)}`); }
 // the long list is honest: a test over the threshold on CI is in tests/long-tests.json (T1, D-063)
+// the versions agree (D-134, order 65): rows, release branches (read from origin when it answers), changelog headings,
+// sample saves; offline and in a shallow clone the parts it cannot see are skipped
+try { execFileSync(process.execPath, ['tools/version.mjs', 'check'], { cwd: root, stdio: 'pipe' }); console.log('versions ok (tools/version.mjs check)'); }
+catch (e) { lintFailed++; console.error(`versions FAIL\n${String(e.stderr || '').slice(0, 2000)}${String(e.stdout || '').slice(0, 2000)}`); }
 try { execFileSync(process.execPath, ['tests/run.mjs', '--check-tiers'], { cwd: root, stdio: 'pipe' }); console.log('tiers ok (tests/long-tests.json)'); }
 catch (e) { lintFailed++; console.error(`tiers FAIL\n${String(e.stderr || '').slice(0, 4000)}`); }
 if (lintFailed) process.exitCode = 1;

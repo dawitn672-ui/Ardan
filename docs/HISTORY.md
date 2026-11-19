@@ -2255,6 +2255,16 @@ D-018's second half, proposed in H-087 and approved by the coordinator. Branch `
   `version.mjs get v2.1.0-alpha.13` still takes the committed file; the row parser reads a row with a build hash
   (a sample row). The three workflows through actionlint (the npm WASM build, 2.0.6): no finding but `ubuntu-24.04`
   being unknown to that old label list (the workflows already ran on it), and each read twice by hand.
+- **D-134 folded in (order 65):** `version.mjs new <v> "title" --at=<sha>` (default HEAD; a dirty tree refused only for
+  HEAD) tags and records the tested commit, warns without `--ci=<check run>,<long run>`, moves the Unreleased bullets
+  under `## <v> (<date> <time> ET) · <title>` (with `--only-before=<sha>`, only those whose lines came with that commit's
+  history, by `git blame`), saves `tests/saves/<v>-noble.ardan` from the version's own game (`tools/make-save.mjs`, as
+  alpha.2 to alpha.10's were made), and prints `git push origin <sha>:refs/heads/release/<v>`; every git look-up is quiet
+  (no "fatal: Needed a single revision"); `make-save <v>`; `check` (rows' commits, `release/<v>` at the row's commit from
+  alpha.10 on via `git ls-remote`, changelog headings and sample saves from alpha.1 on; offline and shallow-safe), run by
+  `tools/check.mjs`. The missing saves of alpha.11, .12 and .13 made from their commits (`65eb7ba`, `059d686`, `a88513b`);
+  `check` passes (31 rows, release branches as recorded). The changelog move tried on a copy: all 26 Unreleased bullets,
+  or 9 of 26 with `--only-before=aa0fdd8`.
 - **Not run here:** the workflows themselves (the first push of this branch, and the first nightly, are their test); the
   `new` command (it tags; tried only through its parts).
 - **Undo:** revert the branch's commits and `git add index.html` again from a build.
