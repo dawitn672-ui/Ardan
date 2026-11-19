@@ -302,6 +302,18 @@ order is replaced, strike it through and say by what.
     mountains and realm heartlands every life, learned like a real world; history, wars and borders still play out
     differently each game; a map improvement redraws it once, and old saves keep the map they were made on.
 
+69. **The map in extreme depth** (D-143) · recorded 2026-11-18 22:25 ET. The owner's words, verbatim:
+
+    > once you do that go into extreme depth eith the map ists differnet locations border relations disputes allances trade routes and more.
+
+    **Read as:** once the one continent stands (order 68, M1), the map becomes a world in depth: its many kinds of place
+    (cities, towns, villages, castles, abbeys, mines, ports, fords, passes, markets, ruins, holy sites, wilds), each with
+    a reason to be where it is; the border between every pair of neighbours with its own state (open, watched, fortified,
+    raided, disputed) and history; disputes over land, water, roads, tolls and claims, each with its parties and cause;
+    alliances, pacts and marriages drawn where they bind; trade routes by land, river and sea with what moves on them, who
+    taxes and who guards them; and more of the same kind. Everything reasoned (order 54), shown at the player's rank and
+    knowledge, and built into what the game does, not painted on.
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,

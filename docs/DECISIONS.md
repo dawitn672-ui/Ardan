@@ -2416,3 +2416,13 @@ continent per life; it came with the generator. The owner noticed the map "keeps
    gets faster.
 Built as item **M1**, first after alpha.14 (every world shifts, so it is its own batch, D-134/D-141).
 
+### D-143 · The map in depth, after the one continent (2026-11-18; order 69)
+**Chosen.** Item **M2**, right after M1, in two stages: **M2a**, a design (the owner's model plan, D-009: the big designs
+at the highest effort) of places, borders, disputes, alliances, trade routes and what else belongs (customs posts, toll
+bridges, march lands, pilgrim roads, smuggling paths, grazing rights, river rights), each tied to systems that already
+exist or are queued: `A.PAX` (the realm's peace: border wars, private wars), `A.WAR` and the reasons for war (claims,
+grudges), `A.CMD`/`A.MEN` (march lords, garrisons), D9's ground (roads, fords, passes), and **E1** (trade routes are the
+economy's veins, so E1 and M2 are designed together). **M2b** and on: built in stages, each its own batch. What the
+player sees follows his rank and what he could know (a peasant knows his valley and the road to market; a merchant the
+routes and tolls; a lord his borders and disputes; a king the realm's).
+
