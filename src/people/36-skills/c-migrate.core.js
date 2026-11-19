@@ -146,25 +146,32 @@
   A.onYear.push(() => { try { SK.npcYear(); } catch (e) { console.error('skills: npc year', e); } });
   // once a month, the people made since the last sweep (an acquaintance, a foe, a new captain): older code rolls their
   // numbers; they become levels here. People are added at the end of S.people, so this reads only the new keys.
-  SK.swept = 0;
+  // Which people are new is read from their ids (A.uid: "p" and S.nextId in base 36), not from their place in S.people:
+  // a person deleted from the record (A.gcPeople) moved every later one a place down, and those made since the last
+  // sweep fell under the old count and were never swept (CI long 7, s1Mirror: p11i kept "command 81"; D-107's deaths
+  // made such deletions common). An id of another shape is always swept (quantize is idempotent).
+  SK.swept = 0; SK.sweptNid = -1;
+  const uidNum = id => { const m = /^p([0-9a-z]+)$/.exec(id); return m ? parseInt(m[1], 36) : -1; };
+  // was this person in the record at the last sweep (and so swept)?
+  SK.sweptBefore = id => SK.sweptNid >= 0 && uidNum(id) >= 0 && uidNum(id) < SK.sweptNid;
   SK.sweepNew = function () {
     const S = A.S; if (!S || !S.people) return 0;
     const ids = Object.keys(S.people);
     // a loaded game or a new one is another state: its people are all unswept (the count of the last state, kept,
     // skipped the first people of a loaded save; found by s1Migrate on the alpha.11 sample save, CI 160)
-    if (SK.sweptS !== S) { SK.sweptS = S; SK.swept = 0; }
-    if (SK.swept > ids.length) SK.swept = 0;
+    if (SK.sweptS !== S) { SK.sweptS = S; SK.sweptNid = -1; }
     let n = 0;
-    for (let i = SK.swept; i < ids.length; i++) {
-      const p = S.people[ids[i]]; if (!p || ids[i] == S.pc || !p.skills) continue;
+    for (const id of ids) {
+      if (SK.sweptBefore(id)) continue;
+      const p = S.people[id]; if (!p || id == S.pc || !p.skills) continue;
       for (const lk in SK.LEG) if (p.skills[lk] != null) { SK.foldNpc(p); break; }
       SK.quantize(p); if (p.apt) SK.fold(p); n++;
     }
-    SK.swept = ids.length;
+    SK.swept = ids.length; SK.sweptNid = +S.nextId || 0;
     return n;
   };
   // everyone at once (a load, a test)
-  SK.sweepAll = function () { SK.swept = 0; return SK.sweepNew(); };
+  SK.sweepAll = function () { SK.swept = 0; SK.sweptNid = -1; return SK.sweepNew(); };
 
   // the save step (99998-v2-saves calls A.SK.migrate for a state older than 15) and the new game
   A.addStage('A.newGame', 'skills', ng => function () {

@@ -80,3 +80,4 @@ D11 the military branches, X5 the state diet, `-ci` a round of CI fixes.)
 - `work/w19-ci` · `454c3407` · merged into `v2-integration`
 - `x5-deaths` · `e075480a` · merged into `v2-integration`
 - `x5-build` · `ddef1f94` · merged into `v2-integration`
+- `work/x5-ci` · `42964ab8` · merged into `v2-integration`

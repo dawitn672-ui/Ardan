@@ -345,7 +345,8 @@ export default {
       const play = T.play(20);
       const SK = A.SK, pc = A.pc(), bad = [];
       let people = 0, nums = 0;
-      const ids = Object.keys(A.S.people).slice(0, SK.swept);   // made since the month's sweep: next month's
+      // the people the month's sweep saw (by id: a death since moves the places; those made since are next month's)
+      const ids = SK.sweptBefore ? Object.keys(A.S.people).filter(SK.sweptBefore) : Object.keys(A.S.people).slice(0, SK.swept);
       for (const id of ids) {
         const p = A.S.people[id]; if (!p || !p.skills) continue; people++;
         for (const k in p.skills) {
