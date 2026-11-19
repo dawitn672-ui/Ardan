@@ -7,7 +7,7 @@
 // Each New Year, after the release's passes and the court's (A.onYear), every living NPC those passes do not cover
 // meets the release's own odds for his body (A.deathChance: his age against his people's span, his health, a blood
 // that shortens life), raised by the year just past where the game knows it: an epidemic in his home province (57's
-// S.prov[].plague), a failed harvest in his realm (57's famine record), more for the poor in a famine. Anyone, covered
+// S.prov[].plague), a failed harvest in his realm (its market's harvest, as 57's record reads a famine), more for the poor in a famine. Anyone, covered
 // or not (the player apart), who has passed his people's greatest age (GD.RACES[race].maxLife) dies of it: the body ends.
 //
 // The draw is from a stream seeded by the year and the person (A.V2F.rng, as V2N.yearOfDeaths), and the death runs in a
@@ -63,8 +63,14 @@
   M.hardYear = function () {
     const S = A.S, y = S.year - 1, plague = new Set(), famine = new Set();
     for (const P of S.prov || []) if (P && P.plague === y) plague.add(P.id);
-    const E = S.wrec && Array.isArray(S.wrec.e) ? S.wrec.e : [];
-    for (let i = E.length - 1; i >= 0; i--) { const e = E[i]; if (!e) continue; if (e[1] < y) break; if (e[0] === 'famine' && e[1] === y && e[4]) famine.add(e[4]); }
+    // a failed harvest is read from the realm's own market (45-economy's June roll, r.mkt.hv), by the rule 57's record
+    // writes a famine with (a yield of 0.4 or less), not from the record: the record observes and never acts
+    // (wcObservesOnly). M1: on the one continent a famine at seed 9090 made the world with the record differ from the
+    // world without it. The market is read, never made (A.mkt would make one).
+    for (const id in S.realms || {}) {
+      const r = S.realms[id], m = r && r.mkt;
+      if (r && r.alive !== false && !r.isRebel && m && m.hv && m.hv.y === y && m.hv.f <= 0.4) famine.add(id);
+    }
     return { plague, famine };
   };
   // the odds for one person this year, and what they come of
