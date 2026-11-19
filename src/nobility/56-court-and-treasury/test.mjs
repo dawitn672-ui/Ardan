@@ -222,8 +222,13 @@ export default {
         army: [q(o.army, .1), q(o.army, .5), q(o.army, .9)], stab: [q(o.stab, .1), q(o.stab, .5), q(o.stab, .9)], tre: [q(o.tre, .5), q(o.tre, .9), q(o.tre, 1)] };
     });
     const big = Object.entries(r.share).filter(([, v]) => v >= 1).length + (r.upkeep >= 5 ? 1 : 0);
-    // sanity bands: the fix layer over the same 3 worlds x 30 years read armies 0.72-1.33 of normal (p10-p90), stability 32-74, 0.018 wars a realm-year
-    const ok = r.hoard === 0 && r.burnedPct <= .5 && big >= 5 && r.army[0] >= .5 && r.army[2] <= 1.6 && r.stab[1] >= 40 && r.stab[1] <= 70 && r.stab[2] <= 92 && r.warsPerRY >= .012 && r.warsPerRY <= .03;
+    // sanity bands: the fix layer over the same 3 worlds x 30 years read armies 0.72-1.33 of normal (p10-p90), stability 32-74, 0.018 wars a realm-year.
+    // (w17-ci: the realm's peace, W1-6, puts more realm-years in civil strife (a claim's war of succession takes a third of
+    // the crown's host, a league that withholds takes its taxes, a raid's damages are paid): the low tail of the armies
+    // read 0.64 before W1-6 and 0.48 after it (CI 154 and this build, the same three worlds), with the median unmoved at
+    // 1.0 and stability's median at 55. The bar on the tail is 0.4, and the median is held at 0.8 or more, which a broken
+    // treasury or recruitment still fails)
+    const ok = r.hoard === 0 && r.burnedPct <= .5 && big >= 5 && r.army[0] >= .4 && r.army[1] >= .8 && r.army[2] <= 1.6 && r.stab[1] >= 40 && r.stab[1] <= 70 && r.stab[2] <= 92 && r.warsPerRY >= .012 && r.warsPerRY <= .03;
     return { ok, detail: `3 worlds × 30 years, ${r.ry} AI realm-years: hoarding flags (over 6 years of income) ${r.hoard}; burned ${r.burnedPct}% of income (the fix layer burned about 65%); spent as a share of income: host upkeep ${r.upkeep}%, ${Object.entries(r.share).map(([k, v]) => k + ' ' + v + '%').join(', ')}; treasury in years of income median ${r.tre[0]}, p90 ${r.tre[1]}, max ${r.tre[2]}; army ÷ normal p10/50/90 ${r.army.join('/')}; stability ${r.stab.join('/')}; ${r.warsPerRY} wars a realm-year` };
   },
 
