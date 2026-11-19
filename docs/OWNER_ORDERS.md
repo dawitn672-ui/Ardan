@@ -344,6 +344,20 @@ order is replaced, strike it through and say by what.
     defence put them. It is built in full (map version 4, with order 71's lore made to match it), and only then shown to
     the owner for his critique.
 
+73. **The owner's picture of the continent** (D-153) · recorded 2026-11-19 15:50 ET. With an image
+    (`docs/design/m1/reference/owner-continent.webp`), the owner's words, verbatim:
+
+    > this is an idea of what the continent looks like using the lore and ideas throughout this project properly consrtuct the map the way i told you too
+
+    **Read as:** the image is the owner's idea of the continent's look and shape, to be built as order 72 says (designed,
+    realistic, clean borders, no enclave) and with the lore made to match (order 71). What it shows: one great landmass
+    with ragged, island-strewn coasts on every side (most broken in the west and south); a belt of snow-capped ranges
+    across the north and north-east; a red volcanic massif in the west; a chain of inland lakes through the north and
+    centre, joined by rivers; a ridge running east-west across the middle; a wide dry basin of sand and scrub in the
+    south-centre, ringed by ranges, with a dry range in the south-east; green lowlands and forest between; a scale of about
+    2,000 km to a third of the map. Where the image and the lore differ (the lore's Middle Sea, channel and straits), the
+    designer reconciles them and lists each choice for the owner's critique.
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
