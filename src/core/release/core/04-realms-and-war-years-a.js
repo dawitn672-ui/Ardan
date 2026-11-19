@@ -186,6 +186,32 @@ A.rulerDies = function (r, cause) {
   return next;
 };
 
+// [w18-ci, D-146] one ruler for every realm that stands. A man can be named ruler of a realm his own record does not point
+// at: A.successionWar names its claimant ruler of his faction realm without crowning him, and that realm can outlive its war
+// and stand on its own under him (03-engine-fixes' rebels). When he dies, or is crowned elsewhere, each such realm passes
+// by its own succession; one that holds no land ends (it disperses), and a rising still at war is left to its war (W1-5:
+// a rising whose leader is dead is beaten). keep: the realm the caller is already settling.
+A.orphanCrowns = function (p, keep) {
+  if (!p || !A.S || !A.S.realms) return;
+  for (const id of Object.keys(A.S.realms)) {
+    const r = A.S.realms[id];
+    if (!r || !r.alive || r.ruler !== p.id || id === keep) continue;
+    if (r.isRebel && A.atWar(id).length) continue;
+    if (!A.realmProvs(id).length) {
+      A.news(`${r.name} disperses: ${A.fullName(p, false)} ${p.alive ? "has taken another crown" : "is dead"}, and it holds no land.`, "crown");
+      A.realmFalls(r, null);
+      continue;
+    }
+    if (p.alive) {
+      let nx = A.pickHeirFrom(r, p);
+      if (!nx || !nx.alive || nx.id === p.id || nx.ruler) nx = A.genNoble(id, "royal", r.house, A.ri(25, 50));
+      r.ruler = null;
+      A.makeRuler(nx, id);
+      A.news(`${A.fullName(p, false)} leaves ${r.short} to ${A.rulerStyle(nx, r)}.`, "crown");
+    } else A.rulerDies(r, p.cause);
+  }
+};
+
 A.pickHeirFrom = function (r, ru) {
   if (!ru) return null;
   const save = r.ruler;
@@ -385,6 +411,7 @@ A.kill = function (p, cause, silent) {
   // [A2 posts] death vacates every post at once (before, dead councillors sat until the yearly sweep)
   if (A.POSTS) A.POSTS.leaveAll(p.id, "died");
   const sp = A.P(p.spouse);
+  const crown = p.ruler;
   if (
     (sp &&
       sp.spouse === p.id &&
@@ -394,6 +421,8 @@ A.kill = function (p, cause, silent) {
     const r = A.realm(p.ruler);
     if (r && r.ruler === p.id) A.rulerDies(r, cause);
   }
+  // [w18-ci, D-146] any other realm that names him its ruler passes by its succession, or ends
+  if (A.orphanCrowns) A.orphanCrowns(p, crown);
   // [C6, D-057] with the house resolver on the page (A.HOUSE, 99994-v2-family) the head passes by the house's law in
   // A.V2F.inherit, its one writer; this eldest-son rule is the fallback of a build without it
   if (!A.HOUSE && p.house && A.S.houses[p.house] && A.S.houses[p.house].headPid === p.id) {
