@@ -727,7 +727,10 @@ A.on && A.on('warEnd', function (w, result, text, live0) {
       else if (result === 'def') {
         h.op = clamp((h.op || 40) - 20, 0, 100);
         const head = h.headPid ? A.P(h.headPid) : null;
-        if (live(head) && head.id !== A.S.pc && !head.ruler && A.chance(.35)) { A.kill(head, 'beheaded for treason', true); if (A.setHead) A.setHead(h, null, 'purged'); else h.headPid = null; hunted.push(h.name); }
+        // the beheaded head's house passes by its law at his death (A.V2F.inherit, with his county); it is not cleared after,
+        // which left the heir with the county and the house with no head, then a stranger (M1: seed 9008, House Laurent in
+        // 1113, a lordship-seat fault). Without the house resolver (A.HOUSE) the release's rule stands
+        if (live(head) && head.id !== A.S.pc && !head.ruler && A.chance(.35)) { A.kill(head, 'beheaded for treason', true); if (!A.HOUSE) { if (A.setHead) A.setHead(h, null, 'purged'); else h.headPid = null; } hunted.push(h.name); }
       } else h.op = clamp((h.op || 40) - 8, 0, 100);
     }
     if (won) for (const h of A.realmHouses(r.id)) if (!w.riBack.includes(h.id)) h.op = clamp((h.op || 50) - 10, 0, 100);
