@@ -7,7 +7,7 @@
     "about": "The few places where the grid departs from the picture's pixels, each listed for the owner in map-design.md",
     "carveSea": [
       {"name": "the Cold Narrows", "why": "the picture draws a channel some 30 km wide from the northern water to the sea; on the 10 km grid it is kept open two cells wide, so that Cold Bay is a bay of the sea and Aldmark's squadron can sail", "width": 2, "line": [[684, 176], [693, 181], [703, 189], [712, 197], [720, 206], [724, 215], [727, 223]]},
-      {"name": "the Amber Strait", "why": "the picture's winding channel across the neck of the south-east peninsula, cut clean two cells wide so that Great Amber is an island", "width": 2, "line": [[1213, 880], [1205, 889], [1193, 901], [1182, 915], [1172, 928], [1163, 938]]},
+      {"name": "the Amber Strait", "why": "the picture's winding channel across the neck of the south-east peninsula, cut clean two cells wide so that Great Amber is an island", "width": 2, "line": [[1213, 880], [1207, 886], [1204, 893], [1196, 898], [1190, 905], [1186, 913], [1178, 919], [1174, 927], [1168, 933], [1163, 939]]},
       {"name": "the Long Firth", "why": "the picture's inlet under the Bleakfold, where the Brightwash and the Bleak Water meet the sea: kept open one cell wide", "width": 1, "line": [[296, 368], [310, 366], [324, 369], [336, 370]]}
     ],
     "openWater": [
@@ -28,16 +28,17 @@
     ]
   },
   "waters": [
-    {"name": "the Western Ocean", "kind": "ocean", "at": [150, 640]},
-    {"name": "the Northern Ocean", "kind": "ocean", "at": [880, 14]},
-    {"name": "the Southern Ocean", "kind": "ocean", "at": [820, 965]},
-    {"name": "the Sunrise Sea", "kind": "ocean", "at": [1460, 430]},
+    {"name": "the Western Ocean", "kind": "ocean", "at": [150, 640], "also": [[105, 430], [150, 300], [200, 760]]},
+    {"name": "the Northern Ocean", "kind": "ocean", "at": [880, 14], "also": [[400, 110], [640, 60], [1320, 70]]},
+    {"name": "the Southern Ocean", "kind": "ocean", "at": [820, 965], "also": [[560, 870], [700, 890], [980, 940]]},
+    {"name": "the Sunrise Sea", "kind": "ocean", "at": [1460, 430], "also": [[1410, 260], [1430, 640]]},
     {"name": "the Lion Gulf", "kind": "gulf", "at": [228, 606], "note": "the bight between the Ashlands and the Bone Coast: Varenna's and Qadir's sea"},
+    {"name": "the Long Firth", "kind": "bay", "at": [288, 374], "note": "Ashmere's bay and the inlet at its head, where the Brightwash and the Bleak Water come in"},
     {"name": "the Strait of Hael", "kind": "strait", "at": [184, 480], "note": "between the Ashlands' cape and the Corsair Isles"},
     {"name": "Tibata Bay", "kind": "bay", "at": [262, 536], "note": "the bay under the Ashlands; its mouth past Gull Isle is the Tibata Strait"},
     {"name": "the Gulf of Sands", "kind": "gulf", "at": [352, 742]},
     {"name": "the North Fjords", "kind": "bay", "at": [480, 198], "note": "the bays the Calara runs into"},
-    {"name": "the Elder Sea", "kind": "sea", "at": [250, 240], "note": "the island-strewn sea off the north-west"},
+    {"name": "the Elder Sea", "kind": "sea", "at": [236, 290], "note": "the island-strewn sea off the north-west", "also": [[330, 200]]},
     {"name": "Amber Bay", "kind": "bay", "at": [668, 164], "note": "the outer bay at the mouth of the Cold Narrows"},
     {"name": "the Cold Narrows", "kind": "strait", "at": [708, 194]},
     {"name": "Cold Bay", "kind": "bay", "at": [736, 242], "note": "the picture's northern water, a bay of the sea through the Cold Narrows"},
@@ -68,7 +69,8 @@
     {"name": "the Sunrise Isles (south)", "at": [1400, 530], "province": 192},
     {"name": "the Sunrise Isles (middle)", "at": [1386, 356], "province": 284},
     {"name": "Elder Isle", "at": [330, 223], "province": 132},
-    {"name": "the Teak Isles", "at": [1261, 712], "province": 57}
+    {"name": "the Teak Isles", "at": [1261, 712], "province": 57},
+    {"name": "the Marsh Isles", "at": [515, 180], "province": 147}
   ],
   "ferries": [
     {"name": "the Tin Run", "a": 267, "b": 270, "note": "Skarfell to Wolfhaven and Coldhaven: Frostholm's tin"},
@@ -117,31 +119,31 @@
     {"name": "the Bleak Water", "from": "the Bleakfold", "to": "the Long Firth", "line": [[386, 340], [380, 350], [365, 358], [346, 366], [336, 370]]}
   ],
   "ranges": [
-    {"name": "the Frostfells", "note": "the snow range along the north coast", "line": [[690, 95], [800, 90], [900, 110], [1000, 110], [1100, 120]]},
+    {"name": "the Frostfells", "note": "the snow range along the north coast", "line": [[690, 95], [800, 90], [900, 110], [1000, 110], [1100, 120]], "label": [880, 108]},
     {"name": "the East Rift Heights", "line": [[1150, 190], [1150, 240], [1150, 290], [1152, 325]]},
     {"name": "the Rift Heights", "line": [[1035, 312], [1048, 335], [1052, 352]]},
     {"name": "the Iron Mountains", "line": [[800, 215], [832, 250], [868, 285]]},
     {"name": "the Tusk Hills", "line": [[505, 287], [545, 285], [582, 290]]},
-    {"name": "the Ash Range", "note": "Mount Cinder's massif", "line": [[350, 378], [400, 405], [450, 422], [500, 432]]},
+    {"name": "the Ash Range", "note": "Mount Cinder's massif", "line": [[350, 378], [400, 405], [450, 422], [500, 432]], "label": [436, 446]},
     {"name": "the Lion Hills", "line": [[340, 478], [375, 495], [402, 512]]},
     {"name": "the Montessa Hills", "line": [[510, 452], [560, 458], [610, 462]]},
-    {"name": "the Crown Range", "line": [[745, 415], [800, 428], [870, 432], [940, 438], [1005, 445]]},
-    {"name": "the Marble Mountains", "line": [[590, 500], [622, 528], [662, 548], [680, 592]]},
+    {"name": "the Crown Range", "line": [[745, 415], [800, 428], [870, 432], [940, 438], [1005, 445]], "label": [912, 446]},
+    {"name": "the Marble Mountains", "line": [[590, 500], [622, 528], [662, 548], [680, 592]], "label": [650, 560]},
     {"name": "the Sunwall", "line": [[380, 640], [425, 660], [480, 680], [520, 690]]},
     {"name": "the Southern Hills", "line": [[600, 694], [660, 712], [730, 728]]},
-    {"name": "the Worldspine", "line": [[1030, 590], [1058, 640], [1085, 700]]},
-    {"name": "the Highveld", "line": [[985, 745], [1045, 765], [1110, 790]]},
-    {"name": "the Roof", "line": [[1195, 428], [1240, 445], [1280, 462]]},
+    {"name": "the Worldspine", "line": [[1030, 590], [1058, 640], [1085, 700]], "label": [1046, 612]},
+    {"name": "the Highveld", "line": [[985, 745], [1045, 765], [1110, 790]], "label": [1010, 730]},
+    {"name": "the Roof", "line": [[1195, 428], [1240, 445], [1280, 462]], "label": [1228, 424]},
     {"name": "the Ember Mountains", "line": [[1252, 568], [1298, 574], [1340, 592]]}
   ],
   "peaks": [
-    {"name": "Mount Cinder", "at": [440, 418], "note": "the live volcano of Ashmere"},
+    {"name": "Mount Cinder", "at": [446, 414], "note": "the live volcano of Ashmere"},
     {"name": "Mount Hael", "at": [262, 462], "note": "the caldera whose eruption ended the Kingdom of Hael"},
     {"name": "Smokewell", "at": [1046, 328], "note": "the sulfur vents on the Rift Heights"},
     {"name": "Redcrown", "at": [1108, 248], "note": "the glowing peak of the East Rift Heights"},
     {"name": "Mount Dobava", "at": [1152, 462]},
     {"name": "Mount Bardun", "at": [1058, 628], "note": "the great peak above the First Hall"},
-    {"name": "Mount Roktar", "at": [835, 432]}
+    {"name": "Mount Roktar", "at": [836, 422]}
   ],
   "passes": [
     {"name": "the Albora Sill", "at": [618, 414], "note": "the low divide between the Glenmere and the Skardush: the Amber Road's way to the Sunlands"},
@@ -162,25 +164,25 @@
     {"name": "the Tharmund Gate", "at": [1262, 588]}
   ],
   "regions": [
-    {"name": "THE WESTLAND", "at": [640, 238], "size": 3},
-    {"name": "THE SUNLANDS", "at": [600, 548], "size": 3},
-    {"name": "THE SOUTHLAND", "at": [820, 702], "size": 3},
-    {"name": "THE EASTLAND", "at": [1168, 408], "size": 3},
-    {"name": "the Evenwood", "at": [455, 262], "size": 2},
+    {"name": "THE WESTLAND", "at": [600, 226], "size": 3},
+    {"name": "THE SUNLANDS", "at": [560, 612], "size": 3},
+    {"name": "THE SOUTHLAND", "at": [800, 706], "size": 3},
+    {"name": "THE EASTLAND", "at": [1190, 250], "size": 3},
+    {"name": "the Evenwood", "at": [448, 256], "size": 2},
     {"name": "the Elder Coast", "at": [300, 262], "size": 1},
-    {"name": "the Grass Sea", "at": [700, 378], "size": 2},
-    {"name": "the Salt Steppe", "at": [985, 418], "size": 1},
-    {"name": "the Lakeland", "at": [962, 222], "size": 2},
+    {"name": "the Grass Sea", "at": [700, 392], "size": 2},
+    {"name": "the Salt Steppe", "at": [975, 432], "size": 1},
+    {"name": "the Lakeland", "at": [950, 262], "size": 2},
     {"name": "the White Coast", "at": [1060, 52], "size": 1},
     {"name": "the Rift", "at": [1052, 366], "size": 1},
-    {"name": "the Neck", "at": [1070, 580], "size": 1},
-    {"name": "the Santora March", "at": [930, 520], "size": 1},
+    {"name": "the Neck", "at": [1052, 566], "size": 1},
+    {"name": "the Santora March", "at": [935, 538], "size": 1},
     {"name": "the Red Waste", "at": [770, 668], "size": 2},
     {"name": "the Long Rift", "at": [896, 640], "size": 1},
     {"name": "the Golden Plains", "at": [760, 800], "size": 2},
     {"name": "the Monsoon Coast", "at": [1160, 742], "size": 1},
     {"name": "the Crown Coast", "at": [296, 578], "size": 1},
-    {"name": "the Holy Coast", "at": [706, 484], "size": 1},
+    {"name": "the Holy Coast", "at": [700, 458], "size": 1},
     {"name": "the Amber Strand", "at": [575, 178], "size": 1},
     {"name": "the Silk Strand", "at": [1332, 300], "size": 1},
     {"name": "the Sunrise Isles", "at": [1408, 478], "size": 1},
@@ -222,5 +224,28 @@
     {"name": "the Stagflow watershed", "note": "Northreach's land border with Aldmark's Crossmarch", "line": [[722, 214], [755, 206], [790, 196]]},
     {"name": "the Lake Portage ridge", "note": "Drevna's border with Greyhaven and Velgrad", "line": [[985, 290], [1020, 292], [1045, 285], [1056, 272]]},
     {"name": "the Crown Wall (west)", "note": "Aldmark's southern border west of the Glenwash, from the Gordush's mouth to the Tusk Hills", "line": [[644, 330], [622, 324], [600, 320], [584, 304]]}
-  ]
+  ],
+  "groundSet": [
+    {"name": "the pale plain under the Tusk Hills", "ground": "steppe", "from": ["grass", "scrub", "forest"], "why": "the Wolf clans' dry grass", "poly": [[468, 316], [524, 312], [528, 352], [470, 354]]},
+    {"name": "the Grass Sea", "ground": "steppe", "from": ["grass", "scrub", "desert"], "why": "the belt of grass in the lee of the Crown Range and the Tusk Hills: the picture paints it yellow-green", "poly": [[645, 336], [700, 340], [750, 352], [790, 330], [800, 300], [880, 285], [940, 300], [938, 345], [900, 400], [850, 412], [800, 408], [760, 418], [700, 422], [645, 420], [625, 372]]},
+    {"name": "the Salt Steppe", "ground": "steppe", "from": ["grass", "scrub", "desert"], "why": "Ulun's grazing between the Salt Sea and the channel", "poly": [[905, 350], [985, 358], [1060, 350], [1072, 390], [1095, 430], [1085, 472], [1040, 472], [1010, 446], [940, 420], [895, 402]]},
+    {"name": "the eastern steppe", "ground": "steppe", "from": ["grass", "scrub", "forest"], "why": "the cold grass plain in the lee of the East Rift Heights, which the picture paints green", "poly": [[1200, 238], [1260, 216], [1330, 242], [1335, 330], [1300, 380], [1235, 386], [1205, 350], [1195, 290]]},
+    {"name": "the Rift oakwood", "ground": "forest", "from": ["grass", "scrub", "steppe"], "why": "Greyhaven's ship oak", "poly": [[915, 262], [1000, 290], [1060, 300], [1088, 322], [1070, 348], [985, 352], [945, 345], [925, 300]]},
+    {"name": "the Free Marches", "ground": "forest", "from": ["grass", "scrub"], "why": "the timber Ranpur buys", "poly": [[1140, 535], [1230, 525], [1250, 560], [1215, 620], [1160, 612], [1125, 580]]},
+    {"name": "the Sunwall coast", "ground": "scrub", "from": ["grass", "forest", "jungle"], "why": "a dry west coast under the desert wind: terraces, dates and thorn", "poly": [[262, 626], [360, 626], [420, 640], [520, 690], [520, 740], [470, 772], [425, 716], [300, 712], [262, 700]]},
+    {"name": "the Bone Coast", "ground": "desert", "from": ["grass", "forest", "scrub", "jungle"], "why": "the bare headland", "poly": [[258, 712], [306, 712], [306, 750], [258, 750]]},
+    {"name": "the Golden Plains", "ground": "scrub", "from": ["grass"], "why": "tall-grass savanna with scattered trees", "poly": [[560, 745], [700, 740], [800, 750], [950, 770], [960, 850], [880, 862], [760, 846], [640, 842], [560, 800]]},
+    {"name": "Mount Cinder", "ground": "ash", "from": ["rock", "grass", "scrub", "forest"], "why": "the lava and ash fields of the live volcano", "poly": [[362, 376], [420, 370], [498, 396], [503, 438], [455, 458], [402, 462], [362, 436]]},
+    {"name": "Mount Hael", "ground": "ash", "from": ["rock", "grass", "scrub", "forest"], "why": "the dead caldera and its ash", "poly": [[250, 446], [268, 442], [282, 450], [286, 466], [276, 480], [258, 482], [244, 472], [242, 456]]},
+    {"name": "the Greenmire", "ground": "marsh", "from": ["grass", "forest"], "why": "the drowned shore of the North Fjords", "poly": [[476, 212], [540, 212], [540, 240], [476, 240]]},
+    {"name": "the Monuti delta", "ground": "marsh", "from": ["grass", "forest", "scrub", "desert"], "why": "reed beds and papyrus between the river's mouths", "poly": [[822, 534], [836, 530], [858, 560], [848, 566], [834, 556]]},
+    {"name": "the Cold Bay fens", "ground": "marsh", "from": ["grass", "forest"], "why": "the fen at the Glenwash's mouth", "poly": [[686, 226], [706, 226], [706, 262], [690, 262]]}
+  ],
+  "labels": {
+    "about": "Where a word is drawn on the sketches when its own place collides with another: realm and wild names at a picture pixel [x, y(, turn in radians)], capital names by an offset in cells from the dot, waters by an offset in pixels. Drawing only: nothing here moves a border.",
+    "realm": {"Greyhaven": [992, 316], "Tessaria": [1108, 580], "Lucerna": [742, 478], "Ostra": [806, 486], "Velgrad": [1150, 300], "Morhaven": [915, 512], "Solenne": [668, 482], "Tamar": [878, 600], "Brannoch": [812, 452], "Irondeep": [846, 266], "Northreach": [742, 150], "Frostholm": [586, 116], "Corvasse": [150, 500], "Qadir": [330, 668], "Sabra": [456, 722], "Kesh": [1150, 868], "Ambrel": [1222, 944], "Emberdeep": [1300, 560], "Skyhold": [1240, 462], "Stonehold": [1064, 662], "Ranpur": [1158, 690], "Ashmere": [392, 418], "Eldergrove": [318, 286], "Hrimfell": [1050, 104], "Ulun": [1000, 412], "Gorath": [760, 372], "Aldmark": [652, 240], "Sylvaran": [470, 282], "Drevna": [980, 232], "Ughrak": [1262, 290], "Abara": [1048, 748], "Zanara": [740, 790], "Sahrim": [720, 640], "Varenna": [470, 560]},
+    "capital": {"Solenne": [-1.6, 2.4], "Lucerna": [0, 2.6], "Ostra": [0.5, 2.6], "Morhaven": [0, 2.7], "Greyhaven": [-2.2, 0], "Velgrad": [0, 2.7], "Tessar": [-2.4, 1.2], "Kingsmere": [0, 2.7], "Urgol": [0, 2.7], "Kharsa": [0, -2.7], "Qadira": [0, -2.6], "Sabra": [0, -2.6], "Varenna": [0, -2.7], "Ashmere": [-2.2, 0], "Wolfhaven": [0, 2.7], "Skyhold": [0, -2.6], "Abara": [0, 2.7], "Zanara": [0, 2.7], "Zarak": [0, 2.7], "Tamar": [2.2, 0], "Stonehold": [0, -2.6], "Ranpur": [0, 2.7], "Kesh": [0, 2.7], "Amberport": [0, -2.6], "Emberdeep": [0, 2.7], "Highcastle": [0, -2.6], "Irondeep": [0, -2.6], "Drevna": [0, 2.7], "Jotunhall": [0, 2.7], "Grakmar": [0, 2.7], "Skarfell": [0, 2.7], "Corvasse": [0, -2.6], "Silverbough": [0, 2.7], "Evenglade": [0, -2.6]},
+    "wild": {"The Little Amber Wilds": [1340, 968], "The Isle of Pearls": [1322, 924], "The Amber Wilds": [1262, 978], "The Dobava Wilds": [1176, 488], "The Stairwood": [1210, 396], "The Western Highlands": [296, 352], "The Bleakfold": [364, 348], "The Firststone Hills": [478, 396]},
+    "water": {"the Long Firth": [-30, 4], "the Cold Narrows": [14, -8], "Amber Bay": [-6, -8]}
+  }
 }

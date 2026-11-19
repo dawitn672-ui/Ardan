@@ -24,7 +24,7 @@
 17	Foxhurst	574	216	forest-road town on the Oak Line
 18	Crossmarch	782	222	the north-east march between Cold Bay and the Pinewild
 19	Northmoor	584	240	seat of the Oak Line Shires
-20	Amberwick	567	197	the Amber Strand on the north coast
+20	Amberwick	568	201	the Amber Strand on the north coast
 21	Galemere Tower	668	318	tower on the Gordush, at the Gashmar road's ford
 22	Goldburg	652	252	river town on the lower Glenwash plain
 23	Briarbrook	698	238	fen town on Cold Bay's west shore
@@ -58,7 +58,7 @@
 49	Anumba	752	806	cattle city on the Lotapa
 50	Tetamba	622	800	market of the western plains
 51	Samandi	660	764	mountain town of the Southern Hills
-52	Juwalo	908	770	market on the eastern road
+52	Juwalo	900	778	market on the eastern road
 # --- Ranpur (POL-30): the Monsoon Coast between the Worldspine and the Eastern Gulf
 53	Ranpur	1188	694	the Chanpur's mouth on the Eastern Gulf
 54	Chanari	1140	668	the steel town in the Worldspine's foothills, on the Chanpur
@@ -67,7 +67,7 @@
 57	Ekapur	1176	722	shore town south of the capital
 # --- Varenna (POL-03): the Lion Gulf coast and the Palella lowland, with the Northern Lakes on the Glenmere
 58	Varenna	313	597	the Palella's mouth on the Lion Gulf, the only river gate through the coast hills
-59	Ardata	592	410	march town at the east end of the Glenmere, under the Albora Sill
+59	Ardata	598	414	march town at the east end of the Glenmere, under the Albora Sill
 60	Camia	447	546	weaving town on the middle Palella
 61	Vitina	324	570	port on the Crown Coast, north of the capital
 62	Castella	548	406	chief town of the Northern Lakes, on the Glenmere's south shore
@@ -149,28 +149,28 @@
 132	Aerdor	385	240	the fir coast of the north
 133	Nimion	298	325	the ship-houses of the West Strand
 # --- Sylvaran (POL-06): the Evenwood round Lake Silara
-134	Evenglade	485	255	the First Oak, between the lake and the northern bays
-135	Fenali	455	352	Fenali Watch over the southern Oak Line
-136	Falessa	492	226	the Greenmire on the north bay
-137	Loriel	462	222	grove city on the north coast
-138	Eridor	520	262	city of the eastern wood
-139	Vaelion	405	320	city south-west of the lake
-140	Fenarin	518	234	marsh town on the north coast
-141	Calandor	415	345	hill town of the south-west
-142	Lirith	415	268	the yew groves west of the Calara
-143	Aravel	385	345	the high south-west, under the Bleakfold
-144	Thalandor	505	300	the western slope of the Tusk Hills
-145	Lirthil	492	282	groves under the Tusk Hills
-146	Aressa	545	252	town of the eastern edge
-147	Silande	500	248	the marsh islands
-148	Aerion	430	335	city south of the lake
-149	Rinthil	478	238	marsh town
-150	Rineron	452	240	the boat sheds on the Calara
-151	Syleron	455	338	market of the south
-152	Mirlas	485	300	the night fishers' city on Lake Silara
-153	Elwen	480	318	town of the south-east wood
-154	Eriavel	470	275	the deep valleys
-155	Erilas	552	272	the rangers' yard on the Eastern Edge
+134	Evenglade	485	258	the First Oak, between the lake and the northern bays
+135	Fenali	458	360	Fenali Watch over the southern Oak Line
+136	Falessa	496	226	the Greenmire on the north bay
+137	Loriel	456	221	grove city on the north coast
+138	Eridor	522	268	city of the eastern wood
+139	Vaelion	403	318	city south-west of the lake
+140	Fenarin	532	226	marsh town on the north coast
+141	Calandor	418	350	hill town of the south-west
+142	Lirith	412	266	the yew groves west of the Calara
+143	Aravel	385	342	the high south-west, under the Bleakfold
+144	Thalandor	512	304	the western slope of the Tusk Hills
+145	Lirthil	500	284	groves under the Tusk Hills
+146	Aressa	548	248	town of the eastern edge
+147	Silande	515	180	the Marsh Isles off the Greenmire
+148	Aerion	432	338	city south of the lake
+149	Rinthil	474	236	marsh town
+150	Rineron	448	246	the boat sheds on the Calara
+151	Syleron	462	340	market of the south
+152	Mirlas	488	304	the night fishers' city on Lake Silara
+153	Elwen	486	326	town of the south-east wood
+154	Eriavel	455	274	the deep valleys
+155	Erilas	553	276	the rangers' yard on the Eastern Edge
 # --- Ashmere (POL-05): the ash soils round Mount Cinder
 156	Ashmere	356	404	the Crown Vale under Mount Cinder's western slope, on the Brightwash
 157	Chasethwaite Tower	360	381	tower on the Long Firth, the northern border
@@ -207,8 +207,8 @@
 185	Drukgar Stockade	1258	240	northern fort at the forest edge
 186	Oggoth Oasis	1298	345	wells by the coast hills
 187	Tukgar Stockade	1214	336	fort under the Mirovo Gap (the Kraoth toll camp)
-188	Vashuk Oasis	1240	368	wells of the Turquoise Hills
-189	Roktuk Oasis	1280	292	wells behind the Silk Strand
+188	Vashuk Oasis	1212	276	wells of the Turquoise Hills, on the east face of the Rift Heights
+189	Roktuk Oasis	1272	292	wells behind the Silk Strand
 # --- Emberdeep (POL-29): the Ember Mountains on the eastern cape
 190	Emberdeep	1298	572	the hold inside the hot mountain
 191	Maghelm	1258	590	gate town on the road down to the Gulf
@@ -251,15 +251,15 @@
 221	Badayn Oasis	842	728	wells of the southern lobe
 222	Halai Oasis	690	655	wells of the western sands
 223	Mirah	742	732	the last wells of the Salt Road, the Zanaran market
-224	Najuma Oasis	600	646	wells of the far western sands
+224	Najuma Oasis	548	656	wells of the far western sands, below the Sabun Pass
 225	Tamuma Oasis	752	712	wells north of the Southern Hills
 226	Qaruma Oasis	802	728	wells on the upper Hazir
 227	Kafam Caravanserai	795	549	harbour camp on the Middle Sea's eastern arm
 228	Januma Caravanserai	735	685	camp on the Well Road, by the Well of Samar
 229	Dahur Oasis	755	585	the great northern wells
-230	Bahib Oasis	872	742	wells south of the Monuti's upper course
-231	Zaruz Oasis	918	768	wells under the Highveld
-232	Talabad Oasis	640	655	wells of the western sands
+230	Bahib Oasis	905	705	wells of the eastern sands, across the upper Monuti
+231	Zaruz Oasis	925	752	wells on the upper Monuti under the Highveld
+232	Talabad Oasis	925	640	wells of the eastern sands, under the bare ranges
 233	Qasan	640	700	hill town of the Southern Hills
 234	Marabad Oasis	806	596	wells west of the Monuti
 235	Yasib Oasis	745	622	wells of the Yasuz Hills
@@ -276,19 +276,19 @@
 244	Sarabad	470	702	granary town inland, on the Bahesh
 245	Sabira	438	728	terraces on the gulf's east shore
 246	Zahas	457	741	market on the gulf's east shore
-247	Daham Tower	385	698	tower on the north shore
+247	Daham Tower	392	704	tower on the gulf's north shore
 248	Nahur	500	728	market of the upland
 249	Basir	474	758	date gardens of the South March
-250	Zariya	342	702	the Oil Shore and its walled seeps
+250	Zariya	352	699	the Oil Shore and its walled seeps
 # --- Skyhold (POL-27): the Roof
 251	Skyhold	1240	442	the White Stair, central to the valleys
-252	Quietwatch Monastery	1198	458	monastery of the western ridges
+252	Quietwatch Monastery	1204	454	monastery of the western ridges
 253	Starspire	1264	466	the Bluespire circuit, above the sea
 254	Moonstair	1218	420	town of the north-west stair
-255	Drumhaven Monastery	1186	432	monastery over the western pass
+255	Drumhaven Monastery	1190	430	monastery over the western pass
 256	Bellcrest	1226	484	the southern herds
 257	Eaglespire	1256	404	the northern salt gate
-258	Stonespire Monastery	1284	432	monastery of the eastern heights
+258	Stonespire Monastery	1280	432	monastery of the eastern heights
 # --- Brannoch (POL-13): the Crown Range
 259	Highcastle	800	440	the charter castle over the high valleys
 260	Bearfold	862	448	eastern valleys
@@ -312,7 +312,7 @@
 273	Miruma	284	652	the naval yard on the open coast
 274	Ashah	306	696	the southern coast, the West March
 275	Faluz Tower	405	648	tower in the Sunwall
-276	Fort Tabir	455	668	fort on the Sunwall's desert face
+276	Fort Tabir	482	668	fort on the Sunwall's desert face, at the Sabun Pass
 277	Fasun	292	680	the coast gardens
 278	Nahin	345	690	market below the Sabun Pass road
 279	Hazifa	340	650	the crown gardens, with Qadira the capital
@@ -322,10 +322,10 @@
 282	The Frostfells	900	150	the snow range north-west of the Western Lakes
 283	The Whale Woods	1262	166	the forest cape east of Whale Sound
 284	The High Wastes	1305	385	the coast mountains north-east of the Roof
-285	The Amber Wilds	1228	962	the hill interior of Great Amber
+285	The Amber Wilds	1226	958	the hill interior of Great Amber
 286	The Isle of Pearls	1298	938	the pearl isle east of Great Amber
 287	The Bone Coast	284	724	the desert headland west of the Gulf of Sands
-288	The Burning Waste	950	660	the sands and bare ranges between the Monuti and the Worldspine
+288	The Burning Waste	985	662	the bare ranges between the Long Rift and the Worldspine, which no clan grazes
 289	The Western Veld	515	805	the south-west peninsula
 290	The Thornveld	1112	815	the dry head of the south-east peninsula
 291	The Deep Green	1005	870	the rainforest cape
@@ -337,9 +337,9 @@
 297	The Tverko Woods	1318	188	the north-east cape and the northern Sunrise Isles
 298	The Trolness Fells	860	70	the ice coast north of the Iron Mountains
 299	The Mammoth Downs	800	190	the downs between Northreach, the Crossmarch and the Pinewild
-300	The Dobava Wilds	1140	455	Mount Dobava and the channel's east shore above the Grey Water
+300	The Dobava Wilds	1176	474	Mount Dobava, the spur between the Neck road and the Roof
 301	The Stairwood	1202	392	the forest stair between Velgrad and the Roof
 302	The Mirun Pines	600	722	the pine hills west of the Southern Hills
 303	The Samuma Uplands	500	775	the uplands south of the Gulf of Sands
-304	The Lunora Woods	1000	514	the wooded hills between the Santora March and the Grey Water
+304	The Lunora Woods	1004	492	the wooded hills between the Castina and the Grey Water, north of the Santora
 305	The Firststone Hills	478	392	the ash plain at the Glenmere's west end

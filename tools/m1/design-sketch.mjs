@@ -75,10 +75,12 @@ const pic = await pg.evaluate(async src => {
     cls[k] = c2; lum[k] = Math.round(0.3 * r + 0.59 * g2 + 0.11 * b2);
   }
   const b64 = a => { let s = ''; for (let i = 0; i < a.length; i += 32768) s += String.fromCharCode.apply(null, a.subarray(i, i + 32768)); return btoa(s); };
-  return { W, H, cls: b64(cls), lum: b64(lum) };
+  const bytes = a => Uint8Array.from(a, v => Math.round(v));
+  return { W, H, cls: b64(cls), lum: b64(lum), r: b64(bytes(br)), g: b64(bytes(bg)), b: b64(bytes(bb)) };
 }, picData);
 const PW = pic.W, PH = pic.H, PN = PW * PH;
 const cls = Uint8Array.from(Buffer.from(pic.cls, 'base64')), lum = Uint8Array.from(Buffer.from(pic.lum, 'base64'));
+const picR = Uint8Array.from(Buffer.from(pic.r, 'base64')), picG = Uint8Array.from(Buffer.from(pic.g, 'base64')), picB = Uint8Array.from(Buffer.from(pic.b, 'base64'));
 
 // the continent, its islets and its lakes on the picture's own pixels
 const pland = new Uint8Array(PN);
@@ -135,18 +137,28 @@ const islets = [];
 // each 10 km cell reads nine points of the picture
 const water = new Uint8Array(N);          // 0 land, 1 sea, 2 lake
 const frac = Array.from({ length: 7 }, () => new Float32Array(N)), lumG = new Float32Array(N);
+const mR = new Float32Array(N), mG = new Float32Array(N), mB = new Float32Array(N), rug = new Float32Array(N);   // the cell's mean colour, and how rough the picture's drawing is there
 for (let cy = 0; cy < GH; cy++) for (let cx = 0; cx < GW; cx++) {
-  let land = 0, lake = 0, tot = 0, lg = 0, ng = 0; const n = [0, 0, 0, 0, 0, 0, 0];
+  let land = 0, lake = 0, tot = 0, lg = 0, ng = 0, sr = 0, sg = 0, sb = 0; const n = [0, 0, 0, 0, 0, 0, 0];
   for (let sy = 0; sy < 3; sy++) for (let sx = 0; sx < 3; sx++) {
     const px = Math.floor(((cx + (sx + 0.5) / 3) * CELL - OX) / S), py = Math.floor(((cy + (sy + 0.5) / 3) * CELL - OY) / S); tot++;
     if (px < 0 || py < 0 || px >= PW || py >= PH) continue;
     const k = py * PW + px, v = keep[k];
-    if (v === 1 || v === 2) { land++; n[cls[k]]++; if (cls[k] === 1) { lg += lum[k]; ng++; } } else if (v === 3) lake++;
+    if (v === 1 || v === 2) { land++; n[cls[k]]++; sr += picR[k]; sg += picG[k]; sb += picB[k]; if (cls[k] === 1) { lg += lum[k]; ng++; } } else if (v === 3) lake++;
   }
   const c = cy * GW + cx;
   water[c] = land >= 5 ? 0 : lake >= 4 ? 2 : 1;
-  if (land) for (let i = 0; i < 7; i++) frac[i][c] = n[i] / land;
+  if (land) { for (let i = 0; i < 7; i++) frac[i][c] = n[i] / land; mR[c] = sr / land; mG[c] = sg / land; mB[c] = sb / land; }
+  { // roughness: the spread of the picture's light and dark within 4 pixels of the cell's middle
+    const px0 = Math.round(((cx + 0.5) * CELL - OX) / S), py0 = Math.round(((cy + 0.5) * CELL - OY) / S); let m = 0, s1 = 0, s2 = 0;
+    for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) { const x = px0 + dx, y = py0 + dy; if (x < 0 || y < 0 || x >= PW || y >= PH) continue; const k = y * PW + x; if (keep[k] !== 1 && keep[k] !== 2) continue; m++; s1 += lum[k]; s2 += lum[k] * lum[k]; }
+    rug[c] = m > 8 ? Math.sqrt(Math.max(0, s2 / m - (s1 / m) ** 2)) : 0; }
   lumG[c] = ng ? lg / ng : 0;
+}
+if (opt('probe', '')) { // --probe="x,y;x,y": what the picture shows round those pixels (the mean of the 5 x 5 cells there)
+  for (const pt of opt('probe', '').split(';')) { const [px, py, name] = pt.split(','), [cx, cy] = px2cell(+px, +py); let m = 0; const f = [0, 0, 0, 0, 0, 0, 0]; let r = 0, g = 0, b2 = 0, ru = 0, lg = 0, nlg = 0;
+    for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const c = (cy + dy) * GW + cx + dx; if (water[c]) continue; m++; for (let i = 0; i < 7; i++) f[i] += frac[i][c]; r += mR[c]; g += mG[c]; b2 += mB[c]; ru += rug[c]; if (lumG[c]) { lg += lumG[c]; nlg++; } }
+    console.log((name || '').padEnd(14), String(px).padStart(5), String(py).padStart(4), 'rgb', [r, g, b2].map(v => String(Math.round(v / m)).padStart(3)).join(' '), 'rug', (ru / m).toFixed(1).padStart(5), 'lumG', String(Math.round(nlg ? lg / nlg : 0)).padStart(3), 'green/sand/brown/snow/red/other', [1, 2, 3, 4, 5, 6].map(i => (f[i] / m).toFixed(2)).join(' ')); }
 }
 // the edits
 const cutLine = (line, width, fn) => {
@@ -157,7 +169,7 @@ const cutLine = (line, width, fn) => {
   }
 };
 function px2cellF([px, py]) { return [(OX + S * px) / CELL, (OY + S * py) / CELL]; }
-const edited = { carved: 0, opened: 0, added: 0, filled: 0 };
+const edited = { carved: 0, opened: 0, added: 0, filled: 0 }, addedLand = new Uint8Array(N);
 for (const e of F.edits.carveSea) cutLine(e.line, e.width, c => { if (water[c] !== 1) { water[c] = 1; edited.carved++; } });
 for (const e of F.edits.openWater || []) cutLine(e.line, e.width, c => { if (water[c] === 0) { water[c] = 2; edited.opened++; } });
 for (const e of F.edits.addLand) {
@@ -165,7 +177,7 @@ for (const e of F.edits.addLand) {
   for (let yy = Math.floor(ey - ry); yy <= Math.ceil(ey + ry); yy++) for (let xx = Math.floor(ex - rx); xx <= Math.ceil(ex + rx); xx++) {
     // an island's outline, not an oval: the edge wobbles with a fixed pattern
     const a = Math.atan2(yy + 0.5 - ey, xx + 0.5 - ex), wob = 1 + 0.16 * Math.sin(3 * a + 1.3) + 0.1 * Math.sin(7 * a + 0.4);
-    if (((xx + 0.5 - ex) / (rx * wob)) ** 2 + ((yy + 0.5 - ey) / (ry * wob)) ** 2 <= 1) { const c = yy * GW + xx; if (water[c]) { water[c] = 0; edited.added++; frac[6][c] = 0.5; frac[4][c] = 0.3; frac[1][c] = 0.2; } }
+    if (((xx + 0.5 - ex) / (rx * wob)) ** 2 + ((yy + 0.5 - ey) / (ry * wob)) ** 2 <= 1) { const c = yy * GW + xx; if (water[c]) { water[c] = 0; addedLand[c] = 1; edited.added++; for (let i = 0; i < 7; i++) frac[i][c] = i === 1 ? 1 : 0; mR[c] = 96; mG[c] = 104; mB[c] = 78; rug[c] = 12; lumG[c] = 100; } }
   }
 }
 // one landmass: join pieces that touch the continent only at a corner, drop single-cell specks
@@ -196,7 +208,7 @@ seaAndLakes();
 const waterName = new Int16Array(N).fill(-1), waterCells = W.map(() => 0), unnamedLakes = [];
 // a filled water takes the ground of the land beside it
 const fillAsLand = cells => { const src = cells.map(k => { for (let r = 1; r <= 8; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) { const x = k % GW + dx, y = ((k / GW) | 0) + dy; if (x >= 0 && y >= 0 && x < GW && y < GH && !water[y * GW + x]) return y * GW + x; } return -1; });
-  cells.forEach((k, n) => { const j = src[n]; for (let i = 0; i < 7; i++) frac[i][k] = j >= 0 ? frac[i][j] : (i === 1 ? 1 : 0); lumG[k] = j >= 0 ? lumG[j] : 90; });
+  cells.forEach((k, n) => { const j = src[n]; for (let i = 0; i < 7; i++) frac[i][k] = j >= 0 ? frac[i][j] : (i === 1 ? 1 : 0); lumG[k] = j >= 0 ? lumG[j] : 90; if (j >= 0) { mR[k] = mR[j]; mG[k] = mG[j]; mB[k] = mB[j]; rug[k] = rug[j]; } });
   for (const k of cells) { water[k] = 0; edited.filled++; } };
 { const lk = components(Uint8Array.from(water, v => (v === 2 ? 1 : 0)), GW, GH, 1), claim = new Map(), minCells = (F.edits.smallLakes || {}).minCells || 0;
   const drops = (F.edits.dropLakes || []).map(d => px2cell(d.at[0], d.at[1]));
@@ -213,20 +225,62 @@ const fillAsLand = cells => { const src = cells.map(k => { for (let r = 1; r <= 
   const q = [], dist = new Int32Array(N).fill(1e9);
   W.forEach((w, i) => { if (lakeKinds.has(w.kind)) return; let c0 = labelCell(w);
     if (water[c0] !== 1) { let bd = 1e9, bk = -1; const x0 = c0 % GW, y0 = (c0 / GW) | 0; for (let yy = Math.max(0, y0 - 12); yy <= Math.min(GH - 1, y0 + 12); yy++) for (let xx = Math.max(0, x0 - 12); xx <= Math.min(GW - 1, x0 + 12); xx++) { const k = yy * GW + xx; if (water[k] === 1) { const d = Math.hypot(xx - x0, yy - y0); if (d < bd) { bd = d; bk = k; } } } c0 = bk; }
-    w.found = c0 >= 0; if (c0 >= 0) { waterName[c0] = i; dist[c0] = 0; q.push(c0); } });
+    w.found = c0 >= 0; if (c0 >= 0) { waterName[c0] = i; dist[c0] = 0; q.push(c0); }
+    for (const at of w.also || []) { const [x, y] = px2cell(at[0], at[1]), k = Math.max(0, Math.min(GH - 1, y)) * GW + Math.max(0, Math.min(GW - 1, x)); if (water[k] === 1) { waterName[k] = i; dist[k] = 0; q.push(k); } } });
   for (let h = 0; h < q.length; h++) { const k = q[h]; for (const j of nb4(k)) if (j >= 0 && water[j] === 1 && dist[j] > dist[k] + 1) { dist[j] = dist[k] + 1; waterName[j] = waterName[k]; q.push(j); } }
   for (let c = 0; c < N; c++) if (water[c] === 1 && waterName[c] >= 0) waterCells[waterName[c]]++; }
 const landC = components(landMask(), GW, GH, 1), mainland = landC.list.reduce((a, c) => (c.n > a.n ? c : a), landC.list[0]);
 let landCells = 0; for (let c = 0; c < N; c++) if (!water[c]) landCells++;
 
-// the ground's height guide from the picture's colours: snow highest, rock and brown high, sand and green low
+// The height guide, from what the picture paints. Snow is highest. Bare rock is grey (red, green and blue alike) or brown
+// (red over green, with little yellow), and it counts for more where the drawing is rough with ridges. Green, yellow and
+// sand are low ground. One blur makes blocks of it.
+const clamp01 = v => Math.max(0, Math.min(1, v));
+const rockOf = c => { const R = mR[c], G = mG[c], B = mB[c], gb = G - B, lum = 0.3 * R + 0.59 * G + 0.11 * B;
+  const grey = Math.abs(R - G) <= 6 ? clamp01((14 - gb) / 8) : 0, brown = clamp01((R - G - 5) / 8) * clamp01((40 - gb) / 14), rf = Math.max(0.2, clamp01((rug[c] - 8) / 10));
+  let v = Math.max(grey, brown) * rf; const sat = Math.max(R, G, B) ? (Math.max(R, G, B) - Math.min(R, G, B)) / Math.max(R, G, B) : 0;
+  if (lum < 50 && sat < 0.3 && v < 0.3) v = Math.max(v, 0.32);            // dark broken country: hills
+  return v; };
 const hRaw = new Float32Array(N);
-for (let c = 0; c < N; c++) if (!water[c]) hRaw[c] = frac[4][c] * 1.0 + frac[6][c] * 0.6 + frac[3][c] * 0.5 + frac[5][c] * 0.62 + frac[2][c] * 0.16 + frac[1][c] * 0.1;
+for (let c = 0; c < N; c++) if (!water[c]) hRaw[c] = Math.min(1, 0.07 + 0.55 * rockOf(c) + 0.5 * frac[4][c]);
 const blurLand = (a, r, passes) => { let cur = a; for (let p = 0; p < passes; p++) { const out = new Float32Array(N);
     for (let y = 0; y < GH; y++) for (let x = 0; x < GW; x++) { const c = y * GW + x; if (water[c]) continue; let s = 0, m = 0;
       for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= GW || yy >= GH) continue; const k = yy * GW + xx; if (water[k]) continue; s += cur[k]; m++; }
       out[c] = s / m; } cur = out; } return cur; };
-const height = blurLand(hRaw, 2, 2);
+const height = blurLand(hRaw, 2, 1);
+// The ground of every cell, from the picture's colour there, the height guide and the latitude; then the design's own
+// word where features.json sets one (a ground the picture's paint cannot tell apart, such as grass from wood).
+const GROUND = ['sea', 'lake', 'ice', 'tundra', 'rock', 'taiga', 'forest', 'jungle', 'grass', 'scrub', 'steppe', 'desert', 'ash', 'marsh'];
+const latOf = cy => F.latitude.top + (F.latitude.bottom - F.latitude.top) * ((cy + 0.5) / GH);
+let ground = new Uint8Array(N);
+for (let c = 0; c < N; c++) {
+  if (water[c]) { ground[c] = water[c] === 1 ? 0 : 1; continue; }
+  const R = mR[c], G = mG[c], B = mB[c], gb = G - B, lum = 0.3 * R + 0.59 * G + 0.11 * B, h = height[c], lat = latOf((c / GW) | 0);
+  let g;
+  if (frac[4][c] >= 0.35) g = 2;                                                        // snow
+  else if (h >= 0.47) g = 4;                                                            // bare rock
+  else if (R - G >= 17 && gb >= 32) g = lat >= 40 ? 10 : gb >= 45 ? 11 : 9;             // dry yellow: steppe, sand or thorn scrub
+  else if (lum < 62 && G >= R - 4) g = lat >= 53 ? 5 : lat < 23 ? 7 : 6;                // dark green: wood
+  else if (lat < 23 && G >= R && lum < 95) g = 7;                                       // the wet south
+  else if (lat >= 57) g = 3;
+  else if (R - G >= 10 && lat < 37) g = 9;                                              // brown dry hills of the south
+  else g = lat < 30 && gb >= 40 ? 9 : 8;                                                // savanna, or grass and farmland
+  ground[c] = g;
+}
+{ // one pass of a 3 x 3 vote takes the speckle out
+  const o = Uint8Array.from(ground);
+  for (let y = 1; y < GH - 1; y++) for (let x = 1; x < GW - 1; x++) { const c = y * GW + x; if (water[c]) continue; const cnt = new Uint8Array(GROUND.length); let best = ground[c], bn = 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const v = ground[c + dy * GW + dx]; if (v < 2) continue; const n = ++cnt[v]; if (n > bn || (n === bn && v === ground[c])) { bn = n; best = v; } } o[c] = best; }
+  ground = o; }
+for (const o of F.groundSet || []) { // the design's word for a stretch of ground: only soft ground changes (never rock, ice, ash or water)
+  const to = GROUND.indexOf(o.ground), from = new Set((o.from || ['grass', 'forest', 'scrub', 'taiga', 'steppe', 'desert', 'jungle', 'tundra']).map(w => GROUND.indexOf(w)));
+  if (to < 0) throw new Error('groundSet: no ground called ' + o.ground);
+  const poly = o.poly.map(px2cellF), inside = (x, y) => { let inq = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const [xi, yi] = poly[i], [xj, yj] = poly[j]; if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inq = !inq; } return inq; };
+  const xs = poly.map(q => q[0]), ys = poly.map(q => q[1]);
+  for (let y = Math.max(0, Math.floor(Math.min(...ys))); y <= Math.min(GH - 1, Math.ceil(Math.max(...ys))); y++) for (let x = Math.max(0, Math.floor(Math.min(...xs))); x <= Math.min(GW - 1, Math.ceil(Math.max(...xs))); x++) { const c = y * GW + x; if (from.has(ground[c]) && inside(x + 0.5, y + 0.5)) ground[c] = to; }
+}
+// the height guide in the engine's own measure (sea 0; alpine above 0.36, snow above 0.5)
+const elevGuide = Float32Array.from(height, (h, c) => (water[c] ? 0 : Math.min(0.7, 0.012 + 0.66 * Math.pow(h, 1.35))));
 
 // rivers and border lines on the grid
 const riverAt = new Int16Array(N).fill(-1), barrier = new Float32Array(N);
@@ -257,7 +311,7 @@ const prov = new Int16Array(N).fill(-1), cost = new Float64Array(N).fill(Infinit
       const j = yy * GW + xx; if (water[j]) continue;
       if (dx && dy && water[y * GW + xx] && water[yy * GW + x]) continue;                  // no squeezing between two water corners
       const hh = Math.max(height[c], height[j]);
-      const nd = d + (dx && dy ? 1.4142 : 1) * (1 + 9 * hh * hh) + barrier[j];
+      const nd = d + (dx && dy ? 1.4142 : 1) * (1 + 14 * hh * hh) + barrier[j];
       if (nd < cost[j]) { cost[j] = nd; prov[j] = prov[c]; push(nd, j); }
     }
   }
@@ -284,17 +338,21 @@ for (let c = 0; c < N; c++) {
   if (riverAt[c] >= 0) a.river.add(F.rivers[riverAt[c]].name);
   for (const j of nb4(c)) { if (j < 0) continue; if (water[j]) { if (water[j] === 1) a.coast = true; else a.lake = true; if (waterName[j] >= 0) a.waters.add(W[waterName[j]].name); } else if (prov[j] >= 0 && prov[j] !== id) a.adj.add(prov[j]); }
 }
-// the ground word the picture gives each province (the engine will read its own from the built ground)
-const latOf = cy => F.latitude.top + (F.latitude.bottom - F.latitude.top) * ((cy + 0.5) / GH);
+// the ground word of each province, from its cells (the engine's words: plains, forest, steppe, hills, desert, mountains, tundra)
+const provGround = seats.map(() => new Float32Array(GROUND.length));
+for (let c = 0; c < N; c++) if (prov[c] >= 0) provGround[prov[c]][ground[c]]++;
 for (const a of P) {
-  const n = Math.max(1, a.cells), f = a.cls.map(v => v / n), h = a.h / n; a.hMean = h; a.lat = latOf(a.sy / n);
-  const greenLum = a.nG ? a.lumG / a.nG : 0;
-  a.ground = f[4] >= 0.3 ? (h >= 0.5 ? 'mountains' : 'tundra') : h >= 0.47 ? 'mountains' : f[2] >= 0.45 ? (a.lat > 39.5 ? 'steppe' : 'desert') : h >= 0.36 ? 'hills'
-    : f[2] >= 0.22 ? (a.lat > 39.5 ? 'steppe' : 'desert') : greenLum && greenLum < 62 ? 'forest' : 'plains';
+  const n = Math.max(1, a.cells), g = Array.from(provGround[a.id], v => v / n), h = a.h / n; a.hMean = h; a.lat = latOf(a.sy / n); a.groundShare = g;
+  const wood = g[5] + g[6] + g[7];
+  a.ground = g[2] + g[4] >= 0.45 ? 'mountains' : g[11] >= 0.4 ? 'desert' : g[10] >= 0.4 ? 'steppe' : h >= 0.3 || g[12] + g[4] + g[2] >= 0.4 ? 'hills' : g[13] >= 0.3 ? 'marsh' : wood >= 0.45 ? 'forest' : g[3] >= 0.4 ? 'tundra' : 'plains';
+  a.cover = GROUND.map((w, i) => [w, g[i]]).filter(x => x[1] >= 0.15).sort((x, y) => y[1] - x[1]).map(x => x[0]);
 }
 const realms = {};
 for (const a of P) { const r = a.realm === 'unclaimed' ? 'wild:' + a.id : a.realm; (realms[r] = realms[r] || { id: r, name: a.realm === 'unclaimed' ? a.name : LORE.realms[a.realm].short, wild: a.realm === 'unclaimed', provs: [] }).provs.push(a); }
 const realmOfProv = id => (P[id].realm === 'unclaimed' ? 'wild:' + id : P[id].realm);
+// each realm's capital province: the one of type "capital city", else its most populous (the engine's own rule)
+const capitalProv = {};
+for (const R of Object.values(realms)) { if (R.wild) continue; const cap = R.provs.find(a => a.type === 'capital city') || R.provs.slice().sort((x, y) => LP[y.id].pop - LP[x.id].pop)[0]; R.capital = cap; capitalProv[cap.id] = LORE.realms[R.id].capital; }
 const problems = [], notes = [];
 for (const R of Object.values(realms)) {
   R.cells = R.provs.reduce((s, a) => s + a.cells, 0); R.coastal = R.provs.filter(a => a.coast).length;
@@ -321,16 +379,28 @@ if (landC.list.length > 1) notes.push(`${landC.list.length - 1} islands beside t
 // ---------------------------------------------------------------- 5. the files
 const out = (name, text) => fs.writeFileSync(path.join(DIR, name), text);
 const r1 = v => Math.round(v * 10) / 10;
+const km = pt => [Math.round(OX + S * pt[0]), Math.round(OY + S * pt[1])];
+const seaLinks = {}; for (const f of F.ferries || []) { (seaLinks[f.a] = seaLinks[f.a] || []).push(f.b); (seaLinks[f.b] = seaLinks[f.b] || []).push(f.a); }
 const build = {
   about: 'Built by tools/m1/design-sketch.mjs from the owner\'s picture, design/seats.tsv and design/features.json. Cells are 10 km squares of the 700 x 450 grid; km are the game\'s frame.',
   frame: F.frame, transform: F.transform, latitude: F.latitude,
   land: { cells: landCells, share: r1(100 * landCells / N), mainland: mainland.n, islands: landC.list.length - 1, edits: edited },
   waters: W.map((w, i) => ({ name: w.name, kind: w.kind, cells: waterCells[i], km2: waterCells[i] * 100, note: w.note || undefined })),
   realms: Object.values(realms).filter(R => !R.wild).sort((x, y) => (x.id < y.id ? -1 : 1)).map(R => ({ id: R.id, name: R.name, provinces: R.provs.length, cells: R.cells, km2: R.cells * 100, coastal: R.coastal,
-    waters: [...R.waters].sort(), neighbours: [...R.nb].map(n => realms[n].name).sort(), islands: R.islands })),
+    capital: { name: LORE.realms[R.id].capital, province: R.capital.id, provinceName: R.capital.name }, waters: [...R.waters].sort(), neighbours: [...R.nb].map(n => realms[n].name).sort(), islands: R.islands })),
   wilds: Object.values(realms).filter(R => R.wild).map(R => ({ id: R.provs[0].id, name: R.name, cells: R.cells, km2: R.cells * 100, neighbours: [...R.nb].map(n => realms[n].name).sort() })),
   provinces: P.map(a => ({ id: a.id, name: a.name, realm: a.realm, type: a.type, seat: { px: a.px, py: a.py, xKm: a.cx * CELL + 5, yKm: a.cy * CELL + 5 }, cells: a.cells, coast: a.coast, lake: a.lake,
-    waters: [...a.waters].sort(), rivers: [...a.river].sort(), ground: a.ground, height: r1(a.hMean), adj: [...a.adj].sort((x, y) => x - y), site: a.site })),
+    waters: [...a.waters].sort(), rivers: [...a.river].sort(), ground: a.ground, cover: a.cover, height: Math.round(a.hMean * 100) / 100, adj: [...a.adj].sort((x, y) => x - y), sea: seaLinks[a.id] || [], site: a.site })),
+  rivers: F.rivers.map(r => ({ name: r.name, from: r.from, to: r.to, big: !!r.big, ships: !!r.channel, boats: r.boats || undefined, border: !!r.border, km: r.line.map(km) })),
+  ranges: F.ranges.map(r => ({ name: r.name, note: r.note || undefined, km: r.line.map(km) })),
+  peaks: F.peaks.map(r => ({ name: r.name, note: r.note || undefined, km: km(r.at) })),
+  passes: F.passes.map(r => ({ name: r.name, note: r.note || undefined, km: km(r.at) })),
+  regions: F.regions.map(r => ({ name: r.name.replace(/^THE /, 'the ').replace(/\b([A-Z])([A-Z]+)/g, (m, a, b) => a + b.toLowerCase()), km: km(r.at) })),
+  roads: F.roads.map(r => ({ name: r.name, note: r.note, byWater: !!r.water, km: r.line.map(km) })),
+  seaLanes: F.sealanes.map(r => ({ name: r.name, note: r.note, km: r.line.map(km) })),
+  isles: (F.isles || []).map(i => ({ name: i.name, province: i.province, km: km(i.at), note: i.note || undefined })),
+  ferries: (F.ferries || []).map(f => ({ name: f.name, a: f.a, b: f.b, note: f.note || undefined })),
+  ground: { words: GROUND, note: 'design/ground.png holds one of these for every cell; design/relief.png the height guide' },
   checks: { problems, notes, snapped },
 };
 out('design/build.json', JSON.stringify(build, null, 1) + '\n');
@@ -353,125 +423,178 @@ out('design/build.json', JSON.stringify(build, null, 1) + '\n');
 const realmList = Object.values(realms).filter(R => !R.wild).sort((x, y) => (x.id < y.id ? -1 : 1));
 const realmIdx = new Int16Array(seats.length); P.forEach(a => { realmIdx[a.id] = a.realm === 'unclaimed' ? -1 : realmList.findIndex(R => R.id === a.realm); });
 const b64 = a => Buffer.from(a.buffer, a.byteOffset, a.byteLength).toString('base64');
-const baseCol = new Uint8Array(N);     // the clean map's ground colour per cell
-for (let c = 0; c < N; c++) { if (water[c]) continue; const f = i => frac[i][c], h = height[c];
-  baseCol[c] = f(4) >= 0.3 ? 4 : f(5) >= 0.12 ? 5 : f(2) >= 0.4 ? 2 : h >= 0.42 ? 6 : h >= 0.3 ? 3 : lumG[c] && lumG[c] < 62 ? 1 : 0; }
+// realm colours: twelve soft hues, shared out so that no two neighbours (by land, or across a narrow water) are alike
+const HUES = [[226, 150, 140], [240, 190, 128], [236, 222, 130], [176, 212, 128], [132, 204, 156], [124, 200, 196], [136, 184, 228], [164, 160, 228], [204, 156, 220], [232, 160, 200], [200, 172, 132], [164, 178, 190]];
+const realmColour = (() => {
+  const idxOf = new Map(realmList.map((R, i) => [R.id, i])), near = realmList.map(() => new Set());
+  for (const R of realmList) for (const n of R.nb) if (idxOf.has(n)) { near[idxOf.get(R.id)].add(idxOf.get(n)); near[idxOf.get(n)].add(idxOf.get(R.id)); }
+  // realms that face each other over water within 60 km count as neighbours for the colours
+  for (let c = 0; c < N; c++) { if (water[c] || prov[c] < 0) continue; const a = realmIdx[prov[c]]; if (a < 0) continue; const x = c % GW, y = (c / GW) | 0;
+    for (const [dx, dy] of [[6, 0], [0, 6], [4, 4], [4, -4]]) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= GW || yy >= GH) continue; const k = yy * GW + xx; if (water[k] || prov[k] < 0) continue; const b2 = realmIdx[prov[k]]; if (b2 >= 0 && b2 !== a) { near[a].add(b2); near[b2].add(a); } } }
+  const col = new Int8Array(realmList.length).fill(-1), order = realmList.map((_, i) => i).sort((a, b) => near[b].size - near[a].size || realmList[b].cells - realmList[a].cells), used = HUES.map(() => 0);
+  const hueDist = (a, b) => { const d = Math.abs(a - b) % HUES.length; return Math.min(d, HUES.length - d); };
+  for (const i of order) { let best = 0, bs = -1e9;
+    for (let h = 0; h < HUES.length; h++) { let s = -used[h] * 0.6; for (const j of near[i]) if (col[j] >= 0) { const d = hueDist(h, col[j]); s += d === 0 ? -100 : d === 1 ? -3 : 0; } for (const j of near[i]) for (const k of near[j]) if (k !== i && col[k] === h) s -= 0.4; if (s > bs) { bs = s; best = h; } }
+    col[i] = best; used[best]++; }
+  return realmList.map((_, i) => HUES[col[i]]);
+})();
+// the sea's distance from land (for the shelf's paler water) and the land's from the sea
+const seaDist = new Uint8Array(N); { // a chamfer distance (5 a side step, 7 a corner step), in tenths of a cell
+  const d = new Int32Array(N); for (let c = 0; c < N; c++) d[c] = water[c] !== 1 ? 0 : 1e6;
+  for (let y = 0; y < GH; y++) for (let x = 0; x < GW; x++) { const c = y * GW + x; let v = d[c]; if (x > 0) v = Math.min(v, d[c - 1] + 5); if (y > 0) { v = Math.min(v, d[c - GW] + 5); if (x > 0) v = Math.min(v, d[c - GW - 1] + 7); if (x < GW - 1) v = Math.min(v, d[c - GW + 1] + 7); } d[c] = v; }
+  for (let y = GH - 1; y >= 0; y--) for (let x = GW - 1; x >= 0; x--) { const c = y * GW + x; let v = d[c]; if (x < GW - 1) v = Math.min(v, d[c + 1] + 5); if (y < GH - 1) { v = Math.min(v, d[c + GW] + 5); if (x < GW - 1) v = Math.min(v, d[c + GW + 1] + 7); if (x > 0) v = Math.min(v, d[c + GW - 1] + 7); } d[c] = v; }
+  for (let c = 0; c < N; c++) seaDist[c] = Math.min(255, Math.round(d[c] / 5 * 6)); }
 const drawData = {
-  GW, GH, K, PW, PH, S, OX, OY, CELL,
-  water: b64(water), prov: b64(prov), height: b64(Uint8Array.from(height, v => Math.max(0, Math.min(255, Math.round(v * 255))))), base: b64(baseCol), keep: b64(keep),
-  realmIdx: b64(realmIdx), realms: realmList.map(R => ({ name: R.name, id: R.id, cells: R.cells })),
+  GW, GH, K, PW, PH, S, OX, OY, CELL, lat: F.latitude,
+  water: b64(water), prov: b64(prov), height: b64(Uint8Array.from(height, v => Math.max(0, Math.min(255, Math.round(v * 255))))), ground: b64(ground), seaDist: b64(seaDist), keep: b64(keep), added: b64(addedLand), edits: { carveSea: F.edits.carveSea, openWater: F.edits.openWater || [] },
+  realmIdx: b64(realmIdx), realms: realmList.map((R, i) => ({ name: R.name, id: R.id, cells: R.cells, colour: realmColour[i] })),
   provs: P.map(a => ({ id: a.id, name: a.name, type: a.type, realm: a.realm, cx: a.cx, cy: a.cy, mx: a.cells ? a.sx / a.cells : a.cx, my: a.cells ? a.sy / a.cells : a.cy, cells: a.cells })),
-  F: { waters: W.map(w => ({ name: w.name, kind: w.kind, at: w.at })), rivers: F.rivers, ranges: F.ranges, peaks: F.peaks, passes: F.passes, regions: F.regions, roads: F.roads, sealanes: F.sealanes, edits: F.edits, labels: F.labels || {} },
-  capitals: LORE.realms ? Object.fromEntries(Object.values(LORE.realms).map(r => [r.id, r.capital])) : {},
+  F: { waters: W.map(w => ({ name: w.name, kind: w.kind, at: w.at, size: w.size })), rivers: F.rivers, ranges: F.ranges, peaks: F.peaks, passes: F.passes, regions: F.regions, roads: F.roads, sealanes: F.sealanes, labels: F.labels || {} },
+  capitalNames: Object.fromEntries(realmList.map(R => [R.id, LORE.realms[R.id].capital])),
 };
 await pg.setViewportSize({ width: GW * K + 40, height: GH * K + 40 });
 for (const mode of ['sketch', 'picture']) {
   await pg.evaluate(({ D, mode }) => {
-    const { GW, GH, K, PW, PH, S, OX, OY, CELL } = D, N = GW * GH, WPX = GW * K, HPX = GH * K;
+    const { GW, GH, K, PW, PH, S, OX, OY, CELL } = D, N = GW * GH, WPX = GW * K, HPX = GH * K, dark = mode === 'picture';
     const u8 = s => Uint8Array.from(atob(s), ch => ch.charCodeAt(0));
-    const water = u8(D.water), base = u8(D.base), hgt = u8(D.height), keep = u8(D.keep);
+    const water = u8(D.water), ground = u8(D.ground), hgt = u8(D.height), seaDist = u8(D.seaDist);
     const prov = new Int16Array(u8(D.prov).buffer), realmIdx = new Int16Array(u8(D.realmIdx).buffer);
     const c = document.getElementById('c'); c.width = WPX; c.height = HPX; const g = c.getContext('2d');
     const kmX = px => (OX + S * px) / CELL * K, kmY = py => (OY + S * py) / CELL * K;     // picture pixel -> canvas
-    // ---- the ground
-    if (mode === 'picture') {
-      g.fillStyle = '#0d1f3f'; g.fillRect(0, 0, WPX, HPX);
-      g.imageSmoothingQuality = 'high'; g.drawImage(window.PICTURE, kmX(0), kmY(0), kmX(PW) - kmX(0), kmY(PH) - kmY(0));
-      g.fillStyle = 'rgba(10,20,40,0.18)'; g.fillRect(0, 0, WPX, HPX);
-    } else {
-      // the land's outline from the picture's own pixels (finer than the grid), the ground's colour from the grid
-      const PAL = [[203, 214, 160], [150, 180, 118], [232, 211, 150], [196, 176, 132], [246, 246, 248], [172, 96, 78], [158, 146, 132]];
-      const im = g.createImageData(WPX, HPX), d = im.data;
-      const sample = (a, fx, fy) => { const x0 = Math.max(0, Math.min(GW - 1, Math.floor(fx - 0.5))), y0 = Math.max(0, Math.min(GH - 1, Math.floor(fy - 0.5))), x1 = Math.min(GW - 1, x0 + 1), y1 = Math.min(GH - 1, y0 + 1), tx = Math.max(0, Math.min(1, fx - 0.5 - x0)), ty = Math.max(0, Math.min(1, fy - 0.5 - y0));
-        return (a[y0 * GW + x0] * (1 - tx) + a[y0 * GW + x1] * tx) * (1 - ty) + (a[y1 * GW + x0] * (1 - tx) + a[y1 * GW + x1] * tx) * ty; };
-      for (let y = 0; y < HPX; y++) for (let x = 0; x < WPX; x++) {
-        const fx = (x + 0.5) / K, fy = (y + 0.5) / K, cx = Math.min(GW - 1, fx | 0), cy = Math.min(GH - 1, fy | 0), cc = cy * GW + cx, k = (y * WPX + x) * 4;
-        // the picture's pixel under this point
-        const ppx = Math.floor((fx * CELL - OX) / S), ppy = Math.floor((fy * CELL - OY) / S), pk = ppx >= 0 && ppy >= 0 && ppx < PW && ppy < PH ? keep[ppy * PW + ppx] : 0;
-        let land = water[cc] === 0, lake = water[cc] === 2;
-        if (pk === 1 || pk === 2) { if (water[cc] !== 1 || true) land = water[cc] !== 1 || nearLand(cx, cy); } else if (pk === 3) { lake = water[cc] !== 1; land = false; } else if (land) land = nearSea(cx, cy) ? false : true;
-        if (water[cc] === 1 && !(pk === 1 || pk === 2)) land = false;
-        if (water[cc] === 1 && (pk === 1 || pk === 2) && !nearLand(cx, cy)) land = false;
-        if (water[cc] === 0 && pk === 0 && !nearSea(cx, cy)) land = true;
-        if (land) {
-          const b = water[cc] === 0 ? base[cc] : baseNear(cx, cy), p = PAL[b], hh = sample(hgt, fx, fy) / 255;
-          // a north-west light on the height guide
-          const sl = (sample(hgt, fx - 0.8, fy - 0.8) - sample(hgt, fx + 0.8, fy + 0.8)) / 255, sh = 1 + Math.max(-0.22, Math.min(0.22, sl * 2.2)) - hh * 0.1;
-          d[k] = Math.min(255, p[0] * sh); d[k + 1] = Math.min(255, p[1] * sh); d[k + 2] = Math.min(255, p[2] * sh);
-        } else if (lake) { d[k] = 150; d[k + 1] = 196; d[k + 2] = 222; }
-        else { const t = Math.min(1, coastDist(cx, cy) / 14); d[k] = 176 - 60 * t; d[k + 1] = 208 - 52 * t; d[k + 2] = 226 - 34 * t; }
-        d[k + 3] = 255;
-      }
-      g.putImageData(im, 0, 0);
-    }
-    function nearLand(cx, cy) { for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const x = cx + dx, y = cy + dy; if (x >= 0 && y >= 0 && x < GW && y < GH && water[y * GW + x] === 0) return true; } return false; }
-    function nearSea(cx, cy) { for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const x = cx + dx, y = cy + dy; if (x >= 0 && y >= 0 && x < GW && y < GH && water[y * GW + x] === 1) return true; } return false; }
-    function baseNear(cx, cy) { for (let r = 1; r <= 2; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) { const x = cx + dx, y = cy + dy; if (x >= 0 && y >= 0 && x < GW && y < GH && water[y * GW + x] === 0) return base[y * GW + x]; } return 0; }
-    function coastDist(cx, cy) { if (!coastDist.d) { const dd = new Int16Array(N).fill(999), q = []; for (let i = 0; i < N; i++) if (water[i] !== 1) { dd[i] = 0; q.push(i); } for (let h = 0; h < q.length; h++) { const i = q[h], x = i % GW; for (const j of [x > 0 ? i - 1 : -1, x < GW - 1 ? i + 1 : -1, i - GW, i + GW]) if (j >= 0 && j < N && dd[j] > dd[i] + 1) { dd[j] = dd[i] + 1; q.push(j); } } coastDist.d = dd; } return coastDist.d[cy * GW + cx]; }
+    // bilinear reading of a cell grid at a canvas point
+    const sample = (a, fx, fy) => { const x0 = Math.max(0, Math.min(GW - 1, Math.floor(fx - 0.5))), y0 = Math.max(0, Math.min(GH - 1, Math.floor(fy - 0.5))), x1 = Math.min(GW - 1, x0 + 1), y1 = Math.min(GH - 1, y0 + 1), tx = Math.max(0, Math.min(1, fx - 0.5 - x0)), ty = Math.max(0, Math.min(1, fy - 0.5 - y0));
+      return (a[y0 * GW + x0] * (1 - tx) + a[y0 * GW + x1] * tx) * (1 - ty) + (a[y1 * GW + x0] * (1 - tx) + a[y1 * GW + x1] * tx) * ty; };
+    const landF = Float32Array.from(water, v => (v === 0 ? 1 : 0));
+    // The coast is the picture's own, finer than the grid: a point is land where the picture has land and the grid has land
+    // there or beside it; the picture's water inside solid grid land is land (river water and ponds the design fills);
+    // the design's cuts and the island it adds are drawn from features.json and the grid.
+    const keep = u8(D.keep), added = u8(D.added);
+    const fine = (want, x, y) => { const px = ((x + 0.5) / K * CELL - OX) / S - 0.5, py = ((y + 0.5) / K * CELL - OY) / S - 0.5, x0 = Math.floor(px), y0 = Math.floor(py), tx = px - x0, ty = py - y0;
+      const at = (xx, yy) => (xx < 0 || yy < 0 || xx >= PW || yy >= PH ? 0 : want(keep[yy * PW + xx]) ? 1 : 0);
+      return (at(x0, y0) * (1 - tx) + at(x0 + 1, y0) * tx) * (1 - ty) + (at(x0, y0 + 1) * (1 - tx) + at(x0 + 1, y0 + 1) * tx) * ty; };
+    const UW = WPX, UH = HPX; let rid = new Int16Array(UW * UH), pid = new Int16Array(UW * UH);
+    const isLand = new Uint8Array(UW * UH), isLake = new Uint8Array(UW * UH);
+    const near = new Uint8Array(N);   // bit 1 land, 2 sea, 4 lake, 8 added land, in the cell or the eight round it
+    for (let cy = 0; cy < GH; cy++) for (let cx = 0; cx < GW; cx++) { let m = 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const xx = cx + dx, yy = cy + dy; if (xx < 0 || yy < 0 || xx >= GW || yy >= GH) { m |= 2; continue; } const j = yy * GW + xx; m |= water[j] === 0 ? 1 : water[j] === 1 ? 2 : 4; if (added[j]) m |= 8; } near[cy * GW + cx] = m; }
+    for (let y = 0; y < UH; y++) for (let x = 0; x < UW; x++) { const k = y * UW + x, cc = ((y / K) | 0) * GW + ((x / K) | 0), m = near[cc], w = water[cc];
+      let land, lake = 0;
+      if (m & 8) land = sample(landF, (x + 0.5) / K, (y + 0.5) / K) >= 0.5;
+      else if (fine(v => v === 1 || v === 2, x, y) >= 0.5) land = (m & 1) !== 0;
+      else land = w === 0 && !(m & 6);
+      if (!land && (m & 4)) lake = w === 2 || fine(v => v === 3, x, y) >= 0.5 ? 1 : 0;
+      if (!land && !lake && w === 2) lake = 1;
+      isLand[k] = land ? 1 : 0; isLake[k] = lake; }
+    { // the design's cuts, drawn on the fine coast
+      const mc = document.createElement('canvas'); mc.width = WPX; mc.height = HPX; const mg = mc.getContext('2d'); mg.lineJoin = 'round'; mg.lineCap = 'round';
+      const stroke = (list, col) => { for (const e of list) { mg.beginPath(); e.line.forEach(([px, py], i) => (i ? mg.lineTo(kmX(px), kmY(py)) : mg.moveTo(kmX(px), kmY(py)))); mg.strokeStyle = col; mg.lineWidth = Math.max(K * 1.1, e.width * K * 0.8); mg.stroke(); } };
+      stroke(D.edits.carveSea, '#f00'); stroke(D.edits.openWater, '#00f');
+      const md = mg.getImageData(0, 0, WPX, HPX).data;
+      for (let k = 0; k < WPX * HPX; k++) { if (md[k * 4 + 3] < 128) continue; if (md[k * 4] > 128) { if (water[((((k / WPX) | 0) / K) | 0) * GW + (((k % WPX) / K) | 0)] !== 0) { isLand[k] = 0; isLake[k] = 0; } } else if (md[k * 4 + 2] > 128 && isLand[k]) { isLand[k] = 0; isLake[k] = 1; } } }
+    // each land point takes the province of the nearest land cell (its own, or a neighbour's on the smoothed coast)
+    for (let y = 0; y < UH; y++) for (let x = 0; x < UW; x++) { const k = y * UW + x; if (!isLand[k]) { rid[k] = pid[k] = -1; continue; }
+      let cx = (x / K) | 0, cy = (y / K) | 0, p = water[cy * GW + cx] ? -1 : prov[cy * GW + cx];
+      if (p < 0) { let bd = 1e9; for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const xx = cx + dx, yy = cy + dy; if (xx < 0 || yy < 0 || xx >= GW || yy >= GH) continue; const j = yy * GW + xx; if (water[j] || prov[j] < 0) continue; const d = Math.hypot((xx + 0.5) * K - x, (yy + 0.5) * K - y); if (d < bd) { bd = d; p = prov[j]; } } }
+      pid[k] = p; rid[k] = p < 0 ? -1 : realmIdx[p] >= 0 ? realmIdx[p] : 1000 + p; }
+    const vote = (a, r) => { const o = new Int16Array(a.length); for (let y = 0; y < UH; y++) for (let x = 0; x < UW; x++) { const k = y * UW + x; if (a[k] < 0) { o[k] = -1; continue; } let best = a[k], bn = 0; const cnt = new Map();
+          for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= UW || yy >= UH) continue; const v = a[yy * UW + xx]; if (v < 0) continue; const n = (cnt.get(v) || 0) + 1; cnt.set(v, n); if (n > bn || (n === bn && v === a[k])) { bn = n; best = v; } } o[k] = best; } return o; };
+    rid = vote(vote(rid, 3), 3); pid = vote(pid, 2);
 
-    // ---- realms: a tint and smoothed borders, from the province grid drawn three times finer and settled by a vote
-    const UP = 3, UW = GW * UP, UH = GH * UP;
-    let rid = new Int16Array(UW * UH), pid = new Int16Array(UW * UH);
-    for (let y = 0; y < UH; y++) for (let x = 0; x < UW; x++) { const cc = ((y / UP) | 0) * GW + ((x / UP) | 0), p = prov[cc]; pid[y * UW + x] = water[cc] ? -1 : p; rid[y * UW + x] = water[cc] || p < 0 ? -1 : (realmIdx[p] >= 0 ? realmIdx[p] : 1000 + p); }
-    const vote = a => { const o = new Int16Array(a.length); for (let y = 0; y < UH; y++) for (let x = 0; x < UW; x++) { const k = y * UW + x; if (a[k] < 0) { o[k] = -1; continue; } const cnt = new Map(); let best = a[k], bn = 0;
-          for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= UW || yy >= UH) continue; const v = a[yy * UW + xx]; if (v < 0) continue; const n = (cnt.get(v) || 0) + 1; cnt.set(v, n); if (n > bn || (n === bn && v === a[k])) { bn = n; best = v; } } o[k] = best; } return o; };
-    rid = vote(vote(rid)); pid = vote(pid);
-    // realm colours: spread round the wheel in an order that keeps neighbours apart
-    const NR = D.realms.length, hue = i => (i * 137.508) % 360, lightOf = i => [58, 46, 66][i % 3], col = (i, a) => `hsla(${hue(i)},${mode === 'picture' ? 85 : 58}%,${lightOf(i)}%,${a})`;
-    const ov = document.createElement('canvas'); ov.width = UW; ov.height = UH; const og = ov.getContext('2d'), oi = og.createImageData(UW, UH), od = oi.data;
-    const hsl = (h, s, l) => { s /= 100; l /= 100; const k = n => (n + h / 30) % 12, a = s * Math.min(l, 1 - l), f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1))); return [255 * f(0), 255 * f(8), 255 * f(4)]; };
-    const RC = D.realms.map((r, i) => hsl(hue(i), mode === 'picture' ? 85 : 58, lightOf(i)));
-    for (let y = 0; y < UH; y++) for (let x = 0; x < UW; x++) { const k = y * UW + x, r = rid[k], o = k * 4; if (r < 0) continue;
-      const edge = (x > 0 && rid[k - 1] !== r && rid[k - 1] >= 0) || (x < UW - 1 && rid[k + 1] !== r && rid[k + 1] >= 0) || (y > 0 && rid[k - UW] !== r && rid[k - UW] >= 0) || (y < UH - 1 && rid[k + UW] !== r && rid[k + UW] >= 0);
-      const pedge = !edge && ((x > 0 && pid[k - 1] !== pid[k] && pid[k - 1] >= 0) || (y > 0 && pid[k - UW] !== pid[k] && pid[k - UW] >= 0));
-      if (edge) { od[o] = mode === 'picture' ? 255 : 70; od[o + 1] = mode === 'picture' ? 240 : 24; od[o + 2] = mode === 'picture' ? 200 : 24; od[o + 3] = 255; }
-      else if (r < 1000) { const cc = RC[r]; od[o] = cc[0]; od[o + 1] = cc[1]; od[o + 2] = cc[2]; od[o + 3] = pedge ? (mode === 'picture' ? 150 : 190) : (mode === 'picture' ? 62 : 118); if (pedge) { od[o] *= 0.55; od[o + 1] *= 0.55; od[o + 2] *= 0.55; } }
-      else { od[o] = 90; od[o + 1] = 90; od[o + 2] = 90; od[o + 3] = pedge ? 110 : (mode === 'picture' ? 0 : 26); } }
-    og.putImageData(oi, 0, 0); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high'; g.drawImage(ov, 0, 0, WPX, HPX);
+    // ---- the ground
+    const GROUND = [[0, 0, 0], [0, 0, 0], [244, 246, 248], [214, 218, 204], [186, 174, 158], [156, 184, 150], [168, 200, 150], [140, 194, 134], [208, 224, 170], [222, 214, 160], [232, 226, 168], [240, 218, 160], [192, 164, 152], [170, 206, 190]];
+    const im = g.createImageData(WPX, HPX), d = im.data;
+    const gR = Float32Array.from(ground, v => GROUND[v][0]), gG = Float32Array.from(ground, v => GROUND[v][1]), gB = Float32Array.from(ground, v => GROUND[v][2]);
+    if (dark) { g.fillStyle = '#0d1f3f'; g.fillRect(0, 0, WPX, HPX); g.imageSmoothingQuality = 'high'; g.drawImage(window.PICTURE, kmX(0), kmY(0), kmX(PW) - kmX(0), kmY(PH) - kmY(0)); g.fillStyle = 'rgba(10,20,40,0.15)'; g.fillRect(0, 0, WPX, HPX); }
+    else {
+      for (let y = 0; y < HPX; y++) for (let x = 0; x < WPX; x++) { const fx = (x + 0.5) / K, fy = (y + 0.5) / K, k = y * WPX + x, o = k * 4; let r, gg, b;
+        if (isLand[k]) {
+          let cx = Math.min(GW - 1, fx | 0), cy = Math.min(GH - 1, fy | 0), gr = ground[cy * GW + cx];
+          if (gr < 2) { let bd = 1e9; for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const xx = cx + dx, yy = cy + dy; if (xx < 0 || yy < 0 || xx >= GW || yy >= GH) continue; const v = ground[yy * GW + xx]; if (v < 2) continue; const dd = dx * dx + dy * dy; if (dd < bd) { bd = dd; gr = v; } } if (gr < 2) gr = 8; }
+          let p = GROUND[gr]; if (water[cy * GW + cx] === 0 && (near[cy * GW + cx] & 6) === 0) p = [sample(gR, fx, fy), sample(gG, fx, fy), sample(gB, fx, fy)];
+          const hh = sample(hgt, fx, fy) / 255, sl = (sample(hgt, fx - 0.9, fy - 0.9) - sample(hgt, fx + 0.9, fy + 0.9)) / 255, sh = 1 + Math.max(-0.2, Math.min(0.16, sl * 2.4)) - hh * 0.06;
+          r = p[0] * sh; gg = p[1] * sh; b = p[2] * sh;
+          const ri = rid[k]; if (ri >= 0 && ri < 1000) { const rc = D.realms[ri].colour, t = 0.5; r = r * (1 - t) + rc[0] * t * sh; gg = gg * (1 - t) + rc[1] * t * sh; b = b * (1 - t) + rc[2] * t * sh; }
+          else { r = r * 0.82 + 150 * 0.18; gg = gg * 0.82 + 150 * 0.18; b = b * 0.82 + 150 * 0.18; }     // the wilds: the bare ground, greyed
+        } else if (isLake[k]) { r = 150; gg = 198; b = 226; }
+        else { const t = Math.min(1, sample(seaDist, fx, fy) / 110), u = t * t * (3 - 2 * t); r = 200 - 48 * u; gg = 224 - 36 * u; b = 239 - 23 * u; }
+        d[o] = Math.min(255, r); d[o + 1] = Math.min(255, gg); d[o + 2] = Math.min(255, b); d[o + 3] = 255; }
+      g.putImageData(im, 0, 0);
+      // the owner's own relief, grey, laid softly on the land so that his ranges show through
+      const t = document.createElement('canvas'); t.width = WPX; t.height = HPX; const tg = t.getContext('2d');
+      tg.filter = 'grayscale(1) contrast(1.35) brightness(1.25)'; tg.imageSmoothingQuality = 'high'; tg.drawImage(window.PICTURE, kmX(0), kmY(0), kmX(PW) - kmX(0), kmY(PH) - kmY(0)); tg.filter = 'none';
+      const ti = tg.getImageData(0, 0, WPX, HPX), td = ti.data; for (let k = 0; k < WPX * HPX; k++) td[k * 4 + 3] = isLand[k] ? 255 : 0; tg.putImageData(ti, 0, 0);
+      g.save(); g.globalCompositeOperation = 'soft-light'; g.globalAlpha = 0.55; g.drawImage(t, 0, 0); g.restore();
+    }
+    // ---- borders: coast, realms, provinces
+    const ov = g.createImageData(WPX, HPX), od = ov.data;
+    for (let y = 1; y < HPX - 1; y++) for (let x = 1; x < WPX - 1; x++) { const k = y * WPX + x, o = k * 4, r = rid[k];
+      if (!isLand[k]) { if (isLand[k - 1] || isLand[k + 1] || isLand[k - WPX] || isLand[k + WPX]) { od[o] = dark ? 255 : 60; od[o + 1] = dark ? 255 : 80; od[o + 2] = dark ? 255 : 110; od[o + 3] = dark ? 90 : 200; } continue; }
+      const e1 = rid[k - 1] !== r && rid[k - 1] >= 0, e2 = rid[k + 1] !== r && rid[k + 1] >= 0, e3 = rid[k - WPX] !== r && rid[k - WPX] >= 0, e4 = rid[k + WPX] !== r && rid[k + WPX] >= 0;
+      const near = e1 || e2 || e3 || e4 || (rid[k - 2] !== r && rid[k - 2] >= 0) || (rid[k - 2 * WPX] !== r && rid[k - 2 * WPX] >= 0);
+      if (near) { const wild = r >= 1000 && [rid[k - 1], rid[k + 1], rid[k - WPX], rid[k + WPX], rid[k - 2], rid[k - 2 * WPX]].every(v => v < 0 || v >= 1000);
+        if (dark) { od[o] = 255; od[o + 1] = 244; od[o + 2] = 190; od[o + 3] = wild ? 120 : 255; } else { od[o] = 70; od[o + 1] = 30; od[o + 2] = 30; od[o + 3] = wild ? 90 : 235; } continue; }
+      if ((pid[k - 1] !== pid[k] && pid[k - 1] >= 0) || (pid[k - WPX] !== pid[k] && pid[k - WPX] >= 0)) { od[o] = dark ? 255 : 70; od[o + 1] = dark ? 255 : 50; od[o + 2] = dark ? 255 : 40; od[o + 3] = dark ? 70 : 70; }
+      else if (dark && r >= 0 && r < 1000) { const rc = D.realms[r].colour; od[o] = rc[0]; od[o + 1] = rc[1]; od[o + 2] = rc[2]; od[o + 3] = 96; } }
+    const oc = document.createElement('canvas'); oc.width = WPX; oc.height = HPX; oc.getContext('2d').putImageData(ov, 0, 0); g.drawImage(oc, 0, 0);
 
     // ---- rivers, roads, sea lanes
-    const path = (line, close) => { g.beginPath(); line.forEach(([x, y], i) => (i ? g.lineTo(kmX(x), kmY(y)) : g.moveTo(kmX(x), kmY(y)))); if (close) g.closePath(); };
+    const path = line => { g.beginPath(); line.forEach(([x, y], i) => (i ? g.lineTo(kmX(x), kmY(y)) : g.moveTo(kmX(x), kmY(y)))); };
     const smooth = line => { let p = line; for (let it = 0; it < 2; it++) { const q = [p[0]]; for (let i = 0; i + 1 < p.length; i++) { const [ax, ay] = p[i], [bx, by] = p[i + 1]; q.push([ax * 0.75 + bx * 0.25, ay * 0.75 + by * 0.25], [ax * 0.25 + bx * 0.75, ay * 0.25 + by * 0.75]); } q.push(p[p.length - 1]); p = q; } return p; };
     g.lineJoin = 'round'; g.lineCap = 'round';
-    if (mode === 'sketch') { g.setLineDash([K * 2.2, K * 1.6]); for (const s of D.F.sealanes) { path(smooth(s.line)); g.strokeStyle = 'rgba(60,90,140,0.55)'; g.lineWidth = K * 0.45; g.stroke(); } g.setLineDash([]); }
-    for (const r of D.F.rivers) { path(smooth(r.line)); g.strokeStyle = mode === 'picture' ? 'rgba(120,200,255,0.9)' : '#3f86c2'; g.lineWidth = K * (r.channel ? 1.5 : r.big ? 0.95 : 0.6); g.stroke(); }
-    if (mode === 'sketch') for (const r of D.F.roads) { if (r.water) continue; path(smooth(r.line)); g.strokeStyle = 'rgba(255,250,235,0.9)'; g.lineWidth = K * 0.9; g.stroke(); path(smooth(r.line)); g.strokeStyle = '#a0522d'; g.lineWidth = K * 0.4; g.stroke(); }
+    for (const s of D.F.sealanes) { g.setLineDash([K * 0.5, K * 1.7]); path(smooth(s.line)); g.strokeStyle = dark ? 'rgba(200,230,255,0.75)' : 'rgba(40,80,140,0.6)'; g.lineWidth = K * 0.5; g.stroke(); } g.setLineDash([]);
+    for (const r of D.F.rivers) { const w = K * (r.channel ? 1.5 : r.big ? 1.0 : 0.6); path(smooth(r.line)); g.strokeStyle = dark ? 'rgba(20,40,80,0.8)' : 'rgba(255,255,255,0.55)'; g.lineWidth = w + K * 0.5; g.stroke(); path(smooth(r.line)); g.strokeStyle = dark ? '#7fd0ff' : '#3a82c4'; g.lineWidth = w; g.stroke(); }
+    for (const r of D.F.roads) { if (r.water) continue; g.setLineDash([K * 1.6, K * 1.0]); path(smooth(r.line)); g.strokeStyle = dark ? 'rgba(255,236,170,0.9)' : 'rgba(120,60,20,0.85)'; g.lineWidth = K * 0.42; g.stroke(); } g.setLineDash([]);
 
     // ---- words
     const text = (s, x, y, o) => { g.font = `${o.italic ? 'italic ' : ''}${o.bold ? 'bold ' : ''}${o.size}px ${o.face || 'Georgia, "DejaVu Serif", serif'}`; g.textAlign = o.align || 'center'; g.textBaseline = 'middle';
-      if (o.space) { try { g.letterSpacing = o.space + 'px'; } catch (e) {} } else { try { g.letterSpacing = '0px'; } catch (e) {} }
+      try { g.letterSpacing = (o.space || 0) + 'px'; } catch (e) {}
       if (o.rot) { g.save(); g.translate(x, y); g.rotate(o.rot); x = 0; y = 0; }
-      g.lineWidth = o.halo == null ? 3 : o.halo; g.strokeStyle = o.haloCol || 'rgba(255,255,255,0.85)'; if (g.lineWidth) g.strokeText(s, x, y); g.fillStyle = o.col || '#222'; g.fillText(s, x, y);
+      g.lineJoin = 'round'; g.lineWidth = o.halo == null ? 3 : o.halo; g.strokeStyle = o.haloCol || (dark ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.85)'); if (g.lineWidth) g.strokeText(s, x, y); g.fillStyle = o.col || '#222'; g.fillText(s, x, y);
       if (o.rot) g.restore(); };
-    const dark = mode === 'picture';
-    for (const r of D.F.regions) if (r.size === 3) text(r.name, kmX(r.at[0]), kmY(r.at[1]), { size: K * 6.2, col: dark ? 'rgba(255,255,255,0.5)' : 'rgba(60,40,20,0.3)', halo: 0, space: K * 3 });
-    for (const w of D.F.waters) { const big = w.kind === 'ocean'; text(w.name, kmX(w.at[0]), kmY(w.at[1]), { size: big ? K * 4.4 : K * 2.9, italic: true, col: dark ? '#d8ecff' : '#1f4f86', haloCol: dark ? 'rgba(0,10,40,0.75)' : 'rgba(235,245,255,0.8)', halo: big ? 0 : 3, space: big ? K * 1.5 : 0 }); }
-    for (const r of D.F.ranges) { const a = r.line[0], z = r.line[r.line.length - 1], m = r.line[(r.line.length / 2) | 0]; let rot = Math.atan2(kmY(z[1]) - kmY(a[1]), kmX(z[0]) - kmX(a[0])); if (rot > Math.PI / 2) rot -= Math.PI; if (rot < -Math.PI / 2) rot += Math.PI;
-      text(r.name.toUpperCase(), kmX(m[0]), kmY(m[1]), { size: K * 2.5, col: dark ? '#ffe9c4' : '#5a3d1e', haloCol: dark ? 'rgba(20,10,0,0.7)' : 'rgba(255,250,240,0.75)', rot, space: K * 0.9 }); }
-    for (const r of D.F.regions) if (r.size < 3) text(r.name, kmX(r.at[0]), kmY(r.at[1]), { size: r.size === 2 ? K * 3.1 : K * 2.5, italic: true, col: dark ? '#f4f0d8' : '#4b4b2a', haloCol: dark ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,245,0.7)' });
-    for (const p of D.F.peaks) { const x = kmX(p.at[0]), y = kmY(p.at[1]); g.beginPath(); g.moveTo(x, y - K * 1.5); g.lineTo(x + K * 1.3, y + K); g.lineTo(x - K * 1.3, y + K); g.closePath(); g.fillStyle = dark ? '#fff' : '#5a3d1e'; g.fill(); text(p.name, x + K * 1.8, y, { size: K * 2.2, align: 'left', col: dark ? '#fff' : '#5a3d1e', haloCol: dark ? 'rgba(0,0,0,0.7)' : 'rgba(255,250,240,0.8)' }); }
-    if (mode === 'sketch') for (const p of D.F.passes) { const x = kmX(p.at[0]), y = kmY(p.at[1]); g.strokeStyle = '#5a3d1e'; g.lineWidth = K * 0.35; g.beginPath(); g.moveTo(x - K, y - K * 0.9); g.lineTo(x - K * 0.3, y); g.lineTo(x - K, y + K * 0.9); g.moveTo(x + K, y - K * 0.9); g.lineTo(x + K * 0.3, y); g.lineTo(x + K, y + K * 0.9); g.stroke(); }
-    // towns: every seat a dot, cities a ring, capitals a star with the realm's name
     const lab = D.F.labels;
-    for (const p of D.provs) { const x = (p.cx + 0.5) * K, y = (p.cy + 0.5) * K, cap = p.type === 'capital city', city = p.type === 'city';
-      if (p.realm === 'unclaimed') continue;
-      g.beginPath(); g.arc(x, y, cap ? K * 1.25 : city ? K * 0.8 : K * 0.5, 0, 6.3); g.fillStyle = cap ? '#b0101a' : dark ? '#fff' : '#333'; g.fill(); g.lineWidth = K * 0.3; g.strokeStyle = dark ? '#000' : '#fff'; g.stroke(); }
-    for (const p of D.provs) { if (p.type !== 'capital city') continue; const o = (lab.capital || {})[p.name] || [0, -2.6];
-      text(p.name, (p.cx + 0.5) * K + o[0] * K, (p.cy + 0.5) * K + o[1] * K, { size: K * 2.5, col: dark ? '#fff' : '#3a0d0d', haloCol: dark ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.9)' }); }
+    for (const r of D.F.regions) if (r.size === 3) text(r.name, kmX(r.at[0]), kmY(r.at[1]), { size: K * 5.2, col: dark ? 'rgba(255,255,255,0.42)' : 'rgba(70,45,20,0.24)', halo: 0, space: K * 3.2 });
+    for (const w of D.F.waters) { const big = w.kind === 'ocean', lake = ['lake', 'lagoon', 'salt lake', 'inland sea'].includes(w.kind), o = (lab.water || {})[w.name] || [0, 0];
+      text(big ? w.name.toUpperCase() : w.name, kmX(w.at[0] + o[0]), kmY(w.at[1] + o[1]), { size: big ? K * 4.2 : w.kind === 'inland sea' ? K * 2.9 : lake ? K * 2.3 : K * 2.7, italic: true, col: dark ? '#d8ecff' : '#1d4f8a', haloCol: dark ? 'rgba(0,10,40,0.8)' : 'rgba(235,245,255,0.85)', halo: big ? 0 : 3, space: big ? K * 2.2 : 0 }); }
+    for (const r of D.F.ranges) { const a = r.line[0], z = r.line[r.line.length - 1], m = r.label || r.line[(r.line.length / 2) | 0]; let rot = Math.atan2(kmY(z[1]) - kmY(a[1]), kmX(z[0]) - kmX(a[0])); if (rot > Math.PI / 2) rot -= Math.PI; if (rot < -Math.PI / 2) rot += Math.PI;
+      text(r.name.toUpperCase(), kmX(m[0]), kmY(m[1]), { size: K * 2.3, col: dark ? '#ffe9c4' : '#5a3d1e', haloCol: dark ? 'rgba(20,10,0,0.75)' : 'rgba(255,250,240,0.8)', rot, space: K * 0.9 }); }
+    for (const r of D.F.regions) if (r.size < 3) text(r.name, kmX(r.at[0]), kmY(r.at[1]), { size: r.size === 2 ? K * 3.0 : K * 2.4, italic: true, col: dark ? '#f4f0d8' : '#4f4f2c', haloCol: dark ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,245,0.75)' });
+    { const seen = new Set(); for (const r of D.F.rivers) { const nm = r.name.replace(/ \(.*\)$/, ''); if (seen.has(nm) || r.line.length < 2) continue; seen.add(nm); const L = smooth(r.line), i = Math.max(1, Math.min(L.length - 2, Math.round(L.length * (r.at == null ? 0.5 : r.at)))), a = L[i - 1], z = L[i + 1];
+        let rot = Math.atan2(kmY(z[1]) - kmY(a[1]), kmX(z[0]) - kmX(a[0])); if (rot > Math.PI / 2) rot -= Math.PI; if (rot < -Math.PI / 2) rot += Math.PI;
+        const x = kmX(L[i][0]) + Math.sin(rot) * K * 1.5, y = kmY(L[i][1]) - Math.cos(rot) * K * 1.5;
+        text(nm, x, y, { size: K * (r.big ? 2.1 : 1.8), italic: true, col: dark ? '#bfe6ff' : '#1d4f8a', haloCol: dark ? 'rgba(0,10,40,0.8)' : 'rgba(255,255,255,0.75)', halo: 2.5, rot }); } }
+    for (const p of D.F.peaks) { const x = kmX(p.at[0]), y = kmY(p.at[1]); g.beginPath(); g.moveTo(x, y - K * 1.6); g.lineTo(x + K * 1.4, y + K); g.lineTo(x - K * 1.4, y + K); g.closePath(); g.fillStyle = dark ? '#fff' : '#5a3d1e'; g.fill(); g.strokeStyle = dark ? '#000' : '#fff'; g.lineWidth = K * 0.2; g.stroke(); text(p.name, x + K * 2, y, { size: K * 2.1, align: 'left', col: dark ? '#fff' : '#5a3d1e' }); }
+    for (const p of D.F.passes) { const x = kmX(p.at[0]), y = kmY(p.at[1]); g.strokeStyle = dark ? '#ffe9a0' : '#5a3d1e'; g.lineWidth = K * 0.4; g.beginPath(); g.moveTo(x - K * 1.1, y - K); g.lineTo(x - K * 0.35, y); g.lineTo(x - K * 1.1, y + K); g.moveTo(x + K * 1.1, y - K); g.lineTo(x + K * 0.35, y); g.lineTo(x + K * 1.1, y + K); g.stroke(); }
+    // towns: every seat a dot, cities larger, capitals a red disc
+    for (const p of D.provs) { if (p.realm === 'unclaimed') continue; const x = (p.cx + 0.5) * K, y = (p.cy + 0.5) * K, cap = D.capitalProv[p.id], city = p.type === 'city';
+      g.beginPath(); g.arc(x, y, cap ? K * 1.3 : city ? K * 0.75 : K * 0.48, 0, 6.3); g.fillStyle = cap ? '#c0101c' : dark ? '#fff' : '#2c2c2c'; g.fill(); g.lineWidth = K * 0.3; g.strokeStyle = dark ? '#000' : '#fff'; g.stroke(); }
+    for (const p of D.provs) { const cap = D.capitalProv[p.id]; if (!cap) continue; const o = (lab.capital || {})[cap] || [0, -2.7];
+      text(cap, (p.cx + 0.5) * K + o[0] * K, (p.cy + 0.5) * K + o[1] * K, { size: K * 2.5, col: dark ? '#fff' : '#3a0d0d', haloCol: dark ? 'rgba(0,0,0,0.85)' : 'rgba(255,255,255,0.9)', align: o[0] > 1.5 ? 'left' : o[0] < -1.5 ? 'right' : 'center' }); }
     // realm names at the middle of their land (or where features.json puts them)
     const mid = D.realms.map(() => [0, 0, 0]); for (const p of D.provs) { const i = D.realms.findIndex(r => r.id === p.realm); if (i >= 0) { mid[i][0] += p.mx * p.cells; mid[i][1] += p.my * p.cells; mid[i][2] += p.cells; } }
-    D.realms.forEach((r, i) => { const o = (lab.realm || {})[r.name], x = o ? kmX(o[0]) : (mid[i][0] / mid[i][2] + 0.5) * K, y = o ? kmY(o[1]) : (mid[i][1] / mid[i][2] + 0.5) * K, big = r.cells > 3000, small = r.cells < 900;
-      text(r.name.toUpperCase(), x, y, { size: big ? K * 4.2 : small ? K * 2.9 : K * 3.4, bold: true, col: dark ? '#fff' : '#111', haloCol: dark ? 'rgba(0,0,0,0.85)' : 'rgba(255,255,255,0.9)', halo: 4, space: big ? K * 1.2 : K * 0.4 }); });
-    for (const p of D.provs) { if (p.realm !== 'unclaimed') continue; const o = (lab.wild || {})[p.name]; if (o === false) continue; const x = o ? kmX(o[0]) : (p.mx + 0.5) * K, y = o ? kmY(o[1]) : (p.my + 0.5) * K; if (D.F.regions.some(r => r.name.toLowerCase() === p.name.replace(/^The /, 'the ').toLowerCase())) continue;
-      text(p.name.replace(/^The /, 'the '), x, y, { size: K * 2.4, italic: true, col: dark ? '#eee' : '#555', haloCol: dark ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.7)' }); }
-    // the frame's furniture: title, scale, north
-    const pad = K * 5;
-    text(mode === 'picture' ? 'ARDAN: the design laid on the owner\'s picture' : 'ARDAN: the one continent (design sketch, map version 4)', pad, pad + K * 2, { size: K * 4.6, bold: true, align: 'left', col: dark ? '#fff' : '#1b1b1b', haloCol: dark ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.8)', halo: 4 });
-    text('realm borders dark, provinces faint; red dots are capitals; rivers blue, great roads brown, sea lanes dashed. 700 x 450 cells of 10 km.', pad, pad + K * 7, { size: K * 2.3, align: 'left', col: dark ? '#eee' : '#333', haloCol: dark ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.8)' });
-    const sx = pad, sy = HPX - pad * 1.6, per = K / CELL; g.fillStyle = dark ? '#fff' : '#222'; g.fillRect(sx, sy, 2000 * per, K * 0.6);
-    for (const km of [0, 500, 1000, 1500, 2000]) { g.fillRect(sx + km * per - K * 0.15, sy - K, K * 0.3, K * 1.6); text(km ? km.toLocaleString('en') + (km === 2000 ? ' km' : '') : '0', sx + km * per, sy - K * 2.6, { size: K * 2.4, col: dark ? '#fff' : '#222', haloCol: dark ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.8)' }); }
-    const nx = WPX - pad * 2, ny = pad * 2.4; g.beginPath(); g.moveTo(nx, ny - K * 5); g.lineTo(nx + K * 1.6, ny + K * 2); g.lineTo(nx, ny + K); g.lineTo(nx - K * 1.6, ny + K * 2); g.closePath(); g.fillStyle = dark ? '#fff' : '#222'; g.fill(); text('N', nx, ny - K * 7, { size: K * 3.2, bold: true, col: dark ? '#fff' : '#222', haloCol: dark ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.8)' });
-  }, { D: drawData, mode });
+    D.realms.forEach((r, i) => { const o = (lab.realm || {})[r.name], x = o ? kmX(o[0]) : (mid[i][0] / mid[i][2] + 0.5) * K, y = o ? kmY(o[1]) : (mid[i][1] / mid[i][2] + 0.5) * K, big = r.cells > 3400, small = r.cells < 1000;
+      text(r.name.toUpperCase(), x, y, { size: big ? K * 4.3 : small ? K * 2.8 : K * 3.4, bold: true, col: dark ? '#fff' : '#161616', haloCol: dark ? 'rgba(0,0,0,0.85)' : 'rgba(255,255,255,0.9)', halo: 4, space: big ? K * 1.3 : K * 0.4, rot: o && o[2] ? o[2] : 0 }); });
+    for (const p of D.provs) { if (p.realm !== 'unclaimed') continue; const o = (lab.wild || {})[p.name]; if (o === false) continue; const x = o ? kmX(o[0]) : (p.mx + 0.5) * K, y = o ? kmY(o[1]) : (p.my + 0.5) * K;
+      text(p.name.replace(/^The /, 'the '), x, y, { size: K * 2.3, italic: true, col: dark ? '#eee' : '#555', haloCol: dark ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.75)' }); }
+    // ---- the frame's furniture: latitude ticks, title, scale, north, key
+    const ink = dark ? '#fff' : '#222', pad = K * 5;
+    g.strokeStyle = dark ? 'rgba(255,255,255,0.5)' : 'rgba(40,40,40,0.55)'; g.lineWidth = K * 0.3; g.strokeRect(K, K, WPX - 2 * K, HPX - 2 * K);
+    for (let la = 15; la <= 60; la += 5) { const y = (D.lat.top - la) / (D.lat.top - D.lat.bottom) * HPX; g.beginPath(); g.moveTo(K, y); g.lineTo(K * (la % 10 ? 2.4 : 3.4), y); g.moveTo(WPX - K, y); g.lineTo(WPX - K * (la % 10 ? 2.4 : 3.4), y); g.stroke(); if (la % 10 === 0) { text(la + '°N', K * 4.2, y, { size: K * 2, align: 'left', col: ink, halo: 2 }); text(la + '°N', WPX - K * 4.2, y, { size: K * 2, align: 'right', col: ink, halo: 2 }); } }
+    text(dark ? 'ARDAN: the design laid on the owner\'s picture' : 'ARDAN: the one continent', pad * 1.6, pad + K * 2.5, { size: K * 5, bold: true, align: 'left', col: ink, halo: 4 });
+    text(dark ? 'the same borders, rivers and names as design-sketch.png, over docs/design/m1/reference/owner-continent.webp' : 'design sketch for map version 4, from the owner\'s picture (order 73, D-153). 700 x 450 cells of 10 km.', pad * 1.6, pad + K * 7.4, { size: K * 2.3, align: 'left', col: ink });
+    const sx = pad * 1.6, sy = HPX - pad * 1.5, per = K / CELL; g.fillStyle = ink; g.fillRect(sx, sy, 2000 * per, K * 0.6);
+    for (const km of [0, 500, 1000, 1500, 2000]) { g.fillStyle = ink; g.fillRect(sx + km * per - K * 0.15, sy - K, K * 0.3, K * 1.6); text(km ? km.toLocaleString('en') + (km === 2000 ? ' km' : '') : '0', sx + km * per, sy - K * 2.6, { size: K * 2.3, col: ink }); }
+    const nx = WPX - pad * 2.4, ny = pad * 3; g.beginPath(); g.moveTo(nx, ny - K * 5); g.lineTo(nx + K * 1.6, ny + K * 2); g.lineTo(nx, ny + K); g.lineTo(nx - K * 1.6, ny + K * 2); g.closePath(); g.fillStyle = ink; g.fill(); text('N', nx, ny - K * 7, { size: K * 3.2, bold: true, col: ink });
+    // the key
+    const kx = sx + 2000 * per + K * 12, ky = HPX - pad * 2.9, row = K * 3.3; let ix = kx, iy = ky;
+    const item = (draw, label) => { draw(ix, iy); text(label, ix + K * 6, iy, { size: K * 2.2, align: 'left', col: ink }); iy += row; if (iy > HPX - pad * 0.9) { iy = ky; ix += K * 42; } };
+    item((x, y) => { g.fillStyle = '#c0101c'; g.beginPath(); g.arc(x + K * 2, y, K * 1.3, 0, 6.3); g.fill(); }, 'capital');
+    item((x, y) => { g.fillStyle = dark ? '#fff' : '#2c2c2c'; g.beginPath(); g.arc(x + K * 1.2, y, K * 0.75, 0, 6.3); g.fill(); g.beginPath(); g.arc(x + K * 3.4, y, K * 0.48, 0, 6.3); g.fill(); }, 'city, other province seat');
+    item((x, y) => { g.strokeStyle = dark ? 'rgb(255,244,190)' : 'rgb(70,30,30)'; g.lineWidth = K * 0.75; g.beginPath(); g.moveTo(x, y); g.lineTo(x + K * 4.4, y); g.stroke(); }, 'realm border (thin: province)');
+    item((x, y) => { g.strokeStyle = dark ? '#7fd0ff' : '#3a82c4'; g.lineWidth = K; g.beginPath(); g.moveTo(x, y); g.lineTo(x + K * 4.4, y); g.stroke(); }, 'river (thick: ship water)');
+    item((x, y) => { g.setLineDash([K * 1.6, K]); g.strokeStyle = dark ? 'rgba(255,236,170,0.9)' : 'rgba(120,60,20,0.85)'; g.lineWidth = K * 0.42; g.beginPath(); g.moveTo(x, y); g.lineTo(x + K * 4.4, y); g.stroke(); g.setLineDash([]); }, 'great road');
+    item((x, y) => { g.setLineDash([K * 0.5, K * 1.7]); g.strokeStyle = dark ? 'rgba(200,230,255,0.75)' : 'rgba(40,80,140,0.6)'; g.lineWidth = K * 0.5; g.beginPath(); g.moveTo(x, y); g.lineTo(x + K * 4.4, y); g.stroke(); g.setLineDash([]); }, 'sea lane');
+    item((x, y) => { g.strokeStyle = dark ? '#ffe9a0' : '#5a3d1e'; g.lineWidth = K * 0.4; x += K * 2; g.beginPath(); g.moveTo(x - K * 1.1, y - K); g.lineTo(x - K * 0.35, y); g.lineTo(x - K * 1.1, y + K); g.moveTo(x + K * 1.1, y - K); g.lineTo(x + K * 0.35, y); g.lineTo(x + K * 1.1, y + K); g.stroke(); }, 'pass or gate');
+    item((x, y) => { g.fillStyle = 'rgb(160,160,150)'; g.fillRect(x, y - K * 1.1, K * 4.4, K * 2.2); }, 'grey ground: the wilds, no realm\'s');
+  }, { D: { ...drawData, capitalProv }, mode });
   const file = path.join(DIR, mode === 'sketch' ? 'design-sketch.png' : 'design-on-picture.png');
   await (await pg.$('#c')).screenshot({ path: file });
   say('drew ' + path.relative(process.cwd(), file));
@@ -527,16 +650,29 @@ if (opt('crops', '')) {
     await (await pg.$('#c')).screenshot({ path: file }); say('crop ' + file);
   }
 }
-// the grid as pictures: land.png to look at, provinces.png to read (red + 256 * green = province id + 1; blue 1 lake, 2 sea)
-await pg.evaluate(({ D }) => {
-  const { GW, GH } = D, u8 = s => Uint8Array.from(atob(s), ch => ch.charCodeAt(0)), water = u8(D.water), prov = new Int16Array(u8(D.prov).buffer), base = u8(D.base);
+// the grid as pictures, one pixel a cell:
+//   provinces.png  red + 256 * green = province id + 1 (0 on water); blue 0 land, 1 lake, 2 sea
+//   ground.png     the ground word of each cell, in the colours of GROUND_RGB below (the index is also in the red channel's low nibble)
+//   relief.png     the height guide: grey = 360 * height, height in the engine's measure (0 sea, 0.36 alpine, 0.5 snow)
+//   land.png       the same grid to look at
+const GROUND_RGB = [[32, 64, 112], [112, 176, 224], [240, 244, 248], [208, 216, 200], [160, 144, 128], [112, 152, 120], [128, 176, 112], [80, 168, 96], [208, 224, 160], [216, 200, 136], [232, 216, 120], [248, 224, 168], [176, 96, 80], [144, 200, 192]].map((c, i) => [(c[0] & 0xf0) | i, c[1], c[2]]);
+await pg.evaluate(({ D, GROUND_RGB, elev }) => {
+  const { GW, GH } = D, u8 = s => Uint8Array.from(atob(s), ch => ch.charCodeAt(0)), water = u8(D.water), prov = new Int16Array(u8(D.prov).buffer), ground = u8(D.ground), el = u8(elev);
   const mk = (id, fn) => { let c = document.getElementById(id); if (!c) { c = document.createElement('canvas'); c.id = id; document.body.appendChild(c); } c.width = GW; c.height = GH; const g = c.getContext('2d'), im = g.createImageData(GW, GH); for (let i = 0; i < GW * GH; i++) { const [r, gg, b] = fn(i); im.data[i * 4] = r; im.data[i * 4 + 1] = gg; im.data[i * 4 + 2] = b; im.data[i * 4 + 3] = 255; } g.putImageData(im, 0, 0); };
-  const PAL = [[203, 214, 160], [150, 180, 118], [232, 211, 150], [196, 176, 132], [246, 246, 248], [172, 96, 78], [158, 146, 132]];
-  mk('land', i => (water[i] === 1 ? [26, 58, 110] : water[i] === 2 ? [120, 180, 220] : PAL[base[i]]));
+  mk('land', i => { const c = GROUND_RGB[ground[i]], sh = water[i] ? 1 : 1.06 - el[i] / 600; return [c[0] * sh, c[1] * sh, c[2] * sh]; });
   mk('provs', i => { const v = water[i] ? 0 : prov[i] + 1; return [v & 255, v >> 8, water[i] === 2 ? 1 : water[i] === 1 ? 2 : 0]; });
-}, { D: drawData });
-await (await pg.$('#land')).screenshot({ path: path.join(DIR, 'design/land.png') });
-await (await pg.$('#provs')).screenshot({ path: path.join(DIR, 'design/provinces.png') });
+  mk('ground', i => GROUND_RGB[ground[i]]);
+  mk('relief', i => [el[i], el[i], el[i]]);
+}, { D: drawData, GROUND_RGB, elev: b64(Uint8Array.from(elevGuide, v => Math.round(v * 360))) });
+for (const [id, name] of [['land', 'land.png'], ['provs', 'provinces.png'], ['ground', 'ground.png'], ['relief', 'relief.png']]) await (await pg.$('#' + id)).screenshot({ path: path.join(DIR, 'design', name) });
+if (opt('debug', '')) { // working pictures: the cells' mean colour and the roughness
+  fs.mkdirSync(opt('debug', ''), { recursive: true });
+  await pg.evaluate(({ GW, GH, r, g, b, rug }) => { const u8 = s => Uint8Array.from(atob(s), ch => ch.charCodeAt(0)), R = u8(r), G = u8(g), B = u8(b), U = u8(rug);
+    const mk = (id, fn) => { let c = document.getElementById(id); if (!c) { c = document.createElement('canvas'); c.id = id; document.body.appendChild(c); } c.width = GW; c.height = GH; const x = c.getContext('2d'), im = x.createImageData(GW, GH); for (let i = 0; i < GW * GH; i++) { const v = fn(i); im.data[i * 4] = v[0]; im.data[i * 4 + 1] = v[1]; im.data[i * 4 + 2] = v[2]; im.data[i * 4 + 3] = 255; } x.putImageData(im, 0, 0); };
+    mk('mean', i => [R[i], G[i], B[i]]); mk('rug', i => [U[i], U[i], U[i]]); },
+  { GW, GH, r: b64(Uint8Array.from(mR, Math.round)), g: b64(Uint8Array.from(mG, Math.round)), b: b64(Uint8Array.from(mB, Math.round)), rug: b64(Uint8Array.from(rug, v => Math.min(255, Math.round(v * 4)))) });
+  for (const id of ['mean', 'rug']) await (await pg.$('#' + id)).screenshot({ path: path.join(opt('debug', ''), id + '.png') });
+}
 await b.close();
 
 say(`land ${landCells} cells (${r1(100 * landCells / N)}% of the frame), continent ${mainland.n}, islands ${landC.list.length - 1}; carved ${edited.carved}, added ${edited.added}`);
