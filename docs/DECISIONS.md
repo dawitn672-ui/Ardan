@@ -2270,3 +2270,37 @@ commander 900 (4,000), General 2,000 and 3,500 (7,000, 12,000). A farmhand earns
 less than twice a farmhand and a captain about one and a half to two yeomen. Wealth in arms is loot and ransom (the
 missions' and battles' own). The balance league has no soldier's path; a peasant who enlists keeps less, and CI's long
 tier (the balance league) is where a band would show it.
+
+### D-128 · D11+: each branch has a road through the ranks, as data (2026-11-18; order 54; war.md §14.1)
+`data/military/paths.json`: for each of the fifteen branches, five rungs, each with what it trains (shares of a month's
+effort by skill), the trial that proves a man at it (its skill and its words), what the board weighs for the next rung,
+and the role it opens where it opens one; and the specialisms the road leads to by the man's way of fighting (S1's
+specialisms: the lance, the war bow, the crossbow, the bill and pike, the wall, carpentry and masonry, supply, scouting
+for a host, the garrison...). *Why:* order 54 asks that the path follow "the weapon under use, the method of combat they
+prefer, and every useful aptitude"; a lancer's, an archer's, a sapper's and a scout's careers differ in what they train,
+what proves them and what opens, which D11-3's ladder (one key skill a branch) did not yet say.
+
+### D-129 · D11+: the road trains through S1's one door, bent by talent (2026-11-18; orders 59, 63; D-072)
+The road's month is half a month's effort (`A.gainXp`, practice, the road named as the cause), split by the rung's
+shares, each multiplied by his talent (F 0.6 to SSS 1.6) and renormalised: a gifted hand spends more of the time where it
+pays, as a man does. It is small beside his drill, duty, missions and deeds, so growth stays S1's (concepts, grasp, proof;
+no timetable). The release's year in the ranks (`A.milYear`'s troop weapon) drills the rung's first skill instead, so a
+scout's year is tracking, not his light horse's riding. Aptitude is said in words (S1's `TALENT_WORD`: gifted, rare, a
+prodigy, slow...), never the letter.
+
+### D-130 · D11+: a rung's trial is S1's proof (2026-11-18; D-072 point on proofs)
+When he stands at the edge of a word in the rung's trial skill, its concepts grasped and wanting a proof (`C.ready`), the
+road's trial is set (`pa_trial`, at most one in 300 days); standing it is the `proof` key (a stretch at the next word's
+level, the engine's own crossing) and is recorded for the board (×1.15 a trial at this rung, two at most). *Why:* S1 asks
+a proving moment from Expert up; the road gives each branch its own, in its own words. A man may ask for another season.
+
+### D-131 · D11+: the road's specialism and the role a rung opens (2026-11-18)
+When the road's skill has room for a specialism (Advanced: one, Master: two) and he has none of the road's, `pa_spec`
+offers the one his way of fighting leads to (and the road's own when it differs) or none; at most one in 600 days. The
+role a rung opens is offered once at that rung by his captain through A.WHY (kind `role`, restricted to it, with "the
+road opens it at this rung" as a small reason for).
+
+### D-132 · D11+: the board weighs the road's next rung (2026-11-18; revises D-122 point 2)
+`A.LADDER.mod` reads `A.PATHS.wants(next rung)` (two skills at most, each a factor 0.6 to 1.5) and the trials stood at
+this rung, in place of the branch's one key skill and command; without a road it falls back to D-122. *Why:* an
+archer's captaincy wants command and the bow, a sapper's command wants tactics and craft, the train's stewardship.
