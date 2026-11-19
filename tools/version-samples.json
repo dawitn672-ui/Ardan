@@ -80,6 +80,22 @@
       "years": 25,
       "shows": "a ruler whose war has come to terms: envoys asking for terms, or terms offered him, as real land, coin and crowns, with how the other crown leans in words",
       "see": "Load it: the war's card waits (envoys at court, or terms offered); the War tab's peace table lists the terms he may ask, with the other crown's lean"
+    },
+    "ageing-world": {
+      "o": {
+        "race": "human",
+        "realm": "POL-01",
+        "status": "noble",
+        "sex": "M",
+        "startAge": 20
+      },
+      "seeds": [
+        77
+      ],
+      "until": "any",
+      "years": 35,
+      "shows": "a noble at 55, thirty-five years into a world where everyone ages: his parents' generation gone by their years, no one past his people's span, the houses he knows married and with heirs, deaths of unmet kin told in the story",
+      "see": "Load it; the People tab (ages, the dead of his house) and the Dynasty tab; play a year and read the year's digest"
     }
   },
   "versions": {
