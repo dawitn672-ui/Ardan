@@ -182,14 +182,14 @@
 163	Sun Temple of Aldminster	294	388	the temple on the sea cliff
 164	Saltmoor	392	440	market of the Stag Downs
 # --- Gorath (POL-11): the Grass Sea, the belt of grass between the northern plains and the Crown Range
-165	Urgol	772	352	the hearth herd's winter ground, central to every clan
+165	Urgol	806	350	the hearth herd's winter ground, central to every clan
 166	Nagdur Stockade	872	300	fort under the Iron Mountains
 167	Ughdur Ring	495	332	ring-fort of the Wolf clans on the pale plain under the Tusk Hills
 168	Grakzag Oasis	702	362	wells of the middle grass
 169	Skartar Caravanserai	900	322	the Salt Sea's north shore
 170	Rushzag Oasis	562	340	wells of the Urgash Hills
-171	Rushoth Caravanserai	838	362	the Salt Sea's west shore
-172	Gorur Caravanserai	826	318	camp on the Goroth grass
+171	Rushoth Caravanserai	842	374	the Salt Sea's west shore
+172	Gorur Caravanserai	832	316	camp on the Goroth grass
 173	Vrakhul Oasis	760	395	wells of the upper Gordush, under the Crown Range
 174	Kagdush Oasis	616	350	the Gashmar fords on the Glenwash
 175	Yagrak Caravanserai	922	338	the Salt Edge, at the Coldbarrow Bridge
@@ -208,7 +208,7 @@
 186	Oggoth Oasis	1298	345	wells by the coast hills
 187	Tukgar Stockade	1214	336	fort under the Mirovo Gap (the Kraoth toll camp)
 188	Vashuk Oasis	1212	276	wells of the Turquoise Hills, on the east face of the Rift Heights
-189	Roktuk Oasis	1272	292	wells behind the Silk Strand
+189	Roktuk Oasis	1266	292	wells behind the Silk Strand
 # --- Emberdeep (POL-29): the Ember Mountains on the eastern cape
 190	Emberdeep	1298	572	the hold inside the hot mountain
 191	Maghelm	1258	590	gate town on the road down to the Gulf

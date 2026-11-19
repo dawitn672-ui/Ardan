@@ -221,13 +221,17 @@ const fillAsLand = cells => { const src = cells.map(k => { for (let r = 1; r <= 
     if (c.n < minCells || dropped) fillAsLand(c.cells);
     else unnamedLakes.push({ n: c.n, at: cell2px(c.sx / c.n, c.sy / c.n).map(Math.round) });
   }
-  // the sea: a many-source flood from each sea label
-  const q = [], dist = new Int32Array(N).fill(1e9);
-  W.forEach((w, i) => { if (lakeKinds.has(w.kind)) return; let c0 = labelCell(w);
-    if (water[c0] !== 1) { let bd = 1e9, bk = -1; const x0 = c0 % GW, y0 = (c0 / GW) | 0; for (let yy = Math.max(0, y0 - 12); yy <= Math.min(GH - 1, y0 + 12); yy++) for (let xx = Math.max(0, x0 - 12); xx <= Math.min(GW - 1, x0 + 12); xx++) { const k = yy * GW + xx; if (water[k] === 1) { const d = Math.hypot(xx - x0, yy - y0); if (d < bd) { bd = d; bk = k; } } } c0 = bk; }
-    w.found = c0 >= 0; if (c0 >= 0) { waterName[c0] = i; dist[c0] = 0; q.push(c0); }
-    for (const at of w.also || []) { const [x, y] = px2cell(at[0], at[1]), k = Math.max(0, Math.min(GH - 1, y)) * GW + Math.max(0, Math.min(GW - 1, x)); if (water[k] === 1) { waterName[k] = i; dist[k] = 0; q.push(k); } } });
-  for (let h = 0; h < q.length; h++) { const k = q[h]; for (const j of nb4(k)) if (j >= 0 && water[j] === 1 && dist[j] > dist[k] + 1) { dist[j] = dist[k] + 1; waterName[j] = waterName[k]; q.push(j); } }
+  // the sea: a flood from each sea label, each kind of water reaching only so far (in cells); then the oceans take what is left
+  const REACH = { strait: 7, bay: 26, sound: 30, gulf: 48, sea: 60, ocean: 1e9 };
+  const flood = only => { const q = [], dist = new Int32Array(N).fill(1e9);
+    W.forEach((w, i) => { if (lakeKinds.has(w.kind) || (only && w.kind !== 'ocean')) return; let c0 = labelCell(w);
+      if (water[c0] !== 1) { let bd = 1e9, bk = -1; const x0 = c0 % GW, y0 = (c0 / GW) | 0; for (let yy = Math.max(0, y0 - 12); yy <= Math.min(GH - 1, y0 + 12); yy++) for (let xx = Math.max(0, x0 - 12); xx <= Math.min(GW - 1, x0 + 12); xx++) { const k = yy * GW + xx; if (water[k] === 1) { const d = Math.hypot(xx - x0, yy - y0); if (d < bd) { bd = d; bk = k; } } } c0 = bk; }
+      if (!only) w.found = c0 >= 0;
+      const seed = k => { if (k >= 0 && water[k] === 1 && (!only || waterName[k] < 0)) { if (!only || waterName[k] < 0) waterName[k] = i; dist[k] = 0; q.push(k); } };
+      seed(c0); for (const at of w.also || []) { const [x, y] = px2cell(at[0], at[1]); seed(Math.max(0, Math.min(GH - 1, y)) * GW + Math.max(0, Math.min(GW - 1, x))); } });
+    for (let h = 0; h < q.length; h++) { const k = q[h], i = waterName[k], lim = w => (w.reach != null ? w.reach : REACH[w.kind] || 30); if (dist[k] >= lim(W[i])) continue;
+      for (const j of nb4(k)) if (j >= 0 && water[j] === 1 && (only ? waterName[j] < 0 : dist[j] > dist[k] + 1)) { if (!only && dist[j] < 1e9 && waterName[j] !== i && dist[j] <= dist[k] + 1) continue; dist[j] = dist[k] + 1; waterName[j] = i; q.push(j); } } };
+  flood(false); flood(true);
   for (let c = 0; c < N; c++) if (water[c] === 1 && waterName[c] >= 0) waterCells[waterName[c]]++; }
 const landC = components(landMask(), GW, GH, 1), mainland = landC.list.reduce((a, c) => (c.n > a.n ? c : a), landC.list[0]);
 let landCells = 0; for (let c = 0; c < N; c++) if (!water[c]) landCells++;
@@ -248,6 +252,10 @@ const blurLand = (a, r, passes) => { let cur = a; for (let p = 0; p < passes; p+
       for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= GW || yy >= GH) continue; const k = yy * GW + xx; if (water[k]) continue; s += cur[k]; m++; }
       out[c] = s / m; } cur = out; } return cur; };
 const height = blurLand(hRaw, 2, 1);
+const polyCells = (poly, fn) => { const q = poly.map(px2cellF), xs = q.map(v => v[0]), ys = q.map(v => v[1]);
+  const inside = (x, y) => { let inq = false; for (let i = 0, j = q.length - 1; i < q.length; j = i++) { const [xi, yi] = q[i], [xj, yj] = q[j]; if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inq = !inq; } return inq; };
+  for (let y = Math.max(0, Math.floor(Math.min(...ys))); y <= Math.min(GH - 1, Math.ceil(Math.max(...ys))); y++) for (let x = Math.max(0, Math.floor(Math.min(...xs))); x <= Math.min(GW - 1, Math.ceil(Math.max(...xs))); x++) if (inside(x + 0.5, y + 0.5)) fn(y * GW + x); };
+for (const o of F.heightSet || []) polyCells(o.poly, c => { if (!water[c]) height[c] = Math.max(height[c], o.min); });   // a high plateau the picture paints green
 // The ground of every cell, from the picture's colour there, the height guide and the latitude; then the design's own
 // word where features.json sets one (a ground the picture's paint cannot tell apart, such as grass from wood).
 const GROUND = ['sea', 'lake', 'ice', 'tundra', 'rock', 'taiga', 'forest', 'jungle', 'grass', 'scrub', 'steppe', 'desert', 'ash', 'marsh'];
@@ -272,20 +280,20 @@ for (let c = 0; c < N; c++) {
   for (let y = 1; y < GH - 1; y++) for (let x = 1; x < GW - 1; x++) { const c = y * GW + x; if (water[c]) continue; const cnt = new Uint8Array(GROUND.length); let best = ground[c], bn = 0;
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const v = ground[c + dy * GW + dx]; if (v < 2) continue; const n = ++cnt[v]; if (n > bn || (n === bn && v === ground[c])) { bn = n; best = v; } } o[c] = best; }
   ground = o; }
-for (const o of F.groundSet || []) { // the design's word for a stretch of ground: only soft ground changes (never rock, ice, ash or water)
+for (const o of F.groundSet || []) { // the design's word for a stretch of ground: only the kinds listed in "from" change
   const to = GROUND.indexOf(o.ground), from = new Set((o.from || ['grass', 'forest', 'scrub', 'taiga', 'steppe', 'desert', 'jungle', 'tundra']).map(w => GROUND.indexOf(w)));
   if (to < 0) throw new Error('groundSet: no ground called ' + o.ground);
-  const poly = o.poly.map(px2cellF), inside = (x, y) => { let inq = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const [xi, yi] = poly[i], [xj, yj] = poly[j]; if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inq = !inq; } return inq; };
-  const xs = poly.map(q => q[0]), ys = poly.map(q => q[1]);
-  for (let y = Math.max(0, Math.floor(Math.min(...ys))); y <= Math.min(GH - 1, Math.ceil(Math.max(...ys))); y++) for (let x = Math.max(0, Math.floor(Math.min(...xs))); x <= Math.min(GW - 1, Math.ceil(Math.max(...xs))); x++) { const c = y * GW + x; if (from.has(ground[c]) && inside(x + 0.5, y + 0.5)) ground[c] = to; }
+  polyCells(o.poly, c => { if (from.has(ground[c])) ground[c] = to; });
 }
+for (let c = 0; c < N; c++) if (!water[c] && height[c] >= 0.47 && ground[c] !== 2 && ground[c] !== 12) ground[c] = 4;   // rock where the height guide says so
 // the height guide in the engine's own measure (sea 0; alpine above 0.36, snow above 0.5)
 const elevGuide = Float32Array.from(height, (h, c) => (water[c] ? 0 : Math.min(0.7, 0.012 + 0.66 * Math.pow(h, 1.35))));
 
 // rivers and border lines on the grid
 const riverAt = new Int16Array(N).fill(-1), barrier = new Float32Array(N);
 F.rivers.forEach((r, i) => cutLine(r.line, 1, c => { if (!water[c]) { riverAt[c] = i; if (r.border) barrier[c] = Math.max(barrier[c], 7); } }));
-for (const l of F.borderLines) cutLine(l.line, 1.2, c => { if (!water[c]) barrier[c] = Math.max(barrier[c], 26); });
+const lineAt = new Int16Array(N).fill(-1);
+F.borderLines.forEach((l, i) => cutLine(l.line, 1.2, c => { if (!water[c]) { barrier[c] = Math.max(barrier[c], 26); lineAt[c] = i; } }));
 
 // ---------------------------------------------------------------- 3. the provinces, grown from their seats
 const seatCell = new Int32Array(seats.length), snapped = [], seatFar = [], taken = new Set();
@@ -338,13 +346,16 @@ for (let c = 0; c < N; c++) {
   if (riverAt[c] >= 0) a.river.add(F.rivers[riverAt[c]].name);
   for (const j of nb4(c)) { if (j < 0) continue; if (water[j]) { if (water[j] === 1) a.coast = true; else a.lake = true; if (waterName[j] >= 0) a.waters.add(W[waterName[j]].name); } else if (prov[j] >= 0 && prov[j] !== id) a.adj.add(prov[j]); }
 }
-// the ground word of each province, from its cells (the engine's words: plains, forest, steppe, hills, desert, mountains, tundra)
-const provGround = seats.map(() => new Float32Array(GROUND.length));
-for (let c = 0; c < N; c++) if (prov[c] >= 0) provGround[prov[c]][ground[c]]++;
+// The ground word of each province (the engine's words: plains, forest, steppe, hills, desert, mountains, tundra, marsh)
+// is read from its settled core, the cells of it within 50 km of the seat; "cover" lists the ground of the whole province.
+const provGround = seats.map(() => new Float32Array(GROUND.length)), coreGround = seats.map(() => new Float32Array(GROUND.length)), coreH = new Float32Array(seats.length), coreN = new Float32Array(seats.length);
+for (let c = 0; c < N; c++) { const id = prov[c]; if (id < 0) continue; provGround[id][ground[c]]++;
+  if (Math.hypot(c % GW - P[id].cx, ((c / GW) | 0) - P[id].cy) <= 5) { coreGround[id][ground[c]]++; coreH[id] += height[c]; coreN[id]++; } }
 for (const a of P) {
-  const n = Math.max(1, a.cells), g = Array.from(provGround[a.id], v => v / n), h = a.h / n; a.hMean = h; a.lat = latOf(a.sy / n); a.groundShare = g;
-  const wood = g[5] + g[6] + g[7];
-  a.ground = g[2] + g[4] >= 0.45 ? 'mountains' : g[11] >= 0.4 ? 'desert' : g[10] >= 0.4 ? 'steppe' : h >= 0.3 || g[12] + g[4] + g[2] >= 0.4 ? 'hills' : g[13] >= 0.3 ? 'marsh' : wood >= 0.45 ? 'forest' : g[3] >= 0.4 ? 'tundra' : 'plains';
+  const n = Math.max(1, a.cells), g = Array.from(provGround[a.id], v => v / n), m = Math.max(1, coreN[a.id]), k = Array.from(coreGround[a.id], v => v / m), h = coreN[a.id] ? coreH[a.id] / m : a.h / n;
+  a.hMean = a.h / n; a.lat = latOf(a.sy / n); a.groundShare = g;
+  const wood = k[5] + k[6] + k[7];
+  a.ground = k[2] + k[4] >= 0.45 ? 'mountains' : k[11] >= 0.4 ? 'desert' : k[10] >= 0.4 ? 'steppe' : h >= 0.3 || k[12] + k[4] + k[2] >= 0.4 ? 'hills' : k[13] >= 0.25 ? 'marsh' : wood >= 0.4 ? 'forest' : k[3] >= 0.4 ? 'tundra' : 'plains';
   a.cover = GROUND.map((w, i) => [w, g[i]]).filter(x => x[1] >= 0.15).sort((x, y) => y[1] - x[1]).map(x => x[0]);
 }
 const realms = {};
@@ -368,6 +379,18 @@ for (const R of Object.values(realms)) {
   if (!R.wild && R.nb.size === 1 && R.coastal > 0) notes.push(`${R.name} has one land neighbour (${realms[[...R.nb][0]].name}) and the sea`);
   if (!R.wild && R.nb.size === 0 && !R.islands && R.provs.every(a => landC.comp[seatCell[a.id]] === mainland.id)) problems.push(`${R.name} has no neighbour at all`);
 }
+// every border between two realms (or a realm and a wild): its length, and what it follows
+const borders = new Map();
+{ const near = (arr, c, r) => { const x = c % GW, y = (c / GW) | 0; for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= GW || yy >= GH) continue; const v = arr[yy * GW + xx]; if (v >= 0) return v; } return -1; };
+  for (let c = 0; c < N; c++) { if (prov[c] < 0) continue; const ra = realmOfProv(prov[c]);
+    for (const j of [c % GW < GW - 1 ? c + 1 : -1, c + GW < N ? c + GW : -1]) { if (j < 0 || prov[j] < 0) continue; const rb = realmOfProv(prov[j]); if (ra === rb) continue;
+      const key = ra < rb ? ra + '|' + rb : rb + '|' + ra; let b2 = borders.get(key); if (!b2) borders.set(key, b2 = { a: ra < rb ? ra : rb, b: ra < rb ? rb : ra, n: 0, river: {}, line: {}, ridge: 0, open: 0, sx: 0, sy: 0 });
+      b2.n++; b2.sx += c % GW; b2.sy += (c / GW) | 0;
+      const rv = Math.max(near(riverAt, c, 1), near(riverAt, j, 1)), ln = Math.max(near(lineAt, c, 1), near(lineAt, j, 1));
+      if (rv >= 0) { const nm = F.rivers[rv].name.replace(/ \(.*\)$/, ''); b2.river[nm] = (b2.river[nm] || 0) + 1; }
+      else if (ln >= 0) b2.line[F.borderLines[ln].name] = (b2.line[F.borderLines[ln].name] || 0) + 1;
+      else if (Math.max(height[c], height[j]) >= 0.3) b2.ridge++;
+      else b2.open++; } } }
 for (const a of P) { if (a.cells < 12 && landC.comp[seatCell[a.id]] === mainland.id) notes.push(`${a.name} (${realmName(a.realm)}) is very small: ${a.cells} cells`); if (!a.cells) problems.push(`${a.name} has no land`); }
 for (const m of seatFar) problems.push(m);
 for (const l of unnamedLakes) problems.push(`an enclosed water of ${l.n} cells at picture ${l.at} has no name`);
@@ -400,6 +423,7 @@ const build = {
   seaLanes: F.sealanes.map(r => ({ name: r.name, note: r.note, km: r.line.map(km) })),
   isles: (F.isles || []).map(i => ({ name: i.name, province: i.province, km: km(i.at), note: i.note || undefined })),
   ferries: (F.ferries || []).map(f => ({ name: f.name, a: f.a, b: f.b, note: f.note || undefined })),
+  borders: [...borders.values()].map(b2 => ({ a: realms[b2.a].name, b: realms[b2.b].name, km: b2.n * 10, at: cell2px(b2.sx / b2.n, b2.sy / b2.n).map(Math.round), river: b2.river, line: b2.line, highGround: b2.ridge, open: b2.open })),
   ground: { words: GROUND, note: 'design/ground.png holds one of these for every cell; design/relief.png the height guide' },
   checks: { problems, notes, snapped },
 };
@@ -415,6 +439,10 @@ out('design/build.json', JSON.stringify(build, null, 1) + '\n');
   for (const w of build.waters) L.push(`| ${w.name} | ${w.kind} | ${w.km2.toLocaleString('en')} |`);
   L.push('', '## Provinces', '', '| Id | Province | Realm | Kind | Seat (km) | Area (km2) | Ground | On water | Seat |', '| ---: | --- | --- | --- | --- | ---: | --- | --- | --- |');
   for (const a of build.provinces) L.push(`| ${a.id} | ${a.name} | ${realmName(a.realm)} | ${a.type} | ${a.seat.xKm}, ${a.seat.yKm} | ${(a.cells * 100).toLocaleString('en')} | ${a.ground} | ${[...a.waters, ...a.rivers].join(', ') || ''} | ${a.site} |`);
+  L.push('', '## Borders', '', 'Length is the count of cell sides between the two, at 10 km a side (a ragged line reads long). "Along" says what the border cells lie on: a named river, a line the design draws, high ground (the height guide at 0.3 or more), or open country.', '', '| Between | Length (km) | Along |', '| --- | ---: | --- |');
+  for (const b2 of [...borders.values()].sort((x, y) => (realms[x.a].name + realms[x.b].name < realms[y.a].name + realms[y.b].name ? -1 : 1))) {
+    const parts = [...Object.entries(b2.river), ...Object.entries(b2.line), ['high ground', b2.ridge], ['open country', b2.open]].filter(e => e[1] / b2.n >= 0.08).sort((x, y) => y[1] - x[1]).map(e => `${e[0]} ${Math.round(100 * e[1] / b2.n)}%`);
+    L.push(`| ${realms[b2.a].name} and ${realms[b2.b].name} | ${(b2.n * 10).toLocaleString('en')} | ${parts.join(', ')} |`); }
   L.push('', '## Checks', '', problems.length ? problems.map(p => '- PROBLEM: ' + p).join('\n') : '- No realm is enclosed by another, every realm is one piece on its land, every seat is on land.', notes.map(n => '- ' + n).join('\n'), snapped.map(n => '- ' + n).join('\n'));
   out('design/tables.md', L.join('\n') + '\n');
 }
