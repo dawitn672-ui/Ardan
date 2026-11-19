@@ -38,7 +38,9 @@ takes its realm's law (male → male-preference, equal → absolute, female → 
 through the holder's children, then the siblings' lines. Titles are a crown (`r.ruler`), a house's headship
 (`h.headPid`, with `h.seat`) and a lordship (`p.noble`, rung 4 and up, "of <province>"); they move only in
 `A.V2F.inherit`: at a death (`A.kill` is wrapped), and when a life goes on as an heir (`V2F-CONTINUE`: the rung goes
-where the law sends it). `A.inheritFrom` keeps the coin and moves nothing (`V2F-INHERITFROM`). A crown's heir is the
+where the law sends it). A lordship goes with the headship of the house seated in its county when the dead headed one
+(M1: Leonor Wickham of seed 7, head of her own house and of House Dovefield at Frosthollow, her county, left the county with
+Wickham and the house to another heir), else with his own house's. `A.inheritFrom` keeps the coin and moves nothing (`V2F-INHERITFROM`). A crown's heir is the
 royal line under the realm's law (`A.pickHeir` is wrapped). A new lordship (a ruler's grant `V2F-GRANT`, a petition
 `V2F-PETITION`, 97's patent, 994's enfeoffment, 9996's forfeit lands) takes a province no one else holds
 (`A.V2F.freeHolding`): never another lord's, a great house's seat with a living head, or a capital.

@@ -2472,3 +2472,57 @@ Branch `work/x5-ci`, from `origin/v2-integration` at `578da51`. The long run on 
   worlds, 11,444 people, no twins), the quick tests of generations, skills and names-and-cultures with the core suites (37
   of 37), `coherency --baseline=quick` clean, lint-skills, lint-stages, lint-reasons (41) ok.
 - **Undo:** revert the branch's commit.
+
+### H-101 · 2026-11-19 · M1: one fixed continent for every life (order 68; D-142's addendum, D-148, D-149)
+- **Branch** `work/m1` from `origin/v2-integration` at `0f5f96e` (the alpha.15 records). Not merged; no PR.
+- **The one continent** (`src/map/99991-v2-map`):
+  - `A.V2MAP.ONE` = `ardan-v2-map:m1-02`, and `VM.mapSeed(gameSeed)` gives it. Every new life is built on it.
+  - Saves carry `A.S.v2map = { seed, v }` as before, so a life begun before M1 keeps its own seed's continent.
+  - The cache never lets the one continent go (`VM.pinned`, `VM.trim`).
+  - The worker that builds it ahead keeps it in its own IndexedDB (`ardan-map`, one entry, tagged by a hash of the code
+    that builds it; D-148).
+  - The creation screen's home towns read the one continent's terrain from `data/map/one-continent.json`
+    (`VM.oneFacts`; D-149). This is the release's `23-ui-a.js` `UI.crStepBirth`, edited in place.
+- **The choice** (`tools/m1/choose-seed.mjs`, `docs/design/m1/`): thirty candidates on seven counts and one gate (the
+  readings are in D-142's addendum and the README). `m1-02` won at 68.8. `m1-22` (70.3) is out: the spice islands hold 1
+  coastal province of 3.
+- **Load** (`tools/bench/phone-load.mjs`, with a new `--warm` for a second visit; reports `tools/bench/reports/phone-m1-*.md`):
+  - First visit unchanged. To the first Life screen at 1x / 4x / 6x: 3,310 / 12,817 / 17,464 ms before, 3,035 / 11,828 /
+    16,884 ms after.
+  - Second visit: the continent is ready at 752 / 2,374 / 3,797 ms against 2,678 / 8,212 / 10,426. The first Life screen
+    comes at 2,401 / 8,834 / 13,396 against 3,443 / 10,554 / 13,803.
+  - A Continue: 0.6 to 0.7 s with no build on the page, against 2.0 to 2.4 s with one.
+- **Tests:**
+  - New: `m1OneContinent` and `m1KeptContinent`.
+  - `v2mapOneContinent`, `v2mapSeaRealms`, `v2mapRoseClear`, `v2mapSameSeed`, `v2mapSaveLoad`, `d9Ground`,
+    `d9RealmColors` and `d9SaveAndPure` hold their rules on the one continent and on other map seeds (`VM.ONE` switched for
+    the life).
+- **The world shift (quick tier, all eight shards on the first M1 build, 900 tests): 889 passed and 11 failed.** Each
+  failure was read on the build before M1 too.
+  - **Rules M1's continent exposed, fixed in the code:**
+    - *`genGenerations`, a county with two holders* (`99994-v2-family`, `F.inherit`). Leonor Wickham, of seed 7 in 1163,
+      headed her own house and House Dovefield, which is seated at Frosthollow, her county. The county went with Wickham's
+      headship and Dovefield went to another heir. A lordship now goes with the house seated in its county.
+    - *`wcObservesOnly`, the world record acting* (`999994-generations`). The deaths read a famine from the world record,
+      so the world with the record differed from the world without it. They now read the realm's market by the record's
+      own rule (a yield of 0.4 or less).
+    - *`mdSpread`, an offer with no reason* (`9999955-muster`). A gentleman with no weapon was offered the scouts with
+      nothing to say for them. A branch the muster-master has no reason for is no longer offered beside one he has.
+  - **Tests that read one world's luck, fixed to read the rule (H-082):**
+    - `freshRealmsValid` nets the crown's shield money, which a breakaway's war musters from the parent's lords.
+    - `skyClimate` reads each climate on the first world that has it (the one continent has no taiga).
+    - `coIntents` takes a fight with men on the other side. An elite order's division of no men held the town, which is
+      noted, not changed.
+    - `w5AiEnding` gives the victor a calm temper. A proud victor may send the envoys back ("no terms yet").
+    - `v2svOldCycle2` lets the migrated life end in its two years (hanged at 21).
+    - `d9SaveAndPure` switches the map seed for "another world".
+    - `ttPhoneTap` failed once under the shard's load and passed 5 times after, on both builds. Its detail now shows the
+      first two taps.
+  - **Failing before M1:** `w4OldSaves` failed on the alpha.15 sample save (year 1140), whose 8 realms have rolls above
+    the cap. A roll above the cap drains a tenth of the excess a year (`A.forcesYear`), so the test now bars the cap only
+    for converted old saves.
+- **Run on the final build:** the 23 tests above and the map tests: 23 of 23. `coherency --baseline=quick`: no check
+  rose.
+- **Undo:** revert the branch's commits, newest first. Saves keep their map's seed: a save made on the one continent
+  carries `ardan-v2-map:m1-02` and loads on any build since v2's map. Clear the worker's store by deleting the browser's
+  `ardan-map` IndexedDB (or let the tag miss).

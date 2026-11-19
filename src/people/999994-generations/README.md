@@ -13,7 +13,8 @@ start.
 living NPC those passes do not weigh meets the release's own odds for his body (`A.deathChance`: age against his
 people's span, health, a blood that shortens life), raised by the year just past where the game knows it: an epidemic
 in his home province (`MORT.PLAGUE` 1.8), a failed harvest in his realm (`MORT.FAMINE`: 1.4 for the poor, 1.2 the middle,
-1.05 the great). Anyone but the player who has passed his people's greatest age (`GD.RACES[race].maxLife`) dies of it,
+1.05 the great; read from the realm's market, a yield of 0.4 or less, as 57's record reads a famine, never from the record
+itself, which only observes: M1). Anyone but the player who has passed his people's greatest age (`GD.RACES[race].maxLife`) dies of it,
 covered or not; the lore's elders of 1105 (Queen Ithrien at 587, an elf's span 520) keep the release's odds and the
 body's end ten years on. The death goes through `A.kill`: posts are left (`A.POSTS.leaveAll`), a widow is a widow, a
 ruler's realm passes, titles and the headship pass by the house's law (`A.V2F.inherit`), the tree keeps the dead. A blood
