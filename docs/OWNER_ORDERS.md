@@ -269,6 +269,30 @@ order is replaced, strike it through and say by what.
     the fight goes, judgment over exchanges), and **talent** (a gifted fighter's ceiling and leaps, breakthroughs). Applies to
     duels first, then to every attempt read through the odds engine.
 
+67. **Answers to the run-through: parity, coherence, and clearing before building** (D-136 to D-141) · recorded 2026-11-18 22:05 ET. The owner's words, verbatim:
+
+    > b. yes do that. c. sure but be very clear what that deed is. d. sure but it is far too easy to progress and become a legend aswell as a king. no need to make the gmae extremely difficult just as conceptually accurate as possible e. consolidate all economic factors against it self. so everything is coherent pricing makes sense etc. keep full speed. yes people you never meet should still age. update each individual and groups data and growth margins the same way you would for a user. i shouldnt be able to make a general im friends with my sergenat and the people around and not around me should grow the same as i do.                          1. slow down properly integrate everything after your sure its right even if it requires testing. fix the current issues in evry case before moving onto new ones.  2. deal with it the best you can. 3. study review and improve it. 4. figure out why. continue adding sample games in every version to show the playable differences.
+
+    **Read as** (the letters answer the run-through's design calls; the numbers answer the four version faults of order 65):
+    - **b.** The world's masters (councillors, mentors, order masters) rolled on the old scale are brought down to what
+      their years, talent and training allow (D-136).
+    - **c.** The trials at Expert and Master stand, and every trial card says plainly what the deed is: what must be done,
+      before whom, and what counts as passing (D-137).
+    - **d.** The census stays a count, not a cap; but becoming a Legend, and becoming a king, are far too easy. Make both
+      as hard as they are in the world's own logic, not artificially hard (D-138).
+    - **e.** Every economic figure is set against the others: wages, pay, prices, rents, upkeep, loot and treasuries
+      agree, so a price makes sense beside a day's wage (D-139).
+    - **Pace:** full speed stays.
+    - **Ageing and growth for everyone:** people the player never meets age and die; every person and group (companies,
+      households, houses) grows by the same rules and margins as the player. No shortcut through a friendship: being
+      friends with one's sergeant does not make a General, and the people near and far grow as the player does (D-140).
+    - **1.** Integrate only what is known to be right, with the testing it needs; fix the current issues everywhere before
+      starting new work (D-141, tightening D-134's batches).
+    - **2.** The three release-branch conventions: handle as well as can be (D-134's note keeps alpha.1-9 as they are).
+    - **3.** The version tool: study, review and improve it (D-134 point 2, built on `x5-build`).
+    - **4.** Find out why sample saves stopped, and add one to every version, chosen to show what that version changed
+      in play (D-141).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,

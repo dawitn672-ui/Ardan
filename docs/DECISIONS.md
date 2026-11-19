@@ -2356,3 +2356,43 @@ the seat term). Circumstance, adaptability and talent are not yet named sources 
 4. *Order:* built as item **U1** after the current batch clears (D-134), duels first, then the odds engine's other
    attempts. Measured by a test that pools upsets by source and checks each source moves results the right way.
 
+### D-136 · The world's masters brought down to what their years allow (2026-11-18; order 67 b; closes D-078's open point)
+Councillors, mentors and order masters rolled at 70 to 96 on the old scale are re-set, on load and at world-making, by
+the closed form of S1 growth: their age, talent letters, training of their post and the concepts a level asks; a few
+stay great where their years and gifts truly carry them. Built inside item **P1** (parity, D-140).
+
+### D-137 · Every trial says what the deed is (2026-11-18; order 67 c; D-067 item 3 confirmed)
+The trials at Expert and Master stand. Each trial card names the deed in plain words: the task, before whom, and what
+counts as passing ("Hold the line's left file for a full charge, before your captain: stand, and keep the file whole").
+A trial's wording comes from data per skill and per level, linted for the three parts. Built inside item **P2**.
+
+### D-138 · Legends and crowns as hard as the world makes them (2026-11-18; order 67 d)
+The census stays a count (D-078). Measure how often a life reaches Legend and how often a commoner, a lord or a soldier
+reaches a crown, and set each against what the world's logic allows (the concepts and proofs a Legend asks over a
+lifetime; a throne by blood, election, conquest or a coup, each needing what it needs in A.WHY and A.PAX). Fix the
+shortcuts found; no flat penalty. Built as item **P2** with D-137.
+
+### D-139 · One economy, every figure set against the others (2026-11-18; order 67 e)
+An audit of every money figure (wages by trade, soldiers' pay (D-127), prices of goods, food, gear, horses, rents,
+dowries, fines, bribes, upkeep of households, hosts and courts, loot and ransom, treasuries and taxes) as one table in a
+day's wage; incoherent ones are re-based from a few anchors (a labourer's day, a loaf, a horse, a sword), the balance
+bands re-read. Built as item **E1** after P1 and P2.
+
+### D-140 · Everyone ages and grows by the player's rules; no friendship shortcuts (2026-11-18; order 67)
+People the player never meets age and die (X5's death pass, `x5-deaths`). Every person and group (a company, a household,
+a house) grows by the same rules and margins as the player: the same S1 experience, concepts, proofs and breakthroughs
+for anyone the world tracks as a person, and the same aggregate rules for groups. Promotion and appointment read merit
+and reasons (A.WHY), and a friendship is one reason among many, never enough alone (a sergeant's friend does not become a
+General). Built as item **P1**.
+
+### D-141 · Clear before building; a sample game in every version that shows what changed (2026-11-18; order 67 1 and 4)
+1. Nothing new starts while a known failure is open: the current batch's fixes, then the next batch's, then new items in
+   the order P1, P2, E1, U1. A merge needs its own tests and the touched features' tests passing locally first.
+2. *Why sample saves stopped:* the rule lived in two places that disagreed. CLAUDE.md asked for a sample game only for
+   "milestones", while every version from alpha.1 to alpha.10 had one by habit; from alpha.11 the version steps were
+   written from memory into scheduled check-ins, and the sample save was left out of them. The fix: the version tool
+   makes it (D-134) and `version.mjs check` fails without it, so it no longer depends on memory.
+3. *A sample game shows the version's difference:* each is played to a moment where that version's change is in play
+   (alpha.12: a landed lord answering the summons; alpha.13: a ruler at the peace table; alpha.14: a soldier at the muster
+   with his company's card), and `tests/saves/README.md` lists what each one shows and how to see it.
+
