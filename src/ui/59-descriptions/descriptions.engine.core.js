@@ -64,9 +64,15 @@
       el.setAttribute('tabindex', '-1');
       el.hidden = true;
       document.body.appendChild(el);
+      // a popover that grows after it is placed (its text set in the fallback face until the game's fonts are ready) is
+      // placed again, so it never runs off the screen (ttPhoneTap: 752 px on a 740 px phone, in a busy browser)
+      if (TT.ro) TT.ro.observe(el);
     }
     return el;
   };
+  TT.ro = typeof ResizeObserver === 'function' ? new ResizeObserver(list => {
+    for (const e of list) { const i = TT.stack.findIndex(s => s && s.el === e.target); if (i >= 0 && !e.target.hidden) TT.place(i + 1); }
+  }) : null;
 
   TT.open = function (a, lvl, how, pt) {
     lvl = Math.min(lvl || TT.levelOf(a), TT.MAX);
@@ -254,6 +260,7 @@
     window.addEventListener('keyup', TT.onKeyUp, true);
     window.addEventListener('focusin', TT.onFocus, true);
     window.addEventListener('resize', TT.onResize);
+    try { if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', TT.onResize); } catch (e) {}
   };
   TT.listen();
   TT.init = function () {
