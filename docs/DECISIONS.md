@@ -2444,3 +2444,24 @@ hump of a two-humped spread (targets.mjs's own words since round 5). Over 24: th
 45,602, all inside the bands, which stay as they were. Of the artisans' twelve young deaths in slots 0 to 11 two had
 enlisted; the rest were hangings from the release's crime scenes, beasts and fever: D11's systems did not send them to war.
 The league's time grows by about a third (24 more lives of 72).
+
+### D-146 · w18-ci: every standing realm has one ruler; a crown a man was only named to passes or ends with him (2026-11-19; the one-holder rule; W1-6's claims, D-099)
+1. **The fault.** `A.successionWar` names its claimant ruler of his faction realm (`nr.ruler`) without crowning him (his own
+   `p.ruler` stays empty, as the release wrote it). Such a realm can outlive its war and stand on its own (03-engine-fixes'
+   rebels), and W1-6 made claims more common (D-099). Two ghosts followed: when he was later crowned in the realm he had
+   claimed, by a war's terms or by plain succession, the faction realm went on naming him; and when he died, nothing
+   settled it, since `A.kill` settles only the realm his own record points at. The nightly coherency run found Sabra's
+   crown on a dead woman (seed 7104).
+2. **Chosen:** `A.orphanCrowns(p, keep)` (release, `04-realms-and-war-years-a.js`), called by `A.kill` and `A.makeRuler`:
+   every other standing realm that names him its ruler passes by its own succession (`A.rulerDies` for a dead man; for a
+   man crowned elsewhere, its heir or a new lord of its house, as `A.makeRuler` already does for a second throne), or,
+   holding no land, disperses (`A.realmFalls`, with a line in the news saying why). A rising still at war is left to its
+   war (W1-5: a rising whose leader is dead is beaten). `A.rulerDies` marks the realm it is settling (`A._crownKeep`, a
+   transient on `A`, never saved), so a claimant whose faction realm is the one dying is settled once, not twice (the
+   first version gave Mirdrin's cause two crowned men). A war's crown term (W1-5's `crown`) now also takes the claimant's
+   own faction realm into the crown he wins when it has stood on its own (before, only a rebel one).
+3. **Not chosen:** crowning the claimant in `A.successionWar` (setting his `p.ruler`): his heir would then take up a
+   rising whose leader died, against W1-5's defeat, and the player's own claim would turn him ruler of "Your faction".
+4. **Found on the way:** with the world moved, a lore cast member kept the lore's title ("Senior General; Warden of the
+   Steppe March") beside the realm's seated Senior General for most of a year; 999990-posts now restyles a stale seat
+   style at each month's end as well as at the New Year (`P.restyle`, no dice, well under a millisecond).

@@ -261,7 +261,9 @@
         case 'crown': {
           const cl = A.P(t.pid), target = A.realm(w.leadD), R = A.realm(w.leadA);
           if (!cl || !cl.alive || !target) break;
-          if (R && R.isRebel) { for (const p of A.realmProvs(R.id)) { p.owner = target.id; if (A.scaleLand) A.scaleLand(); } A.realmGone(R); }
+          // the claimant's own realm goes into the crown he takes: a rebel's risen lands, or (w18-ci, D-146) a faction realm
+          // that outlived an earlier war under him and stands on its own (else it was left naming a crowned man as its ruler)
+          if (R && R.alive !== false && (R.isRebel || R.ruler === cl.id)) { for (const p of A.realmProvs(R.id)) { p.owner = target.id; if (A.scaleLand) A.scaleLand(); } A.realmGone(R); }
           A.makeRuler(cl, target.id);
           target.legit = 45;
           target.stability = Math.max(25, (target.stability || 50) - 10);

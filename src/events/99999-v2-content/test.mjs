@@ -36,7 +36,11 @@ export default {
     await prep(pg);
     const r = await pg.evaluate(() => {
       const MW = A.MW, out = { cards: 0, woven: 0, young: [], present: [], eg: [] };
-      for (const [status, seed, age, years] of [['peasant', 9101, 0, 26], ['noble', 9102, 8, 20]]) {
+      // H-082 standby lives: the two first lives held 150+ cards until D11-2's duty and drill cards went quiet
+      // (w17-ci, d11-ci: 135 on CI 157); further lives are played only while the count of cards is short of 150
+      const lives = [['peasant', 9101, 0, 26], ['noble', 9102, 8, 20], ['artisan', 9103, 8, 20], ['peasant', 9104, 6, 22], ['noble', 9105, 10, 20]];
+      for (const [i, [status, seed, age, years]] of lives.entries()) {
+        if (i >= 2 && out.cards >= 150) break;
         V2CT.life({ seed, status, startAge: age }, years, (q, v) => {
           out.cards++;
           const w = q.ctx && q.ctx.mw;

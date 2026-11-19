@@ -1917,6 +1917,8 @@ A.makeRuler = function (p, rid, silent) {
     A.makeRuler(nx, leaves.id);
     A.news(`${A.fullName(p, false)} takes the crown of ${r.short} and leaves ${leaves.short} to ${A.rulerStyle(nx, leaves)}.`, "crown");
   }
+  // [w18-ci, D-146] and any other realm that still names him its ruler (a faction realm he was named to, not crowned in)
+  if (A.orphanCrowns) A.orphanCrowns(p, rid);
 };
 
 A.genNoble = function (rid, status, house, age, sex) {

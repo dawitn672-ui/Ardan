@@ -796,27 +796,34 @@
   // the New Year; between, P.unstyle catches each seat that changes hands.
   const SEATW = { general: 'Senior General', chancellor: 'Chancellor', treasurer: 'Treasurer', spymaster: 'Spymaster', chaplain: 'Chaplain' };
   const QUICK = /Senior General|Chancellor|Treasurer|Spymaster|Chaplain/;
+  const restyle1 = function (p, styled) {
+    let n = 0;
+    if (!p || !p.alive || p.realm == null || p.ruler) return 0;
+    for (const f of ['occ', 'title']) {
+      const s = p[f];
+      if (!s || typeof s !== 'string' || !QUICK.test(s)) continue;
+      for (const k in SEATW) {
+        if (!styled(s, SEATW[k])) continue;
+        if (P.holder(P.seatKey(p.realm, k)) === p.id) continue;
+        p[f] = 'once ' + s; n++;
+        break;
+      }
+    }
+    return n;
+  };
   P.restyle = function () {
     const styled = A.COHERENCY && A.COHERENCY.styledAs;
     if (!styled) return 0;
     let n = 0;
-    for (const id in A.S.people) {
-      const p = A.S.people[id];
-      if (!p || !p.alive || p.realm == null || p.ruler) continue;
-      for (const f of ['occ', 'title']) {
-        const s = p[f];
-        if (!s || typeof s !== 'string' || !QUICK.test(s)) continue;
-        for (const k in SEATW) {
-          if (!styled(s, SEATW[k])) continue;
-          if (P.holder(P.seatKey(p.realm, k)) === p.id) continue;
-          p[f] = 'once ' + s; n++;
-          break;
-        }
-      }
-    }
+    for (const id in A.S.people) n += restyle1(A.S.people[id], styled);
     if (n) repair('stale style');
     return n;
   };
+  // w18-ci: a style that names a seat of his realm he does not hold is caught at each month's end, not only at the New
+  // Year: a lore cast member keeps the lore's title ("Senior General; Warden of the Steppe March") when the seat goes to
+  // another in the year, which P.unstyle does not read as the seat's own style (nightly coherency, seed 7103, 1135). The
+  // pass reads two strings of each living person against one pattern (well under a millisecond a month)
+  A.onMonth.push(function () { try { P.restyle(); } catch (e) { console.error('[posts] restyle', e); } });
 
   // ---- the audit: every rule, read only ------------------------------------------------------------------------------
   // The rules are read on what the game shows (the mirrors). strict: also every mirror equals its record, which holds

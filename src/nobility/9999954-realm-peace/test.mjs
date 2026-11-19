@@ -356,6 +356,41 @@ export default {
     return { ok, detail: `pe_coup queued ${r.queued}: "${(r.coupText || '').slice(0, 120)}"; told the crown and the plot ended ${r.told}; pe_judge ${r.skip2 ? 'skipped: ' + r.skip2 : `queued ${r.judgeQueued}, judged ${r.judged}`}; sideways scroll ${r.wide}` };
   },
 
+  // every realm that stands has one living ruler (w18-ci, D-146): a claimant's faction realm (A.successionWar names him its
+  // ruler without crowning him) that outlived its war, when he dies or is crowned elsewhere, passes by its succession, or
+  // disperses if it holds no land (the nightly coherency run found Sabra's crown on a dead woman, seed 7104)
+  async peOneRulerLab(pg) {
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const out = {};
+      const ghost = id => { const R = A.realm(id); return !!(R && R.alive && !(A.P(R.ruler) && A.P(R.ruler).alive)); };
+      const faction = (seed, land) => {
+        T.enter({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 18 });
+        const R = PEL.aiRealm(A.pc().realm), cl = PEL.heads(R).map(h => A.P(h.headPid)).find(p => p && !p.ruler && A.isAdult(p));
+        const w = A.successionWar(R, cl), F = A.realm(w.leadA);
+        // its war over, the faction realm stands on its own (03-engine-fixes' rebels), with or without land
+        A.S.wars = A.S.wars.filter(x => x !== w); F.isRebel = false;
+        if (!land) for (const P of A.realmProvs(F.id)) { P.owner = R.id; if (A.scaleLand) A.scaleLand(); }
+        return { R, cl, F };
+      };
+      // 1. he dies: a faction realm with land passes to an heir, one with none disperses
+      let x = faction(9961, true);
+      A.kill(x.cl, 'a fever');
+      out.diesLand = { ghost: ghost(x.F.id), alive: x.F.alive, ruler: x.F.ruler };
+      x = faction(9962, false);
+      A.kill(x.cl, 'a fever');
+      out.diesNoLand = { ghost: ghost(x.F.id), alive: x.F.alive };
+      // 2. he is crowned in the realm he claimed: his faction realm does not keep his name
+      x = faction(9963, true);
+      A.makeRuler(x.cl, x.R.id);
+      out.crowned = { stillNamed: x.F.alive && x.F.ruler === x.cl.id, ruler: x.F.alive ? x.F.ruler : null };
+      out.co = A.COHERENCY.run(['one ruler per realm']).length;
+      return out;
+    });
+    const ok = !r.diesLand.ghost && !r.diesNoLand.ghost && !r.diesNoLand.alive && !r.crowned.stillNamed && !r.co;
+    return { ok, detail: `a faction realm with land, its lord dead: ${r.diesLand.alive ? 'passes to ' + r.diesLand.ruler : 'ends'} (a dead ruler ${r.diesLand.ghost}); without land: ${r.diesNoLand.alive ? 'stands' : 'disperses'} (a dead ruler ${r.diesNoLand.ghost}); its lord crowned elsewhere: still named ${r.crowned.stillNamed}; the check "one ruler per realm" ${r.co ? 'fails' : 'passes'}` };
+  },
+
   // the same seed and the same choices give the same realm's peace
   async peDeterministic(pg) {
     const r = await pg.evaluate(() => {
