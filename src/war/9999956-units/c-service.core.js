@@ -181,6 +181,7 @@
       if (!fx || typeof fx !== 'object' || !pc || pc.id !== A.S.pc || !ctx || !pc.mil) return out;
       const m = pc.mil;
       if (fx.unDrill) {
+        m.drillWay = fx.unDrill;   // how he goes at a drill: a drill done before passes the same way (b-syllabus)
         if (fx.unDrill === 'hard' && A.gainXp) { A.gainXp(pc, ctx.tk || 'command', 1.2, { q: 'stretch', why: `the company's drill: ${ctx.drillT}` }); m.merit = (m.merit || 0) + 1; }
         if (fx.unDrill === 'teach' && A.gainXp) { A.gainXp(pc, 'command', .8, { q: 'stretch', why: 'teaching the raw men' }); m.merit = (m.merit || 0) + 1.5; }
         if (fx.unDrill === 'easy' && A.gainXp) A.gainXp(pc, ctx.tk || 'command', .3, { q: 'practice', why: `the company's drill: ${ctx.drillT}` });
