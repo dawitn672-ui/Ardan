@@ -2169,3 +2169,72 @@ families) and `data/military/duties.json` (10 duties).
 - **Left (D11-3):** each branch's ladder, missions and pay; a role's line of promotion; peace service toward promotion;
   NPC companies' own stored drill.
 - **Undo:** revert branch `d11-2`'s commits; nothing was retired.
+
+### H-093 · 2026-11-18 · D11-3: careers
+CRITIQUE item 19 (D11: "a ladder of registry posts, three missions of its own, half the war cards the branch's own, pay
+rebased, peace service counts"), W11, R12; `docs/design/war.md` §14.1 and §16's D11-3 row; the coordinator's ask to
+revisit D-120 under order 54's first rule (the world is not built around the player); decisions D-122 to D-127. Branch
+`d11-3`, from `origin/v2-integration` at `7499906`. New feature `src/war/9999957-ladder` (`A.LADDER`: `a-ladder`,
+`b-missions`, `c-world`, README, tests; named "ladder" because 994-careers holds "careers"); data in
+`data/military/branches.json` (`ladder`, `key`, `mtypes`).
+- **Built:** each branch's ladder and key skill; the board's hazard scaled by the post's aptitudes (D-122); a mission's
+  kind the commander's choice through `A.WHY` (kind `mission`), the branch's own work titled with it (D-123); peace
+  service as deeds of service, duties done and long service raising the hazard (D-124); a role's line (kind `role`)
+  (D-125); the world's companies' role-holders and own drill in aggregate (D-126); pay rebased (D-127); the place card's
+  ladder and "the next rank" notes.
+- **Release files edited:** `02-game-data-a.js` (`GD.MIL[].pay`), `09-missions-and-line-battles.js` (`A.newMission`'s
+  kind and title). **Features edited:** 99999-v2-renown (`RN.milRoll` reads `A.LADDER.boardMod`; the promotion's log
+  says what the board weighed), 9999955-muster (a raised role kept by its rung; its pay; the place card's ladder), 9999956-units
+  (a duty's outcome and its end as a deed; `unRolesMove` measures the player's own role with the world's part set aside),
+  9997-companies (a role's morale per company; the resting cache keyed by the player's role; a battalion's own drill;
+  the drill cache keyed by a company's grades).
+- **Measured:** `lcMissions`: of 330 missions at war (soldier and captain), the branch's own work was 0.57 to 1.0 for
+  every branch entered at a muster; `lcBoard`: the post's factor 0.4 (no skill) to 2 (a tracker with a voice), long
+  service ×1.6 and three duties ×1.36; `lcPeaceService`: two years at peace, four duties done, 21 deeds of service read
+  by the board, the soldier promoted; `lcWorldRoles`: 6,789 companies, each role held in 0.33 to 0.34 of them, a battalion
+  with surgeon's mates keeps ×1.29 of the wounded, every company's role morale worked out in 1.2 ms cold. The month's
+  cost and the world's wars with the world's part on and off: D-126 (about 1 to 1.5 ms a month on CI; men lost a war −4%
+  over four worlds of 15 years, inside the worlds' own spread).
+- **Tests:** new `lcData`, `lcMissions`, `lcBoard`, `lcPeaceService`, `lcRoleLine`, `lcPay`, `lcWorldRoles`, `lcView`,
+  `lcOldSaves` (14 saves), `lcDeterministic`: all pass. Core suites with the touched features' quick tests (ladder,
+  muster, units, companies, v2-renown, unit-work, careers, v2-war; 95 tests, under a machine load of 16 to 23): 94 on
+  the first build; `unRolesMove` met D-126 (the player's forager and carpenter are one company among the world's) and now
+  measures the player's own role with the world's part set aside; it and `lcWorldRoles`, `lcOldSaves` pass on the final build.
+- **Checks:** lint-events (ladder, units) 0 errors, 0 warnings; lint-reasons 41; lint-stages, lint-kin, lint-skills ok;
+  `--check-tiers` ok; `coherency --baseline=quick`: no contradiction, no check rose. No engine module touched; no long test
+  added or run (the long tier and the balance league are CI's: D-127's pay change is where a band would show).
+- **Left:** D11+ (the military path by weapon and way at every rung); NPC soldiers' own careers (there are none as
+  persons below the seeds); transfers between commands; a foreign contract as peace service (R12's third example).
+- **Undo:** revert branch `d11-3`'s commits; nothing was retired (the release's mission draw stays as the fallback).
+
+### H-095 · 2026-11-19 · D11+: the military path
+Order 54 on the military path ("the weapon under use, the method of combat they prefer, their aptitude across any skill
+that could be made use of in context"); orders 59 and 63 (growth is not a timetable; S1); `docs/design/war.md` §14.1 and
+§14.2; PROGRESS's D11+; decisions D-128 to D-132. Branch `d11p`, from `origin/v2-integration` at `4707b7d`. New feature
+`src/war/9999958-paths` (`A.PATHS`: `a-paths`, `b-view`, `pa.events.js`, README, tests) and `data/military/paths.json`.
+"Training tailored to each unit's make-up" was D11-2's syllabus (D-118); this item adds the man's own road.
+- **Built:** each branch's road through the five rungs (what each trains, its trial, the next rung's wants, the role it
+  opens, its specialisms by way of fighting) (D-128); the month's training through `A.gainXp` bent by talent, said in
+  words, and the release's year in the ranks drilling the road (D-129); the rung's trial as S1's proof (D-130); the
+  road's specialism and the rung's role (D-131); the board weighing the next rung's wants and the trials stood (D-132);
+  the War tab's *Your road* card.
+- **Release files edited:** `08-soldiering.js` (`A.milYear` drills the road's first skill), `23-ui-e.js` (the card).
+  **Features edited:** 9999955-muster (`MU.roleOptions` takes `only`), 9999957-ladder (`L.mod` reads the road), 01-stages
+  (the `paths` stage of `A.applyFx`). No skill engine or S1 test file touched (w17-ci's).
+- **Measured** (`paRoadsDiffer`: the same man as a lancer, an archer, a sapper and a scout, two years at peace, his
+  four key skills set equal): each road grew its own key skill most: riding 2,044 for the lancer (the scout's 2,031, the
+  others none), the bow 4,018 for the archer, craft 2,011 for the sapper (the archer 6), tracking 1,028 for the scout
+  (the archer's 1,002 from a patrol duty); in level-thousandths of growth. The plan's share for the bow: 0.54 slow, 0.58
+  ordinary, 0.65 rare. `paTrial`: a man at the edge of Expert in the bow is set the butts, stands them, S1's proof is called
+  once, and the board's factor rises 0.81 → 0.93. `paBoardAndRole`: an archer's board 0.77 with command alone, 1.88 with
+  the bow too; a sapper's board does not read the bow; the scout's road opens the pathfinder's work.
+- **Tests:** new `paData`, `paRoadsDiffer`, `paTrial`, `paSpec`, `paBoardAndRole`, `paView`, `paOldSaves` (14 saves),
+  `paDeterministic`. Core suites with the touched features' quick tests (paths, muster, ladder, units, v2-renown,
+  careers, unit-work; 72 tests, under a machine load of about 21): 72 of 72.
+- **Checks:** lint-events (paths) 0 errors, 0 warnings; lint-choices (paths) 0 obviously best; lint-reasons 41; lint-stages,
+  lint-kin, lint-skills ok; `--check-tiers` ok; `coherency --baseline=quick`: no contradiction, no check rose. No engine
+  module touched; no long test added or run.
+- **Left:** a road's later rungs for the orders and hired companies stay thin (their own features' doors); a road for a
+  man who changes branch keeps his trials (they count at the rung, not the branch); NPC soldiers have no road (no persons
+  below the seeds).
+- **Undo:** revert branch `d11p`'s commits; nothing was retired.

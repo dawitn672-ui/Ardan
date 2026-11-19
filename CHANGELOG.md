@@ -5,6 +5,32 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Your road through the ranks follows your weapon and your way of fighting.** A lancer rides and learns the sword, then
+  commands horse; an archer shoots; a sapper works timber and stone, then plans the works; a scout tracks and keeps
+  quiet. The War tab's *Your road* card says what your rung trains, with your gift for each in words ("tracking (gifted)").
+- **Each rung has its trial.** When you stand at the edge of a new level, the road sets its own test: the butts at two
+  hundred paces, a bridge of boats, a sentry taken without a sound. Standing it is your proof, and the next promotion
+  board remembers it.
+- **Your way leads to your specialism:** the war bow for a man of the shot, the bill and pike for a man of the wall, the
+  lance for a man of the charge.
+- **Promotion asks what the next rung needs:** an archer's captaincy the bow and command, a sapper's command tactics and
+  craft. Some rungs open a role: a scout's the pathfinder's, the train's the clerk's.
+
+- **Each branch has its own career.** The War tab says what your rank does in your branch, and the whole ladder from
+  soldier to General on a tap. Missions follow your branch: scouts count the enemy and take prisoners who talk,
+  engineers dig the sap and bridge the river, the train brings the bread up; other work still comes now and then.
+- **Promotion weighs what the post needs.** A board asks whether you know what your branch prizes (riding for the
+  lances, tracking for the scouts, stores for the train) and, from sergeant up, whether men follow you. The War tab says
+  in words what the next board will weigh.
+- **Peace service counts.** A duty seen through, and done well, is service the board remembers; long, faithful years at
+  one rank raise your chances, and the board says so when it promotes you.
+- **Roles have a road.** A good clerk becomes a quartermaster and then master of the train; a surgeon's mate a surgeon.
+  Pay rises with each step.
+- **Soldiers' pay is a soldier's pay:** a few suns a month for a soldier, more with each command. Wealth in arms comes
+  from loot and ransom.
+- **Every company in the world has its standard-bearers, surgeons, foragers and drill,** not only yours: armies that
+  keep their wounded and their bread fight on longer.
+
 - **No two companies are the same.** Your company has a make-up (veterans or raw men, conscripts, its sergeants, its
   captain's temper), drills it knows well or not at all, and a character that comes from its own history: it broke
   before horse at one fight, held a ford at another, chases too far under a bold captain. The War tab's *Your company*

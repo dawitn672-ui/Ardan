@@ -312,8 +312,8 @@
     if (d.food != null && d.food <= 0) parts.push(['No bread', -10]);
     if (d.loc === b.h) parts.push(['Fighting at home', 5]);
     // [D11-2] the player's role in this company: the colours, the horn, the pot, the horse lines (A.UNITS.roleMorale)
-    const rm = A.UNITS && A.UNITS.roleMorale ? A.UNITS.roleMorale(d, i) : 0;
-    if (rm) parts.push([`Your work as its ${(A.MUSTER.R(A.UNITS.roleAt(d, i)) || {}).name || 'man'}`, rm]);
+    const rm = A.UNITS && A.UNITS.roleMorale ? A.UNITS.roleMorale(d, i, ci) : 0;
+    if (rm) parts.push([A.UNITS.roleAt(d, i) ? `Your work as its ${(A.MUSTER.R(A.UNITS.roleAt(d, i)) || {}).name || 'man'}` : 'Its standard-bearer, signaller, cook or farrier', rm]);
     const total = parts.reduce((a, p) => a + p[1], 0);
     return { total: clamp(total, 5, 100), parts: parts.map(([l, v]) => [l, r1(v)]) };
   };
@@ -337,13 +337,14 @@
     if (d.pay > 0) v -= 5 * Math.min(4, d.pay);
     if (d.food != null && d.food <= 0) v -= 10;
     if (d.loc === b.h) v += 5;
-    if (A.UNITS && A.UNITS.roleMorale) v += A.UNITS.roleMorale(d, i);   // [D11-2] the player's role (D-120)
+    if (A.UNITS && A.UNITS.roleMorale) v += A.UNITS.roleMorale(d, i, ci);   // [D11-2, D11-3] its role-holders (D-120, D-126)
     return clamp(v, 5, 100);
   };
   const DRF = { foot: 'shields', horse: 'charge', missile: 'weapons', beast: 'formation' };
   CO.drills = function (d) {   // a division's drill on the 0..100 scale, by battalion (one D.of per division)
     const D = A.DRILL, rec = D && D.of ? D.of(d) : null;
-    return d.bs.map(b => { if (!rec) return 0; const cat = GD.BN[b.c] ? GD.BN[b.c].cat : null; return (rec[DRF[cat] || 'formation'] || 0) * 100; });
+    // [D11-3] a battalion's own drill: its stored grades, or the division's with its own difference (A.UNITS.bnDrill, D-126)
+    return d.bs.map((b, i) => { if (!rec) return 0; const cat = GD.BN[b.c] ? GD.BN[b.c].cat : null, fam = DRF[cat] || 'formation', v = (rec[fam] || 0) * 100; return A.UNITS && A.UNITS.bnDrill ? A.UNITS.bnDrill(d, i, fam, v) : v; });
   };
 
   // ---- losses fall on companies
@@ -947,8 +948,9 @@
     let pk = '';
     if (b.p) for (const sl in b.p) { const q = A.P(b.p[sl]); pk += sl + ':' + (q && q.alive ? A.skill(q, 'command') + (capBold(d, b, i, +sl) ? 'b' : '') : '-') + ';'; }
     let c = RESTC.get(b);
-    if (!c || c.d !== d || c.i !== i || c.x !== b.x || c.dr !== dr || c.pay !== pay || c.f0 !== f0 || c.home !== home || c.vac !== vac || c.pk !== pk || c.n !== b.k.length) {
-      c = { d, i, x: b.x, dr, pay, f0, home, vac, pk, n: b.k.length, v: b.k.map((_, ci) => CO.restVal(d, i, ci, dr)) };
+    const rk = A.UNITS && A.UNITS.roleKey ? A.UNITS.roleKey(d, i) : '';   // [D11-3] the player's role here (D-126)
+    if (!c || c.d !== d || c.i !== i || c.x !== b.x || c.dr !== dr || c.pay !== pay || c.f0 !== f0 || c.home !== home || c.vac !== vac || c.pk !== pk || c.n !== b.k.length || c.rk !== rk) {
+      c = { d, i, x: b.x, dr, pay, f0, home, vac, pk, rk, n: b.k.length, v: b.k.map((_, ci) => CO.restVal(d, i, ci, dr)) };
       RESTC.set(b, c);
     }
     return c.v;
@@ -957,6 +959,7 @@
     const codes = CO.codes(d), dr = d.dr;
     let t = '';
     if (dr) for (const k in dr) t += k + dr[k] + ';';
+    for (const b of d.bs) if (b.dg) for (const k in b.dg) t += k + b.dg[k] + ',';   // [D11-3] a company's own grades
     let c = DRC.get(d);
     if (!c || c.t !== t || c.codes !== codes || c.v.length !== d.bs.length) { c = { t, codes, v: CO.drills(d) }; DRC.set(d, c); }
     return c.v;

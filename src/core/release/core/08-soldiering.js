@@ -212,7 +212,9 @@ const milYearNow = function (pc) {
     A.log("Pay is months late. The men grumble.", "warn");
   }
   pc.coin += Math.round(pay);
-  const sk = GD.TROOP_SKILL[m.troop] || "spear",
+  // [D11+] the year in the ranks drills the rung's first skill of his road (A.PATHS: a scout tracks, a sapper works
+  // timber), else his troop's weapon as the release did
+  const sk = (A.PATHS && A.PATHS.yearSkill ? A.PATHS.yearSkill(pc) : null) || GD.TROOP_SKILL[m.troop] || "spear",
     // S1b (D-072): the ranks' year is drill under the sergeants (a teacher a word above a recruit, none for a veteran)
     cz = A.SK && A.SK.ranksCause ? A.SK.ranksCause(pc, sk) : undefined;
   if (

@@ -186,6 +186,7 @@
     const war = A.atWar ? A.atWar(m.realm || pc.realm).length > 0 : false;
     const FIT = { farrier: ['lances', 'light_horse', 'household'], pathfinder: ['scouts', 'light_horse'], carpenter: ['engineers', 'train'], clerk: ['train', 'garrison'], forager: ['train', 'light_horse'], signaller: ['spears', 'foot_men_at_arms'] };
     for (const R of MU.roles()) {
+      if (o.only && R.id !== o.only) continue;   // D11+: a rung of the road opens this one role (A.PATHS)
       const lvl = A.skill(pc, R.skill) || 0;
       if (lvl < R.min) continue;
       const rs = [{ kind: 'merit', weight: Math.round((.4 + (lvl - R.min) / 15) * 100) / 100, label: R.say || MU.SAY[R.skill], source: { t: 'skill', id: R.skill, r: Math.round(lvl) }, pub: 1 }];
@@ -200,6 +201,7 @@
     }
     const none = [{ kind: 'cost', weight: 1.1, label: 'the line wants every man in it', source: { t: 'line' }, pub: 1 }];
     if ((m.rank | 0) >= 1) none.push({ kind: 'cost', weight: .4, label: 'a sergeant has his section to mind', source: { t: 'rank', r: m.rank }, pub: 1 });
+    if (o.only) none.push({ kind: 'cost', weight: -.3, label: 'the road opens it at this rung', source: { t: 'path', id: o.only }, pub: 1 });
     if (!o.muster && m.joinD != null && day() - m.joinD < 60) none.push({ kind: 'cost', weight: .5, label: 'he is new', source: { t: 'joined' }, pub: 1 });
     out.push({ id: 'none', reasons: none });
     return out;
@@ -208,7 +210,7 @@
   MU.roleAsk = function (pc, o) {
     o = o || {};
     const m = pc && pc.mil;
-    if (!m || m.role || (m.rank | 0) >= 3 || pc.id !== A.S.pc) return null;
+    if (!m || m.role || (m.rank | 0) >= 3 || pc.id !== A.S.pc) return null;   // (a raised role, D11-3, comes by its line)
     const opts = MU.roleOptions(pc, o);
     if (opts.length < 2) return null;
     const C = MU.captainOf(pc);
@@ -241,9 +243,10 @@
     if (m.role) {
       const R = MU.R(m.role.k);
       if (!R) { delete m.role; return; }
-      if ((m.rank | 0) >= 3) return MU.dropRole(pc, 'an officer has other work');
+      // D11-3: a raised role is an officer's post as far as its rung (A.LADDER.roleKeeps)
+      if ((m.rank | 0) >= 3 && !(A.LADDER && A.LADDER.roleKeeps && A.LADDER.roleKeeps(m.role, m.rank))) return MU.dropRole(pc, 'an officer has other work');
       if (m.co && m.role.co !== coKey(m)) return MU.dropRole(pc, 'you are in another company now');
-      pc.coin = (pc.coin || 0) + (R.pay || 0);
+      pc.coin = (pc.coin || 0) + (A.LADDER && A.LADDER.rolePay ? A.LADDER.rolePay(pc) : R.pay || 0);
       if (A.gainXp) A.gainXp(pc, R.skill, .3, { q: 'practice', why: `the ${R.name}'s duties` });
       return;
     }
