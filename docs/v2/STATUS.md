@@ -1,5 +1,7 @@
 # v2 status (Nov 5)
 
+> **Historical (as of 2026-11-19).** This is the status of the v2 integration on Nov 5 (v2.0.0-alpha.10), in the era of the eight parallel lanes. The game has moved far past it: the checklist of what is done and next is [PROGRESS.md](../PROGRESS.md), what was done step by step is [HISTORY.md](../HISTORY.md), the versions are in [VERSIONS.md](../VERSIONS.md). Kept for the record, not maintained.
+
 **Branch and version:** `v2-integration`, PR #2 (stacked on PR #1); version v2.0.0-alpha.10.
 **Where it stands:** the build steps are done (steps 1–9 of `V2_SPEC.md`). The playtest loop (step 10) is in round 2: playtest 2 is in `playtest-2.md`, and its findings and CI run 88's 50 failures are being fixed group by group. Each fix is checked by an independent verifier before it is merged.
 

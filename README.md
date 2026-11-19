@@ -1,141 +1,103 @@
 # Ardan
 
-*Bloodlines & Banners* — a life simulation and grand strategy game in the world of Ardan, 1105 AR. One HTML file, no server.
+*Bloodlines & Banners*: a medieval life simulation and grand strategy game. You live one person's life, from birth to
+death, inside a simulated continent of realms, courts, families and wars, in the year 1105 AR. Be a peasant, a soldier, a
+merchant, a priest or a noble; marry, fight, scheme, rule, or just survive. Every figure acts for a reason that fits his
+post and his character; nothing in the world happens for no reason at all.
 
-**Play:** open `index.html` in a recent Chrome, Edge, Firefox or Safari.
+The game is one HTML file. It needs no server and no network, and everything works offline. Time moves by two buttons,
+*Next month* and *Next year*; only things that matter (a choice, a battle, a duel, a deadline) stop a step midway. The same
+seed and the same choices always give the same world.
 
-## How this repo works
+**State of the project (2026-11-19).** The newest version is v2.1.0-alpha.15, built on the shipped release and on the
+owner's v2 design (`docs/V2_SPEC.md`). It is an alpha under active work: the plan and what is done are in
+[docs/PROGRESS.md](docs/PROGRESS.md). The end goal is an iPhone app ([docs/IOS_ROADMAP.md](docs/IOS_ROADMAP.md)).
 
-The game's original source is not here. What is here is the shipped release (`vendor/`), and on top of it a set of
-**features**: each one a folder (under `src/<system>/`) that patches the release, adds readable code or events, and tests itself.
-`tools/build.mjs` turns the release plus every feature into `index.html`.
+## Play it
 
-```
-index.html                  the game: release + every feature (built; CI checks it matches)
-CLAUDE.md                   start here: layout, rules, commands, pointers (for humans and agents alike)
-CHANGELOG.md                what changed for the player, version by version
-vendor/                     the untouched release build b593143 (never edited)
-src/<system>/               core, map, world, people, family, nobility, diplomacy, war, economy, events, ui
-  NN-name/                  a feature: one unit of change each; 00-09 are the fix layer, 99990-99999 are v2
-    patches.mjs             exact edits to the minified code, each with a "why"
-    *.core.js               new engine/UI code, appended to the core
-    *.events.js             new events, appended as content packs
-    test.mjs                browser tests for this feature
-    README.md               what it does, why, how it is measured
-    .wip                    out of the build (work in progress)
-  engine/                   that system's v2 engine modules (plain ES modules; tests in tests/v2)
-data/                       content kept as data (JSON), on the page as A.DATA
-assets/                     fonts and art sources, embedded at build time
-archive/                    retired features (the Far Lands, the v2 kit demo), each with a NOTE.md
-tests/                      run.mjs (browser tests), suites/, v2/ (engine tests), saves/ (sample saves)
-tools/                      build, build-v2, check, version, pack/unpack, show, linters, lib/features.mjs
-tools/bench/                measurement harnesses (bot league, balance bands) -> tools/bench/reports/
-tools/v2/                   the v2 kit's demo build, playtest scripts and map renders
-docs/                       HISTORY, DECISIONS, IDEAS, CRITIQUE, V2_SPEC, VERSIONS; plans, reviews, research
-.claude/skills/             the project's skills (playtest loop, life-sim systems, continent maps)
+The built game is not committed to the repo (it is made from the source in a few seconds), so you build or fetch it.
+You need Node 22.15 or newer and a full clone (`git clone`, not a shallow one, for the second way).
+
+```sh
+node tools/build.mjs                       # writes index.html; open it in a recent Chrome, Edge, Firefox or Safari
+node tools/version.mjs list                # every version of the game, oldest first
+node tools/version.mjs get v2.1.0-alpha.15 # writes versions/ardan-v2.1.0-alpha.15.html: that version exactly as it was
 ```
 
-## Versions
+`main` holds only the original upload, so check out `v2-integration` (the branch the game is built on) before building.
+A version's file rebuilds from that commit's own source and is checked against the build hash its row in
+[docs/VERSIONS.md](docs/VERSIONS.md) records. Saves load and save through the game's menu; every version's sample save
+is in `tests/saves/` ([tests/saves/README.md](tests/saves/README.md) says what each shows).
 
-Every foundational or significant change is a version: a row in docs/VERSIONS.md naming the commit whose `index.html` is that version of
-the game. `node tools/version.mjs list` lists them; `node tools/version.mjs get v1.5.0` writes that version's playable
-file to `versions/`. The history is in [docs/VERSIONS.md](docs/VERSIONS.md): v1.0.0 is the shipped release, v1.1-v1.6
-are the rounds and cycles built on it, and v2.0.0-alpha.N are the steps of the owner's v2 spec.
+## Where to start reading
 
-## Branches
+1. [CLAUDE.md](CLAUDE.md): the rules, the layout, every command, how to write events. Written for people and agents alike.
+2. [docs/README.md](docs/README.md): an index of every document, one line each.
+3. [docs/OWNER_ORDERS.md](docs/OWNER_ORDERS.md): every standing order of the owner's, the rules the work is held to.
+4. [docs/PROGRESS.md](docs/PROGRESS.md): the checklist of what is done and what is next.
+5. Then [docs/HISTORY.md](docs/HISTORY.md) (what was done, step by step, and how to undo it), [docs/DECISIONS.md](docs/DECISIONS.md)
+   (what was chosen and why), [docs/V2_SPEC.md](docs/V2_SPEC.md) and [docs/V3_SPEC.md](docs/V3_SPEC.md) (the owner's designs),
+   [CHANGELOG.md](CHANGELOG.md) (what changed for the player, version by version).
+
+## What is in the repo
+
+```
+CLAUDE.md                the rules, layout and commands
+CHANGELOG.md             player-facing changes, one section per version
+src/core/release/        the shipped release as readable source (core/, content/ with its 30 event packs, lore/, page.html)
+src/<system>/NN-name/    a feature: one unit of change (*.core.js code, *.events.js events, test.mjs, README.md)
+src/<system>/engine/     the v2 engine's modules (plain ES modules), bundled by tools/build-v2.mjs
+data/                    content kept as data (JSON), on the page as A.DATA
+assets/                  fonts and art sources, embedded at build time
+vendor/                  the untouched original release (b593143), kept as the record; the build does not read it
+archive/                 retired features and code, each with a NOTE.md; never built
+tests/                   run.mjs (browser tests), suites/, v2/ (engine unit tests), saves/ (sample saves of every version)
+tools/                   build, check, version, linters, bench/ (measurement harnesses)
+docs/                    HISTORY, DECISIONS, PROGRESS and the rest; docs/README.md indexes them
+.claude/skills/          the project's skills (playtest loop, life-sim systems, continent maps, iOS release)
+```
+
+The systems are `core`, `map`, `world`, `people`, `family`, `nobility`, `diplomacy`, `war`, `economy`, `events` and `ui`;
+features apply in folder-name order across all of them. The release's own source is in `src/core/release/`: change it there
+(there are no patches in the default build any more; the 203 old ones are baked in and listed in
+`src/core/release/PATCHES.md`). `node tools/build.mjs` turns all of it into the one file.
+
+## Versions and branches
+
+Every significant change is a version (a row in [docs/VERSIONS.md](docs/VERSIONS.md)). A version is the commit CI tested green on
+both test tiers; `node tools/version.mjs new` writes its row, moves its changelog bullets under its heading and saves a
+sample game, and the commit is pushed as `release/<version>`. `node tools/version.mjs check` keeps the rows, branches, changelog
+headings and sample saves in agreement.
 
 | Branch | What it holds |
 | --- | --- |
-| `main` | The release as uploaded, and the owner's v2 kit |
-| `claude/dreamy-sagan-anwszt` | v1.1 to v1.6: the fix layer, the Road to Ten rounds, cycles 1 and 2 (PR #1 into `main`) |
-| `v2-integration` | v2: the owner's spec built step by step on top of v1.6 (its own PR, stacked on PR #1) |
-| `v2-fix-*` | Work in progress for the next v2 round; merged into `v2-integration`, then deleted |
+| `main` | The original upload of the release (Nov 1). Pull request #1 will bring the rest in |
+| `claude/dreamy-sagan-anwszt` | The base of PR #1: the v1 rounds, and v2 up to alpha.9 |
+| `v2-integration` | Where the work is merged and CI runs. Start from here |
+| `release/<version>` | One per version, at exactly its commit: the restorable record |
+| `work/<item>` | One agent's task, merged whole into `v2-integration` and then deleted |
+| `archive/v2-lanes` | Keeps the unmerged commits of the old v2 lanes reachable |
 
-Finished lane branches are deleted once they are merged; their work lives in the squashed step commits on `v2-integration`.
+[docs/BRANCHES.md](docs/BRANCHES.md) lists every branch on GitHub, which are active and which may be deleted.
 
-## What is in the build
-
-| Feature | Aspect | What it does |
-| --- | --- | --- |
-| `00-security` | Technical | A Content-Security-Policy and a sanitizer for loaded saves; a crafted save can no longer run script |
-| `01-replay` | Technical | Looking at the screen never changes the world; journals replay exactly |
-| `02-content-fixes` | Events | Digit tokens filled (39 events), dropped events restored, text-diet misses |
-| `03-engine-fixes` | Character | Opposite traits, duel bugs, a training plan that follows the life, newborns at court, gendered titles |
-| `04-world-fixes` | Economy, Diplomacy, War | Idle mercenary pay, stacking reparations, AI debt repaid, stability floor, siege resets, a money loop |
-| `05-saves-and-keyboard` | UI, Technical | Failed saves warn, one tab saves at a time, a new life asks first, keyboard reach and focus |
-| `20-ai-personality` | Diplomacy | Ruler traits drive war, alliances, peace and tribute; every decision logged with its reasons |
-| `21-npc-initiative` | Relationships | People you know act first: requests, offers, hostile moves, gifts; a history per bond |
-| `22-chronicle` | Uniqueness | "The Book": your life written as chapters in a chronicler's voice, exportable |
-| `23-after-action` | War | Every battle ends with its three biggest causes ("numbers +40%, the fog −4%"), calibrated against counterfactuals |
-| `24-honest-duel-odds` | Power scaling | Duel odds on screen fitted to 2,100 real duels |
-| `25-variety-guard` | Events | No event again within 10 years; no two of the same shape back to back; pools and NPC moves prefer what you haven't seen |
-| `26-belief-versus-truth` | Uniqueness, World | Signature 2: you know beasts and secrets only as far as you learned them; far news is hearsay, corrected later; your legend grows in the telling |
-| `27-accessibility` | UI | WCAG 2.2 AA clean across 24 screens (axe) |
-| `28-endings` | Replayability | 20 named endings and 9 manners of death, an epilogue of what became of them, a collection |
-| `29-starting-stories` | Replayability | 20 hand-made starting stories, each with an opening scene and a callback years later |
-| `30-get-to-know` | Relationships | A first meeting is a scene: four approaches, odds set by the person's traits, read in advance by a sharp eye |
-| `31-learn-by-doing` | Character | Using a skill teaches more than drilling it, a failure more than a success; a monthly summary of what you gained |
-| `32-legend-and-master-caps` | Power scaling | A census of the living Legends and Masters, a Master cap per realm, the living ladder in the Codex |
-| `33-no-obvious-choices` | Events | 19 events where one choice beat the rest on every count, fixed; `tools/lint-choices.mjs` keeps it so |
-| `34-squad-and-front-panels` | Uniqueness | Signature 3: after a war-map fight, what you saw, the front, and what the chronicle will say, side by side |
-| `35-moods` | Character | Four needs (rest, company, purpose, comfort) that drift toward what your life gives you, a mood that reads them, and 14 scenes |
-| `36-sieges` | War | Sieges you play: a choice a month from either side of the wall, camp sickness, and the sack or the terms at the end |
-| `37-named-squad` | War | Your named men learn on missions, earn a standing (seasoned, veteran, old hand) and carry the odds; you see their record |
-| `38-orders` | War | Generals with a temper (bold, cautious, cunning) that changes how their army fights, a plan the war room shows, and orders by letter that the map judges sixty days later |
-| `39-schemes` | Relationships | Plots that run for months (sway, befriend, seduce, slander, murder) with a risk of being found out, and enemies who plot against you |
-| `41-friend-circles` | Relationships | Friend circles that form as you meet people, first impressions that follow them, word that gets around, and cliques you can join |
-| `42-difficulty` | Balance | Story, Hard and Realism change the odds you see and how fast wounds, illness and prison pass, not only how often you die |
-| `43-varied-worlds` | Replayability | A menu game starts in a varied world: fortunes, borders moved by older wars, feuds and broken alliances differ each run |
-| `44-rank-battles` | War | A soldier's line battle and an officer's tactical battle now move the war-map fight they belong to: 12 and 19 points of win rate, best against worst |
-| `45-economy` | Economy | Goods made by the land, eaten by people and armies, carried by caravans; prices follow stocks, a famine triples bread, and the best trade loop no longer beats a farm |
-| `46-life-arcs` | Replayability | A middle-years undertaking and a last-years legacy for each path, scenes years apart whose choices carry forward; shown on the Life tab |
-| `47-realm-customs` | World | Each realm's want, fear, place and three customs; 102 customs the engine keeps (dues, rites, estates, weddings, naming, levies, wards), met first as a scene to keep or defy; words for every culture |
-| `48-event-fight-rules` | Power | Every event fight audited against the ladder; 185 fight choices roll on fighting worth with honest odds, group fights on tier math, wounds that drop tiers, the math shown |
-| `49-body-mind` | Character | Wounds by body part, illness over months with treatment choices, traits earned by deeds with reasons, actions of each life stage, dead numbers folded; risky activities refused when hurt |
-| `50-arcs-kin` | Events | 13 family story arcs of 3–6 stages over years (a secret child, a blood feud, an heir's fall) |
-| `51-arcs-rivals` | Events | 13 arcs of rivals and ambition (a rival's rise, an apprentice who passes you, a moneylender), with the same people from first scene to last |
-| `52-arcs-world` | Events | 13 arcs of the world's troubles (plague, flood, siege, heresy) tied to real harvests and wars, some changing the map |
-| `53-arcs-things` | Events | 13 arcs of things with a history (a famous sword, a horse, a house) |
-| `54-character-voices` | Events | Sayings, oaths, greetings and words of rank for 24 cultures; NPC lines that match their traits |
-| `55-bonds` | Relationships | Weighted, fading history per bond that moves opinion and is cited; secrets and leverage; feuds carried by families and realms across rulers |
-| `56-court-and-treasury` | Diplomacy, Economy | Councils of named people with wants and fears; laws and taxes pushed by people; vassal deals and backed claimants; AI gold spent; the player's money sinks |
-| `57-world-chronicle` | World | A dated record of the whole run that scenes cite; "The world in your time" in the book and an Annals view |
-| `58-event-cut` | Events, Uniqueness | 836 weak release events retired by audit (a setting restores them); war screens shown only to those who can use them |
-| `59-descriptions` | UI | Nested tooltips on every number of the profile and top bar, by hover, tap or Enter |
-| `60-unit-drill` | War | Drill per division gates formations and counters (a drilled wall beats a charge), and the report says so |
-| `61-illuminated-chronicle` | Visual art | A woodcut for every event, the Chronicle on vellum, ink and paper motion, synthesized sounds; the style guide is `docs/art/style-guide.md` |
-| `62-inked-map` | Visual art | The world map in ink on parchment, with more detail as you zoom, and standards with the house's charge for armies |
-| `63-miniature-portraits` | Visual art | Portraits as painted miniatures: ink faces that age and scar, culture dress, poses, children and swaddled newborns |
-| `64-npc-beliefs` | Uniqueness | People and courts hold beliefs about you, others, battles and beasts, some false, which move opinion and can be corrected |
-| `65-mods` | Replayability | Player mods as JSON data: events and realm flavour, checked, escaped and recorded in the save |
-| `66-markets` | Economy | A market in every town, with prices that grow with distance from where a good is made, and carts you can carry between them |
-| `67-choice-memories` | Events | Choices leave memories (who, what, when), and later scenes add a line that answers to them |
-| `68-reasons-for-war` | Diplomacy | Every war names its reason; grudges wait for the right moment, and debts are paid back in war |
-| `69-every-number-counts` | Character | Every stat and skill touches at least 5 outcomes in a life; the dead ones were merged |
-| `70-fresh-realms-and-tensions` | Replayability | Fresh small realms and starting tensions each run, so lives sort into many arc types |
-| `71-phone` | UI and UX | The phone layout on its own: thumb-sized cards, a bottom bar, WCAG AA contrast and targets |
-| `72-one-battle-two-scales` | Uniqueness | The squad and the front together: a common soldier's fight and the war it moves, on one page |
-| `73-music-score` | Visual art | A quiet score for each land, off by default: a drone, one voice and long silences, six synthesized instruments |
-| `74-old-age` | Character | 119 old-age events, the deathbed and a death screen that remembers the life |
-| `75-fair-checks` | Character | A scene's odds fit your stage of life, so the young are not set up to fail; untrained or hurt still means long odds |
-| `40-memory-*` (8 chunks) | Events | 471 callbacks that bring back 269 memories the release recorded and never used |
-
-How far each moved the game is measured in `tools/bench/reports/scorecard.md`; the plan for the rest is in `docs/north-star/`.
-
-## Commands
-
-Needs Node 22.15+ (built-in zstd).
+## Tests
 
 ```sh
-npm install && npx playwright install chromium   # once
-npm run build                                    # -> index.html
-npm test                                         # every test against index.html
-npm run test:original                            # the same tests against the untouched release
-node tools/build.mjs --out=/tmp/x.html --only=chronicle   # fixes + one feature, elsewhere
-node tools/lint-events.mjs --feature=chronicle --html=/tmp/x.html
-node tools/lint-choices.mjs --all-features                 # no event a feature adds may have an obviously best choice
-node tools/bench/balance.mjs                                    # each starting path's numbers held to tools/bench/targets.mjs
-node tools/build.mjs --unpack && node tools/show.mjs A.fightWorth
+npm install && npx playwright install chromium    # once
+node tools/check.mjs                              # everything CI runs: build, v2 engine tests, linters, browser tests, balance
+node tests/run.mjs /tmp/me.html --features=my-feature   # core suites plus one feature's tests
+node --test tests/v2/*.test.js                    # the v2 engine's unit tests
 ```
 
-**Port to the real source.** Every patch's `why` is written so it can be ported. A release from the original source without them brings the bugs back.
+There are 961 browser tests (2026-11-19), in two tiers (T1, D-063). The **quick** tier (898 tests) runs on every push
+and pull request (`check.yml`, eight shards, about 13 minutes of tests each). The **long** tier (63 tests: bot lives and
+replays of several minutes each, listed in `tests/long-tests.json`) runs every night and on release branches and `[full ci]`
+pushes (`long.yml`, which also plays the balance league that holds each starting path's numbers to its bands); a version
+needs both green. `nightly.yml` adds larger balance, exploit and customs checks. A test fails on any uncaught error and any `console.error`. A change that moves the random stream moves
+every seeded world, so a test must test the rule, not one world's luck (CLAUDE.md, "World-robust tests").
+
+## Rules the build keeps
+
+Pointer events only and nothing that needs hover, layout from 375x667 up, relative paths and no network (the game is meant to
+ship as an iPhone app), rendering that is pure and never draws from the seeded random stream, every value put in HTML escaped,
+no inline handlers and no `eval`. [CLAUDE.md](CLAUDE.md) has the full list.

@@ -1,5 +1,7 @@
 # Ardan v2 kit
 
+> **Historical (as of 2026-11-19).** This describes the v2 kit as the owner delivered it on Nov 1 (a zip of drop-in modules and a 24-test suite). The kit was integrated step by step and its modules now live in `src/<system>/engine/` (bundled by `tools/build-v2.mjs`; tests in `tests/v2/`); the file paths named below (`src/`, `tests/`, `docs/v2-kit-integration-prompt.md`) are the kit's own, not this repo's. For today's state see [PROGRESS.md](../PROGRESS.md) and `CLAUDE.md` ("The v2 engine"). Kept for the record, not maintained.
+
 Tested drop-in modules that fix the Ardan complaint list. Plain ES modules, no dependencies, deterministic from a seed.
 
 - `docs/V2_SPEC.md`: each complaint mapped to its fix, module and test, plus the integration plan

@@ -1,5 +1,7 @@
 # World expansion: how the world is built, and how to make it much larger
 
+> **Historical (as of 2026-11-19).** This reads the world's code as of Oct 26, when the build was the minified release (`vendor/`) plus patches. The release has since become readable source in `src/core/release/` (X1, D-028) and the map is being redesigned (see [PROGRESS.md](../PROGRESS.md)), so function names, line counts and timings here are out of date; the reasoning still reads. Kept for the record, not maintained.
+
 Oct 26, 2026 · read from the release (`vendor/ardan-b593143.html`) and the full build of 83 features
 (`node tools/build.mjs --out=/tmp/ardan/arch/x.html --unpack=/tmp/ardan/arch/blobs`). Function names are as
 `tools/show.mjs` prints them. The timings were taken on this shared 4-core machine at load 3 to 8, one browser at a
