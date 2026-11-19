@@ -11,7 +11,7 @@ brought into line with it (order 71, D-151).
 | --- | --- |
 | `map-design.md` | This page |
 | `design-sketch.png` | The sketch: the continent as designed, with realms, borders, capitals, rivers, roads and names |
-| `design-on-picture.png` | The same borders, rivers and names laid over the owner's picture, to check the design against it |
+| `design-on-picture.jpg` | The same borders, rivers and names laid over the owner's picture, to check the design against it |
 | `reference/owner-continent.webp` | The owner's picture (order 73) |
 | `design/seats.tsv` | **Authored.** The 306 provinces, each with its seat (a pixel of the picture) and why the seat stands there |
 | `design/features.json` | **Authored.** The frame, the edits, every water, river, range, peak, pass, region, road, sea lane, isle, ferry, border line and ground word |
@@ -39,7 +39,7 @@ Its parts, as the design names them:
 - **West:** a dark red volcanic massif. A peninsula under it reaches west, with two islands off its cape. South of that a
   bright green lowland behind a wall of coast hills.
 - **Middle:** a ridge of mountains running east and west. North of it lie a long lake in the west, yellow grass, and a
-  forked lake in the east. South of it lies a long narrow lake with islets, the largest water inside the land.
+  forked lake in the east. South of it lies a long narrow lake with islets, the longest water inside the land.
 - **South-centre:** a sand desert in a basin ringed by ranges, with one river running north through it to the long lake.
 - **East:** a river running south from near the great northern lake through a trench between a low forest ridge and a high
   snow range, into a crooked lake, and out south-east to a gulf. East of the snow range a green coastal plain, a high
@@ -182,7 +182,7 @@ Five things made this land, and each explains ground the picture paints and good
    carry tin (Frostholm). Amber washes out of old forest beds along the low north-western shore (the Amber Strand).
 5. **The east is tearing apart: the Great Rift.** A crack in the crust runs from the Highveld north down the Long Rift
    (the Monuti's valley) to the Middle Sea's east end, north-east along the Santora to the Grey Water, and north up the
-   Grey Channel to the Western Lakes: 3,500 km. Its floor holds the lakes and the rivers. Its shoulders are pushed up: the
+   Grey Channel to the Western Lakes: about 3,500 km along its floor. Its floor holds the lakes and the rivers. Its shoulders are pushed up: the
    Highveld and the Worldspine in the south, the Roof and the East Rift Heights on the east side (the higher shoulder),
    the low Rift Heights on the west. Rifts leak fire: Redcrown glows, Smokewell vents sulfur, Emberdeep's forges are
    heated by the ground. Where the rift's water breaks out to the east it has cut the Gullet. A rift floor is also where
@@ -231,7 +231,7 @@ The open sea has four names by its side of the land, and the named waters lie wi
 | The Southern Ocean | ocean | South | Zanara; Abara's short south coast; the Western Veld |
 | The Sunrise Sea | ocean | East | Ughrak, Skyhold, Emberdeep; the Sunrise Isles |
 | The Elder Sea | sea | Off the north-west, full of islands | Eldergrove |
-| The North Fjords | bay | The bays the Calara runs into | Sylvaran, Eldergrove's Ithira, Aldmark's Amberwick |
+| The North Fjords | bay | The bays the Calara runs into | Sylvaran, Eldergrove's Ithira |
 | Amber Bay | bay | The outer bay at the mouth of the Cold Narrows | Northreach (Coldhaven), Aldmark's Copperton, Frostholm across it |
 | The Cold Narrows | strait | 150 km long, 20 km wide, from Amber Bay to Cold Bay | Northreach the east bank, Aldmark the west |
 | Cold Bay | bay | The round northern water, 45,700 km2 | Aldmark (Easterham, Eagleburg, the fens), Northreach's south shore |

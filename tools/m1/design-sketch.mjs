@@ -10,7 +10,7 @@
 //      more to cross, so borders fall on ridges and rivers;
 //   4. checks the design's rules: every seat on land, each realm one piece (islands aside), no realm enclosed by another;
 //   5. writes design/land.png, design/provinces.png, design/build.json and design/tables.md;
-//   6. draws design-sketch.png (the clean map) and design-on-picture.png (the same lines over the owner's picture).
+//   6. draws design-sketch.png (the clean map) and design-on-picture.jpg (the same lines over the owner's picture).
 // Nothing here is game code: it is the design's drawing board. Deterministic: no clock, no random draw.
 //   node tools/m1/design-sketch.mjs [--dir=docs/design/m1] [--scale=4] [--quiet]
 import fs from 'node:fs';
@@ -609,6 +609,7 @@ for (const mode of ['sketch', 'picture']) {
     text(dark ? 'ARDAN: the design laid on the owner\'s picture' : 'ARDAN: the one continent', pad * 1.6, pad + K * 2.5, { size: K * 5, bold: true, align: 'left', col: ink, halo: 4 });
     text(dark ? 'the same borders, rivers and names as design-sketch.png, over docs/design/m1/reference/owner-continent.webp' : 'design sketch for map version 4, from the owner\'s picture (order 73, D-153). 700 x 450 cells of 10 km.', pad * 1.6, pad + K * 7.4, { size: K * 2.3, align: 'left', col: ink });
     const sx = pad * 1.6, sy = HPX - pad * 1.5, per = K / CELL; g.fillStyle = ink; g.fillRect(sx, sy, 2000 * per, K * 0.6);
+    if (dark) text('the game\'s scale (10 km cells); the picture\'s own bar above is not used', sx + 2000 * per + K * 2, sy - K * 5.2, { size: K * 2.1, align: 'left', col: ink });
     for (const km of [0, 500, 1000, 1500, 2000]) { g.fillStyle = ink; g.fillRect(sx + km * per - K * 0.15, sy - K, K * 0.3, K * 1.6); text(km ? km.toLocaleString('en') + (km === 2000 ? ' km' : '') : '0', sx + km * per, sy - K * 2.6, { size: K * 2.3, col: ink }); }
     const nx = WPX - pad * 2.4, ny = pad * 3; g.beginPath(); g.moveTo(nx, ny - K * 5); g.lineTo(nx + K * 1.6, ny + K * 2); g.lineTo(nx, ny + K); g.lineTo(nx - K * 1.6, ny + K * 2); g.closePath(); g.fillStyle = ink; g.fill(); text('N', nx, ny - K * 7, { size: K * 3.2, bold: true, col: ink });
     // the key
@@ -623,8 +624,8 @@ for (const mode of ['sketch', 'picture']) {
     item((x, y) => { g.strokeStyle = dark ? '#ffe9a0' : '#5a3d1e'; g.lineWidth = K * 0.4; x += K * 2; g.beginPath(); g.moveTo(x - K * 1.1, y - K); g.lineTo(x - K * 0.35, y); g.lineTo(x - K * 1.1, y + K); g.moveTo(x + K * 1.1, y - K); g.lineTo(x + K * 0.35, y); g.lineTo(x + K * 1.1, y + K); g.stroke(); }, 'pass or gate');
     item((x, y) => { g.fillStyle = 'rgb(160,160,150)'; g.fillRect(x, y - K * 1.1, K * 4.4, K * 2.2); }, 'grey ground: the wilds, no realm\'s');
   }, { D: { ...drawData, capitalProv }, mode });
-  const file = path.join(DIR, mode === 'sketch' ? 'design-sketch.png' : 'design-on-picture.png');
-  await (await pg.$('#c')).screenshot({ path: file });
+  const file = path.join(DIR, mode === 'sketch' ? 'design-sketch.png' : 'design-on-picture.jpg');
+  await (await pg.$('#c')).screenshot(mode === 'sketch' ? { path: file } : { path: file, type: 'jpeg', quality: 86 });
   say('drew ' + path.relative(process.cwd(), file));
 }
 // --ascii="x,y,w,h" (picture pixels): the grid's water there, one character a cell: # land, ~ sea, o lake, @ a seat
