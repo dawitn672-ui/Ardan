@@ -166,8 +166,8 @@ Land: 126,642 cells (12,664,200 km2, 40.2% of the frame); the continent 124,287 
 | 53 | Ranpur | Ranpur | capital city | 5305, 3045 | 63,200 | plains | the Eastern Gulf, the Chanpur, the Gullet | the Chanpur's mouth on the Eastern Gulf |
 | 54 | Chanari | Ranpur | city | 5095, 2935 | 75,900 | plains | the Reed Water, the Chanpur, the Gullet | the steel town in the Worldspine's foothills, on the Chanpur |
 | 55 | Tiravi | Ranpur | town | 5085, 2765 | 22,300 | hills | the Reed Water, the Gullet | the Nagora March under the pass (Tirpur fort) |
-| 56 | Madora | Ranpur | market town | 5275, 3285 | 55,800 | plains | the Eastern Gulf, the Madora | the river-mouth fort and teak harbour of the south coast |
-| 57 | Ekapur | Ranpur | market town | 5255, 3165 | 41,500 | plains | the Eastern Gulf, the Chanpur | shore town south of the capital |
+| 56 | Madora | Ranpur | market town | 5275, 3285 | 55,800 | forest | the Eastern Gulf, the Madora | the river-mouth fort and teak harbour of the south coast |
+| 57 | Ekapur | Ranpur | market town | 5255, 3165 | 41,500 | forest | the Eastern Gulf, the Chanpur | shore town south of the capital |
 | 58 | Varenna | Varenna | capital city | 1565, 2625 | 17,300 | forest | the Lion Gulf, the Palella | the Palella's mouth on the Lion Gulf, the only river gate through the coast hills |
 | 59 | Ardata | Varenna | town | 2785, 1845 | 79,900 | plains | the Glenmere, the Glenwash, the Skardush | march town at the east end of the Glenmere, under the Albora Sill |
 | 60 | Camia | Varenna | city | 2135, 2415 | 46,400 | plains | the Crowmere, the Palella | weaving town on the middle Palella |
@@ -295,7 +295,7 @@ Land: 126,642 cells (12,664,200 km2, 40.2% of the frame); the continent 124,287 
 | 182 | Agbay Yam | Ulun | yam station | 4885, 1885 | 24,300 | steppe | the Grey Channel, the Ostec | yam station on the channel shore |
 | 183 | Altsa Yam | Ulun | yam station | 4845, 2005 | 46,100 | steppe | the Grey Water, the Grey Channel | yam station at the Erkent landings of the Sea Wind |
 | 184 | Grakmar | Ughrak | capital city | 5585, 1405 | 38,200 | steppe | the Sunrise Sea | the War-Mother's camp in the middle of the grass |
-| 185 | Drukgar Stockade | Ughrak | ring-fort | 5605, 1105 | 113,700 | steppe | the Sunrise Sea | northern fort at the forest edge |
+| 185 | Drukgar Stockade | Ughrak | ring-fort | 5605, 1105 | 113,700 | forest | the Sunrise Sea | northern fort at the forest edge |
 | 186 | Oggoth Oasis | Ughrak | oasis | 5775, 1555 | 84,000 | steppe | the Sunrise Sea | wells by the coast hills |
 | 187 | Tukgar Stockade | Ughrak | ring-fort | 5415, 1515 | 67,100 | steppe |  | fort under the Mirovo Gap (the Kraoth toll camp) |
 | 188 | Vashuk Oasis | Ughrak | oasis | 5405, 1255 | 120,900 | steppe |  | wells of the Turquoise Hills, on the east face of the Rift Heights |
@@ -393,7 +393,7 @@ Land: 126,642 cells (12,664,200 km2, 40.2% of the frame); the continent 124,287 
 | 280 | Qarifa | Qadir | market town | 1815, 2935 | 25,600 | plains | the Saman | the Saman mills |
 | 281 | The Free Marches | the wilds | unclaimed land | 5335, 2525 | 194,100 | forest | the Reed Water, the Gullet, the Tirana | the forested lowland between the Gullet, the Roof and the Ember Mountains |
 | 282 | The Frostfells | the wilds | unclaimed land | 4075, 715 | 85,400 | mountains | the Northern Ocean | the snow range north-west of the Western Lakes |
-| 283 | The Whale Woods | the wilds | unclaimed land | 5615, 785 | 64,300 | plains | the Northern Ocean, the Seal Lagoon | the forest cape east of Whale Sound |
+| 283 | The Whale Woods | the wilds | unclaimed land | 5615, 785 | 64,300 | forest | the Northern Ocean, the Seal Lagoon | the forest cape east of Whale Sound |
 | 284 | The High Wastes | the wilds | unclaimed land | 5805, 1725 | 22,300 | mountains | the Sunrise Sea | the coast mountains north-east of the Roof |
 | 285 | The Amber Wilds | the wilds | unclaimed land | 5465, 4165 | 19,900 | forest | the Sunrise Sea | the hill interior of Great Amber |
 | 286 | The Isle of Pearls | the wilds | unclaimed land | 5775, 4085 | 4,900 | forest | the Sunrise Sea | the pearl isle east of Great Amber |
@@ -401,20 +401,20 @@ Land: 126,642 cells (12,664,200 km2, 40.2% of the frame); the continent 124,287 
 | 288 | The Burning Waste | the wilds | unclaimed land | 4435, 2905 | 42,800 | hills |  | the bare ranges between the Long Rift and the Worldspine, which no clan grazes |
 | 289 | The Western Veld | the wilds | unclaimed land | 2425, 3515 | 37,800 | plains | the Southern Ocean, the Veld Lagoon | the south-west peninsula |
 | 290 | The Thornveld | the wilds | unclaimed land | 4975, 3555 | 29,200 | hills |  | the dry head of the south-east peninsula |
-| 291 | The Deep Green | the wilds | unclaimed land | 4525, 3795 | 49,800 | plains | the Southern Ocean, the Spice Sea | the rainforest cape |
+| 291 | The Deep Green | the wilds | unclaimed land | 4525, 3795 | 49,800 | forest | the Southern Ocean, the Spice Sea | the rainforest cape |
 | 292 | The Western Highlands | the wilds | unclaimed land | 1555, 1555 | 19,400 | hills | the Long Firth | the coast heights between the Elder Coast and Ashmere |
 | 293 | The Ashlands | the wilds | unclaimed land | 1295, 2125 | 130,100 | plains | the Lion Gulf, the Strait of Hael, the Western Ocean | the western peninsula under Mount Hael |
 | 294 | The Pinewild | the wilds | unclaimed land | 3775, 765 | 85,600 | mountains |  | the pine fells between Cold Bay and the Frostfells |
 | 295 | The Little Amber Wilds | the wilds | unclaimed land | 5825, 4155 | 1,300 | forest | the Sunrise Sea | the lesser isle |
 | 296 | The Bleakfold | the wilds | unclaimed land | 1745, 1585 | 34,100 | forest | the Bleak Water | the bare heights behind the Western Highlands |
-| 297 | The Tverko Woods | the wilds | unclaimed land | 5855, 885 | 34,300 | plains | the Northern Ocean, the Seal Lagoon, the Sunrise Sea | the north-east cape and the northern Sunrise Isles |
+| 297 | The Tverko Woods | the wilds | unclaimed land | 5855, 885 | 34,300 | forest | the Northern Ocean, the Seal Lagoon, the Sunrise Sea | the north-east cape and the northern Sunrise Isles |
 | 298 | The Trolness Fells | the wilds | unclaimed land | 3905, 375 | 105,600 | mountains | the Northern Ocean | the ice coast north of the Iron Mountains |
 | 299 | The Mammoth Downs | the wilds | unclaimed land | 3645, 895 | 132,400 | forest | the Iron Tarn, the Stagflow | the downs between Northreach, the Crossmarch and the Pinewild |
 | 300 | The Dobava Wilds | the wilds | unclaimed land | 5255, 2105 | 30,100 | forest |  | Mount Dobava, the spur between the Neck road and the Roof |
 | 301 | The Stairwood | the wilds | unclaimed land | 5365, 1755 | 42,800 | forest | the Ostec | the forest stair between Velgrad and the Roof |
-| 302 | The Mirun Pines | the wilds | unclaimed land | 2795, 3165 | 73,700 | plains |  | the pine hills west of the Southern Hills |
+| 302 | The Mirun Pines | the wilds | unclaimed land | 2795, 3165 | 73,700 | forest |  | the pine hills west of the Southern Hills |
 | 303 | The Samuma Uplands | the wilds | unclaimed land | 2365, 3385 | 48,000 | forest | the Southern Ocean, the Veld Lagoon | the uplands south of the Gulf of Sands |
-| 304 | The Lunora Woods | the wilds | unclaimed land | 4515, 2175 | 35,400 | plains | the Santora | the wooded hills between the Castina and the Grey Water, north of the Santora |
+| 304 | The Lunora Woods | the wilds | unclaimed land | 4515, 2175 | 35,400 | forest | the Santora | the wooded hills between the Castina and the Grey Water, north of the Santora |
 | 305 | The Firststone Hills | the wilds | unclaimed land | 2275, 1755 | 64,400 | hills | the Glenmere, the Clarora | the ash plain at the Glenmere's west end |
 
 ## Borders

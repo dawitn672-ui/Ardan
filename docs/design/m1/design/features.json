@@ -78,7 +78,8 @@
     {"name": "the shoals", "a": 205, "b": 206},
     {"name": "the Amber Strait", "a": 212, "b": 111, "note": "Monuro to Amberport"},
     {"name": "the Pearl crossing", "a": 113, "b": 286},
-    {"name": "the lesser crossing", "a": 286, "b": 295}
+    {"name": "the lesser crossing", "a": 286, "b": 295},
+    {"name": "the marsh boats", "a": 147, "b": 136, "note": "the Marsh Isles to the Greenmire"}
   ],
   "rivers": [
     {"name": "the Calara", "from": "Lake Silara", "to": "the North Fjords", "line": [[447, 283], [449, 262], [445, 240], [441, 222], [440, 212]], "border": true},
@@ -246,7 +247,13 @@
     {"name": "the Lakeland woods", "ground": "forest", "from": ["grass", "scrub", "steppe"], "why": "the wooded shores of the Western Lakes, cleared round the towns", "poly": [[905, 232], [960, 205], [985, 235], [1010, 270], [1050, 272], [1040, 292], [985, 292], [960, 305], [920, 290]]},
     {"name": "the Long Rift's flood plain", "ground": "grass", "from": ["desert", "scrub", "steppe"], "why": "the black earth the Monuti's flood leaves, a day's walk wide", "poly": [[838, 562], [862, 566], [870, 596], [876, 606], [884, 632], [876, 652], [862, 676], [846, 676], [852, 650], [862, 632], [850, 606], [846, 590]]},
     {"name": "the Red Waste's western lobe", "ground": "desert", "from": ["scrub", "grass", "steppe"], "why": "the stony west of the basin, in the lee of the Marble Mountains and the Sunwall", "poly": [[535, 628], [600, 596], [700, 566], [730, 600], [720, 680], [700, 722], [620, 712], [540, 684]]},
-    {"name": "the spice isles", "ground": "jungle", "from": ["grass", "scrub", "forest"], "why": "wet forest to the shore", "poly": [[1160, 890], [1220, 880], [1330, 925], [1330, 990], [1170, 990]]}
+    {"name": "the spice isles", "ground": "jungle", "from": ["grass", "scrub", "forest"], "why": "wet forest to the shore", "poly": [[1160, 890], [1220, 880], [1330, 925], [1330, 990], [1170, 990]]},
+    {"name": "the Whale Woods and the Tverko Woods", "ground": "taiga", "from": ["grass", "scrub", "forest"], "why": "the cold forest cape", "poly": [[1232, 140], [1340, 140], [1345, 215], [1240, 212]]},
+    {"name": "the Lunora Woods", "ground": "forest", "from": ["grass", "scrub"], "why": "the wooded hills north of the Santora", "poly": [[975, 478], [1040, 470], [1052, 515], [990, 524]]},
+    {"name": "the Mirun Pines", "ground": "forest", "from": ["grass", "scrub", "desert"], "why": "pine hills", "poly": [[565, 700], [636, 700], [642, 746], [565, 746]]},
+    {"name": "the Deep Green", "ground": "jungle", "from": ["grass", "scrub", "forest"], "why": "the rainforest cape", "poly": [[985, 845], [1036, 845], [1040, 926], [985, 926]]},
+    {"name": "the teak coast", "ground": "forest", "from": ["grass", "scrub"], "why": "Ranpur's monsoon forest south of the Chanpur", "poly": [[1140, 712], [1200, 706], [1206, 790], [1150, 796]]},
+    {"name": "the Drukgar woods", "ground": "taiga", "from": ["grass", "scrub", "steppe", "forest"], "why": "the forest edge of the eastern steppe", "poly": [[1212, 206], [1300, 206], [1296, 252], [1214, 256]]}
   ],
   "labels": {
     "about": "Where a word is drawn on the sketches when its own place collides with another: realm and wild names at a picture pixel [x, y(, turn in radians)], capital names by an offset in cells from the dot, waters by an offset in pixels. Drawing only: nothing here moves a border.",

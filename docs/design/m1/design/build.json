@@ -3285,10 +3285,9 @@
    "rivers": [
     "the Madora"
    ],
-   "ground": "plains",
+   "ground": "forest",
    "cover": [
-    "scrub",
-    "grass"
+    "forest"
    ],
    "height": 0.09,
    "adj": [
@@ -3320,9 +3319,9 @@
    "rivers": [
     "the Chanpur"
    ],
-   "ground": "plains",
+   "ground": "forest",
    "cover": [
-    "scrub",
+    "forest",
     "grass"
    ],
    "height": 0.08,
@@ -4277,8 +4276,8 @@
    "ground": "plains",
    "cover": [
     "scrub",
-    "grass",
-    "jungle"
+    "jungle",
+    "grass"
    ],
    "height": 0.12,
    "adj": [
@@ -6012,7 +6011,9 @@
     138,
     140
    ],
-   "sea": [],
+   "sea": [
+    147
+   ],
    "site": "the Greenmire on the north bay"
   },
   {
@@ -6379,7 +6380,9 @@
    ],
    "height": 0.07,
    "adj": [],
-   "sea": [],
+   "sea": [
+    136
+   ],
    "site": "the Marsh Isles off the Greenmire"
   },
   {
@@ -7445,7 +7448,8 @@
    "ground": "steppe",
    "cover": [
     "grass",
-    "steppe"
+    "steppe",
+    "forest"
    ],
    "height": 0.08,
    "adj": [
@@ -7681,10 +7685,9 @@
     "the Sunrise Sea"
    ],
    "rivers": [],
-   "ground": "steppe",
+   "ground": "forest",
    "cover": [
-    "steppe",
-    "grass"
+    "taiga"
    ],
    "height": 0.24,
    "adj": [
@@ -8053,7 +8056,8 @@
    ],
    "ground": "plains",
    "cover": [
-    "grass"
+    "grass",
+    "forest"
    ],
    "height": 0.08,
    "adj": [
@@ -10995,9 +10999,9 @@
     "the Seal Lagoon"
    ],
    "rivers": [],
-   "ground": "plains",
+   "ground": "forest",
    "cover": [
-    "grass",
+    "taiga",
     "ice"
    ],
    "height": 0.32,
@@ -11249,10 +11253,9 @@
     "the Spice Sea"
    ],
    "rivers": [],
-   "ground": "plains",
+   "ground": "forest",
    "cover": [
-    "jungle",
-    "grass"
+    "jungle"
    ],
    "height": 0.13,
    "adj": [
@@ -11446,8 +11449,9 @@
     "the Sunrise Sea"
    ],
    "rivers": [],
-   "ground": "plains",
+   "ground": "forest",
    "cover": [
+    "taiga",
     "grass"
    ],
    "height": 0.11,
@@ -11617,11 +11621,9 @@
    "lake": false,
    "waters": [],
    "rivers": [],
-   "ground": "plains",
+   "ground": "forest",
    "cover": [
-    "grass",
-    "forest",
-    "scrub"
+    "forest"
    ],
    "height": 0.2,
    "adj": [
@@ -11686,9 +11688,9 @@
    "rivers": [
     "the Santora"
    ],
-   "ground": "plains",
+   "ground": "forest",
    "cover": [
-    "grass"
+    "forest"
    ],
    "height": 0.19,
    "adj": [
@@ -14701,6 +14703,12 @@
    "name": "the lesser crossing",
    "a": 286,
    "b": 295
+  },
+  {
+   "name": "the marsh boats",
+   "a": 147,
+   "b": 136,
+   "note": "the Marsh Isles to the Greenmire"
   }
  ],
  "borders": [
