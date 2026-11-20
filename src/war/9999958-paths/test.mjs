@@ -48,6 +48,7 @@ export default {
   },
 
   // war.md §14.1: the roads differ: a lancer, an archer, a sapper and a scout, the same man in the same world, two years in
+  // (each road's key skill is read from the road's own effort; the whole growth, the world's share in it, is in the detail)
   // arms at peace: each grows his own road's skills more than the others' roads' (what each trains differs), and the
   // month's effort follows his talent (a gifted hand gets more of it)
   async paRoadsDiffer(pg) {
@@ -60,13 +61,26 @@ export default {
           if (!pc) return null;
           PAT.zero(pc); for (const k of Object.values(KEY)) PAT.SV(pc, k, 12);
           const x0 = {}; for (const k of Object.values(KEY)) x0[k] = A.SK.view(pc)[k] ? JSON.stringify(pc.sk[k]) : '';
-          const lv0 = {}; for (const k of Object.values(KEY)) lv0[k] = (pc.sk[k] || {}).lv * 1000 + ((pc.sk[k] || {}).xp || 0);
-          for (let m = 0; m < 24 && pc.alive && pc.mil; m++) {
-            A.S.wars = A.S.wars.filter(w => !w.att.includes(pc.realm) && !w.def.includes(pc.realm)); A._idIdx = null;
-            A.advance(31); let h, g = 0; while ((h = A.headReady()) && g++ < 60) { if (h.type === 'event') A.eventAuto(); else A.skipPrompt(); }
-          }
+          const val = k => (pc.sk[k] || {}).lv * 1000 + ((pc.sk[k] || {}).xp || 0);
+          const lv0 = {}; for (const k of Object.values(KEY)) lv0[k] = val(k);
+          // the road's own training (its months of effort; A.gainXp queues them for the month's pass), apart from what the
+          // world sends him (a patrol, his own chosen practice, the troop's duty): M1's designed world sent an archer after
+          // brigands and taught him more tracking than the scout's road did in a world where the scout was promoted early
+          // (H-082: the rule, not one world's luck)
+          const road = {}, P = A.PATHS.of(pc), g0 = A.gainXp;
+          A.gainXp = function (p, k, e, c) {
+            if (p === pc && P && c && typeof c.why === 'string' && c.why.indexOf(P.name + ':') === 0 && Object.values(KEY).includes(k)) road[k] = (road[k] || 0) + (+e || 0);
+            return g0.apply(this, arguments);
+          };
+          try {
+            for (let m = 0; m < 24 && pc.alive && pc.mil; m++) {
+              A.S.wars = A.S.wars.filter(w => !w.att.includes(pc.realm) && !w.def.includes(pc.realm)); A._idIdx = null;
+              A.advance(31); let h, g = 0; while ((h = A.headReady()) && g++ < 60) { if (h.type === 'event') A.eventAuto(); else A.skipPrompt(); }
+            }
+          } finally { A.gainXp = g0; }
           if (!pc.alive || !pc.mil) return null;
-          const gain = {}; for (const k of Object.values(KEY)) gain[k] = Math.round((((pc.sk[k] || {}).lv * 1000 + ((pc.sk[k] || {}).xp || 0)) - lv0[k]) * 10) / 10;
+          const gain = {}; for (const k of Object.values(KEY)) gain[k] = Math.round((road[k] || 0) * 100) / 100;
+          gain.all = {}; for (const k of Object.values(KEY)) gain.all[k] = Math.round((val(k) - lv0[k]) * 10) / 10;
           void x0;
           return gain;
         });
