@@ -24,9 +24,12 @@ const M = realmMatcher(LORE);
 const REALM = /^POL-\d\d[A-Z]?$/;
 
 const found = [];   // every claim: { file, where, realm, kind, word, why, sentence }
+// the Codex's own words of a realm (its entry, its titles, its people's and race's homelands) are held strictly: compass
+// place, and its own ground; elsewhere a land word may name the land beside it (tools/lib/lore-map.mjs)
+const CODEX = /^(realms|titlesByRealm|cultures|racesLore)\b/;
 const add = (file, where, text, owner) => {
   if (typeof text !== 'string' || text.length < 12 || !/\s/.test(text)) return;
-  for (const c of check(text, owner && F.realms[owner] ? owner : null, M, F)) found.push({ file, where, realm: c.realm, kind: c.kind, word: c.word, why: c.why, sentence: c.sentence });
+  for (const c of check(text, owner && F.realms[owner] ? owner : null, M, F, { codex: /00-lore\.json$/.test(file) && CODEX.test(where) })) found.push({ file, where, realm: c.realm, kind: c.kind, word: c.word, why: c.why, sentence: c.sentence });
 };
 // walk a JSON value: strings with their path; an object with a realm field (or keyed by a realm) owns its strings
 const walk = (file, v, where, owner) => {
@@ -70,7 +73,16 @@ for (const p of codeFiles) {
     if (!/[a-z] [a-z]/i.test(t)) continue;
     // a match that runs across code between two quotes (the release's content is one line a function) is not a text
     if (/=>|&&|\|\||\(p,\s*C\)|\b(cond|fx|setup|choices|text|title|id):|\bA\.\w+\(/.test(t)) continue;
-    let owner = null; for (const [i, id] of keys) { if (i > m.index) break; if (m.index - i < 4000) owner = id; }
+    // a realm-keyed entry owns what follows it until another kind of key opens (an object of creatures or of wilds after a
+    // table of realms is not the last realm's)
+    let owner = null, at = -1; for (const [i, id] of keys) { if (i > m.index) break; if (m.index - i < 4000) { owner = id; at = i; } }
+    if (owner) {
+      const ls = src.lastIndexOf('\n', at) + 1, ind = (/^\s*/.exec(src.slice(ls, at)) || [''])[0].length;
+      for (const line of src.slice(src.indexOf('\n', at) + 1, m.index).split('\n')) {
+        const li = (/^\s*/.exec(line) || [''])[0].length;
+        if (li <= ind && /^\s*(?:["']?[A-Za-z_][\w-]*["']?\s*:\s*[\[{"']|[A-Za-z_]\w*\s*=\s*|D\[)/.test(line) && !/^\s*["']?POL-\d\d/.test(line)) { owner = null; break; }
+      }
+    }
     if (!owner && evAt.length) { let j = -1; for (let q = 0; q < evAt.length && evAt[q] <= m.index; q++) j = q; if (j >= 0) owner = evOwner[j]; }
     add(rel(p), 'line ' + lineAt(m.index), t, owner);
   }

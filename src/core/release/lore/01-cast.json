@@ -183,7 +183,7 @@
   "rung": "N05",
   "looks": "A thin, stooped man of 52 with a bald crown, a neat grey beard and a ring of treasury keys at his belt.",
   "manner": "Quiet and fussy, he counts under his breath and answers every request by naming its cost first.",
-  "wants": "He wants more Irondeep iron on credit for the Gordush and fir masts for the Cold Bay fleet without paying hard coin.",
+  "wants": "He wants more Irondeep iron on credit for the Gordush and fir masts for Aldmark's Cold Bay fleet without paying hard coin.",
   "fears": "He fears Irondeep calling in the 24,000 hold-marks Aldmark owes it in the middle of a war."
  },
  "CHR-0012": {
@@ -5691,7 +5691,7 @@
   "rung": "",
   "looks": "A lean half-orc of 34 with short tusks, his Drevnan mother's blue eyes, and Drevnan green linen under an Ughrak felt coat.",
   "manner": "Patient, polite and careful in both tongues, he chooses every word and translates insults into something gentler.",
-  "wants": "Wants the Lake Council to release the 2,000 bushels of withheld rye before Hrok Whitehorn's riders take it themselves.",
+  "wants": "Wants Drevna's Lake Council to release the 2,000 bushels of withheld rye before Hrok Whitehorn's riders take it themselves.",
   "fears": "Fears being caught between two peoples if war returns, trusted by neither and blamed by both."
  },
  "CHR-0344": {
@@ -7557,7 +7557,7 @@
   "group": "Generals, admirals and captains",
   "role": "general",
   "ruler": false,
-  "title": "Warden of the Highlands",
+  "title": "Warden of the Hills",
   "rung": "N04",
   "looks": "A hard, lean man of 42 with a wyrm-bite scar on his thigh, a headcloth of green batik, and a heavy spear.",
   "manner": "Gruff and secretive, he talks loudly of crushing the hill tribes and quietly of amber-gum prices.",

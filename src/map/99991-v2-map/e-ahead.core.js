@@ -82,7 +82,7 @@ function workerMain() {
   const H = VM.AHEAD = { worker: null, failed: false, wait: new Map(), built: 0, kept: 0, adopted: 0, ms: [], err: null };
   VM.AHEAD_OFF = false;
   // the settings the map is built with, as they stand on the page (a feature may have changed one since a-world ran)
-  const KEYS = ['VERSION', 'GW', 'GH', 'OPTS', 'ELEV_M', 'RIVER_T', 'STREAM_T', 'TERR_SHARE', 'TERR_CAP', 'HILL', 'SITE_R', 'ARID_REALM', 'ISLE_RX', 'COAST_RX', 'SEA_ID', 'DESIGN', 'V4', 'V4_FLOW'];
+  const KEYS = ['VERSION', 'GW', 'GH', 'OPTS', 'ELEV_M', 'RIVER_T', 'STREAM_T', 'TERR_SHARE', 'TERR_CAP', 'HILL', 'SITE_R', 'ARID_REALM', 'ISLE_RX', 'COAST_RX', 'SEA_ID', 'DESIGN', 'V4', 'V4_FLOW', 'V4_SNAP'];
   // the worker's own code: the v2 engine and this feature's builder, from their source, then workerMain (below)
   // M1 (map version 4): and the design's builder (g-v4.core.js), its data posted with the settings (V4)
   const source = () => 'var MAKE = ' + String(A.V2_MAKE) + ';\nvar DEF = ' + String(VM.define) + ';\nvar DEF4 = ' + String(VM.defineV4 || function () {}) + ';\nvar A = { V2: MAKE(), V2MAP: {} };\nDEF(A);\nDEF4(A);\n(' + String(workerMain) + ')();\n';

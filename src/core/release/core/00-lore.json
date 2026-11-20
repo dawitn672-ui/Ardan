@@ -36,7 +36,7 @@
   "orc": {
    "id": "RACE-ORC",
    "name": "Orcs",
-   "homelands": "The Grass Sea (Horde of Gorath) and the Eastern Steppe (Ughrak); mercenaries everywhere",
+   "homelands": "The Grass Sea (Horde of Gorath); Ughrak's eastern steppe; mercenaries everywhere",
    "pop": "2,022,100",
    "height": "175–200 (avg 186)",
    "weight": "90–130",
@@ -395,7 +395,7 @@
    "taxes": "hearth tax of 1 mark a household a year;a tenth on goods landed at Kingsmere;scutage from knights who will not serve;the gods' tenth of war spoils (to the halls)",
    "debts": "24000 hold-marks (120000 suns) to Irondeep;100000 suns to the Hold Bank of Stonehold",
    "exports": "wheat and rye;horses;amber;furs;flax and linen;pine timber and tar",
-   "imports": "iron and steel from Irondeep;tin from Frostholm by way of Northreach;ship oak from Greyhaven;wine and oil;salt;fine…",
+   "imports": "iron and steel from Irondeep;tin from Frostholm by way of Northreach;masts from Eldergrove;wine and oil;salt;fine…",
    "food": "surplus",
    "faith": "REL-03 The Seven Halls",
    "langs": "Northfolk;Old Solen;Orc speech;Elvish",
@@ -523,7 +523,7 @@
    "rivals": ["POL-17"],
    "atWar": [],
    "stability": "steady",
-   "deadline": "Fri 1 Apr: Admiral Castellan asks Lucerna for 20 galleys against Corvasse",
+   "deadline": "Fri 1 Apr: Admiral Castellan asks Lucerna for the gold for 20 galleys against Corvasse",
    "comp": {"standing":10000,"heavyHorse":0,"lightHorse":0,"elephants":0,"heavyFoot":1400,"spear":1200,"missile":3800,"other":3600},
    "fleet": {"ships":"About 60 galleys (20 manned)","field":"About 3,000 landed from the fleet"},
    "coin": {"coin":"Lucernan crown","worth":24},
@@ -807,7 +807,7 @@
    "comp": {"standing":24000,"heavyHorse":2300,"lightHorse":15900,"elephants":0,"heavyFoot":1600,"spear":600,"missile":0,"other":3600},
    "fleet": {"ships":"None","field":"About 36,000 riders for 30 days; 20,000 for a summer"},
    "coin": {"coin":"horses and sheep","worth":40},
-   "primer": {"intro":"The orc clans of the southern grass, held together by the Line of Gorath: horses, felt and relay riders who win in ten minutes or not at all.","ruler":"War-Chief Vrag, grandson of Gorath, chosen at 26 in 1098 to stop the clans splitting; shamans confirm a war-chief and the Grey Mothers can overrule him. He has a weak heart. Capital Urgol.","people and land":"1,600,000 people on 1,345,050 km²: 1,312,000 orcs, 160,000 humans, 128,000 half-orcs. State faith: the Storm and the Mare, with a Drum Council of senior shamans.","strength":"24,000 standing, 90,000 at full muster, women riding as well as men; built around relay charges by riders who tire in ten minutes. No fleet.","three people to know":"Vrag, the war-chief with the weak heart. Tarn Halfblood, who may be the rider of two peoples. Harkun the Drum-Master, who must judge him.","ties":"Hostile to Aldmark; enemies of Ulun since the Salt Shore (1041); rivalry with the League of Brannoch and Ughrak; an old border with Sylvaran; its Nagoth clans sell wool and horses at Morhaven's and Ostra's market towns."}
+   "primer": {"intro":"The orc clans of the Grass Sea, held together by the Line of Gorath: horses, felt and relay riders who win in ten minutes or not at all.","ruler":"War-Chief Vrag, grandson of Gorath, chosen at 26 in 1098 to stop the clans splitting; shamans confirm a war-chief and the Grey Mothers can overrule him. He has a weak heart. Capital Urgol.","people and land":"1,600,000 people on 1,345,050 km²: 1,312,000 orcs, 160,000 humans, 128,000 half-orcs. State faith: the Storm and the Mare, with a Drum Council of senior shamans.","strength":"24,000 standing, 90,000 at full muster, women riding as well as men; built around relay charges by riders who tire in ten minutes. No fleet.","three people to know":"Vrag, the war-chief with the weak heart. Tarn Halfblood, who may be the rider of two peoples. Harkun the Drum-Master, who must judge him.","ties":"Hostile to Aldmark; enemies of Ulun since the Salt Shore (1041); rivalry with the League of Brannoch and Ughrak; an old border with Sylvaran; its Nagoth clans sell wool and horses at Morhaven's and Ostra's market towns."}
   },
   "POL-12": {
    "id": "POL-12",
@@ -1035,7 +1035,7 @@
    "taxes": "water-tax of a tenth of every irrigated crop;a tenth on paper sent abroad;a twentieth on other cargo;2 silver qadr a head from non-believers",
    "debts": "180000 suns to the Water Endowment;90000 suns to the Gold Houses of Zanara",
    "exports": "rag paper;dates;olive oil;copper and lead;salt fish;re-exported Zanari gold",
-   "imports": "linen rags from Tamar;wheat from Tamar;ship timber from the Holy Coast;iron;Zanari gold;horses",
+   "imports": "linen rags from Tamar by the Well Road;wheat from Tamar by the Well Road;ship timber from the Crown Coast and Ashmere;iron;Zanari gold;horses",
    "food": "deficit",
    "faith": "REL-07 The Path of the Well",
    "langs": "Qadiri;Well Speech;Old Solen",
@@ -1047,7 +1047,7 @@
    "comp": {"standing":28000,"heavyHorse":2200,"lightHorse":3000,"elephants":0,"heavyFoot":600,"spear":6900,"missile":6300,"other":9000},
    "fleet": {"ships":"34 galleys (12 leaking; 8 more laid up)","field":"About 10,000 over the Sabun Pass; 15,000 on the coast"},
    "coin": {"coin":"silver qadr","worth":2.07},
-   "primer": {"intro":"The sultanate of passes and galleys on the desert coast: rag paper, which only Qadir makes, dates, copper, and the House of Water where the Book of Wells is judged.","ruler":"Sultan Zahir IV Zahiri, Guardian of the Water, crowned on 21 April 1092 as eldest son; bedridden with kidney stones since November 1104. Capital Qadira.","people and land":"2,100,000 people on 390,800 km², almost all human. State faith: the Path of the Well, whose Well-Keepers can declare a sultan's order against the Book.","strength":"28,000 standing, 100,000 at full muster; built around holding the Sunwall and never crossing open desert without guides. Fleet: 34 galleys, 12 of them leaking, and about 120 merchant ships.","three people to know":"Zahir IV Zahiri, the sick Sultan. Jalal Zahiri, his brother, who built the fleet and wants to use it. Rafiq the Quiet, the spymaster hunting journeymen and jars.","ties":"Rivalry with Sabra since its breakaway in 1025 and with Lucerna, which paid for it; hostility with Corvasse, whose toll Qadiri ships refuse; a secret water-contract with Sahrim; the Delta Wells quarrel with Tamar; the Scale Pact with Zanara; fellow Well realm with Ambrel."}
+   "primer": {"intro":"The sultanate of passes and galleys on the dry coast under the Sunwall: rag paper, which only Qadir makes, dates, copper, and the House of Water where the Book of Wells is judged.","ruler":"Sultan Zahir IV Zahiri, Guardian of the Water, crowned on 21 April 1092 as eldest son; bedridden with kidney stones since November 1104. Capital Qadira.","people and land":"2,100,000 people on 390,800 km², almost all human. State faith: the Path of the Well, whose Well-Keepers can declare a sultan's order against the Book.","strength":"28,000 standing, 100,000 at full muster; built around holding the Sunwall and never crossing open desert without guides. Fleet: 34 galleys, 12 of them leaking, and about 120 merchant ships.","three people to know":"Zahir IV Zahiri, the sick Sultan. Jalal Zahiri, his brother, who built the fleet and wants to use it. Rafiq the Quiet, the spymaster hunting journeymen and jars.","ties":"Rivalry with Sabra since its breakaway in 1025 and with Lucerna, which paid for it; hostility with Corvasse, whose toll Qadiri ships refuse; a secret water-contract with Sahrim; the Delta Wells quarrel with Tamar; the Scale Pact with Zanara; fellow Well realm with Ambrel."}
   },
   "POL-18": {
    "id": "POL-18",
@@ -1287,7 +1287,7 @@
    "comp": {"standing":200,"heavyHorse":0,"lightHorse":0,"elephants":0,"heavyFoot":0,"spear":60,"missile":0,"other":140},
    "fleet": {"ships":"None","field":"About 280 (120 giants, 160 hunters)"},
    "coin": {"coin":"sun","worth":1},
-   "primer": {"intro":"The giant kingdom of the frozen eastern coast: 2,600 giants and 9,100 human hunters, living on seals and walrus, and selling whale tusks south as unicorn horn.","ruler":"King Hraldr of Jotunhall, named alone by Mother Asta at the Thing of 1077 as his cousin's heir; he led the Hrimfell Raids from a sledge, made the Truce of Dobin in 1098, and is dying. Capital Jotunhall.","people and land":"11,700 people on 619,225 km²: 2,600 giants and 9,100 humans. Faith: the Mother Under the Ice; Jotunhall is in the time of the 52nd Mother, and the sixtieth will be the last.","strength":"200 standing (72 giants in pairs, 128 human harpooners and runners), 680 at full muster; built around giants fighting back to back, in the cold, and rarely. No fleet.","three people to know":"Hraldr of Jotunhall, the dying king on a sledge. Ulfar of Jotunhall, the halls' candidate. Torvald of Torholm, who leads the Walking Halls and wants a reason to break the truce.","ties":"The Truce of Dobin with Drevna over the whaling grounds; kinship with Frostholm, the other last giant people; secret tusk trade through Northreach; white bear and fox pelts sold to Velgrad at the Ostmir fairs."}
+   "primer": {"intro":"The giant kingdom of the frozen north-east coast: 2,600 giants and 9,100 human hunters, living on seals and walrus, and selling whale tusks south as unicorn horn.","ruler":"King Hraldr of Jotunhall, named alone by Mother Asta at the Thing of 1077 as his cousin's heir; he led the Hrimfell Raids from a sledge, made the Truce of Dobin in 1098, and is dying. Capital Jotunhall.","people and land":"11,700 people on 619,225 km²: 2,600 giants and 9,100 humans. Faith: the Mother Under the Ice; Jotunhall is in the time of the 52nd Mother, and the sixtieth will be the last.","strength":"200 standing (72 giants in pairs, 128 human harpooners and runners), 680 at full muster; built around giants fighting back to back, in the cold, and rarely. No fleet.","three people to know":"Hraldr of Jotunhall, the dying king on a sledge. Ulfar of Jotunhall, the halls' candidate. Torvald of Torholm, who leads the Walking Halls and wants a reason to break the truce.","ties":"The Truce of Dobin with Drevna over the whaling grounds; kinship with Frostholm, the other last giant people; secret tusk trade through Northreach; white bear and fox pelts sold to Velgrad at the Ostmir fairs."}
   },
   "POL-24": {
    "id": "POL-24",
@@ -1595,7 +1595,7 @@
    "taxes": "road taxes (both claimants);forced loans on towns;grain taken for the armies",
    "debts": "950000 Leontines of old imperial debt to Ostra and Lucerna;700000 suns (Livia) to House Lunetti;900000 suns (Livia) to the Temple;180000 marks (Andros) to…",
    "exports": "copper;cedar timber;wheat and dates in good years;road tolls on the Neck road",
-   "imports": "grain by sea;weapons and armor;hired soldiers;salt;fire-oil (secret;for Livia)",
+   "imports": "grain up the Gullet;weapons and armor;hired soldiers;salt;fire-oil (secret;for Livia)",
    "food": "mixed",
    "faith": "REL-01 Temple of the Returning Sun;REL-02 Dawn Church",
    "langs": "Solen common speech;Eastfolk;Old Solen",
@@ -5296,12 +5296,12 @@
    "headName": "Hamzah Batu",
    "rung": "N04",
    "title": "Viscount",
-   "local": "Warden of the Highlands",
-   "holding": "The Highland March and the Aming Stockade; amber-gum tapping camps",
+   "local": "Warden of the Hills",
+   "holding": "The Hill March and the Aming Stockade; amber-gum tapping camps",
    "people": 25000,
    "men": 1250,
    "since": "1034",
-   "notes": "The 4,000 Highland Spears are the sultan's garrison under the Warden."
+   "notes": "The 4,000 Hill Spears are the sultan's garrison under the Warden."
   },
   "FAM-221": {
    "id": "FAM-221",
@@ -5646,11 +5646,11 @@
    "trait": "Perfect balance: can run along a wall top or stand on one foot in a storm",
    "how": "The balance organs of the inner ear are unusually sensitive, and the brain trusts them more than the eyes. On still ground a Stonefoot feels the smallest tilt and corrects it at once. On a moving floor the ears and eyes disagree, and the same sharp sense brings violent sickness.",
    "inherit": "Dominant: one copy is enough, and about half the children of a carrier have it.",
-   "cost": "Violent seasickness: most Stonefoots collapse on a boat or a ferry and faint on swaying bridges. They cannot serve abroad by sea or cross lakes.",
+   "cost": "Violent seasickness: most Stonefoots collapse on a boat or a ferry and faint on swaying bridges. They cannot serve abroad by sea or cross open water.",
    "exclusive": "Every carrier descends from Orm Stonefoot. The kin marry inside the Highcastle valley clans, and husbands or wives from other clans take the Stonefoot name, as Bard Cairnhold did in 1073;",
    "ancestor": "Hild Stonefoot, first to climb Mount Roktar",
    "origin": "652",
-   "story": "The balance first showed in Orm, born about 652 to a herding family of Highcastle. As a boy he walked the top rail of the sheep pens and the ridge of the Council hall roof, and he never fell. He became a cragsman, gathering eagle eggs and wild honey from cliffs the other herders would not try, and the herders said his feet were stone on the rock. When he took his children down to the Sunland fairs to sell cheese, the ones who had his feet were sick on the Lake Calia ferry until they could not stand, and one fainted halfway across the rope bridge over the Greycloak Gorge.",
+   "story": "The balance first showed in Orm, born about 652 to a herding family of Highcastle. As a boy he walked the top rail of the sheep pens and the ridge of the Council hall roof, and he never fell. He became a cragsman, gathering eagle eggs and wild honey from cliffs the other herders would not try, and the herders said his feet were stone on the rock. When he took his children down to the Sunland fairs to sell cheese, the ones who had his feet were sick on the Skardush ferry until they could not stand, and one fainted halfway across the rope bridge over the Greycloak Gorge.",
    "significance": "The balance is why the Stonefoot kin hold the League's highest seat and why they alone can guard the last Snow Drakes of the Crown Range. Ada Stonefoot's Cliff Runners keep hunters out of the high valleys, and only the kin can climb to the nesting clefts."
   },
   "BLD-07": {
@@ -5854,7 +5854,7 @@
    "trait": "Runner's blood: can run 100 km in a day and keep going",
    "how": "A change in the gene for the receptor that tells the bone marrow to make red blood cells, the kind found in rare Earth families of endurance athletes. The marrow over-answers the body's signal, so carriers have about a fifth more red cells than other people.",
    "inherit": "Dominant: a carrier passes it to about half of his or her children, sons and daughters alike. Children who get it from both parents, common in the imperial line because of the Senior Wife Rule, have the thickest blood and the earliest strokes.",
-   "cost": "Thick blood. Carriers suffer headaches, red faces in the heat and nosebleeds in the highlands, and many die suddenly of strokes or clots between 40 and 60; five emperors died of strokes between 44 and 49. Children with the blood from both parents are the worst hit.",
+   "cost": "Thick blood. Carriers suffer headaches, red faces in the heat and nosebleeds on high ground, and many die suddenly of strokes or clots between 40 and 60; five emperors died of strokes between 44 and 49. Children with the blood from both parents are the worst hit.",
    "exclusive": "Only people sung into the Kanemba line carry it. The Law of the Sung Line (931) requires the High Rememberer to sing every child of an emperor, prince or Runner-kin man or woman into the Kanemba line…",
    "ancestor": "Emperor Mosi Kanemba the Runner",
    "origin": "851",
@@ -6098,7 +6098,7 @@
    "exclusive": "Carried only by descendants of Nimrael. At every naming a lamp is raised before the child's face; only a child whose eyes shine may ever be named Heir of the Veil, and a non-carrier child keeps the…",
    "ancestor": "Nimrael the Grey Veil",
    "origin": "-200",
-   "story": "Nimrael was born about 200 BR at Mirlas, among the night fishers of Lake Silara. Her mother saw at once that the baby's eyes threw back the lamplight like an owl's. As a child she could see fish moving over the lake bottom by starlight and find her way through the Silara Groves on moonless nights, but at noon she wept with the glare and hid under the trees. Her mother sewed her a veil of grey nettle gauze, and she wore one all her life. The fisher-kin used her gift: she steered their boats at night and brought in catches no one else could.",
+   "story": "Nimrael was born about 200 BR at Mirlas in the Evenwood, among the night fishers of Lake Silara. Her mother saw at once that the baby's eyes threw back the lamplight like an owl's. As a child she could see fish moving over the lake bottom by starlight and find her way through the Silara Groves on moonless nights, but at noon she wept with the glare and hid under the trees. Her mother sewed her a veil of grey nettle gauze, and she wore one all her life. The fisher-kin used her gift: she steered their boats at night and brought in catches no one else could.",
    "significance": "The trait holds Eldergrove's crown and its land army. Only carriers may be named heir, and the heir Ilvara commands the Night Rangers and the Dusk School. In 1105 the line matters beyond the coast."
   },
   "BLD-36": {
@@ -8280,7 +8280,7 @@
    "size": "Said to be 60 m long",
    "behavior": "–",
    "weak": "–",
-   "belief": "Merchants of the Middle Sea believe a great fire-dragon guards the Corsair Isles and pay 'dragon tolls' to Corvasse",
+   "belief": "Merchants of the western coasts believe a great fire-dragon guards the Corsair Isles and pay 'dragon tolls' to Corvasse",
    "truth": "Hoax"
   },
   {
@@ -8639,7 +8639,7 @@
    "id": "CRE-40",
    "name": "Deathstalker",
    "cat": "Desert beast",
-   "habitat": "The Red Waste, the Burning Waste, the Gulf of Sands",
+   "habitat": "The Red Waste and the Burning Waste; the shores of the Gulf of Sands",
    "size": "10–12 cm",
    "behavior": "Hides under stones; stings when stepped on",
    "weak": "Shake out boots and bedding; its venom is rarely fatal to healthy adults",
@@ -10739,7 +10739,7 @@
   },
   "POL-32": {
    "style": "Sultan of Ambrel, Guardian of the Water (S02)",
-   "forms": "Harbor lord (count), Warden of the Highlands, Well-Keeper, Grand Vizier",
+   "forms": "Harbor lord (count), Warden of the Hills, Well-Keeper, Grand Vizier",
    "command": "Admiral of the Fleet"
   },
   "POL-33": {
@@ -12150,7 +12150,7 @@
    "id": "TAC-079",
    "name": "Road Clearing",
    "desc": "Clearing a forest road for a column: axemen cut 30–50 m back on each side while shield men cover them and scouts work the trees; 2–5 km a day.",
-   "users": "Aldmark (on the Sylvaran border), Ranpur, Ambrel (highland march)."
+   "users": "Aldmark (on the Sylvaran border), Ranpur, Ambrel (hill march)."
   },
   {
    "id": "TAC-080",
@@ -12252,7 +12252,7 @@
    "id": "TAC-096",
    "name": "Far-Eye Signal",
    "desc": "Towers with flag and fire codes, read by the sharpest eyes: Falcone carriers read a banner at 3 km and spot sails at 30 km, and messages pass 10 km a step.",
-   "users": "Morhaven (Tower Watch), Greyhaven (Beaconstone), Varenna (Tibata Strait Tower)."
+   "users": "Morhaven (Tower Watch), Greyhaven (Beaconstone), Varenna (Tibata Bay Tower)."
   },
   {
    "id": "TAC-097",
@@ -12625,7 +12625,7 @@
   [
    1086,
    "The Cloud Ridge chief killed",
-   "Highland Spears from Aming ambush the chief of the Cloud Ridge clan on a raid against a tapping camp and kill him with eleven of his men."
+   "Hill Spears from Aming ambush the chief of the Cloud Ridge clan on a raid against a tapping camp and kill him with eleven of his men."
   ],
   [
    1086,
@@ -12685,7 +12685,7 @@
   [
    1088,
    "Old Ironjaw sinks the Golden Gull",
-   "A scarred Grey Leviathan bull rams and sinks the Lucernan cog Golden Gull, 180 tonnes, west of the Strait of Hael. 34 drown."
+   "A scarred Grey Leviathan bull rams and sinks the Golden Gull west of the Strait of Hael: a cog out of Varenna, 180 tonnes, insured at Lucerna. 34 drown."
   ],
   [
    1088,
@@ -13125,7 +13125,7 @@
   [
    1100,
    "The bargain at the waterfall",
-   "After a winter of hunger, Lintang Cloudwalker meets the Warden of the Highlands, Hamzah Batu, alone at Amtiuan Falls."
+   "After a winter of hunger, Lintang Cloudwalker meets the Warden of the Hills, Hamzah Batu, alone at Amtiuan Falls."
   ],
   [
    1100,
@@ -13160,7 +13160,7 @@
   [
    1101,
    "The pale calf bought at Amberport",
-   "Ranpuri temple agents buy a young pale elephant cow at Amberport's market from hunters of the Ambrel highlands and ship her to a temple estate near Nagita."
+   "Ranpuri temple agents buy a young pale elephant cow at Amberport's market from hunters of the Ambrel hills and ship her to a temple estate near Nagita."
   ],
   [
    1101,
@@ -13682,7 +13682,7 @@
   [
    "Fri 1 Apr",
    "waning crescent",
-   "Sea Opening: Admiral Castellan asks Lucerna for 20 galleys against Corvasse and sails; Kamal the Eel carries the two paper journeymen to Marira"
+   "Sea Opening: Admiral Castellan asks Lucerna for the gold for 20 galleys against Corvasse and sails; Kamal the Eel carries the two paper journeymen to Marira"
   ],
   [
    "Fri 1 Apr",

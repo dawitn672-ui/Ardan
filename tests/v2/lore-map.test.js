@@ -26,7 +26,7 @@ const F = {
   rivers: [],
 };
 const M = realmMatcher(LORE);
-const bad = (text, owner) => check(text, owner, M, F).filter(c => c.why).map(c => `${c.realm} ${c.kind}`);
+const bad = (text, owner, codex = true) => check(text, owner, M, F, { codex }).filter(c => c.why).map(c => `${c.realm} ${c.kind}`);
 
 test('a realm\'s own text: its ground, its sea, its place on the compass', () => {
   assert.deepEqual(bad('The iron-ringed empire of the northern plains, with a fleet on the Middle Sea.', 'POL-01'), []);
@@ -38,7 +38,7 @@ test('a realm\'s own text: its ground, its sea, its place on the compass', () =>
 test('a word another realm\'s name owns is that realm\'s claim', () => {
   // "beside Aldmark's plains": the plains are Aldmark's, and Irondeep borders it
   assert.deepEqual(bad('The dwarven hold beside Aldmark\'s plains, in the mountains.', 'POL-10'), []);
-  const cs = claimsIn('The dwarven hold beside Aldmark\'s plains.', 'POL-10', M);
+  const cs = claimsIn('The dwarven hold beside Aldmark\'s plains.', 'POL-10', M, { codex: true });
   assert.ok(cs.some(c => c.kind === 'plains' && c.realm === 'POL-01'));
   assert.ok(cs.some(c => c.kind === 'border' && c.realm === 'POL-10' && c.arg === 'POL-01'));
   // a border the map has not
@@ -57,6 +57,25 @@ test('small named waters: a bay needs a coast, a lake a lake; a sea the map must
   assert.deepEqual(bad('Irondeep\'s barges cross Cold Bay.', null), ['POL-10 sea']);
   assert.deepEqual(bad('Drevna fishes Lake Radov.', null), []);
   assert.deepEqual(bad('Aldmark trades on the Salt Sea.', null), ['POL-01 sea']);
+});
+
+test('the open sea is reached from any coast; an enclosed sea only from its shores', () => {
+  const F2 = JSON.parse(JSON.stringify(F));
+  F2.waters.push({ name: 'the Strait of Hael', kind: 'strait', realms: [] });
+  F2.realms['POL-01'].seas = { 'the Northern Ocean': 2 };       // Aldmark has a sea coast
+  F2.realms['POL-04'].lakes = { 'the Middle Sea': 1 }; F2.realms['POL-04'].coastal = 1;   // Lucerna only the inland sea
+  const b2 = (t, o) => check(t, o, M, F2, { codex: true }).filter(c => c.why).map(c => `${c.realm} ${c.kind}`);
+  assert.deepEqual(b2('Its galleys pass the Strait of Hael.', 'POL-01'), []);
+  assert.deepEqual(b2('Its galleys pass the Strait of Hael.', 'POL-04'), ['POL-04 sea']);
+});
+
+test('outside the Codex a land word may be the land beside the realm; the compass is the Codex\'s', () => {
+  const F3 = JSON.parse(JSON.stringify(F));
+  F3.realms['POL-04'].near = { terr: { mountains: 2 }, lake: false, high: true };    // hills just over Lucerna's border
+  const b3 = (t, o, codex) => check(t, o, M, F3, { codex }).filter(c => c.why).map(c => `${c.realm} ${c.kind}`);
+  assert.deepEqual(b3('The Warden of the Highlands keeps the march.', 'POL-04', false), []);
+  assert.deepEqual(b3('A realm of highlands and peaks.', 'POL-04', true), ['POL-04 mountain']);
+  assert.deepEqual(b3('The southern plains lords rode at the Millrun.', 'POL-01', false), []);
 });
 
 test('judge reads the facts it is given', () => {

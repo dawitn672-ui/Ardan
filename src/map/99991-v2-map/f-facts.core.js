@@ -80,7 +80,7 @@
     if (w.riverNames && w.riverTo) w.riverNames.forEach((nm, ri) => {
       if (!nm) return; const a = w.rivers[ri], rs = [];
       for (let t = 0; t < a.length; t += 3) { const k = Math.min(gh - 1, Math.floor(a[t + 1] / 10)) * gw + Math.min(gw - 1, Math.floor(a[t] / 10)); const R = g[k] >= 0 ? realmOf(g[k]) : null; if (isRealm(R) && !rs.includes(R)) rs.push(R); }
-      rivers.push({ name: nm, realms: rs, to: w.riverTo[ri] });
+      rivers.push({ name: nm, realms: rs, to: w.riverTo[ri], ships: !!(w.riverShips && w.riverShips[ri]) });
     });
     else if (G && G.rivers) G.rivers.forEach((rv, i) => {
       const a = w.rivers[rv.r]; if (!a) return;
@@ -111,6 +111,11 @@
       for (const q of ps) for (const wn of pv[q.id].waters) { if (/^(lake|inland sea) \d+$/.test(wn) || enclosed.some(c => encName(c) === wn)) lakes[wn] = (lakes[wn] || 0) + 1; else seas[wn] = (seas[wn] || 0) + 1; }
       const nbs = new Set(); for (const q of ps) for (const j of q.adj) { const R2 = realmOf(j); if (R2 !== R && isRealm(R2)) nbs.add(R2); }
       const cells = ps.reduce((a, q) => a + pv[q.id].cells, 0), high = ps.reduce((a, q) => a + pv[q.id].high, 0);
+      // the land just over its borders (realms' and wilds' provinces alike): what a march, a raid or a view from the walls
+      // can name without the ground being the realm's own
+      const own = new Set(ps.map(q => q.id)), nearIds = new Set(); for (const q of ps) for (const j of q.adj) if (!own.has(j)) nearIds.add(j);
+      const near = { terr: {}, lake: false, high: false };
+      for (const j of nearIds) { const q = P[j]; if (!q) continue; near.terr[q.terr] = (near.terr[q.terr] || 0) + 1; if (pv[j].lake) near.lake = true; if (pv[j].high >= 0.25 * pv[j].cells) near.high = true; }
       realms[R] = {
         name: LORE.realms[R].name, short: LORE.realms[R].short || LORE.realms[R].name,
         capital: { id: cap.id, name: (cap.retype && cap.retype.name) || B[cap.id].name, coast: !!cap.coast, terr: cap.terr,
@@ -119,9 +124,11 @@
         provinces: ps.length, coastal: ps.filter(q => q.coast).length, cells,
         seas, lakes, terr, high: r2(high / Math.max(1, cells)),
         rivers: rivers.filter(rv => rv.realms.includes(R)).map(rv => rv.name),
+        // ship water: a river sea-going ships use (the design's Grey Channel and Gullet), which serves a fleet as a coast does
+        shipWater: rivers.filter(rv => rv.ships && rv.realms.includes(R)).map(rv => rv.name),
         ranges: [...new Set(ranges.filter(x => x.realm === R).map(x => x.name))],
         forests: [...new Set(forests.filter(x => x.realm === R).map(x => x.name))],
-        neighbours: [...nbs].sort(),
+        neighbours: [...nbs].sort(), near,
         towns: ps.map(q => ({ name: (q.retype && q.retype.name) || B[q.id].name, type: (q.retype && q.retype.type) || B[q.id].type })),
       };
     }

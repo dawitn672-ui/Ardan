@@ -9,6 +9,10 @@ const FACTS = () => {
   // every province reachable from the first by land
   const seen = new Set([0]), q = [0];
   while (q.length) { const i = q.pop(); for (const j of P[i].adj) if (!seen.has(j)) { seen.add(j); q.push(j); } }
+  // the designed continent (map version 4) keeps the owner's islands, each reached by its ferry
+  const isles = !!(S.v2map && S.v2map.v >= 4 && S.v2map.seed === A.V2MAP.DESIGN);
+  const seenF = new Set([0]), qF = [0];
+  while (qF.length) { const i = qF.pop(); for (const j of P[i].adj.concat(P[i].sea || [])) if (!seenF.has(j)) { seenF.add(j); qF.push(j); } }
   // the grid's land in 4-connected pieces
   const lab = new Int32Array(gw * gh).fill(-1), sizes = [];
   for (let s = 0; s < gw * gh; s++) {
@@ -31,7 +35,7 @@ const FACTS = () => {
   const countsOk = Object.keys(want).every(r => want[r] === got[r]) && P.length === LORE.map.provinces.length;
   const realmsOk = Object.keys(S.realms).every(id => LORE.realms[id] || S.realms[id].isNew || id === 'POL-31A');
   let h = 2166136261; for (let k = 0; k < g.length; k += 1) { h ^= g[k] + 1; h = Math.imul(h, 16777619); }
-  return { v2: S.v2map, n: P.length, reach: seen.size, pieces: sizes.length, mainPct: Math.round(1000 * main / land) / 10, land, frame, cellsOk, sym, inFrame, countsOk, realmsOk,
+  return { v2: S.v2map, n: P.length, reach: isles ? seenF.size : seen.size, isles, pieces: sizes.length, mainPct: Math.round(1000 * main / land) / 10, land, frame, cellsOk, sym, inFrame, countsOk, realmsOk,
     far: typeof A.FAR !== 'undefined' && !!A.FAR, sea: P.filter(p => p.sea && p.sea.length).length, grid: (h >>> 0).toString(16),
     terr: P.reduce((o, p) => (o[p.terr] = (o[p.terr] || 0) + 1, o), {}), coast: P.filter(p => p.coast).length };
 };
@@ -42,7 +46,9 @@ export default {
   // one world: A.V2MAP.ONE switched for the life)
   async v2mapOneContinent(pg) {
     const r = await pg.evaluate(`(() => { const out = [], VM = A.V2MAP, one = VM.ONE; try { for (const ms of [one, VM.seedOf(11), VM.seedOf(4242)]) { VM.ONE = ms; A.newGame({ seed: 11, realm: 'POL-01', status: 'peasant' }); out.push((${FACTS})()); } } finally { VM.ONE = one; } return out; })()`);
-    const bad = r.filter(f => !(f.v2 && f.reach === f.n && f.mainPct >= 98.5 && f.frame === 0 && f.cellsOk && f.sym && f.inFrame && f.countsOk && f.realmsOk && !f.far && f.sea === 0));
+    // the designed continent: its mainland is 98.1% of the land, its 53 islands the design's, each with its ferry
+    // (docs/design/m1/map-design.md 8.5); a generated one keeps v2's 98.5% and no sea links
+    const bad = r.filter(f => !(f.v2 && f.reach === f.n && f.mainPct >= (f.isles ? 98 : 98.5) && f.frame === 0 && f.cellsOk && f.sym && f.inFrame && f.countsOk && f.realmsOk && !f.far && (f.isles || f.sea === 0)));
     return { ok: !bad.length, detail: r.map(f => `${f.v2 && f.v2.seed}: ${f.reach}/${f.n} provinces reached by land, ${f.pieces} land piece(s), main ${f.mainPct}%, ${f.frame} land cells on the frame, cells ${f.cellsOk}, adjacency symmetric ${f.sym}, sites inside ${f.inFrame}, realm counts kept ${f.countsOk}, realms ${f.realmsOk}, far lands ${f.far}, ${f.coast} coastal, terrain ${JSON.stringify(f.terr)}`).join(' | ') };
   },
 

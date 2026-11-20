@@ -6104,7 +6104,7 @@
             fx: {piety:3,honor:2,lang:"Cloudfolk"},
           },
           {
-            t: "Give him water and send for the Highland Spears",
+            t: "Give him water and send for the Hill Spears",
             r: "He drinks. By the time the soldiers come he is gone into the forest, and he will never trust a lowlander again.",
             fx: {piety:1,favor:1},
           },
@@ -6136,7 +6136,7 @@
         cond: (p,C)=>R(p,"POL-32")&&grown(p,C)&&(C.terr(p,"forest","hills","mountains","marsh")||C.job(p,"labor","hunter")),
         w: 1,
         cool: 6,
-        text: "In the Highland March around Aming, tappers cut the amber-gum trees and collect the sap in bamboo cups. House Batu pays by the cup. The Cloudfolk hill tribes raid the tappers, and the Amber Wyrms hunt in the same forest. Tappers die every season.",
+        text: "In the Hill March around Aming, tappers cut the amber-gum trees and collect the sap in bamboo cups. House Batu pays by the cup. The Cloudfolk hill tribes raid the tappers, and the Amber Wyrms hunt in the same forest. Tappers die every season.",
         choices: [
           {
             t: "Tap deep in the forest where the trees are old",
@@ -6252,7 +6252,7 @@
             t: "Run for the hills",
             check: {s:"survival",s2:"stealth",d:50},
             win: {
-              r: "You live with the tappers in the Highland March, where nobody asks about debts. You will never see the harbor again.",
+              r: "You live with the tappers in the Hill March, where nobody asks about debts. You will never see the harbor again.",
               fx: {skill:{survival:3},wil:1.5,happy:-3},
             },
             lose: {r:"They catch you at the Aming road. Seven years now, not five.",fx:{wil:2.5,happy:-8,health:-5}},

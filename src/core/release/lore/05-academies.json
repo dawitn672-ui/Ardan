@@ -242,7 +242,7 @@
  ],
  "POL-33": [
   {"type":"sea","name":"The Shoal Pilots' Loft of Ratrock","seat":"Ratrock","note":"The Ninefathoms and the other pilot families teach every reef and shoal of the Strait by heart and by night, the one craft that lets light galleys flee where a navy's ships run aground."},
-  {"type":"trade","name":"The Share-Book Table","seat":"Corvasse","note":"Under the Quartermaster's eye, crew children learn the share-book, the tenth to the Table, the dragon toll of one ship in forty and the price of a prize in every coin of the Middle Sea."},
+  {"type":"trade","name":"The Share-Book Table","seat":"Corvasse","note":"Under the Quartermaster's eye, crew children learn the share-book, the tenth to the Table, the dragon toll of one ship in forty and the price of a prize in every coin of the western coasts."},
   {"type":"faith","name":"The Shrine of the Dice","seat":"Corvasse","note":"In the painted sea cave where the Articles were sworn in 990, the Bonedice teach the luck-gods' rites: the dice thrown before every raid, the vows of a crew, and how to read a throw."},
   {"type":"crafts","name":"The Caulkers' Slip of Ratrock","seat":"Ratrock","note":"Caulkers and shipwrights teach oakum and pitch, the patching of galleys and captured cogs on a beach with no proper yard, and the raft-building every isle needs."}
  ],

@@ -180,10 +180,12 @@
     const S = A.S, bad = [], P = S.prov || [];
     // one continent: v2's map, every province reached by land from the first, no far lands, no sea links
     if (!S.v2map) bad.push('no v2 map');
+    // M1, map version 4 (D-154): the designed continent keeps the owner's islands, each reached by its ferry (p.sea)
+    const isles = !!(S.v2map && S.v2map.v >= 4);
     const seen = new Set([0]), q = [0];
-    while (q.length) { const i = q.pop(); for (const j of (P[i] && P[i].adj) || []) if (!seen.has(j)) { seen.add(j); q.push(j); } }
+    while (q.length) { const i = q.pop(); for (const j of ((P[i] && P[i].adj) || []).concat(isles ? (P[i] && P[i].sea) || [] : [])) if (!seen.has(j)) { seen.add(j); q.push(j); } }
     if (seen.size !== P.length) bad.push(`${P.length - seen.size} provinces cut off`);
-    if (P.some(p => p.sea && p.sea.length)) bad.push('sea links');
+    if (!isles && P.some(p => p.sea && p.sea.length)) bad.push('sea links');
     if (S.world && (S.world.parts || []).some(x => x !== 'ardan')) bad.push('far lands');
     // one holder per title (99994's audit)
     const au = A.V2F && A.V2F.audit ? A.V2F.audit() : [];

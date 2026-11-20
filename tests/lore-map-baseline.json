@@ -1,4 +1,4 @@
 {
- "violations": 1303,
+ "violations": 0,
  "note": "tools/lint-lore-map.mjs: the claims about a realm's ground, seas, rivers, compass place and neighbours that the one map denies. It may only fall; M1 (order 71, D-151) ends at 0."
 }

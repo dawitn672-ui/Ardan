@@ -16,6 +16,7 @@
 const VM = A.V2MAP;
 VM.V4 = VM.V4 || null;                 // the design's data (A.DATA['map/v4'] on the page; posted to the worker)
 VM.V4_FLOW = { small: 500, big: 3000, ships: 6000 };   // an authored river's flow at its mouth (D9: bridges from 700, barges 300)
+VM.V4_SNAP = 3;                         // a seat moves at most this many cells (30 km) to stand on its water
 const BIO = A.V2.continent.BIOME;
 // the design's ground words -> v2's biomes; the moisture each pulls toward (the renderer colours land by climate)
 const G2B = { sea: BIO.OCEAN, lake: BIO.LAKE, ice: BIO.SNOW, tundra: BIO.TUNDRA, rock: BIO.ALPINE, taiga: BIO.BOREAL_FOREST, forest: BIO.TEMPERATE_FOREST,
@@ -141,7 +142,7 @@ VM.buildV4 = function (seed, base) {
 
   // ---- 5. the rivers: the authored first (their flow growing to the mouth), then the streams the carved field grows
   const smooth = pts => { let p = pts; for (let r = 0; r < 2; r++) { const o = [p[0]]; for (let i = 0; i + 1 < p.length; i++) { const a = p[i], b = p[i + 1]; o.push([a[0] * 0.75 + b[0] * 0.25, a[1] * 0.75 + b[1] * 0.25], [a[0] * 0.25 + b[0] * 0.75, a[1] * 0.25 + b[1] * 0.75]); } o.push(p[p.length - 1]); p = o; } return p; };
-  const rivers = [], riverNames = [], riverTo = [];
+  const rivers = [], riverNames = [], riverTo = [], riverShips = [];
   D.rivers.forEach(r => {
     const p = smooth(r.km), mouth = r.ships ? VM.V4_FLOW.ships : r.big ? VM.V4_FLOW.big : VM.V4_FLOW.small;
     let L = 0; const cum = [0]; for (let i = 1; i < p.length; i++) { L += Math.hypot(p[i][0] - p[i - 1][0], p[i][1] - p[i - 1][1]); cum.push(L); }
@@ -149,7 +150,7 @@ VM.buildV4 = function (seed, base) {
     const start = /^(the )?(Lake|Western Lakes|Glenmere|Grey Water|Lake Portage|Tolek|border reach)/i.test(r.from || '') ? 0.35 : 0.08;
     const a = new Float32Array(p.length * 3);
     p.forEach(([x, y], i) => { const t = L > 0 ? cum[i] / L : 1; a[3 * i] = x; a[3 * i + 1] = y; a[3 * i + 2] = Math.max(VM.STREAM_T + 5, mouth * (start + (1 - start) * Math.pow(t, 1.2))); });
-    rivers.push(a); riverNames.push(r.name); riverTo.push(r.to || null);
+    rivers.push(a); riverNames.push(r.name); riverTo.push(r.to || null); riverShips.push(!!r.ships);
   });
   const authored = VM.riverRaster(rivers, gw, gh), near = new Uint8Array(N);
   for (let k = 0; k < N; k++) if (authored[k] > 0) { const x = k % gw, y = (k / gw) | 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < gw && yy < gh) near[yy * gw + xx] = 1; } }
@@ -160,7 +161,7 @@ VM.buildV4 = function (seed, base) {
       a.push(xk, yk, Math.min(f, VM.RIVER_T * 2.4));   // a stream never outgrows a named river
       if (near[k]) { shared++; break; }               // it joins the authored river there
     }
-    if (a.length >= 12 && shared <= 1) { rivers.push(Float32Array.from(a)); riverNames.push(null); riverTo.push(null); }
+    if (a.length >= 12 && shared <= 1) { rivers.push(Float32Array.from(a)); riverNames.push(null); riverTo.push(null); riverShips.push(false); }
   }
   const riv = VM.riverRaster(rivers, gw, gh);
   T.rivers = now() - T.t0;
@@ -192,24 +193,40 @@ VM.buildV4 = function (seed, base) {
     for (let yy = y0; yy <= y1; yy++) for (let xx = x0; xx <= x1; xx++) { const k = yy * gw + xx; if (grid[k] !== id) continue; const d = (xx - x) ** 2 + (yy - y) ** 2; if (d < bd) { bd = d; best = k; } }
     if (best < 0) for (let k = 0; k < N; k++) if (grid[k] === id) { const d = (k % gw - x) ** 2 + (((k / gw) | 0) - y) ** 2; if (d < bd) { bd = d; best = k; } }
     return best; };
+  // a seat the design set beside its water (a ford, a mouth, a shore) stands on it: the nearest cell of its province on a
+  // river or stream or on the shore, within VM.V4_SNAP cells (30 km, under the picture's grain); else where the design put it
+  const wet = k => { if (riv[k] >= VM.STREAM_T) return 2; const x = k % gw; for (const j of [x > 0 ? k - 1 : -1, x < gw - 1 ? k + 1 : -1, k - gw, k + gw]) if (j >= 0 && j < N && grid[j] < 0) return 1; return 0; };
+  const onWater = (id, k0) => { if (wet(k0)) return k0; const x0 = k0 % gw, y0 = (k0 / gw) | 0, R = VM.V4_SNAP; let best = k0, bd = Infinity;
+    for (let y = Math.max(0, y0 - R); y <= Math.min(gh - 1, y0 + R); y++) for (let x = Math.max(0, x0 - R); x <= Math.min(gw - 1, x0 + R); x++) {
+      const k = y * gw + x; if (grid[k] !== id || !wet(k)) continue; const d = Math.hypot(x - x0, y - y0); if (d <= R && d < bd - 1e-9) { bd = d; best = k; } }
+    return best; };
   const prov = P.map(p => {
     const a = accP[p.id], n = Math.max(1, a.n), d = byId.get(p.id) || {};
-    const kc = nearest(p.id, a.x / n, a.y / n), ks = nearest(p.id, (d.sx != null ? d.sx : (kc % gw) * 10) / 10 - 0.5, (d.sy != null ? d.sy : ((kc / gw) | 0) * 10) / 10 - 0.5);
+    const kc = nearest(p.id, a.x / n, a.y / n), ks = onWater(p.id, nearest(p.id, (d.sx != null ? d.sx : (kc % gw) * 10) / 10 - 0.5, (d.sy != null ? d.sy : ((kc / gw) | 0) * 10) / 10 - 0.5));
     let bio = null, bn = -1; for (const w of Object.keys(a.bio).sort()) if (a.bio[w] > bn) { bn = a.bio[w]; bio = w; }
     const sea = (d.sea || []).filter(j => j !== p.id).sort((x, y) => x - y);
     return { id: p.id, x: (kc % gw) * 10 + 5, y: ((kc / gw) | 0) * 10 + 5, sx: (ks % gw) * 10 + 5, sy: ((ks / gw) | 0) * 10 + 5,
       cells: a.n, adj: [...a.adj].sort((x, y) => x - y), sea, coast: a.coast, elev: Math.round(a.e / n), biome: bio || 'Dry woodland', terr: d.terr || 'plains' };
   });
   for (const q of prov) if (q.terr === 'mountains' && !/Alpine|Glacier|Taiga/.test(q.biome)) q.biome = 'Alpine highland';
+  // D-061's rule holds on the designed map: an oasis the design set off dry ground (wells in the hills, a ford on the grass)
+  // is a town named for its water; the save keeps its old name (q.retype, read by A.V2MAP.onProv)
+  for (const q of prov) {
+    if (P[q.id].type !== 'oasis' || /^(Desert|Steppe|Savanna|Salt flat)$/.test(q.biome) || /^(desert|steppe)$/.test(q.terr)) continue;
+    const k = Math.floor(q.sy / 10) * gw + Math.floor(q.sx / 10), x = k % gw, nb = [x > 0 ? k - 1 : -1, x < gw - 1 ? k + 1 : -1, k - gw, k + gw].filter(j => j >= 0 && j < N);
+    const word = riv[k] >= VM.STREAM_T ? 'Ford' : nb.some(j => ocean[j]) ? 'Haven' : nb.some(j => grid[j] < 0) ? 'Mere' : q.terr === 'forest' ? 'Wood' : q.terr === 'hills' || q.terr === 'mountains' ? 'Hill' : 'Field';
+    const was = P[q.id].name || '';
+    q.retype = { type: 'town', name: /\bOasis\b/.test(was) ? was.replace(/\bOasis\b/, word) : was, was };
+  }
   T.ms = now() - T.t0;
   const units = Object.keys(D.realms).sort().map(r => ({ key: r, seat: (() => { const q = prov[D.realms[r].capital]; return q ? Math.floor(q.sy / 10) * gw + Math.floor(q.sx / 10) : -1; })(), target: 0 }));
   const w = { seed, v: 4, gw, gh, grid, prov, gen, rivers, riv, ocean, land: nLand, units, T, designed: true,
-    waters: D.waters.map(x => ({ name: x.name, kind: x.kind, enclosed: x.enclosed, coast: x.coast })), waterAt, riverNames, riverTo,
+    waters: D.waters.map(x => ({ name: x.name, kind: x.kind, enclosed: x.enclosed, coast: x.coast })), waterAt, riverNames, riverTo, riverShips,
     features: { ranges: D.ranges, peaks: D.peaks, passes: D.passes, regions: D.regions, roads: D.roads, isles: D.isles, ferries: D.ferries } };
   // D9: the ground the game reads, made when first read (as A.V2MAP.build does)
   if (A.V2.ground && typeof A.V2.ground.buildGround === 'function') {
     const G0 = A.V2.ground, args = { elev: gelev, gi, metres: VM.ELEV_M,
-      places: P.map(p => ({ type: p.type, realm: p.realm })), params: { STREAM_T: VM.STREAM_T, RIVER_T: VM.RIVER_T } };
+      places: P.map(p => ({ type: (prov[p.id].retype || {}).type || p.type, realm: p.realm })), params: { STREAM_T: VM.STREAM_T, RIVER_T: VM.RIVER_T } };
     const snap = { seed, gw, gh, grid, riv, ocean, rivers, gen: { biome: gen.biome, moist: gen.moist }, prov: prov.map(q => ({ sx: q.sx, sy: q.sy, adj: q.adj })) };
     let ground;
     Object.defineProperty(w, 'ground', { enumerable: true, configurable: true,

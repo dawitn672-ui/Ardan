@@ -727,7 +727,7 @@
       text: p => `The palace says Moon-Pearl, the Raja's white elephant, has stopped eating, and the old hymn is on every lip: when the white elephant dies without a calf, the dream will end. ${Ago(p, "ss_rp_calf")} a drunk catcher in the Elephant Hills told you of a pale young elephant hidden on a temple estate near Nagita. Now {them}, an agent of the One Face merchants, will pay to know where.`,
       choices: [
         { t: "Go over the estate wall and see her", check: { s: "stealth", s2: "survival", d: 48 },
-          win: { r: "In a clean stall, fed by temple boys, stands a young cow, pale as milk. On her hip, half hidden by paint, is a hunter's brand from the Ambrel highlands. She was bought, not born.",
+          win: { r: "In a clean stall, fed by temple boys, stands a young cow, pale as milk. On her hip, half hidden by paint, is a hunter's brand from the Ambrel hills. She was bought, not born.",
             fx: { flag: "mrx_rp_calf_seen", secret: 1, int: 0.5 } },
           lose: { r: "Temple guards with bamboo staves catch you on the wall. You go home with a broken nose and nothing seen.",
             fx: { wound: "broken_nose", health: -8, cause: "temple guards" } } },

@@ -31,7 +31,9 @@ const GROUND = () => {
   }
   return { seed: A.S.v2map.seed, ranks, onRoad: onRoad.size, n: A.S.prov.length, waters, missing, kinds, passes: G.passes.length, tribs, rivers: w.rivers.length,
     wood: Math.round(100 * wood / land), marsh: Math.round(1000 * marsh / land) / 10, names: { seas: names.seas.length, ranges: new Set(names.ranges).size, rivers: names.rivers.length, forests: new Set(names.forests).size, passes: names.passes.length },
-    distinct: new Set(all).size === all.length, sample: [names.seas[0], names.ranges[0], names.rivers[0], names.forests[0], names.passes[0]], wet: Math.round(1000 * wet / towns) / 10 };
+    // a generated map names every feature apart; the designed one (map version 4) gives a range, a sea or a pass its one
+    // name along every stretch the ground engine finds, so only the pools' names must be apart there
+    distinct: w.designed ? (() => { const F = w.features || {}, own = new Set([...(F.ranges || []), ...(F.passes || []), ...(F.regions || [])].map(x => x.name).concat((w.waters || []).map(x => x.name), (w.riverNames || []).filter(Boolean))); const pool = all.filter(x => !own.has(x)); return new Set(pool).size === pool.length; })() : new Set(all).size === all.length, sample: [names.seas[0], names.ranges[0], names.rivers[0], names.forests[0], names.passes[0]], wet: Math.round(1000 * wet / towns) / 10 };
 };
 
 export default {
