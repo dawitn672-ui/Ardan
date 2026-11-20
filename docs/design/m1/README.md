@@ -1,9 +1,31 @@
-# M1: choosing the one continent
+# M1: the one continent
 
-The owner's order 68 (D-142): Ardan has one geography for every life. The continent is built from one map seed, chosen
-once by measured quality. This page is the choice: thirty candidates, how each was read, and why the winner won.
+**Now: the designed continent, map version 4 of `ardan-v2-map:one`** (orders 72 and 73; D-152 to D-155). The continent
+is designed on purpose from the owner's picture (`reference/owner-continent.webp`) and the lore's names, in
+[`map-design.md`](map-design.md), and the game builds that design: authored control data (`design/`, turned into
+`data/map/v4.json` by `node tools/m1/v4-data.mjs`) plus generated detail (`src/map/99991-v2-map/g-v4.core.js`), never
+drawing `A.rand`. The lore was then brought into line with it ([`lore-changes.md`](lore-changes.md)), and
+`node tools/lint-lore-map.mjs` holds the words to the map at a baseline of 0. A version 3 save keeps its version 3 map.
 
-**Chosen: `ardan-v2-map:m1-02`** (map version 3). It is `A.V2MAP.ONE` in `src/map/99991-v2-map/a-world.core.js`.
+The built game's own map, rendered by `node tools/m1/render-v4.mjs <built.html> --out=docs/design/m1`:
+
+| The ground | The realms | Close, on the Middle Sea |
+| --- | --- | --- |
+| ![ground](v4-ground.png) | ![realms](v4-realms.png) | ![close](v4-close.png) |
+
+Beside them, the design on the owner's picture: [`design-on-picture.jpg`](design-on-picture.jpg) and the design sketch
+[`design-sketch.png`](design-sketch.png).
+
+To change the map: edit `design/seats.tsv` or `design/features.json` (the owner's questions in `map-design.md` section 9
+may come back that way), then run `node tools/m1/design-sketch.mjs`, `node tools/m1/v4-data.mjs`, build, run
+`node tools/m1/facts.mjs <built.html>` and `node tools/lint-lore-map.mjs --list` to see what lore the change moves.
+
+## Before the design: choosing a seed (D-142, D-148 to D-150; replaced by D-152)
+
+What follows is the seed era, kept as what was tried. The owner's order 68 (D-142): Ardan has one geography for every
+life, built from one map seed chosen once by measured quality. Thirty candidates, how each was read, and why the winner won.
+
+**Chosen then: `ardan-v2-map:m1-02`** (map version 3). A save begun on it keeps it.
 
 | The winner, `m1-02` | Runner-up, `m1-08` | Runner-up, `m1-27` |
 | --- | --- | --- |
@@ -12,7 +34,7 @@ once by measured quality. This page is the choice: thirty candidates, how each w
 Each picture is the game's own full map at its widest, for a life begun in Aldmark on that continent. The scores come
 from `scores.json`, written by `node tools/m1/choose-seed.mjs <built.html> --n=30 --png`.
 
-## How a candidate was read
+### How a candidate was read
 
 Every candidate was built in the page by the code a life plays on (`A.V2MAP.build`, map version 3, the D9 ground with
 it). It was then read on seven counts, each from 0 to 100.
@@ -31,7 +53,7 @@ it). It was then read on seven counts, each from 0 to 100.
 candidate that fails one is out, whatever its total. The gate checked here is from `v2mapSeaRealms`: a realm named for
 the sea has its capital on the coast, and one named for islands has at least two thirds of its provinces on the coast.
 
-## The thirty candidates
+### The thirty candidates
 
 | # | Seed | Total | lore | roads | borders | rivers | sizes | one piece | towns | Gate |
 | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
@@ -66,7 +88,7 @@ the sea has its capital on the coast, and one named for islands has at least two
 | 29 | `m1-13` | 60.4 | 54.7 | 66.7 | 41 | 66.2 | 43.5 | 100 | 85 | |
 | — | `m1-22` | 70.3 | 66.3 | 67.8 | 51.3 | 99.5 | 52.6 | 100 | 89.1 | **out:** Ambrel (the spice islands) has 1 of 3 provinces on the coast |
 
-## Why `m1-02`
+### Why `m1-02`
 
 - **It fits the lore best of the candidates that pass the gate** (67.1; the field ranged from 53.8 to 67.1). Sylvaran
   and Eldergrove are in wood. The dry realms (Sahrim, Qadir, Tamar, Sabra) are on dry land. Stonehold, Brannoch and
@@ -84,7 +106,7 @@ the sea has its capital on the coast, and one named for islands has at least two
   Emberdeep is not high). `m1-27` (68.3) has the best roads of the three (69.3) but puts Stonehold off the heights and has
   44 desert provinces against the lore's few.
 
-## What no candidate gets right (for M2 or the next map version)
+### What no candidate got right (the reason for the design)
 
 These failings were the same on all or nearly all seeds, so choosing a seed cannot fix them. They come from the generator.
 
@@ -103,5 +125,8 @@ These failings were the same on all or nearly all seeds, so choosing a seed cann
 
 ## Undo or change
 
-Set `A.V2MAP.ONE` to another seed (or to `null` to give every life its own continent again), run
-`node tools/m1/facts.mjs <built.html>`, and rebuild. Lives already saved keep the continent they were made on.
+The design is `A.V2MAP.DESIGN` (= `A.V2MAP.ONE`, the seed `one`); `VM.build` builds it as version 4 and any other seed as
+version 3 did. Setting `A.V2MAP.ONE` to `null` gives every life its own generated continent again; setting it to a seed
+such as `m1-02` gives every life that one. Either way run `node tools/m1/facts.mjs <built.html>` and the lore lint, since
+the lore now follows the design. Lives already saved keep the continent and version they were made on. The commits:
+the design `41b7c4e4`, the build `012bdea7` (D-154), the lore `c4cd08cb` (D-155).

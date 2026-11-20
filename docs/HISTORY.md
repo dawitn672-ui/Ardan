@@ -2565,6 +2565,49 @@ Branch `work/x5-ci`, from `origin/v2-integration` at `578da51`. The long run on 
   fields, the code that hard-codes it, the order of the lore pass, and what the lint does not read yet.
 - **Undo:** revert the step's commits. `f-facts` is read only by the tool and the test.
 
+### H-103 · 2026-11-20 · M1 finished: the designed continent built as map version 4, and the lore brought into line (orders 71 to 73; D-153, D-154, D-155)
+- **Branch** `work/m1`. The design came in from `origin/work/m1-design` (`bd80b856`) as one squashed commit, `41b7c4e4`
+  (`docs/design/m1/map-design.md`, `design/` with `seats.tsv`, `features.json`, the PNGs and `tables.md`,
+  `tools/m1/design-sketch.mjs`, which now also writes `design/waters.png`: the named water of every cell). D-153 is the
+  design's own record, copied from its section 1.4.
+- **The build** (`012bdea7`, D-154):
+  - `tools/m1/v4-data.mjs` writes `data/map/v4.json` (`A.DATA['map/v4']`) from the design: cells (province, named water,
+    unnamed lake or sea), ground words, half-resolution relief, the land mask, waters, 306 seats, realms and capitals,
+    36 named rivers (where each runs to, big or small, how far barges go), ranges, peaks, passes, regions, roads, isles and
+    ferries. Run-length coded, base64.
+  - `src/map/99991-v2-map/g-v4.core.js`: `VM.defineV4` / `VM.buildV4`. Height from the relief plus noise seeded by the
+    map seed alone, the authored rivers carved downhill into it, climate from latitude 65 to 11, moisture pulled to the
+    ground word, the ash fields tinted (`map.tint`, drawn by `src/map/engine/render.js`). About 0.3 s; v3 took 1.4 s.
+  - `a-world.core.js`: `VM.VERSION` 4; `VM.ONE = VM.DESIGN = seedOf('one')`; `VM.build` sends the design seed at v4 to
+    `buildV4` and builds any other seed as version 3. A save keeps its `S.v2map.v`, so a v3 save rebuilds v3.
+  - The worker (`e-ahead.core.js`) posts `VM.defineV4` and the design data with the settings; its cache key holds both.
+  - `f-facts.core.js` reads the design's waters, rivers and ship water; a realm records `near` (the ground, lakes and
+    heights of the land beside it, wild lands included). `999911-d9-ground` takes the design's names on a designed map.
+  - `src/map/engine/continent.js` exports `oceanMask`, `distanceToWater` and `flowField` for it (the engine rebundled).
+  - `SV.check` (`99998-v2-saves`): from version 4 an isle is reached by its ferry, so a sea link counts as a road.
+- **The lore** (`c4cd08cb`, D-155): 94 changes in 9 files, declared in `tools/m1/lore-edits.mjs`, applied by
+  `tools/m1/lore-apply.mjs`, which writes `docs/design/m1/lore-changes.md` (old words, new words, places, why, by file).
+  `tools/m1/lore-find.mjs` finds the texts. Release content (`12-ww.js`, `18-cm.js`) checked with the identity probe
+  before and after: the same 5,030 events, no audience class changed, fixed lives on the same random stream (only the
+  state hash differs, since the state holds the texts).
+  - The lint's rules sharpened as the map came in: the Codex held strictly, other texts may name the land beside a realm,
+    seas by reach, ship water on the inland seas, rivers as named waters, compass words only as "-ern", negation and
+    modifiers, region names, lakes under the map's grain. Its false positives went 435, 57, 0. `tests/lore-map-baseline.json`
+    is 0 of 2,625 claims.
+- **Rules mended where the designed world showed them** (fix the rule, H-082): seats the design set beside their water
+  stand on it (`VM.V4_SNAP`, 3 cells), since D9 wants towns on water (20.6% were off it); three oases the design set off dry
+  ground are towns named for their water (D-061's oasis rule, `d9Terrain`); `d9Ground`'s distinct-names check leaves out the
+  design's own names, which repeat by design (a river and its valley).
+- **Tests on the v4 build:** the map tests 19/19 (`v2mapOneContinent` holds version 4's numbers: main land at least 98%,
+  sea links allowed; `m1OneContinent` checks the facts file is the map's own), the engine's unit tests 132/132,
+  `lint-stages` ok, `lint-lore-map` 0. The sweep (quick tier, coherency, suspect long tests, load) is H-104.
+- **The renders** of the built game, `docs/design/m1/v4-ground.png`, `v4-realms.png`, `v4-close.png`, by
+  `node tools/m1/render-v4.mjs <built.html> --out=docs/design/m1`; `docs/design/m1/README.md` leads with them.
+- **Open:** the owner's nine questions (`map-design.md` section 9). An answer is an edit to `seats.tsv` or `features.json`,
+  then `design-sketch.mjs`, `v4-data.mjs`, a build, `facts.mjs` and the lint, which lists the lore the change moves.
+- **Undo:** revert `c4cd08cb` (the lore), `012bdea7` (the build) and `41b7c4e4` (the design); with the build reverted,
+  `VM.VERSION` 3 and `A.V2MAP.ONE` = `m1-02` come back. Saves begun on version 4 then rebuild their seed as version 3.
+
 ### H-106 · 2026-11-19 · Repository tidy: README, docs index and its lint, branches, test times, archive notes
 Branch `work/repo-tidy`, from `origin/v2-integration` at `2f2d7a9`. Documentation and hygiene only; no game code, no player-facing change (no CHANGELOG line).
 - **README.md** rewritten for a visitor (the old one was of Nov 12: it said the source was not here, features carry patches, `index.html`

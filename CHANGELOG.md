@@ -7,9 +7,14 @@ What changed for the player, in plain words, one section per version (newest fir
 
 - **One continent, the same in every life.** Ardan no longer redraws its land for every new game: the coasts, rivers,
   mountains, the realms' heartlands, the towns and the roads between them are the same each time, to be learned like a
-  real country. Who is born, who rules and which wars move the borders still differ from life to life. The continent was
-  chosen from thirty candidates for how well it fits the realms' histories and how clearly its roads read. A life saved
-  before keeps the land it was played on.
+  real country. Who is born, who rules and which wars move the borders still differ from life to life. The continent is
+  drawn on purpose: snowfields and high peaks across the north, Mount Cinder's red ash range in the west, the great desert basin in
+  the south with its flood river, the long Middle Sea inland, the Salt Sea on the steppe and the great lakes of Drevna. Rivers,
+  seas, ranges and passes carry their own names on the map. A life saved before keeps the land it was played on.
+- **The world's words match its map.** The Codex, the people's stories and the events now say what the map shows: a realm
+  called a sea power has its sea, the Middle Sea's harbours are on the Middle Sea, the dry realms are dry, and a few
+  names changed to fit the land (the Tibata Strait is Tibata Bay, Ambrel's highland titles are its hill titles, three
+  oases away from the desert are now towns named for their water).
 - **The creation screen shows that continent:** each home town is listed with its ground (hills, forest, steppe...) as
   you will find it.
 - **Faster on the second visit.** The continent is kept between visits, so it is ready a few seconds sooner on a phone,

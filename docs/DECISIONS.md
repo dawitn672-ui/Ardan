@@ -2649,3 +2649,59 @@ it is built in code as map version 4 (a guided generator or authored shapes with
 drawing `A.rand`), the lore recalibrated to it (D-151), all tested as one world shift, and shown to the owner whole.
 D-142's seed scoring and M1's 30 candidates stay recorded as what was tried.
 
+### D-153 · The designed continent is the owner's picture, read with the lore's names (2026-11-19; order 73; with D-151, D-152)
+**Chosen.** Map version 4 takes its outline, lakes, ranges, deserts, rivers and coasts from the owner's picture
+(`docs/design/m1/reference/owner-continent.webp`), laid on the game's 700 x 450 grid at one scale (4.27 km a pixel).
+Where the picture and the lore differ, the picture's shape stands and the lore's name moves to the water or land that
+fits it best: the Middle Sea is the long central lake, an inland sea with no way to the ocean; Varenna, Qadir, Sabra and
+Corvasse face the Western Ocean, and the Strait of Hael lies between the western cape and the Corsair Isles; Cold Bay is
+the northern water behind the Cold Narrows; the Lakeland is the great north-eastern lake; the Grey Channel is a rift
+river from the Lake Portage to the Grey Water, and the Gullet carries it to the Eastern Gulf; the Salt Sea is the steppe
+lake; the Neck is the land round the Grey Water's south end. Realms are grown from 306 authored seats over the picture's
+ground, borders on rivers and ridges, no realm enclosed, each in one piece. The lore follows the map (order 71): the
+changes are listed in `docs/design/m1/map-design.md` section 7.
+**Why not a wider Middle Sea.** The owner's picture is the order. A wide sea would redraw the middle of his continent.
+The question is put to him (section 9).
+**Departures from the picture** are few and listed (section 2): three channels kept open or cut, three lakes joined
+where the grid would break them, one islet widened into Frostholm, river water and ponds under the map's grain filled.
+
+### D-154 · Map version 4 builds the design: authored control data, generated detail (2026-11-20; order 72, 73; D-153)
+**Chosen.** The designed continent (D-153) is map version 4 of the one seed, `ardan-v2-map:one` (`A.V2MAP.DESIGN`).
+(1) **Authored control data.** `tools/m1/v4-data.mjs` reads the design's PNGs and `build.json` (`docs/design/m1/design/`)
+into `data/map/v4.json` (`A.DATA['map/v4']`, kept as `A.V2MAP.V4`): each 10 km cell's province or water, its ground word
+and relief, the named waters, rivers (authored lines, with where each runs to and how far barges go), ranges, peaks,
+passes, regions, roads, isles and ferries; 306 seats with their realms. The frame is the design's: 7,000 x 4,500 km on
+700 x 450 cells, latitude 65 at the top and 11 at the bottom. (2) **Generated detail.** `g-v4.core.js` (`VM.buildV4`)
+lays the height field on the relief, carves the authored rivers into it downhill, adds noise from the seed alone, reads
+climate from latitude with moisture pulled toward the design's ground word, and tints the ash fields; it never draws
+`A.rand` and builds in about 0.3 s (version 3 took 1.4 s). (3) **The design wins over the old heuristics.** The sea-realm
+placement and the realm growth of versions 2 and 3 give way: provinces and realms are the design's. Two rules of D-061
+still hold on top of it: a seat stands on its water when the design put it within 30 km of a shore or river
+(`VM.V4_SNAP` = 3 cells, under the picture's grain), and an oasis the design set off dry ground becomes a town named for
+its water (three, through `A.V2MAP.onProv`). (4) **Islands.** The mainland holds 98% of the land;
+the design's isles are reached by its ferries, so version 4's one-landmass numbers are main share at least 98 and every
+province reachable by land or ferry (`SV.check` and the map tests read sea links as roads from version 4). (5) **Fleets.**
+The Middle Sea, the Salt Sea and the Grey Water are coasts for fleets: a realm on them has ship water, though no way to
+the ocean. (6) **Old saves.** A save records its map version (`S.v2map.v`); a version 3 save rebuilds version 3's
+continent of its seed, as v1 and v2 saves did before it. Only new lives get the design. (7) **The worker** builds it ahead
+with the same code (`VM.defineV4` posted beside `VM.define`, the design data among the posted settings), and its cache key
+holds both sources.
+
+### D-155 · The lore follows the designed map; the lint holds them together (2026-11-20; order 71; D-151, D-153)
+**Chosen.** The design's section 7 (25 rule-level changes and the table of ties) applied as 94 changes in 9 files by
+`tools/m1/lore-apply.mjs` from the declared list in `tools/m1/lore-edits.mjs`, written out as old and new words by file in
+`docs/design/m1/lore-changes.md`. Release content (`12-ww.js`, `18-cm.js`) was edited with `tools/release/identity-probe.mjs`
+before and after: the same events and audience classes, the same random stream for fixed lives. `tools/lint-lore-map.mjs`
+(run by `tools/check.mjs`) holds the words to `data/map/one-continent.json` at a baseline of 0. Its reading rules:
+(1) **The Codex is strict.** A realm's own Codex words (its entry, its titles, its people's and race's homelands) must be
+true of the realm itself: its coast, ground, waters and compass place. (2) **Elsewhere, the land beside counts.** A story
+or event may name the ground just across a realm's border (the steppe beyond Drevna's march, a lake on the line), read
+from every province next to it, wild lands included. (3) **Waters.** A named water a realm touches, or a river through
+it, is that realm's; a sea is reachable when its water joins the realm's; inland seas count as coasts for fleets (D-154
+point 5). (4) **Compass words** are read only in their "-ern" form (northern, western) and against the realm's place on
+the frame; negations and modifiers ("not a seafaring people", "half-wooded") are read as such. (5) **Lakes under the
+grain** (a mere, a tarn, a pond) are not held to the map, which draws no water under 10 km. **Renamed where the lore
+named the map wrong:** the Tibata Strait is Tibata Bay; Ambrel's "Highland" titles and march are its hills (the Hill March, the Warden of the Hills); three oases off dry
+ground are towns named for their water (D-154 point 3). The owner's nine questions (`map-design.md` section 9) may still
+come back as edits to `seats.tsv` or `features.json`; rebuilding `data/map/v4.json`, then the facts, then the lint shows
+what lore any answer moves.
