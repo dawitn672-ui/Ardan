@@ -31,7 +31,7 @@ export const KINDS = {
   compass: /\b(?:far )?(north|south|east|west)ern (?:plains|steppes?|isles?|islands?|kingdoms?|realms?|empire|grass(?:lands?)?|lands?|waste|hills|highlands|mountains|forests?|frontier)\b/gi,
 };
 // the nouns a land word modifies when it names where a thing comes from, not the realm's own ground
-export const MODIFIED = /^\s+(horses?|horsemen|pon(?:y|ies)|mares?|bred|blood|marches|march|roads?|edge|towers?|watch\w*|tribes?|clans?|riders?|lords?|folk|silver|crossbow\w*|spears?|men|archers|levies|price|trade|wool|furs?|fever|yellow|bows?|heat|castles?|soldiers|castellans?|herds?|wind|raiders?|scouts?|guards?|wardens?|outlaws?|nomads?|caravans?|ponies|dogs?|goats?|sheep|cattle)\b/i;
+export const MODIFIED = /^\s+(horses?|horsemen|pon(?:y|ies)|mares?|bred|blood|marches|march|roads?|edge|towers?|watch\w*|tribes?|clans?|riders?|lords?|folk|silver|crossbow\w*|spears?|men|archers|price|trade|wool|furs?|fever|yellow|bows?|heat|castles?|soldiers|castellans?|herds?|wind|raiders?|scouts?|guards?|wardens?|outlaws?|nomads?|caravans?|ponies|dogs?|goats?|sheep|cattle)\b/i;
 // a land word after these is a place over the border or a thing's origin ("horses from the steppe", "held against the desert")
 export const TOWARD = /\b(from|against|toward|towards|across|beyond|facing|into|onto|off|over)\s+the\s+$/i;
 // the lakes the design keeps under the map's grain (docs/design/m1/map-design.md 3.4): places, not water on the grid

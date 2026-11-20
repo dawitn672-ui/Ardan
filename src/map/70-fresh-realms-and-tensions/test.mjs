@@ -53,7 +53,8 @@ export default {
           if (!ru || !ru.alive || ru.ruler !== r.id || ru.realm !== r.id) why.push('ruler');
           if (!h || !h.name) why.push('house');
           const words = [r.name, r.short, r.title, r.fresh.want, r.fresh.fear, r.fresh.place.name, r.fresh.place.text, r.primer.intro, h && h.name].join(' | ');
-          if (!r.name || !r.short || /[{}]|undefined|null|NaN|\bthe the\b/i.test(words)) why.push('words: ' + words);
+          // a leaked value is a whole word in its own case: a made name may hold its letters (Fe-nan-dor, M1's designed world)
+          if (!r.name || !r.short || /[{}]|\b(undefined|null|NaN)\b/.test(words) || /\bthe the\b/i.test(words)) why.push('words: ' + words);
           if (!P.every(id => p.claims && p.claims[id])) why.push('no claim');
           if (FR.pieces(p.id) > before[p.id].pieces) why.push('parent cut in two');
           if (!(r.rel[p.id] <= -30 && p.rel[r.id] <= -30)) why.push('rel ' + r.rel[p.id]);
