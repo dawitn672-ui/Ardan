@@ -2585,7 +2585,7 @@ Branch `work/x5-ci`, from `origin/v2-integration` at `578da51`. The long run on 
     heights of the land beside it, wild lands included). `999911-d9-ground` takes the design's names on a designed map.
   - `src/map/engine/continent.js` exports `oceanMask`, `distanceToWater` and `flowField` for it (the engine rebundled).
   - `SV.check` (`99998-v2-saves`): from version 4 an isle is reached by its ferry, so a sea link counts as a road.
-- **The lore** (`c4cd08cb`, D-155): 94 changes in 9 files, declared in `tools/m1/lore-edits.mjs`, applied by
+- **The lore** (`c4cd08cb`, D-155): 90 changes in 9 files, declared in `tools/m1/lore-edits.mjs`, applied by
   `tools/m1/lore-apply.mjs`, which writes `docs/design/m1/lore-changes.md` (old words, new words, places, why, by file).
   `tools/m1/lore-find.mjs` finds the texts. Release content (`12-ww.js`, `18-cm.js`) checked with the identity probe
   before and after: the same 5,030 events, no audience class changed, fixed lives on the same random stream (only the

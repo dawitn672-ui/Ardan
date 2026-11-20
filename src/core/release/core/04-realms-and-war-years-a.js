@@ -931,7 +931,7 @@ A.famMembers = function (hid) {
         }[R2.race]) ||
       "human",
     cult = A.cultureFor(race, F.realm),
-    home = (A.S.prov.find(p => p.name === F.seat) || {}).id;
+    home = (A.provOfSeat(F.seat) || {}).id;
   F.members.forEach((m, i) => {
     const p = A.newPerson({
       given: m.given,
@@ -1176,7 +1176,7 @@ A.newGame = function (o) {
       const sp = S.prov.find(p => p.pid === h.seatId);
       if (sp && sp.owner === realm.id) home = sp.id;
     } else if (h.seat && o.home == null) {
-      const sp = S.prov.find(p => p.name === h.seat && p.owner === realm.id);
+      const sp = A.provOfSeat(h.seat, realm.id);
       if (sp) home = sp.id;
     }
   }

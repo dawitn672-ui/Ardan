@@ -2688,7 +2688,7 @@ with the same code (`VM.defineV4` posted beside `VM.define`, the design data amo
 holds both sources.
 
 ### D-155 · The lore follows the designed map; the lint holds them together (2026-11-20; order 71; D-151, D-153)
-**Chosen.** The design's section 7 (25 rule-level changes and the table of ties) applied as 94 changes in 9 files by
+**Chosen.** The design's section 7 (25 rule-level changes and the table of ties) applied as 90 changes in 9 files by
 `tools/m1/lore-apply.mjs` from the declared list in `tools/m1/lore-edits.mjs`, written out as old and new words by file in
 `docs/design/m1/lore-changes.md`. Release content (`12-ww.js`, `18-cm.js`) was edited with `tools/release/identity-probe.mjs`
 before and after: the same events and audience classes, the same random stream for fixed lives. `tools/lint-lore-map.mjs`

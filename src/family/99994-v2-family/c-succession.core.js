@@ -159,7 +159,7 @@
   // ---- the one mover -----------------------------------------------------------------------------------------------
   const seatProv = h => {
     if (h.seatId) { const q = A.S.prov.find(x => x.pid === h.seatId); if (q) return q.id; }
-    if (h.seat) { const q = A.S.prov.find(x => x.name === h.seat && (!h.realm || x.owner === h.realm)); if (q) return q.id; }
+    if (h.seat) { const q = A.provOfSeat(h.seat, h.realm || null); if (q) return q.id; }
     return null;
   };
   F.seatProv = seatProv;

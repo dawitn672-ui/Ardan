@@ -214,6 +214,10 @@ A.famKindOf = h => (h ? h.fkind || A.FAM_KIND[h.kind] || h.kind : null);
 A.prov = i => A.S.prov[i];
 
 A.provName = i => (A.S.prov[i] ? A.S.prov[i].name : "the road");
+// a house's or family's seat is the release's place name; a place the map renamed (an oasis off dry ground, D9, M1) keeps
+// that name as `oname`: find the seat by either, and show it by the place's name now
+A.provOfSeat = (name, owner) => (name && A.S && A.S.prov ? A.S.prov.find(p => p && (p.name === name || p.oname === name) && (owner == null || p.owner === owner)) || null : null);
+A.seatName = name => { const p = name && A.S && A.S.prov ? A.S.prov.find(q => q && q.oname === name) : null; return p ? p.name : name; };
 
 A.raceName = r => (GD.RACES[r] ? GD.RACES[r].name : r);
 
@@ -1156,7 +1160,7 @@ A.T = function (str, ctx = {}) {
         }
         case "familySeat": {
           const h = A.family(pc);
-          return h && h.seat ? h.seat : pc ? A.provName(pc.home) : "home";
+          return h && h.seat ? A.seatName(h.seat) : pc ? A.provName(pc.home) : "home";
         }
         case "familyHead": {
           const h = A.family(pc),

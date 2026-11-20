@@ -1096,7 +1096,7 @@ UI.provPanel = function (pid) {
         .join("")}`;
   }
   const hs = Object.values(A.S.houses)
-    .filter(x => x.seat === p.name && !x.extinct)
+    .filter(x => (x.seat === p.name || (p.oname && x.seat === p.oname)) && !x.extinct)
     .slice(0, 6);
   if (hs.length)
     h += `<div class="group-h">Houses seated here</div>${hs.map(x => `<div class="small click" data-a="ov" data-v="house:${x.id}">${PORTRAIT.coat(x, 14)} ${UI.esc(x.name)}</div>`).join("")}`;

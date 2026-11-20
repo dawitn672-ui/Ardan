@@ -67,7 +67,7 @@ const land = (p, ctx) => {
     const a = ctx.stake && (p.assets || []).find(x => x.k === ctx.stake);
     if (a) return `your ${X().short(a)}`;
     const h = A.family(p);
-    return h && h.seat ? `your family's land at ${h.seat}` : 'the ground your house stands on';
+    return h && h.seat ? `your family's land at ${A.seatName ? A.seatName(h.seat) : h.seat}` : 'the ground your house stands on';
   });
   X().memo(p, ctx, 'landName', () => String(ctx.land).replace(/^your family's/, "the family's").replace(/^your /, 'the ').replace(/^the ground your house/, 'the ground the house'));
 };

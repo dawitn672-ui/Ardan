@@ -4,7 +4,7 @@ Every change made to the world's words to bring them into line with the one map,
 Each row gives the old words, the new words and why. "Places" counts how many times the old words stood in that file. Written by
 `node tools/m1/lore-apply.mjs` from `tools/m1/lore-edits.mjs`. `tools/lint-lore-map.mjs` holds the words to the map from now on.
 
-**94 changes in 9 files.**
+**90 changes in 9 files.**
 
 ## `src/core/release/content/12-ww.js`
 
@@ -12,7 +12,6 @@ Each row gives the old words, the new words and why. "Places" counts how many ti
 | --- | --- | ---: | --- |
 | Highland March | Hill March | 2 | 4.32: Great Amber's interior (the Amber Wilds) is hill forest; the map has no highlands there |
 | Highland Spears | Hill Spears | 1 | 4.32: Great Amber's interior (the Amber Wilds) is hill forest; the map has no highlands there |
-| Highland Spear | Hill Spear | 1 | 4.32: Great Amber's interior (the Amber Wilds) is hill forest; the map has no highlands there |
 
 ## `src/core/release/content/18-cm.js`
 
@@ -74,7 +73,6 @@ Each row gives the old words, the new words and why. "Places" counts how many ti
 | The sultanate of passes and galleys on the desert coast: | The sultanate of passes and galleys on the dry coast under the Sunwall: | 1 | B19: Qadir's coast is dry; the desert proper is beyond the range |
 | Highland March | Hill March | 1 | 4.32: Great Amber's interior (the Amber Wilds) is hill forest; the map has no highlands there |
 | Highland Spears | Hill Spears | 2 | 4.32: Great Amber's interior (the Amber Wilds) is hill forest; the map has no highlands there |
-| Highland Spear | Hill Spear | 1 | 4.32: Great Amber's interior (the Amber Wilds) is hill forest; the map has no highlands there |
 | Warden of the Highlands | Warden of the Hills | 3 | 4.32: Great Amber's interior (the Amber Wilds) is hill forest; the map has no highlands there |
 | Ambrel highlands | Ambrel hills | 1 | 4.32: Great Amber's interior (the Amber Wilds) is hill forest; the map has no highlands there |
 | Ambrel (highland march) | Ambrel (hill march) | 1 | 4.32: Great Amber's interior (the Amber Wilds) is hill forest; the map has no highlands there |
@@ -103,7 +101,6 @@ Each row gives the old words, the new words and why. "Places" counts how many ti
 | She wants the chain replaced with iron from Irondeep, and her father calls it the first step to a human harbor. | Her father calls it the first step to a human harbor; she wants the chain replaced with iron from Irondeep. | 1 | The harbour is Eldergrove's, the iron Irondeep's (inland) |
 | Highland March | Hill March | 1 | 4.32: Great Amber's interior (the Amber Wilds) is hill forest; the map has no highlands there |
 | Highland Spears | Hill Spears | 7 | 4.32: Great Amber's interior (the Amber Wilds) is hill forest; the map has no highlands there |
-| Highland Spear | Hill Spear | 1 | 4.32: Great Amber's interior (the Amber Wilds) is hill forest; the map has no highlands there |
 | Ruhu Highlands | Ruhu Hills | 2 | 4.32: Great Amber's interior (the Amber Wilds) is hill forest; the map has no highlands there |
 | highlands above Ruhu | hills above Ruhu | 1 | 4.32: Great Amber's interior (the Amber Wilds) is hill forest; the map has no highlands there |
 | highland forests | hill forests | 1 | 4.32: Great Amber's interior (the Amber Wilds) is hill forest; the map has no highlands there |
@@ -118,7 +115,6 @@ Each row gives the old words, the new words and why. "Places" counts how many ti
 | 300,000 suns to Greyhaven for its galley fleet, and the shipowners of the Middle Sea. | 300,000 suns to Greyhaven for its channel galleys; and the shipowners of the Middle Sea. | 1 | A3: Greyhaven's galleys are river galleys; the Middle Sea's shipowners are Lucerna's neighbours, not Greyhaven's |
 | Highland March | Hill March | 3 | 4.32: Great Amber's interior (the Amber Wilds) is hill forest; the map has no highlands there |
 | Highland Spears | Hill Spears | 1 | 4.32: Great Amber's interior (the Amber Wilds) is hill forest; the map has no highlands there |
-| Highland Spear | Hill Spear | 1 | 4.32: Great Amber's interior (the Amber Wilds) is hill forest; the map has no highlands there |
 | Warden of the Highlands | Warden of the Hills | 3 | 4.32: Great Amber's interior (the Amber Wilds) is hill forest; the map has no highlands there |
 
 ## `src/core/release/lore/04-styles.json`
@@ -144,3 +140,15 @@ Each row gives the old words, the new words and why. "Places" counts how many ti
 | Old words | New words | Places | Why |
 | --- | --- | ---: | --- |
 | Ambrel highlands | Ambrel hills | 1 | 4.32: Great Amber's interior (the Amber Wilds) is hill forest; the map has no highlands there |
+
+## Names the map gives in play (no text changed)
+
+An oasis the design set off dry ground is a town named for its water (D-061's rule, D-154). The lore keeps the release's name as the
+place's identity: a house seated there finds its seat by either name and is shown by the new one (`A.provOfSeat`, `A.seatName`).
+Read from `data/map/one-continent.json`.
+
+| The release's name | On the map | Realm | Houses seated there |
+| --- | --- | --- | --- |
+| Rushzag Oasis | Rushzag Wood | Horde of Gorath | The Owlmask drummers (FX11-003); The Goatpath line (FX11-013); The Reedboat line (FX11-014) |
+| Kagdush Oasis | Kagdush Ford | Horde of Gorath | The Ladderhand line (FX11-005); The Breadbreakers of Graknak (FX11-017) |
+| Zabesh Oasis | Zabesh Hill | Sahrim Confederacy | the Chiefs of Clan Khaiya (FX19-006) |

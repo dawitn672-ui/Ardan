@@ -1834,7 +1834,7 @@ A.joinSchool2 = function (id) {
     };
   }
   if ((payer === "self" ? (pc.coin -= fee) : (A.S.family.wealth -= fee), !o.here)) {
-    const sp = A.S.prov.find(p => p.name === o.seat && p.owner === o.realm) || A.realmProvs(o.realm)[0];
+    const sp = A.provOfSeat(o.seat, o.realm) || A.realmProvs(o.realm)[0];
     if (sp) {
       pc.home = sp.id;
       A.log(`You travel to ${o.seat} to study.`);

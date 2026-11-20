@@ -170,7 +170,7 @@
         const coat = PF.arms(p, 64), ar = (A.ID && A.ID.arms && A.ID.arms(p)) || null, words = (ar && ar.words) || h.words || '', blaz = h.arms || '';
         s += `<div class="pf-house"><div class="pf-coat" aria-hidden="true">${coat}</div><div class="pf-hn">${trig(['house', h.id], esc(h.name), 'pf-w')}` +
           (words ? `<div class="pf-motto">“${esc(words)}”</div>` : '') + (blaz ? `<div class="pf-m2">${esc(cap(blaz))}</div>` : '') +
-          `<div class="pf-m2">${esc([h.rank, h.seat ? 'of ' + h.seat : ''].filter(Boolean).join(' '))}</div></div></div>`;
+          `<div class="pf-m2">${esc([h.rank, h.seat ? 'of ' + (A.seatName ? A.seatName(h.seat) : h.seat) : ''].filter(Boolean).join(' '))}</div></div></div>`;
       } else s += empty('You belong to no house. Found one when you can.');
       if (folk.length) s += '<ul class="pf-folk">' + folk.map(f => `<li><button type="button" class="pf-person" data-a="ov" data-v="person:${esc(f.p.id)}"><span class="pf-pp">${P ? P.svg(f.p, 40) : ''}</span><span class="pf-pn"><b>${esc(A.fullName(f.p, false))}</b><span class="pf-m2">${esc(f.rel)}, ${esc(PF.cap(A.stage(f.p)))}${f.p.alive ? '' : ', dead'}</span></span></button></li>`).join('') + '</ul>';
       else s += empty('No close kin are living.');

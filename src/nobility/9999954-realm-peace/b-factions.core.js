@@ -181,7 +181,7 @@
     const ratio = PE.leagueRatio(f);
     const backer = A.neighbors(r.id).map(A.realm).filter(o => o && o.alive && !o.isRebel && A.relBetween(o.id, r.id) < -40)
       .sort((a, b) => A.realmPower(b) - A.realmPower(a))[0];
-    const lead = A.S.houses[f.leader], hp = headOf(lead), seats = f.members.some(id => { const h = A.S.houses[id]; return h && h.seat && A.realmProvs(r.id).some(q => q.name === h.seat && q.id !== r.capitalProv); });
+    const lead = A.S.houses[f.leader], hp = headOf(lead), seats = f.members.some(id => { const h = A.S.houses[id]; return h && h.seat && A.realmProvs(r.id).some(q => (q.name === h.seat || q.oname === h.seat) && q.id !== r.capitalProv); });
     const rise = [
       rs('reckoning', 2.4 * (Math.min(2, ratio) - .8), ratio >= 1 ? 'Their men are as many as the crown\'s' : 'The crown\'s hosts outnumber theirs', { t: 'ratio', r: r2(ratio) }, 0),
       rs('grudge', (anger - 40) / 20, 'Their anger with the crown', { t: 'anger', r: Math.round(anger) }, 1),
