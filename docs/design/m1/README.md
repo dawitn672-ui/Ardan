@@ -13,8 +13,12 @@ The built game's own map, rendered by `node tools/m1/render-v4.mjs <built.html> 
 | --- | --- | --- |
 | ![ground](v4-ground.png) | ![realms](v4-realms.png) | ![close](v4-close.png) |
 
-Beside them, the design on the owner's picture: [`design-on-picture.jpg`](design-on-picture.jpg) and the design sketch
-[`design-sketch.png`](design-sketch.png).
+The map a life sees at full size (3300 x 2160, the names and roads legible): [`v4-map-full.jpg`](v4-map-full.jpg). The owner's
+picture, the design laid on it, the built ground and the built map side by side: [`v4-compare.jpg`](v4-compare.jpg).
+
+![The owner's picture, the design, and the built game](v4-compare.jpg)
+
+The design alone: [`design-on-picture.jpg`](design-on-picture.jpg) and the design sketch [`design-sketch.png`](design-sketch.png).
 
 To change the map: edit `design/seats.tsv` or `design/features.json` (the owner's questions in `map-design.md` section 9
 may come back that way), then run `node tools/m1/design-sketch.mjs`, `node tools/m1/v4-data.mjs`, build, run

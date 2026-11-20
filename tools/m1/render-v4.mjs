@@ -2,6 +2,8 @@
 //   <out>/v4-ground.png   the satellite ground alone (v2's renderer over the designed continent): to hold against his picture
 //   <out>/v4-realms.png   the game's full map at its widest, as a life sees it (realms, borders, roads, names)
 //   <out>/v4-close.png    the full map at zoom 3 on the Middle Sea
+//   <out>/v4-map-full.jpg the same full map at its widest, drawn three times larger (3300 x 2160): the names and roads legible
+//   <out>/v4-compare.jpg  the owner's picture, the design laid on it, the built ground and the built map, side by side
 //   node tools/m1/render-v4.mjs <built.html> [--out=docs/design/m1]
 import fs from 'node:fs';
 import path from 'node:path';
@@ -41,6 +43,32 @@ await pg.evaluate(() => {
 await (await pg.$('#gmap')).screenshot({ path: path.join(OUT, 'v4-realms.png') });
 await pg.evaluate(() => { const w = 7000 / 3; UI.gm.view = UI.wrClampView({ x0: 3400 - w / 2, y0: 2250 - w / 3.06, w, h: 0 }); UI.gmDraw(); UI.gmDraw(); });
 await (await pg.$('#gmap')).screenshot({ path: path.join(OUT, 'v4-close.png') });
+// the full map at its widest, drawn into a backing canvas three times the game's own (the game's draw fills whatever size it has)
+const full = await pg.evaluate(() => {
+  const cv = document.getElementById('gmap'), w0 = cv.width, h0 = cv.height;
+  cv.width = w0 * 3; cv.height = h0 * 3;
+  UI.gm.view = UI.wrClampView({ x0: 0, y0: 0, w: 7000, h: 0 }); UI.gmDraw(); UI.gmDraw();
+  const url = cv.toDataURL('image/jpeg', 0.88);
+  cv.width = w0; cv.height = h0; UI.gmDraw();
+  return url;
+});
+fs.writeFileSync(path.join(OUT, 'v4-map-full.jpg'), Buffer.from(full.split(',')[1], 'base64'));
+// the comparison sheet: four panels of one size, each captioned
+const src = f => { const p = path.join(OUT, f); return fs.existsSync(p) ? `data:image/${/\.webp$/.test(f) ? 'webp' : /\.jpe?g$/.test(f) ? 'jpeg' : 'png'};base64,` + fs.readFileSync(p).toString('base64') : null; };
+const panels = [['reference/owner-continent.webp', "The owner's picture"], ['design-on-picture.jpg', 'The design laid on it (map-design.md)'],
+  ['v4-ground.png', 'Built: the ground (map version 4)'], ['v4-map-full.jpg', 'Built: the map a life sees']].map(([f, t]) => [src(f), t]).filter(x => x[0]);
+const sheet = await pg.evaluate(async P => {
+  const W = 1400, H = 920, CAP = 48, cv = document.createElement('canvas'); cv.width = W * 2; cv.height = (H + CAP) * Math.ceil(P.length / 2);
+  const ctx = cv.getContext('2d'); ctx.fillStyle = '#10141c'; ctx.fillRect(0, 0, cv.width, cv.height);
+  for (let i = 0; i < P.length; i++) {
+    const im = new Image(); im.src = P[i][0]; await im.decode();
+    const x = (i % 2) * W, y = Math.floor(i / 2) * (H + CAP), k = Math.min(W / im.width, H / im.height), dw = im.width * k, dh = im.height * k;
+    ctx.drawImage(im, x + (W - dw) / 2, y + CAP + (H - dh) / 2, dw, dh);
+    ctx.fillStyle = '#e8dcc0'; ctx.font = '600 28px Georgia, serif'; ctx.fillText(P[i][1], x + 20, y + 34);
+  }
+  return cv.toDataURL('image/jpeg', 0.86);
+}, panels);
+fs.writeFileSync(path.join(OUT, 'v4-compare.jpg'), Buffer.from(sheet.split(',')[1], 'base64'));
 await b.close();
 if (errs.length) { console.error('page errors: ' + errs.slice(0, 3).join(' | ')); process.exit(1); }
-console.log(`wrote ${['v4-ground.png', 'v4-realms.png', 'v4-close.png'].map(f => path.relative(process.cwd(), path.join(OUT, f))).join(', ')}`);
+console.log(`wrote ${['v4-ground.png', 'v4-realms.png', 'v4-close.png', 'v4-map-full.jpg', 'v4-compare.jpg'].map(f => path.relative(process.cwd(), path.join(OUT, f))).join(', ')}`);
