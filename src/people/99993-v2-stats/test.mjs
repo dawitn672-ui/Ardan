@@ -18,14 +18,21 @@ export default {
   // strength rises, peaks and declines; the old 0-100 stat is derived from the body and still read by C.stat
   async v2sDerive(pg) {
     const r = await pg.evaluate(() => {
-      T.enter({ seed: 32, race: 'human', sex: 'M', startAge: 0 });
       // the body's growth is measured, not the child's luck: on Story no year's death roll takes a child (CI 107: the world
-      // re-rolled by later steps took seed 32's boy at six)
-      A.S.settings.diff = 'story';
-      const pc = A.pc(), byAge = [];
-      // (P3 CI: the body's own strength, pc.st.str, not A.stat's, which a wound lowers: the re-rolled world gave seed 32's
-      // sailor a strained back at 20, str 34 at 18 and 33 at 25 though his body went on growing, 31.9 -> 35.7)
-      for (let y = 0; y < 30; y++) { T.play(1); if (!pc.alive) break; if ([5, 12, 18, 25].includes(A.age(pc))) byAge.push([A.age(pc), Math.round(pc.st.str), Math.round(A.V2S.stats(pc).lift)]); }
+      // re-rolled by later steps took seed 32's boy at six). A man may still die young (M1's designed world took seed 32's
+      // after 18), so the first of six worlds whose man lives the thirty years is read (H-082)
+      let byAge = [];
+      const got = T.trySeeds(T.seedRun(32, 6), seed => {
+        T.enter({ seed, race: 'human', sex: 'M', startAge: 0 });
+        A.S.settings.diff = 'story';
+        const p = A.pc(); byAge = [];
+        // (P3 CI: the body's own strength, pc.st.str, not A.stat's, which a wound lowers: the re-rolled world gave seed 32's
+        // sailor a strained back at 20, str 34 at 18 and 33 at 25 though his body went on growing, 31.9 -> 35.7)
+        for (let y = 0; y < 30; y++) { T.play(1); if (!p.alive) break; if ([5, 12, 18, 25].includes(A.age(p))) byAge.push([A.age(p), Math.round(p.st.str), Math.round(A.V2S.stats(p).lift)]); }
+        return p.alive;
+      });
+      if (!got.res) return { none: got.tried };
+      const pc = A.pc();
       // headroom under the old engine's cap (1.02 x potential), which fx and training both stop at
       if (pc.st.str >= pc.pot.str * 1.02 - 3) { pc.st.str -= 8; A.V2S.sync(pc); }
       const before = { c: pc.v2.c.lift, st: pc.st.str, cstat: A.C.stat(pc, 'str') };
@@ -39,26 +46,27 @@ export default {
       // 22: a lift is strength times conditioning, and a life that stops lifting loses conditioning. The growth of a body is
       // the rule, so the lift is read over three lives, summed, and each life's strength alone must never fall)
       const more = [];
-      for (const seed of [33, 34]) {
+      for (const seed of [got.seed + 100, got.seed + 101]) {
         T.enter({ seed, race: 'human', sex: 'M', startAge: 0 }); A.S.settings.diff = 'story';
         const q = A.pc(), rows = [];
         for (let y = 0; y < 30; y++) { T.play(1); if (!q.alive) break; if ([5, 12, 18, 25].includes(A.age(q))) rows.push([A.age(q), Math.round(q.st.str), Math.round(A.V2S.stats(q).lift)]); }
         more.push(rows);
       }
-      return { byAge, more, before, after, old, peak, alive };
+      return { byAge, more, before, after, old, peak, alive, seed: got.seed };
     });
+    if (r.none) return { ok: false, detail: `no man of the worlds ${r.none.join(', ')} lived thirty years on Story` };
     const lives = [r.byAge].concat(r.more || []).filter(x => x.length === 4);
     const s = r.byAge.map(x => x[1]), l = [0, 1, 2, 3].map(i => lives.reduce((a, x) => a + x[i][2], 0));
     const rises = lives.length >= 2 && lives.every(x => x.every((v, i) => i === 0 || v[1] >= x[i - 1][1])) && l.every((v, i) => i === 0 || v > l[i - 1]);
     const ok = r.alive && rises && r.after.c > r.before.c && r.after.st > r.before.st && r.after.cstat > r.before.cstat && r.old < r.peak;
-    return { ok, detail: `str/lift by age ${r.byAge.map(x => `${x[0]}: ${x[1]}, ${x[2]} kg`).join('; ')} (three lives' lifts summed by age: ${l.join(', ')} kg; ${lives.length} lives to 25); fx str +3: cond ${r.before.c} -> ${r.after.c}, st ${r.before.st} -> ${r.after.st}, C.stat ${r.before.cstat} -> ${r.after.cstat}; lift ${r.peak} kg now, ${r.old} kg at 70` };
+    return { ok, detail: `seed ${r.seed}: str/lift by age ${r.byAge.map(x => `${x[0]}: ${x[1]}, ${x[2]} kg`).join('; ')} (three lives' lifts summed by age: ${l.join(', ')} kg; ${lives.length} lives to 25); fx str +3: cond ${r.before.c} -> ${r.after.c}, st ${r.before.st} -> ${r.after.st}, C.stat ${r.before.cstat} -> ${r.after.cstat}; lift ${r.peak} kg now, ${r.old} kg at 70` };
   },
 
   // races are different bodies: in conscripts a giant beats an orc beats a man beats an elf, and the old scale follows
   async v2sRaces(pg) {
     const r = await pg.evaluate(() => {
       const by = {};
-      for (const seed of [33, 34]) {
+      for (const seed of [got.seed + 100, got.seed + 101]) {
         T.enter({ seed });
         for (const p of Object.values(A.S.people)) {
           if (!p.alive || !p.st || A.age(p) < (GD.RACES[p.race].grown || 20)) continue;

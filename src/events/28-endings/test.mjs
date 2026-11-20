@@ -22,8 +22,13 @@ export default {
 
   async endingsDeathScreen(pg) {
     const r = await pg.evaluate(() => {
-      T.enter({ seed: 61, race: 'human', realm: 'POL-01', status: 'noble', sex: 'F', startAge: 40 });
-      T.play(3);
+      // a life still living after three years, to die of the fever (H-082: on M1's designed world seed 61's dies by accident)
+      const got = T.trySeeds(T.seedRun(61, 6), seed => {
+        T.enter({ seed, race: 'human', realm: 'POL-01', status: 'noble', sex: 'F', startAge: 40 });
+        T.play(3);
+        return A.pc().alive && !A.pc().ending;
+      });
+      if (!got.res) return { none: got.tried };
       const pc = A.pc(); pc.fame = 30; pc.deeds.push({ y: A.S.year, t: 'Held the bridge at Ashford with 40 men' });
       A.pcDeath('a fever');
       const S = A.S, d = S.deadList[S.deadList.length - 1];
@@ -37,6 +42,7 @@ export default {
       return { ending: pc.ending, recorded: d.ending === pc.ending.id && S.endings[pc.ending.id] === S.year, shown: txt.includes(end.name) && txt.includes('What became of them'),
         lines: A.epilogue(pc), pure, legacy: new RegExp('Endings found \\(1/' + A.ENDINGS.length).test(leg), logged, raw: /\{[a-z]/.test(txt) };
     });
+    if (r.none) return { ok: false, detail: `no life of ${r.none.join(', ')} lived three years (a noble woman of 40 in Aldmark)` };
     return { ok: r.recorded && r.shown && r.pure && r.legacy && r.logged && !r.raw && r.lines.length >= 2,
       detail: `${JSON.stringify(r.ending)}; on the death screen ${r.shown}; render pure ${r.pure}; collected ${r.legacy}; logged ${r.logged}; epilogue: ${r.lines.join(' | ')}` };
   },
