@@ -2501,3 +2501,42 @@ Branch `work/repo-tidy`, from `origin/v2-integration` at `2f2d7a9`. Documentatio
   kept as a record) and the old reports in `tools/bench/reports/`.
 - **Not used**: no D- number.
 - **Undo:** revert the branch's commits; nothing else depends on them.
+
+### H-104 · 2026-11-19 22:55 ET · Stopped on the owner's order (74): where everything stands
+**Released:** v2.1.0-alpha.15 at `b405db5` (everyone ages and the houses go on; the game built by CI; versions cut one
+way), its release branch and sample save; v2.1.0-alpha.14 at `6f325bf` before it. `v2-integration` holds both plus the
+repo tidy (H-106) and orders 64 to 74; no feature work is merged past alpha.15 except the tidy.
+
+**M1, the one designed continent (orders 68, 69, 71, 72, 73; D-142, D-151 to D-156), on `origin/work/m1` at `993e3116`,
+NOT merged:**
+- The design (`docs/design/m1/map-design.md`, sketch, overlay on the owner's picture, seats, features, provinces),
+  squashed from `work/m1-design` (`bd80b856`); D-153.
+- Map version 4 built from it (D-154): authored data plus generated detail, seed `ardan-v2-map:one`, 0.3 s to build;
+  old saves keep version 3. The lore pass (D-155): 90 changes in 9 files, `tools/lint-lore-map.mjs` at 0 of 2,625 claims
+  (baseline 0); `docs/design/m1/lore-changes.md`. The seat rule for renamed places (D-156). H-103.
+- Renders shown to the owner for his critique: `docs/design/m1/v4-map-full.jpg`, `v4-compare.jpg`.
+- **Tests at the stop:** final build `a7b9168c`: quick shards 0 and 1 passed (112/112, 113/113); shards 2 to 7, coherency
+  quick and nightly, seven long tests and the load measurement were running and are not done. Rerun:
+  `node tools/build.mjs --out=/tmp/ardan/m1/final.html` on `work/m1`, then the chain in the scratchpad's `chain6.sh`
+  and `load6.sh` (or the quick tier by shards). Faults fixed so far are listed in the M1 report (D-156, the sea shelf,
+  four world-robust tests).
+- **Waiting on the owner:** his critique of the map; the nine questions of `map-design.md` section 9 (recommended picks
+  given: keep 5,300 km; keep the Middle Sea as drawn; west faces the ocean; islands and the two edits; the Grey Channel
+  a river; moved realms kept; trim Varenna and Sahrim a little; the Free Marches stay free; strike any new names); my own
+  notes for him: blocky coasts at the 10 km grid (the art pass waits for the image key), a few small realms unlabelled at
+  full view (Lucerna, Ostra, Irondeep), some neighbours' colours too alike.
+- Merge rule when work resumes: after the owner's critique and its changes, merge `work/m1` alone with `[full ci]`, then
+  cut v2.1.0-alpha.16 with `tools/version.mjs new --at=... --sample=...`.
+
+**Also waiting on the owner:** (a) bring `main` up to date through PR #1, or (b) set the default branch to
+`v2-integration`; deleting the merged branches listed under Deletable in `docs/BRANCHES.md` (17, plus `work/repo-tidy`,
+`work/m1-design` once M1 merges); the repo's About line (text in H-106's report); the image-model key (order 60).
+
+**Queue after M1, in order (docs/PROGRESS.md):** M2 the map in depth (design first, with E0's trade), T14 the alpha.14
+playtest against the alpha.9 survey, Y1 a year worth living and press speed, PA parity, LC Legends and crowns, R3
+relationships, E0 one economy, K1 cards that know your rank, U1 upsets with reasons; then D12b, X4, X7 part 2, I1 stages on
+the owner's word (order 70), v3.
+
+**Stopped:** no agents running; the test chain killed; both scheduled check-ins disabled (not deleted). Next free numbers:
+D-157, H-105 (H-106 is the tidy's).
+

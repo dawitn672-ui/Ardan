@@ -358,6 +358,16 @@ order is replaced, strike it through and say by what.
     2,000 km to a third of the map. Where the image and the lore differ (the lore's Middle Sea, channel and straits), the
     designer reconciles them and lists each choice for the owner's critique.
 
+74. **Record the progress and stop everything** · recorded 2026-11-19 22:55 ET. The owner's words, verbatim:
+
+    > record you current progress and stop everything
+
+    **Read as:** a full stop. Done at once: the M1 engineer agent stopped, the detached test chain killed, both scheduled
+    check-ins disabled (the hourly auto-resume `trig_01Brt9jMjwCyjDebRAxoZpfc` and the batch check-in
+    `trig_011xzubKHgqv6y1akZhHBwEK`; disabled, not deleted, so they can be switched back on), and the state recorded in
+    `docs/HISTORY.md` H-104 and `docs/PROGRESS.md`. No work resumes until the owner says so; a session that reads this
+    first starts nothing, re-enables nothing, and asks the owner.
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
