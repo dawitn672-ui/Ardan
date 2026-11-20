@@ -2992,7 +2992,10 @@ var __ARDAN_V2_MAKE = (() => {
     BIOME_NAME: () => BIOME_NAME,
     blur: () => blur,
     components: () => components,
+    distanceToWater: () => distanceToWater,
+    flowField: () => rivers,
     generateContinent: () => generateContinent,
+    oceanMask: () => oceanMask,
     riverPaths: () => riverPaths
   });
 
@@ -4537,6 +4540,10 @@ var __ARDAN_V2_MAKE = (() => {
         const snowLine = 0.42 - (temp[k] - 0) * 2e-3;
         const snow = smoothstep(snowLine - 0.04, snowLine + 0.03, e) * (1 - smoothstep(0.012, 0.03, slope) * 0.5);
         let col = mix(c, rockC, rock * 0.7);
+        if (map.tint) {
+          const ash = bilinear(map.tint, W, H, x, y);
+          if (ash > 0.01) col = mix(col, [126, 56, 40], 0.7 * Math.min(1, ash));
+        }
         col = mix(col, [238, 240, 244], clamp(snow, 0, 1));
         const sh = hillshade(sampleE, x, y, scale);
         const ao = 0.85 + 0.15 * smoothstep(0, 0.2, e);

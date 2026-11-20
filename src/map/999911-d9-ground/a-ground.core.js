@@ -98,6 +98,22 @@
     const byG = (list, kind) => list.map((r, i) => one(kind, i, r.prov));
     const N = G._names = { rivers: G.rivers.map((r, i) => one('river', i, r.prov, true)), ranges: byG(G.ranges, 'range'),
       forests: byG(G.forests, 'forest'), seas: G.seas.map((r, i) => one('sea', i, r.prov)), passes: G.passes.map((r, i) => one('pass', i, r.prov)) };
+    // M1, map version 4 (D-154): the designed continent names its own rivers, seas, ranges and passes; the pools name only
+    // what the design leaves unnamed (a stream's stretch, a range's far end, a pass the roads found)
+    if (c.w.designed) {
+      const w = c.w, F = w.features || {}, d2 = (a, b) => (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2;
+      const nearLine = (list, x, y, maxKm) => { let best = null, bd = maxKm * maxKm; for (const f of list || []) for (const p of (f.km && Array.isArray(f.km[0]) ? f.km : [f.km])) { const d = d2(p, [x, y]); if (d < bd) { bd = d; best = f.name; } } return best; };
+      G.rivers.forEach((r, i) => { const nm = w.riverNames && w.riverNames[r.r]; if (nm) N.rivers[i] = nm; });
+      G.seas.forEach((s, i) => {
+        const gw = w.gw, x0 = Math.floor(s.x / 10), y0 = Math.floor(s.y / 10); let nm = null, bd = Infinity;
+        for (let yy = Math.max(0, y0 - 12); yy <= Math.min(w.gh - 1, y0 + 12); yy++) for (let xx = Math.max(0, x0 - 12); xx <= Math.min(gw - 1, x0 + 12); xx++) {
+          const wi = w.waterAt[yy * gw + xx]; if (wi < 0) continue; const d = (xx - x0) ** 2 + (yy - y0) ** 2; if (d < bd) { bd = d; nm = w.waters[wi].name; } }
+        if (nm) N.seas[i] = nm;
+      });
+      G.ranges.forEach((r, i) => { const nm = nearLine(F.ranges, r.x, r.y, 320); if (nm) N.ranges[i] = nm; });
+      G.passes.forEach((p, i) => { const nm = nearLine(F.passes, p.x, p.y, 90); if (nm) N.passes[i] = nm; });
+      G.forests.forEach((f, i) => { const nm = nearLine((F.regions || []).filter(x => /wood|wild|forest/i.test(x.name)), f.x, f.y, 260); if (nm) N.forests[i] = nm; });
+    }
     // a river is known by its path: crossings name the river they ford
     N.byPath = new Map(G.rivers.map((r, i) => [r.r, N.rivers[i]]));
     return N;

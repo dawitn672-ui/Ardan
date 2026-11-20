@@ -68,6 +68,8 @@ export function renderMap(map, opts = {}) {
       const snowLine = 0.42 - (temp[k] - 0) * 0.002;
       const snow = smoothstep(snowLine - 0.04, snowLine + 0.03, e) * (1 - smoothstep(0.012, 0.03, slope) * 0.5);
       let col = mix(c, rockC, rock * 0.7);
+      // a designed map may tint its ground (M1, map version 4: map.tint, 0 to 1, is volcanic ash, the red massif of Mount Cinder)
+      if (map.tint) { const ash = bilinear(map.tint, W, H, x, y); if (ash > 0.01) col = mix(col, [126, 56, 40], 0.7 * Math.min(1, ash)); }
       col = mix(col, [238, 240, 244], clamp(snow, 0, 1));
       // hillshade: key light from NW + soft fill
       const sh = hillshade(sampleE, x, y, scale);

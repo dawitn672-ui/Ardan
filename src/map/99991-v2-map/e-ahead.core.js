@@ -62,7 +62,7 @@ function workerMain() {
     var d = e.data, VM = A.V2MAP, t0 = performance.now(), tag = null;
     for (var k in d.k) VM[k] = d.k[k];
     if (d.keep && typeof indexedDB !== 'undefined') {
-      if (FP == null) FP = hash(String(DEF), hash(String(MAKE)));
+      if (FP == null) FP = hash(String(DEF4), hash(String(DEF), hash(String(MAKE))));
       tag = d.key + '|' + FP + '|' + hash(JSON.stringify(d.k), hash(JSON.stringify(d.base)));
     }
     (tag ? get(tag) : Promise.resolve(null)).catch(function () { return null; }).then(function (w) {
@@ -82,9 +82,10 @@ function workerMain() {
   const H = VM.AHEAD = { worker: null, failed: false, wait: new Map(), built: 0, kept: 0, adopted: 0, ms: [], err: null };
   VM.AHEAD_OFF = false;
   // the settings the map is built with, as they stand on the page (a feature may have changed one since a-world ran)
-  const KEYS = ['VERSION', 'GW', 'GH', 'OPTS', 'ELEV_M', 'RIVER_T', 'STREAM_T', 'TERR_SHARE', 'TERR_CAP', 'HILL', 'SITE_R', 'ARID_REALM', 'ISLE_RX', 'COAST_RX', 'SEA_ID'];
+  const KEYS = ['VERSION', 'GW', 'GH', 'OPTS', 'ELEV_M', 'RIVER_T', 'STREAM_T', 'TERR_SHARE', 'TERR_CAP', 'HILL', 'SITE_R', 'ARID_REALM', 'ISLE_RX', 'COAST_RX', 'SEA_ID', 'DESIGN', 'V4', 'V4_FLOW'];
   // the worker's own code: the v2 engine and this feature's builder, from their source, then workerMain (below)
-  const source = () => 'var MAKE = ' + String(A.V2_MAKE) + ';\nvar DEF = ' + String(VM.define) + ';\nvar A = { V2: MAKE(), V2MAP: {} };\nDEF(A);\n(' + String(workerMain) + ')();\n';
+  // M1 (map version 4): and the design's builder (g-v4.core.js), its data posted with the settings (V4)
+  const source = () => 'var MAKE = ' + String(A.V2_MAKE) + ';\nvar DEF = ' + String(VM.define) + ';\nvar DEF4 = ' + String(VM.defineV4 || function () {}) + ';\nvar A = { V2: MAKE(), V2MAP: {} };\nDEF(A);\nDEF4(A);\n(' + String(workerMain) + ')();\n';
   const usable = () => !VM.AHEAD_OFF && !H.failed && typeof Worker === 'function' && typeof Blob === 'function' && typeof URL !== 'undefined' &&
     typeof URL.createObjectURL === 'function' && typeof A.V2_MAKE === 'function';
   const stop = why => { H.failed = true; H.err = why; H.wait.clear(); H.next = null; try { if (H.worker) H.worker.terminate(); } catch (e) {} H.worker = null; };

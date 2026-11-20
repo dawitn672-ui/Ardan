@@ -694,6 +694,7 @@ if (opt('crops', '')) {
 //   ground.png     the ground word of each cell in the colours of GROUND_RGB; the index is the low four bits of red
 //   relief.png     the height guide: grey = 360 * height, height in the engine's measure (0 sea, 0.36 alpine, 0.5 snow)
 //   land.png       the same grid to look at
+//   waters.png     the named water of every water cell (index in build.json's waters + 1)
 const GROUND_RGB = [[32, 64, 112], [112, 176, 224], [240, 244, 248], [208, 216, 200], [160, 144, 128], [112, 152, 120], [128, 176, 112], [80, 168, 96], [208, 224, 160], [216, 200, 136], [232, 216, 120], [248, 224, 168], [176, 96, 80], [144, 200, 192]].map((c, i) => [(c[0] & 0xf0) | i, c[1], c[2]]);
 const writePng = (file, w, h, rgb) => { // 8-bit RGB, no filter, one IDAT
   const raw = Buffer.alloc(h * (1 + w * 3)); let o = 0;
@@ -707,6 +708,9 @@ const elevByte = Uint8Array.from(elevGuide, v => Math.round(v * 360));
 writePng(path.join(DIR, 'design/provinces.png'), GW, GH, i => { const v = water[i] ? 0 : prov[i] + 1; return [v & 255, v >> 8, water[i] === 2 ? 1 : water[i] === 1 ? 2 : 0]; });
 writePng(path.join(DIR, 'design/ground.png'), GW, GH, i => GROUND_RGB[ground[i]]);
 writePng(path.join(DIR, 'design/relief.png'), GW, GH, i => [elevByte[i], elevByte[i], elevByte[i]]);
+// waters.png (M1 build, map version 4): the named water of every water cell, red + 256 * green = the index in build.json's
+// waters + 1 (0 on land and on water no name reached), so the game knows which gulf, bay or strait a coast faces
+writePng(path.join(DIR, 'design/waters.png'), GW, GH, i => { const v = water[i] && waterName[i] >= 0 ? waterName[i] + 1 : 0; return [v & 255, v >> 8, 0]; });
 writePng(path.join(DIR, 'design/land.png'), GW, GH, i => { const c = GROUND_RGB[ground[i]], sh = water[i] ? 1 : 1.06 - elevByte[i] / 600; return [Math.min(255, Math.round(c[0] * sh)), Math.min(255, Math.round(c[1] * sh)), Math.min(255, Math.round(c[2] * sh))]; });
 if (opt('debug', '')) { // working pictures: the cells' mean colour and the roughness
   fs.mkdirSync(opt('debug', ''), { recursive: true });

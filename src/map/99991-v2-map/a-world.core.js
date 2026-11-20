@@ -18,9 +18,11 @@
 // A.V2MAP and A.V2.continent.
 (A.V2MAP = A.V2MAP || {}).define = function (A) {
 const VM = A.V2MAP;
-VM.VERSION = 3;                                 // 2: sea realms on the shore (playtest 1, #21); a v1 save rebuilds as v1
+VM.VERSION = 4;                                 // 2: sea realms on the shore (playtest 1, #21); a v1 save rebuilds as v1
                                                 // 3 (D9, D-061): towns on water, oases on dry land, terrain read from the
                                                 // ground with no word on more than a third; a v2 save rebuilds as v2
+                                                // 4 (M1, D-153, D-154): the one continent is the design (g-v4.core.js);
+                                                // any other map seed builds as version 3 did; a v3 save rebuilds as v3
 VM.GW = 467; VM.GH = 300;                       // the generator's grid: 15 km cells over the release's 7,000 x 4,500 km
 // erosion at 0.5 droplets a cell (v2's default is 0.9): the same look at this grid, a third less time
 VM.OPTS = { landFraction: 0.38, latTop: 56, latBottom: 16, maxIslands: 0, provinces: 1, droplets: Math.round(VM.GW * VM.GH * 0.5) };
@@ -43,14 +45,18 @@ VM.COAST_RX = /\b(coast|shore|bay|strand|sea)\b|reef\b/i;       // a realm named
 VM.SEA_ID = { 'POL-32': 'peninsula', 'POL-21': 'coast', 'POL-33': 'coast' };
 VM.seedOf = s => 'ardan-v2-map:' + String(s);
 // M1 (owner order 68, D-142): one continent for every life. The land, sea, heights, rivers, lakes, provinces' cells, seats'
-// sites, roads, fords and passes are built from this one map seed, whatever the game's seed; the game's seed still decides
-// everything that happens on it. Chosen by measured quality among 24 candidates (tools/m1/choose-seed.mjs,
-// docs/design/m1/README.md, D-142's addendum). A save keeps the map it was made on (A.S.v2map = { seed, v }), so a life
-// begun before M1 keeps its own seed's continent. A new map version (VM.VERSION) redraws this one continent once.
+// sites, roads, fords and passes are the same for every life, whatever the game's seed; the game's seed still decides
+// everything that happens on them. Version 3 chose a seed by measured quality (tools/m1/choose-seed.mjs, D-142's addendum);
+// version 4 is the continent designed on purpose (orders 72 and 73; docs/design/m1/map-design.md, D-153, D-154,
+// g-v4.core.js). A save keeps the map it was made on (A.S.v2map = { seed, v }), so a life begun before keeps its own
+// continent. A new map version (VM.VERSION) redraws this one continent once.
 // VM.ONE = null builds a continent from each game's seed again (the old way; tools and tests that want other lands).
-VM.ONE = VM.seedOf('m1-02');
+VM.ONE = VM.seedOf('one');
+// the seed of the designed continent (map version 4 builds the design for it alone; M1's chosen seed m1-02 is version 3's,
+// and a life saved on it keeps it)
+VM.DESIGN = VM.seedOf('one');
 VM.mapSeed = s => VM.ONE || VM.seedOf(s);
-const now =() => (typeof performance !== 'undefined' ? performance.now() : 0);
+const now = () => (typeof performance !== 'undefined' ? performance.now() : 0);
 
 // a hash of a cell index in [0, 1): the costs' grain, so equal costs never fall back on scan order
 const hash01 = k => { let h = Math.imul(k ^ 0x9e3779b9, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); h ^= h >>> 16; return (h >>> 0) / 4294967296; };
@@ -264,6 +270,8 @@ VM.terrainOf = function (prov, M) {
 
 // base: { gw, gh, grid (the release's province grid), provinces: [{ id, realm, sx, sy, cells }] } (the map as written)
 VM.build = function (seed, base, v = VM.VERSION) {
+  // M1 (D-154): from version 4 the one continent is the design, not a generated land
+  if (v >= 4 && seed === VM.DESIGN && typeof VM.buildV4 === 'function' && VM.V4) return VM.buildV4(seed, base);
   const T = { t0: now() };
   const C = A.V2.continent;
   const gen = C.generateContinent(Object.assign({ width: VM.GW, height: VM.GH, seed }, VM.OPTS));

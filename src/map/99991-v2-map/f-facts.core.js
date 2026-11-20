@@ -57,21 +57,32 @@
     if (G && G.seas) G.seas.forEach((s, i) => { seaBySect[s.s] = (NM && NM.seas[i]) || 'the sea ' + i; });
     const named = seaBySect.map((x, s) => { if (x) return x; for (let d = 1; d < SECT; d++) for (const t of [(s + d) % SECT, (s - d + SECT) % SECT]) if (seaBySect[t]) return seaBySect[t]; return 'the open sea'; });
     // world-given names for enclosed water (a designed map may name its inland sea and lakes: w.waterNames[component])
-    const encName = c => (w.waterNames && w.waterNames[c.id]) || null;
-    const waterAt = k => (ocean[k] ? { k: 'sea', name: named[sectOf(k)] } : wcomp[k] >= 0 ? { k: enclosed[wcomp[k]].cells >= VM.INLAND_SEA ? 'inland sea' : 'lake', c: wcomp[k] } : null);
-    const waterKey = x => (x.k === 'sea' ? x.name : (encName(enclosed[x.c]) || `${x.k} ${x.c}`));
+    // a designed map (version 4) names every water cell: w.waterAt is its index in w.waters
+    const designed = !!(w.waterAt && w.waters);
+    const encName = c => { if (!designed) return (w.waterNames && w.waterNames[c.id]) || null; if (c.nm === undefined) { c.nm = null; for (let k = 0; k < N && c.nm === null; k++) if (wcomp[k] === c.id && w.waterAt[k] >= 0) c.nm = w.waters[w.waterAt[k]].name; } return c.nm; };
+    const waterAt = k => {
+      if (designed && w.waterAt[k] >= 0) { const x = w.waters[w.waterAt[k]]; return x.enclosed ? { k: 'lake', c: wcomp[k], name: x.name } : { k: 'sea', name: x.name }; }
+      return ocean[k] ? { k: 'sea', name: named[sectOf(k)] } : wcomp[k] >= 0 ? { k: enclosed[wcomp[k]].cells >= VM.INLAND_SEA ? 'inland sea' : 'lake', c: wcomp[k] } : null;
+    };
+    const waterKey = x => (x.k === 'sea' ? x.name : (x.name || encName(enclosed[x.c]) || `${x.k} ${x.c}`));
 
     // ---- per province: cells, waters it touches, high ground, river
     const pv = P.map(q => ({ id: q.id, cells: 0, high: 0, waters: new Set(), lake: false }));
     for (let k = 0; k < N; k++) {
       const id = g[k]; if (id < 0) continue;
       const a = pv[id]; a.cells++; if (metres(k) >= VM.HIGH_M) a.high++;
-      for (const j of nb4(k)) { if (j < 0 || g[j] >= 0) continue; const wa = waterAt(j); if (!wa) continue; a.waters.add(waterKey(wa)); if (wa.k !== 'sea') { a.lake = true; const R = realmOf(id); if (isRealm(R)) enclosed[wa.c].realms[R] = 1; } }
+      for (const j of nb4(k)) { if (j < 0 || g[j] >= 0) continue; const wa = waterAt(j); if (!wa) continue; a.waters.add(waterKey(wa)); if (wa.k !== 'sea') { a.lake = true; const R = realmOf(id); if (isRealm(R) && wa.c >= 0 && enclosed[wa.c]) enclosed[wa.c].realms[R] = 1; } }
     }
 
     // ---- named rivers: the realms each runs through, and the water it reaches (followed down the generator's flow)
     const rivers = [];
-    if (G && G.rivers) G.rivers.forEach((rv, i) => {
+    // a designed map's rivers are its own, every one named, each with the water it reaches
+    if (w.riverNames && w.riverTo) w.riverNames.forEach((nm, ri) => {
+      if (!nm) return; const a = w.rivers[ri], rs = [];
+      for (let t = 0; t < a.length; t += 3) { const k = Math.min(gh - 1, Math.floor(a[t + 1] / 10)) * gw + Math.min(gw - 1, Math.floor(a[t] / 10)); const R = g[k] >= 0 ? realmOf(g[k]) : null; if (isRealm(R) && !rs.includes(R)) rs.push(R); }
+      rivers.push({ name: nm, realms: rs, to: w.riverTo[ri] });
+    });
+    else if (G && G.rivers) G.rivers.forEach((rv, i) => {
       const a = w.rivers[rv.r]; if (!a) return;
       const rs = [];
       for (let t = 0; t < a.length; t += 3) { const k = Math.min(gh - 1, Math.floor(a[t + 1] / 10)) * gw + Math.min(gw - 1, Math.floor(a[t] / 10)); const R = g[k] >= 0 ? realmOf(g[k]) : null; if (isRealm(R) && rs[rs.length - 1] !== R && !rs.includes(R)) rs.push(R); }
@@ -115,8 +126,10 @@
       };
     }
     const waters = [];
-    for (let s = 0; s < SECT; s++) if (seaBySect[s]) waters.push({ name: seaBySect[s], kind: 'sea', realms: Object.keys(realms).filter(R => realms[R].seas[seaBySect[s]]) });
-    for (const c of enclosed) if (c.cells >= 4) waters.push({ name: encName(c) || `${c.cells >= VM.INLAND_SEA ? 'inland sea' : 'lake'} ${c.id}`, kind: c.cells >= VM.INLAND_SEA ? 'inland sea' : 'lake', cells: c.cells, realms: Object.keys(c.realms).sort() });
+    // a designed map: each of its named waters, with the realms on its shores
+    if (designed) for (const x of w.waters) waters.push({ name: x.name, kind: x.kind, coast: !!x.coast, realms: Object.keys(realms).filter(R => realms[R].seas[x.name] || realms[R].lakes[x.name]) });
+    else for (let s = 0; s < SECT; s++) if (seaBySect[s]) waters.push({ name: seaBySect[s], kind: 'sea', realms: Object.keys(realms).filter(R => realms[R].seas[seaBySect[s]]) });
+    for (const c of enclosed) if (c.cells >= 4 && !(designed && encName(c))) waters.push({ name: encName(c) || `${c.cells >= VM.INLAND_SEA ? 'inland sea' : 'lake'} ${c.id}`, kind: c.cells >= VM.INLAND_SEA ? 'inland sea' : 'lake', cells: c.cells, realms: Object.keys(c.realms).sort() });
     const uniq = list => { const m = new Map(); for (const x of list) { const e = m.get(x.name) || { name: x.name, realms: [] }; if (x.realm && !e.realms.includes(x.realm)) e.realms.push(x.realm); m.set(x.name, e); } return [...m.values()]; };
     return { v: VM.FACTS_V, seed: w.seed, map: w.v, realms, waters, rivers, ranges: uniq(ranges), forests: uniq(forests), passes: uniq(passes) };
   };

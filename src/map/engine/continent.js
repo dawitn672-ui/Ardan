@@ -438,3 +438,8 @@ function chaikin(p) {
   o.push(p[p.length - 1]);
   return o;
 }
+
+// M1, map version 4 (a designed continent, src/map/99991-v2-map/g-v4.core.js): the same steps a generated continent takes,
+// for a height field made elsewhere: the sea that reaches the frame, each land cell's distance to water, and the D8 flow
+// (priority-flood fill) with its accumulated moisture
+export { oceanMask, distanceToWater, rivers as flowField };
