@@ -75,7 +75,7 @@ VM.buildV4 = function (seed, base) {
     const k = y * GW + x, u = x / GW, v = y / GH;
     if (!gland[k]) {
       const d = toLand[k];
-      // the shelf: the owner's picture rings its coasts with pale shallows, a few cells wide (about 30 to 105 km, by the
+      // the shelf: the owner's picture rings its coasts with pale shallows, 2 to 9 cells wide (about 30 to 135 km, by the
       // seed's noise), near sea level as a generated continent's shelf is; then a slope, and the deep as before
       const S = Math.max(2, Math.min(9, 5 + 4 * Nz.fbm(u * 5 + 3.1, v * 5 + 1.7, 3)));
       elev[k] = !gocean[k] ? -0.02 - 0.05 * Math.min(1, d / 6)

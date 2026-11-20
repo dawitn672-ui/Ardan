@@ -2685,7 +2685,9 @@ The Middle Sea, the Salt Sea and the Grey Water are coasts for fleets: a realm o
 the ocean. (6) **Old saves.** A save records its map version (`S.v2map.v`); a version 3 save rebuilds version 3's
 continent of its seed, as v1 and v2 saves did before it. Only new lives get the design. (7) **The worker** builds it ahead
 with the same code (`VM.defineV4` posted beside `VM.define`, the design data among the posted settings), and its cache key
-holds both sources.
+holds both sources. (8) **The sea's shelf.** The design draws no depth; the owner's picture rings its coasts with pale
+shallows, so the open sea keeps a shelf near sea level some 2 to 9 generator cells wide (about 30 to 135 km, by the seed's
+noise), then a slope to the deep.
 
 ### D-155 · The lore follows the designed map; the lint holds them together (2026-11-20; order 71; D-151, D-153)
 **Chosen.** The design's section 7 (25 rule-level changes and the table of ties) applied as 90 changes in 9 files by
@@ -2705,3 +2707,12 @@ named the map wrong:** the Tibata Strait is Tibata Bay; Ambrel's "Highland" titl
 ground are towns named for their water (D-154 point 3). The owner's nine questions (`map-design.md` section 9) may still
 come back as edits to `seats.tsv` or `features.json`; rebuilding `data/map/v4.json`, then the facts, then the lint shows
 what lore any answer moves.
+
+### D-156 · A seat on a renamed place is found by either name (2026-11-20; D-061, D-154)
+**Context.** Since map version 3 (D9, D-061) an oasis the land leaves off dry ground becomes a town named for its water,
+and the state keeps its release name as `p.oname`. The release finds a house's or family's seat by `p.name === seat`, so a
+house seated on such a place lost its seat (its people placed by chance, its title's province missed). On the designed
+map that is six houses on three oases (Rushzag, Kagdush, Zabesh). **Chosen.** The lore keeps the release's place name as
+the place's identity; `A.provOfSeat(name, owner)` finds a seat by its name or its old name, and `A.seatName(name)` shows it
+by the place's name now (the family-seat token, the profile, the rivals' arc). Every seat lookup by name goes through
+them. The renamed places are listed at the end of `docs/design/m1/lore-changes.md`.
