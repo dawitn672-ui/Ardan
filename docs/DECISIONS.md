@@ -2663,11 +2663,12 @@ share card and its picture no seed, the hall of lives no seed. The functions sta
 seed; saves belong to a device or account; no percentages for the player. The owner: "sure, but no players have the game
 yet", so low priority, done because it was small.
 
-### D-NEW-1 · 2026-11-25 · Powers: might is conscripts squared; the level is 10 x log10 of it
-**Choice:** one number for every being, a person's fighting worth in conscripts squared (Lanchester), read as a level
-(ten levels = ten times the might) with rank words over it (G to SSS, then "beyond every rank" for four beings). **Why:**
-the owner wants levels, a huge spread and today's best man mid-ladder; conscripts are what the sheet already shows, and
-squaring puts a soldier (about 20) and the best Master (46-51) on one scale with the masters of the races (57-65), the
-legends (76-97) and the summit (103-107) without changing any person. Odds come from the might and the profile's
-matchup, never the level alone. The world's own draws use a seeded stream of their own so the main stream moves only
-when the player is involved. No gods on the scale (the owner's later note).
+### D-NEW-1 · 2026-11-25 · Powers: might is conscripts squared; level on the owner's anchors; power reads titles and mastery
+**Choice:** one number for every being, its might (a person's fighting worth in conscripts squared, Lanchester; the
+release's beasts by their duel rows), read as a level 1-1000 on a convex curve fitted to the owner's anchors (an average
+human 25, a soldier 100, a kingdom's best 300-380, a grown dragon 450, a strong one 525, legends 600-800); rank words G to
+SSS over it; and fighting power = the level's might x titles' power x mastery, which the odds and the ranking read with
+the capability profile. **Why:** the owner's orders of 2026-11-25 in turn (levels, a huge spread, each level worth more
+than the last, level is not everything, the Saint above the Lord of the Sea); conscripts are what the sheet already
+shows, so no person changed. The world's own draws use a seeded stream of their own so the main stream moves only when
+the player is involved. No gods; no demon realm.
