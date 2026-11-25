@@ -128,7 +128,9 @@
       const t = live(id); if (!t) continue;
       // E9 (order 76, the Emilio save): struck from the rolls, in a cell or cast out, you have no superior, and the old
       // one is not your master either ("Your superior, Stefano, wants something else of you now" after the escape)
-      if (rel[id].type === 'superior' && A.superior && (!curSup || curSup.id !== t.id)) continue;
+      // (a soldier or a hand still in a post whose commander is not recorded keeps the old reading: v2cPlaytest2Class)
+      const noPost = (!pc.mil && !pc.job) || !!pc.prison;
+      if (rel[id].type === 'superior' && ((curSup && curSup.id !== t.id) || (noPost && A.superior))) continue;
       const v = myOp(pc, t) + theirOp(t, pc); if (v > bmv) { bm = t; bmv = v; }
     }
     if (bm) add(bm, 'master', pc.job ? 66 : 50);

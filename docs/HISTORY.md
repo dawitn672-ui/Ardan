@@ -2683,3 +2683,9 @@ The owner's Emilio life (`docs/design/emilio-1108-findings.md`). Fixed in the mo
   only Next year. It now presses whichever step the clock shows. `91-visual-style`'s accent-button list leaves out
   `v2Year` as it did `v2Next`.
 - Local: play-fixes, crown-crimes and advisors 42 of 42; next-year and v2-time 44 of 44 with these fixes.
+
+### H-116 · 2026-11-25 · E9 narrowed: a former superior is set aside only when you hold no post
+CI 165 failed `v2cPlaytest2Class`: a soldier still in the army, whose officer is recorded only as a 'superior' bond, lost
+him from counsel. `ADV.candidates` now sets a former superior aside when you hold no post (no army place, no job) or sit in
+a cell, or when someone else is your superior now (the older rule). `v2cPlaytest2Class` and `pfNoSuperiorWithoutPost`
+pass. CI 165's long shard 0 (`modsFireInLives`, too few long bot lives) is being compared against the build before H-112.
