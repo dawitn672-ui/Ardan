@@ -11,7 +11,7 @@
 // Nothing here draws from A.rand: the lanes' upgrades are seeded from the game's seed, and the stream is put back.
 (function () {
   const SV = A.V2SAVE = A.V2SAVE || {};
-  SV.VER = 15;                      // 15: S1b, skills with levels (A.SK.migrate; D-072)
+  SV.VER = 16;                      // 15: S1b, skills with levels (A.SK.migrate; D-072); 16: the skills rebuild's rungs (A.SK2.migrate; skills-v2 §7)
   SV.FMT = 3;
   SV.FROM = A.SAVE_VER;            // the release's version (13): a state at or below it is pre-v2
   A.SAVE_VER = SV.VER;
@@ -62,6 +62,9 @@
     // 9. skills (S1b, D-072): everyone's numbers become levels, the ten legacy keys specialisms, aptitudes talent letters;
     //    the player gets his table (36-skills' A.SK.migrate; docs/design/skills.md §9)
     ['skills', S => { if (A.SK && A.SK.migrate && !S.skv) A.SK.migrate(S, 'migrate'); }],
+    // 10. the skills rebuild (docs/design/skills-v2.md §7): the player's S1 table as ranked rungs (37-skills2's
+    //     A.SK2.migrate); what every check reads is unchanged
+    ['skills2', S => { if (A.SK2 && A.SK2.migrate && !S.sk2v) A.SK2.migrate(S); }],
   ];
   SV.last = null;
   // runs on A.S (the lanes read it); the game's random stream stands where it was

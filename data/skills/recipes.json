@@ -1,0 +1,4 @@
+{
+  "about": "Skills rebuild (docs/design/skills-v2.md §3.4): merge recipes. A recipe is { id, kind (known | found | age), parts: [{ id, lv }] (two or more), result, needs?, moment?, chance? }; the parts are absorbed into the result (§15.2). Evolution lives on the skill itself (evolvesTo). The first recipes come with step 8.",
+  "recipes": []
+}

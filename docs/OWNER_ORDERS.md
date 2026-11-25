@@ -455,6 +455,10 @@ order is replaced, strike it through and say by what.
     (680-700) through his titles and the mastery and quality of his skills. Dragons live in the Dragon Mountains; there is no
     demon kingdom (D-173 addendum).
 
+86. **The map: substance over looks** · recorded 2026-11-25 (evening). Kept unchanged in `docs/prompts/2026-11-25-map-detail.md`.
+    Do not spend effort on the map's visual appeal; be ultra specific and detailed in the locations, layout and form of the
+    continent; the owner will make it look good later. Passed to the map builder (D-173 addendum).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,

@@ -2707,6 +2707,7 @@ coin and skill); creatures may act purely by their specified nature (bloodthirst
 legendary beings mostly very old; the ladder covers every level of existence. Recorded in `docs/design/skills-v2.md` §15
 and the master prompt (9, 17, 18); passed to the power-scale builder.
 
+<<<<<<< HEAD
 ### D-172 · Legends hold the summit, not gods; the Sword Saint; no crown baseline (2026-11-25; order 83)
 No gods as beings (faint myth and faith only); the summit is legends (a King of Dragons, the Primordial Archdemons, a
 legendary human Sword Saint of ages ago, the world's best-known figure). Skills have no range. The harness measures crowns
@@ -2723,3 +2724,31 @@ test, and the later the lock the more is placed twice). **Why:** the owner's ord
 **D-173 addendum (order 85).** Might grows faster with every level (the gap between levels widens); power is level's might
 times titles, skill mastery and quality, and capabilities, so the Sword Saint (650) outranks the Sea Lord (680-700), which a
 test holds. The Dragon Mountains are the dragons' home; there is no demon kingdom.
+=======
+### D-174 · The skills rebuild, steps 1 to 4: where the design's text and the code disagreed (2026-11-25)
+- **An S1 level lands on the odd level of its step, not the even one** (`docs/design/skills-v2.md` §7 said "at half or
+  more, the even level"). An even level in C, B and A reads half way to the next S1 step (C Lv 4 reads 41, where S1's
+  Advanced II reads 39), so §7's rule would have moved odds on the day of the step, against §5's promise that every check
+  keeps its odds. Experience past the odd level's bar is kept as `held` and lands as the even level when the rungs hold
+  the level (step 5). Nothing is lost; nothing is read differently (`sk2Migrate`).
+- **Each family has a fifth rung, a common S rung** (§13's risk made data): an old save's Grandmaster or Legend must land
+  somewhere, and the one-holder summits come with step 9. So the first ladders are 140 rungs, not 112.
+- **Ranks D, C, B, A, S, SS, SSS and G** (§15.1; G is the "gods and the like" above SSS). Budget 1 to 128 a level, the
+  stacking caps rising from SS. SS and above are off the 0-100 scale a card reads: they read its top; their levels cost
+  twice the rank below's.
+- **A perk effect that carries a release row costs nothing in the budget** until step 6 prices it as a real effect: it
+  continues the release's knack so `A.perkSum` is whole at the switch; priced, the C rungs' Lv 1 knacks would break a
+  budget of 2.
+- **No range in a skill's specification** (the owner, 2026-11-25: skills are used only in combat or training): `spec`
+  holds cooldown, cost (stamina, mana, ...), effect, duration and conditions; a rare skill may carry `reach`, a short
+  note, where it truly matters. **No S1 measure word survives in the new data:** a concept says the rank (and level)
+  it opens (`opens`), not S1's word.
+- **Check 6 (reachable)** reads "every newborn reaches every skill" as: every skill is reachable by some newborn, and every
+  ladder rung D to A by a newborn of every start without a culture, race, faith or house route (lives move between
+  stations, so a start is not a cage); check 9 (rank shares) holds once the library has 200 skills.
+- **The store while S1 owns the levels:** the player's rungs (`pc.ks`, `pc.kc`) are written by the save step and kept in
+  step with S1's table once a month; a read never writes (a stale family is read as the sync would write it). The data
+  sits under `A.DATA['skills/...']` (the build's naming), assembled as `A.SK2.DATA`, not `A.DATA.skills2`.
+>>>>>>> worktree-agent-ae273c4866bddc5a1
+**D-173 addendum (order 86).** The redesign's effort goes into a detailed gazetteer in data (every range, river, coast,
+realm, seat, road and wild with its reason, sizes and travel times), not into renders; plain renders only to check layout.

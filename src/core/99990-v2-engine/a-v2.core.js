@@ -42,6 +42,7 @@ var __ARDAN_V2_MAKE = (() => {
     renown: () => renown_exports,
     rng: () => rng_exports,
     skills: () => skills_exports,
+    skills2: () => skills2_exports,
     succession: () => succession_exports,
     surrender: () => surrender_exports,
     war: () => war_exports,
@@ -1352,18 +1353,18 @@ var __ARDAN_V2_MAKE = (() => {
       const c = cost(s.lv);
       if (s.xp < c) break;
       if (atEdge(s)) {
-        const w = wordOf(s.lv) + 1, missing = openConcepts(p, k);
-        const barred = missing.length || w >= PROOF_FROM && !s.proved;
+        const w = wordOf(s.lv) + 1, missing2 = openConcepts(p, k);
+        const barred = missing2.length || w >= PROOF_FROM && !s.proved;
         if (barred) {
           const over = s.xp - c, room = storeRoom(s);
-          const kept = Math.min(room, over * (missing.length ? STORE_RATE : 1));
+          const kept = Math.min(room, over * (missing2.length ? STORE_RATE : 1));
           s.st += kept;
           s.xp = c;
-          lostLine(p, age, k, over - kept, missing.length ? "stored at half: a concept not grasped" : "the store is full");
+          lostLine(p, age, k, over - kept, missing2.length ? "stored at half: a concept not grasped" : "the store is full");
           if (s.stallAt == null) s.stallAt = age;
           if (!s.stallSaid && age - s.stallAt >= 1) {
             s.stallSaid = true;
-            rec(p, age, k, "stall", missing.length ? `${SKILL[k].name} holds at ${levelName(s.lv)}: has not grasped ${missing.map((x) => x.name).join(" or ")}` : `${SKILL[k].name} holds at ${levelName(s.lv)}: ready, and not yet proved`);
+            rec(p, age, k, "stall", missing2.length ? `${SKILL[k].name} holds at ${levelName(s.lv)}: has not grasped ${missing2.map((x) => x.name).join(" or ")}` : `${SKILL[k].name} holds at ${levelName(s.lv)}: ready, and not yet proved`);
           }
           break;
         }
@@ -1661,6 +1662,485 @@ var __ARDAN_V2_MAKE = (() => {
     return { lv, xp };
   }
 
+  // src/people/engine/skills2.js
+  var skills2_exports = {};
+  __export(skills2_exports, {
+    ADVANCES_A_LIFE: () => ADVANCES_A_LIFE,
+    ADVANCE_FROM: () => ADVANCE_FROM,
+    BANDS: () => BANDS,
+    CURVE_A: () => CURVE_A,
+    CURVE_S: () => CURVE_S,
+    HUMAN: () => HUMAN,
+    IX: () => IX,
+    MAX_LV: () => MAX_LV2,
+    RANKS: () => RANKS,
+    REACH: () => REACH,
+    S1_MAX: () => S1_MAX,
+    S1_VALUES: () => S1_VALUES,
+    XP_K: () => XP_K,
+    XP_UNIT: () => XP_UNIT2,
+    budget: () => budget,
+    budgetFaults: () => budgetFaults,
+    canAdvance: () => canAdvance,
+    canEvolve: () => canEvolve,
+    canMerge: () => canMerge,
+    capOf: () => capOf,
+    cost: () => cost2,
+    deedCount: () => deedCount,
+    descendants: () => descendants,
+    effectCost: () => effectCost,
+    effectKey: () => effectKey,
+    effectsAt: () => effectsAt,
+    evolve: () => evolve,
+    evolveRoutes: () => evolveRoutes,
+    famOf: () => famOf,
+    familyRead: () => familyRead,
+    findCycle: () => findCycle,
+    fromS1: () => fromS1,
+    graph: () => graph,
+    index: () => index,
+    merge: () => merge,
+    missing: () => missing,
+    nextRank: () => nextRank,
+    pastReach: () => pastReach,
+    prevRank: () => prevRank,
+    rankIx: () => rankIx,
+    rungOf: () => rungOf,
+    rungOfS1: () => rungOfS1,
+    rungOfValue: () => rungOfValue,
+    s1LevelOfValue: () => s1LevelOfValue,
+    s1OfRung: () => s1OfRung,
+    s1Pos: () => s1Pos,
+    setData: () => setData2,
+    shifted: () => shifted,
+    spendAt: () => spendAt,
+    stack: () => stack,
+    topRank: () => topRank,
+    totalTo: () => totalTo2,
+    value: () => value2,
+    valueAt: () => valueAt
+  });
+  var RANKS = ["D", "C", "B", "A", "S", "SS", "SSS", "X"];
+  var HUMAN = ["D", "C", "B", "A", "S"];
+  var rankIx = (r) => RANKS.indexOf(r);
+  var MAX_LV2 = 10;
+  var EDGE2 = [1, 15, 35, 55, 72, 88, 96, 101];
+  var STEPS2 = 5;
+  var S1_MAX = 35;
+  var S1_VALUES = [0];
+  for (let lv = 1; lv <= S1_MAX; lv++) {
+    const w = Math.floor((lv - 1) / STEPS2);
+    S1_VALUES.push(EDGE2[w] + (lv - 1) % STEPS2 * (EDGE2[w + 1] - EDGE2[w]) / STEPS2);
+  }
+  function s1LevelOfValue(v) {
+    if (!(v >= 1 - 1e-9)) return 0;
+    let lo = 1, hi = S1_MAX;
+    while (lo < hi) {
+      const mid = lo + hi + 1 >> 1;
+      if (S1_VALUES[mid] <= v + 1e-9) lo = mid;
+      else hi = mid - 1;
+    }
+    return lo;
+  }
+  var BASE = { D: 0, C: 10, B: 15, A: 20, S: 25 };
+  function s1Pos(rank, lv) {
+    if (!(lv >= 1)) return 0;
+    lv = Math.min(MAX_LV2, lv);
+    if (rank === "D" || rank === "S") return BASE[rank] + lv;
+    if (BASE[rank] != null) return BASE[rank] + (lv + 1) / 2;
+    return S1_MAX;
+  }
+  function valueAt(pos) {
+    if (!(pos >= 1)) return pos > 0 ? S1_VALUES[1] * pos : 0;
+    if (pos >= S1_MAX) return S1_VALUES[S1_MAX];
+    const i = Math.floor(pos), f = pos - i;
+    return f < 1e-9 ? S1_VALUES[i] : S1_VALUES[i] + f * (S1_VALUES[i + 1] - S1_VALUES[i]);
+  }
+  var value2 = (rank, lv) => lv >= 1 && rankIx(rank) >= 0 ? valueAt(s1Pos(rank, lv)) : 0;
+  var BANDS = Object.fromEntries(RANKS.map((r) => [r, Array.from({ length: MAX_LV2 }, (_, i) => value2(r, i + 1))]));
+  function rungOfS1(s1lv) {
+    s1lv = Math.max(0, Math.min(S1_MAX, s1lv | 0));
+    if (s1lv <= 0) return null;
+    if (s1lv <= 10) return { rank: "D", lv: s1lv };
+    if (s1lv <= 25) {
+      const rank = s1lv <= 15 ? "C" : s1lv <= 20 ? "B" : "A";
+      return { rank, lv: 2 * (s1lv - BASE[rank]) - 1 };
+    }
+    return { rank: "S", lv: s1lv - 25 };
+  }
+  var s1OfRung = (rank, lv) => Math.min(S1_MAX, Math.floor(s1Pos(rank, lv) + 1e-9));
+  var LADDER = [];
+  for (const r of HUMAN) for (let lv = 1; lv <= MAX_LV2; lv++) LADDER.push({ rank: r, lv, v: value2(r, lv) });
+  function rungOfValue(v) {
+    if (!(v >= 1 - 1e-9)) return null;
+    let lo = 0, hi = LADDER.length - 1;
+    while (lo < hi) {
+      const mid = lo + hi + 1 >> 1;
+      if (LADDER[mid].v <= v + 1e-9) lo = mid;
+      else hi = mid - 1;
+    }
+    return { rank: LADDER[lo].rank, lv: LADDER[lo].lv };
+  }
+  var shifted = (rank, lv, steps) => valueAt(Math.max(1, Math.min(S1_MAX, s1Pos(rank, lv) + steps)));
+  var nextRank = (r) => RANKS[rankIx(r) + 1] || null;
+  var prevRank = (r) => rankIx(r) > 0 ? RANKS[rankIx(r) - 1] : null;
+  var XP_UNIT2 = 10;
+  var CURVE_A = 1.8;
+  var CURVE_S = 21.6;
+  var XP_K = XP_UNIT2 * CURVE_S / CURVE_A;
+  var span = (a, b) => Math.max(1, Math.round(XP_K * (Math.exp(b / CURVE_S) - Math.exp(a / CURVE_S))));
+  function cost2(rank, lv) {
+    const ri = rankIx(rank);
+    if (ri < 0) return Infinity;
+    if (!(lv >= 1)) return rank === "D" ? span(0, value2("D", 1)) : Infinity;
+    if (lv > MAX_LV2) return Infinity;
+    if (ri >= rankIx("S")) {
+      const L = Math.min(lv, MAX_LV2 - 1), base = span(value2("S", L), value2("S", L + 1));
+      if (rank === "S" && lv === MAX_LV2) return RANKS.length > ri + 1 ? base * 2 : Infinity;
+      return base * Math.pow(2, ri - rankIx("S"));
+    }
+    const to = lv < MAX_LV2 ? value2(rank, lv + 1) : value2(nextRank(rank), 1);
+    return span(value2(rank, lv), to);
+  }
+  function totalTo2(rank, lv) {
+    let t = cost2("D", 0);
+    for (const r of RANKS) {
+      for (let l = 1; l <= MAX_LV2; l++) {
+        if (r === rank && l === lv) return t;
+        t += cost2(r, l);
+      }
+      if (r === rank) return t;
+    }
+    return t;
+  }
+  var REACH = { F: ["D", 10], E: ["C", 1], D: ["B", 1], C: ["A", 1], B: ["A", 5], A: ["S", 1], S: ["S", 6], SSS: null };
+  function pastReach(talent, rank, lv) {
+    const r = REACH[talent] === void 0 ? REACH.C : REACH[talent];
+    if (!r) return false;
+    return rankIx(rank) > rankIx(r[0]) || rank === r[0] && lv >= r[1];
+  }
+  function fromS1(s1lv, xp) {
+    const r = rungOfS1(s1lv);
+    if (!r) return null;
+    xp = Math.max(0, +xp || 0);
+    if (!isFinite(xp)) xp = 0;
+    const c = cost2(r.rank, r.lv), keep = Math.floor(Math.min(xp, Math.max(0, c - 0.01)) * 100) / 100;
+    const out = { rank: r.rank, lv: r.lv, xp: keep };
+    const held = Math.round((xp - keep) * 100) / 100;
+    if (held > 0) out.held = held;
+    return out;
+  }
+  function index(D) {
+    const V = D.vocab, fams = Array.isArray(D.families) ? D.families : D.families && D.families.families || [];
+    const IX2 = { V, D, fams, skills: D.skills || [], recipes: D.recipes || [], BY: {}, FAM: {}, LEG: {}, RUNG: {}, RECIPE: {}, groups: new Set(V.groups || []), checkTags: new Set(V.checkTags || []) };
+    for (const f of fams) {
+      IX2.FAM[f.id] = f;
+      for (const k of f.legacy || []) IX2.LEG[k] = f.id;
+    }
+    for (const s of IX2.skills) {
+      if (!IX2.BY[s.id]) IX2.BY[s.id] = s;
+      if (s.family && HUMAN.includes(s.rank)) {
+        const L = IX2.RUNG[s.family] = IX2.RUNG[s.family] || {};
+        if (!L[s.rank]) L[s.rank] = s.id;
+      }
+    }
+    for (const r of IX2.recipes) IX2.RECIPE[r.id] = r;
+    IX2.weapons = new Set(fams.filter((f) => f.group === "arms" || f.id === "unarmed").flatMap((f) => [f.id, ...f.legacy || []]));
+    return IX2;
+  }
+  var IX = null;
+  function setData2(D) {
+    IX = index(D);
+    return IX;
+  }
+  var famOf = (ix, k) => ix.FAM[k] ? k : ix.LEG[k] || null;
+  var rungOf = (ix, fam, rank) => ix.RUNG[fam] && ix.RUNG[fam][rank] || null;
+  function budget(ix, skill, at) {
+    const per = ix.V.perLevel[skill.rank] || 0, bonus = (ix.V.rarityBonus || {})[skill.rarity] || 0;
+    return per * at * (1 + bonus);
+  }
+  var tagKind = (ix, tag) => ix.FAM[tag] ? "family" : ix.groups.has(tag) ? "group" : "narrow";
+  function effectCost(ix, e) {
+    if (!e || typeof e !== "object") return 0;
+    const C = ix.V.costs, a = Math.abs(+e.v || 0);
+    switch (e.type) {
+      case "stat":
+        return C.stat * a;
+      case "edge": {
+        const k = tagKind(ix, e.tag);
+        return (k === "family" ? C.edgeFamily : k === "group" ? C.edgeGroup : C.edgeNarrow) * a;
+      }
+      case "fight":
+        return (e.tag === "all" ? C.fightAll : C.fightOne) * a;
+      case "blunder":
+      case "surge":
+        return C.blunderSurge * a;
+      case "aura":
+        return (C.aura[e.scale] || 0) * a;
+      case "resist":
+        return ((C.resistHardOf || []).includes(e.of) ? C.resistHard : C.resist) * a;
+      case "social":
+        return C.socialPer5 * a / 5;
+      case "economy":
+        return C.economyPer5 * a / 5;
+      case "growth":
+        return C.growthPer10 * a / 10;
+      case "unlock":
+        return (C.unlockBigKinds || []).includes(String(e.what || "").split(":")[0]) ? C.unlockBig : C.unlockSmall;
+      case "perk":
+        return e.legacy ? C.perkLegacy : C.perk * (a || 1);
+      case "trigger":
+        return effectCost(ix, e.do) * ((ix.V.rareTriggers || []).includes(e.on) ? C.triggerRare : C.trigger);
+      case "active":
+        return effectCost(ix, e.do) * (ix.V.limits[e.limit] != null ? ix.V.limits[e.limit] : 1);
+      default:
+        return 0;
+    }
+  }
+  function effectKey(e) {
+    if (e.type === "perk") return "perk|" + (e.legacy || e.key + ":" + e.name);
+    const t = e.tag != null ? e.tag : e.of != null ? e.of : e.stat != null ? e.stat : e.group != null ? e.group : e.on != null ? e.on : e.name != null ? e.name : e.what;
+    return e.type + "|" + t + (e.part ? "|" + e.part : "");
+  }
+  function effectsAt(skill, lv) {
+    const held = /* @__PURE__ */ new Map();
+    for (const b of (skill.levels || []).slice().sort((x, y) => x.at - y.at)) {
+      if (b.at > lv) break;
+      for (const e of b.effects || []) held.set(effectKey(e), e);
+    }
+    return [...held.values()];
+  }
+  var spendAt = (ix, skill, lv) => effectsAt(skill, lv).reduce((t, e) => t + effectCost(ix, e), 0);
+  function budgetFaults(ix, skill) {
+    const out = [];
+    for (const b of skill.levels || []) {
+      const sp = spendAt(ix, skill, b.at), bud = budget(ix, skill, b.at);
+      if (skill.kind === "flaw") {
+        if (b.at === (skill.levels[0] || {}).at && sp + 1e-9 < budget(ix, skill, 1)) out.push({ at: b.at, spend: sp, budget: budget(ix, skill, 1), flaw: true });
+      } else if (sp > bud + 1e-9) out.push({ at: b.at, spend: sp, budget: bud });
+    }
+    return out;
+  }
+  function stack(values, cap3, weights) {
+    const w = weights || [1, 0.5, 0.25, 0.125];
+    const pos = values.filter((v) => v > 0).sort((a, b) => b - a), neg = values.filter((v) => v < 0);
+    let t = 0;
+    pos.forEach((v, i) => {
+      t += v * (w[i] || 0);
+    });
+    t = Math.min(cap3, t);
+    const n3 = neg.reduce((s, v) => s + v, 0);
+    return Math.max(-cap3, t + n3);
+  }
+  function capOf(ix, what, topRank2) {
+    const C = ix.V.caps[what];
+    if (!C) return Infinity;
+    return C[topRank2] != null ? C[topRank2] : C.S;
+  }
+  var topRank = (ranks) => ranks.reduce((t, r) => rankIx(r) > rankIx(t) ? r : t, "D");
+  var TAL = ["F", "E", "D", "C", "B", "A", "S", "SSS"];
+  var has = (x, k) => Array.isArray(x) ? x.includes(k) : x instanceof Set ? x.has(k) : !!(x && x[k] != null && x[k] !== false);
+  var oneOf = (want, got) => Array.isArray(want) ? want.includes(got) : want === got;
+  function deedCount(facts, kind, rank) {
+    let n3 = 0;
+    for (const d of facts.deeds || []) if (d && d.kind === kind && (!rank || rankIx(d.rank) >= rankIx(rank))) n3 += d.n || 1;
+    return n3;
+  }
+  function missing(needs, facts) {
+    const out = [];
+    if (!needs) return out;
+    facts = facts || {};
+    for (const k in needs) {
+      const n3 = needs[k];
+      switch (k) {
+        case "stat":
+          for (const s in n3) if (!((facts.stat || {})[s] >= n3[s])) out.push("stat:" + s);
+          break;
+        case "family":
+          for (const f in n3) if (!((facts.family || {})[f] >= n3[f])) out.push("family:" + f);
+          break;
+        case "skill":
+          for (const id in n3) {
+            const h = (facts.skills || {})[id], w = n3[id] || {};
+            if (!h || w.lv && !(h.lv >= w.lv)) out.push("skill:" + id);
+          }
+          break;
+        case "age":
+          if (!(facts.age >= n3[0] && facts.age <= n3[1])) out.push("age");
+          break;
+        case "race":
+        case "culture":
+        case "faith":
+        case "house":
+        case "office":
+        case "place":
+          if (!oneOf(n3, facts[k])) out.push(k);
+          break;
+        case "teacher":
+          if (!(typeof facts.teacher === "function" ? facts.teacher(n3) : facts.teacher)) out.push("teacher");
+          break;
+        case "months":
+          if (!(facts.months >= n3)) out.push("months");
+          break;
+        case "item":
+          if (!has(facts.items, n3)) out.push("item");
+          break;
+        case "deed":
+          if (deedCount(facts, n3.kind, n3.rank) < (n3.n || 1)) out.push("deed:" + n3.kind);
+          break;
+        case "flag":
+          if (!has(facts.flags, n3)) out.push("flag:" + n3);
+          break;
+        case "title":
+          if (!has(facts.titles, n3)) out.push("title");
+          break;
+        case "devotion":
+          if (!((facts.devotion || {})[n3.faith] >= n3.min)) out.push("devotion");
+          break;
+        case "trait":
+          if (![].concat(n3).every((t) => has(facts.traits, t))) out.push("trait");
+          break;
+        case "talent":
+          for (const f in n3) if (TAL.indexOf((facts.talent || {})[f] || "C") < TAL.indexOf(n3[f])) out.push("talent:" + f);
+          break;
+        case "concept":
+          for (const c of n3) if (!has(facts.concepts, c)) out.push("concept:" + c);
+          break;
+        case "fame":
+          if (!(facts.fame >= n3)) out.push("fame");
+          break;
+        case "moment":
+          if (!oneOf(n3, facts.moment)) out.push("moment");
+          break;
+        case "not":
+          if (!missing(n3, facts).length) out.push("not");
+          break;
+        default:
+          out.push("unknown:" + k);
+      }
+    }
+    return out;
+  }
+  function evolveRoutes(ix, from) {
+    const s = ix.BY[from];
+    if (!s) return [];
+    const out = [];
+    for (const t of s.evolvesTo || []) {
+      const to = ix.BY[t.id];
+      if (!to) continue;
+      for (const r of to.acquire || []) if (r.via === "evolve" && r.from === from) out.push({ to: t.id, route: r });
+    }
+    return out;
+  }
+  function canEvolve(ix, held, facts) {
+    const s = ix.BY[held && held.id];
+    if (!s) return [];
+    return evolveRoutes(ix, held.id).map(({ to, route }) => {
+      const miss = [];
+      if (!(held.lv >= MAX_LV2)) miss.push("level");
+      if ((facts.skills || {})[to]) miss.push("held");
+      miss.push(...missing(route.needs, facts));
+      return { to, ok: !miss.length, missing: miss };
+    });
+  }
+  function evolve(table, from, to, at) {
+    if (!table[from] || table[to]) return table;
+    table[to] = { lv: 1, xp: 0, via: "evolve", from };
+    if (at != null) table[to].y = at;
+    return table;
+  }
+  function canMerge(ix, recipe, facts) {
+    const miss = [], held = facts.skills || {};
+    if (!recipe || !ix.BY[recipe.result]) return { ok: false, missing: ["recipe"] };
+    for (const p of recipe.parts || []) {
+      const h = held[p.id];
+      if (!h || !(h.lv >= (p.lv || 1))) miss.push("part:" + p.id);
+    }
+    if (held[recipe.result]) miss.push("held");
+    if (recipe.kind === "known" && facts.knows && !facts.knows(recipe.id)) miss.push("known");
+    if (recipe.kind === "age" && facts.census && facts.census(recipe.result) > 0) miss.push("census");
+    if (recipe.kind === "found" && recipe.moment && facts.moment !== recipe.moment) miss.push("moment");
+    miss.push(...missing(recipe.needs, facts));
+    return { ok: !miss.length, missing: miss };
+  }
+  function merge(ix, table, recipe, at) {
+    let floor = 0;
+    for (const p of recipe.parts) {
+      const h = table[p.id], s = ix.BY[p.id];
+      if (h && s) floor = Math.max(floor, value2(s.rank, h.lv));
+      delete table[p.id];
+    }
+    table[recipe.result] = { lv: 1, xp: 0, via: "merge", floor };
+    if (at != null) table[recipe.result].y = at;
+    return table;
+  }
+  var ADVANCE_FROM = 5;
+  var ADVANCES_A_LIFE = 1;
+  function canAdvance(ix, held, facts) {
+    const miss = [], s = ix.BY[held && held.id];
+    if (!s) return { ok: false, missing: ["skill"] };
+    const to = (s.evolvesTo || []).map((t) => ix.BY[t.id]).find((t) => t && rankIx(t.rank) === rankIx(s.rank) + 1);
+    if (!to) miss.push("no-next");
+    if (!(held.lv >= ADVANCE_FROM)) miss.push("level");
+    if ((facts.advances || 0) >= ADVANCES_A_LIFE) miss.push("once");
+    if (!(ix.V.moments || []).includes(facts.moment)) miss.push("moment");
+    if (to && (facts.skills || {})[to.id]) miss.push("held");
+    return { ok: !miss.length, missing: miss, to: to ? to.id : null };
+  }
+  function graph(ix) {
+    const G = /* @__PURE__ */ new Map(), add2 = (a, b) => {
+      if (!G.has(a)) G.set(a, /* @__PURE__ */ new Set());
+      G.get(a).add(b);
+    };
+    for (const s of ix.skills) {
+      for (const t of s.evolvesTo || []) add2(s.id, t.id);
+      for (const r of s.acquire || []) if (r.via === "evolve" && r.from) add2(r.from, s.id);
+    }
+    for (const r of ix.recipes) for (const p of r.parts || []) add2(p.id, r.result);
+    return G;
+  }
+  function findCycle(G) {
+    const state = /* @__PURE__ */ new Map(), stack2 = [];
+    const visit = (n3) => {
+      state.set(n3, 1);
+      stack2.push(n3);
+      for (const m of G.get(n3) || []) {
+        if (state.get(m) === 1) return stack2.slice(stack2.indexOf(m)).concat(m);
+        if (!state.get(m)) {
+          const c = visit(m);
+          if (c) return c;
+        }
+      }
+      state.set(n3, 2);
+      stack2.pop();
+      return null;
+    };
+    for (const n3 of [...G.keys()].sort()) if (!state.get(n3)) {
+      const c = visit(n3);
+      if (c) return c;
+    }
+    return null;
+  }
+  function descendants(G, id) {
+    const out = /* @__PURE__ */ new Set(), q = [id];
+    while (q.length) for (const m of G.get(q.pop()) || []) if (!out.has(m)) {
+      out.add(m);
+      q.push(m);
+    }
+    return out;
+  }
+  function familyRead(ix, entries, fam) {
+    let best = 0;
+    for (const e of entries) {
+      const s = ix.BY[e.id];
+      if (!s || !(s.reads || []).includes(fam)) continue;
+      let v = Math.max(value2(s.rank, e.lv), e.floor || 0);
+      if (e.rust > 0) v = Math.max(0, v - e.rust);
+      if (v > best) best = v;
+    }
+    return best;
+  }
+
   // src/people/engine/why.js
   var why_exports = {};
   __export(why_exports, {
@@ -1933,18 +2413,18 @@ var __ARDAN_V2_MAKE = (() => {
   var R2 = (kind, weight, label, source, pub) => ({ kind, weight, label, source: source || null, pub: pub ? 1 : 0 });
   var her = (s) => String(s).replace(/\bhimself\b/g, "herself").replace(/\bhe\b/g, "she").replace(/\bHe\b/g, "She").replace(/\bhis\b/g, "her").replace(/\bhim\b/g, "her");
   function options(c) {
-    const act = ACTS[c.act] || ACTS.know, tr = c.traits || [], has = (t) => tr.includes(t);
+    const act = ACTS[c.act] || ACTS.know, tr = c.traits || [], has2 = (t) => tr.includes(t);
     const yes = [], no = [];
     const gap = Math.max(0, n(c.gap) - T2.near);
     if (gap > 0) no.push(R2("station", act.k * T2.step * gap, `${an(c.lowWord || "commoner")} is far beneath ${an(c.highWord || "lord")}`, { t: "gap", g: n(c.gap) }, 1));
     if (c.born === "gold") no.push(R2("station", T2.gold, "born to gold, he has never had to look down", { t: "born" }, 1));
     if (c.born === "low") yes.push(R2("sympathy", T2.risen, `he was born ${c.origWord || "low"} himself`, { t: "born" }, 1));
-    if (has("cruel")) no.push(R2("station", T2.cruel, "he likes to see a man refused", { t: "trait", k: "cruel" }));
-    if (has("shy")) no.push(R2("temper", T2.shy, "he keeps to himself", { t: "trait", k: "shy" }));
-    if (has("kind")) yes.push(R2("sympathy", T2.kind, "he is a kindly man", { t: "trait", k: "kind" }, 1));
-    if (has("humble")) yes.push(R2("sympathy", T2.humble, "he holds himself no higher than he must", { t: "trait", k: "humble" }, 1));
-    if (has("gregarious")) yes.push(R2("temper", T2.gregarious, "he likes company", { t: "trait", k: "gregarious" }));
-    if (has("curious")) yes.push(R2("want", T2.curious, "he is curious about you", { t: "trait", k: "curious" }));
+    if (has2("cruel")) no.push(R2("station", T2.cruel, "he likes to see a man refused", { t: "trait", k: "cruel" }));
+    if (has2("shy")) no.push(R2("temper", T2.shy, "he keeps to himself", { t: "trait", k: "shy" }));
+    if (has2("kind")) yes.push(R2("sympathy", T2.kind, "he is a kindly man", { t: "trait", k: "kind" }, 1));
+    if (has2("humble")) yes.push(R2("sympathy", T2.humble, "he holds himself no higher than he must", { t: "trait", k: "humble" }, 1));
+    if (has2("gregarious")) yes.push(R2("temper", T2.gregarious, "he likes company", { t: "trait", k: "gregarious" }));
+    if (has2("curious")) yes.push(R2("want", T2.curious, "he is curious about you", { t: "trait", k: "curious" }));
     const op = n(c.op);
     if (op > 5) yes.push(R2("loyalty", Math.min(T2.opMax, op / T2.opPer), "he already thinks well of you", { t: "op", v: op }));
     else if (op < -5) no.push(R2("grudge", Math.min(T2.opMax, -op / T2.opPer), "he thinks ill of you", { t: "op", v: op }));
@@ -1976,7 +2456,7 @@ var __ARDAN_V2_MAKE = (() => {
   var nobility_exports = {};
   __export(nobility_exports, {
     CAPS: () => CAPS,
-    RANKS: () => RANKS,
+    RANKS: () => RANKS2,
     RANK_TITLE: () => RANK_TITLE,
     buildHierarchy: () => buildHierarchy,
     dukesFor: () => dukesFor,
@@ -2092,7 +2572,7 @@ var __ARDAN_V2_MAKE = (() => {
   }
 
   // src/nobility/engine/nobility.js
-  var RANKS = ["king", "duke", "marquis", "count", "viscount", "baron", "lord"];
+  var RANKS2 = ["king", "duke", "marquis", "count", "viscount", "baron", "lord"];
   var RANK_TITLE = { king: ["King", "Queen"], duke: ["Duke", "Duchess"], marquis: ["Marquis", "Marquise"], count: ["Count", "Countess"], viscount: ["Viscount", "Viscountess"], baron: ["Baron", "Baroness"], lord: ["Lord", "Lady"] };
   var CAPS = { duke: 3, marquis: 6 };
   function makeRealms(map, rng, count = 8, cultures = ["aldic", "solenne", "aldic", "khuul", "solenne", "aldic", "orcish", "aldic"]) {
@@ -2236,8 +2716,8 @@ var __ARDAN_V2_MAKE = (() => {
     }
     return { titles, summary: { king: 1, dukes: dukes.length, marquises: marqs.length, counts: counts.length, viscounts, barons, lords } };
   }
-  function lowerNoble(seed, realm, county, rank, index) {
-    const rng = makeRng(`${seed}:${realm.id}:${county}:${rank}:${index}`);
+  function lowerNoble(seed, realm, county, rank, index2) {
+    const rng = makeRng(`${seed}:${realm.id}:${county}:${rank}:${index2}`);
     const namer = makeNamer(rng);
     const sex = rng.chance(0.88) ? "male" : "female";
     return { rank, title: `${RANK_TITLE[rank][sex === "female" ? 1 : 0]} of ${namer.place(realm.culture, { realm: realm.id })}`, given: namer.given(realm.culture, sex, { realm: realm.id }), house: namer.house(realm.culture, { realm: realm.id }), sex };
@@ -2267,9 +2747,9 @@ var __ARDAN_V2_MAKE = (() => {
     for (const r of realms) r.ruler ?? (r.ruler = { traits: [rng.pick(["ambitious", "cautious", "honourable", "greedy", "pious", "paranoid"])] });
     return { rel, get, key, log: [] };
   }
-  function setFactor(d, a, b, name, value2, { decay = 0, year: year2, text } = {}) {
+  function setFactor(d, a, b, name, value3, { decay = 0, year: year2, text } = {}) {
     const r = d.get(a, b);
-    r.factors.set(name, { value: value2, decay, since: year2, text: text ?? name });
+    r.factors.set(name, { value: value3, decay, since: year2, text: text ?? name });
   }
   function score(d, a, b) {
     let s = 0;
@@ -2421,7 +2901,7 @@ var __ARDAN_V2_MAKE = (() => {
   __export(war_exports, {
     CHOICES: () => CHOICES,
     PHASES: () => PHASES,
-    RANKS: () => RANKS2,
+    RANKS: () => RANKS3,
     TACTICS: () => TACTICS,
     TERRAIN: () => TERRAIN,
     afterAction: () => afterAction,
@@ -2462,7 +2942,7 @@ var __ARDAN_V2_MAKE = (() => {
     pass: { name: "mountain pass", at: "in a mountain pass", frontage: 250, cavalry: 0.5, ranged: 1, defenderBonus: 1.4 }
   };
   var PHASES = ["Skirmish", "Clash", "Press", "Decision"];
-  var RANKS2 = ["soldier", "sergeant", "captain", "commander"];
+  var RANKS3 = ["soldier", "sergeant", "captain", "commander"];
   function makeUnit(id, name, kind, count, worth, opts = {}) {
     return {
       id,
@@ -3379,31 +3859,31 @@ var __ARDAN_V2_MAKE = (() => {
   function components(elev, W, H) {
     const n3 = W * H, comp = new Int32Array(n3).fill(-1), list = [];
     let largest = -1, best = 0;
-    const stack = [];
+    const stack2 = [];
     for (let s = 0; s < n3; s++) {
       if (elev[s] <= 0 || comp[s] >= 0) continue;
       const id = list.length, cells = [];
       comp[s] = id;
-      stack.push(s);
-      while (stack.length) {
-        const k = stack.pop();
+      stack2.push(s);
+      while (stack2.length) {
+        const k = stack2.pop();
         cells.push(k);
         const x = k % W, y = k / W | 0;
         if (x > 0 && elev[k - 1] > 0 && comp[k - 1] < 0) {
           comp[k - 1] = id;
-          stack.push(k - 1);
+          stack2.push(k - 1);
         }
         if (x < W - 1 && elev[k + 1] > 0 && comp[k + 1] < 0) {
           comp[k + 1] = id;
-          stack.push(k + 1);
+          stack2.push(k + 1);
         }
         if (y > 0 && elev[k - W] > 0 && comp[k - W] < 0) {
           comp[k - W] = id;
-          stack.push(k - W);
+          stack2.push(k - W);
         }
         if (y < H - 1 && elev[k + W] > 0 && comp[k + W] < 0) {
           comp[k + W] = id;
-          stack.push(k + W);
+          stack2.push(k + W);
         }
       }
       list.push({ id, size: cells.length, cells });
@@ -3557,17 +4037,17 @@ var __ARDAN_V2_MAKE = (() => {
       const k = rng.pick(land), x = k % W, y = k / W | 0;
       if (seeds.every((s) => Math.hypot(s.x - x, s.y - y) > minD)) seeds.push({ k, x, y });
     }
-    const owner = new Int16Array(n3).fill(-1), cost2 = new Float64Array(n3).fill(Infinity);
+    const owner = new Int16Array(n3).fill(-1), cost3 = new Float64Array(n3).fill(Infinity);
     const heap2 = new MinHeap();
     seeds.forEach((s, i) => {
-      cost2[s.k] = 0;
+      cost3[s.k] = 0;
       heap2.push(0, s.k);
       owner[s.k] = i;
     });
     while (heap2.size) {
       const k = heap2.pop();
       const c = heap2.lastKey;
-      if (c > cost2[k]) continue;
+      if (c > cost3[k]) continue;
       const x = k % W;
       for (const d of [-1, 1, -W, W]) {
         const kk = k + d;
@@ -3576,8 +4056,8 @@ var __ARDAN_V2_MAKE = (() => {
         if (elev[kk] <= 0) continue;
         const step = 1 + Math.abs(elev[kk] - elev[k]) * 400 + (acc[kk] > 400 ? 6 : 0) + elev[kk] * 8;
         const nc = c + step;
-        if (nc < cost2[kk]) {
-          cost2[kk] = nc;
+        if (nc < cost3[kk]) {
+          cost3[kk] = nc;
           owner[kk] = owner[k];
           heap2.push(nc, kk);
         }
@@ -5086,8 +5566,8 @@ var __ARDAN_V2_MAKE = (() => {
             lk = k;
           }
         }
-        const span = Math.sqrt(Math.max(xx, yy) / cells.length) * 2;
-        out.push({ n: cells.length, g: g2, whole: all, x: lk % gw * 10 + 5, y: (lk / gw | 0) * 10 + 5, ang: Math.round(ang * 100) / 100, span: Math.round(span * 10), peak: Math.round(peak), prov: nearProv(lk % gw, lk / gw | 0) });
+        const span2 = Math.sqrt(Math.max(xx, yy) / cells.length) * 2;
+        out.push({ n: cells.length, g: g2, whole: all, x: lk % gw * 10 + 5, y: (lk / gw | 0) * 10 + 5, ang: Math.round(ang * 100) / 100, span: Math.round(span2 * 10), peak: Math.round(peak), prov: nearProv(lk % gw, lk / gw | 0) });
       }
       return out.sort((p, q2) => q2.whole - p.whole || p.g - q2.g || q2.n - p.n || p.x - q2.x || p.y - q2.y);
     };
@@ -6653,7 +7133,7 @@ var __ARDAN_V2_MAKE = (() => {
     }
     const tf = st.tuft;
     if (tf) for (let i = 0; i < tf.n; i++) {
-      const span = (tf.span || 1) * 112, a = rad(lerp2(-span, span, (i + 0.5) / tf.n) + r.s() * 5), sw = rad((tf.swirl || 0) * (0.5 + r())), out = lerp2(tf.out[0], tf.out[1], r());
+      const span2 = (tf.span || 1) * 112, a = rad(lerp2(-span2, span2, (i + 0.5) / tf.n) + r.s() * 5), sw = rad((tf.swirl || 0) * (0.5 + r())), out = lerp2(tf.out[0], tf.out[1], r());
       L([Math.sin(a) * Rx * 0.7 * nar, cyc - Math.cos(a) * Ry * 0.72], [Math.sin(a + sw) * (Rx * nar + out), cyc - Math.cos(a + sw) * (Ry + out)], lerp2(tf.w[0], tf.w[1], r()), (tf.bend || 0.1) * (i % 2 ? 1 : -1), "locks", -6);
     }
     if (st.nape) for (const sg of [-1, 1]) for (let i = 0; i < st.nape.n; i++) {
@@ -7128,25 +7608,25 @@ var __ARDAN_V2_MAKE = (() => {
     const scale = f.scale ? cloth(sty === "orc" ? "#d9cdb4" : WOODS[Math.min(3, q + 1)]) : null;
     part2(S, F, [[-gw * 0.5, -gh], [-grip * 0.5, -gh * (f.two ? 1.04 : 1.1)], [-grip, -gh * 0.8], [-grip, gh * 0.8], [-grip * 0.5, gh * (f.two ? 1.04 : 1.1)], [-gw * 0.5, gh]], scale || (q === 0 ? cloth("hemp") : lea), { k: [0.1, 0.8, 0.2, 0.2, 0.8, 0.1], in: () => {
       if (!big) return;
-      const u0 = -gw * 0.6, span = grip - gw * 0.6, wire = q > 1 ? fit.l : lea.k, turn = (n3, sl, col, px, op) => {
+      const u0 = -gw * 0.6, span2 = grip - gw * 0.6, wire = q > 1 ? fit.l : lea.k, turn = (n3, sl, col, px, op) => {
         let d = "";
         for (let i = 1; i < n3; i++) {
-          const u = u0 - span * i / n3;
+          const u = u0 - span2 * i / n3;
           d += seg(F, [u + sl, -gh * 1.2], [u - sl, gh * 1.2]);
         }
         S.stroke(d, col, px, { op });
       };
       if (scale) {
-        studs(S, F, [0.25, 0.5, 0.75].map((t) => [u0 - span * t, 0]), gh * 0.2, q > 1 ? fit : st);
+        studs(S, F, [0.25, 0.5, 0.75].map((t) => [u0 - span2 * t, 0]), gh * 0.2, q > 1 ? fit : st);
         return;
       }
-      if (q === 0) turn(Math.round(span / (gh * 0.7)), gh * 0.34, cloth("hemp").k, 0.9, 0.75);
+      if (q === 0) turn(Math.round(span2 / (gh * 0.7)), gh * 0.34, cloth("hemp").k, 0.9, 0.75);
       else if (q === 1) {
-        turn(Math.round(span / (gh * 0.5)), gh * 0.2, lea.k, 0.7, 0.45);
-        for (const t of f.two ? [0.2, 0.5, 0.8] : [0.28, 0.7]) S.stroke(seg(F, [u0 - span * t, -gh * 1.2], [u0 - span * t, gh * 1.2]), lea.l, 1.6, { op: 0.7 });
+        turn(Math.round(span2 / (gh * 0.5)), gh * 0.2, lea.k, 0.7, 0.45);
+        for (const t of f.two ? [0.2, 0.5, 0.8] : [0.28, 0.7]) S.stroke(seg(F, [u0 - span2 * t, -gh * 1.2], [u0 - span2 * t, gh * 1.2]), lea.l, 1.6, { op: 0.7 });
       } else {
-        turn(Math.round(span / (gh * 0.34)), gh * 0.3, wire, 0.7, 0.9);
-        if (q > 2) turn(Math.round(span / (gh * 0.68)), -gh * 0.6, fit.hi, 0.8, 0.8);
+        turn(Math.round(span2 / (gh * 0.34)), gh * 0.3, wire, 0.7, 0.9);
+        if (q > 2) turn(Math.round(span2 / (gh * 0.68)), -gh * 0.6, fit.hi, 0.8, 0.8);
       }
     } });
     if (q > 1 && big) for (const u of [-gw * 0.9, -grip + gh * 0.2, ...f.two ? [-grip * 0.52] : []]) part2(S, F, [[u - gh * 0.22, -gh * 1.16], [u + gh * 0.22, -gh * 1.16], [u + gh * 0.22, gh * 1.16], [u - gh * 0.22, gh * 1.16]], fit, { k: 0.2, al: 1 });
@@ -10145,11 +10625,11 @@ var __ARDAN_V2_MAKE = (() => {
     }
     const civilDress = age >= 3 && !harness && !kid && est !== "priest";
     if (civilDress && !royal && grown) {
-      const has = (k) => gear.some((x) => x.id === k), mainT = gear.find((x) => x.id === "tunic");
-      if ((cult.collar === "beads" || cult.collar === "bones") && !has("beads") && !has("chain") && g2 >= 1 && ch(cult.collar === "bones" ? 0.7 : 0.5)) gear.push({ id: "beads", rows: g2 >= 3 ? 2 : 1, fangs: cult.collar === "bones" ? 1 : 0, dyes: cult.collar === "bones" ? ["walnut", "cream"] : g2 <= 2 ? [pick(["cream", "walnut", "madder"]), "walnut"] : [pick(["ochre", "madder", "white"]), "teal"] });
-      if (cult.torc && g2 >= 2 && !has("torc") && !has("chain") && !has("beads") && ch(0.6)) gear.push({ id: "torc", metal: g2 >= 5 ? "gold" : g2 >= 4 ? "silver" : "bronze" });
+      const has2 = (k) => gear.some((x) => x.id === k), mainT = gear.find((x) => x.id === "tunic");
+      if ((cult.collar === "beads" || cult.collar === "bones") && !has2("beads") && !has2("chain") && g2 >= 1 && ch(cult.collar === "bones" ? 0.7 : 0.5)) gear.push({ id: "beads", rows: g2 >= 3 ? 2 : 1, fangs: cult.collar === "bones" ? 1 : 0, dyes: cult.collar === "bones" ? ["walnut", "cream"] : g2 <= 2 ? [pick(["cream", "walnut", "madder"]), "walnut"] : [pick(["ochre", "madder", "white"]), "teal"] });
+      if (cult.torc && g2 >= 2 && !has2("torc") && !has2("chain") && !has2("beads") && ch(0.6)) gear.push({ id: "torc", metal: g2 >= 5 ? "gold" : g2 >= 4 ? "silver" : "bronze" });
       if (cult.collar === "embroidered" && mainT && !mainT.yoke && g2 >= 1 && g2 <= 4 && ch(0.7)) mainT.yoke = pick(["madder", "cream", "woad"]);
-      if ((cult.collar === "fur" || cult.fur) && !has("furcollar") && !has("cloak") && !has("shawl") && !has("hood") && g2 === 4 && ch(cult.collar === "fur" ? 0.5 : 0.25)) gear.push({ id: "furcollar", fur: pick(["wolf", "bear", "hare"]), z: 0.15 });
+      if ((cult.collar === "fur" || cult.fur) && !has2("furcollar") && !has2("cloak") && !has2("shawl") && !has2("hood") && g2 === 4 && ch(cult.collar === "fur" ? 0.5 : 0.25)) gear.push({ id: "furcollar", fur: pick(["wolf", "bear", "hare"]), z: 0.15 });
       if (cult.sash && cut === "tunic" && g2 >= 1 && g2 <= 4 && ch(0.7)) {
         const at = gear.findIndex((x) => x.id === "belt" && !x.rope);
         if (at >= 0 && !gear.some((x) => x.id === "tool" || x.id === "pouch")) gear.splice(at, 1, { id: "sash", dye: second, w: 36, hang: 0.6 });
@@ -10159,7 +10639,7 @@ var __ARDAN_V2_MAKE = (() => {
         mainT.hemKind = cult.pat === "stripe" ? "stripe" : "zig";
       }
       if (cult.band && mainT && !mainT.trim && g2 >= 1 && ch(0.6)) mainT.trim = second;
-      if (cult.apron && g2 === 1 && male && !has("apron") && !fine && ch(0.5)) gear.splice(gear.findIndex((x) => x.id === "belt"), 0, { id: "apron", leather: pick(["brown", "tan"]), len: 0.45 });
+      if (cult.apron && g2 === 1 && male && !has2("apron") && !fine && ch(0.5)) gear.splice(gear.findIndex((x) => x.id === "belt"), 0, { id: "apron", leather: pick(["brown", "tan"]), len: 0.45 });
     }
     if (road && civilDress && !gear.some((x) => x.id === "cloak") && !cloak) {
       const at = Math.max(0, gear.findIndex((x) => x.id === "belt" || x.id === "sash"));

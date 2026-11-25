@@ -2766,3 +2766,35 @@ crowned share and the best skill's level (median, highest) per path, banded by n
 ### H-130 · 2026-11-25 · Order 84 recorded (the anchors, legends, the map lock)
 Master prompt 7 (the map redesigned from M1, then locked), 13.1 (3b), 17 (the anchors), register LM; D-173. The anchors and
 the lock passed to the power-scale builder.
+### H-131 · 2026-11-25 · The skills rebuild, steps 1 to 4 (nothing a player sees changes)
+`docs/design/skills-v2.md` §10 steps 1 to 4, with §15 (order 82) and the owner's word of the same day (no range in a
+skill's specification; no measure word left). Decisions: D-174.
+- **Step 1, data and validator:** `data/skills/` (`vocab.json`: ranks D to SSS and G, budget 1 to 128 a level, costs,
+  caps rising by rank, the words; `families.json`: the 28 families from S1's data; `ladders/*.json`: 140 rungs, D, C, B,
+  A and a common S rung a family, carrying the release's 114 perk rows on the C, B and A rungs; `recipes.json`), seeded by
+  `tools/skills2/seed-data.mjs`; the ten checks of §2.7 in `tools/lib/skills2-check.mjs`, run by `tools/lint-skills.mjs`
+  (its S1 checks kept); `tests/v2/skills2-data.test.js` (11 tests: the data passes, each check fails on a planted fault).
+- **Step 2, engine:** `src/people/engine/skills2.js` (pure: bands on S1's values, S1's costs, S1 entries as rungs, talent
+  reach, budget and costs, caps, needs, evolve (the old skill stays), merge (absorbs, keeps a floor), advance (once a life),
+  the graph); bundled as `A.V2.skills2`; `tests/v2/skills2.test.js` (11 tests).
+- **Step 3, adapter:** `src/people/37-skills2/a-adapter.core.js`, `A.SK2` with `on = false`: `SK2.read(p, k)` through the
+  rungs (and 49-body-mind's wound by part, which wraps `A.skill`), the player's rungs in `pc.ks`/`pc.kc` synced monthly.
+  `sk2Shadow`: three bot lives of 6 years, 225 months, 9,255,432 reads, 0 differ from `A.skill`, rungs never stale.
+- **Step 4, migration:** save step `skills2` (`SV.VER` 16, `src/core/99998-v2-saves`), `SK2.migrate`. `sk2Migrate`: 22
+  sample saves, 947,530 reads the same before and after, every rung in band, idempotent, only its own fields written;
+  `paOldSaves`, `s1Migrate`, `s1Mirror`, the four `v2sv*` tests pass (`v2svRoundTrip` now expects version 16);
+  `version.mjs check` ok.
+- Lints: lint-skills ok, lint-stages 146 registrations (baseline 146, no new stage), lint-reasons 41 (baseline 41),
+  docs index ok; `node --test tests/v2/*.test.js` 146 of 146.
+- Refactor check (base `8f5bd0d7` vs this build): `verify.mjs` reports the core program different (the new feature and
+  engine, as expected); content same program (13,236 functions), lore byte-identical; `identity-probe.mjs`: 5,030 events,
+  0 audience classes differ, and in all nine fixed-seed lives the random stream's position and the journal's length are
+  the same, the fits the same; fingerprints and `A.S` hashes differ only by the new fields (`pc.ks`, `pc.kc`, `S.sk2v`,
+  `S.ver` 16). `sk2Shadow` and `sk2Migrate` (229 s, 261 s) are in `tests/long-tests.json`.
+- Undo: revert the five commits; a version-16 save would then be refused as newer (no sample save is version 16).
+
+### H-132 · 2026-11-25 · The skills rebuild, steps 1 to 4, integrated; the rank above SSS renamed X
+The helper's branch (`worktree-agent-ae273c4866bddc5a1`: data/skills, the pure engine, the adapter `A.SK2` off, the save
+step to version 16; H-131, D-174) merged on the trunk. Its rank above SSS was "G" for gods; order 83 removed gods as beings,
+so it is "X", for the few legends (vocab, engine, tests). Engine tests 146 of 146 after the rename (an old test used "X"
+as an unknown rank; now "Z"). Order 86 (the map: substance over looks) recorded and passed to the map builder.

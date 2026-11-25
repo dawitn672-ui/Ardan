@@ -7,3 +7,7 @@ and their names), `military/` (branches, ranks, gear, missions), `items/`.
 
 Events stay as code next to their system (`src/events/NN-*/*.events.js`, and each system's own packs): an event holds
 functions (`cond`, `setup`, sometimes `text` and `fx`), so it cannot be plain JSON. See `docs/DECISIONS.md` (D-002).
+
+`skills/` (the skills rebuild, `docs/design/skills-v2.md`): `vocab.json` (ranks D to SSS and G, costs, caps, the words a
+skill is written in), `families.json` (the 28 families, from S1's `skills.json`), `ladders/*.json` (the rungs, a file a
+group; seeded by `tools/skills2/seed-data.mjs`), `recipes.json` (merges). Validated by `tools/lint-skills.mjs`.

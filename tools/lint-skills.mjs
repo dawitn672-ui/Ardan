@@ -10,9 +10,12 @@
 // - data/skills.json: unique ids; nine concepts a skill in the 1-1-2-2-2-1 shape; every kin, legacy and shared key
 //   resolves; every concept has a description and a "never grasped" line of at most 14 words; every skill has a reader
 //   (a card's check, a post, a plan or a hook names it).
+// - data/skills/ (the skills rebuild, docs/design/skills-v2.md §2.7): the ten checks of tools/lib/skills2-check.mjs
+//   (schema, references, budget, stats apart, ladders whole, reachable, no loops, up not down, shares, names).
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadSkills2, validate as validateSkills2 } from './lib/skills2-check.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BASE = path.join(root, 'tests/skills-baseline.json');
 const errors = [], notes = [];
@@ -97,6 +100,11 @@ for (const s of D.skills) {
   if (!keys.some(k => new RegExp(`(s2?:\\s*["']${k}["']|skill:\\s*["']${k}["']|["']${k}["']\\s*[,)\\]])`).test(allText))) errors.push(`data: ${s.id} has no reader`);
 }
 
+// 5. the skills rebuild's data (data/skills/)
+let D2 = null;
+try { D2 = loadSkills2(root); for (const e of validateSkills2(D2, { s1: D })) errors.push(`data/skills: check ${e.check}: ${e.msg}`); }
+catch (e) { errors.push('data/skills: ' + e.message); }
+
 if (notes.length) console.log(notes.join('\n'));
 if (errors.length) { console.error(`skills lint FAILED (${errors.length}):\n  ` + errors.slice(0, 40).join('\n  ')); process.exit(1); }
-console.log(`skills ok: ${D.skills.length} skills, ${Object.keys(conceptIds).length} concepts; older code: ${Object.entries(measured).map(([k, v]) => `${k} ${v.n}`).join(', ')}`);
+console.log(`skills ok: ${D.skills.length} skills, ${Object.keys(conceptIds).length} concepts; data/skills: ${D2.skills.length} skills in ${D2.families.families.length} families, ${D2.recipes.length} recipes; older code: ${Object.entries(measured).map(([k, v]) => `${k} ${v.n}`).join(', ')}`);
