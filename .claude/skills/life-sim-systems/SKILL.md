@@ -19,7 +19,21 @@ Use this when building or reviewing character, family, politics or war systems f
   - Strength maturity is about 0.03 at birth, 0.34 at 10, 0.86 at 18 and 1.0 from 25 to 32, then falls to about 0.7 by 60.
   - Stretch the curves per race with `ageScale` (orc 0.78, dwarf 1.65, elf 2.1, giant 1.9).
 - Conditioning moves toward a **natural ceiling** (lift ×3.8 for an untrained adult; Earth's record is about ×3.8 too). Gains shrink near the top, and idle months lose a little.
-- **Breakthroughs** are the only way past a ceiling: winning a real-stakes attempt by a surge of will against long odds raises the ceiling by about 12% for each unit of magnitude. This is how a human climbs to giant-class.
+- **Body breakthroughs (past a stat ceiling) are rare, costly and budgeted** (`docs/MASTER_PROMPT.md` §6.2, §8 A0 and A2).
+  They are not a road to giant class; treating them as one is the exploit. Today's release code is that exploit:
+  `A.breakthrough` (`src/core/release/core/04-realms-and-war-years-b.js`, called from the duel's close in `07-duels.js`)
+  fires on any fight won against a foe more than 8 above you, raises `pot` by 70% of each gain (up to 200) and has no
+  budget, no cooldown and no cost, and sparring is not excluded. The rule any change must meet:
+  - **A lifetime budget** of about three to five true breakthroughs (the A0 stopgap: at most three).
+  - **Years apart:** a cooldown of years (the A0 stopgap: at least two in-game years).
+  - **Never from sparring,** practice, drill or a bout with nothing at stake: only a real-stakes deed against long odds.
+  - **A real risk** of crippling injury or death that grows with the gap overcome.
+  - **A hard ceiling from the body model:** a breakthrough lifts the person's own ceiling a little (about an eighth,
+    `docs/design/growth-standard.md` §3.11) and never past his people's limit.
+  - **No unlimited rise in potential:** no rise in `pot`, or a small capped one; never one that compounds.
+  - Anchor the outcome to `GD.TIERS` (§8 A1): Master is one or two in a realm, Legend about five alive in Ardan.
+  Mark stopgap code `STOPGAP: replaced by A2`, record it in `docs/DECISIONS.md`, and measure it with the balance harness
+  before and after.
 - **Skills are levels and experience, not a number** (Ardan S1, owner order 63, D-072, built in `src/people/36-skills` on
   the engine `src/people/engine/skills.js`). Seven words of five steps (Beginner I to Legend V; Myth for the dead); a
   level is exactly what a check reads, and experience fills a bar toward the next step at the growth standard's price
@@ -27,7 +41,9 @@ Use this when building or reviewing character, family, politics or war systems f
   (nine a skill) must be grasped. A person's need for each is a hash (some come at once, some take ten years, a few never:
   a blind spot); each month of real work is a chance of insight; at the edge experience is stored at half and lands as
   a leap when the concept comes. From Expert up the word must also be **proved** (a stretch at the next word, succeeded).
-  **Breakthroughs** are sudden grasps at named moments (a defeat by a better hand, a near death, a rival, a new land, a
+  **Concept-grasp breakthroughs** (S1; owner orders 59 and 61, `docs/design/growth-standard.md` §3.16) are a different,
+  wanted thing from the body breakthroughs above: they cross a skill's concept and release its stored effort, and never
+  raise a stat ceiling or `pot`. They are sudden grasps at named moments (a defeat by a better hand, a near death, a rival, a new land, a
   master's word, a quiet season). Discipline (unbroken months), a rival, a new place, needs, kin skills, hours shared,
   specialisms (two steps up inside, one down in a sibling, ×0.85 outside) and pride move what a month is worth, and every
   one is written in the ledger beside the gain it changed. Other people keep one number (the value of their level) and
@@ -59,13 +75,13 @@ Humans are the yardstick. Square-cube law: a 5.6 m giant has about 10× human st
   | Ordinary adult giant | 12 to 30 |
   | Legend | 50 to 80 |
 
-- **What it takes for a human to stand equal to a giant:** Master tier, lift around 500 kg (one breakthrough), and order-grade gear.
+- **What it takes for a human to stand equal to a giant:** Master tier, lift around 500 kg (at most one body breakthrough, inside the budget of §1), and order-grade gear. Rare by design.
 
 ## 3. Odds without percentages, and outcomes beyond dice
 `attempt()` decides every test from three forces:
 1. **Edge** = ln(capability/difficulty) × 2.45, plus standard logistic noise. One tier up (×1.5) wins about 72%.
 2. **Blunders.** Chance = 2.5% × e^(−0.7·judgmentZ) × (1 + 1.6·fatigue) × (1 + overconfidence), where overconfidence rises once the edge passes +1. A blunder subtracts 2.5 to 5. Fools and the cocky lose fights they should win.
-3. **Surges.** These happen only when losing with stakes above 0.3. Chance = 2.2% × e^(0.7·willZ) × (0.5 + stakes) × (0.6 + desperation). A surge adds 1.5 to 4 and costs strain. Winning by a surge at an edge below −0.8 is a **breakthrough**.
+3. **Surges.** These happen only when losing with stakes above 0.3. Chance = 2.2% × e^(0.7·willZ) × (0.5 + stakes) × (0.6 + desperation). A surge adds 1.5 to 4 and costs strain. Winning by a surge at an edge below −0.8 is a **breakthrough candidate**: it becomes a body breakthrough only within the budget, cooldown, cost and ceiling of §1.
 
 Show odds as words plus a tipped balance icon. The words, from best to worst: a certainty, heavily in your favour, in your favour, evenly matched, against you, long odds, hopeless. Never show a %. Afterwards, show why it happened ("overconfidence", "a surge of will", "outmatched").
 
