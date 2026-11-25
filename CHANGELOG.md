@@ -5,6 +5,8 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+## v2.1.0-alpha.16 (2026-11-25 17:06 ET) · Phase 1: the Emilio fixes, the exploit stopgaps (breakthroughs, the throne plot), outlaws hunted, one time button
+
 - **Escaping the gallows really frees you.** Breaking free at the gallows or bribing the hangman used to leave you
   "in prison" on paper, so cell fights followed you abroad. Now a man who escapes is out of the cells.
 - **No training injuries in a cell.** Your training plan's injuries came even in prison; now only training can hurt you.
