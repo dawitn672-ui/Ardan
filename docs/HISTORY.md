@@ -2779,4 +2779,9 @@ skill's specification; no measure word left). Decisions: D-NEW-1.
   `version.mjs check` ok.
 - Lints: lint-skills ok, lint-stages 146 registrations (baseline 146, no new stage), lint-reasons 41 (baseline 41),
   docs index ok; `node --test tests/v2/*.test.js` 146 of 146.
-- Undo: revert the four commits; a version-16 save would then be refused as newer (no sample save is version 16).
+- Refactor check (base `8f5bd0d7` vs this build): `verify.mjs` reports the core program different (the new feature and
+  engine, as expected); content same program (13,236 functions), lore byte-identical; `identity-probe.mjs`: 5,030 events,
+  0 audience classes differ, and in all nine fixed-seed lives the random stream's position and the journal's length are
+  the same, the fits the same; fingerprints and `A.S` hashes differ only by the new fields (`pc.ks`, `pc.kc`, `S.sk2v`,
+  `S.ver` 16). `sk2Shadow` and `sk2Migrate` (229 s, 261 s) are in `tests/long-tests.json`.
+- Undo: revert the five commits; a version-16 save would then be refused as newer (no sample save is version 16).
