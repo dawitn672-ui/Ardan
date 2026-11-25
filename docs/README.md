@@ -10,6 +10,7 @@ left the tree on that day; git history holds them (the last commit with them is 
 | [MASTER_PROMPT.md](MASTER_PROMPT.md) | The owner's one living instruction file. The newest instruction wins |
 | [prompts/2026-11-25-master-prompt.md](prompts/2026-11-25-master-prompt.md) | The master prompt as the owner gave it, unchanged (every raw prompt is kept in `prompts/`) |
 | [prompts/2026-11-25-answers-and-direction.md](prompts/2026-11-25-answers-and-direction.md) | The owner's answers to the Phase 0 questions (order 76), unchanged |
+| [prompts/](prompts/) | Every later prompt of the owner's, unchanged, one file each (the power scale, levels and beings, titles, pathways, ...) |
 | [OWNER_ORDERS.md](OWNER_ORDERS.md) | Every order of the owner's, dated |
 | [STATUS.md](STATUS.md) | Where every piece of work stands now |
 | [ROADMAP.md](ROADMAP.md) | The phases and what is in each (the working copy of the master prompt's section 13) |
