@@ -1,62 +1,296 @@
 {
-  "about": "The one power scale (powers wave 1, docs/design/powers.md). A being's strength is its LEVEL, 1 to 100: level = perTen x log10(might / base), so every ten levels is ten times the might. Might is a single number: for a person, his fighting worth in conscripts (A.V2S.shownConscripts, the number his sheet shows) squared, which is the Lanchester fighting strength of the band of conscripts he equals; for a beast, the same from its duel worth and blood (the human fit below), or the bestiary's level. The level alone does not settle a fight: each being also has a profile of capabilities, and titles add to both.",
-  "levels": { "min": 1, "max": 100, "base": 0.01, "perTen": 10 },
+  "about": "The one power scale (powers wave 1, docs/design/powers.md). A being's strength is its LEVEL, 1 to 130 (the gods of the world stand above 100): level = perTen x log10(might / base), so every ten levels is ten times the might. Might is a single number: for a person, his fighting worth in conscripts (A.V2S.shownConscripts, the number his sheet shows) squared, which is the Lanchester fighting strength of the band of conscripts he equals; for a beast, the same from its duel worth and blood (the human fit below), or the bestiary's level. The level alone does not settle a fight: each being also has a profile of capabilities, and titles add to both.",
+  "levels": {
+    "min": 1,
+    "max": 130,
+    "base": 0.01,
+    "perTen": 10
+  },
   "people": {
     "about": "ln(conscripts) = lnA + lnB x worth, fitted on 656 humans of seed 7 at the start (A.fightWorth against A.V2S.shownConscripts); used to put the release's beasts on the people's scale: conscripts x sqrt(blood / 100), squared",
-    "lnA": -2.2438, "lnB": 0.05186
+    "lnA": -2.2438,
+    "lnB": 0.05186
   },
   "odds": {
     "about": "the chance that A beats B: 1 / (1 + (mightB / mightA)^k) on the might after the profile's matchup. k = 0.55: one of the release's fighter tiers (about 14 worth, one e-fold of conscripts, e squared of might) wins three fights in four. A fight is settled without the duel engine when the gap passes hugeGap levels.",
-    "k": 0.55, "hugeGap": 12, "closeGap": 8
+    "k": 0.55,
+    "hugeGap": 12,
+    "closeGap": 8
   },
   "bands": [
-    { "from": 1, "w": "vermin", "d": "Rats, crows, a stray cur. A nuisance, deadly only to the sick or the very young." },
-    { "from": 10, "w": "prey", "d": "A fox, a hedge cat, most people who never held a weapon in earnest." },
-    { "from": 18, "w": "a soldier's match", "d": "A drilled soldier, a hill wolf, a wild boar. One against one, either can die." },
-    { "from": 26, "w": "a village's terror", "d": "A veteran, a bear, a pack of wolves together. A village loses men to it." },
-    { "from": 34, "w": "a valley's terror", "d": "A knight of an order, a great cat, a troll. A lord sends hunters with spears and dogs." },
-    { "from": 42, "w": "a champion's peer", "d": "The best fighters of a realm, the human masters, an ordinary grown giant, a great bear or a young dragon. A hall of heroes in songs." },
-    { "from": 50, "w": "elder might", "d": "The masters of the elder and great races, great dragons, wyrms, the great beasts of the old lore. A champion of men dies here alone." },
-    { "from": 60, "w": "a realm's terror", "d": "Elder dragons, the giant kings, the great spirits. Only a host can stand against one." },
-    { "from": 70, "w": "the bane of nations", "d": "Ancient dragons, the eldest giants, sea monsters that sink fleets. Kingdoms make their peace with them." },
-    { "from": 80, "w": "the doom of an age", "d": "A being the chronicles name an age after. Hosts break on it." },
-    { "from": 90, "w": "world-shaking", "d": "The oldest powers: the sea's mother, the first fire. The world itself moves around them." }
+    {
+      "from": 1,
+      "r": "G",
+      "w": "vermin",
+      "d": "Rats, crows, a stray cur. A nuisance, deadly only to the sick or the very young."
+    },
+    {
+      "from": 10,
+      "r": "F",
+      "w": "prey",
+      "d": "A fox, a hedge cat, most people who never held a weapon in earnest."
+    },
+    {
+      "from": 18,
+      "r": "E",
+      "w": "a soldier's match",
+      "d": "A drilled soldier, a hill wolf, a wild boar. One against one, either can die."
+    },
+    {
+      "from": 26,
+      "r": "D",
+      "w": "a village's terror",
+      "d": "A veteran, a bear, a pack of wolves together. A village loses men to it."
+    },
+    {
+      "from": 34,
+      "r": "C",
+      "w": "a valley's terror",
+      "d": "A knight of an order, a great cat, a troll. A lord sends hunters with spears and dogs."
+    },
+    {
+      "from": 42,
+      "r": "B",
+      "w": "a champion's peer",
+      "d": "The best fighters of a realm, the human masters, an ordinary grown giant, a great bear or a young dragon. The heroes of the songs stand here."
+    },
+    {
+      "from": 52,
+      "r": "A",
+      "w": "elder might",
+      "d": "The masters of the elder and great races, great dragons and wyrms, the great beasts of the old lore. A champion of men dies here alone."
+    },
+    {
+      "from": 60,
+      "r": "S",
+      "w": "a realm's terror",
+      "d": "Elder dragons, the giant kings, the great spirits. Only a host can stand against one."
+    },
+    {
+      "from": 70,
+      "r": "SS",
+      "w": "the bane of nations",
+      "d": "Ancient dragons, the eldest giants, sea monsters that sink fleets. Kingdoms make their peace with them."
+    },
+    {
+      "from": 80,
+      "r": "SSS",
+      "w": "the doom of an age",
+      "d": "Beings the chronicles name ages after: the oldest dragons, the dead kings, the princes of the gates. Hosts break on them."
+    },
+    {
+      "from": 100,
+      "r": "divine",
+      "w": "a god of the world",
+      "d": "Above every rank: the few powers the world prays to or fears, distant, mostly asleep. When one stirs, the whole world feels it."
+    }
   ],
   "capabilities": [
-    { "k": "str", "n": "strength", "d": "weight, reach and the force of a blow" },
-    { "k": "spd", "n": "speed", "d": "whether you can outrun it, and whether it can outrun you" },
-    { "k": "hide", "n": "hide and armour", "d": "how much of a blade it shrugs off; a light weapon barely bites" },
-    { "k": "venom", "n": "venom", "d": "a scratch that kills a day later; a hardy body and a healer help" },
-    { "k": "flight", "n": "flight", "d": "it chooses when to fight; only a bow or a spear thrown reaches it" },
-    { "k": "regen", "n": "regeneration", "d": "wounds close as you make them; only fire, a long fight won or a killing blow ends it" },
-    { "k": "ward", "n": "resistance to magic", "d": "charms, prayers and spells slide off it" },
-    { "k": "swarm", "n": "numbers", "d": "it comes as many: one fighter is surrounded; a shield wall holds" },
-    { "k": "cunning", "n": "cunning", "d": "it ambushes, finds you hiding and learns your tricks" },
-    { "k": "magic", "n": "magic", "d": "breath, fire, frost, glamour or spells: the reach of a weapon means little" }
+    {
+      "k": "str",
+      "n": "strength",
+      "d": "weight, reach and the force of a blow"
+    },
+    {
+      "k": "spd",
+      "n": "speed",
+      "d": "whether you can outrun it, and whether it can outrun you"
+    },
+    {
+      "k": "hide",
+      "n": "hide and armour",
+      "d": "how much of a blade it shrugs off; a light weapon barely bites"
+    },
+    {
+      "k": "venom",
+      "n": "venom",
+      "d": "a scratch that kills a day later; a hardy body and a healer help"
+    },
+    {
+      "k": "flight",
+      "n": "flight",
+      "d": "it chooses when to fight; only a bow or a spear thrown reaches it"
+    },
+    {
+      "k": "regen",
+      "n": "regeneration",
+      "d": "wounds close as you make them; only fire, a long fight won or a killing blow ends it"
+    },
+    {
+      "k": "ward",
+      "n": "resistance to magic",
+      "d": "charms, prayers and spells slide off it"
+    },
+    {
+      "k": "swarm",
+      "n": "numbers",
+      "d": "it comes as many: one fighter is surrounded; a shield wall holds"
+    },
+    {
+      "k": "cunning",
+      "n": "cunning",
+      "d": "it ambushes, finds you hiding and learns your tricks"
+    },
+    {
+      "k": "magic",
+      "n": "magic",
+      "d": "breath, fire, frost, glamour or spells: the reach of a weapon means little"
+    }
   ],
   "intelligence": [
-    { "k": "beast", "d": "Acts by instinct: hunger, the season, its ground. It hunts, flees and guards, and holds no grudge." },
-    { "k": "cunning", "d": "Plans an ambush and remembers a trap, but cannot bargain or reason with you." },
-    { "k": "speaking", "d": "Speaks, bargains, lies and holds a grudge. Its choices have reasons, and it can be talked to." },
-    { "k": "wise", "d": "Old and deep: it plans for years, keeps its word or its hatred for generations, and weighs kingdoms." }
+    {
+      "k": "beast",
+      "d": "Acts by instinct: hunger, the season, its ground. It hunts, flees and guards, and holds no grudge."
+    },
+    {
+      "k": "cunning",
+      "d": "Plans an ambush and remembers a trap, but cannot bargain or reason with you."
+    },
+    {
+      "k": "speaking",
+      "d": "Speaks, bargains, lies and holds a grudge. Its choices have reasons, and it can be talked to."
+    },
+    {
+      "k": "wise",
+      "d": "Old and deep: it plans for years, keeps its word or its hatred for generations, and weighs kingdoms."
+    }
   ],
-  "terrains": ["plains", "steppe", "forest", "hills", "mountains", "marsh", "desert"],
+  "terrains": [
+    "plains",
+    "steppe",
+    "forest",
+    "hills",
+    "mountains",
+    "marsh",
+    "desert"
+  ],
   "masters": [
-    { "id": "m-giant-king", "n": "The King under Jotunhall", "race": "giant", "level": 62, "int": "wise", "homeName": "Jotunhall",
-      "prof": { "str": 10, "spd": 4, "hide": 7, "venom": 0, "flight": 0, "regen": 4, "ward": 3, "swarm": 0, "cunning": 6, "magic": 1 },
-      "titles": [ { "n": "Breaker of the Ice-Road", "honour": 30, "buffs": { "str": 1, "level": 1 }, "req": "hidden" } ],
-      "d": "The eldest giant still on a throne. Three hundred years of war in his arms and shoulders." },
-    { "id": "m-dwarf-anvil", "n": "The Anvil-Warden of Irondeep", "race": "dwarf", "level": 57, "int": "wise", "homeName": "Irondeep",
-      "prof": { "str": 8, "spd": 3, "hide": 10, "venom": 0, "flight": 0, "regen": 2, "ward": 6, "swarm": 0, "cunning": 6, "magic": 2 },
-      "titles": [ { "n": "Who Held the Ninth Gate", "honour": 25, "buffs": { "hide": 1, "ward": 1 }, "req": "hidden" } ],
-      "d": "Two centuries at the forge and the gate. Rune-steel on his back that no smith of men can scratch." },
-    { "id": "m-elf-blade", "n": "The Eldest Blade of Evenglade", "race": "elf", "level": 56, "int": "wise", "homeName": "Evenglade",
-      "prof": { "str": 4, "spd": 10, "hide": 3, "venom": 0, "flight": 0, "regen": 2, "ward": 7, "swarm": 0, "cunning": 9, "magic": 4 },
-      "titles": [ { "n": "the Unhurried", "honour": 20, "buffs": { "spd": 1, "cunning": 1 }, "req": "hidden" } ],
-      "d": "Four hundred years with one sword. She has outlived every school that tried to teach men her way." },
-    { "id": "m-orc-khan", "n": "The Skull-Khan of Urgol", "race": "orc", "level": 52, "int": "speaking", "homeName": "Urgol",
-      "prof": { "str": 9, "spd": 6, "hide": 5, "venom": 0, "flight": 0, "regen": 4, "ward": 2, "swarm": 2, "cunning": 5, "magic": 0 },
-      "titles": [ { "n": "Who Ate the Iron Feast", "honour": 15, "buffs": { "str": 1 }, "req": "hidden" } ],
-      "d": "Took his seat over the bodies of forty challengers. No man of the west has lasted a minute with him." }
+    {
+      "id": "m-giant-king",
+      "n": "The King under Jotunhall",
+      "race": "giant",
+      "level": 64,
+      "int": "wise",
+      "homeName": "Jotunhall",
+      "prof": {
+        "str": 10,
+        "spd": 4,
+        "hide": 7,
+        "venom": 0,
+        "flight": 0,
+        "regen": 4,
+        "ward": 3,
+        "swarm": 0,
+        "cunning": 6,
+        "magic": 1
+      },
+      "titles": [
+        {
+          "n": "Breaker of the Ice-Road",
+          "honour": 30,
+          "buffs": {
+            "str": 1,
+            "level": 1
+          },
+          "req": "hidden"
+        }
+      ],
+      "d": "The eldest giant still on a throne. Three hundred years of war in his arms and shoulders."
+    },
+    {
+      "id": "m-dwarf-anvil",
+      "n": "The Anvil-Warden of Irondeep",
+      "race": "dwarf",
+      "level": 59,
+      "int": "wise",
+      "homeName": "Irondeep",
+      "prof": {
+        "str": 8,
+        "spd": 3,
+        "hide": 10,
+        "venom": 0,
+        "flight": 0,
+        "regen": 2,
+        "ward": 6,
+        "swarm": 0,
+        "cunning": 6,
+        "magic": 2
+      },
+      "titles": [
+        {
+          "n": "Who Held the Ninth Gate",
+          "honour": 25,
+          "buffs": {
+            "hide": 1,
+            "ward": 1
+          },
+          "req": "hidden"
+        }
+      ],
+      "d": "Two centuries at the forge and the gate. Rune-steel on his back that no smith of men can scratch."
+    },
+    {
+      "id": "m-elf-blade",
+      "n": "The Eldest Blade of Evenglade",
+      "race": "elf",
+      "level": 58,
+      "int": "wise",
+      "homeName": "Evenglade",
+      "prof": {
+        "str": 4,
+        "spd": 10,
+        "hide": 3,
+        "venom": 0,
+        "flight": 0,
+        "regen": 2,
+        "ward": 7,
+        "swarm": 0,
+        "cunning": 9,
+        "magic": 4
+      },
+      "titles": [
+        {
+          "n": "the Unhurried",
+          "honour": 20,
+          "buffs": {
+            "spd": 1,
+            "cunning": 1
+          },
+          "req": "hidden"
+        }
+      ],
+      "d": "Four hundred years with one sword. She has outlived every school that tried to teach men her way."
+    },
+    {
+      "id": "m-orc-khan",
+      "n": "The Skull-Khan of Urgol",
+      "race": "orc",
+      "level": 57,
+      "int": "speaking",
+      "homeName": "Urgol",
+      "prof": {
+        "str": 9,
+        "spd": 6,
+        "hide": 5,
+        "venom": 0,
+        "flight": 0,
+        "regen": 4,
+        "ward": 2,
+        "swarm": 2,
+        "cunning": 5,
+        "magic": 0
+      },
+      "titles": [
+        {
+          "n": "Who Ate the Iron Feast",
+          "honour": 15,
+          "buffs": {
+            "str": 1
+          },
+          "req": "hidden"
+        }
+      ],
+      "d": "Took his seat over the bodies of forty challengers. No man of the west has lasted a minute with him."
+    }
   ]
 }

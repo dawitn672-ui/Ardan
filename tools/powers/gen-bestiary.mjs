@@ -43,6 +43,8 @@ const P = (str, spd, hide, venom, flight, regen, ward, swarm, cunning, magic) =>
 // ---------------------------------------------------------------- families and lines
 // line: { k, forms: [name | { n, cre, int }], levels: [..] (or start/step), terr, coast, diet, seasons, int, apexInt, prof, drops }
 const ALL = ['spring', 'summer', 'autumn', 'winter'];
+// a title some kinds are born with (titles are data with buffs; the owner, 2026-11-25): the oldest dragons are born of the old blood
+const OLD = { n: 'Old Blood', honour: 20, buffs: { level: 1, ward: 1 }, born: true, req: 'born' };
 const FAMILIES = {
   vermin: { n: 'Vermin', diet: 'carrion', seasons: ALL, int: 'beast', drops: ['pelt', 'meat'], prof: P(1, 5, 1, 0, 0, 1, 0, 7, 3, 0), lines: [
     { k: 'rat', forms: ['Cellar Rat', 'Plague Rat', 'Rat Matron', 'Warren King'], levels: [5, 10, 15, 21], terr: ['plains', 'marsh', 'hills', 'forest', 'steppe'], drops: ['pelt', 'tail'], prof: { venom: 3 } },
@@ -91,9 +93,9 @@ const FAMILIES = {
     { k: 'sanddragon', forms: [{ n: 'Sand Dragon', cre: 'CRE-43' }, 'Dune Drake'], levels: [0, 38], terr: ['desert'], int: 'beast', prof: { flight: 0, spd: 7 } },
   ] },
   dragons: { n: 'Dragons', diet: 'hunter', seasons: ALL, int: 'speaking', apexInt: 'wise', drops: ['dragon scale', 'dragon heart'], prof: P(9, 7, 9, 2, 9, 6, 7, 0, 7, 9), lines: [
-    { k: 'ashdragon', forms: [{ n: 'Ash Hatchling', int: 'cunning' }, { n: 'Ash Dragonet', int: 'cunning' }, { n: 'Great Ash Dragon', cre: 'CRE-01' }, 'Elder Ash Dragon', 'Ancient Ash Dragon'], levels: [36, 44, 0, 62, 72], terr: ['mountains', 'hills'] },
-    { k: 'frostdragon', forms: [{ n: 'Frost Hatchling', int: 'cunning' }, 'Frost Dragon', 'Elder Frost Dragon', 'Ancient Frost Dragon'], levels: [38, 52, 63, 74], terr: ['mountains'], seasons: ['autumn', 'winter', 'spring'] },
-    { k: 'stormdragon', forms: [{ n: 'Storm Hatchling', int: 'cunning' }, 'Storm Dragon', 'Elder Storm Dragon', 'Ancient Storm Dragon'], levels: [40, 54, 65, 76], terr: ['mountains', 'hills', 'steppe'] },
+    { k: 'ashdragon', forms: [{ n: 'Ash Hatchling', int: 'cunning' }, { n: 'Ash Dragonet', int: 'cunning' }, { n: 'Great Ash Dragon', cre: 'CRE-01' }, 'Elder Ash Dragon', { n: 'Ancient Ash Dragon', born: OLD }], levels: [36, 44, 0, 62, 72], terr: ['mountains', 'hills'] },
+    { k: 'frostdragon', forms: [{ n: 'Frost Hatchling', int: 'cunning' }, 'Frost Dragon', 'Elder Frost Dragon', { n: 'Ancient Frost Dragon', born: OLD }], levels: [38, 52, 63, 74], terr: ['mountains'], seasons: ['autumn', 'winter', 'spring'] },
+    { k: 'stormdragon', forms: [{ n: 'Storm Hatchling', int: 'cunning' }, 'Storm Dragon', 'Elder Storm Dragon', { n: 'Ancient Storm Dragon', born: OLD }], levels: [40, 54, 65, 76], terr: ['mountains', 'hills', 'steppe'] },
     { k: 'brinedragon', forms: [{ n: 'Brine Hatchling', int: 'cunning' }, 'Brine Dragon', 'Elder Brine Dragon'], levels: [37, 53, 64], terr: ['hills', 'marsh'], coast: true },
     { k: 'redwidow', forms: [{ n: 'The Red Widow', cre: 'CRE-02' }], levels: [60], terr: ['mountains'], unique: true },
   ] },
@@ -135,10 +137,10 @@ const FAMILIES = {
     { k: 'grove', forms: ['Grove Sprite', { n: 'Leaf Spirit', int: 'speaking' }], levels: [9, 22], terr: ['forest'], seasons: ['spring', 'summer'] },
   ] },
   demons: { n: 'Demons', diet: 'souls', seasons: ALL, int: 'speaking', apexInt: 'wise', drops: ['horn', 'brimstone core'], prof: P(6, 6, 5, 3, 3, 5, 7, 2, 8, 7), lines: [
-    { k: 'imp', forms: [{ n: 'Imp', int: 'cunning' }, 'Fiend', 'Greater Fiend', 'Pit Prince'], levels: [16, 30, 44, 58], terr: ['desert', 'mountains', 'marsh'] },
+    { k: 'imp', forms: [{ n: 'Imp', int: 'cunning' }, 'Fiend', 'Greater Fiend', { n: 'Pit Prince', born: { n: 'Pit-Born', honour: 0, buffs: { ward: 1 }, born: true, req: 'born' } }], levels: [16, 30, 44, 58], terr: ['desert', 'mountains', 'marsh'] },
     { k: 'cinderhound', forms: [{ n: 'Cinder Hound', int: 'beast' }, { n: 'Brimstone Hound', int: 'cunning' }], levels: [28, 38], terr: ['desert', 'hills', 'mountains'], prof: { spd: 8, swarm: 5, magic: 5 } },
     { k: 'tempter', forms: ['Whisperer', 'Soul Broker'], levels: [24, 42], terr: ['plains', 'forest', 'hills'], prof: { str: 2, cunning: 10, magic: 8 } },
-    { k: 'horror', forms: [{ n: 'Gate Horror', int: 'cunning' }, 'Gate Tyrant'], levels: [52, 66], terr: ['desert', 'mountains'], prof: { str: 9, hide: 8 } },
+    { k: 'horror', forms: [{ n: 'Gate Horror', int: 'cunning' }, { n: 'Gate Tyrant', born: { n: 'Gate-Born', honour: 0, buffs: { str: 1, ward: 1 }, born: true, req: 'born' } }], levels: [52, 66], terr: ['desert', 'mountains'], prof: { str: 9, hide: 8 } },
   ] },
   deep: { n: 'Monsters of the sea and the deep', diet: 'hunter', seasons: ALL, int: 'beast', drops: ['oil', 'bone', 'shell'], prof: P(7, 5, 6, 1, 0, 4, 2, 2, 3, 1), lines: [
     { k: 'crab', forms: [{ n: 'Giant Spider Crab', cre: 'CRE-15' }, 'Reef Crusher'], levels: [14, 28], terr: [], coast: true, prof: { hide: 9 } },
@@ -278,8 +280,24 @@ const BEH_LINE = {
   'constructs.bone': { drives: ['duty', 'hunger'], people: 'hates', provoked: ['the living'], calmed: ['its binder\'s word'] },
   'constructs.brass': { drives: ['duty'], social: 'pack', hunt: 'chase', provoked: ['a thief'], calmed: ['the house\'s token'] },
 };
+// Natures (the owner, 2026-11-25: "some are simply bloodthirsty ... that is itself their specified nature"): a kind with a
+// nature acts from it, not from a reason of the moment, and nothing soothes it (calmed is empty: the card offers no calming
+// choice); the spec says how it acts, so rule 18 holds through its nature. `limit` is the one thing that ends it, if any.
+const NATURE = {
+  'hounds.hound': { k: 'bloodthirsty', spec: 'kills past hunger and leaves the meat; cannot be bargained with or turned; the pack runs until the quarry or the pack is dead', limit: 'running water' },
+  'demons.cinderhound': { k: 'bloodthirsty', spec: 'bred to the hunt by whatever summoned it; tracks one scent across a realm; stops only when its master calls or it dies', limit: null },
+  'demons.horror': { k: 'cruel', spec: 'kills slowly, for the pleasure of it; plays with what it catches; nothing it wants can be given', limit: null },
+  'undead.dead': { k: 'relentless', spec: 'walks toward the living without rest, hunger or fear; does not tire, does not flee, does not hear words', limit: 'dawn' },
+  'undead.ghoul': { k: 'hungry', spec: 'hungry beyond reason: eats until it bursts and eats again; flees only fire', limit: 'fire' },
+  'crawlers.swarm': { k: 'mindless', spec: 'a hunger with a million mouths; it does not see you, only what you stand in; it ends when the grass ends or the frost comes', limit: 'frost' },
+  'oozes.slime': { k: 'mindless', spec: 'flows toward warmth and eats what stays still; no fear, no wish, no memory until the last forms of its line', limit: 'fire' },
+  'oozes.venomslime': { k: 'mindless', spec: 'a poison that moves; it eats by rotting what it touches and knows nothing else', limit: 'salt' },
+  'constructs.bone': { k: 'relentless', spec: 'bound to one order by whoever raised it; carries it out until it is broken to pieces', limit: null },
+};
 const behOf = (fk, lk, apex, int) => {
   const b = Object.assign({ migrates: false, where: {} }, BEH_FAM[fk], BEH_LINE[lk] || {});
+  const N = NATURE[lk];
+  if (N && !(apex && (int === 'speaking' || int === 'wise'))) { b.nature = N; b.calmed = []; }
   if (apex && int !== 'beast') b.drives = [...new Set(b.drives.concat(int === 'wise' ? ['ambition', 'memory'] : ['pride']))].slice(0, 5);
   if (int === 'speaking' || int === 'wise') { if (b.people === 'avoids' || b.people === 'ignores') b.people = 'bargains'; }
   return b;
@@ -319,6 +337,7 @@ export function generate() {
           next: null, apex: apex || !!L.unique, beh: behOf(fk, lk, apex || !!L.unique, int),
         };
         if (f.cre) sp.cre = f.cre;
+        if (f.born) sp.titles = [f.born];
         if (L.unique) sp.unique = true;
         // the step up: feed this many seasons, win this many fights, live this many years at this form (higher forms ask more)
         if (i < L.forms.length - 1) sp.evolve = { feeds: 2 + Math.floor(level / 12), wins: 1 + Math.floor(level / 18), years: 1 + Math.floor(level / 15) };
