@@ -2712,3 +2712,11 @@ No gods as beings (faint myth and faith only); the summit is legends (a King of 
 legendary human Sword Saint of ages ago, the world's best-known figure). Skills have no range. The harness measures crowns
 and best skill levels but bands neither (the A1 target table is superseded). The throne for an outsider is to be as hard as
 it truly is (A2.2, a coalition of named people and every real requirement). Passed to both helpers.
+
+### D-173 · The ladder's anchors; the map redesigned from M1 and locked (2026-11-25; order 84)
+**What.** The level anchors of order 84 are the scale the power wave is built to. The map: the designed continent (M1, from
+the owner's picture, on `work/m1`) is the base; I enlarge and place as needed (room for the legends' domains), show the
+owner renders once, then merge and lock it (places may be added, the map not edited). Ordered right after the power wave
+lands, since legends' lairs, habitats and lore sit on it; the power wave keeps lairs as data keyed to terrain and named
+places for one re-placement pass. **Considered:** finishing skills first (the map lock touches every world and every
+test, and the later the lock the more is placed twice). **Why:** the owner's order 84, placed by importance.

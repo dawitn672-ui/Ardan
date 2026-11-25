@@ -2762,3 +2762,7 @@ from save version 15, phone views, the first 200, build order in 12 steps, title
 ### H-129 · 2026-11-25 · Order 83 recorded; balance measures levels, not words
 Master prompt 8 (A1 targets superseded; A2.2), 9, 17, 18; skills-v2 §15.7; D-172. `tools/bench/balance.mjs` measures the
 crowned share and the best skill's level (median, highest) per path, banded by nothing; its Master and Legend shares are gone.
+
+### H-130 · 2026-11-25 · Order 84 recorded (the anchors, legends, the map lock)
+Master prompt 7 (the map redesigned from M1, then locked), 13.1 (3b), 17 (the anchors), register LM; D-173. The anchors and
+the lock passed to the power-scale builder.

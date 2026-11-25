@@ -439,6 +439,16 @@ order is replaced, strike it through and say by what.
     designer's call). No baseline (target number) for a crown; Master and Legend do not exist as measures. Taking a throne
     as an outsider must be as complicated as it really is from one person's position (D-172, H-129).
 
+84. **The level anchors; legends as national threats; the map redesigned freely, then locked** · recorded 2026-11-25
+    (evening). Kept unchanged in `docs/prompts/2026-11-25-levels-legends-map.md`. Levels: an average human 20-30, a soldier
+    75-125, a knight 150-200, an elite 200-250, a kingdom's strongest 300-380; a grown dragon about 450, a strong one 525;
+    legends all above 600 (the Sword Saint, alive in old age, 650, the strongest human; the three Primordial Archdemons
+    725-750; the Dragon King about 800, by far the strongest); a Lord of the Sea and others between, in a clear ranking,
+    some close and uncertain. Legends hold titles, are national threats able to threaten the whole world, and can be
+    challenged. Races have baseline stats changed greatly by lineage, starting titles and innate ability. **The map:** I may
+    change it however I like, as big as I like, placing realms and places freely; once done, places may be added but the
+    map can no longer be edited (D-173, H-130).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
