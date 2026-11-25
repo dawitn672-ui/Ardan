@@ -33,7 +33,8 @@ left the tree on that day; git history holds them (the last commit with them is 
 | [art/style-guide.md](art/style-guide.md) | The art style guide |
 | [design/characters.md](design/characters.md) | Character design |
 | [design/reference/README.md](design/reference/README.md) | The owner's reference pictures |
-| [design/skills.md](design/skills.md) | The S1 skills design (to be replaced by the master prompt's section 9) |
+| [design/skills.md](design/skills.md) | The S1 skills design (superseded by skills-v2.md; kept as the reference for experience by doing) |
+| [design/skills-v2.md](design/skills-v2.md) | The skills rebuild: ranked skills D to S with levels 1 to 10, evolution, merging, the adapter, migration, the first 200; titles; a person's level, stat points and training |
 | [design/growth.md](design/growth.md) | Growth by age and training |
 | [design/growth-standard.md](design/growth-standard.md) | The growth standard everyone is held to |
 | [design/households.md](design/households.md) | Households and kin |
