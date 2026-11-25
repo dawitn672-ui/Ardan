@@ -293,3 +293,10 @@ list against this file and records the count.
 `<name>@synced` (Claude Code docs, plugins/loading, "Plugins synced from claude.ai"). The next session after the first
 change still loaded every plugin. The file now uses `@synced` keys. A plugin the organization marks as required loads
 whatever the file says; the account switch (claude.ai, Customize, Plugins) is the sure way.
+
+**What this session saw after the owner's switches (2026-11-25, evening):** the agents of agentic-council, backend-design,
+claude-security and vercel left the session's list mid-session; the Google Drive, Supabase, Vercel and Cloudflare
+connectors disconnected; the account copies of life-sim-systems, game-ux-playtest-loop and realistic-continent-maps are
+gone from the synced skills (built-in-browser, computer-use, google-workspace, import-memory and morning remain, optional).
+All 31 plugins' files stay in the local sync cache whether on or off, so the cache proves nothing; the next session's
+skill list is the check, with the count before (about 459 skills) and after to be written here.
