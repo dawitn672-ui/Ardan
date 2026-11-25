@@ -9,3 +9,8 @@ canon/
 versions/
 # X5 (D-109): the built game is not committed; node tools/build.mjs writes it, CI builds it once per run and shares it
 /index.html
+
+# design renders are made by their scripts, not kept (order 76)
+docs/design/demo-2d/**/*.png
+docs/design/demo-2d/**/*.html
+docs/design/war/*.svg

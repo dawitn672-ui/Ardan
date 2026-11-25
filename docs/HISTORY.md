@@ -2616,3 +2616,15 @@ On the trunk, docs only (no game code, no player-facing change).
 - **Decisions:** D-158 to D-162. **Also:** `CLAUDE.md` (precedence, time, no working branches, records on `main`),
   `docs/ROADMAP.md` and `docs/STATUS.md` (renumbered, with a dated note), `docs/README.md`.
 - **Undo:** revert this commit.
+
+### H-110 · 2026-11-25 · Plugins off for this repo; docs cleared to the reference set (order 76)
+- **Plugins:** `.claude/settings.json` switches off 28 plugins for this repo's sessions and keeps frontend-design,
+  image-deep-research and skill-creator (`docs/TOOLING.md`, last section). Commit `872768f6`.
+- **Docs:** `docs/` went from 121 MB to 15 MB. Gone from the tree (the last commit that had them all is `872768f6`):
+  `plan/`, `reviews/`, `benchmarks/`, `north-star/`, `v2/` (the owner's alpha 9 playtest moved to `design/`),
+  `CRITIQUE.md`, `tools/delete-old-branches.sh`, most of `research/` (kept: `c7-name-data.json`, `d11-military-branches.json`,
+  `codex/`, `ios/`), and in `design/`: `brief-audit.md`, `c8d-gate1.md`, `critique.md`, `research.md`, `trials/`, `demo/`,
+  `growth/`, `map/`, the legendaries' renders, and the renders of `demo-2d/` and `war/` (now ignored: their scripts make
+  them). Nothing the build, tools or tests read was removed: the engine's 124 unit tests pass and the docs index lint
+  passes. `tools/v2/build-demo.js` went to `archive/v2-kit-demo-ui/`. `docs/README.md` and `docs/BRANCHES.md` rewritten.
+- **Undo:** `git checkout 872768f6 -- <path>` brings any of it back.
