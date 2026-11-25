@@ -2540,3 +2540,30 @@ the owner's word (order 70), v3.
 **Stopped:** no agents running; the test chain killed; both scheduled check-ins disabled (not deleted). Next free numbers:
 D-157, H-105 (H-106 is the tidy's).
 
+
+### H-107 · 2026-11-25 · The skills and tools review (master prompt section 16, Phase 0's first step)
+Branch `work/tooling`, from `origin/v2-integration` at `d132b8d`. Skills and docs only; no game code, no player-facing change
+(no CHANGELOG line). D-157.
+- **Inventory** of this cloud session: 31 plugins synced from the owner's claude.ai account, 459 skills in the list (422 from
+  plugins, 16 account, 16 bundled, 4 project, 1 environment), 466 skill and command files inside the plugins, 64 plugin agents,
+  7 connectors with tools and 30 bundled connector entries, 6 plugins with hooks. The owner's count was about 457 skills in 31
+  plugins plus 17 account skills; `arcads` and `expo` are not installed.
+- **docs/TOOLING.md** (new): the counts, the Keep / Merge / Remove verdicts for every plugin, account skill, bundled skill,
+  connector and agent, the risks (hooks, installs, keys, network) and clashes (quoted), how to switch each off and on
+  (claude.ai Customize > Plugins / Skills / Connectors; `/plugin` and `claude plugin disable <name>@synced`; a repo
+  `.claude/settings.json` with `enabledPlugins` and `skillOverrides`), the projected after counts, and the trigger checks.
+  **Nothing was disabled or uninstalled**: the table waits for the owner's yes.
+- **Three Phase 0 Ardan skills** (new): `.claude/skills/ardan-prompt-intake`, `ardan-dev-process`, `ardan-ui-review`, written
+  in our own words from the master prompt and the merged plugins' ideas, pointing at the master prompt's sections and this
+  repo's tools. Trigger checks reasoned on three requests and two near misses each (TOOLING.md section 7); skill-creator's
+  `claude -p` optimiser not run (cost, needs the owner's yes).
+- **`life-sim-systems`**: the line that called breakthroughs "how a human climbs to giant-class" is replaced by the master
+  prompt's rule (a lifetime budget of about three to five, years apart, never from sparring, a real risk of injury, a hard
+  ceiling from the body model, no unlimited rise in `pot`), naming the release's `A.breakthrough` as the exploit to close.
+  S1's concept-grasp breakthroughs (orders 59 and 61, growth-standard §3.16) are named apart. Two lines that leaned on the old
+  rule (the giant comparison, the surge) now point at it. Nothing else in the skill changed.
+- **docs/README.md**: index lines for TOOLING.md, MASTER_PROMPT.md and the raw prompt (the index lint failed on the last two
+  since `d132b8d`); `tools/lint-docs-index.mjs` passes.
+- **Checks:** `tools/lint-docs-index.mjs` ok; `tools/lint-skills.mjs` ok (it reads game skills, unchanged). No build or test
+  run: no game file changed.
+- **Undo:** revert the branch's commits; nothing depends on them.

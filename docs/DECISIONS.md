@@ -2573,3 +2573,29 @@ it is built in code as map version 4 (a guided generator or authored shapes with
 drawing `A.rand`), the lore recalibrated to it (D-151), all tested as one world shift, and shown to the owner whole.
 D-142's seed scoring and M1's 30 candidates stay recorded as what was tried.
 
+
+### D-157 · The tooling review: method and proposed verdicts, pending the owner's yes (2026-11-25; order 75, master prompt section 16)
+**Context.** The master prompt makes the skills and tools review the top priority (16, 13.1 rule 1): every installed
+skill puts its name and description into each session, and hundreds of overlapping ones make Claude pick the wrong one.
+**Method.** (1) Inventory from this cloud session itself, not from the owner's chat count: the skill list offered to the
+session and the plugin files synced from the owner's claude.ai account (31 plugins, 459 listed skills, 64 plugin agents,
+7 connectors with tools, 30 bundled connector entries, 6 plugins with hooks). (2) Every plugin read by its files, not its
+description: the frontmatter of every skill, the hooks and connector files of every plugin, a full read of the skills
+that feed the new Ardan skills (superpowers' verification, debugging, plans, brainstorming, subagents; design's critique,
+accessibility, ux-copy) and a sample of the rest, and a scan of every plugin for commands that install, ask for keys or
+reach the network. (3) A verdict per plugin, per account skill, per bundled skill and per connector, with one line of
+reason, the risks and the clashes quoted (`docs/TOOLING.md`). (4) The Merge verdicts are carried out first by writing
+new Ardan skills in our own words (`ardan-prompt-intake`, `ardan-dev-process`, `ardan-ui-review`), since plugin skills
+cannot be edited; ideas for later Ardan skills are written into TOOLING.md section 2.5 so the source plugins can go now.
+**Proposed.** Keep 1 plugin (`frontend-design`) plus `image-deep-research` off until the Phase 1 portrait research;
+merge-then-remove superpowers, design, mattpocock-skills, vectorlab-ux-skills, ui-consistency, unity and vercel; remove
+the other 22 (claude-security and backend-design until Phase 8); keep 8 of 16 account skills (the three older copies of
+the project skills go); turn 7 bundled skills off with `skillOverrides`; keep Claude Docs, claude-code-remote and GitHub,
+keep Supabase disconnected until Phase 8, disconnect Vercel, Cloudflare and Google Drive. Projected: 26 skills, 5 agent
+types, 3 connectors, no plugin hooks (from 459, 69, 7 and 6).
+**Rules kept.** Disable, never delete (claude.ai's plugin toggle, not Remove); nothing is switched off until the owner
+confirms the table; the master prompt wins over any skill that says to check skills before every reply or injects
+always-on instructions. **Considered:** running skill-creator's trigger optimiser (`claude -p`, three runs per query):
+not without the owner's yes on cost; the trigger checks were reasoned against the skill list and recorded instead.
+Keeping a few plugin skills while dropping the rest of their plugin: not possible (`skillOverrides` does not reach plugin
+skills). Keeping the account copies of the project skills: they are stale and one still teaches the breakthrough exploit.
