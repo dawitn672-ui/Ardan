@@ -250,8 +250,12 @@ A.INT_FN = {
     };
   },
   murder(pc, t, r) {
-    const skill = A.skill(pc, "intrigue") + A.skill(pc, "stealth") + A.stat(pc, "int") / 2,
-      guard = t.ruler ? 180 : t.status === "royal" ? 120 : t.status === "noble" ? 80 : 30,
+    // E5 (order 76, the Emilio save): someone who survived your attempt keeps a guard against you for five years, and an
+    // attempt on a sovereign or the royal blood is treason, not a common attempted murder
+    const wary = t.wary && t.wary[pc.id] != null && A.S.year - t.wary[pc.id] < 5,
+      crown = !!(t.ruler || t.status === "royal" || (A.realm(t.realm) && A.realm(t.realm).ruler === t.id)),
+      skill = A.skill(pc, "intrigue") + A.skill(pc, "stealth") + A.stat(pc, "int") / 2,
+      guard = (t.ruler ? 180 : t.status === "royal" ? 120 : t.status === "noble" ? 80 : 30) + (wary ? 120 : 0),
       ok = A.chance(A.clamp(0.25 + (skill - guard) / 200, 0.03, 0.85));
     if (((pc.honor = A.clamp(pc.honor - 20, 0, 100)), ok)) {
       A.kill(
@@ -263,7 +267,7 @@ A.INT_FN = {
       const caught = A.chance(0.25 - skill / 800 + (t.ruler ? 0.25 : 0));
       if (caught) {
         A.log("But someone saw.", "bad");
-        A.punish(pc, "murder");
+        A.punish(pc, crown ? "treason" : "murder");
       }
       return {
         msg: `${t.given} is dead. Nobody can prove a thing${caught ? "... or so you hoped" : ""}.`,
@@ -272,9 +276,10 @@ A.INT_FN = {
     }
     A.addOp(pc, t, -60);
     r.type = "enemy";
+    (t.wary = t.wary || {})[pc.id] = A.S.year;
     if (A.chance(0.5)) {
       A.log(`${t.given} survives your attempt — and knows it was you.`, "bad");
-      A.punish(pc, "attempted murder");
+      A.punish(pc, crown ? "treason" : "attempted murder");
     }
     return {
       msg: `Your attempt on ${t.given}'s life fails.`,
@@ -699,6 +704,10 @@ const punishNow = function (pc, crime) {
       if (pc.coin >= price) {
         pc.coin -= price;
         out = `You pay the blood-price: ${A.coin(price)}.`;
+      } else if (pc.flags.outlaw) {
+        // E5: an outlaw is not declared outlaw twice; the unpaid price is one more reason to hunt him
+        pc.flags.outlawDebt = (+pc.flags.outlawDebt || 0) + price;
+        out = "You cannot pay the blood-price. You are outlaw already, and the price on your head grows.";
       } else {
         pc.flags.outlaw = true;
         A.ach("outlaw");

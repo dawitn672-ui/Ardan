@@ -43,7 +43,7 @@ const DRIVE = () => {
 export const limits = { nyChildhood: 1500, nyOneRedraw: 900, nyYearSameWorld: 900, nyYearGoesOn: 900 };
 
 export default {
-  // two buttons in fixed places at both widths; the running one is not a stop button; the year leads in childhood
+  // one button in a fixed place at both widths (D-160): Next year below 12, Next month from 12; the running one is not a stop button
   async nyButtons(pg) {
     await pg.evaluate(DRIVE);
     const out = [];
@@ -55,7 +55,7 @@ export default {
         __nyEnter({ seed: 9501, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
         const adult = info(); res.adult = adult;
         // running: the label stays, it is disabled, there is a bar, and nowhere is there a stop control
-        UI.A.v2Year();
+        UI.A.v2Next();
         const during = info(); res.during = during;
         res.stop = document.querySelectorAll('[data-a="stepStop"]').length;
         res.stopLabel = [...document.querySelectorAll('#clk button')].some(b => /^\s*(Stop|Pause)/i.test(b.textContent));
@@ -70,9 +70,10 @@ export default {
       }, w));
     }
     const same = (a, b) => a.length === b.length && a.every((x, i) => x.x === b[i].x && x.y === b[i].y && x.t === b[i].t);
-    const ok = out.every(o => o.adult.length === 2 && o.adult[0].t === 'Next month' && o.adult[1].t === 'Next year' && o.adult[0].primary && !o.adult[1].primary &&
-      o.during.length === 2 && o.during.every(b => b.dis) && same(o.adult, o.during) && o.during.some(b => b.run && b.prog) && !o.stop && !o.stopLabel &&
-      same(o.adult, o.after) && o.after.every(b => !b.dis) && o.child[1].primary && !o.child[0].primary && Math.abs(o.child[0].w - o.adult[0].w) <= 2 && Math.abs(o.child[1].w - o.adult[1].w) <= 2) &&
+    // D-160 (order 76): one button; Next month from 12, Next year below 12, in the same place and size
+    const ok = out.every(o => o.adult.length === 1 && o.adult[0].t === 'Next month' && o.adult[0].primary &&
+      o.during.length === 1 && o.during.every(b => b.dis) && same(o.adult, o.during) && o.during.some(b => b.run && b.prog) && !o.stop && !o.stopLabel &&
+      same(o.adult, o.after) && o.after.every(b => !b.dis) && o.child.length === 1 && o.child[0].t === 'Next year' && o.child[0].primary && Math.abs(o.child[0].w - o.adult[0].w) <= 2) &&
       out[0].dock;
     return { ok, detail: out.map(o => `${o.w}px: ${o.adult.map(b => b.t + (b.primary ? '*' : '')).join(' | ')}; running: ${o.during.map(b => b.t + (b.dis ? ' (off)' : '')).join(' | ')}, ${o.stop} stop controls; child: ${o.child.map(b => b.t + (b.primary ? '*' : '')).join(' | ')}; fixed ${same(o.adult, o.during)}/${same(o.adult, o.after)}`).join('; ') };
   },

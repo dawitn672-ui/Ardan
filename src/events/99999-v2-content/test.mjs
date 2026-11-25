@@ -398,6 +398,9 @@ export default {
       };
       V2CT.life({ seed: 9501, status: 'peasant', startAge: 8 }, 20, look);
       V2CT.life({ seed: 9502, status: 'noble', startAge: 16 }, 18, look);
+      // H-082 standby lives: a life cut short (on main after H-112, 9502's noble died at 18 of a bad tooth and the count
+      // fell to 123) is followed by the next seed's, only while the scenes are short of the bar
+      for (let s = 9504; out.scenes < 200 && s < 9510; s++) V2CT.life({ seed: s, status: s % 2 ? 'noble' : 'peasant', startAge: 16 }, 18, look);
       // staged: the drill's fresh conscripts and the song, and the old scholar for a man with no coin (two live choices)
       T.enter({ seed: 9503, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 24 });
       const pc = A.pc(); pc.coin = 0;

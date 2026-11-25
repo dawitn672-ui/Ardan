@@ -1422,8 +1422,10 @@ DEC("treatise", {
   reqs: pc => {
     const best = A.bestSkillOf(pc);
     return [
-      // S1b (D-072): a level in words (50 is the top of Advanced IV)
-      R(`A skill at Advanced IV (best: ${GD.SKILLS[best.k]}, ${A.SK ? A.SK.levelName(A.SK.lvOfValue(best.v)) : best.v})`, best.v >= 47),
+      // S1b (D-072): a level in words. E8 (order 76, the Emilio save): a book worth reading asks an Expert's grasp and
+      // the years to have used it (he wrote "The Book of Swordsmanship" at 23, at Advanced, and it "changed a life")
+      R(`A skill at Expert (best: ${GD.SKILLS[best.k]}, ${A.SK ? A.SK.levelName(A.SK.lvOfValue(best.v)) : best.v})`, best.v >= 55),
+      R("Age 28 or more", A.age(pc) >= 28),
       R("Once every 6 years", !pc.flags.author || A.S.year - pc.flags.author >= 6),
     ];
   },
@@ -1452,7 +1454,7 @@ DEC("treatise", {
     });
     return good
       ? `"${title}" is copied in three academies within a year. Masters argue about chapter four.`
-      : `"${title}" is finished. A few copies sell. One reader writes to say it changed his life.`;
+      : `"${title}" is finished. A few copies sell, to men who already agreed with you.`;
   },
 });
 

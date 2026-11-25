@@ -27,3 +27,23 @@ a reader's life. His tourney friend becomes High Luminary.
 | E10 | His friend of one tourney, one of "the young of three houses", becomes High Luminary within a year | Succession to an elected sacred throne picks an unlikely young man; check the reason it records | Reason rule (check) |
 
 E5 and E8 join the exploits list of section 8 (A2). E1, E2 and E9 come first: they corrupt state.
+
+## Where each stands (2026-11-25)
+
+The save was begun on an older build: its log holds the pre-S1 training lines ("Cutting drills… +0.6 Swordsmanship:
+43 → 44, Trained") and the old rank names ("Squad Captain"), which today's code no longer writes. Each finding was checked
+against today's code before it was fixed.
+
+| # | Verdict | Where |
+|---|---|---|
+| E1 | **Fixed:** `A.exile` empties the cell | test `pfExileFreesCell` |
+| E2 | **Fixed:** the training injury needs a plan and no cell | `pfNoTrainingHurtInCell` |
+| E3 | **Fixed:** a card's result line is logged before its effects' lines | `pfResultBeforeEffects` |
+| E4 | **Ruled out for today's build:** those lines came from the older build; today's practice writes words, and the page words the season's "of it from doing" line (checked by rendering both on the Life tab) | |
+| E5 | **Fixed:** one attempt on a life a year; none from a cell; the survivor keeps a guard against you for five years; an outlaw is not declared outlaw twice (the unpaid price is recorded as `flags.outlawDebt`); the release's own path calls an attempt on the crown treason (the crown-crimes feature already holds an inquest) | `pfMurderHasCosts` |
+| E5b | **Partly there:** outlaws do meet hunters ("Hunted", "A price on your head"; none came in his two years); their odds do not yet grow with the unpaid price or the victims' kin. Open, with the reason rule (A.WHY) | Phase 1 |
+| E6 | **Partly reasoned:** his mother held the Chancellor's seat, so seeking it had a reason; the refusal of a petition now names what was short instead of repeating "Do more. Then ask." | |
+| E7 | **Ruled out for today's build:** the "line" text and "Squad Captain" are the older build's | |
+| E8 | **Fixed:** a treatise asks Expert and age 28 or more; the weak outcome no longer flatters | `pfTreatiseAsksMastery` |
+| E9 | **Fixed** for the superior (a former superior is no longer your master when you hold no post); status stays noble by birth, as it should | `pfNoSuperiorWithoutPost` |
+| E10 | **Open:** check the reason the High Luminary's election records | Phase 1, with the A.WHY audit |

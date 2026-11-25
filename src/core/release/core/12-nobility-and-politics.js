@@ -165,7 +165,19 @@ A.nobleAction = function (key) {
         };
       }
       if (ru) A.addOp(pc, ru, -4);
-      A.log('Your petition is refused. "Do more. Then ask."', "bad");
+      // E6 (order 76, the Emilio save): the refusal says what was short, not the same words each time
+      const asked = pc.flags.petitionY != null && A.S.year - pc.flags.petitionY <= 1;
+      pc.flags.petitionY = A.S.year;
+      A.log(
+        asked
+          ? 'Your petition is refused. "You asked last year. The answer has not changed."'
+          : op < 10
+            ? `Your petition is refused. ${ru ? ru.given : "The crown"} hardly knows your name.`
+            : pc.deeds.length < 2
+              ? 'Your petition is refused. "Do more. Then ask."'
+              : "Your petition is refused. There are older names in the queue, and better friends at court.",
+        "bad",
+      );
       return {
         ok: true,
       };

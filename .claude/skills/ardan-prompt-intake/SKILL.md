@@ -43,7 +43,7 @@ sections it names rather than this summary when in doubt: **§1.1** (the nine st
 - Do not paste the prompt into the master file. Each requirement once, short, in its topic.
 - Keep intent over wording. A vague request gets the most reasonable reading, stated, and you move on; ask only when a
   wrong guess is costly.
-- The merge is its own commit on its own branch (`work/<item>`), docs only, with its HISTORY entry. Commit messages that
+- The merge is its own commit on the trunk (no working branch: order 76), docs only, with its HISTORY entry. Commit messages that
   touch only docs may carry `[skip ci]`.
 - Do not start the work the prompt asks for in the same commit. Finish the merge, then plan the work with
   `ardan-dev-process`.

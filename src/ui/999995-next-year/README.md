@@ -1,4 +1,4 @@
-# 999995-next-year: Next month or Next year
+# 999995-next-year: Next year, then Next month
 
 **Aspect:** round 2 B6 (`docs/CRITIQUE.md` §2 item 4; T1, T2, T5, U18; `docs/DECISIONS.md` D-008, D-019, D-026) ·
 **Kind:** one readable core file, tests; small edits in 84-top-bar (hooks), 99992-v2-time (the buttons), 996-coming-up,
@@ -7,9 +7,9 @@
 
 ## What the player sees
 
-- **Two buttons in fixed places**, on a desktop's top bar and in a phone's dock: **Next month** (N or M) on the left and
-  **Next year** (Y) beside it. While you are a child the year is the main (accent) button; after that, the month.
-  Neither ever becomes a stop control: the one that runs keeps its name, is disabled, and shows a thin progress bar.
+- **One button in a fixed place** (D-160, order 76, 2026-11-25), on a desktop's top bar and in a phone's dock: **Next
+  year** below the age of 12, **Next month** from 12 (N, M or Y press it). The year step stays in the engine for tests
+  and bots (`UI.A.v2Year`). It never becomes a stop control: the one that runs keeps its name, is disabled, and shows a thin progress bar.
   **Esc** ends a year at the end of its month. (On campaign the pair is Next day and Next week, as before.)
 - **A year runs month by month** under A1's one-redraw policy: one redraw and one digest at the end.
 - **A step stops midway only for what matters, then completes itself** (P3, order 54, D-062 addendum). A card that

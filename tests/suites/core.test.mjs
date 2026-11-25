@@ -69,10 +69,12 @@ export default {
       await pg.keyboard.press('Escape');
       await pg.waitForFunction(() => !UI.ov, null, { timeout: 5000 }).catch(() => {});
     }
-    // v2 (99992-v2-time): Play and its speeds are gone; the one control that moves time is Next month (when
+    // v2 (99992-v2-time): Play and its speeds are gone; the one control that moves time is Next month or, for a child, Next year (when
     // 99992 is not in the build, the release's Play). Press it and wait for the month to end or stop at a card.
-    if (await pg.$('[data-a="v2Next"]')) {
-      await pg.click('[data-a="v2Next"]');
+    // D-160: one button, Next year below 12 (a random life may start in the cradle) and Next month from 12
+    const step = (await pg.$('[data-a="v2Next"]')) ? '[data-a="v2Next"]' : (await pg.$('[data-a="v2Year"]')) ? '[data-a="v2Year"]' : null;
+    if (step) {
+      await pg.click(step);
       await pg.waitForFunction(() => !(UI.stepper && UI.stepper.run) || UI.stepper.wait, null, { timeout: 60000 }).catch(() => {});
     } else {
       await pg.click('button:has-text("Play")');

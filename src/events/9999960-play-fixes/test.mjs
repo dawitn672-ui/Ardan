@@ -41,4 +41,61 @@ export default {
     });
     return { ok: r.res >= 0 && r.fx > r.res, detail: `result line at ${r.res}, effect line at ${r.fx}` };
   },
+  // E9: a former superior is not your master once you have no post (struck from the rolls, in a cell, cast out)
+  async pfNoSuperiorWithoutPost(pg) {
+    const r = await pg.evaluate(() => {
+      if (!A.ADV || !A.ADV.candidates) return { skip: 'no advisors feature' };
+      T.enter({ seed: 6104, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 24 });
+      const pc = A.pc();
+      const t = Object.values(A.S.people).find(p => p && p.alive && p.id !== pc.id && A.age(p) > 30 && !(pc.rel || {})[p.id] && p.home === pc.home && (!A.X3 || !A.X3.reaches || A.X3.reaches(pc, p)));
+      if (!t) return { skip: 'no grown neighbour within reach in world 6104' };
+      pc.rel[t.id] = { type: 'superior', op: 40, since: A.S.year, seen: A.S.year };
+      (A.P(t.id).rel = A.P(t.id).rel || {})[pc.id] = { type: 'acquaint', op: 40 };
+      pc.mil = null; pc.job = null;
+      const c = A.ADV.candidates(pc).find(x => x.id === t.id);
+      return { sup: A.superior(pc) ? A.superior(pc).id : null, as: c ? c.role : null };
+    });
+    if (r.skip) return { ok: true, skip: r.skip };
+    return { ok: r.sup == null && r.as !== 'master', detail: `current superior: ${r.sup}; the old superior counsels as: ${r.as || 'nothing'}` };
+  },
+  // E5: one attempt on a life a year; none from a cell; a sovereign's life is treason; the survivor stays on guard
+  async pfMurderHasCosts(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 6105, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 });
+      const pc = A.pc(), ch = A.chance, puns = [], p0 = A.punish;
+      const victim = Object.values(A.S.people).find(p => p && p.alive && p.id !== pc.id && A.age(p) > 20 && !p.ruler && p.status !== 'royal');
+      const realm = A.realm(pc.realm), king = realm && A.P(realm.ruler);
+      A.punish = (who, crime) => { puns.push(crime); };
+      const out = {};
+      try {
+        A.chance = () => false;                                  // every attempt fails, nobody is caught...
+        A.S.time = 30; out.first = A.interact(victim.id, 'murder').ok !== false;
+        A.S.time = 30; out.second = A.interact(victim.id, 'murder').ok !== false;
+        out.wary = !!(victim.wary && victim.wary[pc.id] != null);
+        A.chance = p => p === 0.5;                               // ...then the attempt fails and the target knows (the even chance)
+        if (king && king.id !== pc.id) { A.S.time = 30; out.kingRes = A.interact(king.id, 'murder').msg; }
+        A.chance = () => false;
+        A.imprison(pc, 3, 'theft');
+        const free = Object.values(A.S.people).find(p => p && p.alive && p.id !== pc.id && p.id !== victim.id && !p.prison && A.age(p) > 20);
+        A.S.time = 30; out.fromCell = A.interact(free.id, 'murder').ok !== false;
+      } finally { A.chance = ch; A.punish = p0; }
+      out.puns = puns; out.king = !!king;
+      return out;
+    });
+    // an attempt on the crown is 999993-crown-crimes' (an inquest names you later); the release's own path calls it treason
+    const ok = r.first && !r.second && r.wary && !r.fromCell;
+    return { ok, detail: `first attempt ${r.first}, second the same year ${r.second}, target on guard ${r.wary}, from a cell ${r.fromCell}; punishments ${r.puns.join(', ') || 'none'} (a king to try: ${r.king}: ${r.kingRes || ''})` };
+  },
+  // E8: a treatise asks an Expert and a grown writer; a 23-year-old at Advanced cannot write one
+  async pfTreatiseAsksMastery(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 6106, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 23 });
+      const pc = A.pc(); pc.literate = true; pc.flags.author = null;
+      const best = A.bestSkillOf(pc), lv = A.SK ? A.SK.lvOfValue(50) : 0;
+      if (A.SK && A.SK.set) A.SK.set(pc, best.k || 'sword', lv, 'test'); else pc.skills[best.k || 'sword'] = 50;
+      const young = A.DEC.treatise.reqs(pc);
+      return { age: A.age(pc), v: A.bestSkillOf(pc).v, open: young.every(x => x[1]), why: young.filter(x => !x[1]).map(x => x[0]) };
+    });
+    return { ok: !r.open, detail: `age ${r.age}, best skill value ${r.v}: ${r.open ? 'may write a treatise' : 'may not: ' + r.why.join('; ')}` };
+  },
 };

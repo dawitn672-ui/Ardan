@@ -10,6 +10,13 @@ What changed for the player, in plain words, one section per version (newest fir
 - **No training injuries in a cell.** Your training plan's injuries came even in prison; now only training can hurt you.
 - **The story reads in order.** What you did comes first in the year's log, then what it caused ("Your attempt fails."
   then "You are imprisoned"), not the other way round.
+- **Murder is not a game you can retry.** One attempt on a person a year; none from a prison cell on someone outside
+  it; whoever survives your attempt is on guard against you for years; an outlaw is not "declared outlaw" again.
+- **A book takes mastery.** Writing a treatise now asks an Expert's skill and a writer of 28 or more.
+- **A refused petition says why** (you asked last year, the crown hardly knows you, or you have done too little).
+- **A former superior stops giving you orders** once you have left the post.
+- **One time button.** As a child you live a year at a time with **Next year**; from age 12 there is only **Next
+  month**.
 
 ## v2.1.0-alpha.15 (2026-11-19 09:00 ET) · Everyone ages and the houses go on; the game built by CI; versions cut one way
 

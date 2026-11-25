@@ -207,9 +207,11 @@
 
   // the steps: a month, or (on campaign) a day or a week
   if (UI.STEP_NAME) Object.assign(UI.STEP_NAME, { day: 'Next day', week: 'Next week', month: 'Next month' });
-  UI.stepPlan = function () { return V2T.campaign() ? ['day', 'week'] : ['month', 'year']; };
-  // childhood is lived a year at a time (D-008): the year is the main button until you are grown, the month after
-  V2T.primary = function (pc) { pc = pc || (A.S && A.pc && A.pc()); return pc && A.isAdult && !A.isAdult(pc) ? 'year' : 'month'; };
+  // D-160 (order 76): one button. Below the age of 12 a life goes by the year (Next year); from 12 by the month (Next
+  // month), and Next year is gone. The year step stays in the engine (UI.A.v2Year, V2T.nextYear) for tests and bots.
+  V2T.YEAR_UNTIL = 12;
+  V2T.primary = function (pc) { pc = pc || (A.S && A.pc && A.pc()); return pc && A.age && A.age(pc) < V2T.YEAR_UNTIL ? 'year' : 'month'; };
+  UI.stepPlan = function () { if (V2T.campaign()) return ['day', 'week']; const p = V2T.primary(); return [p, p]; };
   const target0 = UI.stepTarget;
   UI.stepTarget = function (kind) {
     if (kind === 'day') return A.absDay() + 1;
@@ -363,7 +365,7 @@
       const ic = kind === 'month' ? 'step-moon' : kind === 'week' ? 'calendar' : kind === 'year' ? 'sprout' : 'sun';
       return `<button class="v2-step${primary ? ' primary' : ''}${mine ? ' run' : ''}" data-a="${act}"${dis ? ' aria-disabled="true"' : ''} aria-label="${esc(label)}" aria-keyshortcuts="${key}" aria-description="${esc(tip)}">${icon(ic)}<span>${words}</span>${mine ? prog : ''}</button>`;
     };
-    if (!camp) return `<span class="v2-time" role="group" aria-label="Time">${btn('v2Next', 'month', 'Next month', 'N', first === 'month')}${btn('v2Year', 'year', 'Next year', 'Y', first === 'year')}</span>`;
+    if (!camp) return `<span class="v2-time" role="group" aria-label="Time">${first === 'year' ? btn('v2Year', 'year', 'Next year', 'N', true) : btn('v2Next', 'month', 'Next month', 'N', true)}</span>`;
     const steps = `${btn('v2Day', 'day', 'Next day', 'D', false)}${btn('v2Week', 'week', 'Next week', 'W', true)}`;
     // a desktop's top bar holds the two steps only; the road or the host and its standing orders are on the Life and War
     // pages (V2T.campCard), so the bar fits at 1366 (playtest 1: 1648 px). A phone's dock has the room.
@@ -466,8 +468,8 @@
     e.preventDefault(); e.stopImmediatePropagation();
     if (e.repeat) return;
     const camp = V2T.campaign();
-    if (k === 'n' || k === 'm') { if (ST && ST.run && !ST.wait) UI.toast('Time is passing.'); else if (camp) start('week'); else start('month'); }
-    else if (k === 'y' && !camp) { if (ST && ST.run && !ST.wait) UI.toast('Time is passing.'); else start('year'); }
+    // D-160: N, M and Y all take the one step the age allows
+    if (k === 'n' || k === 'm' || (k === 'y' && !camp)) { if (ST && ST.run && !ST.wait) UI.toast('Time is passing.'); else if (camp) start('week'); else start(V2T.primary()); }
     else if (k === 'w' && camp) start('week');
     else if (k === 'd' && camp) start('day');
   }, true);
@@ -539,11 +541,11 @@
       if (typeof h !== 'string') return h;
       const k = x => (coarse() ? '' : ` (${x})`);
       return h.replace(/<details class="help-more"><summary>Time<\/summary>[\s\S]*?<\/details>/,
-        `<details class="help-more"><summary>Time</summary><p><b>A month or a year.</b> <i>Next month</i>${k('N')} lives the next month; <i>Next year</i>${k('Y')} lives the next twelve, month by month, and is the main button while you are a child. Neither ever turns into a stop button: the one that is running keeps its name and a thin bar shows how far it has gone${coarse() ? '' : '; Esc ends a year at the end of its month'}. ` +
+        `<details class="help-more"><summary>Time</summary><p><b>A year, then a month.</b> Until you are twelve, <i>Next year</i>${k('N')} lives the next twelve months, month by month. From twelve on, <i>Next month</i>${k('N')} lives the next month, and there is no year button. It never turns into a stop button: while it runs it keeps its name and a thin bar shows how far it has gone${coarse() ? '' : '; Esc ends a year at the end of its month'}. ` +
         `A year stops by itself, and says why in one line, for what matters: a choice with real weight, a battle or a call to war, an illness or a wound, a birth or a death in your household, coming of age, a deadline. Talk, errands and the small happenings of the day never stop it: they wait for the end of the step and come one at a time, and the quiet months are gathered into one note. ` +
         `Your days are not rationed: do as much as you like, but a body driven too hard grows weary, and then hurt. ` +
         `On campaign (your host on the march or at a siege, or a long road) time opens into <i>Next day</i>${k('D')} and <i>Next week</i>${k('W')}, with your standing orders beside them. A battle stops the clock. Between steps the world is still and the time is yours.</p></details>`)
-        .replace(/<li>Press <b>Month<\/b>[\s\S]*?<\/li>/, `<li>Press <b>Next month</b>${k('N')} or <b>Next year</b>${k('Y')} to let time pass.</li>`);
+        .replace(/<li>Press <b>Month<\/b>[\s\S]*?<\/li>/, `<li>Press <b>Next year</b> (a child) or <b>Next month</b> (from twelve)${k('N')} to let time pass.</li>`);
     } catch (e) { return h; }
   };
 

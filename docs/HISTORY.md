@@ -2649,3 +2649,37 @@ The owner's Emilio life (`docs/design/emilio-1108-findings.md`). Fixed in the mo
   tests pass.
 - Also: `ardan-dev-process` no longer says to push `work/<item>` branches (order 76). CHANGELOG under Unreleased.
 - **Undo:** revert this commit.
+
+### H-113 · 2026-11-25 · Emilio findings E4 to E10 checked; E5, E6, E8, E9 fixed (order 76)
+- **E5** `INT_FN.murder` (`05-marriage-jobs-and-law.js`): the survivor of an attempt keeps a guard against you five
+  years (`t.wary`, a new person field, old saves tolerate its absence); an attempt on a sovereign or royal is punished as
+  treason on the release's path; `A.punish` no longer declares an outlaw outlaw twice (`flags.outlawDebt` records the
+  unpaid price). `interactNow` (`04-realms-and-war-years-b.js`): one murder attempt a target a year, and no murder or duel
+  from a cell on someone outside it.
+- **E6** the petition's refusal (`12-nobility-and-politics.js`) names what was short (asked last year, little known at
+  court, too few deeds, others ahead); `flags.petitionY` records the year asked. No new draw.
+- **E8** `DEC.treatise` (`13-factions-and-decisions.js`): Expert (55) and age 28 or more; the weak outcome is plain.
+- **E9** `ADV.candidates` (`9999-advisors`): a former superior is not your master when you hold no post.
+- **E4, E7** ruled out for today's build (the save began on an older build; checked by rendering on the Life tab).
+  **E5b** (outlaws hunted for a reason) and **E10** (the High Luminary's election) stay open. The findings file has a
+  verdict table.
+- **Tests** (`src/events/9999960-play-fixes/`): `pfMurderHasCosts`, `pfTreatiseAsksMastery`, `pfNoSuperiorWithoutPost`
+  fail on the build before and pass after.
+- **Undo:** revert this commit.
+
+### H-114 · 2026-11-25 · One time button: Next year below 12, Next month from 12 (D-160, order 76)
+`src/core/99992-v2-time/time.core.js`: `V2T.primary` is the year below age 12 (`V2T.YEAR_UNTIL`) and the month from 12
+(it was the year until 16 with both buttons always shown); the clock draws only that one button; N, M and Y all press it;
+`UI.stepPlan` offers the one step; the help's Time section says so. The year step stays in the engine (`UI.A.v2Year`,
+`V2T.nextYear`) for the tests and bots that drive a year. `src/ui/999995-next-year`: `nyButtons` now holds the new rule
+(one button, Next month for a grown man, Next year for a child of 7, same place and width) and the README says it.
+**Undo:** revert this commit.
+
+### H-115 · 2026-11-25 · Tests held to the new world and the one button
+- CI 164 (H-112's push) failed `v2cEveryChoiceShows`: 123 scenes against a bar of 200. Not a fault: H-112 moved the random
+  stream, and seed 9502's noble now dies at 18 of a bad tooth (probed: 18 cards; before, 162 to age 34). The test now plays
+  standby lives (seeds 9504 to 9509) only while the scenes are short of the bar (H-082): 304 scenes.
+- `uiSmoke` (`tests/suites/core.test.mjs`) pressed Next month; a random life can start in the cradle, where D-160 shows
+  only Next year. It now presses whichever step the clock shows. `91-visual-style`'s accent-button list leaves out
+  `v2Year` as it did `v2Next`.
+- Local: play-fixes, crown-crimes and advisors 42 of 42; next-year and v2-time 44 of 44 with these fixes.

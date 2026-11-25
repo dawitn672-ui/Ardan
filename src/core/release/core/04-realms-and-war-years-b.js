@@ -1251,6 +1251,18 @@ const interactNow = function (tid, key, arg) {
       ok: false,
       msg: "You have done that enough this year.",
     };
+  // E5 (order 76, the Emilio save): one attempt on a life a year, and none from a cell on someone outside it (he killed
+  // the High Luminary from prison, and tried twice a month on one man)
+  if (key === "murder" && count >= 1)
+    return {
+      ok: false,
+      msg: "Not again so soon. They are watching now.",
+    };
+  if (pc.prison && (key === "murder" || key === "duel") && !t.prison)
+    return {
+      ok: false,
+      msg: "Not from a cell.",
+    };
   const I = A.INTERACT[key];
   if (I.cost && A.S.time < I.cost)
     return {
