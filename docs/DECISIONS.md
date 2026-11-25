@@ -2680,3 +2680,9 @@ instinct with a named cause, thinking beings through A.WHY. (4) Every unique leg
 personality, habits, titles and a rank among the great beings; a lair only where it fits. (5) A standing rule: each new order
 is placed by importance under 13.1, not by arrival. **Why:** the owner's order 78. Both helpers (the power scale and the
 skills design) were told mid-work.
+
+### D-169 · Titles: stackable, buffs, hidden requirements (2026-11-25; order 79)
+**What.** Titles are their own system beside skills: earned only, very hard, with conditions the player never sees before
+earning; they stack; each gives honour and buffs or stat boosts under the skills' power budget and stacking caps; unique
+titles have one holder. Designed with the skills rebuild (13.1 rule 4); the great beings' titles (with their buffs) come in
+the power-scale wave now. **Why:** the owner's order 79; placed by importance (order 78).

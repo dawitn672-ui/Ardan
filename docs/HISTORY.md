@@ -2744,3 +2744,7 @@ The build runs in a helper's worktree.
 ### H-125 · 2026-11-25 · Order 78 merged (levels, capability profiles, minds, orders by importance)
 Saved the prompt; order 78; master prompt header, register row L, sections 9 and 17, Appendix C; D-168. Passed to the
 power-scale builder and the skills designer while they work.
+
+### H-126 · 2026-11-25 · Order 79 merged (titles)
+Saved the prompt; order 79; master prompt register T2 and section 9; D-169. Passed to the skills designer (the full title
+system) and the power-scale builder (the great beings' titles and buffs).

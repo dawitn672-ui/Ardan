@@ -402,6 +402,11 @@ order is replaced, strike it through and say by what.
     each has full reasoning, emotions, a personality and habits, its own titles and its own ranking. **Standing rule:**
     every order is placed in the work by its importance (master prompt 13.1), not by when it was given (D-168, H-125).
 
+79. **Titles: stackable, with buffs, very hard to earn, hidden requirements** · recorded 2026-11-25 (evening). Kept
+    unchanged in `docs/prompts/2026-11-25-titles.md`. A person can hold several titles; each gives honour plus buffs and
+    stat boosts; they are very difficult to get, and their requirements cannot be seen. Placed by importance: designed with
+    the skills rebuild (13.1 rule 4), and the great beings' titles in the power-scale wave (D-169).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
