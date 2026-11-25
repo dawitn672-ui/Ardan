@@ -376,6 +376,19 @@ order is replaced, strike it through and say by what.
     (its section 0.2), then the rest of its Phase 0. Where it conflicts with earlier orders or decisions, it wins (its
     section 2, "Precedence"), except where undoing is costly: those are put to the owner first (its section 1.1 step 3).
 
+76. **Answers and new direction: the newest instruction wins, magic, the skills rebuilt, the order of work by effect** ·
+    recorded 2026-11-25. Kept unchanged in `docs/prompts/2026-11-25-answers-and-direction.md`; merged into
+    `docs/MASTER_PROMPT.md` (register row A). In short: **every new instruction takes precedence over former constructs,
+    for the rest of the project**; GitHub's `main` brought fully up to date, and the repo is only versions being updated
+    (no working branches or working files beyond what reference needs); the 17 merged branches deleted (the owner deletes
+    them: this session's git proxy cannot); the plugins' useful parts merged into the Ardan skills and the rest cut; the two
+    unfinished features dropped; the map decision put to him later; seed and export behind a developer flag; skills that
+    merge, advance and evolve, in great number, stats separate (replacing S1); Next month only from age 12; magic, many
+    races, monsters and legendary beings, after the skills, with any canon open to rewriting; paid game packs for more
+    allowances (birth editing, choosing a station); portraits improved as often as needed; the Emilio save
+    (`docs/design/emilio-1108-findings.md`); the hourly auto-resume back on; the whole order of work rebuilt in descending
+    order of effect on the game (D-158 to D-162, H-109).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,

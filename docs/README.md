@@ -12,6 +12,8 @@ add a line when you add a doc. (Working files inside the subfolders of `design/`
 | --- | --- |
 | [MASTER_PROMPT.md](MASTER_PROMPT.md) | The owner's one living instruction file (order 75): every new prompt is merged into it; the source of truth |
 | [prompts/2026-11-25-master-prompt.md](prompts/2026-11-25-master-prompt.md) | The master prompt as the owner gave it, unchanged (every raw prompt is kept in `prompts/`) |
+| [prompts/2026-11-25-answers-and-direction.md](prompts/2026-11-25-answers-and-direction.md) | The owner's answers to the Phase 0 questions (order 76), unchanged |
+| [design/emilio-1108-findings.md](design/emilio-1108-findings.md) | What the owner's Emilio life (1105 to 1108) shows: ten findings for Phase 1 |
 | [STATUS.md](STATUS.md) | What is in progress right now: one row per piece of work with its branch, modules touched, section and verdict (Finish, Redirect, Park, Drop); updated every session |
 | [ROADMAP.md](ROADMAP.md) | The plan: the master prompt's phases with what is done mapped on them, section 3 re-checked against the code, the old queue placed, the conflicts and owner questions, the carry-over checklist with a status for every row |
 | [TOOLING.md](TOOLING.md) | Skills, plugins, agents and connectors: the inventory, the Keep / Merge / Remove verdicts, risks, clashes, how to switch each off and on, counts before and after (master prompt section 16) |

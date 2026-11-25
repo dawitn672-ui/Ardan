@@ -1,5 +1,7 @@
 # Status: what is in progress right now
 
+> **Updated 2026-11-25 for order 76** (the owner's answers): phases renumbered (Phase 3 is now magic, races and monsters; the old 3 to 11 are 4 to 12); the order of work is by effect on today's game (master prompt 13.1); Phase 1 now starts with the Emilio findings (`docs/design/emilio-1108-findings.md`). Settled: C1 skills (section 9 replaces S1, D-159), C2 time (Next year below 12, Next month from 12, D-160), C5 export and seed (behind a developer flag, low priority), the magic question (yes, section 17, D-161), the store (game packs), portraits (code-drawn), auto-resume (on), the two unfinished features (dropped). Put to the owner later: the map (C6, C8).
+
 The live view of the work (master prompt 0.2, 4.2). **Keep it current every session.** The plan is `docs/ROADMAP.md`;
 the rules are `docs/MASTER_PROMPT.md`. *Last updated 2026-11-25 by the sync (H-108), on `v2-integration` at `0982302`.*
 
@@ -31,7 +33,7 @@ question (the list is in `docs/ROADMAP.md` section 4). Sections are the master p
 | 4 | **PR #1** (`claude/dreamy-sagan-anwszt` into `main`) | open since 2026-11-16 | Holds v2 up to alpha.9 (PR #2's merge `bf316fe`); `v2-integration` is 328 commits ahead of it | the whole repo | 0.2, 4, 13.3 Phase 0 ("protect `main`") | **Redirect** **[Q3]**: either the owner sets the default branch to `v2-integration`, or a new PR brings `v2-integration` into `main` once it is green. The master prompt's "`main` always builds" then means that branch |
 | 5 | The skills and tools review (H-107) | `work/tooling`, merged at `0982302` | Done; the table waits for the owner's yes; the removals are not switched off | `docs/TOOLING.md`, `.claude/skills/` | 16 | **Finish**: on the owner's yes, switch off what he confirms (claude.ai settings, his hands) |
 | 6 | 17 merged working branches (`d11-1` … `x5-deaths`, listed in `docs/BRANCHES.md`), plus `work/repo-tidy` and `work/tooling` | on GitHub | Every tip is inside `v2-integration` (`git branch -r --no-merged` lists none of them) | none | 0.2 | No work. **Keep** until the owner deletes them (the sync deletes nothing; order 64 lets him) |
-| 7 | `82-early-years` (`.wip`) | in `v2-integration` | Left out of the build since v2 (its `.wip`): it sped the old continuous clock, which Next month replaced. Still carries a `patches.mjs` (2 patches) | `src/events/82-early-years` (would touch `core/23-ui-d.js`) | 5 | **Drop** **[yes needed]**: archive to `archive/` with a note; the pace of childhood is Y1's question now (ROADMAP Phase 5) |
+| 7 | `82-early-years` (`.wip`) | in `v2-integration` | Left out of the build since v2 (its `.wip`): it sped the old continuous clock, which Next month replaced. Still carries a `patches.mjs` (2 patches) | `src/events/82-early-years` (would touch `core/23-ui-d.js`) | 5 | **Drop** **[yes needed]**: archive to `archive/` with a note; the pace of childhood is Y1's question now (ROADMAP Phase 6) |
 | 8 | `9995-trade-roads` (`.wip`) | in `v2-integration` | Left out of the build: it runs only on the Great Continent, which is gone | `src/economy/9995-trade-roads` (edits listed in its README for `45-economy`, `66-markets`) | 7, 6.5 | **Drop** **[yes needed]**: archive; its ideas (distance, far goods, carriers) go to M2 and E0 in `docs/IDEAS.md` |
 | 9 | 63 local agent worktrees in `.claude/worktrees/` and 3 in `/tmp/ardan/` | local only | No uncommitted file found (files newer than each worktree's index: 0 in all 67, main checkout included); no stash (`refs/stash` has no log). Three local branches hold one commit each not in `v2-integration` (`worktree-agent-a921c71…`, `…aa270e1…`: the G design; `…aefd500…`: the E1/E2 design); `git cherry` shows all three already applied there | none | 0.2 | No work. Leave them; `git worktree prune` is the integrator's, later |
 | 10 | The two skill-card errors (`sk_better_hand`, `sk_rival_contest`) | none | Reproduced and diagnosed (H-108; ROADMAP section 2) | `src/core/release/core/18-event-view-a.js` (`A.eventChoose`), `src/people/36-skills/skills.events.js` | 9 B7.7, 13 Phase 0 | **Finish** (Phase 0, under a day): `A.eventChoose` refuses a skipped view; the two fx guard their context; a test that chooses on a skipped view. Whether rivals get skills is PA's |
@@ -44,26 +46,26 @@ reasons in `docs/ROADMAP.md` section 3.
 
 | Item | What it was | Verdict | Where it goes |
 |---|---|---|---|
-| M2 | The map in extreme depth (order 69) | **Park** until M1 merges | Phase 5 (map detail), terrain as data the war core reads (§7) |
+| M2 | The map in extreme depth (order 69) | **Park** until M1 merges | Phase 6 (map detail), terrain as data the war core reads (§7) |
 | T14 | Playtest alpha.14 against the owner's alpha.9 survey | **Redirect** | Phase 1: part of the baseline report |
-| Y1 | A year worth living; press speed | **Redirect** | Press speed: Phase 1 lag (4.4); what fills a year: Phase 5 |
-| PA | Parity: everyone grows by the player's rules | **Redirect** | Phase 3 (A3: rivals and the world grow and push back) |
-| LC | Legends and crowns as hard as the world makes them (D-138) | **Redirect** | Phase 1 stopgaps (A0) now, Phase 3 (A2) for good |
-| R3 | Relationships that change a life | **Park** | Phase 5 (6.1) |
-| E0 | One economy (D-139) | **Park** | Phase 5; it feeds A2.3's treasury and the store's later prices |
-| K1 | Cards that know your rank | **Park**; a wrong card that breaks play is a quick fix now | Phase 5 (event migration, 1.3 row 29) |
-| U1 | Honest odds with named upsets (order 66) | **Redirect** | Phase 2 (skills feed `attempt()`), duels in Phase 3 |
-| D12b | War and command depth | **Redirect** (war is frozen, §10) | Phase 1–2 side track (war architecture doc, war harness), Phase 3 new core, Phase 4 depth |
+| Y1 | A year worth living; press speed | **Redirect** | Press speed: Phase 1 lag (4.4); what fills a year: Phase 6 |
+| PA | Parity: everyone grows by the player's rules | **Redirect** | Phase 4 (A3: rivals and the world grow and push back) |
+| LC | Legends and crowns as hard as the world makes them (D-138) | **Redirect** | Phase 1 stopgaps (A0) now, Phase 4 (A2) for good |
+| R3 | Relationships that change a life | **Park** | Phase 6 (6.1) |
+| E0 | One economy (D-139) | **Park** | Phase 6; it feeds A2.3's treasury and the store's later prices |
+| K1 | Cards that know your rank | **Park**; a wrong card that breaks play is a quick fix now | Phase 6 (event migration, 1.3 row 29) |
+| U1 | Honest odds with named upsets (order 66) | **Redirect** | Phase 2 (skills feed `attempt()`), duels in Phase 4 |
+| D12b | War and command depth | **Redirect** (war is frozen, §10) | Phase 1–2 side track (war architecture doc, war harness), Phase 4 new core, Phase 5 depth |
 | X4 | Balance pass | **Redirect** | Phase 1: the balance harness (A1, Appendix A) |
-| X7 part 2 | Phone speed per press | **Redirect** | Phase 1 (lag, phone smoke test), Phase 6 |
-| I1-1 | iPhone budgets for load and Next month | **Redirect** | Phase 1 smoke test, Phase 6 |
-| I1-2 (left) | `pointercancel` on map drags, `SAVES.backend`, the 57 `:hover` rules | **Park** | Phase 6 (the `:hover` rules can ride a Phase 1 interface step) |
-| I1-3 to I1-7 | `www/`, Capacitor shell, Codemagic, listing, review | **Park** (order 70: on the owner's word) | Phases 9 and 10 |
+| X7 part 2 | Phone speed per press | **Redirect** | Phase 1 (lag, phone smoke test), Phase 7 |
+| I1-1 | iPhone budgets for load and Next month | **Redirect** | Phase 1 smoke test, Phase 7 |
+| I1-2 (left) | `pointercancel` on map drags, `SAVES.backend`, the 57 `:hover` rules | **Park** | Phase 7 (the `:hover` rules can ride a Phase 1 interface step) |
+| I1-3 to I1-7 | `www/`, Capacitor shell, Codemagic, listing, review | **Park** (order 70: on the owner's word) | Phases 10 and 10 |
 | C8d, L2 | Manhwa cards; legendaries redrawn (wait for the image key, order 60) | **Park** **[Q5]** | 6.8 parallel track: appearance data first, art by the route the owner picks |
 | D9-2 | Roads read as roads (69 to 75 of 100, target 90) | **Park** | After M1; the art pass waits for the art route |
 | Gaps | Known leftovers | **Park**; ride along with the step that touches them | Any phase |
 | R1 | 41 bare-dice decisions left (`tools/lint-reasons.mjs`) | **Finish as you go** | Every step that touches an AI decision |
-| G, E1, E2, L1, N1, V3-X | The v3 designs | **Redirect** (G into §9's library) / **Park** (the rest) | G: Phases 2 and 5; E1/E2: Phase 5; L1/N1: Phase 3 (A2.3 routes by start) and 5 |
+| G, E1, E2, L1, N1, V3-X | The v3 designs | **Redirect** (G into §9's library) / **Park** (the rest) | G: Phases 2 and 5; E1/E2: Phase 6; L1/N1: Phase 4 (A2.3 routes by start) and 5 |
 
 ## Who touches what (parallel work)
 

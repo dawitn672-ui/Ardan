@@ -4,7 +4,9 @@ This is the one living instruction file for Ardan. It is not a numbered release 
 
 **The code is being worked on right now.** This file arrives in the middle of that work. It must mesh with what is already happening, not restart it.
 
-**Order of the first steps:** (1) reach a safe point in the current work (0.2, step 1); (2) **refine the skills and tools (section 16). This is the top priority**, because every later step runs through them; (3) sync with the work in progress (0.2, steps 2 to 8); (4) the rest of Phase 0.
+**My newest instruction always wins.** Whenever I give you something new, it takes precedence over every older construct: an earlier order, a decision record, a design already built, a rule in this file, `CLAUDE.md`, a skill or a spec. Merge it (section 1), move what it replaces to Appendix C, and build from the new one. Ask first only when following it would cost money, accounts, the store, players' saves or deleted work. This holds for the rest of the project.
+
+**Order of work:** by what has the greatest effect on the game as it is today, in descending order (13.1). Skills and tools are refined first whenever I add new ones (section 16).
 
 Read this whole file at the start, and again after every merge (section 1). In other sessions, read section 0, `docs/STATUS.md`, section 13 and the section for the work at hand.
 
@@ -30,6 +32,7 @@ I am early in development. The game will change a lot before the roadmap is fini
 14. Tools and services
 15. First session script
 16. Skills, plugins and connectors (top priority)
+17. Magic, races, monsters and legendary beings (Workstream D)
 - Appendix A: balance harness. Appendix B: skill schema. Appendix C: superseded instructions.
 
 Keep this list current when sections are added, split or renumbered.
@@ -129,6 +132,7 @@ One row per prompt I give you. Add a row every time. "Status" says whether it is
 | M | 2026-11-25 | "This is not a numbered round" instruction | One living master prompt. Each new prompt is merged and the file is reorganised around it | 1 | Merged. |
 | I | 2026-11-25 | "The code is under work right now" instruction | Mesh this file with the work already in progress; order the work and set priorities for the most efficient route | 0.2, 1.1, 2, 4.5, 4.6, 8 (A0), 10, 13, 15 | Merged. |
 | T | 2026-11-25 | "Refining the skills comes first" instruction | Make the skills and tools review the top priority, because it helps every later step | Header, 0.2, 13.1, 13.2, 13.3, 15, 16 | Merged. |
+| A | 2026-11-25 | Answers to the Phase 0 questions (`docs/prompts/2026-11-25-answers-and-direction.md`), with the Emilio save | Newest instruction wins, everywhere; GitHub `main` brought up to date; no working branches or working files left in the repo, only versions; plugins folded into the Ardan skills, the rest cut; drop the two unfinished features; the map decision put to me later; seed and export behind a dev flag; skills rebuilt as ranked skills that merge, advance and evolve, in great number, stats kept apart; Next month only from age 12; magic, many races, monsters and legendary beings, after the skills; paid game packs for more allowances; portraits improved as often as needed; the Emilio life; auto-resume on; the order of work rebuilt by effect on the game | Header, 2, 4.1, 5, 9, 12.5, 13, 16, 17 | Merged. |
 
 ### 1.3 Carry-over checklist
 Earlier prompts asked for a lot that may already be built, or be in progress. **Before you plan any phase, check each row in the repo.** Record the result (Done, In progress, Partly, Not done or Changed) and the evidence in `docs/ROADMAP.md`. Work only on what is not done. New prompts add rows here. Item IDs: K1 to K10 are the kit steps, V1 to V16 are the complaint numbers in `docs/V2_SPEC.md`, O-letter-number are the orders of 2026-11-12.
@@ -177,30 +181,34 @@ Earlier prompts asked for a lot that may already be built, or be in progress. **
 - **No Mac.** iPhone builds must come from a cloud route (section 12).
 - **Players must never be able to send a world seed to anyone.**
 - **Saves belong to a device or an account, never to a seed.** A save's identity is a random ID created on install or on the account, plus a random life ID.
-- **Remove `.ardan` export and import** from release builds. Keep them behind a developer flag for tests. Cloud saves and the local backup slots replace them.
+- **Remove `.ardan` export and import** from release builds. Keep them behind a developer flag for tests. Cloud saves and the local backup slots replace them. Low priority: no players have the game yet.
+- **Magic: yes,** and much of it (section 17), with many races, monsters and legendary beings. Any canon may be rewritten to make it fit.
+- **The store sells game packs that give more allowances,** for example editing your birth or choosing your station (12.5). Nothing else is decided.
+- **Portraits:** the code-drawn portraits, improved as many times as needed (6.8).
+- **The map:** the designed continent (M1) stands for now; the final decision is put to me later, when the canon is rewritten (Phase 3).
 
 **Standing rules**
 - No hover pop-ups. Descriptions open on click.
 - No percentages in the player-facing UI. Use words, pips and scales.
 - One holder per post, title and unique thing.
 - Deterministic from the seed. Looking at something must never change the dice.
-- One step per commit, on a branch. Tests and coherency checks run after every step. `docs/HISTORY.md` is append-only.
+- One step per commit. Tests and coherency checks run after every step. `docs/HISTORY.md` is append-only.
+- **The repo is versions being updated:** GitHub holds `main` (the one trunk) and a `release/<version>` branch per version. No working branches are pushed and no working files are kept: helpers work in local worktrees and their work lands on `main`; plans, reports and scratch stay out of the repo unless they are needed for reference (4.1).
 - `main` always builds, passes its tests and loads old saves. A broken `main` is fixed before anything else.
 - The seed is never shown, copied, typed in, printed or saved where a player can read it.
 - Do not auto-format `data/` or the event packs. The game reads event functions as text (`A.evAudience`).
 - **Do not add new wrapper layers (`A.addStage`) in any system.** Change the module that owns the function. If a wrapper is truly unavoidable, record why in `docs/DECISIONS.md`. CI counts them (4.6).
 - Never polish a system that is scheduled to be rebuilt. It gets bug fixes only (war, until its new core switches on).
-- **Pending my decision:** nothing bought in the store may change the simulation or a ranked result. Treat this as the default until I decide otherwise.
-- **Precedence:** my newest instruction wins over an older one. The replaced instruction goes to Appendix C (section 1.1).
+- **Precedence:** my newest instruction wins over every older construct, everywhere (the header). The replaced instruction goes to Appendix C (section 1.1).
 
-**Open questions for me.** Ask all of them in one message during Phase 0. Each has a "needed by" phase. Work around them until then.
+**Open questions for me.** Ask all of them in one batched message. Each has a "needed by" phase. Work around them until then.
 
 | # | Question | Needed by | Default until I answer |
 |---|---|---|---|
-| 1 | The build still mentions the Great Continent 35 times, though section 7 says to remove it from play. Which stands? | Phase 1 (map tests) | Leave it untouched. Do no new work on it. |
-| 2 | Does Ardan have magic? | Phase 2 (skill categories, B5) | No arcane skill category. |
-| 3 | Should anything bought in the store ever change the simulation or a ranked result? | Phase 8 | No. |
-| 4 | Which art route for portraits: an illustrator, an image pipeline, or code-drawn parts? (6.8) | Phase 2 | Keep the code-drawn SVG portraits and improve them. |
+| 1 | The map: does the designed continent (M1) stand, and the Great Continent go for good? (Answered 2026-11-25: ask me again later.) | Phase 3 | The designed continent; no new work on the Great Continent. |
+| 2 | ~~Does Ardan have magic?~~ Answered 2026-11-25: yes, much of it (17). | | |
+| 3 | ~~Should anything bought change the game?~~ Answered 2026-11-25: game packs that give more allowances (12.5). Whether a life started with a pack counts on the leaderboards is still open. | Phase 9 | Lives started with a pack are marked and ranked apart. |
+| 4 | ~~Which art route for portraits?~~ Answered 2026-11-25: code-drawn, improved as often as needed. | | |
 
 ---
 
@@ -265,6 +273,8 @@ About 40 lives with simple scripted bots (hard difficulty, human, default realm,
 ### 4.1 Repo layout (target)
 `src/` split by system (map, people, family, nobility, diplomacy, war, events, ui); `data/` (events, cultures and names, military branches, items, skills); `assets/` (art, portraits, VFX); `tests/`; `tools/` (build, playtest scripts, coherency checks, harnesses); `docs/`; `archive/`; `.claude/skills/`. Move files with `git mv`, so their history follows.
 
+**Only what is needed** (the owner, 2026-11-25): the repo is the game and versions of it being updated. `docs/` keeps the reference set (this file, the prompts, orders, decisions, history, status, roadmap, versions, changelog, tooling, the design notes of systems still in play) and nothing else: old plans, reports, reviews, lane files, playtest kits and scratch leave the tree (git history keeps them; `docs/HISTORY.md` records the last commit that had them). No working branches stay on GitHub. **Done when:** `docs/` holds only the reference set and `node tools/lint-docs-index.mjs` passes.
+
 ### 4.2 Memory files
 - `CLAUDE.md` at the repo root, the first file any session reads: the layout, how to build, test and play, the standing rules (section 2) and pointers to the files below. Update it whenever any of these change.
 - `docs/MASTER_PROMPT.md` (this file) and `docs/prompts/` (every prompt I gave you, unchanged).
@@ -304,7 +314,7 @@ When you remove or replace a feature (the tile map, hover pop-ups, the old stats
 ### 4.6 Shrink the patch stack as you go
 Do not do a big-bang rewrite. Each workstream retires the wrapper layers and baked patches **in its own system** while it works there, by folding them into the module that owns the function. CI counts `A.addStage` wrappers and baked patches on every push, and fails if either count rises. Record both counts in `docs/HISTORY.md` at the end of each phase.
 
-**Proposed targets** (set the real ones from the counts on current `main`): war wrappers at zero once the new war core switches on; total wrappers under 40 by the end of Phase 5.
+**Proposed targets** (set the real ones from the counts on current `main`): war wrappers at zero once the new war core switches on; total wrappers under 40 by the end of Phase 6.
 
 **Done when (section 4):** a new session can orient itself from `CLAUDE.md` and `docs/STATUS.md` alone; `docs/HISTORY.md` has an entry for every merged step; the coherency checks report zero contradictions across 100 seeded lives; a month in a 50-year game takes no more than about 1.5 times a month in year 1; the wrapper count has not risen since Phase 0. These numbers are proposals. Set the exact budgets from measurement and record them in `docs/DECISIONS.md`.
 
@@ -314,14 +324,14 @@ Do not do a big-bang rewrite. Each workstream retires the wrapper layers and bak
 
 - **Descriptions open on click or tap** (a button or an info icon), never on hover. This replaces the older rule that no description may sit behind a click (Appendix C). Update `docs/V2_SPEC.md` and the `game-ux-playtest-loop` skill to match.
 - **Cards.** Each month's events arrive as cards, one at a time, with everything needed on the card: odds in words and the consequences. Quiet months show a two-second toast and no card. Event text is 80 words or fewer.
-- **Time.** One button: **Next month**. In war, **Next day** and **Next week** with standing orders, and battles run phase by phase. No Play button, no speed controls, no "sim a week".
+- **Time.** Below the age of 12, one button: **Next year** (childhood passes by years). From 12, one button: **Next month**; Next year is gone. In war, **Next day** and **Next week** with standing orders, and battles run phase by phase. No Play button, no speed controls, no "sim a week".
 - **Five places at most:** Life, You, Family, World, and War only while at war. Cut each screen down to what matters right now. Everything else sits one click deeper.
 - **No percentages** for the player. Use words, pips, scales and a tipped scale for odds.
 - **Faith** has no scripted chapter. Events only offer it. It appears for the clergy-born or for a player who takes it up. Piety is not a universal stat.
 - **Phones first.** Check layouts at 360, 390 and 420 px wide. Touch targets are 44 px or more.
 - **This shell comes before new screens.** The skills screen (section 9) and any other new screen wait until rows 3, 4, 21 and 22 of 1.3 are Done, so they are built once.
 
-**Done when:** a scripted Playwright year opens no dialog in a quiet month; no hover pop-up exists (a test exercises every screen); screenshots at the three widths pass `ardan-ui-review`; `Play` and `simWeek` no longer exist.
+**Done when:** a scripted Playwright year opens no dialog in a quiet month; no hover pop-up exists (a test exercises every screen); screenshots at the three widths pass `ardan-ui-review`; `Play` and `simWeek` no longer exist; a test shows Next year only before twelve and Next month only from twelve.
 
 ---
 
@@ -364,7 +374,7 @@ Every character looks and feels like an individual: face, build, age, scars, clo
 
 - **One connected continent**, made by procedural plates, erosion, climate and rivers, with sea all around and no land touching the frame. Satellite-style rendering with zoom detail and cloud drift. Rivers and borders are canvas vectors, and zoomed regions render at a higher scale.
 - **The Great Continent and the Far Lands are removed from play.** The lore may remain as rumour only. Ardan's realms keep their identities, but the map decides the borders. **Open:** the build still mentions the Great Continent 35 times. Ask me which stands (section 2, question 1).
-- **Detail that matters:** borders and border information, trade routes, roads, rivers, fords, passes, forests, marshes and towns. Terrain changes movement, supply and battles (section 10). Build terrain as data the war core can read, so war depth (Phase 4) reuses it rather than redoing it.
+- **Detail that matters:** borders and border information, trade routes, roads, rivers, fords, passes, forests, marshes and towns. Terrain changes movement, supply and battles (section 10). Build terrain as data the war core can read, so war depth (Phase 5) reuses it rather than redoing it.
 - Use and keep updating the `realistic-continent-maps` skill.
 
 **Done when:** the tests `one continent` and `no land touches the frame` pass; no realm or province lies outside the continent; a march across a ford, a pass and a marsh each shows a different, visible cost.
@@ -419,6 +429,8 @@ Keep the diminishing returns on repeated activities (`A.DIM`). Add fatigue, inju
 
 ## 9. Workstream B: the skill system (game-like)
 
+**What changed (2026-11-25).** This model replaces the S1 skills of order 63 (28 skills, 35 levels in seven words, concepts, proofs): the newest instruction wins. Skills **merge, advance and evolve**, and the world holds **a great many of them** (the scale of a fantasy world where nearly everyone has a few and the great have dozens, common skills combine into rarer ones, and the rarest are one of a kind). **Stats and skills stay separate:** the six stats (strength, speed, insight, stamina, intellect, will) are the body and mind, grown by age, training, food and wounds, and shown on their own; skills are what a person can do. A skill may ask for a stat as a condition; an ordinary skill never adds to a stat (only blessings, curses and racial skills may). What S1 built is reused where it serves this model (experience earned by doing fills a level; its concepts become conditions for evolving), and its 35 levels, seven words and proofs retire to `archive/`.
+
 ### B1. What a skill looks like
 Every skill shows as a card, for example:
 
@@ -442,7 +454,9 @@ The card shows: name, rank letter, level out of 10 as pips, kind, category, rari
   - blessing (granted by a god, a patron or a bloodline, and can be lost)
   - flaw or curse (a negative skill)
 - **Slots:** a limited number of active skills can be readied at once. It grows with the mind, rank and age. Passives and auras have no slot limit but are capped by the stacking rule below.
-- **Evolution:** a skill can evolve at level 10 into a higher-rank skill if its conditions are met (Beginner Footwork D → Footwork C → Fleet Fighter B). Some merge.
+- **Evolution:** a skill can evolve at level 10 into a higher-rank skill if its conditions are met (Beginner Footwork D → Footwork C → Fleet Fighter B).
+- **Merging:** several held skills can fuse into one stronger skill when their conditions meet (Swordsmanship + Footwork + Battle Sense → a named sword art), and the parts are absorbed into it. Some merges are known recipes, some are found by chance in a crisis, and a few happen only once in an age.
+- **Advancing:** a skill can also be awakened at a higher rank by a deed, a near-death or a blessing, without passing through every level (rare, and always with a named reason).
 - **Rust:** unused skills slip. Rust already exists, so reuse it.
 - **Teaching and inheritance:** each skill says whether it can be taught, inherited, stolen, sold, lost or only earned.
 
@@ -483,7 +497,7 @@ Routes are **discoverable**: rumours, teachers and books point the player at the
 Examples of routes: training with a teacher (Blake secret: bloodline or adoption, a house tutor, three secluded years, and a prior sword skill); a deed (Gifted Leader: three victories against the odds as a captain or above, or an inborn talent revealed on the first command); a blessing (Sun God's Blessing: a devout follower chosen at the solstice after leading the faithful to victory at the holy site, one holder at a time, lost if you turn apostate or commit a grave sin).
 
 ### B5. Categories (start with these, add more as the game grows)
-Combat (a weapon art per weapon and per culture's tradition, defence, mounted, ranged, unarmed, duelling), Body (endurance, footwork, toughness, recovery), Mind (focus, memory, learning), Command (leadership, drill, morale auras, tactics), War and Siege (logistics, siegecraft, scouting, engineering), Stealth and Intrigue (infiltration, assassination, espionage, forgery), Social (persuasion, diplomacy, intimidation, etiquette, charm), Governance (stewardship, law, taxation), Economy and Craft (trade, smithing, building, farming), Wilds (survival, tracking, beast-craft, seamanship), Medicine, Faith and Blessings, Bloodline and House Secrets, Racial, Unique and Legendary, Flaws and Curses. Check the lore before adding an arcane or magic category, and wait for my answer (section 2, question 2).
+Combat (a weapon art per weapon and per culture's tradition, defence, mounted, ranged, unarmed, duelling), Body (endurance, footwork, toughness, recovery), Mind (focus, memory, learning), Command (leadership, drill, morale auras, tactics), War and Siege (logistics, siegecraft, scouting, engineering), Stealth and Intrigue (infiltration, assassination, espionage, forgery), Social (persuasion, diplomacy, intimidation, etiquette, charm), Governance (stewardship, law, taxation), Economy and Craft (trade, smithing, building, farming), Wilds (survival, tracking, beast-craft, seamanship), Medicine, Faith and Blessings, Bloodline and House Secrets, Racial, Unique and Legendary, Flaws and Curses. Magic is in (section 17): **Magic** (one ladder per element and school), **Spirit and Bond** (contracts, familiars), **Monster** (skills of non-human kinds) and **Resistance** join the list.
 
 ### B6. How many, and how to build them
 "Countless" means a large library, built mostly from templates:
@@ -496,19 +510,19 @@ Combat (a weapon art per weapon and per culture's tradition, defence, mounted, r
 - Flaws and curses.
 - At least **60 hand-written Unique and Legendary skills**.
 
-**Targets:** about 150 skills in the first release of the system, 400 in the next, and 800 or more by the time the content phase ends. Keep skills in data files (`data/skills/`).
+**Targets:** about 200 skills in the first release of the system, 500 in the next, and 1,000 or more by the time the content phase ends, counting magic and monster skills. Keep skills in data files (`data/skills/`).
 
 ### B7. Build order
 Steps 1 to 3 need no interface, so they can start while the shell (section 5) is being finished. Step 4 waits for the shell.
 1. **Schema and validator** (Appendix B). Tests: every skill reachable, every prerequisite exists, no skill above its power budget, no orphans, no skill that can only be reached through an exploit loop, rank distribution as intended.
 2. **Adapter.** Keep `A.skill(p, k)` working: derive its number from the skills the person holds. Do not break the thousands of event checks. Events then migrate gradually, as they are touched or pruned. Never migrate them in one big batch.
-3. **Migration.** Old numeric skills and perks become ranked skills and levels, once, with a save migration step and a test save from each version.
+3. **Migration.** S1's skill levels, talents and knacks, and the old perks, become ranked skills and levels, once, with a save migration step and a test save from each version.
 4. **UI.** The skill card, a skills screen with category tabs and filters, readied actives, and a "how to learn" view. Descriptions open on click. Make it good on a phone.
 5. **Wire into systems.** `attempt()`, `fightWorth`, teaching, inheritance, theft, title and office unlocks. War units and auras hook into the new war core (section 10), not into the old war modules.
 6. **Fill the library** in the waves above, with a data review after each wave.
 7. **Fix the two skill-event errors** from 3.3 in Phase 0, before the rest.
 
-**Exit criteria:** the five example skills work end to end; a new life shows named, ranked skills; every route can be followed in a test; the old numeric skill code is archived.
+**Exit criteria:** the five example skills work end to end; a new life shows named, ranked skills apart from its stats; at least one evolution and one merge happen in a bot life for a reason the log names; every route can be followed in a test; S1's level words and proofs are archived and every old save loads.
 
 ---
 
@@ -527,7 +541,7 @@ You say it is far too undeveloped and buggy. Fix the structure first, then add d
 **Steps:**
 1. **Map it.** Write `docs/design/war-architecture.md`: every war module, every function it wraps (`A.addStage` names), every screen, and every place war touches people, family, diplomacy and events. (A side track during Phases 1 and 2. It changes no code.)
 2. **War test harness.** A headless harness that creates wars and runs thousands of seeded campaigns, battles, sieges and duels with no UI. It checks invariants: men are conserved, no NaN, supply never negative, one commander per unit, every battle ends, the queue never sticks, no unit is in two places. Log every error and every console error. This finds the bugs I cannot describe. (Also a side track during Phases 1 and 2, in new test files only.)
-3. **Build the new core alongside the old one.** Pure, seeded functions in new files, behind a flag, with a thin UI on top. Run the harness on both, and compare. (Start as the side track in Phase 3.) When the new core passes and matches the behaviour worth keeping, switch it on, archive the old modules and remove their wrappers.
+3. **Build the new core alongside the old one.** Pure, seeded functions in new files, behind a flag, with a thin UI on top. Run the harness on both, and compare. (Start as the side track in Phase 4.) When the new core passes and matches the behaviour worth keeping, switch it on, archive the old modules and remove their wrappers.
 4. **Deepen** (in this order): the detailed map and terrain, reusing the terrain data from section 7 (borders, roads, rivers, fords, passes, forests, marshes, towns, supply); the military branches (heavy lancers, mounted men-at-arms, knights on foot, a Scout Regiment, infantry, archers, crossbowmen, siege engineers, garrisons, levies, mercenaries, elite orders, each with ranks, training, gear and missions); then flanking, stealth, attrition, blockades, encirclement, sieges, supply lines, ambushes, scouting and intelligence.
 5. **Tie it to skills and difficulty.** Command, tactics, logistics, scouting and auras (Gifted Leader) change real outcomes at squad, company and army scale. Enemy AI has doctrines per realm and gets better on harder settings.
 6. **Make mercenary and company routes real.** In my test the mercenary route never reached a battle. Check that the road from soldier to captain to a company to land is open and fair. It is also the peasant's only road to a crown (section 8).
@@ -574,112 +588,103 @@ You say it is far too undeveloped and buggy. Fix the structure first, then add d
 - Wrap the built HTML with **Capacitor** (the current major version). Android builds on any computer with Android Studio.
 - **iPhone builds need Apple's tools.** Without a Mac, research and propose the best current route, with price and steps, for me to choose. Candidates to check: a cloud build service built for Capacitor; GitHub Actions macOS runners with Fastlane; a rented cloud Mac. Check current availability and cost first.
 - Finish `UI.nativeDownload` with Filesystem and Share for the share picture. Mirror saves to native storage, because the OS can clear WebView storage. Add haptics, status bar, splash screen and app lifecycle handling.
-- Memory is the main phone risk (20 MB of text at boot). A quick smoke test in Phase 1 shows whether this is a problem early. Measure properly on an older iPhone and a cheap Android in Phase 6, and cut if needed.
+- Memory is the main phone risk (20 MB of text at boot). A quick smoke test in Phase 1 shows whether this is a problem early. Measure properly on an older iPhone and a cheap Android in Phase 7, and cut if needed.
 - Live updates for web-layer fixes without a store review (check current tools: Capgo and Capawesome are candidates).
 
 ### 12.5 Store
 - Apple Developer Program (check the current fee), App Store Connect, TestFlight.
 - Google Play Console (check the fee). Check the current rule for new personal accounts: when I last checked, they had to run a closed test with at least 12 testers for 14 continuous days before publishing. **Start collecting testers during the playtest phase.**
 - Both stores need a privacy policy and a support link. If I offer any social login, Apple needs Sign in with Apple. The backend must be live during review.
-- **The shop is deferred.** When I decide, both stores require their own billing for digital goods, randomised paid items must show their odds before purchase, purchased currency must not expire, and there must be a way to restore purchases. Recommended defaults: no randomised paid items; nothing bought changes the simulation or a ranked result. Use a purchase service (RevenueCat is a candidate) with a webhook into the `entitlements` table. Do not build any of this until I say so.
+- **Game packs.** The shop sells packs that give more allowances in a life, for example editing your birth or choosing your station. Check the stores' current rules for paid digital content before designing them.
+- **The rest of the shop is deferred.** When I decide, both stores require their own billing for digital goods, randomised paid items must show their odds before purchase, purchased currency must not expire, and there must be a way to restore purchases. Recommended defaults: no randomised paid items; nothing bought changes the simulation or a ranked result. Use a purchase service (RevenueCat is a candidate) with a webhook into the `entitlements` table. Do not build any of this until I say so.
 
 ---
 
 ## 13. Roadmap and order of work
 
 ### 13.1 How work is ordered (priority rules)
-When choosing what to do next, apply these in order:
-1. **Skills and tools first (section 16).** Refine them before any other work, and again whenever I add new ones. Every later step runs through them, so this pays back on everything else.
-2. **Keep `main` playable and releasable.** A broken build or a broken save is fixed before anything else.
-3. **Finish or park work in progress (0.2)** before starting something new.
-4. **Safety nets before changes:** tests, CI, save-compat tests, coherency checks, the balance and war harnesses. Everything later leans on them.
-5. **Bugs that break play or corrupt state** (stuck queues, two holders of a post, runtime errors, lag) before new features.
-6. **Cheap stopgaps for the worst feel problem first** (too easy: A0). The full redesign comes later.
-7. **Foundations before what sits on them:** the interface shell before new screens; the skill data model and adapter before difficulty and war hooks; the war core before war depth; terrain data before war terrain; character appearance data before portrait art; gameplay before platform.
-8. **Never polish what will be rebuilt.** Systems waiting for a rebuild get bug fixes only.
-9. **Limit work in progress:** one main workstream at a time, plus at most one side track that touches different modules. Research and docs do not count against the limit. A quick fix (under a day) can jump the queue.
-10. **Ask for my decisions before they block** (section 2 lists "needed by"). Work around them until then.
-11. **Start long lead-time items early** (13.4), because they run on calendar time, not work time.
+**Descending order of effect on the game as it is today** (the owner's answers of 2026-11-25): what changes the current game most, and what the most later work depends on, comes first. When choosing what to do next, apply these in order:
+1. **Keep `main` playable and releasable.** A broken build or a broken save is fixed before anything else.
+2. **Bugs the owner meets in play** (his lives: the alpha 9 survey, the Emilio life of 1105 to 1108, `docs/design/emilio-1108-findings.md`) and the open exploits (breakthroughs, the throne plot): they change every life now. Fix current issues before new ones (order 54).
+3. **The skills rebuild (section 9).** The owner's top complaint is linear growth, and magic, difficulty and war all sit on it.
+4. **Magic, races and monsters (section 17).** The largest change to the world; it begins only once the skills are done, and difficulty and war are tuned after it, not before.
+5. **Difficulty and progression (section 8),** measured on the world with skills and magic in it.
+6. **War (section 10).** Bug fixes only until its rebuild.
+7. **Content, art and depth;** then phone, playtesters, backend, apps, store, launch.
+8. **Skills and tools are refined whenever the owner adds new ones (section 16),** before the work that uses them.
+9. **Never polish what will be rebuilt.** **Limit work in progress:** one main workstream, at most one side track on different modules; a fix under a day can jump the queue.
+10. **Ask for the owner's decisions before they block,** batched; work around them until then. **Start long lead-time items early** (13.4).
 
 Tie-breaker: the value to the player divided by the effort, plus how much later work it unblocks.
 
 ### 13.2 Critical path
 ```
-Skills and tools (16) ─► Sync (0.2) ─► Safety nets ─► Stopgaps + measure ─► Skill system core ─► Difficulty ─► War switch-over + depth ─► Content
-                                                                             (data, adapter,                                              │
-                                                                              migration)                                                  ▼
-                                                                              Phone ─► Playtesters ─► Backend ─► Apps ─► Store ─► Launch
+Finish Phase 0 ─► Fix what play shows (bugs, exploits, measure) ─► Skills rebuild ─► Magic, races, monsters ─► Difficulty ─► War ─► Content
+                                                                                                                                   │
+                                                                                                                                   ▼
+                                                                                 Phone ─► Playtesters ─► Backend ─► Apps ─► Store ─► Launch
 Side tracks, under the limit in 13.1:
-  Phases 1–2: war map + war harness (no game code changes)
-  Phase 3:    new war core built alongside the old one, behind a flag
-  Phase 1 on: portraits and look (6.8): research, then appearance data, then art
-  Phase 5 on: event pruning and migration; recruiting testers
+  Phases 1–2: war map + war harness (no game code changes); portraits improved again and again (6.8)
+  Phase 3:    the map decision (M1 and the owner's critique) is put to the owner when the world's canon is rewritten
+  Phase 4 on: new war core built alongside the old one, behind a flag
+  Phase 6 on: event pruning and migration; recruiting testers
 ```
 
 ### 13.3 Phases
-Each phase has its work and exit criteria. **After every phase, and after every prompt I add (section 1), stop and re-plan:** update `docs/ROADMAP.md` with what changed, what is cut, what is new, and what I should decide. Do not switch the main workstream to the next phase until I agree, but prepare it (research, design notes, tests) while you wait.
+Each phase has its work and exit criteria. **After every phase, and after every prompt the owner adds (section 1), stop and re-plan:** update `docs/ROADMAP.md` with what changed, what is cut, what is new, and what the owner should decide. Prepare the next phase (research, design notes, tests) while waiting for his agreement to switch.
 
-#### Phase 0 — Skills, sync and protect (a few days, up to a week)
-- **First, the skills and tools refinement (section 16, top priority):** inventory what is installed, review everything as one batch (16.6), send me the Keep / Merge / Remove table, disable the removals once I confirm, create `ardan-prompt-intake`, `ardan-dev-process` and `ardan-ui-review`, fix the breakthrough line in `life-sim-systems`, write `docs/TOOLING.md`.
-- Then the sync in 0.2: `docs/STATUS.md`, a verdict for every piece of work in progress, Finish items finished.
-- Run the carry-over checklist (1.3). Finish the memory files (4.2) wherever they are missing.
-- Save this file as `docs/MASTER_PROMPT.md`, and every raw prompt in `docs/prompts/`. Turn section 13 into `docs/ROADMAP.md`.
-- Tag the current build. Protect `main`.
-- **GitHub Actions:** tests, coherency checks, build, size and boot-time budgets, and the wrapper and patch counts (4.6).
-- **Save-compat tests:** a save from each version in `tests/saves/`.
-- Turn on Dependabot and secret scanning.
-- Remove the seed leaks and release-build export and import, with the Playwright seed-leak test. (Small and isolated, so it does not clash with other work.)
-- Fix the two skill-event errors (3.3).
-- **One batched message to me:** the sync result, the checklist result, the open questions with their "needed by" (section 2), and the request for my winning-run save.
-- **Exit:** the skills cleanup is applied and recorded in `docs/TOOLING.md`, and the three Phase 0 Ardan skills pass their trigger checks; `main` is green in CI; every piece of in-progress work has a verdict; every row of 1.3 has a status; the seed-leak test passes.
+*Phase numbers changed on 2026-11-25 (the owner's answers): the magic phase became Phase 3, so the old Phases 3 to 11 are now 4 to 12.*
 
-#### Phase 1 — Measure, stabilise, stopgap (about 1–2 weeks)
-- Build the balance harness (Appendix A) and the strategies. Replay my winning run, so the exploit becomes a test. Write `docs/BALANCE_BASELINE.md`.
-- Fix lag, one holder per post and the coherency gaps (4.4), unless 1.3 shows they are done.
-- Land the difficulty stopgaps (A0), each with before and after numbers.
-- Finish the interface shell (rows 3, 4, 21 and 22 of 1.3) if it is not done.
-- One-time **phone smoke test:** load the build on a cheap Android phone and an older iPhone by the easiest current route (check the cost first), and note boot time and whether it runs. If it fails badly, tell me, because it changes priorities.
-- Side track: war map (C1) and the start of the war harness (C2).
-- Side track (research and docs): portraits and look (6.8): a research pass and a one-page priced plan for me to approve.
-- **Exit:** a baseline report for each start and strategy; the stopgaps measured; a ranked list of exploits and war bugs; the shell rows Done; the phone result recorded.
+#### Phase 0 — Skills, sync and protect (finishing)
+- Done: the master prompt saved; the tooling review (`docs/TOOLING.md`); the three Ardan skills; the sync (`docs/STATUS.md`, `docs/ROADMAP.md`); the batched questions, answered.
+- Left: fold the useful parts of the plugins into the Ardan skills and switch the rest off for this repo (16); bring GitHub's `main` up to date and make it the one trunk; clear the repo down to what is needed for reference (4.1); archive the two dropped features (82-early-years, 9995-trade-roads); the wrapper and patch count gate (4.6); save-compat tests; fix the two skill-event errors (a skipped card's choice still runs); the seed and export behind a developer flag (low priority: no players yet); Dependabot and secret scanning (the owner's settings).
+- **Exit:** `main` green and current; the repo holds the game, its tools, its tests and its reference docs only; the gate and save-compat tests run in CI.
 
-#### Phase 2 — Skills (about 4–6 weeks)
-- Workstream B: steps 1 to 3 first, then 4 and 5 once the shell is done, with the first 150 skills.
-- Side track: finish the war harness and the war architecture doc.
-- Parallel track: character appearance data (6.8).
+#### Phase 1 — Fix what play shows, and measure (about 1–2 weeks)
+- Every bug in `docs/design/emilio-1108-findings.md` and the alpha 9 survey's open lines, each with a test.
+- Close the two exploits for good or with stopgaps (A0, A2): breakthroughs and the retryable throne plot.
+- The balance harness (Appendix A) and `docs/BALANCE_BASELINE.md`; replay the owner's lives as tests.
+- Next year for childhood only, Next month from twelve (5).
+- One-time phone smoke test (check the cost first).
+- **Exit:** every finding fixed or ruled out with a reason; the exploits closed; the baseline measured.
+
+#### Phase 2 — Skills rebuild (about 4–6 weeks)
+- Section 9: the schema and validator, the adapter, the migration from S1, the skill card and screen, wiring into checks and fights, evolution and merging, the first 200 skills.
 - **Exit:** see B7.
 
-#### Phase 3 — Difficulty and progression (about 3–4 weeks)
-- Workstream A (A2 to A4). Uses the skills and the harness. Remove the A0 stopgaps as their replacements land.
+#### Phase 3 — Magic, races, monsters and legendary beings (long; several waves)
+- Section 17. Starts when Phase 2's exit is met. Includes the canon rewrite and, with it, the map decision put to the owner.
+- **Exit:** see section 17.
+
+#### Phase 4 — Difficulty and progression (about 3–4 weeks)
+- Workstream A (A2 to A4) on the world with skills and magic. Remove the A0 stopgaps as their replacements land.
 - Side track: the new war core built alongside the old one, behind a flag (C3).
 - **Exit:** see section 8.
 
-#### Phase 4 — War (about 4–6 weeks, shorter because the core was started in Phase 3)
-- Switch on the new war core, archive the old modules, then deepen (C4 to C6).
+#### Phase 5 — War (about 4–6 weeks)
+- Switch on the new war core, archive the old modules, then deepen (C4 to C6), with magic and monsters in war.
 - **Exit:** see section 10.
 
-#### Phase 5 — Content, art and depth (runs through the rest)
-- Grow skills to 400, then 800. Prune and migrate events (the 3,199 events and the packs) as they are touched. Carry on the portraits and look track (6.8): layered portrait parts that age, and event illustrations. Continue map detail (section 7) and military branches (section 10).
-- Decide whether localization will ever matter.
+#### Phase 6 — Content, art and depth (runs through the rest)
+- Grow skills to 500, then 1,000 or more; spells, races and monsters likewise (17). Prune and migrate events as they are touched. Portraits improved as many times as needed (6.8). Map detail (7) and military branches (10).
 
-#### Phase 6 — Phone readiness (about 2–3 weeks)
+#### Phase 7 — Phone readiness (about 2–3 weeks)
 - Profile a 50-year game for memory and long frames. Test on real devices. Fix layout and touch problems.
 
-#### Phase 7 — Real playtesters (about 2–3 weeks)
-- Publish each merged build for testers (GitHub Pages or itch.io; check cost and privacy options). Collect feedback with a form or GitHub Issues. Recruit at least 12 Android testers.
-- Research and propose the iPhone no-Mac route.
+#### Phase 8 — Real playtesters (about 2–3 weeks)
+- Publish each merged build for testers (check cost and privacy options). Collect feedback. Recruit at least 12 Android testers.
 
-#### Phase 8 — Accounts, cloud saves, leaderboards (about 5–6 weeks)
-- Section 12.3. Use this phase only after Phases 2–4 pass.
+#### Phase 9 — Accounts, cloud saves, leaderboards (about 5–6 weeks)
+- Section 12.3. Only after Phases 2–5 pass.
 
-#### Phase 9 — Apps (about 3–5 weeks)
+#### Phase 10 — Apps (about 3–5 weeks)
 - Section 12.4.
 
-#### Phase 10 — Store (about 3–4 weeks)
-- Section 12.5. The shop stays off until I decide what to sell.
+#### Phase 11 — Store (about 3–4 weeks)
+- Section 12.5: the game packs (birth editing, choosing a status and the like).
 
-#### Phase 11 — Launch and live operation
-- Live updates, crash and error reports (ask the player first), seasons for leaderboards with the engine version pinned, a community channel, and optional later targets such as a desktop version.
+#### Phase 12 — Launch and live operation
+- Live updates, crash and error reports (ask the player first), seasons for leaderboards with the engine version pinned, a community channel.
 
 Week counts are rough guesses. **Re-estimate at every checkpoint.**
 
@@ -689,11 +694,11 @@ These run on calendar time, so start them before the phase that needs them. Chec
 | Item | Why it takes time | Start by |
 |---|---|---|
 | Art route for portraits (6.8) | An illustrator or pipeline needs choosing, pricing and briefing | Phase 1 (plan), Phase 2 (decide) |
-| Name check for "Ardan" in both stores and as a web address | A clash forces a rename late | Phase 5 |
-| Recruiting 12 or more Android testers | Google's closed test runs for weeks with a minimum number of testers | Phase 5 (recruit), Phase 9 (start the test) |
-| The iPhone no-Mac route | Accounts, setup and a first successful build | Phase 7 |
-| Apple Developer enrolment | Verification can take days or longer | Before Phase 9 |
-| Privacy policy and terms | Needed for the backend and both stores | Draft in Phase 7 |
+| Name check for "Ardan" in both stores and as a web address | A clash forces a rename late | Phase 6 |
+| Recruiting 12 or more Android testers | Google's closed test runs for weeks with a minimum number of testers | Phase 6 (recruit), Phase 10 (start the test) |
+| The iPhone no-Mac route | Accounts, setup and a first successful build | Phase 8 |
+| Apple Developer enrolment | Verification can take days or longer | Before Phase 10 |
+| Privacy policy and terms | Needed for the backend and both stores | Draft in Phase 8 |
 
 ---
 
@@ -707,7 +712,7 @@ These run on calendar time, so start them before the phase that needs them. Chec
 | Dependabot, secret scanning | 0 | Switch on in the repo settings. |
 | Balance harness, war harness (build) | 1, 2 | Appendix A. Nightly reports in `docs/`. |
 | Skill schema validator (build) | 2 | Appendix B. Runs in CI. |
-| Chrome DevTools, Lighthouse | 1, 6 | Smoke test in Phase 1; memory and frame profiling in Phase 6. |
+| Chrome DevTools, Lighthouse | 1, 6 | Smoke test in Phase 1; memory and frame profiling in Phase 7. |
 | Real phones: one older iPhone, one cheap Android | 1, 6 | Nothing replaces these. |
 | GitHub Pages or itch.io | 7 | Playtest web builds. |
 | Google Form or GitHub Issues | 7 | Feedback. |
@@ -784,9 +789,9 @@ Create them in `.claude/skills/` at the phase shown. Each description below is a
 | `ardan-ui-review` | Review an Ardan screen for clarity, accessibility and wording. Use before shipping any UI change. | From `design-critique`: first impression, usability, hierarchy, consistency. From `accessibility-review`: WCAG 2.1 AA (contrast, 44 px targets, keyboard, reduced motion). From `ux-copy`: clear microcopy, adapted to this repo (descriptions open on click, no percentages, events of 80 words or fewer, choices of 12 words or fewer). From `design-system`: the token audit, checked against `docs/design/brief.md`. | Phase 0 |
 | `ardan-balance-harness` | Measure Ardan's difficulty with headless lives and fail the build when a strategy beats the targets. Use for any change to stats, skills, war or the crown. | Appendix A, the targets and stopgaps in section 8, the strategy list, nightly CI, and the replay of my winning run. Use `dataviz` for the charts. | Phase 1 |
 | `ardan-skill-system` | Design, write and validate ranked skills for Ardan: ranks, levels, kinds, effects, acquisition. Use when adding or changing any skill. | Section 9 and Appendix B; the power-budget and stacking rules; the validator checks; the `life-sim-systems` rules on learning by doing. | Phase 2 |
-| `ardan-war-core` | The war core's architecture, invariants and test harness. Use for any change to war, battles, sieges, companies or armies. | The map from `docs/design/war-architecture.md`, the invariant list, the freeze rule, and the rank-by-rank rules now in `life-sim-systems`. | Phase 2 (draft), Phase 3 (finish) |
-| `ardan-playtest-synthesis` | Turn playtest feedback into ranked findings. Use after any playtest or batch of reports. | From `user-research`: interview and timed-task guides for the 5 real players. From `research-synthesis`: themes, insights, then recommendations, plus user segments. Add: the problem-report bundle and GitHub Issues as sources. | Phase 7 |
-| `ardan-release-pipeline` | Platform steps for Ardan: CSP, secrets, Supabase, Capacitor without a Mac, stores, purchases. Use for anything that leaves the repo. | Ideas only, from the removed families: `vercel:client-side-security` (how to write and test a CSP, for the `connect-src` change); `vercel:env-vars` (keeping secrets out of the repo); `vercel:deployments-cicd` (preview builds and rollback); `unity:implement-in-app-purchases` (receipt checks, restore, sandbox testing); `unity:build-live-game` (server-authoritative scores and leaderboards); `unity:optimize-web` (size, load time, memory, battery); `unity:craft-game-floors` (a polish checklist for art, juice, sound, menus and saves); `unity:localization` (later). Add sections 12, 13.4 and 14 of this file. | Draft in Phase 6, finish before Phase 8 |
+| `ardan-war-core` | The war core's architecture, invariants and test harness. Use for any change to war, battles, sieges, companies or armies. | The map from `docs/design/war-architecture.md`, the invariant list, the freeze rule, and the rank-by-rank rules now in `life-sim-systems`. | Phase 2 (draft), Phase 4 (finish) |
+| `ardan-playtest-synthesis` | Turn playtest feedback into ranked findings. Use after any playtest or batch of reports. | From `user-research`: interview and timed-task guides for the 5 real players. From `research-synthesis`: themes, insights, then recommendations, plus user segments. Add: the problem-report bundle and GitHub Issues as sources. | Phase 8 |
+| `ardan-release-pipeline` | Platform steps for Ardan: CSP, secrets, Supabase, Capacitor without a Mac, stores, purchases. Use for anything that leaves the repo. | Ideas only, from the removed families: `vercel:client-side-security` (how to write and test a CSP, for the `connect-src` change); `vercel:env-vars` (keeping secrets out of the repo); `vercel:deployments-cicd` (preview builds and rollback); `unity:implement-in-app-purchases` (receipt checks, restore, sandbox testing); `unity:build-live-game` (server-authoritative scores and leaderboards); `unity:optimize-web` (size, load time, memory, battery); `unity:craft-game-floors` (a polish checklist for art, juice, sound, menus and saves); `unity:localization` (later). Add sections 12, 13.4 and 14 of this file. | Draft in Phase 7, finish before Phase 9 |
 
 **Update the three existing Ardan skills at the start of the phase shown:**
 - `life-sim-systems` (the breakthrough part in the first, top-priority skills step; the rest in Phase 2). **It currently says breakthroughs are how a human climbs to giant class, which is the exploit.** Replace that with the budgeted, costly breakthrough rule (A0, then A2). Replace "learn by doing: hours practised" with the ranked-skill model. Add the difficulty targets and the Notoriety rule. Point the war section at the war core.
@@ -794,8 +799,8 @@ Create them in `.claude/skills/` at the phase shown. Each description below is a
 - `realistic-continent-maps` (when I decide the Great Continent question). Otherwise keep it as it is.
 
 **Third-party skills to add, after reading them and telling me what they do:**
-- The **Supabase agent skill** at the start of Phase 8. The Supabase tools themselves recommend it (`npx skills add supabase/agent-skills`).
-- A **Capacitor store-publishing skill** at Phase 9 or 10. I saw one called `capacitor-app-store` in the `cap-go/capgo-skills` repository. Check that it is current, that it fits the no-Mac plan, and that it is safe before installing.
+- The **Supabase agent skill** at the start of Phase 9. The Supabase tools themselves recommend it (`npx skills add supabase/agent-skills`).
+- A **Capacitor store-publishing skill** at Phase 10 or 11. I saw one called `capacitor-app-store` in the `cap-go/capgo-skills` repository. Check that it is current, that it fits the no-Mac plan, and that it is safe before installing.
 
 ### 16.3 Keep
 | Skill | Use in Ardan |
@@ -814,7 +819,7 @@ Create them in `.claude/skills/` at the phase shown. Each description below is a
 ### 16.4 Connectors and agents
 | Item | Decision |
 |---|---|
-| **Supabase** | Keep, but switched off until Phase 8. When on, use a **development project only**. It can run SQL, apply migrations, deploy functions and pause or delete things, so ask me before any change to a live project and use branches for migrations. |
+| **Supabase** | Keep, but switched off until Phase 9. When on, use a **development project only**. It can run SQL, apply migrations, deploy functions and pause or delete things, so ask me before any change to a live project and use branches for migrations. |
 | Claude Docs and Claude Artifacts | Keep. |
 | The project tool | Keep. |
 | Claude in Chrome | Keep, optional. |
@@ -847,6 +852,24 @@ Create them in `.claude/skills/` at the phase shown. Each description below is a
 - More skills is not better. A skill earns its place only if it has one clear job, a description that says when to use it and when not to, and no overlap with another.
 - Prefer improving an existing Ardan skill over adding a new one.
 - If a skill is useful but only for a later phase (for example payments or store publishing), keep it **disabled** until that phase starts, and note the phase in `docs/TOOLING.md`.
+
+---
+
+## 17. Workstream D: magic, races, monsters and legendary beings
+
+**The owner, 2026-11-25:** "as much magic with ranks, progression etc. as possible, across all the elements and more"; many more races, countless monsters and species, and legendary beings; a large project that transforms this world, in the spirit of high-fantasy worlds where monsters, spirits and dragons stand beside nations. **Any canon may be rewritten to make it fit.** It **begins after the skills rebuild (Phase 2) is done**, and runs in waves: study, build, test, improve, repeat.
+
+**Original, not copied.** The world takes the genre's ideas (ranked monsters, evolving kinds, named monsters that rise, elemental magic, spirits, dragons as forces of nature, skill evolution) and makes them its own. No names, characters, places, skill names or story from any existing work.
+
+- **Magic.** Elements and more: fire, water, earth, wind, light, dark, ice, lightning, life, death, space, time, spirit, and blood or bone where they fit the lore. Each is a ladder of ranked spells and skills (section 9's ranks and levels), learned by study, a teacher, a contract, a bloodline or a blessing. **Mana** is a resource of its own beside the six stats; a person's affinity is born, found and trained. Magic changes healing, war, craft, the economy and the faiths, and each realm and faith has a stance on it.
+- **Races and kinds.** The human peoples, and many more: elder races, beast-folk, giants, dwarves, the sea and sky peoples, spirits, the undead, demons and others the lore earns. Each has lifespans, bodies, cultures, homelands on the map and relations with the rest. A player may be born into several of them.
+- **Monsters.** A bestiary of countless species from vermin to calamities, ranked by threat, each with a habitat on the map, a diet, a season and a place in the economy (hides, cores, bounties). **Monsters evolve:** one that survives, feeds and wins can rise to a higher kind and, at the top, gain a name and a mind. Hunters, adventurers and orders exist because the monsters do.
+- **Legendary beings.** A few world-shaping beings (dragons, old spirits, demon lords, heroes), each one of a kind (the one-holder rule), with lairs, aims and reasons (the A.WHY rule), able to move kingdoms.
+- **Fit with the rest.** The map gains habitats, ley lines, lairs and wild lands; diplomacy and war gain monster nations and calamities; the market gains magic goods; difficulty and war are tuned after this, not before (13.1).
+
+**Build order:** (1) a canon pass: the world's history, races and faiths rewritten to hold magic, recorded in `docs/design/magic-world.md`, and **the map decision put to the owner** with it; (2) data models (elements, spells, mana, races, monsters, evolution) in `data/`, with validators like section 9's; (3) the first wave in play: a starting set of elements and spells, ten races, a hundred monsters, three legendary beings; (4) the waves after it, each studied, playtested and improved.
+
+**Done when (first wave):** a new life can be born a mage or into a non-human race; monsters live in places on the map and are hunted for reasons; at least one monster evolves in a bot life for a reason the log names; every legendary being has one holder and a reason for each move; old saves load; the balance harness passes on the new world.
 
 ---
 
@@ -979,3 +1002,11 @@ Instructions that a newer one replaced. They are kept so a later session knows w
 | No new wrapper layers in the war code only | W | No new wrapper layers in any system; CI counts them and fails if the count rises | 2, 4.6 |
 | Start fresh from Phase 0 | W | Sync with work already in progress first (0.2) | 0.2, 15 |
 | The skills cleanup is one item among the Phase 0 tasks, done after the sync | I | The skills and tools refinement is the top priority, right after reaching a safe point and before the sync | Header, 13, 15, 16 |
+| Keep S1's growth engine and lay ranked cards over it | My proposal of 2026-11-25 | Section 9's ranked skills that merge, advance and evolve, replacing S1's levels and words; stats kept apart (the owner: newest instruction wins) | 9 |
+| S1 skills: 28 skills, 35 levels in seven words, concepts and proofs (order 63) | Order 63 | Section 9's model | 9 |
+| No magic; "keep it game-like and medieval" | Order rule 9, section 2 question 2 | Much magic, many races, monsters and legendary beings; any canon may be rewritten | 17 |
+| Next month, or Next year, at any age (D-008, D-019, D-026); later "one button: Next month" | Section 5 | Next year below 12, Next month from 12 | 5 |
+| Nothing bought may change the game | Section 2 (pending) | Paid game packs that give more allowances (birth editing, choosing a station) | 2, 12.5 |
+| `work/<item>` branches pushed for the integrator (order 64, D-133) | Order 64 | No working branches or working files on GitHub; `main` and `release/<version>` only | 2, 4.1 |
+| Order of work led by skills and tools first, then safety nets | Section 13.1 | Descending effect on today's game: play bugs and exploits, skills, magic, difficulty, war, then the rest | 13 |
+| Phase numbers 3 to 11 | Section 13.3 | 4 to 12 (Phase 3 is magic) | 13 |

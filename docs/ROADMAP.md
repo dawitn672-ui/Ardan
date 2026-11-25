@@ -1,5 +1,7 @@
 # Roadmap
 
+> **Updated 2026-11-25 for order 76** (the owner's answers): phases renumbered (Phase 3 is now magic, races and monsters; the old 3 to 11 are 4 to 12); the order of work is by effect on today's game (master prompt 13.1); Phase 1 now starts with the Emilio findings (`docs/design/emilio-1108-findings.md`). Settled: C1 skills (section 9 replaces S1, D-159), C2 time (Next year below 12, Next month from 12, D-160), C5 export and seed (behind a developer flag, low priority), the magic question (yes, section 17, D-161), the store (game packs), portraits (code-drawn), auto-resume (on), the two unfinished features (dropped). Put to the owner later: the map (C6, C8).
+
 The working copy of the master prompt's section 13 (phases) and 1.3 (the carry-over checklist), with what is already
 built mapped onto them (master prompt 0.2 steps 3 and 7, 4.2). The rules are `docs/MASTER_PROMPT.md`; what is happening
 today is `docs/STATUS.md`. Plan in rolling waves: the next phase in detail, the later ones in outline. Re-plan after
@@ -35,6 +37,7 @@ Contents: 1 the phases · 2 section 3 re-checked · 3 the old queue on the new p
 every row of 1.3 with a status (done); the seed-leak test passes.
 
 ### Phase 1: measure, stabilise, stopgap (next; outline with what exists)
+**First (order 76):** the Emilio findings E1 to E10 (`docs/design/emilio-1108-findings.md`), state bugs first (E1, E2, E9), each with a test; then the exploits (breakthroughs, the throne plot, E5 retryable murder, E8 easy authorship); then Next year below 12 and Next month from 12.
 
 - **Balance harness (A1).** Start from what exists: `tools/bench/balance.mjs` (held to `tools/bench/targets.mjs` on the
   long tier), `tools/bench/bot.mjs`, `dominant-strategies.mjs`, `long-life-audit.mjs`. Add the master prompt's strategies
@@ -56,25 +59,28 @@ Starts from S1, not from the alpha 15 numbers (Q7): 28 skills with experience, c
 mirror, save version 15. Schema and validator, adapter, migration, UI, wiring, the first 150 skills. Absorbs **G**'s
 library, **U1**'s link to `attempt()`. Side track: the war harness. Parallel: character appearance data (6.8).
 
-### Phase 3: difficulty and progression (§8 A2 to A4)
+### Phase 3: magic, races, monsters and legendary beings (§17)
+Begins when Phase 2's exit is met. A canon pass first (`docs/design/magic-world.md`, with the map decision put to the owner), then data models and validators, then the first wave (elements and spells, ten races, a hundred monsters, three legendary beings), then waves of study, playtest and improvement. Old work to reuse: `archive/990-far-peoples`, `992-far-beasts` (read, not restored whole).
+
+### Phase 4: difficulty and progression (§8 A2 to A4)
 
 Absorbs **LC** (for good), **PA** (parity, the world's growth), the routes of **L1**/**N1** (A2.3). Side track: the new war
 core behind a flag (§10 C3).
 
-### Phase 4: war (§10 C4 to C6)
+### Phase 5: war (§10 C4 to C6)
 
 Absorbs **D12b**'s stages: hosts on roads, one engine, reports, the theatre, the press, sieges.
 
-### Phase 5: content, art and depth
+### Phase 6: content, art and depth
 
 Absorbs **M2** (the map in depth, with **E0**'s trade), **R3**, **K1**, **E0**, **E1/E2**, the rest of **Y1**, **C8d**, **L2**,
 **D9-2**, the **Gaps**, event pruning (row 29).
 
-### Phases 6 to 11
+### Phases 7 to 12
 
 6 phone readiness (**X7 part 2**'s remainder, **I1-2**'s leftovers), 7 playtesters, 8 accounts and cloud saves,
 9 apps (**I1-3**, **I1-4**), 10 store (**I1-5** to **I1-7**), 11 launch. The iPhone route is already researched (`docs/IOS_ROADMAP.md`:
-Capacitor 8 and Codemagic, I1-0); the master prompt asks to research and propose it in Phase 7, so it is re-checked then.
+Capacitor 8 and Codemagic, I1-0); the master prompt asks to research and propose it in Phase 8, so it is re-checked then.
 
 ---
 
@@ -110,23 +116,23 @@ packs, 5,605 KB".
 
 - **M1** (in flight): Finish, Phase 0/1, after the owner's critique. It decides 1.3 row 2 and 26's ground, and section 7's
   terrain-as-data starts from its version 4 data.
-- **M2**: Park to Phase 5. It is the "detail that matters" of section 7 and needs M1. Its places and trade routes should be
+- **M2**: Park to Phase 6. It is the "detail that matters" of section 7 and needs M1. Its places and trade routes should be
   built as data the war core reads (7, 13.1 rule 7).
 - **T14**: Redirect into Phase 1's baseline: a scripted read of which alpha.9 survey findings the build now answers.
-- **Y1**: Redirect, split: the press's wait is Phase 1 lag; what fills a year is Phase 5 content.
-- **PA**: Redirect to Phase 3 (A3, rivals that grow; and the rivals-without-skills finding above). Its "record the trait's say
+- **Y1**: Redirect, split: the press's wait is Phase 1 lag; what fills a year is Phase 6 content.
+- **PA**: Redirect to Phase 4 (A3, rivals that grow; and the rivals-without-skills finding above). Its "record the trait's say
   in the rulers' log" is a small ride-along.
-- **LC**: Redirect: A0 stopgaps now (Phase 1), A2 for good (Phase 3). D-137's "say plainly what the deed is" rides with it.
-- **R3, E0, K1**: Park to Phase 5. K1's "a duke forced to kneel" is a wrong card: fix it on sight as a quick fix.
+- **LC**: Redirect: A0 stopgaps now (Phase 1), A2 for good (Phase 4). D-137's "say plainly what the deed is" rides with it.
+- **R3, E0, K1**: Park to Phase 6. K1's "a duke forced to kneel" is a wrong card: fix it on sight as a quick fix.
 - **U1**: Redirect: its four named sources of upset become §9 effects (blunder and surge) and the duel side of A3.
 - **D12b**: Redirect: war is frozen (§10). Its design (`docs/design/war.md` §9 to §16) feeds C1's architecture doc and C3's core.
 - **X4**: Redirect to the balance harness (Phase 1). **X5**'s leftovers are done or decided (D-104 point 4).
-- **X7 part 2, I1-1**: Redirect to Phase 1 (lag, the smoke test) and Phase 6.
-- **I1-2 leftovers, I1-3 to I1-7**: Park (order 70; Phases 6, 9, 10).
+- **X7 part 2, I1-1**: Redirect to Phase 1 (lag, the smoke test) and Phase 7.
+- **I1-2 leftovers, I1-3 to I1-7**: Park (order 70; Phases 7, 9, 10).
 - **C8d, L2, D9-2, Gaps**: Park; the art waits for the art route (Q5) and the image key (order 60).
 - **R1**: Finish as you go; the count (41) may only fall.
-- **v3 (G, E1, E2, L1, N1, V3-X)**: G is §9's library (Phases 2 and 5); E1 and E2 Phase 5; L1 and N1 Phase 3's routes and
-  Phase 5.
+- **v3 (G, E1, E2, L1, N1, V3-X)**: G is §9's library (Phases 2 and 5); E1 and E2 Phase 6; L1 and N1 Phase 4's routes and
+  Phase 6.
 - **Versions and milestones** (`release/v2.2-interface` …): the milestone list stays as the restore points; the names are
   not used in new docs (conflict 4).
 
@@ -200,4 +206,4 @@ already by the generated continent).
 | 28 | War depth: flanking, stealth, attrition, blockades, encirclement, sieges, supply, ambushes, scouting | **Not done** | Designed (`docs/design/war.md`, D12a, D-064); D12b not built; the old `36-sieges` is part of the frozen stack |
 | 29 | Migrate and prune the 3,199 events | **Not done** | 3,199 release events still in `src/core/release/content/`; the built game holds 5,030 events (`A.EV`) |
 | 30 | Diplomacy depth: wars move provinces; allies pulled in | **Partly** | W1-5: terms of real things, a province passes (`src/war/9999953-surrender/b-end.core.js:220`); W1-3 the summons, W1-6 alliances and pacts through `A.WHY`; allies drawn in by reasons not checked end to end |
-| 31 | Five real new players confirm the feel | **Not done** | Phase 7 |
+| 31 | Five real new players confirm the feel | **Not done** | Phase 8 |

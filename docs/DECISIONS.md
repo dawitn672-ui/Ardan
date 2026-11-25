@@ -2599,3 +2599,36 @@ always-on instructions. **Considered:** running skill-creator's trigger optimise
 not without the owner's yes on cost; the trigger checks were reasoned against the skill list and recorded instead.
 Keeping a few plugin skills while dropping the rest of their plugin: not possible (`skillOverrides` does not reach plugin
 skills). Keeping the account copies of the project skills: they are stale and one still teaches the breakthrough exploit.
+
+### D-158 · The newest instruction wins, everywhere (2026-11-25; order 76)
+**What.** Every new instruction from the owner takes precedence over every older construct: orders, decision records,
+built designs, the master prompt's rules, `CLAUDE.md`, skills and specs. The replaced text goes to the master prompt's
+Appendix C. Asking first stays only for what costs money, accounts, the store, players' saves or deleted work.
+**Considered:** keeping order 63's S1 under the new skill cards (my proposal): the owner said no. **Why:** his words, "make
+this clear throughout the rest of this project". Written into the master prompt's header, section 2, and `CLAUDE.md`.
+
+### D-159 · Skills rebuilt on section 9's model; S1 retires; stats apart (2026-11-25; order 76)
+**What.** Ranked skills (D to S, levels 1 to 10, rarity, kinds) that **merge, advance and evolve**, in great number
+(200, then 500, then 1,000 or more with magic and monsters). Stats stay a separate system; an ordinary skill never adds
+to a stat. S1's experience by doing and its concepts are reused as the engine under levels and evolution conditions; its
+35 levels, seven words and proofs go to `archive/` with a save migration. **Considered:** S1 with cards on top (refused);
+a fresh engine with nothing from S1 (throws away tested growth code). **Why:** the newest instruction wins (D-158); the
+owner's reference is a world with very many skills that combine.
+
+### D-160 · Next year below twelve, Next month from twelve (2026-11-25; order 76)
+**What.** Childhood passes by years; from age 12 the only button is Next month. Supersedes the two buttons of D-008,
+D-019 and D-026 for adults. **Why:** the owner's answer to "keep Next year?".
+
+### D-161 · Magic, races, monsters and legendary beings: Phase 3, after the skills (2026-11-25; order 76)
+**What.** A new workstream (master prompt section 17), begun once the skills rebuild is done, free to rewrite any canon,
+original in its names and story though inspired by the genre. Difficulty and war are tuned after it. The store sells
+packs that give more allowances (birth editing, choosing a station). **Considered:** magic as a late content wave
+(would retune difficulty and war twice). **Why:** the owner's order of work, and the size of the change.
+
+### D-162 · The order of work by effect on today's game; one trunk; no working branches (2026-11-25; order 76)
+**What.** Phases: 0 finish; 1 fix what play shows (the Emilio findings, the alpha 9 survey, the two exploits) and
+measure; 2 skills; 3 magic; 4 difficulty; 5 war; 6 content; 7 to 12 phone, playtesters, backend, apps, store, launch.
+GitHub's default branch `main` is brought up to date with `v2-integration` by a merge (no force; the owner's upload of
+2026-11-01 stays in its history) and becomes the one trunk; no working branches are pushed (helpers use local
+worktrees), replacing D-133's `work/<item>`. **Considered:** making `v2-integration` the default branch (the owner said
+update `main`). **Why:** the owner: "the repo should just be different versions getting updated".

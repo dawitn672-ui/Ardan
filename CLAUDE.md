@@ -19,6 +19,9 @@ built on top of it: **features** that add code and events, the **v2 engine** (pl
 
 ## Standing rules (the owner's)
 
+> **The owner's newest instruction always wins** over every older construct here, in `docs/`, in a skill or in the code's
+> design (order 76, D-158). The living source of truth is `docs/MASTER_PROMPT.md`; where this file disagrees with it, it wins.
+
 > ### ⚑ NOT A SINGLE THING IN THIS WORLD HAPPENS OUTSIDE OF REASON.
 > Things may come down to chance, luck, reasoned or calculated action, even petty and emotional reasons, but **never to
 > no reason at all.** Every figure acts from a thought process that fits his post, circumstances and personality. Coups,
@@ -40,8 +43,8 @@ built on top of it: **features** that add code and events, the **v2 engine** (pl
   tools and AI.
 - **One holder per post.** Every title, office and command has exactly one holder at a time. A promotion hands over
   the real command, men and powers and takes the old post away; leaving a post has consequences.
-- **Time moves by Next month or Next year** (D-008, D-019, D-026), two buttons in fixed places that never become a stop
-  control. Only notable things stop a step midway (a card that needs a real answer, a battle, a duel, a call to arms, a
+- **Time moves by Next year below age 12 and by Next month from 12** (D-160, replacing the two buttons of D-008, D-019,
+  D-026), in a fixed place, never a stop control. Only notable things stop a step midway (a card that needs a real answer, a battle, a duel, a call to arms, a
   deadline), and once the card or chain of cards is answered **the same step carries on to its end** (order 54, D-062
   addendum); a wound, an illness, a death or birth in the household and coming of age go into the year's digest. Only Esc,
   death or being put on campaign end a step early. Talk and the day's small happenings wait for the step's end.
@@ -190,7 +193,7 @@ Every foundational or significant change is a version (`docs/VERSIONS.md`, `tool
 - **How a version is cut (D-134, order 65), one way only.** A version is the commit CI tested green on both tiers
   (`check.yml` and `long.yml`). `node tools/version.mjs new vX.Y.Z "what changed" --at=<that sha>` writes its row in
   `docs/VERSIONS.md`, moves the changelog bullets that came with it under its heading, and saves a sample game in
-  `tests/saves/`; push `release/<version>` at exactly that commit, then commit the records on `v2-integration` (`[skip ci]`
+  `tests/saves/`; push `release/<version>` at exactly that commit, then commit the records on the trunk, `main` (`[skip ci]`
   unless a later batch needs its run). `node tools/version.mjs check` (run by `tools/check.mjs`) fails when the rows,
   release branches, changelog headings and sample saves disagree.
 - **Batches.** Merge features in a batch with one `[full ci]` push; the next batch waits on its pushed branches until
@@ -223,8 +226,9 @@ avoids it). Only a history rewrite would shrink it; that is the owner's decision
 
 **Parallel safety.** When several agents work at once, each owns **only its own `src/<system>/NN-name/` folder** (or its own `data/` files).
 
-- Work on a branch named `work/<item>` (D-133, order 64), push it early and often, and leave it for the integrator, who
-  merges it whole into `v2-integration` and lists it under "Deletable" in `docs/BRANCHES.md`.
+- Work in a local worktree; **push no working branch** (order 76, D-162, replacing D-133's `work/<item>`). The integrator
+  merges the work into the trunk, `main` (kept level with `v2-integration` until the owner deletes it), and pushes only
+  the trunk and `release/<version>` branches. The repo keeps only what reference needs: no plans, reports or scratch.
 - Take decision and history numbers (`D-`, `H-`) only from the range your brief reserves; with none given, write
   `D-NEW-1`, `H-NEW` and the integrator numbers them at the merge (parallel branches clashed on D-142, H-083, H-085).
 - Build to `--out=` a private scratch path such as `/tmp/ardan/<name>/`, never to `index.html`.

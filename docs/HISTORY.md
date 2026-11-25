@@ -2602,3 +2602,17 @@ no player-facing change (no CHANGELOG line). No D- number taken.
   `docs/BRANCHES.md` (`work/repo-tidy` and `work/tooling` to the deletable list), `docs/IDEAS.md` notes for the parked
   and dropped items. The next records step does them.
 - **Undo:** revert the branch's commit; nothing depends on it.
+
+### H-109 · 2026-11-25 · The owner's answers merged (order 76): newest instruction wins, skills rebuilt, magic, the order of work by effect
+On the trunk, docs only (no game code, no player-facing change).
+- **Saved:** `docs/prompts/2026-11-25-answers-and-direction.md` (unchanged); order 76 in `docs/OWNER_ORDERS.md`.
+- **Master prompt:** header (the newest instruction wins, everywhere; work by effect on today's game); register row A;
+  section 2 (decisions on magic, store packs, portraits, the map later; the repo as versions only; the open questions
+  answered); 4.1 (only what reference needs); 5 (Next year below 12, Next month from 12); 9 (the new model replaces S1:
+  merge, advance, evolve; stats apart; 200/500/1,000 skills); 12.5 (game packs); 13.1 to 13.3 rebuilt (Phase 3 is magic;
+  old Phases 3 to 11 are 4 to 12, every reference renumbered); new section 17 (magic, races, monsters, legendary beings);
+  Appendix C rows for each superseded instruction.
+- **New:** `docs/design/emilio-1108-findings.md` (E1 to E10 from the owner's save, which stays out of the repo).
+- **Decisions:** D-158 to D-162. **Also:** `CLAUDE.md` (precedence, time, no working branches, records on `main`),
+  `docs/ROADMAP.md` and `docs/STATUS.md` (renumbered, with a dated note), `docs/README.md`.
+- **Undo:** revert this commit.
