@@ -2632,3 +2632,11 @@ GitHub's default branch `main` is brought up to date with `v2-integration` by a 
 2026-11-01 stays in its history) and becomes the one trunk; no working branches are pushed (helpers use local
 worktrees), replacing D-133's `work/<item>`. **Considered:** making `v2-integration` the default branch (the owner said
 update `main`). **Why:** the owner: "the repo should just be different versions getting updated".
+
+### D-163 · Breakthroughs budgeted: a stopgap until A2 (2026-11-25; master prompt 8 A0.1, 13.1 rule 2)
+**What.** `A.breakthrough` (a duel won against a foe 8 or more above) and `VS.breakthrough` (an attempt won by a surge)
+share one life's budget: at most three, two years apart; a sparring bout never triggers one; the body's ceiling rises by
+at most 3 a breakthrough and never past 100 (it was up to 70% of the gain, capped at 200 and 220), and the body only grows
+toward it. Marked `STOPGAP: replaced by A2`. **Considered:** removing breakthroughs until A2 (loses the owner's loved
+duels' high moment); a cooldown alone (still a road to Legend over a long life). **Why:** the owner's alpha 9 life went to
+Legend in under thirty years; the master prompt's A0.1 sets these numbers, to be tuned from the balance harness.

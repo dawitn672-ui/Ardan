@@ -435,13 +435,15 @@ A.duelConsequences = function (D) {
     won && D.kind !== "spar" && (pc.flags.duelWins = (pc.flags.duelWins || 0) + 1),
     won)
   ) {
-    if (gap > 8) {
+    // STOPGAP: replaced by A2 (D-163): a sparring bout is no breakthrough, and the life's budget may be spent
+    if (gap > 8 && D.kind !== "spar") {
       const gains = A.breakthrough(pc, gap, D);
-      out.push(
-        `BREAKTHROUGH. You beat a foe who should have beaten you. Your body and will change: ${Object.entries(gains)
-          .map(([k, v]) => GD.STAT_SHORT[k] + " +" + v)
-          .join(", ")}.`,
-      );
+      if (gains)
+        out.push(
+          `BREAKTHROUGH. You beat a foe who should have beaten you. Your body and will change: ${Object.entries(gains)
+            .map(([k, v]) => GD.STAT_SHORT[k] + " +" + v)
+            .join(", ")}.`,
+        );
       A.ach("giant_killer");
       A.fame(pc, Math.min(15, Math.round(gap / 3)));
     }

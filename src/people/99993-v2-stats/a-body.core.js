@@ -257,6 +257,9 @@ VS.STAT_OF_SKILL = { sword: 'str', axe: 'str', melee: 'str', unarmed: 'str', spe
   bow: 'ins', xbow: 'ins', throwing: 'ins', dagger: 'spd', stealth: 'spd', riding: 'spd', tracking: 'ins' };
 VS.breakthrough = function (p, s, mag, note) {
   if (!VS.isPC(p) || !GD.STATS.includes(s)) return false;
+  // STOPGAP: replaced by A2 (D-163): one life's budget for every breakthrough, this one and the duel's (A.breakthroughOpen)
+  if (A.breakthroughOpen && !A.breakthroughOpen(p)) return false;
+  if (A.breakthroughOpen) { p.btN = (p.btN || 0) + 1; p.btY = A.S.year; }
   VS.sync(p);
   const v = VS.vperson(p), a = VS.ATTR[s];
   if (VS.PHYS.includes(s)) B.breakthrough(v, a, mag, note || '');
@@ -264,7 +267,7 @@ VS.breakthrough = function (p, s, mag, note) {
   for (const k in p.v2.c) p.v2.c[k] = r4(p.v2.c[k]);
   for (const k in p.v2.cb) p.v2.cb[k] = r4(p.v2.cb[k]);
   // the old scale sees it as potential, as the release's own breakthroughs do
-  p.pot[s] = Math.min(220, Math.round(p.pot[s] + 3 * mag));
+  p.pot[s] = Math.max(p.pot[s], Math.min(100, Math.round(p.pot[s] + 3 * mag)));   // STOPGAP (D-163): never past 100
   if (p.v2.bt.length > 24) p.v2.bt.splice(0, p.v2.bt.length - 24);
   VS.sync(p);
   return true;

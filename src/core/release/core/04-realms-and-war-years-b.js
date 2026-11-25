@@ -323,13 +323,25 @@ A.willGrow = function (p, amt, why) {
   return p.st.wil - before;
 };
 
+// STOPGAP: replaced by A2 (master prompt section 8, A0.1; D-163). A breakthrough raised the body's ceiling by up to 70%
+// of the gain with no cap but 200, on any win against a foe 8 above, sparring included, as often as such foes were found:
+// the road to Legend in under thirty years (the owner's alpha 9 life). Now: at most A.BT_MAX in a life, A.BT_GAP years
+// apart, the ceiling rises by at most 3 a breakthrough and never past 100, and the body only grows toward it.
+A.BT_MAX = 3;
+A.BT_GAP = 2;
+A.breakthroughOpen = function (p) {
+  return (p.btN || 0) < A.BT_MAX && (p.btY == null || A.S.year - p.btY >= A.BT_GAP);
+};
 A.breakthrough = function (p, gap, ctx) {
+  if (!A.breakthroughOpen(p)) return null;
+  p.btN = (p.btN || 0) + 1;
+  p.btY = A.S.year;
   const mult = (0.6 + A.stat(p, "wil") / 70) * Math.min(3, gap / 10),
     gains = {};
   for (const s of ["str", "spd", "ins", "sta"]) {
     const g = A.rf(0.6, 1.4) * mult * 2.2;
-    p.pot[s] = Math.round(Math.min(200, p.pot[s] + g * 0.7));
-    p.st[s] = Math.min(p.pot[s] * 1.02, p.st[s] + g);
+    p.pot[s] = Math.round(Math.max(p.pot[s], Math.min(100, p.pot[s] + Math.min(3, g * 0.2))));
+    p.st[s] = Math.min(Math.max(p.st[s], p.pot[s]), p.st[s] + g);
     gains[s] = A.round(g, 1);
   }
   const wg = A.willGrow(p, 2 + mult * 1.5, "breakthrough");

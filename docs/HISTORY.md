@@ -2696,3 +2696,16 @@ CI 165's long shard 0: `modsFireInLives` had two lives with 10+ adult years of t
 treason after a plot card), not a fault, and the balance bench (each path's span within its bands) passed on the same
 commit. The test now plays the next mix and seed, up to twelve lives, while fewer than three are long: locally 9 lives, the
 probe in 3 of 3 long ones.
+
+### H-118 · 2026-11-25 · E10 and E5b closed; breakthroughs budgeted (D-163)
+- **E10** `A.electable` (`04-realms-and-war-years-a.js`): a theocracy's throne asks a senior churchman of the race's
+  adult age + 20 (36 for a human); test `pfSacredThroneAsksYears`. The election itself was already reasoned (electors
+  score candidates with named parts, 9996-polity).
+- **E5b** `src/events/9999960-play-fixes/hunt.core.js` (new, the folder becomes a feature with code): each month the one
+  with most cause (a survivor of the outlaw's knife, else the crown of the land) decides through `A.WHY.decide` whether to
+  hunt him (the unpaid price, the grudge, nearness; against: cost, his renown) and brings one of the release's hunter
+  scenes at most every two years; test `pfOutlawHunted` (0 hunts for a free man in 24 months, 4 for an outlaw with a price
+  and a grudge, told "Because: ...").
+- **Breakthroughs** (D-163): `A.breakthrough`, the duel's call (`07-duels.js`) and `VS.breakthrough`; test
+  `pfBreakthroughBudget` (old build: 12 in 12 years, a ceiling of 124; now 3, two years apart, the highest ceiling 61).
+- **Undo:** revert this commit.

@@ -98,4 +98,50 @@ export default {
     });
     return { ok: !r.open, detail: `age ${r.age}, best skill value ${r.v}: ${r.open ? 'may write a treatise' : 'may not: ' + r.why.join('; ')}` };
   },
+  // E10: a theocracy's throne asks a churchman of years (36 for a human), not a young priest
+  async pfSacredThroneAsksYears(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 6107, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 24 });
+      const r = Object.values(A.S.realms).find(x => x && x.alive && x.gov === 'theocracy' && x.race === 'human');
+      if (!r) return { skip: 'no human theocracy in world 6107' };
+      const p = A.pc(); p.job = { c: 'clergy', r: 4, y: A.S.year, perf: 60 };
+      const young = A.electable(p, r);
+      p.born = A.S.year - 40;
+      const old = A.electable(p, r);
+      return { young, old, realm: r.short };
+    });
+    if (r.skip) return { ok: true, skip: r.skip };
+    return { ok: !r.young && r.old, detail: `${r.realm}: a senior priest of 24 electable ${r.young}; of 40 ${r.old}` };
+  },
+  // E5b: an outlaw with an unpaid blood-price and a man who survived his knife is hunted within two years; a man with
+  // nothing against him is not
+  async pfOutlawHunted(pg) {
+    const r = await pg.evaluate(() => {
+      if (!A.PF || !A.PF.huntMonth) return { skip: 'no hunt' };
+      T.enter({ seed: 6108, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
+      const pc = A.pc();
+      const t = Object.values(A.S.people).find(p => p && p.alive && p.id !== pc.id && p.realm === pc.realm && A.age(p) > 20);
+      A.link(pc, t, 'enemy', -60, 'enemy'); (t.wary = t.wary || {})[pc.id] = A.S.year;
+      const run = () => { let n = 0; for (let m = 0; m < 24; m++) { A.S.queue = []; const rec = A.PF.huntMonth(pc); if (A.S.queue.some(q => /bounty|hunted/.test(q.ev))) { n++; delete pc.flags.pf_hunted; } } return n; };
+      const clean = run();
+      pc.flags.outlaw = A.S.year; pc.flags.outlawDebt = 300;
+      const hunted = run();
+      const rec = A.WHY.decide(t.id, 'hunt', A.PF.huntOptions(pc, A.PF.hunter(pc)), { log: false });
+      return { clean, hunted, why: A.WHY.tell ? A.WHY.tell(rec, true) : rec.chose };
+    });
+    if (r.skip) return { ok: true, skip: r.skip };
+    return { ok: r.clean === 0 && r.hunted >= 1, detail: `not an outlaw: ${r.clean} hunts in 24 months; an outlaw with a price and a grudge: ${r.hunted}; ${r.why}` };
+  },
+  // A0.1 stopgap (D-163): three breakthroughs in a life, two years apart, the ceiling never past 100, and a spar is none
+  async pfBreakthroughBudget(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 6109, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 20 });
+      const pc = A.pc(), y0 = A.S.year, got = [];
+      for (let i = 0; i < 12; i++) { A.S.year = y0 + i; got.push(!!A.breakthrough(pc, 30, {})); }
+      A.S.year = y0;
+      const maxPot = Math.max(...['str', 'spd', 'ins', 'sta'].map(s => pc.pot[s]));
+      return { got: got.map(x => (x ? 1 : 0)).join(''), n: got.filter(Boolean).length, maxPot, btN: pc.btN };
+    });
+    return { ok: r.n === 3 && r.maxPot <= 100 && /^1010100+$/.test(r.got), detail: `twelve tries a year apart: ${r.got} (${r.n} breakthroughs); the highest ceiling after: ${r.maxPot}` };
+  },
 };
