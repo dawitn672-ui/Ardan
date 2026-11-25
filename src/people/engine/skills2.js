@@ -111,9 +111,9 @@ export function pastReach(talent, rank, lv) {
 // as `held` (stored experience: it lands as the even level when the rungs hold the level, step 5). Nothing is lost.
 export function fromS1(s1lv, xp) {
   const r = rungOfS1(s1lv); if (!r) return null;
-  xp = Math.max(0, +xp || 0);
-  const c = cost(r.rank, r.lv), keep = Math.min(xp, Math.max(0, c - 1e-6));
-  const out = { rank: r.rank, lv: r.lv, xp: Math.round(keep * 100) / 100 };
+  xp = Math.max(0, +xp || 0); if (!isFinite(xp)) xp = 0;
+  const c = cost(r.rank, r.lv), keep = Math.floor(Math.min(xp, Math.max(0, c - 0.01)) * 100) / 100;
+  const out = { rank: r.rank, lv: r.lv, xp: keep };
   const held = Math.round((xp - keep) * 100) / 100;
   if (held > 0) out.held = held;
   return out;
