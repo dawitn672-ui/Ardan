@@ -407,6 +407,13 @@ order is replaced, strike it through and say by what.
     stat boosts; they are very difficult to get, and their requirements cannot be seen. Placed by importance: designed with
     the skills rebuild (13.1 rule 4), and the great beings' titles in the power-scale wave (D-169).
 
+80. **Stat points per level, skill training, blacksmithing and weapons, trade as a profession, many paths beyond combat** ·
+    recorded 2026-11-25 (evening). Kept unchanged in `docs/prompts/2026-11-25-pathways.md`. Placed by importance (order 78):
+    stat allocation, per-level points and skill training go into the skills rebuild's design now (13.1 rule 4); blacksmithing
+    and diverse weapons, merchant relations, trade and business as a simple profession, and countless other pathways become
+    a new workstream, Professions and pathways (master prompt section 18), right after the skills rebuild and before magic,
+    because every life reads them and they sit on the new skills (D-170, H-127).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,

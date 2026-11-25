@@ -33,6 +33,7 @@ I am early in development. The game will change a lot before the roadmap is fini
 15. First session script
 16. Skills, plugins and connectors (top priority)
 17. Magic, races, monsters and legendary beings (Workstream D)
+18. Professions and pathways (Workstream E)
 - Appendix A: balance harness. Appendix B: skill schema. Appendix C: superseded instructions.
 
 Keep this list current when sections are added, split or renumbered.
@@ -136,6 +137,7 @@ One row per prompt I give you. Add a row every time. "Status" says whether it is
 | P2 | 2026-11-25 | "Make the power scaling of this world much larger" (`docs/prompts/2026-11-25-power-scale.md`) | Countless beasts and mythical beings; today's strongest warrior weak beside race masters and monsters; full speed, no stopping every few minutes | 13, 17 | Merged. |
 | L | 2026-11-25 | Levels and beings (`docs/prompts/2026-11-25-levels-and-beings.md`) | Levels replace tier words; same level, different capabilities; intelligence classes; minds, titles and a ranking for every unique being, lairs for some; every order placed by importance | Header, 9, 13.1, 17 | Merged. |
 | T2 | 2026-11-25 | Titles (`docs/prompts/2026-11-25-titles.md`) | Stackable titles with honour, buffs and stat boosts; very hard to earn; hidden requirements | 9 | Merged. |
+| PW | 2026-11-25 | Pathways (`docs/prompts/2026-11-25-pathways.md`) | Stat allocation with points per level; skill training; blacksmithing and diverse weapons; trade and business as an easy profession; countless paths beyond combat | 9, 13.1, 18 | Merged. |
 
 ### 1.3 Carry-over checklist
 Earlier prompts asked for a lot that may already be built, or be in progress. **Before you plan any phase, check each row in the repo.** Record the result (Done, In progress, Partly, Not done or Changed) and the evidence in `docs/ROADMAP.md`. Work only on what is not done. New prompts add rows here. Item IDs: K1 to K10 are the kit steps, V1 to V16 are the complaint numbers in `docs/V2_SPEC.md`, O-letter-number are the orders of 2026-11-12.
@@ -459,6 +461,7 @@ The card shows: name, rank letter, level out of 10 as pips, kind, category, rari
 - **Slots:** a limited number of active skills can be readied at once. It grows with the mind, rank and age. Passives and auras have no slot limit but are capped by the stacking rule below.
 - **Evolution:** a skill can evolve at level 10 into a higher-rank skill if its conditions are met (Beginner Footwork D → Footwork C → Fleet Fighter B).
 - **Merging:** several held skills can fuse into one stronger skill when their conditions meet (Swordsmanship + Footwork + Battle Sense → a named sword art), and the parts are absorbed into it. Some merges are known recipes, some are found by chance in a crisis, and a few happen only once in an age.
+- **Levels and stat points (order 80):** a person has a level on the one ladder every being shares (17), gained in every walk of life, not only war. Each level gives **stat points the player allocates** among the six stats, inside his race's ceilings and his body's state (age and wounds still bound them). **Skill training** is the player's choice on its own screen: a skill, a way (alone, a master, a school, a book), time and coin, odds in words.
 - **Titles (order 79):** a system beside skills. Earned, never bought; very hard to get; their requirements are **hidden** (at most a rumour hints at one); they **stack**, each giving honour and buffs or stat boosts, held under the same power budget and stacking caps as skills so a stack cannot snowball; one-of-a-kind titles have one holder. People and the great beings hold them too. **Done when:** a title is earned in a bot life by meeting hidden conditions it was never shown; two stacked titles stay inside the caps.
 - **Levels, not words (order 78):** the player reads a skill's rank and level, never "Master", "Legend" or the other tier words; honours such as "master swordsman" are titles given for deeds, not the measure.
 - **Advancing:** a skill can also be awakened at a higher rank by a deed, a near-death or a blessing, without passing through every level (rare, and always with a named reason).
@@ -612,14 +615,15 @@ You say it is far too undeveloped and buggy. Fix the structure first, then add d
 1. **Keep `main` playable and releasable.** A broken build or a broken save is fixed before anything else.
 2. **Bugs the owner meets in play** (his lives: the alpha 9 survey, the Emilio life of 1105 to 1108, `docs/design/emilio-1108-findings.md`) and the open exploits (breakthroughs, the throne plot): they change every life now. Fix current issues before new ones (order 54).
 3. **The power scale and the bestiary (section 17, its first wave; order 77):** now, beside the last of Phase 1.
-4. **The skills rebuild (section 9).** The owner's top complaint is linear growth, and magic, difficulty and war all sit on it.
-5. **Magic, races and the rest of section 17.** The largest change to the world; it begins only once the skills are done, and difficulty and war are tuned after it, not before.
-6. **Difficulty and progression (section 8),** measured on the world with skills and magic in it.
-7. **War (section 10).** Bug fixes only until its rebuild.
-8. **Content, art and depth;** then phone, playtesters, backend, apps, store, launch.
-9. **Skills and tools are refined whenever the owner adds new ones (section 16),** before the work that uses them.
-10. **Never polish what will be rebuilt.** **Limit work in progress:** one main workstream, at most one side track on different modules; a fix under a day can jump the queue.
-11. **Ask for the owner's decisions before they block,** batched; work around them until then. **Start long lead-time items early** (13.4).
+4. **The skills rebuild (section 9),** with stat points per level, skill training and titles. The owner's top complaint is linear growth, and magic, difficulty and war all sit on it.
+5. **Professions and pathways (section 18):** blacksmithing and weapons, trade and business, and many roads beyond combat; they sit on the new skills.
+6. **Magic, races and the rest of section 17.** The largest change to the world; it begins only once the skills are done, and difficulty and war are tuned after it, not before.
+7. **Difficulty and progression (section 8),** measured on the world with skills and magic in it.
+8. **War (section 10).** Bug fixes only until its rebuild.
+9. **Content, art and depth;** then phone, playtesters, backend, apps, store, launch.
+10. **Skills and tools are refined whenever the owner adds new ones (section 16),** before the work that uses them.
+11. **Never polish what will be rebuilt.** **Limit work in progress:** one main workstream, at most one side track on different modules; a fix under a day can jump the queue.
+12. **Ask for the owner's decisions before they block,** batched; work around them until then. **Start long lead-time items early** (13.4).
 
 Tie-breaker: the value to the player divided by the effort, plus how much later work it unblocks.
 
@@ -883,6 +887,21 @@ Create them in `.claude/skills/` at the phase shown. Each description below is a
 
 ---
 
+## 18. Workstream E: professions and pathways
+
+**The owner, 2026-11-25 (order 80):** "blacksmithing and diverse weapons. merchant relations, trades and business more simplified and easy to use as an actual profession. countless extra pathways for a player to go, reaching farther than just combat." A life is a career the player can pursue as fully as war.
+
+- **Blacksmithing and crafts:** ore, fuel and tools; a forge of one's own; weapons and armour of many kinds and cultures, each with its own handling and use in a fight; quality from the smith's level and materials (and, after section 17, monster parts); commissions, a mark and a name; apprentices.
+- **Weapons:** a wide armoury by kind, culture and quality, read by the fight (reach, weight, speed, against armour, against beasts).
+- **Trade and business, simple to use:** buy where cheap, sell where dear, along roads with risk; a shop, a stall, a caravan, a trading house; partners and rivals with relations; contracts and credit; one clear screen that a new player understands in a minute. It sits on one coherent economy (E0).
+- **Many roads:** scholar, healer, priest, judge, steward, spy, explorer, monster hunter, builder, farmer and landholder, guild master, courtier, artist, and more, each with its levels, skills, titles and a way to rise, fail or change course. A life can move between them.
+
+**Build order:** after the skills rebuild; first the economy's single model (E0) and the profession frame (one schema for every trade: work, income, levels, relations, events), then blacksmithing and trade as the two deep examples, then the other roads in waves.
+
+**Done when (first wave):** a bot life can live wholly as a smith or a merchant and rise for reasons; a new player opens the trade screen and makes a profit within ten minutes without help; every road has at least one way up and one way down.
+
+---
+
 ## Appendix A — headless balance harness (starting point, tested on alpha 15)
 
 Load the built HTML in headless Chrome with the page's security rule bypassed for the test only, then drive the engine. These entry points exist in alpha 15 (re-check them on current `main`): `A.newGame`, `A.ageUp`, `A.eventView`, `A.eventChoose`, `A.eventClose`, `A.doActivity`, `A.canAct`, `A.battleClose`, `A.duelAuto`, `A.duelClose`, `A.fightWorth`, `A.pc`. Inside the repo, prefer calling the modules directly with no browser.
@@ -1023,3 +1042,4 @@ Instructions that a newer one replaced. They are kept so a later session knows w
 | Monsters and power wait until after the skills rebuild | Order 76 (section 17) | The power scale and bestiary now, before the skills; magic and races keep their place | 13, 17 |
 | Tier words (Beginner to Legend) as the measure of skill and fighting | S1 (order 63), GD.TIERS | Levels; titles only for deeds (order 78) | 9, 17 |
 | New orders worked in the order given | Practice | Every order placed by importance (13.1), order 78 | Header, 13.1 |
+| Stats grow by age and training alone | V2 body (order 59 era) | Stat points per level, allocated by the player, bounded by race and body (order 80) | 9 |

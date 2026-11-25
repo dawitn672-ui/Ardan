@@ -2686,3 +2686,11 @@ skills design) were told mid-work.
 earning; they stack; each gives honour and buffs or stat boosts under the skills' power budget and stacking caps; unique
 titles have one holder. Designed with the skills rebuild (13.1 rule 4); the great beings' titles (with their buffs) come in
 the power-scale wave now. **Why:** the owner's order 79; placed by importance (order 78).
+
+### D-170 · Stat points per level and skill training in the skills rebuild; professions and pathways next (2026-11-25; order 80)
+**What.** A person's level (the one ladder of every being) gives stat points the player allocates, bounded by race and
+body; skill training is chosen on its own screen. Both go into the skills rebuild's design now. Blacksmithing and weapons,
+trade and business as an easy profession, and many roads beyond combat become section 18, built right after the skills
+rebuild and before magic. **Considered:** building trade first (it needs the skills and E0's single economy, or it is
+built twice); after magic (every life reads professions; magic is one road among them). **Why:** the owner's order 80, placed
+by importance (order 78).

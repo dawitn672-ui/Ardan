@@ -2748,3 +2748,8 @@ power-scale builder and the skills designer while they work.
 ### H-126 · 2026-11-25 · Order 79 merged (titles)
 Saved the prompt; order 79; master prompt register T2 and section 9; D-169. Passed to the skills designer (the full title
 system) and the power-scale builder (the great beings' titles and buffs).
+
+### H-127 · 2026-11-25 · Order 80 merged (stat points, training, professions and pathways); alpha 16 cut
+- v2.1.0-alpha.16 at `4a97b98d` (check 169 and long 113 green), release branch pushed, sample `young-noble`.
+- Order 80: master prompt register PW, sections 9 and 13.1 (professions and pathways fifth, before magic), new section 18;
+  D-170. The skills designer has the stat points and training parts.
