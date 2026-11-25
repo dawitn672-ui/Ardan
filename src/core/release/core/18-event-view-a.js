@@ -227,6 +227,10 @@ A.eventChoose = function (idx) {
   }
   const ctxT = A.ctxTokens(pc, q.ctx || {});
   let text = "";
+  // E3 (order 76, the Emilio save): the choice's own result line goes into the year's log before the lines its effects
+  // write ("Your attempt fails." then "You are imprisoned"), not after them. Mark where the effects begin.
+  const L0 = A.S.log[A.S.log.length - 1],
+    n0 = L0 && L0.year === A.S.year && L0.pc === A.S.pc ? L0.lines.length : -1;
   try {
     if (branch.fx) {
       const r = A.applyFx(pc, branch.fx, q.ctx || {});
@@ -247,7 +251,11 @@ A.eventChoose = function (idx) {
     text: A.T(text, ctxT),
     success,
   };
-  if (text) A.log(A.T(text, ctxT), success === false ? "bad" : success ? "good" : "");
+  if (text) {
+    const cls = success === false ? "bad" : success ? "good" : "";
+    if (n0 >= 0 && A.S.log[A.S.log.length - 1] === L0 && L0.lines.length > n0) L0.lines.splice(n0, 0, [A.T(text, ctxT), cls, A.today()]);
+    else A.log(A.T(text, ctxT), cls);
+  }
   return q;
 };
 

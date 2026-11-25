@@ -5,6 +5,12 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Escaping the gallows really frees you.** Breaking free at the gallows or bribing the hangman used to leave you
+  "in prison" on paper, so cell fights followed you abroad. Now a man who escapes is out of the cells.
+- **No training injuries in a cell.** Your training plan's injuries came even in prison; now only training can hurt you.
+- **The story reads in order.** What you did comes first in the year's log, then what it caused ("Your attempt fails."
+  then "You are imprisoned"), not the other way round.
+
 ## v2.1.0-alpha.15 (2026-11-19 09:00 ET) · Everyone ages and the houses go on; the game built by CI; versions cut one way
 
 - **People grow old and die, and the great houses go on.** Before, only rulers, title holders and people you knew ever

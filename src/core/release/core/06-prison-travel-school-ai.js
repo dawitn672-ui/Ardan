@@ -28,6 +28,9 @@ A.imprison = function (pc, years, why) {
 };
 
 A.exile = function (pc) {
+  // E1 (order 76, the Emilio save): whoever is cast out is out of the cells. The gallows' "break free" and the hangman's
+  // bribe exiled a condemned prisoner but left pc.prison, so cell fights and the sentence ran on in a foreign land.
+  pc.prison = null;
   const opts = A.S.prov.filter(p => p.owner !== pc.realm && (p.owner === "unclaimed" || A.realm(p.owner))),
     to = A.pick(opts.filter(p => p.adj.some(j => A.S.prov[j].owner === pc.realm)).concat(opts.slice(0, 5)));
   if (to) {

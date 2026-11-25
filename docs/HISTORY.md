@@ -2633,3 +2633,19 @@ On the trunk, docs only (no game code, no player-facing change).
 `src/events/82-early-years` and `src/economy/9995-trade-roads` (both `.wip`, never in the default build) moved to
 `archive/` with notes; the owner left the choice to the integrator. The default build is unchanged (150 features, 0
 patches). Last commit with them in `src/`: `a8819b95`. **Undo:** move the folders back and restore their `.wip` files.
+
+### H-112 · 2026-11-25 · Phase 1 begins: Emilio findings E1 to E3 fixed (order 76)
+The owner's Emilio life (`docs/design/emilio-1108-findings.md`). Fixed in the modules that own the code:
+- **E1** `A.exile` (`src/core/release/core/06-prison-travel-school-ai.js`) empties the cell: the gallows' "break free"
+  and the hangman's bribe exiled a condemned prisoner and kept `pc.prison`, so cell cards and the sentence followed him
+  abroad.
+- **E2** `A.planDay` (`16-classes-roles-and-paths.js`): the training injury needs a training plan and no cell (it rolled
+  for anyone at a hard intensity, prisoners included). Moves the random stream for people without a plan.
+- **E3** `A.eventChoose` (`18-event-view-a.js`): a choice's result line goes into the log before the lines its effects
+  write.
+- **Tests** in the new `src/events/9999960-play-fixes/`: `pfExileFreesCell`, `pfNoTrainingHurtInCell` (4,000 days; 18
+  injuries without the rule), `pfResultBeforeEffects`; all three fail on the build before the fix and pass after.
+  Coherency quick: no contradiction, no check rose. lint-stages ok; lint-reasons 41 (unchanged). The engine's 124 unit
+  tests pass.
+- Also: `ardan-dev-process` no longer says to push `work/<item>` branches (order 76). CHANGELOG under Unreleased.
+- **Undo:** revert this commit.

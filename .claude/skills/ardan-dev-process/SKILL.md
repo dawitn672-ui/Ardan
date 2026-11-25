@@ -29,11 +29,11 @@ The rules are the owner's: `docs/MASTER_PROMPT.md` §2 (standing rules), §4.5 (
 - A short design check first: two or three approaches, the one you take and why. Ask the owner only when a wrong guess
   is costly; otherwise state the reading and go.
 - A numbered plan: each task small enough to have its own test and commit, with the files it touches. Put large plans
-  in `docs/design/` or `docs/plan/`, never in a tool's own folder.
-- Independent tasks can go to parallel subagents, one folder each (CLAUDE.md, parallel safety), each on its own branch.
+  in `docs/design/`, never in a tool's own folder.
+- Independent tasks can go to parallel subagents, one folder each (CLAUDE.md, parallel safety), each in its own local worktree.
 
 ## 4. Work
-- Branch `work/<item>` from `origin/v2-integration`; one step per commit; push early. Do not merge; the integrator does.
+- One step per commit on the trunk `main` (or a local worktree for a helper; push no working branch: order 76, D-162).
 - **Test first** where the rule can be tested: write the failing test (a feature's `test.mjs`, or `tests/v2/*.test.js`
   for the engine) with calibration targets, see it fail, then make it pass. Tests must be world-robust (CLAUDE.md:
   seed fallback, pooled numbers with bars from measured spread, poll never sleep).

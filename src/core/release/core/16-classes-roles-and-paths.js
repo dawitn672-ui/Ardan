@@ -931,7 +931,8 @@ A.planDay = function (pc) {
   if (
     ((pc.happy = A.clamp(pc.happy + I.happy, 0, 100)),
     (I.health > 0 || pc.health > 40) && (pc.health = A.clamp(pc.health + I.health, 0, A.maxHealth(pc))),
-    I.inj && A.chance(I.inj * (pc.health < 50 ? 2 : 1)))
+    // E2 (order 76): the training injury comes only from training, and nobody trains in a cell
+    I.inj && P.train && !pc.prison && A.chance(I.inj * (pc.health < 50 ? 2 : 1)))
   ) {
     const w = A.addWound && A.chance(0.2) ? A.addWound(pc, A.pick(["bad_knee", "back", "broken_ribs"])) : null,
       k = A.ri(4, 12);
