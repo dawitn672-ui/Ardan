@@ -144,4 +144,20 @@ export default {
     });
     return { ok: r.n === 3 && r.maxPot <= 100 && /^1010100+$/.test(r.got), detail: `twelve tries a year apart: ${r.got} (${r.n} breakthroughs); the highest ceiling after: ${r.maxPot}` };
   },
+  // A0.2 stopgap (D-164): one plot in five years whatever its end, odds no better than 40 in 100, told in words
+  async pfThronePlotOnce(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 6110, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 });
+      const pc = A.pc(); pc.fame = 100; if (pc.noble) pc.noble.rung = 6; else pc.noble = { rung: 6, realm: pc.realm };
+      A.S.queue = [];
+      const a = A.plotThrone(pc), odds = (A.S.queue.find(q => q.ev === 'plot_throne') || { ctx: {} }).ctx.odds;
+      A.S.queue = [];
+      const b = A.plotThrone(pc);
+      A.S.year += 5; const c = A.plotThrone(pc); A.S.year -= 5;
+      const q = A.S.queue.find(x => x.ev === 'plot_throne'), v = q ? A.eventView(q) : null;
+      const shown = v && UI.queueModal ? (VS => VS ? VS.deNum(String(v.text)) : String(v.text))(A.V2S) : '';
+      return { a: a.ok, b: b.ok, c: c.ok, odds, digits: /\d+ in a hundred/.test(shown), shown: shown.slice(-90) };
+    });
+    return { ok: r.a && !r.b && r.c && r.odds <= 40 && !r.digits, detail: `first plot ${r.a}, again that year ${r.b}, five years on ${r.c}; odds ${r.odds} in 100 at most 40; shown: "${r.shown}"` };
+  },
 };

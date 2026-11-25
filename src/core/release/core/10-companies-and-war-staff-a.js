@@ -292,6 +292,7 @@ A.foundRealm = function (pc, provIds, men) {
   return r;
 };
 
+A.PLOT_GAP = 5;
 A.plotThrone = function (pc) {
   const r = A.realm(pc.realm);
   if (!r || !r.alive)
@@ -312,7 +313,16 @@ A.plotThrone = function (pc) {
       ok: false,
       msg: "You have no party at court and no swords. Nobody joins a plot that cannot win. (Need rank, title, blood, swords or fame.)",
     };
-  const odds = A.clamp((power - 30) / 100 + (100 - r.legit) / 300 + (100 - r.stability) / 400, 0.05, 0.75);
+  // STOPGAP: replaced by A2 (master prompt section 8, A0.2; D-164). A plot could be raised every year and "wait for a
+  // better moment" cost nothing, so a strong man waited until the odds (up to 75%) were good. Now a plot, whatever comes
+  // of it, closes the road for five years, and the odds top out at 40%.
+  if (pc.flags.plotY != null && A.S.year - pc.flags.plotY < A.PLOT_GAP)
+    return {
+      ok: false,
+      msg: "Your last plot is too fresh. The men who knew of it are watched, or watching you.",
+    };
+  pc.flags.plotY = A.S.year;
+  const odds = A.clamp((power - 30) / 100 + (100 - r.legit) / 300 + (100 - r.stability) / 400, 0.05, 0.4);
   A.queue({
     type: "event",
     ev: "plot_throne",

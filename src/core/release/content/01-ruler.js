@@ -976,7 +976,8 @@
         {
           t: "Wait for a better moment",
           r: "You let the plot cool. Some of your friends drift away.",
-          fx: {skill:{intrigue:2}},
+          // STOPGAP (D-164): waiting spends the plot (A.PLOT_GAP years) and the friends who drift away take some standing
+          fx: {skill:{intrigue:2},fame:-2,honor:-2},
         },
         {
           t: "Betray your fellow plotters to the crown",

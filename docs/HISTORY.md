@@ -2709,3 +2709,9 @@ probe in 3 of 3 long ones.
 - **Breakthroughs** (D-163): `A.breakthrough`, the duel's call (`07-duels.js`) and `VS.breakthrough`; test
   `pfBreakthroughBudget` (old build: 12 in 12 years, a ceiling of 124; now 3, two years apart, the highest ceiling 61).
 - **Undo:** revert this commit.
+
+### H-119 · 2026-11-25 · The throne plot stopgap (D-164)
+`A.plotThrone` (`10-companies-and-war-staff-a.js`): `A.PLOT_GAP`, `flags.plotY`, odds capped at 0.4. The plot card's
+"Wait" (`content/01-ruler.js`, a data literal, not a function: no identity probe needed) costs fame and honour 2.
+`VS.NUMRULES` (`99993-v2-stats/g-bands.core.js`) words "about N in a hundred". Test `pfThronePlotOnce` (old build: a plot
+again the same year, odds 75, digits on the card; now refused for five years, 40, "evenly matched"). Polity tests 37 of 37.

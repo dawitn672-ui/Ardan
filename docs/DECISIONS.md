@@ -2640,3 +2640,11 @@ at most 3 a breakthrough and never past 100 (it was up to 70% of the gain, cappe
 toward it. Marked `STOPGAP: replaced by A2`. **Considered:** removing breakthroughs until A2 (loses the owner's loved
 duels' high moment); a cooldown alone (still a road to Legend over a long life). **Why:** the owner's alpha 9 life went to
 Legend in under thirty years; the master prompt's A0.1 sets these numbers, to be tuned from the balance harness.
+
+### D-164 · The throne plot: once in five years, odds to 40%, in words (2026-11-25; master prompt 8 A0.2)
+**What.** `A.plotThrone` closes the road for `A.PLOT_GAP` (5) years from the day a plot is raised, whatever comes of it,
+so "Wait for a better moment" spends the attempt; waiting also costs a little renown and honour (friends drift away); the
+odds top out at 40% (were 75%); the card's "about N in a hundred" is put in odds words by the page's number rules
+(`VS.NUMRULES`). Marked `STOPGAP: replaced by A2` (a coalition of named people). **Considered:** one attempt per life now
+(A2's rule; too harsh before the coalition gives a reason to try again). **Why:** the owner's alpha 9 life became emperor in
+under thirty years; the master prompt's A0.2 sets these numbers, to be tuned from the harness.

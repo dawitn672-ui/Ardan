@@ -120,6 +120,9 @@ VS.NUMRULES = [
   [new RegExp(`\\b${TIER} · (\\d{1,3})\\b(?! conscripts)`, 'g'), (m, t) => t],
   [/(Most (?:feared|loved|trusted|hated|respected)[^\d\n]{0,40}?) (\d{1,3})\b/g, (m, a) => a],
   [VITAL_RE, (m, k, sep, v) => `${k}${sep || ' '}${VS.band(k, +v)}`],
+  // the throne plot's own count ("Your chance of success, by your own count: about 30 in a hundred"): odds in words
+  // (order 76, the master prompt's section 3: no percentages, however they are spelled)
+  [/\babout (\d{1,3}) in a hundred\b/g, (m, n) => { try { const o = VS.oddsOf(+n); return (o && o.words) || 'a gamble'; } catch (e) { return 'a gamble'; } }],
 ];
 const statKeyOf = name => { for (const k in GD.STAT_NAMES || {}) if (GD.STAT_NAMES[k] === name) return k; return null; };
 const skillKeyOf = name => { for (const k in GD.SKILLS || {}) if (GD.SKILLS[k] === name) return k; return null; };

@@ -15,6 +15,12 @@ What changed for the player, in plain words, one section per version (newest fir
 - **A book takes mastery.** Writing a treatise now asks an Expert's skill and a writer of 28 or more.
 - **A refused petition says why** (you asked last year, the crown hardly knows you, or you have done too little).
 - **A former superior stops giving you orders** once you have left the post.
+- **Breakthroughs are rare.** Beating a far stronger foe can still change you, but at most three times in a life, two
+  years apart, and a sparring bout never counts. Your body's limits rise only a little.
+- **A throne plot is a once-in-years gamble.** Raising a plot, even one you let cool, closes that road for five years; the
+  best odds are lower, and the card says them in words.
+- **Outlaws are hunted.** The one you wronged, or the lord of the land, sends men after you when he has reason to.
+- **A sacred throne goes to an old churchman,** not a young priest.
 - **One time button.** As a child you live a year at a time with **Next year**; from age 12 there is only **Next
   month**.
 
