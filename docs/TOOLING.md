@@ -287,3 +287,9 @@ image-deep-research and skill-creator. Switching off is a toggle: delete the lin
 `backend-design` and `claude-security` come back at the backend phase (Phase 9). The account-wide switches at claude.ai
 (Customize, Plugins) are the owner's and optional. Effective from the next session; the next session checks its skill
 list against this file and records the count.
+
+**Correction (2026-11-25, later):** the first `.claude/settings.json` named the plugins by marketplace
+(`superpowers@anthropic-plugin-directory`), which does not match plugins synced from the claude.ai account; their key is
+`<name>@synced` (Claude Code docs, plugins/loading, "Plugins synced from claude.ai"). The next session after the first
+change still loaded every plugin. The file now uses `@synced` keys. A plugin the organization marks as required loads
+whatever the file says; the account switch (claude.ai, Customize, Plugins) is the sure way.
