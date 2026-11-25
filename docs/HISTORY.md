@@ -2798,3 +2798,10 @@ The helper's branch (`worktree-agent-ae273c4866bddc5a1`: data/skills, the pure e
 step to version 16; H-131, D-174) merged on the trunk. Its rank above SSS was "G" for gods; order 83 removed gods as beings,
 so it is "X", for the few legends (vocab, engine, tests). Engine tests 146 of 146 after the rename (an old test used "X"
 as an unknown rank; now "Z"). Order 86 (the map: substance over looks) recorded and passed to the map builder.
+
+### H-133 · 2026-11-25 · CI 170 on the skills merge: a retired rank word; a slow runner
+- `w1NoMarshalLint` failed on the new skill "Marshal's Grasp" (`data/skills/ladders/war.json`): Marshal is a retired rank
+  (D-062). Renamed "General's Grasp"; the lint passes.
+- `nyOneRedraw` failed on CI with a quiet year's median of 2,131 ms CPU (limit 2,000; its seven years read 1,297 to 3,431).
+  Not this change: locally, alternating runs of alpha 16's build and the merge's read 1,065 / 1,060 and 1,155 / 1,130 ms.
+  The next batch's run is the check; if CI's runner reads high again, the test's spread (not the code) is the fix.
