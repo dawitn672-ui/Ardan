@@ -420,6 +420,17 @@ order is replaced, strike it through and say by what.
     profile (drives, provocations, habits, hoards, ways with people), individuals vary; every legendary being a hand-written
     character sheet read by its decisions. Passed to the power-scale builder (D-168 addendum).
 
+82. **Answers to the skills design; paths named; creatures by nature; every level of existence** · recorded 2026-11-25
+    (evening). Kept unchanged in `docs/prompts/2026-11-25-answers-skills-titles.md`. "Unique" only for what is one of a kind.
+    A monster hunter is an adventurer; a spy comes through the military or is made one by someone who can; a guild master
+    inherits the post or founds a guild (coin and skill required). Not every creature needs a reason for each act or a way
+    to calm it: some are simply bloodthirsty, specified and justified by their nature. Legendary beings are mostly very old
+    (demons, dragons, gods). The ladder covers every level of existence: ranks to SSS, gods above. Skills: thousands at
+    completion, each built with cooldowns, mana, damage and the like. Answers: (1) ranks up to SSS, a god higher; (2) an
+    evolved skill does not vanish, a merge absorbs its parts; (3) "Master" may stand in a name, and titles such as Sword Saint,
+    or Primordial Demon from birth; (4) stats are raised by levels, skills and titles by actions and training; (5) placed
+    points never move, but an evolution in any area can bring explosive growth or extra points (D-171, H-128).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,

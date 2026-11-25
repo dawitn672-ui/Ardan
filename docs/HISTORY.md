@@ -2753,3 +2753,8 @@ system) and the power-scale builder (the great beings' titles and buffs).
 - v2.1.0-alpha.16 at `4a97b98d` (check 169 and long 113 green), release branch pushed, sample `young-noble`.
 - Order 80: master prompt register PW, sections 9 and 13.1 (professions and pathways fifth, before magic), new section 18;
   D-170. The skills designer has the stat points and training parts.
+
+### H-128 · 2026-11-25 · The skills design merged; order 82 (the owner's answers) recorded
+`docs/design/skills-v2.md` (the helper's design, 1,144 lines: data model, progression, adapter over 5,723 checks, migration
+from save version 15, phone views, the first 200, build order in 12 steps, titles, levels and stat points) cherry-picked as
+`a9789998`; its §15 records the owner's answers. Order 82; D-171; master prompt 9, 17, 18.

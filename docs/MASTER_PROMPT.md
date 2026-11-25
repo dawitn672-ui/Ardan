@@ -138,6 +138,7 @@ One row per prompt I give you. Add a row every time. "Status" says whether it is
 | L | 2026-11-25 | Levels and beings (`docs/prompts/2026-11-25-levels-and-beings.md`) | Levels replace tier words; same level, different capabilities; intelligence classes; minds, titles and a ranking for every unique being, lairs for some; every order placed by importance | Header, 9, 13.1, 17 | Merged. |
 | T2 | 2026-11-25 | Titles (`docs/prompts/2026-11-25-titles.md`) | Stackable titles with honour, buffs and stat boosts; very hard to earn; hidden requirements | 9 | Merged. |
 | PW | 2026-11-25 | Pathways (`docs/prompts/2026-11-25-pathways.md`) | Stat allocation with points per level; skill training; blacksmithing and diverse weapons; trade and business as an easy profession; countless paths beyond combat | 9, 13.1, 18 | Merged. |
+| AS | 2026-11-25 | Answers on skills, titles, paths, creatures (`docs/prompts/2026-11-25-answers-skills-titles.md`) | Ranks to SSS, gods above; evolved skills stay, merges absorb; titles like Sword Saint or born-with; stats by levels, skills and titles by action; evolution can give explosive growth; thousands of fully specified skills; paths: adventurer, spy, guild master; creatures specified by nature | 9, 17, 18 | Merged. |
 
 ### 1.3 Carry-over checklist
 Earlier prompts asked for a lot that may already be built, or be in progress. **Before you plan any phase, check each row in the repo.** Record the result (Done, In progress, Partly, Not done or Changed) and the evidence in `docs/ROADMAP.md`. Work only on what is not done. New prompts add rows here. Item IDs: K1 to K10 are the kit steps, V1 to V16 are the complaint numbers in `docs/V2_SPEC.md`, O-letter-number are the orders of 2026-11-12.
@@ -518,7 +519,7 @@ Combat (a weapon art per weapon and per culture's tradition, defence, mounted, r
 - Flaws and curses.
 - At least **60 hand-written Unique and Legendary skills**.
 
-**Targets:** about 200 skills in the first release of the system, 500 in the next, and 1,000 or more by the time the content phase ends, counting magic and monster skills. Keep skills in data files (`data/skills/`).
+**Targets:** about 200 skills in the first release of the system, 500 in the next, and **thousands at completion** (order 82), each fully specified (cooldown, mana or stamina, damage or effect, range, duration, conditions); ranks D to SSS, a god's above; evolved skills stay beside their evolution, merges absorb their parts; stats rise by levels, skills and titles by action and training; an evolution in any area may bring explosive growth or extra points. The first wave counted toward 1,000, counting magic and monster skills. Keep skills in data files (`data/skills/`).
 
 ### B7. Build order
 Steps 1 to 3 need no interface, so they can start while the shell (section 5) is being finished. Step 4 waits for the shell.
@@ -894,6 +895,7 @@ Create them in `.claude/skills/` at the phase shown. Each description below is a
 - **Blacksmithing and crafts:** ore, fuel and tools; a forge of one's own; weapons and armour of many kinds and cultures, each with its own handling and use in a fight; quality from the smith's level and materials (and, after section 17, monster parts); commissions, a mark and a name; apprentices.
 - **Weapons:** a wide armoury by kind, culture and quality, read by the fight (reach, weight, speed, against armour, against beasts).
 - **Trade and business, simple to use:** buy where cheap, sell where dear, along roads with risk; a shop, a stall, a caravan, a trading house; partners and rivals with relations; contracts and credit; one clear screen that a new player understands in a minute. It sits on one coherent economy (E0).
+- **How some roads open (order 82):** a monster hunter is an **adventurer** (contracts, a guild or company, the wilds); a **spy** comes through the military or is made one by someone with the power to; a **guild master** inherits the post or founds a guild, which asks both coin and skill.
 - **Many roads:** scholar, healer, priest, judge, steward, spy, explorer, monster hunter, builder, farmer and landholder, guild master, courtier, artist, and more, each with its levels, skills, titles and a way to rise, fail or change course. A life can move between them.
 
 **Build order:** after the skills rebuild; first the economy's single model (E0) and the profession frame (one schema for every trade: work, income, levels, relations, events), then blacksmithing and trade as the two deep examples, then the other roads in waves.

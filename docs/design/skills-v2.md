@@ -1142,3 +1142,19 @@ data.
 
 (Settled by default, not asked: house secrets' generated instances do not count toward the 500 and 1,000 targets, only
 their four templates; honours are titles and posts given for reasons, never automatic for a rank.)
+
+
+## 15. The owner's answers (2026-11-25, order 82), which override the sections above where they differ
+
+1. **Ranks run D, C, B, A, S, SS, SSS;** a god's skills (and the like) stand above SSS. The power budget extends upward in the
+   same doubling (SS 32, SSS 64 a level), with the stacking caps rising by rank.
+2. **An evolved skill does not vanish:** the old skill stays, the evolved one is added (its levels start low). **A merge
+   absorbs its parts.**
+3. **Names:** "Master" may stand in a skill's name; titles carry honours such as **Sword Saint**; a being can be **born with a
+   title** (a Primordial Demon is born "Primordial Demon"). "Unique" is kept only for what is one of a kind.
+4. **Stats are raised by levels** (the points a level brings); **skills and titles grow by actions and training.**
+5. **Placed points never move,** but an **evolution in any area** (a skill, a title, the person's own kind) can bring
+   explosive growth or extra points.
+6. **Scale:** thousands of skills at completion, built in waves from the first 200; each skill fully specified for use:
+   cooldown, mana (or stamina) cost, damage or effect as a share or amount, range, duration, conditions. The player reads
+   them in words and pips; the numbers live in the data and the tests.

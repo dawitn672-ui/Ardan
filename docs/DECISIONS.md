@@ -2697,3 +2697,12 @@ by importance (order 78).
 **D-168 addendum (order 81).** Depth and variety over count: every species has its own behaviour profile and individuals
 vary (seeded); every legendary being has a hand-written character sheet (history, traits, values, fears, desires, grudges,
 loves, speech, seasonal habits, aims, reactions) that its A.WHY decisions read.
+
+### D-171 · The owner's answers on skills, titles, paths and creatures (2026-11-25; order 82)
+Ranks D to SSS, gods above; an evolved skill stays and a merge absorbs; titles carry honours (Sword Saint) and can be born
+with (Primordial Demon); stats rise by levels, skills and titles by action and training; placed points never move but an
+evolution can bring explosive growth or extra points; thousands of fully specified skills; "unique" only for one of a kind;
+paths: adventurer (the monster hunter), spy (through the military or appointment), guild master (inherited or founded with
+coin and skill); creatures may act purely by their specified nature (bloodthirsty, relentless) without a calming option;
+legendary beings mostly very old; the ladder covers every level of existence. Recorded in `docs/design/skills-v2.md` §15
+and the master prompt (9, 17, 18); passed to the power-scale builder.
