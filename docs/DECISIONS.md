@@ -2694,3 +2694,6 @@ trade and business as an easy profession, and many roads beyond combat become se
 rebuild and before magic. **Considered:** building trade first (it needs the skills and E0's single economy, or it is
 built twice); after magic (every life reads professions; magic is one road among them). **Why:** the owner's order 80, placed
 by importance (order 78).
+**D-168 addendum (order 81).** Depth and variety over count: every species has its own behaviour profile and individuals
+vary (seeded); every legendary being has a hand-written character sheet (history, traits, values, fears, desires, grudges,
+loves, speech, seasonal habits, aims, reactions) that its A.WHY decisions read.

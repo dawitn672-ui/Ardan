@@ -414,6 +414,12 @@ order is replaced, strike it through and say by what.
     a new workstream, Professions and pathways (master prompt section 18), right after the skills rebuild and before magic,
     because every life reads them and they sit on the new skills (D-170, H-127).
 
+81. **Deeper, personal minds for every creature and legend** · recorded 2026-11-25 (evening). The owner on order 78's
+    points: the intelligence classes and the legends' characters are "perfect but go into more depth and variety,
+    personalised to each creature"; the standing rule (orders by importance) "yes". Every species gets its own behaviour
+    profile (drives, provocations, habits, hoards, ways with people), individuals vary; every legendary being a hand-written
+    character sheet read by its decisions. Passed to the power-scale builder (D-168 addendum).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
