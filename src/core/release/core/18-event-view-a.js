@@ -196,6 +196,15 @@ A.eventChoose = function (idx) {
     e = A.EV[q.ev],
     view = A.eventView(q);
   if (q.result) return q;
+  // Phase 0 (the sync's finding, master prompt 3.3): a card the engine dropped (its setup set ctx.skip: no fit person, a
+  // token it cannot fill) is closed unanswered; running its choice anyway threw in sk_better_hand and sk_rival_contest
+  // when a bot or a test answered the dropped card
+  if (view && view.skip) {
+    q.result = {
+      text: "",
+    };
+    return q;
+  }
   const vc = view.choices[idx];
   if (!vc || vc.i < 0 || !e) {
     q.result = {

@@ -2715,3 +2715,8 @@ probe in 3 of 3 long ones.
 "Wait" (`content/01-ruler.js`, a data literal, not a function: no identity probe needed) costs fame and honour 2.
 `VS.NUMRULES` (`99993-v2-stats/g-bands.core.js`) words "about N in a hundred". Test `pfThronePlotOnce` (old build: a plot
 again the same year, odds 75, digits on the card; now refused for five years, 40, "evenly matched"). Polity tests 37 of 37.
+
+### H-120 · 2026-11-25 · A dropped card is never answered (Phase 0, the sync's skill-event errors)
+`A.eventChoose` (`18-event-view-a.js`) closes a card whose view is skipped (its setup set `ctx.skip`) without running a
+choice. The sync (H-108) traced the two skill-event errors (`sk_better_hand`, `sk_rival_contest`) to a bot or test
+answering such a card. Test `pfSkippedCardNotRun` (old build: the choice's effects ran; now none, the card closed).

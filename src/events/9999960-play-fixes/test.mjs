@@ -160,4 +160,17 @@ export default {
     });
     return { ok: r.a && !r.b && r.c && r.odds <= 40 && !r.digits, detail: `first plot ${r.a}, again that year ${r.b}, five years on ${r.c}; odds ${r.odds} in 100 at most 40; shown: "${r.shown}"` };
   },
+  // Phase 0: a dropped card (ctx.skip) is closed unanswered; its choice's effects never run
+  async pfSkippedCardNotRun(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 6111, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 30 });
+      window.__pfRan = 0;
+      A.defEvents([{ id: 'pf_skip_probe', title: 'Probe', text: 'A probe.', setup: (p, ctx) => { ctx.skip = true; },
+        choices: [{ t: 'Do it', r: 'Done.', fx: () => { window.__pfRan++; } }, { t: 'Do not', r: 'No.', fx: {} }] }]);
+      A.S.queue.unshift({ type: 'event', ev: 'pf_skip_probe', ctx: {} });
+      const q = A.eventChoose(0);
+      return { ran: window.__pfRan, closed: !!(q && q.result) };
+    });
+    return { ok: r.ran === 0 && r.closed, detail: `effects run: ${r.ran}; the card closed: ${r.closed}` };
+  },
 };
