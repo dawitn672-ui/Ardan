@@ -10,6 +10,9 @@ add a line when you add a doc. (Working files inside the subfolders of `design/`
 
 | Doc | What it is |
 | --- | --- |
+| [MASTER_PROMPT.md](MASTER_PROMPT.md) | The owner's one living instruction file (order 75): every new prompt is merged into it; the source of truth |
+| [prompts/2026-11-25-master-prompt.md](prompts/2026-11-25-master-prompt.md) | The master prompt as the owner gave it, unchanged (every raw prompt is kept in `prompts/`) |
+| [TOOLING.md](TOOLING.md) | Skills, plugins, agents and connectors: the inventory, the Keep / Merge / Remove verdicts, risks, clashes, how to switch each off and on, counts before and after (master prompt section 16) |
 | [OWNER_ORDERS.md](OWNER_ORDERS.md) | Every standing order of the owner's, with the date and time it was given |
 | [PROGRESS.md](PROGRESS.md) | The checklist of every work item (v2, then v3): done, in progress, next, milestones |
 | [HISTORY.md](HISTORY.md) | What was done, step by step, and how to undo each step (append only) |

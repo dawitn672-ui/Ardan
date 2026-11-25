@@ -20,6 +20,8 @@ the states it can be in (empty, busy, a peasant, a noble, a ruler, a child) at *
 - Is there one obvious next action? Is anything shown that does not matter right now (§5: cut each screen to what matters;
   the rest one click deeper)? Measure clutter with `node tools/bench/clutter.mjs <html> --out=... --shots=...`; its
   numbers only fall (`src/ui/9992-story-drawer/test.mjs`).
+- Does it look and behave like the screens beside it? Find the nearest existing screen of the same kind and reuse its
+  parts and tokens; a new pattern needs a reason.
 
 ## 2. House rules (each one is a finding if broken)
 - **Descriptions open on click, tap or Enter, never on hover.** A description is `data-note="..."` on a button or an
