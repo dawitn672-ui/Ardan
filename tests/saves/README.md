@@ -7,7 +7,7 @@ recipe of `tools/version-samples.json`, made by `node tools/version.mjs make-sav
 or by `version.mjs new` when the version is cut); `node tools/version.mjs check` fails when a version from
 v2.1.0-alpha.1 on has no save or its save has no line below.
 
-To open one: start the game (`node tools/build.mjs`, then open `index.html`), Menu, *Load save file*, pick the file.
+To open one: start the game (`node tools/build.mjs`, then open `index.html?dev`: since D-166 the developer switch shows *Load save file*), Menu, *Load save file*, pick the file.
 To see one as it was in its own version, `node tools/version.mjs get <version>` and load it there.
 
 | Save | Version | What it shows | How to see it |

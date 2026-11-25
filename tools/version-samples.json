@@ -96,6 +96,24 @@
       "years": 35,
       "shows": "a noble at 55, thirty-five years into a world where everyone ages: his parents' generation gone by their years, no one past his people's span, the houses he knows married and with heirs, deaths of unmet kin told in the story",
       "see": "Load it; the People tab (ages, the dead of his house) and the Dynasty tab; play a year and read the year's digest"
+    },
+    "young-noble": {
+      "o": {
+        "race": "human",
+        "realm": "POL-01",
+        "status": "noble",
+        "sex": "M",
+        "startAge": 10
+      },
+      "seeds": [
+        77,
+        78,
+        79
+      ],
+      "until": "any",
+      "years": 1,
+      "shows": "a noble boy of eleven: Next year is the only button until twelve, then Next month (D-160); grown, the murder, treatise, petition, breakthrough and throne-plot limits of Phase 1",
+      "see": "Open the game with ?dev at the end of its address (the developer switch, D-166), then Menu, Load save file; press Next year once to reach twelve"
     }
   },
   "versions": {
