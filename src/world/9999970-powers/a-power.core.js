@@ -107,7 +107,7 @@
     const L = LEG.get(id) || MAS.get(id);
     if (L) {
       const w = PW.withTitles(L.prof, L.level, L.titles);
-      return { kind: LEG.has(id) ? (L.home && L.home.type === 'beyond' ? 'god' : 'legend') : 'master', id, n: L.n, level: clamp(w.level, 1, LV.max), might: PW.mightOf(w.level), prof: w.prof, int: L.int,
+      return { kind: LEG.has(id) ? (L.level >= 100 ? 'summit' : 'legend') : 'master', id, n: L.n, level: clamp(w.level, 1, LV.max), might: PW.mightOf(w.level), prof: w.prof, int: L.int,
         titles: L.titles || [], base: L.level, ranged: true, hardy: w.prof.regen };
     }
     return null;
@@ -141,7 +141,7 @@
     return { p, gap, word: PW.oddsWord(p), edges, huge: Math.abs(gap) >= D.odds.hugeGap, close: Math.abs(gap) <= D.odds.closeGap, a, b };
   };
   // how a gap reads in words (no numbers beside it on a card)
-  PW.gapWords = gap => (gap <= -55 ? 'a god: nothing of this world stands against it' : gap <= -30 ? 'beyond anything you could ever hope to stand against' : gap <= -18 ? 'far beyond you: a host would die here'
+  PW.gapWords = gap => (gap <= -55 ? 'beyond every rank: the whole world moves when it does' : gap <= -30 ? 'beyond anything you could ever hope to stand against' : gap <= -18 ? 'far beyond you: a host would die here'
     : gap <= -10 ? 'far stronger than you' : gap <= -4 ? 'stronger than you' : gap < 4 ? 'about your match' : gap < 10 ? 'weaker than you' : 'no match for you');
 
   // ---------------------------------------------------------------- a duel fighter for a bestiary species (close fights)

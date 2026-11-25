@@ -60,18 +60,18 @@
     st.leg = st.leg || {}; st.wild = Array.isArray(st.wild) ? st.wild : []; st.evo = Array.isArray(st.evo) ? st.evo : [];
     st.known = st.known || {}; st.met = st.met || {}; st.n = st.n || 0;
     for (const L of LD.legends) if (!st.leg[L.id]) st.leg[L.id] = PW.place(L);
+    if (st.known['sword-saint'] == null) st.known['sword-saint'] = S.year;   // everyone grows up knowing his name
     return st;
   };
   // where a great being lives, chosen from the world as it is, by its seed (no draw from any stream)
   PW.place = function (L) {
     const H = PW.hash(`${A.S.seed}|${L.id}`), all = provs();
     const ty = L.home.type;
-    if (ty === 'beyond') return { at: null, home: null, fed: 0, hurt: 0, raids: 0, feel: [], grudges: [], god: 1 };   // a god has no place on the map
     let cands = [];
     if (ty === 'sea') cands = all.filter(P => P.coast && !P.town);
     if (ty === 'sea' && !cands.length) cands = all.filter(P => P.coast);
     if (ty === 'city') cands = all.filter(P => P.town >= 20000);
-    if (ty === 'lair' || ty === 'roam') cands = all.filter(P => (L.home.terr || []).includes(P.terr) && isWild(P));
+    if (ty === 'lair' || ty === 'roam' || ty === 'sealed') cands = all.filter(P => (L.home.terr || []).includes(P.terr) && isWild(P));
     if (!cands.length && ty !== 'realm') cands = all.filter(P => (L.home.terr || []).includes(P.terr));
     let rid = null;
     if (ty === 'realm') {
@@ -155,7 +155,7 @@
   const why = (w, kind, label, source, pub) => ({ kind, weight: w, label, source: source || null, pub: pub !== false });
 
   PW.legendSeason = function (L, g, rng) {
-    const se = PW.season(), hab = (L.habits || {})[se] || { do: 'roam', why: 'its ground calls it' };
+    const se = PW.season(), hab = L.sleeper && awake(L.id) ? (L.wakeHabit || { do: L.id === 'sword-saint' ? 'roam' : 'hunt', why: 'awake after an age asleep' }) : (L.habits || {})[se] || { do: 'roam', why: 'its ground calls it' };
     const hungry = clamp(g.fed / Math.max(1, L.hungerMonths), 0, 2.5);
     const opts = [];
     const habit = act => (hab.do === act ? [why(2.2, 'temper', `its ${se} habit: ${hab.why}`, { t: 'habit', at: se })] : []);
@@ -244,37 +244,55 @@
     return rec;
   };
 
-  // ---------------------------------------------------------------- the gods: they do not wander, they stir
-  // Once a year each god weighs sleep against stirring, through A.WHY: what wakes it is on its sheet (wake: great wars,
-  // the dead walking, deep mines, the old peace broken, the long winter, its children slain), read from the world as it is.
-  // Its own nature weighs hard for sleep, and a god that stirred within a generation sleeps on. A stirring is a world event.
+  // ---------------------------------------------------------------- the sleepers at the summit
+  // The few beings above every rank mostly sleep: the King of Dragons wounded under the Crown Range, the Archdemon Ghazrul
+  // bound under the Burning Waste, the Sword Saint turned to stone on his ridge. Once a year each weighs sleep against waking,
+  // through A.WHY: what would wake it is on its sheet (wake), read from the world as it is. Its nature weighs hard for sleep,
+  // and one that woke within a generation sleeps on. A waking lasts a few years (wakeYears); while awake it lives by
+  // legendSeason like the others. If the King and the Saint are both awake, they meet on the ridge.
+  const legOf = id => (A.S.pw && A.S.pw.leg && A.S.pw.leg[id]) || null;
+  const awake = id => { const g = legOf(id); return !!(g && !g.slain && g.wokeUntil != null && g.wokeUntil >= A.S.year); };
   const WAKE = {
-    'great wars': () => ({ w: Math.min(2.5, ((A.S.wars || []).length) * 0.35), label: `${(A.S.wars || []).length} wars burning at once` }),
-    'the dead walking': () => { const g = (A.S.pw.leg || {}).ulmavren; return { w: g && !g.slain ? Math.min(2, (g.raids || 0) * 0.4) : 0, label: 'the dead king\'s host walks' }; },
-    'deep mines': () => { const n = Object.values(A.S.realms || {}).filter(r => r.alive && r.race === 'dwarf').length; return { w: n * 0.3, label: `the mines of ${n} dwarf realms` }; },
-    'the old peace broken': () => { const g = (A.S.pw.leg || {}).orrun; return { w: g && g.raids ? Math.min(2, g.raids * 0.5) : 0, label: 'the eldest giant\'s peace is broken' }; },
-    'the long winter': () => { const g = (A.S.pw.leg || {}).hrimgala; return { w: g && !g.slain && g.awake ? 0.8 + Math.min(1.5, (g.raids || 0) * 0.3) : 0, label: 'the white winter walks' }; },
-    'its children slain': () => { const g = (A.S.pw.leg || {}).vaskareth; return { w: g && g.slain ? 3 : 0, label: 'the oldest of its children is slain' }; },
+    'great wars': () => ({ w: Math.min(2, ((A.S.wars || []).length) * 0.3), label: `${(A.S.wars || []).length} wars burning at once` }),
+    'his children slain': () => { const g = legOf('vaskareth'); return { w: g && g.slain ? 3 : 0, label: 'his eldest daughter is slain' }; },
+    'the Saint stirs': () => ({ w: awake('sword-saint') ? 4 : 0, label: 'the stone on the Saint\'s Stair is empty' }),
+    'the King wakes': () => ({ w: awake('sarnavoth') ? 4 : 0, label: 'the King of Dragons is awake' }),
+    'archdemons walk': () => { const g = legOf('morvane'); return { w: (awake('ghazrul') ? 4 : 0) + Math.min(1.5, ((g && g.raids) || 0) * 0.2), label: 'the Archdemons are loose in the world' }; },
+    'the seal weakens': () => ({ w: Math.min(1.5, ((A.S.wars || []).length) * 0.12), label: 'the blood spilled in the wars soaks down to the seal' }),
+    'souls spilled': () => ({ w: Math.min(1.5, ((A.S.wars || []).length) * 0.2), label: 'souls spilled in the wars above her' }),
+    'her brother calls': () => { const g = legOf('morvane'); return { w: Math.min(1.5, ((g && g.raids) || 0) * 0.3), label: 'her brother hunts the world above' }; },
   };
-  const STIR = {
-    velmorrow: (rng) => { const ms = provs().filter(P => P.terr === 'mountains' && P.pop); const P = ms.length ? rng.pick(ms) : null; if (P) P.pop = Math.round(P.pop * 0.97); return `The Sleeper Under the World has turned in its sleep. ${P ? P.name + ' is broken by the shaking; ' : ''}every land felt the ground move.`; },
-    aun: () => { for (const r of Object.values(A.S.realms || {})) if (r.alive) r.stability = clamp((r.stability || 0) - 1, 0, 100); const g = (A.S.pw.leg || {}).hrimgala; if (g && !g.slain) g.hurt = (g.hurt || 0) + 4; return 'The First Fire has come down the sun\'s road. The summer burns across the whole world, and the high ice retreats.'; },
-    nhal: () => { const g = (A.S.pw.leg || {}).ulmavren; if (g && !g.slain) g.hurt = (g.hurt || 0) + 4; return 'The Keeper of the Last Door has walked the battlefields. The dead lie still this year, everywhere; even the barrow-roads are quiet.'; },
+  const WOKE = {
+    sarnavoth: 'The roof of the Crown Range has fallen in. Sarnavoth, King of Dragons, is awake after nine hundred years, and every dragon in the sky has turned north.',
+    ghazrul: 'The glass seal in the Burning Waste has cracked. Ghazrul the Unmaker is loose. Caravans turn back; the sand is burning.',
+    'sword-saint': 'The stone on the Saint\'s Stair is empty. Pilgrims swear they saw Cael Vardan stand up and walk down the mountain with his sword.',
   };
-  PW.godYear = function (L, g, rng) {
-    const stirredLately = g.stirred != null && A.S.year - g.stirred < 30;
+  PW.sleeperYear = function (L, g, rng) {
+    if (awake(L.id)) return null;
+    const lately = g.woke != null && A.S.year - g.woke < 30;
     const rs = (L.wake || []).map(k => (WAKE[k] ? WAKE[k]() : null)).filter(x => x && x.w > 0).map(x => why(x.w, 'want', x.label, { t: 'wake' }));
     const opts = [
-      { id: 'sleep', reasons: [why(3.5, 'temper', `its nature: ${(L.habits.spring || {}).why || 'it sleeps'}`, { t: 'habit' }), ...(stirredLately ? [why(3, 'temper', `it stirred ${A.S.year - g.stirred} years ago`, { t: 'stir' })] : [])] },
-      { id: 'stir', reasons: rs },
+      { id: 'sleep', reasons: [why(3.5, 'temper', `its nature: ${(L.habits.spring || {}).why || 'it sleeps'}`, { t: 'habit' }), ...(lately ? [why(3, 'temper', `it woke ${A.S.year - g.woke} years ago`, { t: 'woke' })] : [])] },
+      { id: 'wake', reasons: rs },
     ];
-    const rec = A.WHY.decide({ id: 'god:' + L.id, temper: L.temper || {}, feel: [] }, 'legend', opts, { rand: () => rng.next(), band: 0.5, logIf: r => r.chose === 'stir' });
-    if (!rec || rec.chose !== 'stir') return rec;
-    g.stirred = A.S.year; g.stirs = (g.stirs || 0) + 1;
-    A.news(`${STIR[L.id] ? STIR[L.id](rng) : `${L.n} has stirred.`} ${A.WHY.tell(rec, true)}`, 'pw');
+    const rec = A.WHY.decide(legMind(L, g), 'legend', opts, { rand: () => rng.next(), band: 0.5, logIf: r => r.chose === 'wake' });
+    if (!rec || rec.chose !== 'wake') return rec;
+    g.woke = A.S.year; g.wokeUntil = A.S.year + (L.wakeYears || 3); g.awake = true;
+    A.news(`${WOKE[L.id] || PW.styled(L) + ' is awake.'} ${A.WHY.tell(rec, true)}`, 'pw');
     PW.know(L.id);
     return rec;
   };
+  // the King and the Saint, both awake: they meet on the ridge, as he promised; the loser goes back to his long sleep
+  PW.ridge = function (rng) {
+    if (!awake('sarnavoth') || !awake('sword-saint')) return null;
+    const c = PW.compare('sword-saint', 'sarnavoth'), saintWins = rng.chance(c.p);
+    const lose = legOf(saintWins ? 'sarnavoth' : 'sword-saint');
+    lose.hurt = (lose.hurt || 0) + 8; lose.wokeUntil = A.S.year - 1; lose.awake = false;
+    A.news(saintWins ? 'On the Saint\'s Stair the fight of nine hundred years ago has been fought again. The King of Dragons has gone back under the mountain, and the Saint sits down on his ridge.'
+      : 'On the Saint\'s Stair the King of Dragons has had his answer. The Saint is stone again, and the dragon-king is in the sky.', 'pw');
+    return saintWins ? 'saint' : 'king';
+  };
+
 
   // ---------------------------------------------------------------- wild monsters: feed, fight, rise
   const NAME_A = ['Old', 'Red', 'Black', 'Grey', 'Hollow', 'Iron', 'Bitter', 'Long', 'Pale', 'Night', 'Ash', 'Salt', 'Crook', 'Mother', 'Thorn'];
@@ -441,7 +459,16 @@
 
   // ---------------------------------------------------------------- the year's tale: a great being the player hears of
   PW.tale = function (pc, st, rng) {
-    if (!pc || !pc.alive || A.age(pc) < 8) return;
+    if (!pc || !pc.alive) return;
+    // the Sword Saint's story every child hears, told as his own people tell it (the sheet's tellings), with one saying
+    const S_ = PW.LEG.get('sword-saint');
+    if (S_ && !st.saintTold && A.age(pc) >= 4) {
+      const tell = (S_.tellings || {})[pc.race] || (S_.tellings || {}).human || S_.d, say = S_.sayings && S_.sayings.length ? S_.sayings[PW.hash(`${A.S.seed}|${pc.id}`) % S_.sayings.length] : '';
+      A.log(`The story every child knows: Cael Vardan, the Sword Saint. ${tell}${say ? ` They say he said: "${say}"` : ''}`, 'lore');
+      st.saintTold = A.S.year; PW.know('sword-saint');
+      return;
+    }
+    if (A.age(pc) < 8) return;
     const unknown = PW.great().filter(x => st.known[x.id] == null);
     if (!unknown.length || !rng.chance(0.3)) return;
     const x = rng.pick(unknown), L = PW.LEG.get(x.id) || PW.MAS.get(x.id);
@@ -455,8 +482,8 @@
     const st = PW.state();
     if (!st) return;
     const m = month();
-    if (m % 3 === 2) { const rng = PW.rng('legends'); for (const L of LD.legends) { const g = st.leg[L.id]; if (g && !g.slain && !g.god) PW.legendSeason(L, g, rng); } }
-    if (m === 2) { const rng = PW.rng('gods'); for (const L of LD.legends) { const g = st.leg[L.id]; if (g && g.god) PW.godYear(L, g, rng); } }
+    if (m % 3 === 2) { const rng = PW.rng('legends'); for (const L of LD.legends) { const g = st.leg[L.id]; if (g && !g.slain && (!L.sleeper || awake(L.id))) PW.legendSeason(L, g, rng); } }
+    if (m === 2) { const rng = PW.rng('sleepers'); for (const L of LD.legends) { const g = st.leg[L.id]; if (g && !g.slain && L.sleeper) PW.sleeperYear(L, g, rng); } PW.ridge(rng); }
     if (m === 2) { PW.wildYear(PW.rng('wild')); PW.tale(pc, st, PW.rng('tale')); }
     PW.monthPlayer(pc, st);
   };

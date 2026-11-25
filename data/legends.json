@@ -1,5 +1,5 @@
 {
- "about": "The great beings of the world (powers wave 1, docs/design/powers.md): each one of a kind (one holder), each a hand-written character sheet. home.type: lair (a fixed place it guards), beyond (a god: no place on the map; it does not wander the world, it stirs), roam (moves through its ground), city (lives among people, unknown), realm (serves a crown), sea (sleeps in the deep, rises at a coast). temper: A.WHY's ten axes (-1..1). habits: what each season draws it to (sleep, hunt, roam, guard, court) and why. loves and grudges point at a realm (POL-xx), a people (race) or another being, with a weight and the reason; desires and fears are tags the module reads (gold, books, horses, herds, souls, worship, cold, children, peace, ships; hosts, fire, iron, priests, the deep, being forgotten, sunlight, sea). reacts: how it answers being sought, flattered, attacked or ignored (spare, demand, test, scorn, rage, bargain) with its own words. Every move goes through A.WHY.decide with reasons read from this sheet. A title marked born was had from birth. Title requirements (req) are never shown to the player.",
+ "about": "The great beings of the world (powers wave 1, docs/design/powers.md): each one of a kind (one holder), each a hand-written character sheet. home.type: lair (a fixed place it guards), sealed (bound in a place, cannot leave). A sleeper (sleeper: true) sleeps for ages and decides once a year, through A.WHY, whether what would wake it (wake) has come, roam (moves through its ground), city (lives among people, unknown), realm (serves a crown), sea (sleeps in the deep, rises at a coast). temper: A.WHY's ten axes (-1..1). habits: what each season draws it to (sleep, hunt, roam, guard, court) and why. loves and grudges point at a realm (POL-xx), a people (race) or another being, with a weight and the reason; desires and fears are tags the module reads (gold, books, horses, herds, souls, worship, cold, children, peace, ships; hosts, fire, iron, priests, the deep, being forgotten, sunlight, sea). reacts: how it answers being sought, flattered, attacked or ignored (spare, demand, test, scorn, rage, bargain) with its own words. Every move goes through A.WHY.decide with reasons read from this sheet. A title marked born was had from birth. Title requirements (req) are never shown to the player.",
  "legends": [
   {
    "id": "vaskareth",
@@ -1084,12 +1084,12 @@
    "id": "morvane",
    "n": "Morvane",
    "fam": "demons",
-   "level": 87,
+   "level": 100,
    "int": "wise",
    "age": "came through the gate some three thousand years ago",
    "titles": [
     {
-     "n": "Primordial Demon",
+     "n": "Primordial Archdemon",
      "born": true,
      "honour": 0,
      "buffs": {
@@ -1142,7 +1142,7 @@
     "social": 1,
     "ambition": 1
    },
-   "history": "One of the first things that ever was, on the far side of the seventh gate. A sorcerer-prince opened that gate three thousand years ago to win a war, and died owing him; Morvane stayed to collect. He has worn a merchant's face in some great town ever since, lending at honest rates. His debtors do not die. They change.",
+   "history": "One of the two Primordial Archdemons, the first things that ever were on the far side of the gates. A sorcerer-prince opened the seventh gate three thousand years ago to win a war, and died owing him; Morvane stayed to collect. His sister-in-darkness Ghazrul came through with him and was sealed under the Burning Waste by the Sword Saint; Morvane was cleverer, and was never found. He has worn a merchant's face in some great town ever since, lending at honest rates. His debtors do not die. They change.",
    "traits": [
     "charming",
     "patient",
@@ -1171,10 +1171,10 @@
      "why": "the Church has burned three of his houses"
     },
     {
-     "at": "serrath",
+     "at": "sword-saint",
      "kind": "being",
-     "w": 0.7,
-     "why": "the fey queen's bargains are better than his, and everyone knows it"
+     "w": 1.5,
+     "why": "the Saint sealed Ghazrul and cut Morvane's first face from him"
     }
    ],
    "speech": "Warm, reasonable, a little amused. Always offers terms. Never raises his voice.",
@@ -1594,277 +1594,488 @@
    "d": "The winter given a will. When she walks out of the high ice, harvests fail three valleys away and the wolves come down."
   },
   {
-   "fam": "spirits",
+   "id": "sarnavoth",
+   "n": "Sarnavoth",
+   "fam": "dragons",
+   "level": 104,
    "int": "wise",
-   "hungerMonths": 9999,
-   "desires": [],
-   "fears": [],
-   "loves": [],
-   "grudges": [],
-   "aims": [],
-   "id": "velmorrow",
-   "n": "Velmorrow",
-   "level": 124,
-   "age": "before the world had a shape",
+   "age": "about four thousand years",
    "titles": [
     {
-     "n": "the Sleeper Under the World",
-     "born": true,
+     "n": "King of Dragons",
      "honour": 100,
      "buffs": {
       "str": 1,
-      "hide": 1,
-      "level": 2
-     },
-     "req": "born"
-    }
-   ],
-   "prof": {
-    "str": 12,
-    "spd": 1,
-    "hide": 12,
-    "venom": 0,
-    "flight": 0,
-    "regen": 12,
-    "ward": 12,
-    "swarm": 0,
-    "cunning": 6,
-    "magic": 12
-   },
-   "home": {
-    "type": "beyond",
-    "terr": [],
-    "what": "under the roots of every mountain at once"
-   },
-   "temper": {
-    "pride": 0,
-    "wrath": 0.2,
-    "caution": 0.8,
-    "patience": 1,
-    "honor": 0.5,
-    "greed": -1,
-    "warmth": 0,
-    "zeal": 0,
-    "social": -1,
-    "ambition": -1
-   },
-   "history": "The dwarves say the world is the back of something sleeping, and that every deep mine is a little closer to waking it. When the Sleeper turns over, mountains fall and new ones rise. The last time was before writing.",
-   "traits": [
-    "asleep",
-    "vast",
-    "indifferent"
-   ],
-   "values": [
-    "sleep"
-   ],
-   "wake": [
-    "deep mines",
-    "the old peace broken"
-   ],
-   "speech": "None. The ground shakes.",
-   "habits": {
-    "spring": {
-     "do": "sleep",
-     "why": "it sleeps"
-    },
-    "summer": {
-     "do": "sleep",
-     "why": "it sleeps"
-    },
-    "autumn": {
-     "do": "sleep",
-     "why": "it sleeps"
-    },
-    "winter": {
-     "do": "sleep",
-     "why": "it sleeps"
-    }
-   },
-   "century": "To sleep.",
-   "reacts": {},
-   "d": "The god under the mountains. When it turns in its sleep, the ground opens. The dwarves dig carefully."
-  },
-  {
-   "fam": "spirits",
-   "int": "wise",
-   "hungerMonths": 9999,
-   "desires": [],
-   "fears": [],
-   "loves": [],
-   "grudges": [],
-   "aims": [],
-   "id": "aun",
-   "n": "Aun",
-   "level": 118,
-   "age": "the first fire, lit when the world was cold",
-   "titles": [
-    {
-     "n": "the First Fire",
-     "born": true,
-     "honour": 100,
-     "buffs": {
       "magic": 1,
       "level": 2
      },
-     "req": "born"
-    }
-   ],
-   "prof": {
-    "str": 9,
-    "spd": 10,
-    "hide": 9,
-    "venom": 0,
-    "flight": 12,
-    "regen": 12,
-    "ward": 12,
-    "swarm": 0,
-    "cunning": 8,
-    "magic": 12
-   },
-   "home": {
-    "type": "beyond",
-    "terr": [],
-    "what": "the sun's road"
-   },
-   "temper": {
-    "pride": 0.7,
-    "wrath": 0.5,
-    "caution": 0,
-    "patience": 0.6,
-    "honor": 0.3,
-    "greed": 0,
-    "warmth": 0.6,
-    "zeal": 1,
-    "social": 0,
-    "ambition": 0
-   },
-   "history": "Every fire is a spark of it, the southern faiths say. It walked the world once, when the ice covered everything, and the ice went back. The dragons call it their mother and the frost spirits their enemy.",
-   "traits": [
-    "generous",
-    "consuming",
-    "proud of its children"
-   ],
-   "values": [
-    "warmth",
-    "its children the dragons"
-   ],
-   "wake": [
-    "the long winter",
-    "its children slain"
-   ],
-   "speech": "A voice in every hearth at once.",
-   "habits": {
-    "spring": {
-     "do": "sleep",
-     "why": "it rides the sun"
+     "req": "hidden"
     },
-    "summer": {
-     "do": "sleep",
-     "why": "it rides the sun"
-    },
-    "autumn": {
-     "do": "sleep",
-     "why": "it rides the sun"
-    },
-    "winter": {
-     "do": "sleep",
-     "why": "it rides the sun, far away"
-    }
-   },
-   "century": "That the world not freeze again.",
-   "reacts": {},
-   "d": "The first fire. It rides the sun's road, and comes down only when the cold wins. Then summers burn."
-  },
-  {
-   "fam": "spirits",
-   "int": "wise",
-   "hungerMonths": 9999,
-   "desires": [],
-   "fears": [],
-   "loves": [],
-   "grudges": [],
-   "aims": [],
-   "id": "nhal",
-   "n": "Nhal",
-   "level": 112,
-   "age": "as old as the first death",
-   "titles": [
     {
-     "n": "Keeper of the Last Door",
+     "n": "Dragon-Born of the First Clutch",
      "born": true,
-     "honour": 90,
+     "honour": 40,
      "buffs": {
-      "ward": 1,
+      "hide": 1,
       "level": 1
      },
      "req": "born"
     }
    ],
    "prof": {
-    "str": 6,
-    "spd": 6,
-    "hide": 6,
+    "str": 12,
+    "spd": 8,
+    "hide": 12,
     "venom": 0,
-    "flight": 8,
-    "regen": 12,
-    "ward": 12,
-    "swarm": 6,
-    "cunning": 10,
+    "flight": 12,
+    "regen": 10,
+    "ward": 11,
+    "swarm": 0,
+    "cunning": 9,
     "magic": 12
    },
    "home": {
-    "type": "beyond",
-    "terr": [],
-    "what": "behind the last door"
+    "type": "lair",
+    "terr": [
+     "mountains"
+    ],
+    "what": "a hall under the highest peak of the Crown Range, sealed by his own fallen roof"
    },
+   "sleeper": true,
+   "wake": [
+    "his children slain",
+    "the Saint stirs",
+    "great wars"
+   ],
    "temper": {
-    "pride": 0.2,
-    "wrath": -0.3,
-    "caution": 0.5,
-    "patience": 1,
-    "honor": 1,
-    "greed": -1,
-    "warmth": 0.2,
-    "zeal": 0.8,
-    "social": -0.3,
-    "ambition": -0.5
+    "pride": 1,
+    "wrath": 0.7,
+    "caution": 0.3,
+    "patience": 0.8,
+    "honor": 0.5,
+    "greed": 0.6,
+    "warmth": -0.3,
+    "zeal": 0.3,
+    "social": -0.2,
+    "ambition": 0.9
    },
-   "history": "Not a god anyone prays to, and every faith has a name for her. She keeps the door the dead go through. When too many come at once, after a great war or a plague, she comes out to see why, and the dead who would not go through it are made to.",
+   "history": "The first dragon hatched of the first clutch, who gathered every dragon of the age under one crown and ruled the skies of the north for two thousand years. Nine hundred years ago he met the Sword Saint on the ridge now called the Saint's Stair. The fight lasted three days. The Saint struck the last blow and the King fell into the mountain, roof and all; he has slept there wounded ever since. Every dragon alive is his subject or his grandchild, and Vaskareth his eldest.",
    "traits": [
-    "just",
-    "tired",
-    "patient beyond measure"
+    "regal",
+    "proud past measure",
+    "honourable to a worthy foe",
+    "remembers every insult for a thousand years"
    ],
    "values": [
-    "the door kept",
-    "the dead at rest"
+    "the dragons' crown",
+    "a duel fought fairly",
+    "the north sky"
    ],
-   "wake": [
-    "great wars",
-    "the dead walking"
+   "fears": [
+    "being forgotten"
    ],
-   "speech": "A quiet woman's voice, close to your ear.",
+   "desires": [
+    "dominion",
+    "gold"
+   ],
+   "loves": [
+    {
+     "at": "vaskareth",
+     "kind": "being",
+     "w": 1.5,
+     "why": "his eldest daughter"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "sword-saint",
+     "kind": "being",
+     "w": 2,
+     "why": "the only being who ever struck him down"
+    },
+    {
+     "at": "POL-27",
+     "kind": "realm",
+     "w": 1,
+     "why": "Skyhold's monks built their monastery on his roof"
+    }
+   ],
+   "speech": "Courtly and old, like a king addressing a petitioner. Calls the Saint 'my only equal' and no one else anything at all.",
    "habits": {
     "spring": {
      "do": "sleep",
-     "why": "she keeps the door"
+     "why": "he sleeps wounded under the fallen mountain"
     },
     "summer": {
      "do": "sleep",
-     "why": "she keeps the door"
+     "why": "he sleeps wounded under the fallen mountain"
     },
     "autumn": {
      "do": "sleep",
-     "why": "she keeps the door"
+     "why": "he sleeps wounded under the fallen mountain"
     },
     "winter": {
      "do": "sleep",
-     "why": "she keeps the door"
+     "why": "he sleeps wounded under the fallen mountain"
     }
    },
-   "century": "That the dead go through the door.",
-   "reacts": {},
-   "d": "The keeper of the door the dead go through. After a great war she walks the field, and the dead who would not rest are made to."
+   "hungerMonths": 60,
+   "century": "To wake healed, and finish the fight on the Saint's Stair.",
+   "reacts": {
+    "sought": {
+     "a": "test",
+     "line": "An eye the size of a door opens in the rock. He asks whose sword you carry."
+    },
+    "flattered": {
+     "a": "scorn",
+     "line": "He has been praised by kings. You are not one."
+    },
+    "attacked": {
+     "a": "rage",
+     "line": "The mountain moves."
+    },
+    "ignored": {
+     "a": "spare",
+     "line": "He is asleep. You are lucky."
+    }
+   },
+   "d": "The King of Dragons, who ruled the north sky for two thousand years until the Sword Saint brought him down. He sleeps under the Crown Range, wounded. Every dragon alive is his subject."
+  },
+  {
+   "id": "ghazrul",
+   "n": "Ghazrul",
+   "fam": "demons",
+   "level": 102,
+   "int": "wise",
+   "age": "as old as the gates",
+   "titles": [
+    {
+     "n": "Primordial Archdemon",
+     "born": true,
+     "honour": 0,
+     "buffs": {
+      "ward": 1,
+      "regen": 1,
+      "level": 2
+     },
+     "req": "born"
+    },
+    {
+     "n": "the Unmaker",
+     "honour": 0,
+     "buffs": {
+      "str": 1,
+      "magic": 1
+     },
+     "req": "hidden"
+    }
+   ],
+   "prof": {
+    "str": 12,
+    "spd": 7,
+    "hide": 10,
+    "venom": 6,
+    "flight": 6,
+    "regen": 12,
+    "ward": 12,
+    "swarm": 8,
+    "cunning": 8,
+    "magic": 12
+   },
+   "home": {
+    "type": "sealed",
+    "terr": [
+     "desert"
+    ],
+    "what": "under the Burning Waste, beneath a seal of glass the Saint cut into the sand"
+   },
+   "sleeper": true,
+   "wake": [
+    "the seal weakens",
+    "souls spilled",
+    "her brother calls"
+   ],
+   "temper": {
+    "pride": 0.9,
+    "wrath": 1,
+    "caution": -0.6,
+    "patience": -0.4,
+    "honor": -1,
+    "greed": 0.3,
+    "warmth": -1,
+    "zeal": 0.8,
+    "social": -0.6,
+    "ambition": 0.7
+   },
+   "history": "The other Primordial Archdemon, Morvane's sister-in-darkness, who came through the seventh gate with him and burned four realms in a year. The Sword Saint met her in what was then a green country; when it was over the country was the Burning Waste and she was under it, bound by a seal of glass. The seal has held nine hundred years. The sand above it is still warm.",
+   "traits": [
+    "ravenous",
+    "cruel",
+    "impatient",
+    "hates the bound world"
+   ],
+   "values": [
+    "ruin",
+    "freedom"
+   ],
+   "fears": [
+    "the Saint's sword"
+   ],
+   "desires": [
+    "souls"
+   ],
+   "loves": [
+    {
+     "at": "morvane",
+     "kind": "being",
+     "w": 0.6,
+     "why": "her brother, who has never tried to free her"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "sword-saint",
+     "kind": "being",
+     "w": 2,
+     "why": "he bound her under the sand"
+    },
+    {
+     "at": "human",
+     "kind": "race",
+     "w": 1.2,
+     "why": "the Saint was one of them"
+    }
+   ],
+   "speech": "Heat and a voice in it, saying the same few words over and over: open, open, open.",
+   "habits": {
+    "spring": {
+     "do": "sleep",
+     "why": "bound under the seal"
+    },
+    "summer": {
+     "do": "sleep",
+     "why": "bound under the seal; the sand is hottest"
+    },
+    "autumn": {
+     "do": "sleep",
+     "why": "bound under the seal"
+    },
+    "winter": {
+     "do": "sleep",
+     "why": "bound under the seal"
+    }
+   },
+   "hungerMonths": 6,
+   "century": "To break the seal and unmake the realms of men.",
+   "reacts": {
+    "sought": {
+     "a": "bargain",
+     "line": "The sand speaks. It offers anything, everything, for a crack in the glass."
+    },
+    "flattered": {
+     "a": "test",
+     "line": "The sand laughs."
+    },
+    "attacked": {
+     "a": "rage",
+     "line": "The glass groans."
+    },
+    "ignored": {
+     "a": "demand",
+     "line": "The heat follows you for a day."
+    }
+   },
+   "d": "The other Primordial Archdemon, bound under the Burning Waste by the Sword Saint nine hundred years ago. The sand over the seal is still warm."
+  },
+  {
+   "id": "sword-saint",
+   "n": "Cael Vardan",
+   "fam": "human",
+   "level": 102,
+   "int": "wise",
+   "age": "born some nine hundred and sixty years ago; a stone these nine hundred",
+   "titles": [
+    {
+     "n": "the Sword Saint",
+     "honour": 100,
+     "buffs": {
+      "spd": 1,
+      "cunning": 1,
+      "level": 2
+     },
+     "req": "hidden"
+    },
+    {
+     "n": "Dragon-Feller",
+     "honour": 60,
+     "buffs": {
+      "str": 1
+     },
+     "req": "hidden"
+    },
+    {
+     "n": "Binder of the Unmaker",
+     "honour": 60,
+     "buffs": {
+      "ward": 1
+     },
+     "req": "hidden"
+    }
+   ],
+   "prof": {
+    "str": 9,
+    "spd": 12,
+    "hide": 3,
+    "venom": 0,
+    "flight": 0,
+    "regen": 4,
+    "ward": 11,
+    "swarm": 0,
+    "cunning": 12,
+    "magic": 7
+   },
+   "home": {
+    "type": "lair",
+    "terr": [
+     "mountains"
+    ],
+    "what": "the Saint's Stair, a ridge of the Crown Range, where he sits turned to stone with his sword across his knees"
+   },
+   "sleeper": true,
+   "wake": [
+    "the King wakes",
+    "the seal weakens",
+    "archdemons walk"
+   ],
+   "temper": {
+    "pride": -0.3,
+    "wrath": -0.5,
+    "caution": 0.4,
+    "patience": 1,
+    "honor": 1,
+    "greed": -1,
+    "warmth": 0.6,
+    "zeal": 0.4,
+    "social": 0.2,
+    "ambition": -0.8
+   },
+   "history": "A shepherd's son of the western hills, born in a year of famine, who learned the sword from a deserter for a sack of oats. By thirty no one in the world could stand against him; by fifty he had bound the Archdemon Ghazrul under the Burning Waste and cut the first face from Morvane. At sixty-one he climbed the ridge to meet the King of Dragons, alone, as he had promised. Three days later the King was under the mountain and the Saint sat down on the ridge and did not get up. He is stone now, sword on his knees. Pilgrims climb to him. The old women say he is only resting.",
+   "traits": [
+    "humble",
+    "patient",
+    "merciful",
+    "unbending once he has given his word"
+   ],
+   "values": [
+    "a promise kept",
+    "the weak protected",
+    "a fair fight"
+   ],
+   "fears": [
+    "an oath broken"
+   ],
+   "desires": [
+    "peace"
+   ],
+   "loves": [
+    {
+     "at": "human",
+     "kind": "race",
+     "w": 1,
+     "why": "his own people, whom he never stopped defending"
+    },
+    {
+     "at": "POL-01",
+     "kind": "realm",
+     "w": 0.5,
+     "why": "the hills he was born in lie under Aldmark"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "ghazrul",
+     "kind": "being",
+     "w": 1.5,
+     "why": "four realms burned"
+    },
+    {
+     "at": "morvane",
+     "kind": "being",
+     "w": 1.2,
+     "why": "the one who got away"
+    }
+   ],
+   "rivals": [
+    "Sarnavoth, King of Dragons, his only equal",
+    "Ghazrul the Unmaker, whom he bound",
+    "Morvane, who escaped him",
+    "Ossery the Black, a swordsman of the south who challenged him nine times and lost nine times, and wept at his stone"
+   ],
+   "sword": {
+    "n": "Morrowglass",
+    "d": "a plain grey blade that, the songs say, cut the seal of glass into the sand and the dragon-king's scales alike. It lies across his stone knees, and no one has been able to lift it."
+   },
+   "sayings": [
+    "A sword is a promise you keep with your hands.",
+    "I have never fought a man who was not better than me at something.",
+    "The first cut is the one you decided on yesterday.",
+    "Go home. Your mother is waiting."
+   ],
+   "places": [
+    "the Saint's Stair, the ridge where he sits",
+    "Vardan's Ford, where he held a river against a host alone",
+    "the Glass Seal in the Burning Waste",
+    "Oat Hill, where he took his first lesson",
+    "the Weeping Stone, where Ossery the Black mourned him"
+   ],
+   "tellings": {
+    "human": "The shepherd's son who became the greatest swordsman who ever lived, fought the King of Dragons for three days, and sits on the mountain still, waiting for the day he is needed.",
+    "elf": "A man who lived as if he had four hundred years instead of sixty, and so learned in sixty what we learn in four hundred. The elves say he rests, and that his kind are owed patience.",
+    "dwarf": "A man who never once broke his word. The dwarves carve his saying over their forges and swear by his stone; they deny he ever wept.",
+    "orc": "The orcs tell that their own champions fought him and lost with honour, and that he once shared bread with a beaten khan. They call him the Grey Brother.",
+    "giant": "The giants say he was not a man at all but a mountain that stood up for a while, and has sat down again."
+   },
+   "end": "He sat down on the ridge after the last blow against the King of Dragons and turned slowly to stone. Some say he died there; the priests say he sleeps; the pilgrims say he will wake when the King does.",
+   "speech": "Quiet, plain, a hill-shepherd's words. Never boasts. Asks people their names.",
+   "habits": {
+    "spring": {
+     "do": "sleep",
+     "why": "he sits in stone on the ridge, resting"
+    },
+    "summer": {
+     "do": "sleep",
+     "why": "he sits in stone on the ridge, resting"
+    },
+    "autumn": {
+     "do": "sleep",
+     "why": "he sits in stone on the ridge, resting"
+    },
+    "winter": {
+     "do": "sleep",
+     "why": "he sits in stone on the ridge, resting"
+    }
+   },
+   "hungerMonths": 9999,
+   "century": "To rest until he is needed, and not one day longer.",
+   "reacts": {
+    "sought": {
+     "a": "spare",
+     "line": "You climb to the stone and sit by it. The wind drops, and you feel, for a moment, that someone asks your name."
+    },
+    "flattered": {
+     "a": "scorn",
+     "line": "The stone does not answer. He never liked praise."
+    },
+    "attacked": {
+     "a": "test",
+     "line": "You raise a hand against the stone, and cannot bring it down."
+    },
+    "ignored": {
+     "a": "spare",
+     "line": "Pilgrims pass him every day."
+    }
+   },
+   "d": "Cael Vardan, the Sword Saint: a shepherd's son who became the greatest swordsman of any age, bound an Archdemon and brought down the King of Dragons, then sat down on the ridge and turned to stone. Every child knows his story."
   }
  ]
 }

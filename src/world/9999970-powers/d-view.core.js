@@ -20,7 +20,8 @@
     if (!seen.length) h += '<div class="small muted">You have heard no tales of them yet.</div>';
     else h += '<table class="t small"><tr><th>Place</th><th>Who</th><th>Level</th></tr>' + seen.map(x => {
       const L = PW.LEG.get(x.id) || PW.MAS.get(x.id), t = (x.titles || []).map(y => y.n).join(', ');
-      return `<tr><td>${e(x.rank)}</td><td data-note="${e(L && L.d ? L.d : 'A named monster of the wilds.')}"><b>${e(x.n)}</b>${t ? ' <span class="muted">' + e(t) + '</span>' : ''}</td><td>${e(x.level)}</td></tr>`;
+      const more = L && L.tellings ? ` Your people tell it: ${L.tellings[pc.race] || L.tellings.human}${L.sword ? ' His sword: ' + L.sword.n + ', ' + L.sword.d : ''}${L.places ? ' Places named for him: ' + L.places.join('; ') + '.' : ''}` : '';
+      return `<tr><td>${e(x.rank)}</td><td data-note="${e((L && L.d ? L.d : 'A named monster of the wilds.') + more)}"><b>${e(x.n)}</b>${t ? ' <span class="muted">' + e(t) + '</span>' : ''}</td><td>${e(x.level)}</td></tr>`;
     }).join('') + '</table>';
     if (great.length > seen.length) h += `<div class="tiny muted">There are others no tale has reached you of.</div>`;
     const ms = Object.keys(met).map(id => PW.species(id)).filter(Boolean).sort((a, b) => b.level - a.level);

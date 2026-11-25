@@ -7,7 +7,7 @@ const NO = { ok: false, detail: 'A.POWER not in this build' };
 
 export default {
   // the one scale: today's strongest human mid-ladder (B), the race masters at A to S, great monsters at S and above,
-  // the legends at SS and SSS, the gods above every rank; an ordinary man near the bottom
+  // the legends at SS and SSS; above every rank only the summit (the King of Dragons, the Primordial Archdemons, the Sword Saint, a man); an ordinary man near the bottom
   async pwLadder(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     const r = await pg.evaluate(() => {
@@ -18,24 +18,24 @@ export default {
         out.tops.push(hs[hs.length - 1]); out.meds.push(hs[hs.length >> 1]);
       }
       out.masters = PW.D.masters.map(m => PW.level(m.id));
-      out.legends = PW.LD.legends.filter(l => l.home.type !== 'beyond').map(l => PW.level(l.id));
-      out.gods = PW.LD.legends.filter(l => l.home.type === 'beyond').map(l => PW.level(l.id));
+      out.legends = PW.LD.legends.filter(l => PW.level(l.id) < 100).map(l => PW.level(l.id));
+      out.summit = PW.LD.legends.filter(l => PW.level(l.id) >= 100).map(l => l.id).sort(); out.summitL = out.summit.map(id => PW.level(id)); out.saintHuman = PW.LEG.get('sword-saint').fam === 'human'; out.godBand = PW.D.bands.some(b => /god|divine/i.test(b.r + b.w));
       out.great = PW.BD.species.filter(s => /^(Ancient|Elder) .*Dragon$/.test(s.n)).map(s => PW.level(s.id));
       out.bands = PW.D.bands.map(b => [b.r, b.from]);
       out.bandOfTop = out.tops.map(L => PW.band(L).r);
       out.ratio = PW.mightOf(60) / PW.mightOf(50);
-      // a human master against a giant king, an elder dragon and a god, in words
+      // a human master against a giant king, an elder dragon, a legend and the Saint, in words
       const best = Object.values(A.S.people).filter(p => p.alive && p.st && p.race === 'human').sort((a, b) => PW.might(b) - PW.might(a))[0];
-      out.words = ['m-giant-king', 'elder-ash-dragon', 'vaskareth', 'velmorrow'].map(id => PW.compare(best, id).word);
+      out.words = ['m-giant-king', 'elder-ash-dragon', 'vaskareth', 'sword-saint'].map(id => PW.compare(best, id).word);
       out.pcts = out.words.some(w => /%|\d/.test(w));
       return out;
     });
     const max = Math.max(...r.tops), min = Math.min(...r.tops);
-    const ok = r.bands.length >= 11 && r.bands.some(b => b[0] === 'SSS') && r.bands[r.bands.length - 1][0] === 'divine' &&
+    const ok = r.bands.length >= 11 && r.bands.some(b => b[0] === 'SSS') && 
       min >= 42 && max <= 55 && r.bandOfTop.every(b => b === 'B' || b === 'A') && Math.max(...r.meds) <= 25 &&
       r.masters.every(L => L >= 50 && L < 70) && Math.min(...r.masters) > max && r.great.every(L => L >= 60) &&
-      r.legends.every(L => L >= 70) && r.gods.every(L => L >= 100) && Math.abs(r.ratio - 10) < 1e-6 && !r.pcts;
-    return { ok, detail: `strongest human by world ${r.tops.join(', ')} (${r.bandOfTop.join(', ')}), median ${r.meds.join(', ')}; masters ${r.masters.join(', ')}; elder and ancient kinds ${Math.min(...r.great)}-${Math.max(...r.great)}; legends ${Math.min(...r.legends)}-${Math.max(...r.legends)}; gods ${r.gods.join(', ')}; the best man against them: ${r.words.join(' / ')}` };
+      r.legends.every(L => L >= 70) && r.summit.join() === 'ghazrul,morvane,sarnavoth,sword-saint' && r.saintHuman && !r.godBand && r.bands[r.bands.length - 1][0] === 'beyond' && Math.abs(r.ratio - 10) < 1e-6 && !r.pcts;
+    return { ok, detail: `strongest human by world ${r.tops.join(', ')} (${r.bandOfTop.join(', ')}), median ${r.meds.join(', ')}; masters ${r.masters.join(', ')}; elder and ancient kinds ${Math.min(...r.great)}-${Math.max(...r.great)}; legends ${Math.min(...r.legends)}-${Math.max(...r.legends)}; above every rank ${r.summit.map((id, i) => id + ' ' + r.summitL[i]).join(', ')}; the best man against them: ${r.words.join(' / ')}` };
   },
 
   // the bestiary: countless kinds in families and evolution lines; the release's beasts placed by their own duel rows
@@ -102,8 +102,8 @@ export default {
     return { ok, detail: r.n ? `world ${r.seed} (tried ${r.tried.join(', ')}): ${r.n} rises in 40 years, ${r.named} named; e.g. ${r.rec.from} -> ${r.rec.to}: ${r.rec.why}` : `no rise in worlds ${r.tried.join(', ')}` };
   },
 
-  // the great beings: one holder each, a character sheet, a reason for every move (A.WHY), raids as news, and gods who
-  // mostly sleep
+  // the great beings: one holder each, a character sheet, a reason for every move (A.WHY), raids as news, and the
+  // sleepers of the summit who mostly sleep
   async pwLegends(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     const r = await pg.evaluate(() => {
@@ -115,7 +115,7 @@ export default {
         const rng = PW.rng('t' + i);
         for (const L of PW.LD.legends) {
           const g = st.leg[L.id]; if (!g || g.slain) continue;
-          const rec = g.god ? PW.godYear(L, g, rng) : PW.legendSeason(L, g, rng);
+          const rec = L.sleeper && !(g.wokeUntil >= A.S.year) ? (i % 4 === 0 ? PW.sleeperYear(L, g, rng) : null) : PW.legendSeason(L, g, rng);
           if (rec) { recs.push(rec); moves[rec.chose] = (moves[rec.chose] || 0) + 1; }
         }
       }
@@ -123,12 +123,12 @@ export default {
       const ids = PW.LD.legends.map(l => l.id), uniq = new Set(ids).size === ids.length;
       const reasoned = recs.every(r => r.why && r.why.length > 0);
       const shown = JSON.stringify(PW.great().map(x => PW.titlesShown(x))).includes('req');
-      return { n: PW.LD.legends.length, gods: PW.LD.legends.filter(l => l.home.type === 'beyond').length, homes: [...new Set(PW.LD.legends.map(l => l.home.type))], uniq, sheets, reasoned, recs: recs.length, moves,
+      return { n: PW.LD.legends.length, sleepers: PW.LD.legends.filter(l => l.sleeper).length, saintKnown: A.S.pw.known['sword-saint'] != null, saintSheet: !!(PW.LEG.get('sword-saint').tellings && PW.LEG.get('sword-saint').sword && PW.LEG.get('sword-saint').sayings && PW.LEG.get('sword-saint').places && PW.LEG.get('sword-saint').rivals && PW.LEG.get('sword-saint').end), homes: [...new Set(PW.LD.legends.map(l => l.home.type))], uniq, sheets, reasoned, recs: recs.length, moves,
         raidWhy: (recs.find(r => r.chose === 'raid') || {}).why, slain: Object.values(st.leg).filter(g => g.slain).length, shown,
         logged: A.WHY.recent(150, x => x.k === 'legend').length };
     });
-    const ok = r.n >= 10 && r.gods >= 2 && r.homes.length >= 5 && r.uniq && r.sheets && r.reasoned && r.recs > 500 && (r.moves.raid || 0) > 0 && (r.moves.sleep || 0) > 0 && !r.shown;
-    return { ok, detail: `${r.n} great beings (${r.gods} gods; homes ${r.homes.join(', ')}); 40 years: ${JSON.stringify(r.moves)}, ${r.slain} slain by hosts; a raid because: ${JSON.stringify((r.raidWhy || []).map(x => x[0]))}` };
+    const ok = r.n >= 10 && r.sleepers >= 3 && r.saintKnown && r.saintSheet && r.homes.length >= 5 && r.uniq && r.sheets && r.reasoned && r.recs > 500 && (r.moves.raid || 0) > 0 && (r.moves.sleep || 0) > 0 && !r.shown;
+    return { ok, detail: `${r.n} great beings (${r.sleepers} sleepers at the summit, the Sword Saint known from the start; homes ${r.homes.join(', ')}); 40 years: ${JSON.stringify(r.moves)}, ${r.slain} slain by hosts; a raid because: ${JSON.stringify((r.raidWhy || []).map(x => x[0]))}` };
   },
 
   // a card from the wilds: words not numbers, at most 80 words; a fight far above is settled at once (death or flight, no

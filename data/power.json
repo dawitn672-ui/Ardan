@@ -80,9 +80,9 @@
     },
     {
       "from": 100,
-      "r": "divine",
-      "w": "a god of the world",
-      "d": "Above every rank: the few powers the world prays to or fears, distant, mostly asleep. When one stirs, the whole world feels it."
+      "r": "beyond",
+      "w": "beyond every rank",
+      "d": "Only a handful in all the ages: the King of Dragons, the Primordial Archdemons and the Sword Saint of old, a man who rose to stand with them. When one of them moves, the whole world feels it."
     }
   ],
   "capabilities": [
@@ -292,5 +292,6 @@
       ],
       "d": "Took his seat over the bodies of forty challengers. No man of the west has lasted a minute with him."
     }
-  ]
+  ],
+  "myth": "The faiths speak of gods. No one has ever measured one, and the scale does not hold them: it stops at the few beings above every rank."
 }
