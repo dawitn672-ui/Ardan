@@ -2662,3 +2662,12 @@ share card and its picture no seed, the hall of lives no seed. The functions sta
 (tests and the owner's bug reports use export); a stored setting (a player could find it). **Why:** players never send a
 seed; saves belong to a device or account; no percentages for the player. The owner: "sure, but no players have the game
 yet", so low priority, done because it was small.
+
+### D-NEW-1 · 2026-11-25 · Powers: might is conscripts squared; the level is 10 x log10 of it
+**Choice:** one number for every being, a person's fighting worth in conscripts squared (Lanchester), read as a level
+(ten levels = ten times the might) with rank words over it (G to SSS, then "beyond every rank" for four beings). **Why:**
+the owner wants levels, a huge spread and today's best man mid-ladder; conscripts are what the sheet already shows, and
+squaring puts a soldier (about 20) and the best Master (46-51) on one scale with the masters of the races (57-65), the
+legends (76-97) and the summit (103-107) without changing any person. Odds come from the might and the profile's
+matchup, never the level alone. The world's own draws use a seeded stream of their own so the main stream moves only
+when the player is involved. No gods on the scale (the owner's later note).

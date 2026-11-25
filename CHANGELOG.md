@@ -5,6 +5,19 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **The world is far bigger than you.** Every being now has a level, from a cellar rat to the King of Dragons, with ranks
+  G to SSS and a handful beyond every rank. The best swordsman alive stands mid-ladder; the masters of the giants, dwarves,
+  elves and orcs, the great dragons and the old monsters stand far above him. The codex's Power & scale page shows where
+  you stand, the great beings you have heard of, ranked, and the beasts you have met.
+- **270 kinds of beast and monster**, each with its own ways: what drives it, what provokes it, what turns it away (if
+  anything does), how it treats people. Some can be talked to. Monsters in the wild grow into stronger forms, and the
+  greatest take a name.
+- **The wilds push back.** On the road, exploring, hunting or at the frontier, something may find you: run, try what turns
+  its kind, speak to it, or fight. Odds are in words; a fight far above you is over at once. Towns stay mostly safe.
+- **Legends move.** Fifteen great beings with their own histories, grudges and habits raid, sleep, hunt and bargain for
+  reasons the news tells; crowns send hosts against them, and lose. Every child grows up on the story of Cael Vardan, the
+  Sword Saint, who sits turned to stone on his ridge.
+
 - **Escaping the gallows really frees you.** Breaking free at the gallows or bribing the hangman used to leave you
   "in prison" on paper, so cell fights followed you abroad. Now a man who escapes is out of the cells.
 - **No training injuries in a cell.** Your training plan's injuries came even in prison; now only training can hurt you.
