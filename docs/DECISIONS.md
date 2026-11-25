@@ -2720,3 +2720,6 @@ owner renders once, then merge and lock it (places may be added, the map not edi
 lands, since legends' lairs, habitats and lore sit on it; the power wave keeps lairs as data keyed to terrain and named
 places for one re-placement pass. **Considered:** finishing skills first (the map lock touches every world and every
 test, and the later the lock the more is placed twice). **Why:** the owner's order 84, placed by importance.
+**D-173 addendum (order 85).** Might grows faster with every level (the gap between levels widens); power is level's might
+times titles, skill mastery and quality, and capabilities, so the Sword Saint (650) outranks the Sea Lord (680-700), which a
+test holds. The Dragon Mountains are the dragons' home; there is no demon kingdom.

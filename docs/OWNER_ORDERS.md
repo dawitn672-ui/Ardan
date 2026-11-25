@@ -449,6 +449,12 @@ order is replaced, strike it through and say by what.
     change it however I like, as big as I like, placing realms and places freely; once done, places may be added but the
     map can no longer be edited (D-173, H-130).
 
+85. **Exponential levels; titles and skill quality beat raw level; the Dragon Mountains; no demon kingdom** · recorded
+    2026-11-25 (evening). Kept unchanged in `docs/prompts/2026-11-25-exponential-levels.md`. Levelling grows exponentially
+    harder and the gap between levels grows; level is not everything: the Sword Saint (650) is stronger than the Sea Lord
+    (680-700) through his titles and the mastery and quality of his skills. Dragons live in the Dragon Mountains; there is no
+    demon kingdom (D-173 addendum).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
