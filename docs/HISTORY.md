@@ -2740,3 +2740,7 @@ either rising fails, `--write` lowers them. The names-defined-more-than-once cou
 Saved `docs/prompts/2026-11-25-power-scale.md`; order 77 in `docs/OWNER_ORDERS.md`; master prompt: register row P2, 13.1
 (the power scale and bestiary third, before the skills), section 17 (its first wave and Done when), Appendix C row; D-167.
 The build runs in a helper's worktree.
+
+### H-125 · 2026-11-25 · Order 78 merged (levels, capability profiles, minds, orders by importance)
+Saved the prompt; order 78; master prompt header, register row L, sections 9 and 17, Appendix C; D-168. Passed to the
+power-scale builder and the skills designer while they work.

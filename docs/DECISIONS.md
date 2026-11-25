@@ -2671,3 +2671,12 @@ canon rewrite stay after the skills rebuild. Built by a helper in a local worktr
 **Considered:** waiting for the skills rebuild (order 76's sequence; the owner's newer word wins, D-158); bending the
 existing human scale up instead (the owner asked that today's best be weak beside monsters and race masters, so the
 scale grows above, not the humans). **Why:** the owner's order 77.
+
+### D-168 · Levels replace tier words; capability profiles; minds for the great beings; orders by importance (2026-11-25; order 78)
+**What.** (1) Skills and the power ladder are measured in levels; "Master", "Legend" and the other tier words leave what the
+player reads (titles remain for deeds). (2) A being's level is not its whole story: each species and legend has a
+capability profile, so two of one level fight differently. (3) Every species has an intelligence class; beasts act by
+instinct with a named cause, thinking beings through A.WHY. (4) Every unique legendary being has reasoning, emotions, a
+personality, habits, titles and a rank among the great beings; a lair only where it fits. (5) A standing rule: each new order
+is placed by importance under 13.1, not by arrival. **Why:** the owner's order 78. Both helpers (the power scale and the
+skills design) were told mid-work.

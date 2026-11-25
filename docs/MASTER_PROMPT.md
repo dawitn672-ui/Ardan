@@ -6,7 +6,7 @@ This is the one living instruction file for Ardan. It is not a numbered release 
 
 **My newest instruction always wins.** Whenever I give you something new, it takes precedence over every older construct: an earlier order, a decision record, a design already built, a rule in this file, `CLAUDE.md`, a skill or a spec. Merge it (section 1), move what it replaces to Appendix C, and build from the new one. Ask first only when following it would cost money, accounts, the store, players' saves or deleted work. This holds for the rest of the project.
 
-**Order of work:** by what has the greatest effect on the game as it is today, in descending order (13.1). Skills and tools are refined first whenever I add new ones (section 16).
+**Order of work:** by what has the greatest effect on the game as it is today, in descending order (13.1). **Every new order is placed in the work by its importance under 13.1, not by when I gave it** (order 78). Skills and tools are refined first whenever I add new ones (section 16).
 
 Read this whole file at the start, and again after every merge (section 1). In other sessions, read section 0, `docs/STATUS.md`, section 13 and the section for the work at hand.
 
@@ -134,6 +134,7 @@ One row per prompt I give you. Add a row every time. "Status" says whether it is
 | T | 2026-11-25 | "Refining the skills comes first" instruction | Make the skills and tools review the top priority, because it helps every later step | Header, 0.2, 13.1, 13.2, 13.3, 15, 16 | Merged. |
 | A | 2026-11-25 | Answers to the Phase 0 questions (`docs/prompts/2026-11-25-answers-and-direction.md`), with the Emilio save | Newest instruction wins, everywhere; GitHub `main` brought up to date; no working branches or working files left in the repo, only versions; plugins folded into the Ardan skills, the rest cut; drop the two unfinished features; the map decision put to me later; seed and export behind a dev flag; skills rebuilt as ranked skills that merge, advance and evolve, in great number, stats kept apart; Next month only from age 12; magic, many races, monsters and legendary beings, after the skills; paid game packs for more allowances; portraits improved as often as needed; the Emilio life; auto-resume on; the order of work rebuilt by effect on the game | Header, 2, 4.1, 5, 9, 12.5, 13, 16, 17 | Merged. |
 | P2 | 2026-11-25 | "Make the power scaling of this world much larger" (`docs/prompts/2026-11-25-power-scale.md`) | Countless beasts and mythical beings; today's strongest warrior weak beside race masters and monsters; full speed, no stopping every few minutes | 13, 17 | Merged. |
+| L | 2026-11-25 | Levels and beings (`docs/prompts/2026-11-25-levels-and-beings.md`) | Levels replace tier words; same level, different capabilities; intelligence classes; minds, titles and a ranking for every unique being, lairs for some; every order placed by importance | Header, 9, 13.1, 17 | Merged. |
 
 ### 1.3 Carry-over checklist
 Earlier prompts asked for a lot that may already be built, or be in progress. **Before you plan any phase, check each row in the repo.** Record the result (Done, In progress, Partly, Not done or Changed) and the evidence in `docs/ROADMAP.md`. Work only on what is not done. New prompts add rows here. Item IDs: K1 to K10 are the kit steps, V1 to V16 are the complaint numbers in `docs/V2_SPEC.md`, O-letter-number are the orders of 2026-11-12.
@@ -457,6 +458,7 @@ The card shows: name, rank letter, level out of 10 as pips, kind, category, rari
 - **Slots:** a limited number of active skills can be readied at once. It grows with the mind, rank and age. Passives and auras have no slot limit but are capped by the stacking rule below.
 - **Evolution:** a skill can evolve at level 10 into a higher-rank skill if its conditions are met (Beginner Footwork D → Footwork C → Fleet Fighter B).
 - **Merging:** several held skills can fuse into one stronger skill when their conditions meet (Swordsmanship + Footwork + Battle Sense → a named sword art), and the parts are absorbed into it. Some merges are known recipes, some are found by chance in a crisis, and a few happen only once in an age.
+- **Levels, not words (order 78):** the player reads a skill's rank and level, never "Master", "Legend" or the other tier words; honours such as "master swordsman" are titles given for deeds, not the measure.
 - **Advancing:** a skill can also be awakened at a higher rank by a deed, a near-death or a blessing, without passing through every level (rare, and always with a named reason).
 - **Rust:** unused skills slip. Rust already exists, so reuse it.
 - **Teaching and inheritance:** each skill says whether it can be taught, inherited, stolen, sold, lost or only earned.
@@ -873,6 +875,8 @@ Create them in `.claude/skills/` at the phase shown. Each description below is a
 
 **Build order:** (1) a canon pass: the world's history, races and faiths rewritten to hold magic, recorded in `docs/design/magic-world.md`, and **the map decision put to the owner** with it; (2) data models (elements, spells, mana, races, monsters, evolution) in `data/`, with validators like section 9's; (3) the first wave in play: a starting set of elements and spells, ten races, a hundred monsters, three legendary beings; (4) the waves after it, each studied, playtested and improved.
 
+**Refined by order 78:** the ladder is one of **levels** (titles above it are names, not the measure); **beings of one level can differ completely** (a capability profile: strength, speed, hide, venom, flight, regeneration, numbers, cunning...); every species has an **intelligence class** (beasts act by instinct with a named cause; only the thinking ones decide through A.WHY); **not every unique being has a lair** (some roam, serve a realm, sleep under the sea), but **each has reasoning, emotions, a personality, habits, its own titles and a place in a ranking** of the world's great beings the player can learn of.
+
 **Done when (first wave):** a new life can be born a mage or into a non-human race; monsters live in places on the map and are hunted for reasons; at least one monster evolves in a bot life for a reason the log names; every legendary being has one holder and a reason for each move; old saves load; the balance harness passes on the new world.
 
 ---
@@ -1015,3 +1019,5 @@ Instructions that a newer one replaced. They are kept so a later session knows w
 | Order of work led by skills and tools first, then safety nets | Section 13.1 | Descending effect on today's game: play bugs and exploits, skills, magic, difficulty, war, then the rest | 13 |
 | Phase numbers 3 to 11 | Section 13.3 | 4 to 12 (Phase 3 is magic) | 13 |
 | Monsters and power wait until after the skills rebuild | Order 76 (section 17) | The power scale and bestiary now, before the skills; magic and races keep their place | 13, 17 |
+| Tier words (Beginner to Legend) as the measure of skill and fighting | S1 (order 63), GD.TIERS | Levels; titles only for deeds (order 78) | 9, 17 |
+| New orders worked in the order given | Practice | Every order placed by importance (13.1), order 78 | Header, 13.1 |

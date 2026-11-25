@@ -395,6 +395,13 @@ order is replaced, strike it through and say by what.
     of section 17 ahead of the skills rebuild (the newest instruction wins, D-158); magic and the canon rewrite stay after
     the skills. Also: work at full speed without stopping every few minutes (D-167, H-124).
 
+78. **Levels, not tier words; beings differ at one level; minds for the great beings; orders placed by importance** ·
+    recorded 2026-11-25 (evening). Kept unchanged in `docs/prompts/2026-11-25-levels-and-beings.md`. Levels replace
+    "Master", "Legend" and the other tier words (skills and the power ladder). Beings of the same level can differ
+    completely in what they can do. Not every creature is intelligent. Not every unique legendary being has a lair, but
+    each has full reasoning, emotions, a personality and habits, its own titles and its own ranking. **Standing rule:**
+    every order is placed in the work by its importance (master prompt 13.1), not by when it was given (D-168, H-125).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
