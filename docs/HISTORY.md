@@ -2689,3 +2689,10 @@ CI 165 failed `v2cPlaytest2Class`: a soldier still in the army, whose officer is
 him from counsel. `ADV.candidates` now sets a former superior aside when you hold no post (no army place, no job) or sit in
 a cell, or when someone else is your superior now (the older rule). `v2cPlaytest2Class` and `pfNoSuperiorWithoutPost`
 pass. CI 165's long shard 0 (`modsFireInLives`, too few long bot lives) is being compared against the build before H-112.
+
+### H-117 · 2026-11-25 · modsFireInLives plays standby lives (H-082)
+CI 165's long shard 0: `modsFireInLives` had two lives with 10+ adult years of the three it needs (years 6/3/36/9/3/36 against
+36/36/36/19/1/36 before H-112). The deaths were the world's (a skirmish at 16, lung, marsh and camp fevers, a hanging for
+treason after a plot card), not a fault, and the balance bench (each path's span within its bands) passed on the same
+commit. The test now plays the next mix and seed, up to twelve lives, while fewer than three are long: locally 9 lives, the
+probe in 3 of 3 long ones.

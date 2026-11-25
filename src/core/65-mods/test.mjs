@@ -195,8 +195,11 @@ export default {
         A.MODS.setOn('example', on); A.MODS.setOn('probe', on);
         const out = [];
         const mixes = [['human', 'POL-01', 'peasant'], ['human', 'POL-05', 'artisan'], ['dwarf', 'POL-20', 'peasant'], ['human', 'POL-01', 'serf'], ['orc', 'POL-11', 'peasant'], ['human', 'POL-03', 'peasant']];
-        for (let i = 0; i < 6; i++) {
-          const [race, realm, status] = mixes[i];
+        // H-082 standby lives: while fewer than three lives reach 10 adult years, the next mix and seed are played too (CI 165,
+        // after H-112 moved the stream: 6/3/36/9/3/36 years, two long lives, deaths of battle and fevers, not of a fault)
+        const long = () => out.filter(x => x.adultYears >= 10).length;
+        for (let i = 0; i < 6 || (long() < 3 && i < 12); i++) {
+          const [race, realm, status] = mixes[i % 6];
           const L = B.life({ seed: 6500 + i * 131, race, realm, status, sex: i % 2 ? 'F' : 'M', startAge: 16 }, ['careful', 'greedy', 'random'][i % 3], false, 35);
           const pc = A.P(A.S.pc), ev = pc.flags.ev || {}, rb = pc.rb || {};
           out.push({ years: L.years, adultYears: Math.max(0, L.years - Math.max(0, GD.RACES[race].adult - 16)), probe: ev.mod_probe_knock ? 1 : 0, example: Object.keys(ev).filter(k => k.startsWith('mod_example_')), custom: Object.keys(rb).filter(k => k.startsWith('mod_')).length,
@@ -230,7 +233,7 @@ export default {
     const sh = r.share, firm = sh.draws >= 1000 && sh.probe >= sh.draws * 0.015;
     const long = r.on.filter(x => x.adultYears >= 10), onProbeLong = long.filter(x => x.probe).length;
     const ok = firm && long.length >= 3 && onProbeLong >= Math.ceil(long.length / 2) && offAny === 0 && r.off.every(x => x.mods === '') && r.on.every(x => x.mods === 'example,probe');
-    return { ok, detail: `the monthly roll: the probe ${sh.probe} of ${sh.draws} draws (the commonest other ${sh.top}); 6 bot lives each way (16 to 51, same seeds; years ${r.on.map(x => x.years).join('/')}): on, the probe mod's event came up in ${onProbe} of 6 lives (${onProbeLong} of the ${long.length} with 10+ adult years), the example's in ${onEx} (${[...new Set(r.on.flatMap(x => x.example))].join(', ') || 'none'}), its Aldmark custom met in ${r.bible ? onCustom : 'none (no realm bible in this build)'}; off, mod events, customs or flags in ${offAny} lives` };
+    return { ok, detail: `the monthly roll: the probe ${sh.probe} of ${sh.draws} draws (the commonest other ${sh.top}); ${r.on.length} bot lives on and ${r.off.length} off (16 to 51, same seeds, standbys while short of three long lives; years ${r.on.map(x => x.years).join('/')}): on, the probe mod's event came up in ${onProbe} of ${r.on.length} lives (${onProbeLong} of the ${long.length} with 10+ adult years), the example's in ${onEx} (${[...new Set(r.on.flatMap(x => x.example))].join(', ') || 'none'}), its Aldmark custom met in ${r.bible ? onCustom : 'none (no realm bible in this build)'}; off, mod events, customs or flags in ${offAny} lives` };
   },
 
   // A.CX_RX reads the condition's text: a mod's condition reads as the hand-written one would, so A.evFit draws it alike
