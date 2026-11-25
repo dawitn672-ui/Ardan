@@ -277,3 +277,13 @@ the key use first, a little "pushy", the near misses named).
 At the end of every phase: list the skills again, compare with this file, remove what was not used, and run 16.6 on
 anything new (read it in full, verdict, risk, clash, a line here). Never install a third-party skill, plugin or connector
 without reading it and telling the owner what it does.
+
+## 2026-11-25: applied for this repo (order 76)
+The owner asked for the merging and cutting to be done here, without a table. The useful rules of superpowers,
+mattpocock-skills, design, vectorlab-ux-skills and ui-consistency were already folded into `ardan-dev-process` and
+`ardan-ui-review` (H-107); the ideas of unity and vercel are in section 2.5 for the release skill. `.claude/settings.json`
+now switches off 28 plugins for every session in this repo (`enabledPlugins: false`) and keeps three on: frontend-design,
+image-deep-research and skill-creator. Switching off is a toggle: delete the line or set it to `true` to bring one back.
+`backend-design` and `claude-security` come back at the backend phase (Phase 9). The account-wide switches at claude.ai
+(Customize, Plugins) are the owner's and optional. Effective from the next session; the next session checks its skill
+list against this file and records the count.
