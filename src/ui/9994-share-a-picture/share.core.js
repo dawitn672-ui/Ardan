@@ -46,7 +46,7 @@
   SH.footer = function () {
     const S = A.S, pc = A.pc();
     const where = pc ? (A.realmName ? A.realmName(pc.realm) : pc.realm) : '';
-    return `Ardan · seed ${S && S.seed != null ? S.seed : '?'}${where ? ' · ' + where : ''} · ${S ? S.year : ''} AR`;
+    return `Ardan${UI.DEV ? ` · seed ${S && S.seed != null ? S.seed : '?'}` : ''}${where ? ' · ' + where : ''} · ${S ? S.year : ''} AR`;   // the seed only for testers (D-166)
   };
   SH.bust = function (p) {
     // the whole drawing as one SVG: the card is painted on a canvas, which cannot follow the page's picture frames (93-figures)
@@ -217,7 +217,7 @@
     const share = typeof navigator !== 'undefined' && navigator.canShare && typeof File !== 'undefined';
     return head + `<div class="sh-prev"><img src="${esc(L.url)}" alt="${esc('A card: ' + L.title)}" width="270" height="338"></div>` +
       `<div class="small muted sh-foot">${esc(L.footer)}</div>` +
-      `<div class="field"><label for="shSeed">World seed: a friend can start in the same world with it</label><div class="row"><input id="shSeed" readonly value="${esc(L.seed)}" style="flex:1"><button class="small" data-a="shCopy">Copy the seed</button></div></div>` +
+      (UI.DEV ? `<div class="field"><label for="shSeed">World seed: a friend can start in the same world with it</label><div class="row"><input id="shSeed" readonly value="${esc(L.seed)}" style="flex:1"><button class="small" data-a="shCopy">Copy the seed</button></div></div>` : '') +
       `<div class="sh-acts"><button class="primary" data-a="shSave">Save the picture (PNG)</button>${share ? '<button data-a="shShare">Share…</button>' : ''}<button class="ghost" data-a="closeOv">Back</button></div></div>`;
   };
   UI.SYS_OV = UI.SYS_OV || [];

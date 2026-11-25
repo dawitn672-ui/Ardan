@@ -173,4 +173,41 @@ export default {
     });
     return { ok: r.ran === 0 && r.closed, detail: `effects run: ${r.ran}; the card closed: ${r.closed}` };
   },
+  // A0.3 stopgap (D-165): a foe found on demand is rarely far stronger than you (a breakthrough on call)
+  async pfDuelFoesOnDemand(pg) {
+    const r = await pg.evaluate(() => {
+      let far = 0, n = 0, me = 0;
+      for (const seed of [6112, 6113, 6114]) {
+        T.enter({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
+        const pc = A.pc(); me = A.CR(A.fighterFrom(pc), { round: 2 });
+        for (let i = 0; i < 300; i++) { const f = A.makeOpponent(pc, 'duel'); if ((pc.rel || {})[f.id] && ['rival', 'enemy'].includes(pc.rel[f.id].type)) continue; n++; if (A.CR(A.fighterFrom(f), { round: 2 }) - me > 8) far++; }
+      }
+      return { far, n, me: Math.round(me) };
+    });
+    // pooled over worlds 6112 to 6114: 176 of 900 (20%) before the stopgap, 80 of 900 (9%) after; the bar sits between
+    // them
+    return { ok: r.n >= 600 && r.far / r.n < 0.14, detail: `${r.far} of ${r.n} foes found on demand stood more than 8 above you (rating ${r.me})` };
+  },
+  // D-166 (master prompt 2, 12.2): with the developer switch off, no world seed, no save export or import and no exact
+  // odds anywhere a player looks: the creation steps, the menu, the share card and the hall of lives
+  async pfNoSeedForPlayers(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 48213, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
+      const dev = UI.DEV, found = [];
+      const look = (where, h) => { h = String(h || ''); const m = /.{0,40}(48213|crSeed|shSeed|World seed|exportSave|data-a="import"|setOdds).{0,40}/.exec(h); if (m) found.push(where + ': ' + m[0]); };
+      try {
+        UI.DEV = false;
+        const step = UI.step, crt = UI.cr;
+        if (UI.renderCreate) for (let s = 0; s < 4; s++) { UI.step = s; try { look('create ' + s, UI.renderCreate()); } catch (e) {} }
+        UI.step = step;
+        UI.ov = { type: 'menu' }; UI.renderModal(); look('menu', (document.querySelector('#modal') || document.body).innerHTML); UI.ov = null; UI.renderModal();
+        if (UI.SHARE && UI.SHARE.footer) look('share footer', UI.SHARE.footer());
+        if (UI.HALL && UI.HALL.card) look('hall', UI.HALL.card({ seed: 48213, lands: 'known', name: 'x', given: 'x', ach: [] }));
+        UI.DEV = true;
+        UI.ov = { type: 'menu' }; UI.renderModal(); const devMenu = /data-a="exportSave"/.test((document.querySelector('#modal') || document.body).innerHTML); UI.ov = null; UI.renderModal();
+        return { found, devMenu };
+      } finally { UI.DEV = dev; }
+    });
+    return { ok: !r.found.length && r.devMenu, detail: `with the switch off, seed or export shown on: ${r.found.join(', ') || 'nothing'}; with it on, the menu exports: ${r.devMenu}` };
+  },
 };

@@ -2720,3 +2720,13 @@ again the same year, odds 75, digits on the card; now refused for five years, 40
 `A.eventChoose` (`18-event-view-a.js`) closes a card whose view is skipped (its setup set `ctx.skip`) without running a
 choice. The sync (H-108) traced the two skill-event errors (`sk_better_hand`, `sk_rival_contest`) to a bot or test
 answering such a card. Test `pfSkippedCardNotRun` (old build: the choice's effects ran; now none, the card closed).
+
+### H-121 · 2026-11-25 · Duel foes on demand narrowed (D-165)
+`A.makeOpponent` (`07-duels.js`); test `pfDuelFoesOnDemand` (pooled worlds 6112 to 6114: 176 of 900 far stronger before, 80
+after; bar 14%).
+
+### H-122 · 2026-11-25 · The developer switch (D-166)
+`UI.DEV` in `23-ui-a.js`; the seed field (`UI.renderCreate`), the menu's export, import and exact odds (`23-ui-b.js`),
+`UI.SHARE.footer` and its seed field (`9994-share-a-picture`), the hall's seed (`995-hall-of-lives`). Test
+`pfNoSeedForPlayers` (old build: the menu's export, the share footer's and the hall's seed; now nothing, and the menu
+exports with the switch on); `uiSmoke` still exports (a test browser is a developer's).

@@ -356,6 +356,17 @@ UI.download = function (bytes, name, type) {
   }, 500);
 };
 
+// The developer switch (master prompt 2 and 12.2; order 76, D-166): the world seed, the save file's export and import,
+// and exact odds are for testing, never for a player. On with "?dev" in the address, or under a test browser
+// (navigator.webdriver: Playwright, the bots); off in the app and for every player.
+UI.DEV = (() => {
+  try {
+    return /[?&]dev\b/.test(location.search) || !!navigator.webdriver;
+  } catch (e) {
+    return false;
+  }
+})();
+
 UI.exportSave = async function () {
   if (!A.S) return;
   const { bytes } = await SAVES.encode(A.S, A.J),
@@ -1122,7 +1133,8 @@ UI.crStepBegin = function () {
   ]
     .map(d => UI.opt((c.world || "varied") === d[0], "crSet", "world:" + d[0], d[1], d[2]))
     .join("")}</div></div>`;
-  h += `<div class="field"><label>World seed (optional)</label><input data-c="crSeed" aria-label="World seed" value="${UI.esc(c.seed)}" placeholder="random" style="width:200px"> <span class="small muted">The same seed and choices give the same world.</span></div>`;
+  if (UI.DEV)
+    h += `<div class="field"><label>World seed (optional)</label><input data-c="crSeed" aria-label="World seed" value="${UI.esc(c.seed)}" placeholder="random" style="width:200px"> <span class="small muted">The same seed and choices give the same world.</span></div>`;
   h +=
     '<div class="card lore-text" style="margin-top:10px">Every run differs: the wars of 1105 may or may not break out, kings live or die, provinces change hands, and your own blood, nature and luck are rolled fresh.</div>';
   // [X1 baked patch map/43-varied-worlds WORLD-CHOICE] The creation screen offers the choice next to the world seed:

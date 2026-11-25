@@ -661,7 +661,9 @@ A.makeOpponent = function (pc, kind, tier) {
             ? A.ri(10, 25)
             : tier
               ? (tier - 2) * 9
-              : A.ri(-8, 14),
+              : // STOPGAP: replaced by A2 (master prompt 8 A0.3; D-165): a foe found on demand was up to 14 above you, a
+                // breakthrough on call; a far stronger foe now comes by his own road (a champion, a rival, a card)
+                A.ri(-10, 8),
     p = A.newPerson({
       given: A.givenName(cult, sex, { realm: pc.realm }),
       sex,

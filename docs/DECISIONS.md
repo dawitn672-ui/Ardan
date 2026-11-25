@@ -2648,3 +2648,17 @@ odds top out at 40% (were 75%); the card's "about N in a hundred" is put in odds
 (`VS.NUMRULES`). Marked `STOPGAP: replaced by A2` (a coalition of named people). **Considered:** one attempt per life now
 (A2's rule; too harsh before the coalition gives a reason to try again). **Why:** the owner's alpha 9 life became emperor in
 under thirty years; the master prompt's A0.2 sets these numbers, to be tuned from the harness.
+
+### D-165 · Duel foes on demand: no breakthrough on call (2026-11-25; master prompt 8 A0.3)
+**What.** `A.makeOpponent`'s plain duel foe is drawn from -10 to +8 of the player (was -8 to +14): a foe found on demand
+stood more than 8 above the player 20% of the time (pooled, three worlds), now 9%. Champions, rivals, enemies and cards
+still bring far stronger foes, by their own roads. `STOPGAP: replaced by A2`. **Why:** A0.3; with D-163's budget it closes
+the breakthrough farm from both ends.
+
+### D-166 · The developer switch: seed, save export and import, exact odds (2026-11-25; master prompt 2, 12.2; order 76)
+**What.** `UI.DEV` (`23-ui-a.js`) is on with `?dev` in the address or in a test browser (`navigator.webdriver`), off for
+players and in the app. Off, the creation screen has no seed field, the menu no export, import or exact-odds toggle, the
+share card and its picture no seed, the hall of lives no seed. The functions stay for tests. **Considered:** removing them
+(tests and the owner's bug reports use export); a stored setting (a player could find it). **Why:** players never send a
+seed; saves belong to a device or account; no percentages for the player. The owner: "sure, but no players have the game
+yet", so low priority, done because it was small.

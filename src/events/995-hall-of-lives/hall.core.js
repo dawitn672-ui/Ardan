@@ -146,7 +146,7 @@
       `<b class="hl-name">${esc(L.name)}</b><span class="hl-meta">${esc(yrs(L))} AR · ${esc(L.realmName || L.realm)}</span>` +
       (en ? `<span class="hl-end">${esc(en)}${mn ? ', ' + esc(mn) : ''}</span>` : '') +
       (ep ? `<span class="hl-ep">${esc(ep)}</span>` : '') +
-      `<span class="hl-seed">seed ${esc(L.seed)}${L.lands === 'known' ? ' · Known World' : ''}</span></div></li>`;
+      (UI.DEV ? `<span class="hl-seed">seed ${esc(L.seed)}${L.lands === 'known' ? ' · Known World' : ''}</span>` : '') + `</div></li>`;
   };
   UI.hallShelf = function () {
     const h = HALL.read();

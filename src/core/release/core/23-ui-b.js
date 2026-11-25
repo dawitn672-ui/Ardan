@@ -1204,9 +1204,9 @@ UI.ovModalBasic = function (ov) {
     ? UI.reportModal(close)
     : ov.type === "menu"
       ? `<div class="panel mbox">${close}<h2>Menu</h2><div class="col">
-    <button data-a="save">Save now</button><button data-a="exportSave">Export save file</button><button data-a="import">Load save file</button><button data-a="help">How to play</button><button data-a="report">Report a problem</button><button data-a="mods">Mods</button><button data-a="playtest">Playtest mode</button>
+    <button data-a="save">Save now</button>${UI.DEV ? '<button data-a="exportSave">Export save file</button><button data-a="import">Load save file</button>' : ""}<button data-a="help">How to play</button><button data-a="report">Report a problem</button><button data-a="mods">Mods</button><button data-a="playtest">Playtest mode</button>
     ${(SAVES.listCache || []).length ? `<div class="group-h">Saves in this browser</div>${SAVES.listCache.map(s => `<div class="row small"><span class="grow">${s.slot === "cur" ? "Newest" : "Backup " + s.slot.slice(3)}: ${UI.esc(s.meta.name || "?")}, ${s.meta.alive ? "age " + s.meta.age : "dead"} · ${s.meta.year} AR <span class="muted">(${s.kb} KB)</span></span><button class="small" data-a="loadSlot" data-v="${s.slot}">Load</button></div>`).join("")}` : ""}
-    ${UI.ILLUM ? UI.ILLUM.menu() : ""}<label class="row"><input type="checkbox" data-c="setOdds" ${UI.set.odds ? "checked" : ""}> Show exact odds on choices</label>
+    ${UI.ILLUM ? UI.ILLUM.menu() : ""}${UI.DEV ? `<label class="row"><input type="checkbox" data-c="setOdds" ${UI.set.odds ? "checked" : ""}> Show exact odds on choices</label>` : ""}
     ${UI.SCORE ? UI.SCORE.menu() : ""}<label class="row"><input type="checkbox" data-c="setAuto" ${UI.set.autosave ? "checked" : ""}> Autosave every year</label>
     <label class="row"><input type="checkbox" data-c="setHints" ${UI.set.hints !== false ? "checked" : ""}> Hints for new players (the first ten years)</label>
     ${UI.EVCUT ? UI.EVCUT.menu() : ""}<label class="row">Text size <select data-c="setTx" aria-label="Text size">${[1, 1.25, 1.5, 2].map(v => `<option value="${v}" ${(UI.set.tx || 1) === v ? "selected" : ""}>${v * 100}%</option>`).join("")}</select></label>
