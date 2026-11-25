@@ -1,8 +1,8 @@
 {
-  "about": "The one power scale (powers wave 1, docs/design/powers.md). A being's strength is its LEVEL, 1 to 130 (the gods of the world stand above 100): level = perTen x log10(might / base), so every ten levels is ten times the might. Might is a single number: for a person, his fighting worth in conscripts (A.V2S.shownConscripts, the number his sheet shows) squared, which is the Lanchester fighting strength of the band of conscripts he equals; for a beast, the same from its duel worth and blood (the human fit below), or the bestiary's level. The level alone does not settle a fight: each being also has a profile of capabilities, and titles add to both.",
+  "about": "The one power scale (powers wave 1, docs/design/powers.md). A being's strength is its LEVEL, 1 to 1000, read from one number, its might, on the owner's anchors (levelCurve). Might for a person is his fighting worth in conscripts (A.V2S.shownConscripts, the number his sheet shows) squared, the Lanchester fighting strength of the band of conscripts he equals; for a beast of the release, the same from its duel worth and blood (the human fit below); for every other being its level is written in data. Inside the code a being also carries t = 10 x log10(might / 0.01), the even log scale the odds, gaps and draws use. The level alone does not settle a fight: each being has a profile of capabilities, and titles add to both.",
   "levels": {
     "min": 1,
-    "max": 130,
+    "max": 1000,
     "base": 0.01,
     "perTen": 10
   },
@@ -12,10 +12,10 @@
     "lnB": 0.05186
   },
   "odds": {
-    "about": "the chance that A beats B: 1 / (1 + (mightB / mightA)^k) on the might after the profile's matchup. k = 0.55: one of the release's fighter tiers (about 14 worth, one e-fold of conscripts, e squared of might) wins three fights in four. A fight is settled without the duel engine when the gap passes hugeGap levels.",
+    "about": "the chance that A beats B: 1 / (1 + (mightB / mightA)^k) on the might, then the profile's matchup. k = 0.55: one of the release's fighter tiers (about 14 worth, one e-fold of conscripts, e squared of might) wins three fights in four. A fight is settled without the duel engine when the might differs by more than 10^hugeLog; within 10^closeLog it goes to the duel.",
     "k": 0.55,
-    "hugeGap": 12,
-    "closeGap": 8
+    "hugeLog": 1.2,
+    "closeLog": 0.8
   },
   "bands": [
     {
@@ -25,64 +25,58 @@
       "d": "Rats, crows, a stray cur. A nuisance, deadly only to the sick or the very young."
     },
     {
-      "from": 10,
+      "from": 20,
       "r": "F",
-      "w": "prey",
-      "d": "A fox, a hedge cat, most people who never held a weapon in earnest."
+      "w": "common folk",
+      "d": "Most people: farmers, clerks, lords who never drilled (an average grown human stands at 20 to 30). A fox, a hedge cat."
     },
     {
-      "from": 18,
+      "from": 75,
       "r": "E",
       "w": "a soldier's match",
-      "d": "A drilled soldier, a hill wolf, a wild boar. One against one, either can die."
+      "d": "A regular soldier (75 to 125), a hill wolf, a wild boar. One against one, either can die."
     },
     {
-      "from": 26,
+      "from": 150,
       "r": "D",
-      "w": "a village's terror",
-      "d": "A veteran, a bear, a pack of wolves together. A village loses men to it."
+      "w": "a knight's match",
+      "d": "A knight (150 to 200), a bear, a pack of wolves. A village loses men to it."
     },
     {
-      "from": 34,
+      "from": 200,
       "r": "C",
-      "w": "a valley's terror",
-      "d": "A knight of an order, a great cat, a troll. A lord sends hunters with spears and dogs."
+      "w": "an elite's match",
+      "d": "The elite of a realm (200 to 250), a great cat, a troll. A lord sends hunters with spears and dogs."
     },
     {
-      "from": 42,
+      "from": 250,
       "r": "B",
-      "w": "a champion's peer",
-      "d": "The best fighters of a realm, the human masters, an ordinary grown giant, a great bear or a young dragon. The heroes of the songs stand here."
+      "w": "a kingdom's champion",
+      "d": "The strongest of a kingdom (300 to 380 in most cases), an ordinary grown giant, a great bear, a young dragon. The heroes of the songs stand here."
     },
     {
-      "from": 52,
+      "from": 380,
       "r": "A",
       "w": "elder might",
-      "d": "The masters of the elder and great races, great dragons and wyrms, the great beasts of the old lore. A champion of men dies here alone."
+      "d": "The masters of the elder and great races, the great beasts of the old lore, the smaller grown dragons. A kingdom's champion dies here alone."
     },
     {
-      "from": 60,
+      "from": 450,
       "r": "S",
-      "w": "a realm's terror",
-      "d": "Elder dragons, the giant kings, the great spirits. Only a host can stand against one."
+      "w": "a grown dragon",
+      "d": "An average grown dragon (about 450), the giant kings, the great spirits. Only a host can stand against one."
     },
     {
-      "from": 70,
+      "from": 525,
       "r": "SS",
-      "w": "the bane of nations",
-      "d": "Ancient dragons, the eldest giants, sea monsters that sink fleets. Kingdoms make their peace with them."
+      "w": "a strong dragon",
+      "d": "A strong dragon (about 525), the elder wyrms, the sea monsters that sink fleets. Kingdoms make their peace with them."
     },
     {
-      "from": 80,
+      "from": 600,
       "r": "SSS",
-      "w": "the doom of an age",
-      "d": "Beings the chronicles name ages after: the oldest dragons, the dead kings, the princes of the gates. Hosts break on them."
-    },
-    {
-      "from": 100,
-      "r": "beyond",
-      "w": "beyond every rank",
-      "d": "Only a handful in all the ages: the King of Dragons, the Primordial Archdemons and the Sword Saint of old, a man who rose to stand with them. When one of them moves, the whole world feels it."
+      "w": "a legend",
+      "d": "The legends: each one of a kind, each with a title, the strongest beings on the continent, a threat to nations and, in the end, to the world. The Sword Saint, the strongest man alive, stands about 650; the three Primordial Archdemons 725 to 750; the Dragon King about 800, by far the strongest of all."
     }
   ],
   "capabilities": [
@@ -169,7 +163,7 @@
       "id": "m-giant-king",
       "n": "The King under Jotunhall",
       "race": "giant",
-      "level": 64,
+      "level": 500,
       "int": "wise",
       "homeName": "Jotunhall",
       "prof": {
@@ -190,18 +184,19 @@
           "honour": 30,
           "buffs": {
             "str": 1,
-            "level": 1
+            "level": 10
           },
           "req": "hidden"
         }
       ],
-      "d": "The eldest giant still on a throne. Three hundred years of war in his arms and shoulders."
+      "d": "The eldest giant still on a throne. Three hundred years of war in his arms and shoulders.",
+      "mastery": 7
     },
     {
       "id": "m-dwarf-anvil",
       "n": "The Anvil-Warden of Irondeep",
       "race": "dwarf",
-      "level": 59,
+      "level": 440,
       "int": "wise",
       "homeName": "Irondeep",
       "prof": {
@@ -227,13 +222,14 @@
           "req": "hidden"
         }
       ],
-      "d": "Two centuries at the forge and the gate. Rune-steel on his back that no smith of men can scratch."
+      "d": "Two centuries at the forge and the gate. Rune-steel on his back that no smith of men can scratch.",
+      "mastery": 8
     },
     {
       "id": "m-elf-blade",
       "n": "The Eldest Blade of Evenglade",
       "race": "elf",
-      "level": 58,
+      "level": 430,
       "int": "wise",
       "homeName": "Evenglade",
       "prof": {
@@ -259,13 +255,14 @@
           "req": "hidden"
         }
       ],
-      "d": "Four hundred years with one sword. She has outlived every school that tried to teach men her way."
+      "d": "Four hundred years with one sword. She has outlived every school that tried to teach men her way.",
+      "mastery": 9
     },
     {
       "id": "m-orc-khan",
       "n": "The Skull-Khan of Urgol",
       "race": "orc",
-      "level": 57,
+      "level": 400,
       "int": "speaking",
       "homeName": "Urgol",
       "prof": {
@@ -290,8 +287,27 @@
           "req": "hidden"
         }
       ],
-      "d": "Took his seat over the bodies of forty challengers. No man of the west has lasted a minute with him."
+      "d": "Took his seat over the bodies of forty challengers. No man of the west has lasted a minute with him.",
+      "mastery": 7
     }
   ],
-  "myth": "The faiths speak of gods. No one has ever measured one, and the scale does not hold them: it stops at the few beings above every rank."
+  "myth": "The faiths speak of gods. No one has ever measured one, and the scale does not hold them: it stops at the legends.",
+  "levelCurve": {
+    "about": "log10(might) = a + b x level + c x level^2 from level 20 up (c > 0: each level multiplies the might by more than the one before, so 650 is far beyond 600); below level 20, fifteen levels to a tenfold. Fitted to the owner's anchors (2026-11-25): an average human 20-30 (might about 0.36), a regular soldier 75-125, a knight 150-200, an elite 200-250, a kingdom's strongest 300-380 (today's best Masters, might 400-1,250), an average grown dragon about 450, a strong one about 525; the legends above 600 are written in data.",
+    "a": -0.695,
+    "b": 0.009746,
+    "c": 0.000002,
+    "low": {
+      "from": 20,
+      "perDecade": 15
+    }
+  },
+  "races": {
+    "about": "Races have baseline bodies (GD.RACES and the v2 body: a giant grown is about B, a human about F) that lineage, a title had from birth and an innate gift change a great deal; the masters below are what the best of each people reach. A playable lineage system is a later wave."
+  },
+  "power": {
+    "about": "A being's fighting power is its level's might times its titles' power (each title's buffs.power, +0.5 = half as much again) times its mastery: the mastery and quality of its skills, 0 to 12, worth 2^((mastery - 5) / 2.5) (5 is ordinary for its kind; 12 is the Sword Saint's art). A person's mastery is already inside his fighting worth, so it counts once. The comparison and the ranking read the power and the profile, never the level alone: the Sword Saint at 650 beats the Lord of the Sea at 712.",
+    "masteryBase": 5,
+    "masteryPerDouble": 2.5
+  }
 }

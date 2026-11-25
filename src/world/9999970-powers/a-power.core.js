@@ -28,8 +28,21 @@
 
   // ---------------------------------------------------------------- the scale
   const LV = D.levels;
-  PW.levelOf = m => clamp(Math.round(LV.perTen * Math.log10(Math.max(1e-9, m) / LV.base)), LV.min, LV.max);
-  PW.mightOf = L => LV.base * Math.pow(10, L / LV.perTen);
+  // the level (1-1000) from the might, and back: log10(might) = a + b L + c L^2 above level 20 (c > 0, so each level
+  // multiplies the might by more than the one before), fifteen levels to a tenfold below (data/power.json levelCurve)
+  const CV = D.levelCurve, gOf = L => CV.a + CV.b * L + CV.c * L * L, X20 = gOf(CV.low.from);
+  PW.levelOf = function (m) {
+    const x = Math.log10(Math.max(1e-12, m));
+    if (x < X20) return clamp(Math.round(CV.low.from + (x - X20) * CV.low.perDecade), LV.min, LV.max);
+    return clamp(Math.round((-CV.b + Math.sqrt(CV.b * CV.b + 4 * CV.c * (x - CV.a))) / (2 * CV.c)), LV.min, LV.max);
+  };
+  PW.mightOf = L => Math.pow(10, L >= CV.low.from ? gOf(L) : X20 + (L - CV.low.from) / CV.low.perDecade);
+  // fighting power: the level's might x the titles' power x the mastery and quality of its skills (data/power.json power)
+  PW.masteryMult = ms => (ms == null ? 1 : Math.pow(2, (ms - D.power.masteryBase) / D.power.masteryPerDouble));
+  PW.titleMult = titles => (titles || []).reduce((m, t) => m * (1 + ((t.buffs && t.buffs.power) || 0)), 1);
+  // t: the even log scale the odds, gaps and draws use inside the code (t = 10 x log10(might / 0.01); ten t is ten times the might)
+  PW.tOf = m => Math.round(100 * LV.perTen * Math.log10(Math.max(1e-12, m) / LV.base)) / 100;
+  PW.mightOfT = t => LV.base * Math.pow(10, t / LV.perTen);
   PW.band = L => { let b = D.bands[0]; for (const x of D.bands) if (L >= x.from) b = x; return b; };
   PW.oddsWord = p => (A.RN && A.RN.oddsWord ? A.RN.oddsWord(p)
     : p >= 0.9 ? 'a sure thing' : p >= 0.6 ? 'better than even odds' : p >= 0.4 ? 'about even odds' : p >= 0.2 ? 'long odds' : p >= 0.08 ? 'very long odds' : 'odds no one would take');
@@ -87,33 +100,34 @@
     if (x.kind && x.prof && x.level != null) return x;
     if (typeof x === 'object' && x.st) {
       const m = PW.personMight(x), prof = PW.personProf(x);
-      return { kind: 'person', id: x.id, n: A.fullName ? A.fullName(x, false) : 'a person', level: PW.levelOf(m), might: m, prof, int: 'wise', titles: [],
+      return { kind: 'person', id: x.id, n: A.fullName ? A.fullName(x, false) : 'a person', level: PW.levelOf(m), t: PW.tOf(m), might: m, power: m, mastery: null, prof, int: 'wise', titles: [],
         ranged: !!(x.gear && x.gear.ranged), hardy: clamp(((A.stat ? A.stat(x, 'sta') : 50) || 50) / 10, 0, 10) };
     }
     if (typeof x === 'object' && x.sp) {   // a wild individual: its species, its temper, its own name and titles
       const s = SP.get(x.sp); if (!s) return null;
       const t = PW.individual(s, x.key || x.id || '');
       const prof = Object.assign({}, s.prof); for (const k in t.mod) prof[k] = clamp(prof[k] + t.mod[k], 0, 10);
-      const w = PW.withTitles(prof, s.level + t.lv, (s.titles || []).concat(x.titles || []));
-      return { kind: 'wild', id: x.id || s.id, sp: s.id, n: x.name || s.n, level: clamp(w.level, 1, LV.max), might: PW.mightOf(w.level), prof: w.prof,
+      const w = PW.withTitles(prof, PW.levelOf(PW.mightOfT(s.t + t.lv)), (s.titles || []).concat(x.titles || [])), m = PW.mightOf(w.level);
+      return { kind: 'wild', id: x.id || s.id, sp: s.id, n: x.name || s.n, level: clamp(w.level, 1, LV.max), t: PW.tOf(m * PW.titleMult(x.titles)), might: m, power: m * PW.titleMult(x.titles), prof: w.prof,
         int: x.int || s.int, titles: x.titles || [], temper: t, ranged: s.prof.flight >= 6 || s.prof.magic >= 6, hardy: s.prof.regen };
     }
     const id = typeof x === 'string' ? x : x.id;
     if (SP.has(id)) {   // a kind may be born with a title (the oldest dragons, the gate-born demons): its buffs count
-      const s = SP.get(id), w = PW.withTitles(s.prof, s.level, s.titles);
-      return { kind: 'species', id, sp: id, n: s.n, level: clamp(w.level, 1, LV.max), might: PW.mightOf(w.level), prof: w.prof, int: s.int, titles: s.titles || [], ranged: s.prof.flight >= 6 || s.prof.magic >= 6, hardy: s.prof.regen };
+      const s = SP.get(id), w = PW.withTitles(s.prof, s.level, s.titles), m = s.titles ? PW.mightOf(w.level) : s.might;
+      return { kind: 'species', id, sp: id, n: s.n, level: clamp(w.level, 1, LV.max), t: PW.tOf(m * PW.titleMult(s.titles)), might: m, power: m * PW.titleMult(s.titles), prof: w.prof, int: s.int, titles: s.titles || [], ranged: s.prof.flight >= 6 || s.prof.magic >= 6, hardy: s.prof.regen };
     }
     if (BYCRE.has(id)) return PW.being(BYCRE.get(id).id);
     const L = LEG.get(id) || MAS.get(id);
     if (L) {
-      const w = PW.withTitles(L.prof, L.level, L.titles);
-      return { kind: LEG.has(id) ? (L.level >= 100 ? 'summit' : 'legend') : 'master', id, n: L.n, level: clamp(w.level, 1, LV.max), might: PW.mightOf(w.level), prof: w.prof, int: L.int,
+      const w = PW.withTitles(L.prof, L.level, L.titles), m = PW.mightOf(w.level), pw = m * PW.titleMult(L.titles) * PW.masteryMult(L.mastery);
+      return { kind: LEG.has(id) ? 'legend' : 'master', id, n: L.n, level: clamp(w.level, 1, LV.max), t: PW.tOf(pw), might: m, power: pw, mastery: L.mastery, prof: w.prof, int: L.int,
         titles: L.titles || [], base: L.level, ranged: true, hardy: w.prof.regen };
     }
     return null;
   };
   PW.level = x => { const b = PW.being(x); return b ? b.level : 0; };
   PW.might = x => { const b = PW.being(x); return b ? b.might : 0; };
+  PW.power = x => { const b = PW.being(x); return b ? b.power : 0; };
 
   // ---------------------------------------------------------------- the matchup: what one being's profile does to the other
   // edges from a's side, in log-odds; each one says why in words the player may read
@@ -135,13 +149,13 @@
     edgesOver(a, b, 1, edges);
     edgesOver(b, a, -1, edges);
     const prof = edges.reduce((s, e) => s + e.w, 0);
-    const lg = D.odds.k * Math.log(Math.max(1e-12, a.might) / Math.max(1e-12, b.might)) + prof;
-    const p = 1 / (1 + Math.exp(-lg)), gap = a.level - b.level;
+    const lg = D.odds.k * Math.log(Math.max(1e-12, a.power || a.might) / Math.max(1e-12, b.power || b.might)) + prof;   // power, not the level alone
+    const p = 1 / (1 + Math.exp(-lg)), gap = a.t - b.t;   // the gap on the even log scale (10 = ten times the might)
     edges.sort((x, y) => Math.abs(y.w) - Math.abs(x.w));
-    return { p, gap, word: PW.oddsWord(p), edges, huge: Math.abs(gap) >= D.odds.hugeGap, close: Math.abs(gap) <= D.odds.closeGap, a, b };
+    return { p, gap, word: PW.oddsWord(p), edges, huge: Math.abs(gap) >= 10 * D.odds.hugeLog, close: Math.abs(gap) <= 10 * D.odds.closeLog, a, b };
   };
-  // how a gap reads in words (no numbers beside it on a card)
-  PW.gapWords = gap => (gap <= -55 ? 'beyond every rank: the whole world moves when it does' : gap <= -30 ? 'beyond anything you could ever hope to stand against' : gap <= -18 ? 'far beyond you: a host would die here'
+  // how a gap (on the t scale) reads in words (no numbers beside it on a card)
+  PW.gapWords = gap => (gap <= -45 ? 'a legend: the whole world moves when it does' : gap <= -30 ? 'beyond anything you could ever hope to stand against' : gap <= -18 ? 'far beyond you: a host would die here'
     : gap <= -10 ? 'far stronger than you' : gap <= -4 ? 'stronger than you' : gap < 4 ? 'about your match' : gap < 10 ? 'weaker than you' : 'no match for you');
 
   // ---------------------------------------------------------------- a duel fighter for a bestiary species (close fights)
@@ -162,7 +176,7 @@
       name: s.n, short: /^The /.test(s.n) ? s.n.replace(/^The /, 'the ') : 'the ' + s.n.toLowerCase(), beast: s.id,
       str: (30 + P_.str * 10) * mod, spd: 30 + P_.spd * 7, ins: 40 + P_.cunning * 5, sta: 40 + P_.regen * 4,
       wdmg: 6 + P_.str * 2, pierce: P_.venom >= 5 ? 4 : 2, prot: Math.round(P_.hide * 0.8), mass: (30 + P_.str * 10) / 40,
-      reach: P_.str >= 7 ? 30 : 5, verb: VERB[s.fam] || 'strikes', weapon: VERB[s.fam] || 'strikes', fame: Math.round(s.level / 3), tier: 'animal',
+      reach: P_.str >= 7 ? 30 : 5, verb: VERB[s.fam] || 'strikes', weapon: VERB[s.fam] || 'strikes', fame: Math.round(s.t / 3), tier: 'animal',
     });
     f.maxHp = f.hp = Math.round(hp * mod);
     const c = Math.sqrt(s.might) / Math.sqrt(hp / 100);
@@ -178,7 +192,8 @@
     for (const L of LD.legends) { const g = (st.leg || {})[L.id] || {}; if (g.slain) continue; const b = PW.being(L.id); out.push({ id: L.id, kind: b.kind, n: L.n, level: b.level, titles: L.titles, b }); }
     for (const M of D.masters) { const b = PW.being(M.id); out.push({ id: M.id, kind: 'master', n: M.n, level: b.level, titles: M.titles, b }); }
     for (const w of st.wild || []) if (w.name) { const b = PW.being(w); if (b) out.push({ id: w.id, kind: 'named', n: w.name, level: b.level, titles: w.titles || [], b }); }
-    out.sort((a, b) => b.level - a.level || (a.id < b.id ? -1 : 1));
+    // ranked by fighting power (level, titles, mastery), not the level alone
+    out.sort((a, b) => b.b.power - a.b.power || (a.id < b.id ? -1 : 1));
     out.forEach((x, i) => { x.rank = i + 1; });
     return out;
   };

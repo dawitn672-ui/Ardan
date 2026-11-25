@@ -163,7 +163,7 @@
     opts.push({ id: 'sleep', reasons: [...habit('sleep'), ...hurt, why(hungry < 0.5 ? 0.6 : hungry > 1 ? -1.5 * (hungry - 1) : 0, 'want', hungry < 0.5 ? 'it has fed' : `hunger: ${g.fed} months since it fed`, { t: 'hunger' })] });
     opts.push({ id: 'hunt', reasons: [...habit('hunt'), why(1.2 * hungry, 'want', `hunger: ${g.fed} months since it fed`, { t: 'hunger' }, true)] });
     if (L.home.type !== 'realm') opts.push({ id: 'roam', reasons: [...habit('roam'), why(L.home.type === 'roam' ? 0.5 : -0.5, 'temper', L.home.type === 'roam' ? 'it is a wanderer' : 'it keeps to its lair', { t: 'home' })] });
-    opts.push({ id: 'stay', reasons: [...habit('guard'), ...habit('court'), why(0.3, 'temper', L.home.what ? `its place: ${L.home.what}` : 'its place', { t: 'home' })] });
+    opts.push({ id: 'stay', reasons: [...habit('guard'), ...habit('court'), ...habit('stay'), why(0.3, 'temper', L.home.what ? `its place: ${L.home.what}` : 'its place', { t: 'home' })] });
     if (g.rid) {
       const r = A.realm(g.rid), war = r && r.alive && A.atWar && A.atWar(g.rid).length;
       if (war) opts.push({ id: 'march', reasons: [why(2.4, 'duty', `its oath to the crown of ${short(g.rid)}, at war`, { t: 'oath', r: g.rid })] });
@@ -215,7 +215,7 @@
   };
 
   // the crown answers a raid through A.WHY: send a host after it, or endure (a host far below it dies for nothing)
-  PW.hostOf = r => { const n = Math.max(100, Math.round((r.army || 0) * 0.1)); return { kind: 'host', id: 'host:' + r.id, n: `the host of ${r.short}`, level: PW.levelOf(Math.pow(n, 1.35) * 2), might: Math.pow(n, 1.35) * 2, prof: { str: 5, spd: 4, hide: 4, venom: 0, flight: 0, regen: 0, ward: 3, swarm: 10, cunning: 5, magic: 0 }, int: 'wise', titles: [], ranged: true, hardy: 5, men: n }; };
+  PW.hostOf = r => { const n = Math.max(100, Math.round((r.army || 0) * 0.1)); return { kind: 'host', id: 'host:' + r.id, n: `the host of ${r.short}`, level: PW.levelOf(Math.pow(n, 1.35) * 2), might: Math.pow(n, 1.35) * 2, t: PW.tOf(Math.pow(n, 1.35) * 2), prof: { str: 5, spd: 4, hide: 4, venom: 0, flight: 0, regen: 0, ward: 3, swarm: 10, cunning: 5, magic: 0 }, int: 'wise', titles: [], ranged: true, hardy: 5, men: n }; };
   PW.realmAnswer = function (L, g, r, P, rng) {
     const host = PW.hostOf(r), c = PW.compare(host, L.id);
     const opts = [
@@ -245,17 +245,17 @@
   };
 
   // ---------------------------------------------------------------- the sleepers at the summit
-  // The few beings above every rank mostly sleep: the King of Dragons wounded under the Crown Range, the Archdemon Ghazrul
-  // bound under the Burning Waste, the Sword Saint turned to stone on his ridge. Once a year each weighs sleep against waking,
+  // Two of the legends sleep: the King of Dragons wounded under the Crown Range since the Sword Saint threw him there, and
+  // the Archdemon Ghazrul bound under the Burning Waste. Once a year each weighs sleep against waking,
   // through A.WHY: what would wake it is on its sheet (wake), read from the world as it is. Its nature weighs hard for sleep,
   // and one that woke within a generation sleeps on. A waking lasts a few years (wakeYears); while awake it lives by
-  // legendSeason like the others. If the King and the Saint are both awake, they meet on the ridge.
+  // legendSeason like the others. If the King wakes while the old Saint lives, they meet on the ridge again.
   const legOf = id => (A.S.pw && A.S.pw.leg && A.S.pw.leg[id]) || null;
-  const awake = id => { const g = legOf(id); return !!(g && !g.slain && g.wokeUntil != null && g.wokeUntil >= A.S.year); };
+  const awake = id => { const g = legOf(id), L = PW.LEG.get(id); return !!(g && L && !g.slain && (!L.sleeper || (g.wokeUntil != null && g.wokeUntil >= A.S.year))); };
   const WAKE = {
     'great wars': () => ({ w: Math.min(2, ((A.S.wars || []).length) * 0.3), label: `${(A.S.wars || []).length} wars burning at once` }),
     'his children slain': () => { const g = legOf('vaskareth'); return { w: g && g.slain ? 3 : 0, label: 'his eldest daughter is slain' }; },
-    'the Saint stirs': () => ({ w: awake('sword-saint') ? 4 : 0, label: 'the stone on the Saint\'s Stair is empty' }),
+    'the old fight unfinished': () => ({ w: awake('sword-saint') ? 0.6 : 0, label: 'the old man who threw him down still lives' }),
     'the King wakes': () => ({ w: awake('sarnavoth') ? 4 : 0, label: 'the King of Dragons is awake' }),
     'archdemons walk': () => { const g = legOf('morvane'); return { w: (awake('ghazrul') ? 4 : 0) + Math.min(1.5, ((g && g.raids) || 0) * 0.2), label: 'the Archdemons are loose in the world' }; },
     'the seal weakens': () => ({ w: Math.min(1.5, ((A.S.wars || []).length) * 0.12), label: 'the blood spilled in the wars soaks down to the seal' }),
@@ -265,7 +265,6 @@
   const WOKE = {
     sarnavoth: 'The roof of the Crown Range has fallen in. Sarnavoth, King of Dragons, is awake after nine hundred years, and every dragon in the sky has turned north.',
     ghazrul: 'The glass seal in the Burning Waste has cracked. Ghazrul the Unmaker is loose. Caravans turn back; the sand is burning.',
-    'sword-saint': 'The stone on the Saint\'s Stair is empty. Pilgrims swear they saw Cael Vardan stand up and walk down the mountain with his sword.',
   };
   PW.sleeperYear = function (L, g, rng) {
     if (awake(L.id)) return null;
@@ -285,11 +284,15 @@
   // the King and the Saint, both awake: they meet on the ridge, as he promised; the loser goes back to his long sleep
   PW.ridge = function (rng) {
     if (!awake('sarnavoth') || !awake('sword-saint')) return null;
+    const kg = legOf('sarnavoth');
+    if (kg.ridge != null && kg.ridge === kg.woke) return null;   // once a waking
+    kg.ridge = kg.woke;
     const c = PW.compare('sword-saint', 'sarnavoth'), saintWins = rng.chance(c.p);
     const lose = legOf(saintWins ? 'sarnavoth' : 'sword-saint');
-    lose.hurt = (lose.hurt || 0) + 8; lose.wokeUntil = A.S.year - 1; lose.awake = false;
-    A.news(saintWins ? 'On the Saint\'s Stair the fight of nine hundred years ago has been fought again. The King of Dragons has gone back under the mountain, and the Saint sits down on his ridge.'
-      : 'On the Saint\'s Stair the King of Dragons has had his answer. The Saint is stone again, and the dragon-king is in the sky.', 'pw');
+    lose.hurt = (lose.hurt || 0) + 8; if (saintWins) { lose.wokeUntil = A.S.year - 1; lose.awake = false; }
+    if (!saintWins) lose.hurt += 4;   // an old man's wounds
+    A.news(saintWins ? 'On the Saint\'s Stair the fight of sixty years ago has been fought again. The old man came down from his hut with his sword, and the King of Dragons has gone back under the mountain.'
+      : 'On the Saint\'s Stair the King of Dragons has had his answer. The old Saint was carried down from the ridge alive, barely, and the dragon-king is in the sky.', 'pw');
     return saintWins ? 'saint' : 'king';
   };
 
@@ -302,8 +305,8 @@
     const wild = provs().filter(P => isWild(P) || ['mountains', 'marsh'].includes(P.terr));
     if (!wild.length) return null;
     const P = rng.pick(wild), se = PW.season();
-    const cands = PW.BD.species.filter(s => !s.apex && s.evolve && s.level >= 12 && s.level <= 45 && terrOk(s, P));
-    const s = wpick(rng, cands, x => Math.exp(-x.level / 18));
+    const cands = PW.BD.species.filter(s => !s.apex && s.evolve && s.t >= 12 && s.t <= 45 && terrOk(s, P));
+    const s = wpick(rng, cands, x => Math.exp(-x.t / 18));
     if (!s) return null;
     const w = { id: 'w' + (++st.n), sp: s.id, at: P.id, fed: 0, wins: 0, yrs: 0, born: A.S.year, key: 'w' + st.n };
     st.wild.push(w);
@@ -322,8 +325,8 @@
       for (let k = 0; k < 4; k++) if (rng.chance(P.town && s.beh.stock === 'raids' ? 0.65 : 0.5)) { w.fed++; w.ate = P.town && s.beh.stock === 'raids' ? `the herds of ${P.name}` : `the game of the ${P.terr} around ${P.name}`; }
       // it meets rivals and hunters: a fight a year, more for a territorial kind
       if (rng.chance(s.beh.drives.includes('territory') ? 0.55 : 0.35)) {
-        const oppL = clamp(s.level + rng.int(-6, 6), 1, 100), me = PW.being(w);
-        const p = 1 / (1 + Math.pow(PW.mightOf(oppL) / me.might, D.odds.k));
+        const oppL = clamp(s.t + rng.int(-6, 6), 1, 100), me = PW.being(w);
+        const p = 1 / (1 + Math.pow(PW.mightOfT(oppL) / me.power, D.odds.k));
         const foe = P.owner && rng.chance(0.4) ? `hunters out of ${P.name}` : `a rival of the ${P.terr}`;
         if (rng.chance(p)) { w.wins++; w.won = foe; }
         else if (rng.chance(0.35)) { w.dead = A.S.year; w.by = foe; if (w.name) PW.tell(P, `${w.name} the ${s.n} is dead, killed by ${foe}.`, w.id, rng); continue; }
@@ -341,7 +344,7 @@
         w.sp = nx.id; w.fed = 0; w.wins = 0; w.yrs = 0;
         if (nx.apex && !w.name) {
           w.name = PW.nameFor(w); w.int = nx.int;
-          w.titles = [{ n: `the ${P.terr === 'marsh' ? 'Mire' : P.terr === 'mountains' ? 'Crag' : P.terr === 'desert' ? 'Dune' : P.terr === 'forest' ? 'Wood' : 'Wild'}-${nx.fam === 'oozes' ? 'Mind' : 'Lord'} of ${P.name}`, honour: 5, buffs: { level: 1 }, req: 'hidden' }];
+          w.titles = [{ n: `the ${P.terr === 'marsh' ? 'Mire' : P.terr === 'mountains' ? 'Crag' : P.terr === 'desert' ? 'Dune' : P.terr === 'forest' ? 'Wood' : 'Wild'}-${nx.fam === 'oozes' ? 'Mind' : 'Lord'} of ${P.name}`, honour: 5, buffs: { level: 10, power: 0.2 }, req: 'hidden' }];
           rec.named = w.name;
           PW.tell(P, `In the wilds of ${P.name} a ${s.n.toLowerCase()} has grown into ${/^[AEIOU]/.test(nx.n) ? 'an' : 'a'} ${nx.n.toLowerCase()} and taken a name: ${w.name}. ${nx.int === 'beast' ? '' : 'They say it speaks.'}`, w.id, rng);
         }
@@ -396,8 +399,8 @@
   PW.pickBeast = function (P, target, rng, opts) {
     opts = opts || {};
     const se = PW.season();
-    const cands = PW.BD.species.filter(s => !s.unique && terrOk(s, P) && (s.seasons || []).includes(se) && (!opts.max || s.level <= opts.max));
-    return wpick(rng, cands, s => Math.exp(-Math.pow(s.level - target, 2) / (2 * 49)) / (s.beh.people === 'avoids' && !opts.hunt ? 2 : 1));
+    const cands = PW.BD.species.filter(s => !s.unique && terrOk(s, P) && (s.seasons || []).includes(se) && (!opts.max || s.t <= opts.max));
+    return wpick(rng, cands, s => Math.exp(-Math.pow(s.t - target, 2) / (2 * 49)) / (s.beh.people === 'avoids' && !opts.hunt ? 2 : 1));
   };
   PW.exposure = function (pc, P, doing) {
     let x = (T.terr[P.terr] || 0.004) * (P.town >= 20000 ? T.city : P.town >= 3000 ? T.town : T.wild);
@@ -445,7 +448,7 @@
     st.hn = (st.hn || 0) + 1;
     const rng = PW.rng('hunt:' + st.hn);
     if (!rng.chance(famous ? T.famousChance : T.huntChance)) return false;
-    const me = PW.being(pc).level;
+    const me = PW.being(pc).t;
     let ctx = null;
     if (famous) {
       const prey = st.wild.filter(w => !w.dead && (w.at === P.id || (P.adj || []).includes(w.at)));

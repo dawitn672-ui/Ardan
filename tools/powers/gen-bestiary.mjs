@@ -31,8 +31,13 @@ const CRE = {
 };
 const F = POWER.people;   // the human fit: ln(conscripts) = a + b x worth (656 humans, seed 7)
 export const creMight = (w, hp) => { const c = Math.exp(F.lnA + F.lnB * w) * Math.sqrt(hp / 100); return c * c; };
-export const levelOf = m => Math.max(POWER.levels.min, Math.min(POWER.levels.max, Math.round(POWER.levels.perTen * Math.log10(m / POWER.levels.base))));
-export const mightOf = L => POWER.levels.base * Math.pow(10, L / POWER.levels.perTen);
+// t: the even log scale the lines are written in (t = 10 x log10(might / 0.01)); level: the owner's level, read from the might
+// on data/power.json's levelCurve (straight lines between the anchors)
+export const levelOf = m => Math.round(10 * Math.log10(m / 0.01));
+export const mightOf = t => 0.01 * Math.pow(10, t / 10);
+const CV = POWER.levelCurve, gOf = L => CV.a + CV.b * L + CV.c * L * L, X20 = gOf(CV.low.from);
+// the level from the might: the root of a + bL + cL^2 = log10(might) above level 20, fifteen levels a decade below
+export const curveLevel = m => { const x = Math.log10(m); if (x < X20) return Math.max(1, Math.round(CV.low.from + (x - X20) * CV.low.perDecade)); return Math.min(POWER.levels.max, Math.round((-CV.b + Math.sqrt(CV.b * CV.b + 4 * CV.c * (x - CV.a))) / (2 * CV.c))); };
 const hash = s => { let h = 2166136261 >>> 0; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
 
 // ---------------------------------------------------------------- capabilities (0-10 each; data/power.json describes them)
@@ -44,7 +49,7 @@ const P = (str, spd, hide, venom, flight, regen, ward, swarm, cunning, magic) =>
 // line: { k, forms: [name | { n, cre, int }], levels: [..] (or start/step), terr, coast, diet, seasons, int, apexInt, prof, drops }
 const ALL = ['spring', 'summer', 'autumn', 'winter'];
 // a title some kinds are born with (titles are data with buffs; the owner, 2026-11-25): the oldest dragons are born of the old blood
-const OLD = { n: 'Old Blood', honour: 20, buffs: { level: 1, ward: 1 }, born: true, req: 'born' };
+const OLD = { n: 'Old Blood', honour: 20, buffs: { level: 10, ward: 1 }, born: true, req: 'born' };
 const FAMILIES = {
   vermin: { n: 'Vermin', diet: 'carrion', seasons: ALL, int: 'beast', drops: ['pelt', 'meat'], prof: P(1, 5, 1, 0, 0, 1, 0, 7, 3, 0), lines: [
     { k: 'rat', forms: ['Cellar Rat', 'Plague Rat', 'Rat Matron', 'Warren King'], levels: [5, 10, 15, 21], terr: ['plains', 'marsh', 'hills', 'forest', 'steppe'], drops: ['pelt', 'tail'], prof: { venom: 3 } },
@@ -93,11 +98,11 @@ const FAMILIES = {
     { k: 'sanddragon', forms: [{ n: 'Sand Dragon', cre: 'CRE-43' }, 'Dune Drake'], levels: [0, 38], terr: ['desert'], int: 'beast', prof: { flight: 0, spd: 7 } },
   ] },
   dragons: { n: 'Dragons', diet: 'hunter', seasons: ALL, int: 'speaking', apexInt: 'wise', drops: ['dragon scale', 'dragon heart'], prof: P(9, 7, 9, 2, 9, 6, 7, 0, 7, 9), lines: [
-    { k: 'ashdragon', forms: [{ n: 'Ash Hatchling', int: 'cunning' }, { n: 'Ash Dragonet', int: 'cunning' }, { n: 'Great Ash Dragon', cre: 'CRE-01' }, 'Elder Ash Dragon', { n: 'Ancient Ash Dragon', born: OLD }], levels: [36, 44, 0, 62, 72], terr: ['mountains', 'hills'] },
-    { k: 'frostdragon', forms: [{ n: 'Frost Hatchling', int: 'cunning' }, 'Frost Dragon', 'Elder Frost Dragon', { n: 'Ancient Frost Dragon', born: OLD }], levels: [38, 52, 63, 74], terr: ['mountains'], seasons: ['autumn', 'winter', 'spring'] },
-    { k: 'stormdragon', forms: [{ n: 'Storm Hatchling', int: 'cunning' }, 'Storm Dragon', 'Elder Storm Dragon', { n: 'Ancient Storm Dragon', born: OLD }], levels: [40, 54, 65, 76], terr: ['mountains', 'hills', 'steppe'] },
-    { k: 'brinedragon', forms: [{ n: 'Brine Hatchling', int: 'cunning' }, 'Brine Dragon', 'Elder Brine Dragon'], levels: [37, 53, 64], terr: ['hills', 'marsh'], coast: true },
-    { k: 'redwidow', forms: [{ n: 'The Red Widow', cre: 'CRE-02' }], levels: [60], terr: ['mountains'], unique: true },
+    { k: 'ashdragon', forms: [{ n: 'Ash Hatchling', int: 'cunning' }, { n: 'Ash Dragonet', int: 'cunning' }, { n: 'Great Ash Dragon', cre: 'CRE-01' }, 'Elder Ash Dragon', { n: 'Ancient Ash Dragon', born: OLD }], levels: [36, 44, 0, 69, 74], terr: ['mountains', 'hills'], places: ['the Dragon Mountains'] },
+    { k: 'frostdragon', forms: [{ n: 'Frost Hatchling', int: 'cunning' }, 'Frost Dragon', 'Elder Frost Dragon', { n: 'Ancient Frost Dragon', born: OLD }], levels: [38, 60, 69, 75], terr: ['mountains'], places: ['the Dragon Mountains'], seasons: ['autumn', 'winter', 'spring'] },
+    { k: 'stormdragon', forms: [{ n: 'Storm Hatchling', int: 'cunning' }, 'Storm Dragon', 'Elder Storm Dragon', { n: 'Ancient Storm Dragon', born: OLD }], levels: [40, 62, 71, 77], terr: ['mountains', 'hills', 'steppe'], places: ['the Dragon Mountains'] },
+    { k: 'brinedragon', forms: [{ n: 'Brine Hatchling', int: 'cunning' }, 'Brine Dragon', 'Elder Brine Dragon'], levels: [37, 60, 69], terr: ['hills', 'marsh'], coast: true, places: ['the Dragon Mountains', 'the coasts below them'] },
+    { k: 'redwidow', forms: [{ n: 'The Red Widow', cre: 'CRE-02' }], levels: [66], terr: ['mountains'], unique: true, places: ['the Dragon Mountains'] },
   ] },
   giants: { n: 'Wild giants and trolls', diet: 'omnivore', seasons: ALL, int: 'cunning', apexInt: 'speaking', drops: ['bone', 'tooth', 'hide'], prof: P(9, 3, 5, 0, 0, 6, 2, 1, 3, 0), lines: [
     { k: 'troll', forms: ['Bog Troll', 'Hill Troll', 'Cave Troll', 'Stone Troll', 'Troll Grandsire'], levels: [36, 43, 50, 57, 64], terr: ['marsh', 'hills', 'mountains', 'forest'], prof: { regen: 9 } },
@@ -331,12 +336,13 @@ export function generate() {
         if (prof.magic > 0 && g > 0.5) prof.magic = clamp(prof.magic + 1, 0, 10);
         const id = slug(f.n), worth = Math.round(2 * Math.pow(10, level / 25));
         const sp = {
-          id, n: f.n, fam: fk, line: lk, form: i, level, might: +mightOf(level).toPrecision(3), int,
+          id, n: f.n, fam: fk, line: lk, form: i, t: level, level: curveLevel(mightOf(level)), might: +mightOf(level).toPrecision(3), int,
           prof, terr: L.terr.slice(), coast: !!L.coast, diet: L.diet || Fm.diet, seasons: (L.seasons || Fm.seasons).slice(),
           drops: (L.drops || Fm.drops).map((k, j) => ({ k, worth: Math.max(1, Math.round(worth / (j + 1))) })),
           next: null, apex: apex || !!L.unique, beh: behOf(fk, lk, apex || !!L.unique, int),
         };
         if (f.cre) sp.cre = f.cre;
+        if (L.places) sp.places = L.places.slice();   // named places, so the final map can place them in one pass
         if (f.born) sp.titles = [f.born];
         if (L.unique) sp.unique = true;
         // the step up: feed this many seasons, win this many fights, live this many years at this form (higher forms ask more)
@@ -360,12 +366,12 @@ export function validate(B) {
     if (!INT.includes(s.int)) errs.push(`${s.id}: intelligence ${s.int}`);
     for (const t of s.terr) if (!terrs.has(t)) errs.push(`${s.id}: terrain ${t}`);
     if (!s.terr.length && !s.coast) errs.push(`${s.id}: no habitat`);
-    if (s.level < 1 || s.level > 100) errs.push(`${s.id}: level ${s.level}`);
+    if (s.level < 1 || s.level > POWER.levels.max) errs.push(`${s.id}: level ${s.level}`);
     for (const k of POWER.capabilities.map(c => c.k)) if (!(s.prof[k] >= 0 && s.prof[k] <= 10)) errs.push(`${s.id}: capability ${k}`);
   }
   for (const [lk, ids2] of Object.entries(B.lines)) for (let i = 1; i < ids2.length; i++) {
     const a = B.species.find(s => s.id === ids2[i - 1]), b = B.species.find(s => s.id === ids2[i]);
-    if (!(b.level > a.level)) errs.push(`${lk}: ${b.id} (${b.level}) is not above ${a.id} (${a.level})`);
+    if (!(b.t > a.t)) errs.push(`${lk}: ${b.id} (${b.level}) is not above ${a.id} (${a.level})`);
   }
   return errs;
 }
@@ -391,6 +397,6 @@ if (isMain) {
     console.log(`${g.species.length} species, ${Object.keys(g.fam).length} families, ${Object.keys(g.lines).length} lines ` +
       `(${Object.values(g.lines).filter(l => l.length > 1).length} with evolution), ${apex} apex forms, ${cre} from LORE; ` +
       `levels ${Math.min(...g.species.map(s => s.level))}-${Math.max(...g.species.map(s => s.level))}; ${JSON.stringify(byInt)}`);
-    for (const s of g.species.filter(s => s.cre && CRE[s.cre])) console.log(`  ${s.cre} ${s.n}: level ${s.level}`);
+    for (const s of g.species.filter(s => s.cre && CRE[s.cre])) console.log(`  ${s.cre} ${s.n}: t ${s.t}, level ${s.level}`);
   }
 }

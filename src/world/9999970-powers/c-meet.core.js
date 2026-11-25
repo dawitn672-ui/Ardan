@@ -41,7 +41,7 @@
     if ((s.beh.calmed || []).some(c => /distance|path away|retreat|backing/.test(c))) q += 0.08;
     if (['pack', 'swarm', 'host'].includes(s.beh.social)) q -= 0.06;
     if (b.temper) q += b.temper.k === 'wary' ? 0.06 : b.temper.k === 'bold' || b.temper.k === 'hungry' ? -0.06 : 0;
-    if (me.level - b.level >= 10) q += 0.15;
+    if (me.t - b.t >= 10) q += 0.15;
     if (ctx.hunt) q += 0.15;   // the hunter chose the ground
     return clamp(q, 0.06, 0.95);
   };
@@ -61,7 +61,7 @@
   // a speaking or wise being's answer: the options and their reasons
   PW.talkOptions = function (p, ctx) {
     const b = PW.foe(ctx), s = PW.species(ctx.sp), me = PW.being(p);
-    const gap = b.level - me.level, se = PW.season(), hungry = se === 'winter' || (s.beh.drives || [])[0] === 'hunger';
+    const gap = b.t - me.t, se = PW.season(), hungry = se === 'winter' || (s.beh.drives || [])[0] === 'hunger';
     const courtesy = clamp(((A.skill ? A.skill(p, 'persuasion') || 0 : 0) + (A.skill ? A.skill(p, 'diplomacy') || 0 : 0) * 0.5) / 40, 0, 1.6);
     const view = s.beh.people;
     return [
@@ -88,7 +88,7 @@
     const lead = ctx.hunt ? (ctx.famous ? `After weeks of tracking you find ${who}.` : `You came for game and found ${who}.`) : `Near ${ctx.place || 'the road'}: ${who}.`;
     const edge = c.edges.length ? ` ${cap(c.edges[0].t)}.` : '';
     const mind = b.int === 'beast' ? '' : b.int === 'cunning' ? ' It is cunning.' : ' It can speak.';
-    return `${lead} ${cap(ctx.cause || PW.cause(s))}. It is ${PW.gapWords(c.gap)}: ${band.r === "divine" ? "" : band.r + " rank, "}${band.w} (level ${b.level}; you stand at ${me.level}).${edge}${mind}`;
+    return `${lead} ${cap(ctx.cause || PW.cause(s))}. It is ${PW.gapWords(c.gap)}: ${band.r} rank, ${band.w} (level ${b.level}; you stand at ${me.level}).${edge}${mind}`;
   };
 
   // ---------------------------------------------------------------- what happens
@@ -109,7 +109,7 @@
     if (!s || !b) return '';
     PW.meet(s.id);
     if (ctx.wid) PW.know(ctx.wid);
-    const name = PW.foeName(ctx), cause = name, me = PW.being(p), gap = b.level - me.level;
+    const name = PW.foeName(ctx), cause = name, me = PW.being(p), gap = b.t - me.t;
     const fall = (lo, hi) => (lo + (hi - lo) * A.rand()) * clamp(1 + gap / 25, 0.4, 2.5);
     if (how === 'leave') return 'You let it be, and go home with nothing but the story.';
     if (how === 'flee') {
@@ -134,13 +134,13 @@
       return 'You go at it.';
     }
     if (A.chance(c.p)) {
-      const coin = Math.round(dropsOf(s) * 0.6), fame = clamp(Math.round(b.level / 6 + Math.max(0, gap) / 2), 1, 30);
+      const coin = Math.round(dropsOf(s) * 0.6), fame = clamp(Math.round(b.t / 6 + Math.max(0, gap) / 2), 1, 30);
       p.coin = (p.coin || 0) + coin; if (A.fame) A.fame(p, fame);
       if (gap > 0 && Array.isArray(p.deeds)) p.deeds.push({ y: A.S.year, t: `Killed ${name} alone` });
       PW.slainBy(p, ctx);
       return gap > 0 ? `Against all sense, it is dead and you are not. What it leaves fetches ${A.coin ? A.coin(coin) : coin}.` : `It is no match for you. What it leaves fetches ${A.coin ? A.coin(coin) : coin}.`;
     }
-    if (gap >= PW.D.odds.hugeGap) return hurt(p, fall(45, 90), cause, clamp(0.25 + (gap - 12) / 40, 0.25, 0.7)) ? '' : 'It is over in moments. You wake in the mud, broken, and it is gone.';
+    if (gap >= 10 * PW.D.odds.hugeLog) return hurt(p, fall(45, 90), cause, clamp(0.25 + (gap - 12) / 40, 0.25, 0.7)) ? '' : 'It is over in moments. You wake in the mud, broken, and it is gone.';
     return hurt(p, fall(12, 30), cause, 0.05) ? '' : 'You hurt it, and it hurts you worse. It breaks off; so do you.';
   };
 
@@ -149,7 +149,7 @@
     const L = PW.LEG.get(ctx.lg), b = PW.being(ctx.lg), me = PW.being(p);
     if (!L) return '';
     const t = L.titles && L.titles[0] ? `, ${L.titles[0].n}` : '';
-    return `${L.n}${t}. ${L.d} ${L.speech} It is ${PW.gapWords(me.level - b.level < 0 ? me.level - b.level : 0)}: level ${b.level}, where you stand at ${me.level}.`;
+    return `${L.n}${t}. ${L.d} ${L.speech} It is ${PW.gapWords(Math.min(0, me.t - b.t))}: level ${b.level}, where you stand at ${me.level}.`;
   };
   PW.greatOptions = function (p, ctx, react) {
     const L = PW.LEG.get(ctx.lg), g = (A.S.pw && A.S.pw.leg && A.S.pw.leg[ctx.lg]) || {};
@@ -181,7 +181,7 @@
     PW.know(L.id);
     const rec = A.WHY.decide(legMind(L), 'legend', PW.greatOptions(p, ctx, react), { logIf: r => r.chose === 'rage' || r.chose === 'bargain' });
     const ans = rec ? rec.chose : 'scorn', line = ((L.reacts || {})[react] || {}).a === ans ? ((L.reacts || {})[react] || {}).line : '';
-    const b = PW.being(L.id), gap = b.level - PW.being(p).level;
+    const b = PW.being(L.id), gap = b.t - PW.being(p).t;
     if (ans === 'spare') { if (A.fame) A.fame(p, 2); return line || 'It lets you go. You will tell this for the rest of your days, and few will believe you.'; }
     if (ans === 'scorn') return line || 'It does not answer. When you look again, it is gone.';
     if (ans === 'bargain') { const c0 = Math.min(p.coin || 0, 20); p.coin -= c0; p.happy = clamp((p.happy || 50) + 4, 0, 100); return (line || 'It names terms, and keeps them to the letter.') + (c0 ? ` It costs you ${A.coin ? A.coin(c0) : c0}.` : ''); }
