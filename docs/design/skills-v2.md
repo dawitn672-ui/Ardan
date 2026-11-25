@@ -1158,3 +1158,5 @@ their four templates; honours are titles and posts given for reasons, never auto
 6. **Scale:** thousands of skills at completion, built in waves from the first 200; each skill fully specified for use:
    cooldown, mana (or stamina) cost, damage or effect as a share or amount, range, duration, conditions. The player reads
    them in words and pips; the numbers live in the data and the tests.
+
+7. **No range** (order 83): skills are used in combat or training; a rare skill may note a special reach where it truly matters.

@@ -431,6 +431,14 @@ order is replaced, strike it through and say by what.
     or Primordial Demon from birth; (4) stats are raised by levels, skills and titles by actions and training; (5) placed
     points never move, but an evolution in any area can bring explosive growth or extra points (D-171, H-128).
 
+83. **Legends without gods; the Sword Saint; no crown baseline; the throne as hard as it should be** · recorded 2026-11-25
+    (evening). Kept unchanged in `docs/prompts/2026-11-25-legends-and-throne.md`. The paths named are principles; there are
+    many more. Remove most of the idea of gods: the summit is legends such as a King of Dragons, the Primordial Archdemons
+    and a legendary human Sword Saint of ages ago who rose to their level, the best-known historical figure in the world,
+    his story a legend; as many legends as fit. Skills have no range (combat and training only; a rare exception at the
+    designer's call). No baseline (target number) for a crown; Master and Legend do not exist as measures. Taking a throne
+    as an outsider must be as complicated as it really is from one person's position (D-172, H-129).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,

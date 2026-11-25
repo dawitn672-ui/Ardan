@@ -61,10 +61,11 @@ const playLife = (page, { name, P, i }) => {
     const at = age => (S.find(s => s.age >= age) || S[S.length - 1] || {});
     const out = { deathAge: L.deathAge, years: L.years, arc: L.arc, wins: L.wins, checks: L.checks, peakCoin: max('coin'), peakFame: max('fame'),
       coinAt40: at(40).coin || 0, freed: !!(S[0] && S[0].unfree && !(S[S.length - 1] || {}).unfree), kids: max('kids') };
-    // the master prompt's A1 targets: a crown ever held, and the best skill's word at the end (Master is the fifth of seven)
+    // measured, never a target (order 83: no baseline for a crown; Master and Legend are no measures): whether a crown was
+    // ever held, and the best skill's level at the end
     const pc = A.P(A.S.pc);
     out.crowned = !!((A.S.ach && A.S.ach.ruler) || (pc && pc.ruler));
-    try { const sk = pc && pc.sk ? Object.values(pc.sk).map(s => (s && (s.best || s.lv)) || 0) : []; const best = Math.max(0, ...sk); out.word = A.SK && A.SK.wordOf ? A.SK.wordOf(best) : -1; } catch (e) { out.word = -1; }
+    try { const sk = pc && pc.sk ? Object.values(pc.sk).map(s => (s && (s.best || s.lv)) || 0) : []; out.topLv = Math.max(0, ...sk); } catch (e) { out.topLv = 0; }
     return out;
   }, [Object.assign({ seed: 7001 + i * 104729 + name.length * 31, sex: i % 2 ? 'F' : 'M' }, P.start, LANDS === 'great' ? { lands: 'great' } : {}), pers, engaged, YEARS]);
 };
@@ -90,10 +91,10 @@ for (const [name, P] of Object.entries(TARGETS.paths)) {
     medianPeakFame: median(lives.map(l => l.peakFame)),
     notableSharePct: r1(100 * lives.filter(l => !quiet.has(l.arc)).length / lives.length),
     freedSharePct: r1(100 * lives.filter(l => l.freed).length / lives.length),
-    // measured, not banded (yet): docs/BALANCE_BASELINE.md holds them against the master prompt's A1 targets
+    // measured, never banded (order 83)
     crownedSharePct: r1(100 * lives.filter(l => l.crowned).length / lives.length),
-    masterSharePct: r1(100 * lives.filter(l => l.word >= 4).length / lives.length),
-    legendSharePct: r1(100 * lives.filter(l => l.word >= 6).length / lives.length),
+    medianTopSkillLv: median(lives.map(l => l.topLv || 0)),
+    maxTopSkillLv: Math.max(0, ...lives.map(l => l.topLv || 0)),
     arcs: lives.map(l => l.arc),
     each: lives.map(l => ({ deathAge: l.deathAge, years: l.years, peakCoin: l.peakCoin, peakFame: l.peakFame })),   // for studies of the spread
   };
@@ -121,7 +122,7 @@ for (const [name, P] of Object.entries(TARGETS.paths)) {
 }
 for (const [k, band] of Object.entries(TARGETS.global)) { const v = out.global[k]; rows.push(['all', k, v, band, check('all', k, v, band)]); }
 for (const [p, k, v, b, ok] of rows) console.log(`${ok ? 'ok  ' : 'FAIL'} ${p.padEnd(14)} ${k.padEnd(16)} ${String(v).padStart(7)}   target ${b[0]}–${b[1]}`);
-for (const [name, v] of Object.entries(out.paths)) console.log(`     ${name.padEnd(14)} crowned ${v.crownedSharePct}%, Master ${v.masterSharePct}%, Legend ${v.legendSharePct}% of ${v.lives} lives (measured)`);
+for (const [name, v] of Object.entries(out.paths)) console.log(`     ${name.padEnd(14)} crowned ${v.crownedSharePct}% of ${v.lives} lives; best skill level: median ${v.medianTopSkillLv}, highest ${v.maxTopSkillLv} (measured)`);
 const json = opt('json') || path.join(root, 'tools', 'bench', 'reports', LANDS === 'great' ? 'balance-great.json' : 'balance.json');
 fs.mkdirSync(path.dirname(json), { recursive: true });
 fs.writeFileSync(json, JSON.stringify(out, null, 1));

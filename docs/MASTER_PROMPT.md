@@ -139,6 +139,7 @@ One row per prompt I give you. Add a row every time. "Status" says whether it is
 | T2 | 2026-11-25 | Titles (`docs/prompts/2026-11-25-titles.md`) | Stackable titles with honour, buffs and stat boosts; very hard to earn; hidden requirements | 9 | Merged. |
 | PW | 2026-11-25 | Pathways (`docs/prompts/2026-11-25-pathways.md`) | Stat allocation with points per level; skill training; blacksmithing and diverse weapons; trade and business as an easy profession; countless paths beyond combat | 9, 13.1, 18 | Merged. |
 | AS | 2026-11-25 | Answers on skills, titles, paths, creatures (`docs/prompts/2026-11-25-answers-skills-titles.md`) | Ranks to SSS, gods above; evolved skills stay, merges absorb; titles like Sword Saint or born-with; stats by levels, skills and titles by action; evolution can give explosive growth; thousands of fully specified skills; paths: adventurer, spy, guild master; creatures specified by nature | 9, 17, 18 | Merged. |
+| LT | 2026-11-25 | Legends and the throne (`docs/prompts/2026-11-25-legends-and-throne.md`) | Paths are principles; no gods but faint myth; the King of Dragons, Primordial Archdemons, a legendary human Sword Saint (the best-known figure of history); skills have no range; no crown baseline; no Master or Legend measures; an outsider's road to a throne as hard as it truly is | 8, 9, 17, 18 | Merged. |
 
 ### 1.3 Carry-over checklist
 Earlier prompts asked for a lot that may already be built, or be in progress. **Before you plan any phase, check each row in the repo.** Record the result (Done, In progress, Partly, Not done or Changed) and the evidence in `docs/ROADMAP.md`. Work only on what is not done. New prompts add rows here. Item IDs: K1 to K10 are the kit steps, V1 to V16 are the complaint numbers in `docs/V2_SPEC.md`, O-letter-number are the orders of 2026-11-12.
@@ -402,21 +403,13 @@ Rules: change the module that owns the code (no new wrappers); mark each change 
 ### A1. Measure first
 Build the balance harness (Appendix A) in `tools/balance/`. Run it in CI nightly and on demand. Keep several strategies: random, greedy, duel-farmer, careerist, courtier, mercenary, and a replay of my winning run (see the first session script).
 
-**Proposed targets (tune from measurements, and record changes in `docs/DECISIONS.md`):**
-
-| Start | Chance of ever holding a crown | Route |
-|---|---|---|
-| Peasant | under 1 in 100 lives, even for a strong player | Conquest only: a company, land, then a realm, or a civil war. It takes most of a life and carries a high risk of death. |
-| Noble | about 1 in 20 | Marriage, claims, vassal support, intrigue. |
-| Royal | common as heir, but holding the realm is hard | Roughly one reign in three ends in a lost crown, a lost realm or a ruinous war. |
-
-Anchor strength to the lore in `GD.TIERS`: Elite is one soldier in several hundred, Master is one or two in a realm, Legend is perhaps five alive in all of Ardan. A player reaching Master should be well under 1 in 100 lives. Reaching Legend should be around 1 in 1,000 and should cost injuries and years of life.
+**No target numbers for a crown or for the top of a skill (order 83).** The harness measures each start's crowns and its best skill levels so a change that makes them easier shows, but nothing is banded to a number: the measure of a crown is how hard the road is, not how often it is reached. "Master" and "Legend" are not measures (levels only, order 78).
 
 CI fails if any strategy beats a target by a wide margin.
 
 ### A2. Close the exploits for good
 1. **Breakthroughs become rare and costly.** A lifetime budget (about three to five true breakthroughs), a cooldown of years, a real chance of crippling injury or death that grows with the gap, and a hard ceiling from the body model. Remove the unlimited rise in `pot`.
-2. **The throne is not a roll.** Replace the `power` number with a coalition of **named people**. Each lord and officer has an opinion, an ambition and a price. A plot needs recruited conspirators found through relationships, money or favours. One attempt per lifetime for most routes. Failure is severe: execution, exile, an attainted house, or a civil war you lose.
+2. **The throne is not a roll (and for an outsider it is as complicated as it truly is, order 83):** what one person would really need: a claim or a cause men accept, lords won one by one for their own reasons, coin, swords that obey him, the church's nod or its silence, the moment, and survival after. **The throne is not a roll.** Replace the `power` number with a coalition of **named people**. Each lord and officer has an opinion, an ambition and a price. A plot needs recruited conspirators found through relationships, money or favours. One attempt per lifetime for most routes. Failure is severe: execution, exile, an attainted house, or a civil war you lose.
 3. **Routes differ by start.** Add the prerequisites that make a peasant's road to a crown different from a noble's and a prince's: legitimacy, claims, church backing, treasury, army loyalty, marriage alliances.
 4. **A crown is the start of the hard part.** Make ruling harder than rising: succession wars, debts, revolts, vassal leagues, foreign wars, plots against you, an heir problem. Check that the realm and diplomacy systems scale up when the player rules.
 
@@ -519,7 +512,7 @@ Combat (a weapon art per weapon and per culture's tradition, defence, mounted, r
 - Flaws and curses.
 - At least **60 hand-written Unique and Legendary skills**.
 
-**Targets:** about 200 skills in the first release of the system, 500 in the next, and **thousands at completion** (order 82), each fully specified (cooldown, mana or stamina, damage or effect, range, duration, conditions); ranks D to SSS, a god's above; evolved skills stay beside their evolution, merges absorb their parts; stats rise by levels, skills and titles by action and training; an evolution in any area may bring explosive growth or extra points. The first wave counted toward 1,000, counting magic and monster skills. Keep skills in data files (`data/skills/`).
+**Targets:** about 200 skills in the first release of the system, 500 in the next, and **thousands at completion** (order 82), each fully specified (cooldown, mana or stamina, damage or effect, duration, conditions; no range: skills are used in combat or training, a rare exception at the designer's call, order 83); ranks D to SSS, a god's above; evolved skills stay beside their evolution, merges absorb their parts; stats rise by levels, skills and titles by action and training; an evolution in any area may bring explosive growth or extra points. The first wave counted toward 1,000, counting magic and monster skills. Keep skills in data files (`data/skills/`).
 
 ### B7. Build order
 Steps 1 to 3 need no interface, so they can start while the shell (section 5) is being finished. Step 4 waits for the shell.
@@ -877,6 +870,7 @@ Create them in `.claude/skills/` at the phase shown. Each description below is a
 - **Magic.** Elements and more: fire, water, earth, wind, light, dark, ice, lightning, life, death, space, time, spirit, and blood or bone where they fit the lore. Each is a ladder of ranked spells and skills (section 9's ranks and levels), learned by study, a teacher, a contract, a bloodline or a blessing. **Mana** is a resource of its own beside the six stats; a person's affinity is born, found and trained. Magic changes healing, war, craft, the economy and the faiths, and each realm and faith has a stance on it.
 - **Races and kinds.** The human peoples, and many more: elder races, beast-folk, giants, dwarves, the sea and sky peoples, spirits, the undead, demons and others the lore earns. Each has lifespans, bodies, cultures, homelands on the map and relations with the rest. A player may be born into several of them.
 - **Monsters.** A bestiary of countless species from vermin to calamities, ranked by threat, each with a habitat on the map, a diet, a season and a place in the economy (hides, cores, bounties). **Monsters evolve:** one that survives, feeds and wins can rise to a higher kind and, at the top, gain a name and a mind. Hunters, adventurers and orders exist because the monsters do.
+- **No gods as beings (order 83):** at most faint myth and faith. The summit is held by legends: a **King of Dragons**, the **Primordial Archdemons**, and a **legendary human Sword Saint** of ages ago who rose to their level, the best-known figure of the world's history, his story told differently by every people and known to a child; and as many more as fit.
 - **Legendary beings.** A few world-shaping beings (dragons, old spirits, demon lords, heroes), each one of a kind (the one-holder rule), with lairs, aims and reasons (the A.WHY rule), able to move kingdoms.
 - **Fit with the rest.** The map gains habitats, ley lines, lairs and wild lands; diplomacy and war gain monster nations and calamities; the market gains magic goods; difficulty and war are tuned after this, not before (13.1).
 
@@ -895,6 +889,7 @@ Create them in `.claude/skills/` at the phase shown. Each description below is a
 - **Blacksmithing and crafts:** ore, fuel and tools; a forge of one's own; weapons and armour of many kinds and cultures, each with its own handling and use in a fight; quality from the smith's level and materials (and, after section 17, monster parts); commissions, a mark and a name; apprentices.
 - **Weapons:** a wide armoury by kind, culture and quality, read by the fight (reach, weight, speed, against armour, against beasts).
 - **Trade and business, simple to use:** buy where cheap, sell where dear, along roads with risk; a shop, a stall, a caravan, a trading house; partners and rivals with relations; contracts and credit; one clear screen that a new player understands in a minute. It sits on one coherent economy (E0).
+- **The roads named are principles, not a list (order 83):** there are many more.
 - **How some roads open (order 82):** a monster hunter is an **adventurer** (contracts, a guild or company, the wilds); a **spy** comes through the military or is made one by someone with the power to; a **guild master** inherits the post or founds a guild, which asks both coin and skill.
 - **Many roads:** scholar, healer, priest, judge, steward, spy, explorer, monster hunter, builder, farmer and landholder, guild master, courtier, artist, and more, each with its levels, skills, titles and a way to rise, fail or change course. A life can move between them.
 
@@ -1045,3 +1040,5 @@ Instructions that a newer one replaced. They are kept so a later session knows w
 | Tier words (Beginner to Legend) as the measure of skill and fighting | S1 (order 63), GD.TIERS | Levels; titles only for deeds (order 78) | 9, 17 |
 | New orders worked in the order given | Practice | Every order placed by importance (13.1), order 78 | Header, 13.1 |
 | Stats grow by age and training alone | V2 body (order 59 era) | Stat points per level, allocated by the player, bounded by race and body (order 80) | 9 |
+| Target chances of a crown per start; Master and Legend shares | Section 8 A1 | No baseline for a crown; levels, not Master or Legend (order 83) | 8 |
+| Gods at the summit of the ladder | Order 82 (my reading) | No gods as beings; legends hold the summit (order 83) | 17 |

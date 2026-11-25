@@ -2758,3 +2758,7 @@ system) and the power-scale builder (the great beings' titles and buffs).
 `docs/design/skills-v2.md` (the helper's design, 1,144 lines: data model, progression, adapter over 5,723 checks, migration
 from save version 15, phone views, the first 200, build order in 12 steps, titles, levels and stat points) cherry-picked as
 `a9789998`; its §15 records the owner's answers. Order 82; D-171; master prompt 9, 17, 18.
+
+### H-129 · 2026-11-25 · Order 83 recorded; balance measures levels, not words
+Master prompt 8 (A1 targets superseded; A2.2), 9, 17, 18; skills-v2 §15.7; D-172. `tools/bench/balance.mjs` measures the
+crowned share and the best skill's level (median, highest) per path, banded by nothing; its Master and Legend shares are gone.

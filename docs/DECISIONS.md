@@ -2706,3 +2706,9 @@ paths: adventurer (the monster hunter), spy (through the military or appointment
 coin and skill); creatures may act purely by their specified nature (bloodthirsty, relentless) without a calming option;
 legendary beings mostly very old; the ladder covers every level of existence. Recorded in `docs/design/skills-v2.md` §15
 and the master prompt (9, 17, 18); passed to the power-scale builder.
+
+### D-172 · Legends hold the summit, not gods; the Sword Saint; no crown baseline (2026-11-25; order 83)
+No gods as beings (faint myth and faith only); the summit is legends (a King of Dragons, the Primordial Archdemons, a
+legendary human Sword Saint of ages ago, the world's best-known figure). Skills have no range. The harness measures crowns
+and best skill levels but bands neither (the A1 target table is superseded). The throne for an outsider is to be as hard as
+it truly is (A2.2, a coalition of named people and every real requirement). Passed to both helpers.
