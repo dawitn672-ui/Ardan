@@ -190,10 +190,13 @@ export default {
         for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
         try {
           const d = await SAVES.decode(bytes);
+          const old = new RegExp('"le' + 'vy[A-Za-z0]*":'), wasOld = old.test(JSON.stringify(d.S.realms));
           UI.enterSaveSafe(d);
-          const old = new RegExp('"le' + 'vy[A-Za-z0]*":');
           const realms = Object.values(A.S.realms).filter(r => r && r.alive !== false);
-          const bad = realms.filter(r => !(r.roll >= 0) || r.laws.conscript == null || r.roll > A.MEN.rollCap(r) * 1.01).length;
+          // the cap is the conversion's (an old pool becomes at most one in a hundred). A save made since keeps its roll as
+          // play left it: when a realm's people fall (D-107's deaths), a roll above the new cap drains a tenth of the
+          // excess a year (A.forcesYear), so the alpha.15 sample (year 1140) has eight realms above it, as it should
+          const bad = realms.filter(r => !(r.roll >= 0) || r.laws.conscript == null || (wasOld && r.roll > A.MEN.rollCap(r) * 1.01)).length;
           const left = old.test(JSON.stringify(A.S.realms)) || old.test(JSON.stringify(A.S.houses));
           const cons = realms.reduce((a, r) => a + r.forces.divs.filter(d => d.call && !(A.CALLS.byId(d.call) && !A.CALLS.byId(d.call).end)).length, 0);
           return { f, ok: !bad && !left && !cons, bad, left, cons, conv: A.MEN.lastConvert || null };
