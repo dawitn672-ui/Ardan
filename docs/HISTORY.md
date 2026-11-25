@@ -2567,3 +2567,38 @@ Branch `work/tooling`, from `origin/v2-integration` at `d132b8d`. Skills and doc
 - **Checks:** `tools/lint-docs-index.mjs` ok; `tools/lint-skills.mjs` ok (it reads game skills, unchanged). No build or test
   run: no game file changed.
 - **Undo:** revert the branch's commits; nothing depends on them.
+
+### H-108 · 2026-11-25 · The sync with the work in progress (master prompt 0.2 steps 2 to 7, section 3 re-checked, 1.3)
+Branch `work/sync`, from `origin/v2-integration` at `0982302` (after the tooling merge, H-107). Docs only: no game code,
+no player-facing change (no CHANGELOG line). No D- number taken.
+- **docs/STATUS.md** (new): the live view. One row per piece of work with branch, how far, modules touched, section and
+  verdict: main's red test (Finish now), M1 (Finish after the owner's critique), `work/m1-design` (with M1), PR #1
+  (Redirect, owner), the tooling review (Finish on the owner's yes), the 19 merged branches (keep until he deletes them),
+  `82-early-years` and `9995-trade-roads` (Drop, to archive on his yes), the local worktrees (nothing to keep), the two
+  skill-card errors and the seed and export removal (Finish in Phase 0); then the old PROGRESS queue, each item placed.
+- **docs/ROADMAP.md** (new): the phases of master prompt 13 with what is done mapped on them; section 3 re-checked
+  (then, now, evidence); the old queue on the new phases; ten conflicts with proposed resolutions and seven owner
+  questions; the 31 rows of 1.3 (Done 18, Partly 9, Changed 1, Not done 3).
+- **Stock-take:** the branches on `origin` (`git ls-remote`: 41 at the first read, `work/tooling` pushed since): `main` (`1589d44`, the Nov 1 upload, 1,328 commits behind),
+  `claude/dreamy-sagan-anwszt` (PR #1, open), `v2-integration`, `archive/v2-lanes`, 17 `release/*`, `work/m1` (30 ahead,
+  7 behind), `work/m1-design`, `work/repo-tidy` and 17 merged working branches (`git branch -r --no-merged` lists only
+  `main`, PR #1's branch, `archive/v2-lanes` and the two M1 branches). PRs by the REST API: #1 open, #2 merged. 67
+  worktrees (63 agent worktrees, three in `/tmp/ardan`, the main checkout): no file newer than its worktree's index (read
+  without git, since this worktree may not run git in another), no stash; three local design branches with one commit each,
+  all already applied (`git cherry`).
+- **Found:** (1) the last check run on `v2-integration` (`650949f5`, run 44618429139) failed `w4OldSaves` on the alpha.15
+  sample save (8 realms above the conversion's roll cap; the test is too strict, the fix is `work/m1`'s `259c74ca` test
+  hunk); every commit since is `[skip ci]`. (2) The two skill-card errors are real but only when a skipped card is answered:
+  `A.eventChoose` runs a choice of a view its setup marked `skip`; forcing the cards on 8 lives gave 24
+  `sk_rival_contest` errors, answering only live views gave 0, and 6 bot lives of 40 years on the game's own auto-answer
+  gave 0. (3) `sk_rival_contest` never shows in play: the player's rivals carry no skills. (4) `A.breakthrough` and
+  `A.plotThrone` are as section 3 says; "Wait for a better moment" even gives intrigue experience, and the plot card shows
+  "about N in a hundred". (5) The Great Continent left play in v2.0.0-alpha.2; 41 comment and dead-guard mentions remain.
+  (6) The 354 baked patches are the 355 `[X1 baked patch]` markers of X1's 203 patches, written into the source.
+- **Checks:** a private build (`/tmp/ardan/sync/x.html`: 150 features, 0 patches, 310 code files, 87 event packs,
+  5,605 KB); the reproduction scripts in the session's scratchpad (not committed); `tools/lint-docs-index.mjs` ok with
+  the two new docs in the index.
+- **Not done here (outside this branch's four files):** `CLAUDE.md`'s `A.addStage` advice (conflict C3), `docs/PROGRESS.md`,
+  `docs/BRANCHES.md` (`work/repo-tidy` and `work/tooling` to the deletable list), `docs/IDEAS.md` notes for the parked
+  and dropped items. The next records step does them.
+- **Undo:** revert the branch's commit; nothing depends on it.
