@@ -2758,3 +2758,25 @@ system) and the power-scale builder (the great beings' titles and buffs).
 `docs/design/skills-v2.md` (the helper's design, 1,144 lines: data model, progression, adapter over 5,723 checks, migration
 from save version 15, phone views, the first 200, build order in 12 steps, titles, levels and stat points) cherry-picked as
 `a9789998`; its §15 records the owner's answers. Order 82; D-171; master prompt 9, 17, 18.
+
+### H-NEW · 2026-11-25 · The skills rebuild, steps 1 to 4 (nothing a player sees changes)
+`docs/design/skills-v2.md` §10 steps 1 to 4, with §15 (order 82) and the owner's word of the same day (no range in a
+skill's specification; no measure word left). Decisions: D-NEW-1.
+- **Step 1, data and validator:** `data/skills/` (`vocab.json`: ranks D to SSS and G, budget 1 to 128 a level, costs,
+  caps rising by rank, the words; `families.json`: the 28 families from S1's data; `ladders/*.json`: 140 rungs, D, C, B,
+  A and a common S rung a family, carrying the release's 114 perk rows on the C, B and A rungs; `recipes.json`), seeded by
+  `tools/skills2/seed-data.mjs`; the ten checks of §2.7 in `tools/lib/skills2-check.mjs`, run by `tools/lint-skills.mjs`
+  (its S1 checks kept); `tests/v2/skills2-data.test.js` (11 tests: the data passes, each check fails on a planted fault).
+- **Step 2, engine:** `src/people/engine/skills2.js` (pure: bands on S1's values, S1's costs, S1 entries as rungs, talent
+  reach, budget and costs, caps, needs, evolve (the old skill stays), merge (absorbs, keeps a floor), advance (once a life),
+  the graph); bundled as `A.V2.skills2`; `tests/v2/skills2.test.js` (11 tests).
+- **Step 3, adapter:** `src/people/37-skills2/a-adapter.core.js`, `A.SK2` with `on = false`: `SK2.read(p, k)` through the
+  rungs (and 49-body-mind's wound by part, which wraps `A.skill`), the player's rungs in `pc.ks`/`pc.kc` synced monthly.
+  `sk2Shadow`: three bot lives of 6 years, 225 months, 9,255,432 reads, 0 differ from `A.skill`, rungs never stale.
+- **Step 4, migration:** save step `skills2` (`SV.VER` 16, `src/core/99998-v2-saves`), `SK2.migrate`. `sk2Migrate`: 22
+  sample saves, 947,530 reads the same before and after, every rung in band, idempotent, only its own fields written;
+  `paOldSaves`, `s1Migrate`, `s1Mirror`, the four `v2sv*` tests pass (`v2svRoundTrip` now expects version 16);
+  `version.mjs check` ok.
+- Lints: lint-skills ok, lint-stages 146 registrations (baseline 146, no new stage), lint-reasons 41 (baseline 41),
+  docs index ok; `node --test tests/v2/*.test.js` 146 of 146.
+- Undo: revert the four commits; a version-16 save would then be refused as newer (no sample save is version 16).
