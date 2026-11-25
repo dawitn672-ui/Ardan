@@ -2730,3 +2730,8 @@ after; bar 14%).
 `UI.SHARE.footer` and its seed field (`9994-share-a-picture`), the hall's seed (`995-hall-of-lives`). Test
 `pfNoSeedForPlayers` (old build: the menu's export, the share footer's and the hall's seed; now nothing, and the menu
 exports with the switch on); `uiSmoke` still exports (a test browser is a developer's).
+
+### H-123 · 2026-11-25 · The wrapper and patch gate (master prompt 4.6, Phase 0)
+`tools/lint-stages.mjs` (run by `tools/check.mjs`, so by CI) now also counts the default build's `A.addStage`
+registrations (146) and its feature `patches.mjs` files (0) against `tests/stages-baseline.json` (`addStage`, `patches`);
+either rising fails, `--write` lowers them. The names-defined-more-than-once count (346) stays as it was.

@@ -176,5 +176,20 @@ if (base && !arg('root')) {
     else console.log(`fewer names defined more than once than the baseline (${base.definedMoreThanOnce}): lower it with --write`);
   }
 }
+// the master prompt's 4.6 (Phase 0): the wrapper layers (A.addStage registrations of the default build) and the feature
+// patch files may only fall, like the names defined more than once
+{
+  const nRegs = regs.filter(r => !r.wip).length;
+  const walk = d => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(path.join(d, e.name)) : e.name === 'patches.mjs' ? [path.join(d, e.name)] : []);
+  const nPatch = walk(path.join(here, 'src')).filter(f => !fs.existsSync(path.join(path.dirname(f), '.wip'))).length;
+  console.log(`wrappers: ${nRegs} A.addStage registrations, ${nPatch} patch files (baseline ${base && base.addStage != null ? base.addStage : '-'}, ${base && base.patches != null ? base.patches : '-'})`);
+  if (base && !arg('root')) {
+    if (base.addStage != null && nRegs > base.addStage) faults.push(`${nRegs} A.addStage registrations; tests/stages-baseline.json allows ${base.addStage}. No new wrapper (master prompt 2, 4.6): change the module that owns the function`);
+    if (base.patches != null && nPatch > base.patches) faults.push(`${nPatch} patch files in the default build; tests/stages-baseline.json allows ${base.patches}. Change the release in its source`);
+    if (process.argv.includes('--write') && ((base.addStage != null && nRegs < base.addStage) || (base.patches != null && nPatch < base.patches))) {
+      base.addStage = Math.min(base.addStage, nRegs); base.patches = Math.min(base.patches, nPatch); fs.writeFileSync(BASEFILE, JSON.stringify(base, null, 2) + '\n');
+    }
+  }
+}
 if (faults.length) { console.error(`stages FAIL (${faults.length}):\n  ` + faults.join('\n  ')); process.exitCode = 1; }
 else console.log('stages ok');

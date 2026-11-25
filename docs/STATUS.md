@@ -10,15 +10,19 @@ waiting on PR #1 (see row 4).
 
 ## Now
 
-- **Phase 0.** Done so far: the safe point (H-104), the skills and tools review (H-107, `docs/TOOLING.md`, its Keep /
-  Merge / Remove table waiting for the owner's yes), this sync (H-108).
-- **Main is not green.** The last real check of `v2-integration` (run 44618429139, on `650949f5`, the repo tidy's merge)
-  failed one quick test: `w4OldSaves` reads the alpha.15 sample save and counts 8 realms with a roll above the conversion's
-  cap. The rule is right and the test too strict: a save made since the conversion keeps its roll as play left it. The fix
-  is a test-only hunk already written on `work/m1` (`259c74ca`, `src/war/9999952-men/test.mjs`). Every commit since has
-  been `[skip ci]` (docs only). Master prompt 13.1 rule 2: fix first.
-- **No agent is working on game code.** The two scheduled check-ins stay disabled (order 74; not re-enabled by the sync).
-- **Modules in use:** none. The next code step claims its modules here before it starts.
+*Updated 2026-11-25, evening (order 76).*
+
+- **Phase 0: done** except the owner's settings (Dependabot, secret scanning) and the plugin check in the next session.
+  Done today: plugins off for the repo (`@synced` names) and by the owner at claude.ai; docs cleared to the reference set
+  (H-110); the two unfinished features archived (H-111); main brought up to date and made the trunk; a dropped card never
+  answered (H-120); the developer switch for seed, export and exact odds (H-122); the wrapper and patch gate (H-123).
+  Save-compat tests already existed (`paOldSaves`: every sample save loads and plays).
+- **Phase 1: under way.** The Emilio findings E1 to E10 are fixed or ruled out (`docs/design/emilio-1108-findings.md`); the
+  stopgaps for breakthroughs (D-163), the throne plot (D-164) and duel foes on demand (D-165) are in; one time button
+  (D-160). Next: cut alpha 16 once the long tier of `4a97b98d` is green; the balance baseline (`docs/BALANCE_BASELINE.md`).
+- **CI:** quick tier green on `4a97b98d` (run 169); its long tier (run 113) running. Commits since are `[skip ci]` and go
+  into the next `[full ci]` batch.
+- **Hourly auto-resume:** on (order 76).
 
 ## Work in progress, one row each
 
