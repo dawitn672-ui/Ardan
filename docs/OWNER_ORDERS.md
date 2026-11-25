@@ -389,6 +389,12 @@ order is replaced, strike it through and say by what.
     (`docs/design/emilio-1108-findings.md`); the hourly auto-resume back on; the whole order of work rebuilt in descending
     order of effect on the game (D-158 to D-162, H-109).
 
+77. **A much larger power scale, now: countless beasts and mythical beings** · recorded 2026-11-25 (evening). Kept unchanged
+    in `docs/prompts/2026-11-25-power-scale.md`. The strongest warrior of the world before this change must be weak beside
+    the masters of other races and real monsters; the world grows harder through them. It pulls the monster and power part
+    of section 17 ahead of the skills rebuild (the newest instruction wins, D-158); magic and the canon rewrite stay after
+    the skills. Also: work at full speed without stopping every few minutes (D-167, H-124).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,

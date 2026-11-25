@@ -2735,3 +2735,8 @@ exports with the switch on); `uiSmoke` still exports (a test browser is a develo
 `tools/lint-stages.mjs` (run by `tools/check.mjs`, so by CI) now also counts the default build's `A.addStage`
 registrations (146) and its feature `patches.mjs` files (0) against `tests/stages-baseline.json` (`addStage`, `patches`);
 either rising fails, `--write` lowers them. The names-defined-more-than-once count (346) stays as it was.
+
+### H-124 · 2026-11-25 · Order 77 merged: the power scale first
+Saved `docs/prompts/2026-11-25-power-scale.md`; order 77 in `docs/OWNER_ORDERS.md`; master prompt: register row P2, 13.1
+(the power scale and bestiary third, before the skills), section 17 (its first wave and Done when), Appendix C row; D-167.
+The build runs in a helper's worktree.

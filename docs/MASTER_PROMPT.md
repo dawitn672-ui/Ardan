@@ -133,6 +133,7 @@ One row per prompt I give you. Add a row every time. "Status" says whether it is
 | I | 2026-11-25 | "The code is under work right now" instruction | Mesh this file with the work already in progress; order the work and set priorities for the most efficient route | 0.2, 1.1, 2, 4.5, 4.6, 8 (A0), 10, 13, 15 | Merged. |
 | T | 2026-11-25 | "Refining the skills comes first" instruction | Make the skills and tools review the top priority, because it helps every later step | Header, 0.2, 13.1, 13.2, 13.3, 15, 16 | Merged. |
 | A | 2026-11-25 | Answers to the Phase 0 questions (`docs/prompts/2026-11-25-answers-and-direction.md`), with the Emilio save | Newest instruction wins, everywhere; GitHub `main` brought up to date; no working branches or working files left in the repo, only versions; plugins folded into the Ardan skills, the rest cut; drop the two unfinished features; the map decision put to me later; seed and export behind a dev flag; skills rebuilt as ranked skills that merge, advance and evolve, in great number, stats kept apart; Next month only from age 12; magic, many races, monsters and legendary beings, after the skills; paid game packs for more allowances; portraits improved as often as needed; the Emilio life; auto-resume on; the order of work rebuilt by effect on the game | Header, 2, 4.1, 5, 9, 12.5, 13, 16, 17 | Merged. |
+| P2 | 2026-11-25 | "Make the power scaling of this world much larger" (`docs/prompts/2026-11-25-power-scale.md`) | Countless beasts and mythical beings; today's strongest warrior weak beside race masters and monsters; full speed, no stopping every few minutes | 13, 17 | Merged. |
 
 ### 1.3 Carry-over checklist
 Earlier prompts asked for a lot that may already be built, or be in progress. **Before you plan any phase, check each row in the repo.** Record the result (Done, In progress, Partly, Not done or Changed) and the evidence in `docs/ROADMAP.md`. Work only on what is not done. New prompts add rows here. Item IDs: K1 to K10 are the kit steps, V1 to V16 are the complaint numbers in `docs/V2_SPEC.md`, O-letter-number are the orders of 2026-11-12.
@@ -606,14 +607,15 @@ You say it is far too undeveloped and buggy. Fix the structure first, then add d
 **Descending order of effect on the game as it is today** (the owner's answers of 2026-11-25): what changes the current game most, and what the most later work depends on, comes first. When choosing what to do next, apply these in order:
 1. **Keep `main` playable and releasable.** A broken build or a broken save is fixed before anything else.
 2. **Bugs the owner meets in play** (his lives: the alpha 9 survey, the Emilio life of 1105 to 1108, `docs/design/emilio-1108-findings.md`) and the open exploits (breakthroughs, the throne plot): they change every life now. Fix current issues before new ones (order 54).
-3. **The skills rebuild (section 9).** The owner's top complaint is linear growth, and magic, difficulty and war all sit on it.
-4. **Magic, races and monsters (section 17).** The largest change to the world; it begins only once the skills are done, and difficulty and war are tuned after it, not before.
-5. **Difficulty and progression (section 8),** measured on the world with skills and magic in it.
-6. **War (section 10).** Bug fixes only until its rebuild.
-7. **Content, art and depth;** then phone, playtesters, backend, apps, store, launch.
-8. **Skills and tools are refined whenever the owner adds new ones (section 16),** before the work that uses them.
-9. **Never polish what will be rebuilt.** **Limit work in progress:** one main workstream, at most one side track on different modules; a fix under a day can jump the queue.
-10. **Ask for the owner's decisions before they block,** batched; work around them until then. **Start long lead-time items early** (13.4).
+3. **The power scale and the bestiary (section 17, its first wave; order 77):** now, beside the last of Phase 1.
+4. **The skills rebuild (section 9).** The owner's top complaint is linear growth, and magic, difficulty and war all sit on it.
+5. **Magic, races and the rest of section 17.** The largest change to the world; it begins only once the skills are done, and difficulty and war are tuned after it, not before.
+6. **Difficulty and progression (section 8),** measured on the world with skills and magic in it.
+7. **War (section 10).** Bug fixes only until its rebuild.
+8. **Content, art and depth;** then phone, playtesters, backend, apps, store, launch.
+9. **Skills and tools are refined whenever the owner adds new ones (section 16),** before the work that uses them.
+10. **Never polish what will be rebuilt.** **Limit work in progress:** one main workstream, at most one side track on different modules; a fix under a day can jump the queue.
+11. **Ask for the owner's decisions before they block,** batched; work around them until then. **Start long lead-time items early** (13.4).
 
 Tie-breaker: the value to the player divided by the effort, plus how much later work it unblocks.
 
@@ -857,6 +859,8 @@ Create them in `.claude/skills/` at the phase shown. Each description below is a
 
 ## 17. Workstream D: magic, races, monsters and legendary beings
 
+**The power scale comes first (order 77, 2026-11-25, evening):** "the strongest warrior in the Ardan world before this update should be weak when masters of other races and actual monsters appear; make the power scaling of this world much larger." One rank ladder for every being, people and beasts alike, at least ten steps from vermin to world-shaking, each a large multiple of the one below; today's best human swordsman sits near the middle; the masters of the elder and great races, great monsters and legendary beings stand far above him. A bestiary of at least 150 species with evolution lines, ten or more unique legendary beings with lairs and reasons, monsters in the wilds by terrain and season, encounters scaled to what the player does, and odds in words. This wave runs **now, beside Phase 1 and before the skills rebuild**; magic, new playable races and the canon rewrite keep their place after the skills. **Done when:** the ladder, the bestiary and the legends are in data with tests; a fight far above you is flight or death; ordinary settled lives still mostly live (the balance bands hold).
+
 **The owner, 2026-11-25:** "as much magic with ranks, progression etc. as possible, across all the elements and more"; many more races, countless monsters and species, and legendary beings; a large project that transforms this world, in the spirit of high-fantasy worlds where monsters, spirits and dragons stand beside nations. **Any canon may be rewritten to make it fit.** It **begins after the skills rebuild (Phase 2) is done**, and runs in waves: study, build, test, improve, repeat.
 
 **Original, not copied.** The world takes the genre's ideas (ranked monsters, evolving kinds, named monsters that rise, elemental magic, spirits, dragons as forces of nature, skill evolution) and makes them its own. No names, characters, places, skill names or story from any existing work.
@@ -1010,3 +1014,4 @@ Instructions that a newer one replaced. They are kept so a later session knows w
 | `work/<item>` branches pushed for the integrator (order 64, D-133) | Order 64 | No working branches or working files on GitHub; `main` and `release/<version>` only | 2, 4.1 |
 | Order of work led by skills and tools first, then safety nets | Section 13.1 | Descending effect on today's game: play bugs and exploits, skills, magic, difficulty, war, then the rest | 13 |
 | Phase numbers 3 to 11 | Section 13.3 | 4 to 12 (Phase 3 is magic) | 13 |
+| Monsters and power wait until after the skills rebuild | Order 76 (section 17) | The power scale and bestiary now, before the skills; magic and races keep their place | 13, 17 |

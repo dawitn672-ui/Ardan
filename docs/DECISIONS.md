@@ -2662,3 +2662,12 @@ share card and its picture no seed, the hall of lives no seed. The functions sta
 (tests and the owner's bug reports use export); a stored setting (a player could find it). **Why:** players never send a
 seed; saves belong to a device or account; no percentages for the player. The owner: "sure, but no players have the game
 yet", so low priority, done because it was small.
+
+### D-167 · The power scale and bestiary now, before the skills rebuild (2026-11-25; order 77)
+**What.** The monster and power part of section 17 (one rank ladder for every being, a bestiary of 150 or more species
+with evolution lines, unique legendary beings with lairs and reasons, monsters in the wilds, encounters scaled to the
+player's choices) is built now, beside the end of Phase 1, as section 17's first wave; magic, new playable races and the
+canon rewrite stay after the skills rebuild. Built by a helper in a local worktree, integrated on the trunk.
+**Considered:** waiting for the skills rebuild (order 76's sequence; the owner's newer word wins, D-158); bending the
+existing human scale up instead (the owner asked that today's best be weak beside monsters and race masters, so the
+scale grows above, not the humans). **Why:** the owner's order 77.
