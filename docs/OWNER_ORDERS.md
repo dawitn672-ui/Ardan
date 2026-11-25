@@ -368,6 +368,14 @@ order is replaced, strike it through and say by what.
     `docs/HISTORY.md` H-104 and `docs/PROGRESS.md`. No work resumes until the owner says so; a session that reads this
     first starts nothing, re-enables nothing, and asks the owner.
 
+75. **The master prompt: recalibrate, reconstruct, reorganise everything** · recorded 2026-11-25. The owner's words before
+    and after it, verbatim: "recalibrate reconstruct reorganizee everything-" ... "ask any and every question you need help
+    with". The prompt itself is kept unchanged in `docs/prompts/2026-11-25-master-prompt.md` and, as the living source of
+    truth, in `docs/MASTER_PROMPT.md`. It lifts order 74's stop. It sets the order of work: a safe point (reached: H-104),
+    then the skills and tools refinement (its section 16) as the top priority, then the sync with the work in progress
+    (its section 0.2), then the rest of its Phase 0. Where it conflicts with earlier orders or decisions, it wins (its
+    section 2, "Precedence"), except where undoing is costly: those are put to the owner first (its section 1.1 step 3).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
