@@ -2628,3 +2628,8 @@ On the trunk, docs only (no game code, no player-facing change).
   them). Nothing the build, tools or tests read was removed: the engine's 124 unit tests pass and the docs index lint
   passes. `tools/v2/build-demo.js` went to `archive/v2-kit-demo-ui/`. `docs/README.md` and `docs/BRANCHES.md` rewritten.
 - **Undo:** `git checkout 872768f6 -- <path>` brings any of it back.
+
+### H-111 · 2026-11-25 · The two unfinished features archived (order 76)
+`src/events/82-early-years` and `src/economy/9995-trade-roads` (both `.wip`, never in the default build) moved to
+`archive/` with notes; the owner left the choice to the integrator. The default build is unchanged (150 features, 0
+patches). Last commit with them in `src/`: `a8819b95`. **Undo:** move the folders back and restore their `.wip` files.
