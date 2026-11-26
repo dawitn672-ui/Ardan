@@ -51,6 +51,8 @@
     const p = A.pc(), close = `<button class="close" data-a="closeOv" aria-label="Close">${UI.icon ? UI.icon('x', 'm') : 'x'}</button>`;
     if (!LV.canChoose(p)) return `<div class="panel mbox lv-sheet">${close}<h2>Points to place</h2><div class="mtext">You have none to place now.</div><div class="choices"><button data-a="closeOv">Close</button></div></div>`;
     const pend = ov.pend || {}, { left } = LV.pendCost(p, pend), VS = A.V2S;
+    // a greyed + says why in its row's cost (a press on the marks or "full"), and a greyed - has nothing pending: both carry
+    // data-why so 97-first-life-fixes adds no second info button beside them
     const rows = GD.STATS.map(s => {
       const cap = LV.cap(p, s), room = LV.room(p, s), now = LV.eff(p, s), x = pend[s] || 0;
       const w = v => Math.max(0, Math.min(100, Math.round(100 * v / Math.max(1, cap))));
@@ -61,9 +63,9 @@
         `<span class="lv-name">${note(DOES[s] || LABEL(s), esc(LABEL(s)))}</span>` +
         `<span class="lv-bar" aria-hidden="true"><i class="lv-room" style="width:${w(room)}%"></i><i class="lv-now" style="width:${w(now)}%"></i><i class="lv-add" style="left:${w(now)}%;width:${Math.max(0, w(now + x) - w(now))}%"></i></span>` +
         `<span class="lv-word">${esc(word)}${x ? ' <b>+' + note(`${x === 1 ? 'A point' : 'Points'} you would place here.`, esc(x)) + '</b>' : ''}</span>` +
-        `<span class="lv-cost" data-note="${esc(costNote)}">${can ? pips(3, c, 'lv-c') : '<span class="muted">full</span>'}</span>` +
-        `<span class="lv-ctl"><button type="button" class="lv-btn" data-a="lvMinus" data-v="${esc(s)}" aria-label="One fewer to ${esc(LABEL(s))}"${x ? '' : ' disabled'}>−</button>` +
-        `<button type="button" class="lv-btn" data-a="lvPlus" data-v="${esc(s)}" aria-label="One more to ${esc(LABEL(s))}"${can ? '' : ' disabled'}>+</button></span></div>`;
+        `<span class="lv-cost${can ? '' : ' lv-off'}">${note(costNote, now + x + 1 > room ? 'full' : pips(3, c, 'lv-c'))}</span>` +
+        `<span class="lv-ctl"><button type="button" class="lv-btn" data-a="lvMinus" data-v="${esc(s)}" aria-label="Less ${esc(LABEL(s))}"${x ? '' : ' disabled data-why=""'}>−</button>` +
+        `<button type="button" class="lv-btn" data-a="lvPlus" data-v="${esc(s)}" aria-label="More ${esc(LABEL(s))}"${can ? '' : ' disabled data-why=""'}>+</button></span></div>`;
     }).join('');
     const any = Object.values(pend).some(Boolean);
     return `<div class="panel mbox lv-sheet">${close}<h2>Points to place</h2>` +
@@ -109,7 +111,7 @@
 .lv-name{grid-area:n;min-width:0}.lv-bar{grid-area:b;position:relative;height:10px;border-radius:5px;background:var(--surface-2,#eee);overflow:hidden}
 .lv-bar i{position:absolute;top:0;bottom:0;left:0}.lv-room{background:var(--line,#ccc)}.lv-now{background:var(--accent,#a77)}.lv-add{background:var(--good,#6a6)}
 .lv-word{grid-area:w;font-size:var(--t-small,13px)}.lv-cost{grid-area:c}.lv-ctl{grid-area:k;display:flex;gap:6px}
-.lv-btn{min-width:44px;min-height:44px;font-size:20px;line-height:1}
+.lv-btn{min-width:44px;min-height:44px;font-size:20px;line-height:1}.lv-off{opacity:.55}
 @media (min-width:480px){.lv-row{grid-template-columns:96px minmax(60px,1fr) 90px auto auto;grid-template-areas:"n b w c k"}}
 `;
   const put = () => { if (typeof document === 'undefined' || document.getElementById('lv-style')) return; const st = document.createElement('style'); st.id = 'lv-style'; st.textContent = CSS; (document.head || document.documentElement).appendChild(st); };
