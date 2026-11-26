@@ -3008,6 +3008,14 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
 - **Also:** `pupil_taught` has a source (the teaching activities), so the Silver Sage can be earned.
 - **Deferred:** the "new order in battle" kind of part (the war core is being rebuilt, §10); class parts for a career's
   monthly work; a training screen for classes; magic classes (v4); NPC-against-NPC duels still record nothing.
+- **On D-185's curve (merged the same day).** The rule reads no might, so the rescale moved only the seeded levels and
+  the foes' levels: twelve bot lives (six peasants, six nobles, 35 years, the seeds of `lvAnchors`) ended: peasants who
+  never fought 29 and 29 (average people 20-50), one with seven kills 64, the three who killed 49 to 67 men 120, 129 and
+  136 (soldiers 80-180; one took the Spearman at the wall, two had been seeded past 100 at sixteen); nobles 117 to 170,
+  seeded at 115-170 at sixteen with worn classes (Swordsman, Rider) where their skills open one; nobody at 99, 199 or 299.
+  **For the rescale's owner:** on D-185's curve a sixteen-year-old's fighting worth reads 105-170 for half the lives
+  tried (a might of 1 is level 105), so the seeded level, not the earned one, decides where most nobles and some
+  peasants stand; the earned rule only moves them from there.
 
 ### D-185 · The scale stretched (orders 92, 93, 94): Sarnavoth at 1000, every anchor moved, the legends' balance kept; no hints about titles (2026-11-26)
 - **The legends x 1000/800 (order 92).** "Shift out the levelling system putting Sarnavoth at 1000 and increasing the

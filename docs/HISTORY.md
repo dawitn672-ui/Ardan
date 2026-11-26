@@ -3114,3 +3114,57 @@ lint-titles, lint-events and lint-choices (`--feature=titles`: no error, 0 obvio
 
 **Undo.** Revert `a12a4c2d` for order 92's scale on the old curve; revert `177c9970` too for D-177's levels; revert
 `b7832ae1` to bring the rumours back (or move `archive/titles-hints/` back into the feature).
+
+### H-148 · 2026-11-26 · Experience from anyone, walls at each hundredth level, classes as chosen branches, legends that grow (orders 91-94, D-184)
+
+**What.** `src/people/9999975-level`: experience counted in defeats of a peer from the level gap alone (a stronger foe
+`2^(gap/20)`, past four the root; a weaker one `2^(-gap/6)`; a level `1.01^L` peers); D-181's line withdrawn, every foe
+gives something. The step into each hundredth level is a wall of 6, 10, 12, 12, then 15 times the step before it
+(thresholds, not ceilings: order 94). At a wall, a branch the person chooses: a class from `data/classes.json` (29 classes,
+three steps, eight roads; each adds a duel technique, a passive, a buff or a way to earn) or a stat boost (6, 10, 15, 20
+points); the player on the cards `lv_wall` and `lv_boost`, anyone else through `A.WHY.decide` on a seeded stream. The
+class he holds gives its effects through the skills adapter (`SK2.xClass`); its parts work in play: techniques in
+`A.techsOf` (style id `class:<id>`), passives in `A.techEdge`, activities held to the class in `A.canAct`, buffs in
+`A.stat`. Worn classes for anyone seeded past a wall (no effects, honour or points). Save version 20 (step `classes`).
+The class beside the level on the profile, its note on a press. The legends grow by the same rule (`LV.legendDefeat`,
+`PW.being` reads the data's level plus the gain; the ridge and a great being's meeting pay it). `pupil_taught` has a
+source (the teaching activities). Merged with the rescale (D-185) and calibrated on its curve. The owner's orders 91
+("you can get exp from anyone regardless of level ... at 100lv thresholds where you get a class upgrade or stat boost"),
+92 ("the rewards at the wall is like a branch ... a class change should add new components"; "the legends can get
+stronger"), 93 (the anchors) and 94 ("knights don't stall at 299").
+
+**Commits.** `de15cc96` (experience, walls, legends), `3df6e07e` (classes, cards, parts, save 20, tests), `f1938e4c`
+(`lvAnchors`), `32518e41` (records), `65b914ac` (the rescale merged), `f1516064` (tests on the new curve), and this entry.
+
+**Edits outside the folder (guarded, commented).** Release `07-duels.js` (`A.style`, `A.techsOf`, `A.styleFighter`,
+`A.techEdge`, `A.techSteal`), `04-...-b.js` (`A.canAct`), `03-engine-base.js` (`A.stat` reads a buff); `37-skills2/
+c-effects.core.js` (`xOf` reads `SK2.xClass`); `9999970-powers/a-power.core.js` (`PW.being`: a legend's gain, a person's
+class), `b-wilds.core.js` (`PW.ridge`), `c-meet.core.js` (`PW.greatAnswer`); `99998-v2-saves` (`SV.VER` 20);
+`data/titles/vocab.json`. No new `A.addStage`; lint-stages at its baseline.
+
+**Proof** (a private build of the merged branch, `--workers=2`; the machine shared with two other builders). Level:
+`lvFromDefeats` (a foe 40 down 0.0054, 0.0036, 0.0017 of a level at 60, 100, 175; 30 down something; duels paid to the
+rule), `lvNoFarm` (from 30, a thousand defeats of men at 10 reach 49, the second five hundred adding less; twenty soldiers
+reach 77), `lvWalls` (each wall 6.1, 10.1, 12.1, 12.1, 15.2 times the step before; 98-99 in 3 defeats of men of 100, 99-100
+in 16, 100-101 in 3; knights 198-199 in 2, 199-200 in 12; 299-300 against the best in 112), `lvClass` (the swordsman's card
+offers Swordsman and Warrior and he takes the Swordsman with Rising Cut and its source; no art of arms: the boost card,
+6 points placed; 40 NPCs, the same on a replay, the main stream unmoved, 40 took a blade or warrior class; the Sword
+Saint shut while Cael lives, open with the title), `lvClassParts` (29 classes, 17 leading to two or more, every class
+adding a part; Heavy Blow and Blood Rage in a duel, the passive said once; the berserker's buff 43 -> 46 for two months,
+then 43; another's activity hidden; the class and its note at 375), `lvLegends` (a fresh world at the data's levels; 100
+defeats of an equal give an archdemon 0.006 of a level), `statBounds`, `statMigrate` (25 saves: the same `A.stat` for
+everyone, walls settled worn), `statNpc`, `lvPhone` pass. Titles (`ttEarned`, `ttUnique`, `ttCaps`, `ttNpc`, `ttSave`,
+`ttPhone`, `ttLegends` (0.415; 0.529, 0.464, 0.470; 0.770), `ttHidden`, `ttDeterministic`), powers (`pwLadder`,
+`pwPowerNotLevel` (0.41), `pwStretched`, `pwBestiary`, `pwProfiles`, `pwEvolution`, `pwLegends`, `pwEncounter`,
+`pwSettledSafe`, `pwPureAndOldSave`), skills (`sk2Merge`, `sk2Advance`, `sk2Evolve`, `sk2Caps`, `sk6PerkSums`,
+`sk2Migrate`), `renderRng`, `replayWithRender`, `v2svRoundTrip`, `w1NoMarshalLint`, `w4NoLevyLint`, `pfNumbers`, `pfFits`
+pass; `uiSmoke` passes alone (it timed out twice beside other runs on the loaded machine, and passes on the base the
+same way). Engine tests 155 of 155; lint-stages, lint-reasons (41, its baseline), lint-skills, lint-titles, lint-kin,
+lint-docs-index, `version.mjs check`, `--check-tiers` (lvAnchors in the long tier); lint-events and lint-choices
+(`--feature=level`: 0 errors, 0 obviously best); coherency `--baseline=quick`: no contradiction, no check rose. Twelve bot
+lives with `lvAnchors`' seeds (D-184's last point): peasants who never fought 29, 29; fighters 120, 129, 136; nobles
+seeded 115-170. Not run: `tools/bench/balance.mjs` (the league of 70-year lives could not finish on the shared machine)
+and the long tier as a whole (`lives` and `x3HonestCards` timed out at their limits under the load).
+
+**Undo.** Revert the step's commits; a save made at version 20 would then be refused as newer. `data/classes.json`
+and `c-classes.core.js` can go to `archive/` with a note if classes are retired alone (the level keeps its walls).

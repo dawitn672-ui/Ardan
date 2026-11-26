@@ -38,6 +38,10 @@ two cards (`level.events.js`), tests.
   | 250 | the best knights (320) | 260 | 280 | 300 | 329 |
   | 280 | a kingdom's elite (360) | 289 | 300 | 334 | 364 |
 
+  In play (twelve bot lives of 35 years with `lvAnchors`' seeds, on D-185's curve): peasants who never fought end at
+  29, fighters with 49-67 kills at 120-136, nobles (seeded at 115-170 at sixteen from their fighting worth) at 117-170;
+  nobody stands at 99, 199 or 299.
+
 - **At each wall, a class or a stat boost** (`c-classes.core.js`, `data/classes.json`; orders 91 and 92). The reward is a
   **branch the person chooses**: the classes open to him (those that follow the class he holds, or the first classes of
   a road if he holds none; his best skill of the class's families at C, B or A by its step; the Sword Saint only for the
