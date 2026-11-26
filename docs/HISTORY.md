@@ -3475,3 +3475,14 @@ coherency and the balance harness (nothing here moves a world: no draw, no write
   trade; the merchant now plays 24 lives, as the artisan and the noble do (H-096).
 
 **Undo.** Revert this commit.
+
+### H-163 · 2026-11-26 · s1Cost again (1.202 ms on CI on 0163f899)
+
+A CPU profile of the test's 1,000 months showed two new monthly costs from steps 7-8 and the arts: the merge offer asked
+every family for its top rung each month (28 rung reads through `SK2.tops`), and the arts' month asked the household for a
+teacher once per route. The merge offer is now skipped when fewer than two rungs stand at Lv 10 (every recipe joins two
+level-10 parts, lint-skills check 8), and a month's facts keep one answer per skill and rank a teacher must hold.
+`s1Cost` read 0.704 ms here with two builders running beside it; `sk2Merge` and `sk2Evolve` pass. The merchant's lower
+peak coin (balance, 49,935 over 24 lives) is a real drop since alpha 20 (114,768) and has its own builder (H-162).
+
+**Undo.** Revert this commit.

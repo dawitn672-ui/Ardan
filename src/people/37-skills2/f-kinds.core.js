@@ -108,7 +108,13 @@
     const deeds = [], K = pc.kd || {};
     for (const k in K) if (K[k] > 0 && !/Y$/.test(k)) deeds.push({ kind: k, n: K[k] });
     const skills = {}; for (const h of SK2.artsHeld(pc)) skills[h.id] = { lv: h.lv };
-    return { family: fam, stat: Object.fromEntries(GD.STATS.map(s => [s, A.stat(pc, s)])), age: A.age(pc), deeds, skills, teacher: need => SK2.teacherFor(pc, need) };
+    // one answer a month for each skill and rank a teacher must hold (H-163: every route asked the household again)
+    const taught = new Map(), teacher = need => {
+      const key = need ? need.reads + '|' + (need.rank || 'D') : '';
+      if (!taught.has(key)) taught.set(key, SK2.teacherFor(pc, need));
+      return taught.get(key);
+    };
+    return { family: fam, stat: Object.fromEntries(GD.STATS.map(s => [s, A.stat(pc, s)])), age: A.age(pc), deeds, skills, teacher };
   };
   // the route by which an art is open to the player now, or null
   SK2.artRoute = function (pc, s, facts) {

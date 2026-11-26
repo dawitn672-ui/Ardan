@@ -112,7 +112,10 @@
       }
     }
     // a known recipe offered, once in a while, when its parts are ready and someone can show it
-    if (A.age(pc) >= SK2.OFFER_FROM && A.EV && A.EV.sk2_merge_offer && !A.S.queue.some(q => q && q.ev === 'sk2_merge_offer')) {
+    // every recipe joins two rungs at Lv 10 (lint-skills check 8): with fewer than two held there, nothing can be offered,
+    // and the month does not ask every family for its top (H-163: s1Cost)
+    let at10 = 0; for (const id in pc.ks || {}) { const e = pc.ks[id]; if (e && e.lv >= 10 && ++at10 >= 2) break; }
+    if (at10 >= 2 && A.age(pc) >= SK2.OFFER_FROM && A.EV && A.EV.sk2_merge_offer && !A.S.queue.some(q => q && q.ev === 'sk2_merge_offer')) {
       const f = SK2.mergeFacts(pc);
       for (const r of ix.recipes) {
         if (r.kind !== 'known') continue;
