@@ -5,6 +5,8 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+## v2.1.0-alpha.19 (2026-11-26 10:12 ET) · Skills evolve at level 10, two can merge, a rare leap once a life; titles earned by hidden deeds, stacked under the same limits
+
 - **Titles.** The world now gives names for what you do: the Undefeated, the Unbought, Ironhide, the Hundred-Day Wall,
   the Peacemaker, Beast-Bane, Wyrm-Slayer, the Sword of your realm and more. A title is never bought or trained, and
   what earns one is never shown: at most you hear a rumour of it in a tavern once you have done something on its road.

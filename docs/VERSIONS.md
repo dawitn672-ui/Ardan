@@ -86,6 +86,7 @@ Tag a commit whose CI is green, or the end of a step the owner asked for. Say in
 | v2.1.0-alpha.16 | 2026-11-25 | `4a97b98d` | Phase 1: the Emilio fixes, the exploit stopgaps (breakthroughs, the throne plot), outlaws hunted, one time button · build `sha256:4b0c1b3322597085871ac858a55f7abc03590a4881dec1b3a1e42bacc11eea5d` |
 | v2.1.0-alpha.17 | 2026-11-26 | `82bcc376` | The world grows: the level ladder for every being, 270 species and 16 legends (Sarnavoth, the Primordial Archdemons, the Sword Saint), encounters in the wilds, skills read in rank and level · build `sha256:81dec1eae3f61b45bee0f015bb3c6f0c7704af2f0800333af397f2bbd2e9d6dd` |
 | v2.1.0-alpha.18 | 2026-11-26 | `5f7fd2f3` | Skills that do things (effects and their caps, step 6) and a person's level on the ladder, earned by defeating people and beasts, with stat points to place · build `sha256:4f9ccbb023375130631e177fa90961ec40103c170acc37f0b543efaedaa2ad0a` |
+| v2.1.0-alpha.19 | 2026-11-26 | `a0fa8892` | Skills evolve at level 10, two can merge, a rare leap once a life; titles earned by hidden deeds, stacked under the same limits · build `sha256:cb227305970c7d7c4a037ca593eeda0d03fc26c044069899fd4206aef73c2ae9` |
 <!-- versions:end -->
 
 **Release branches (D-134).** From v2.1.0-alpha.10 on, `release/<version>` points at exactly the row's commit, the one CI
