@@ -3071,3 +3071,46 @@ lint-choices (`--feature=titles`: 0 obviously best), `version.mjs check`; cohere
 
 **Undo.** Revert the step's commits; a save made at version 19 would then be refused as newer. The legends' titles
 return inline with `git checkout <base> -- data/legends.json data/power.json`.
+
+### H-149 · 2026-11-26 · The scale stretched (orders 92, 93, 94) and no hints about titles (order 92; D-185)
+
+**What.** Commits `177c9970` (order 92: the legends x 1000/800, Sarnavoth at 1000, a first 29 calamities in eleven new
+bestiary lines, `pwStretched`), `b7832ae1` (no hints about titles), `a12a4c2d` (order 93: every anchor stretched, a new might
+curve, the bestiary's dragons and demons by kind, the 29 calamities moved to 585-787, the legends' signature titles retuned
+from D-177's), and the records. The owner, order 92: "no hints throughout the games on titles ... shift out the levelling
+system putting sarnavoth at 1000 and increasing the other legends accordingly ... to allow countless more monsters and
+creatures to fit in between"; order 93: "stretch average ppl to 20-50 soldiers to 80-180 knights 230-299 and kingdoms
+elites at 300-420 ... strongest ... 500-700 ... average grown dragon around lvl 700 and an average great demon at around 650
+and lower demons around 300-500"; order 94: knights do not stall at 299.
+
+**Files.** `data/power.json` (levelCurve, bands, the masters' levels), `data/legends.json` (levels, about),
+`data/titles/legends.json` (fifteen signature titles' power, the Sword Saint's hint gone), `data/titles/people.json` and
+`vocab.json` (hints gone), `tools/powers/gen-bestiary.mjs` and `data/bestiary.json` (eleven new lines, the dragons and
+demons retuned, 299 kinds; the 270 older kinds keep every field but `t`, `level`, `might`, `drops` and `evolve` where their
+t moved), `src/world/9999970-powers/test.mjs` (`pwLadder` on order 93's anchors, `pwPowerNotLevel` to 1000, `pwStretched`
+new), `src/people/9999976-titles/` (`a-titles`, `b-view`, `titles.events.js`, README, `ttHidden` rewritten),
+`tools/lint-titles.mjs`, `archive/titles-hints/`, `docs/design/powers.md`, `docs/MASTER_PROMPT.md` §17 and the titles line,
+`CHANGELOG.md`.
+
+**Archived.** `archive/titles-hints/`: `tt_hint`, `TT.hintable`, `TT.heard`, Records' "Things you have heard", the crown's
+"does not name you" log line, the deed on another person's title card, the thirteen hint lines. Last built at `177c9970`.
+
+**Proof.** On a private build (`/tmp/ardan/o92s/x.html`, `--workers=2`): the ten powers tests pass (`pwLadder`: the
+best man of worlds 7, 11, 23, 41 at 493, 550, 508, 552, medians 34-36, a soldier's might 106-154, a knight's 255-321, an
+elite's 321-376, masters 615-700, grown dragons 688-713, lower demons 307-477, great demons 611-675, legends 800-1000;
+`pwPowerNotLevel`: might per level 1.0138 < ... < 1.0206, Sarnavoth against the three 0.41, the Saint against each archdemon
+0.53, 0.46, 0.47, over the Lord of the Sea 0.77, the weakest legend 279 times the strongest beast or master; `pwStretched`:
+no legend off its level, all 29 new kinds in the band, 74 kinds of 17 families from 600 to 800, widest hole 13; and
+`pwBestiary`, `pwProfiles`, `pwEvolution`, `pwLegends`, `pwEncounter`, `pwSettledSafe`, `pwPureAndOldSave`); the nine titles
+tests pass (`ttLegends` 0.415 / 0.529, 0.464, 0.470 / 0.770; `ttHidden` rewritten: no card, no reader, no hinted title,
+nothing queued by deeds, no rumours in Records, no log line on a withheld grant, another man's card without the deed);
+`uiSmoke`, `renderRng`, `replayWithRender`, `v2svRoundTrip`, `statMigrate`, `w1NoMarshalLint` pass. **`lvFromDefeats`
+fails** on order 93's curve: its bar "twenty levels up gives more than half a level" reads 1.14, 0.73 and 0.47 at levels
+24, 100 and 175, because `A.LV.xpFor` reads the might ratio of the two levels and twenty levels are now a smaller ratio
+(1.34 at 175 against 1.62 on the old curve); it is the level builder's rule (`src/people/9999975-level`, not touched here),
+for the merge to settle. Engine tests 155 of 155; lint-stages (146, at its baseline), lint-reasons (41, at its baseline),
+lint-titles, lint-events and lint-choices (`--feature=titles`: no error, 0 obviously best), lint-docs-index,
+`version.mjs check`, `gen-bestiary.mjs --check`; coherency `--baseline=quick`: no contradiction, no check rose.
+
+**Undo.** Revert `a12a4c2d` for order 92's scale on the old curve; revert `177c9970` too for D-177's levels; revert
+`b7832ae1` to bring the rumours back (or move `archive/titles-hints/` back into the feature).

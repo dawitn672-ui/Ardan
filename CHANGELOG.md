@@ -5,14 +5,27 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **A much taller ladder.** Every level is stretched. An ordinary grown person now stands about 35 (most between 20 and
+  50), a soldier 80 to 180, a knight 230 to 299 and more than an ordinary knight past that, a kingdom's elite 300 to 420,
+  and only a handful of the continent's strongest between 500 and 700. A grown dragon is about 700, a great demon about
+  650, a lesser demon 300 to 500. The legends stand from 800 up, and Sarnavoth, King of Dragons, at 1000. The fights
+  between them are as they were: Sarnavoth still a little behind the three Primordial Archdemons together, the Sword Saint
+  (now about 875) still even with any one of them and well above the Lord of the Sea. Your own strength, and every beast's,
+  is unchanged: only the numbers that read it moved.
+- **Calamities.** Twenty-nine new kinds of monster stand between the dragons and the legends: titans, hydras, lich-kings,
+  hive-empresses that eat a province bare, tempest rocs, the fire under the mountain, the Grey Hunt, gate-dukes of the
+  demons, colossi of the first forge and the serpents that girdle the sea. No one meets them yet: they wait for the map.
+- **No more rumours about titles.** Nothing tells you about a title before you earn it: the tavern tales are gone, and so
+  is "Things you have heard" in Records. Another person's title shows its name and what it gives, never what he did for
+  it. A title is announced when it comes.
 - **Titles.** The world now gives names for what you do: the Undefeated, the Unbought, Ironhide, the Hundred-Day Wall,
   the Peacemaker, Beast-Bane, Wyrm-Slayer, the Sword of your realm and more. A title is never bought or trained, and
-  what earns one is never shown: at most you hear a rumour of it in a tavern once you have done something on its road.
+  what earns one is never shown, nor hinted at.
   Titles stack: each brings honour and renown once, and while you hold it a gift in words (a steadier nerve, a harder
   guard, the regard of soldiers, a little more strength), never past the limits skills already have. Some are one of a
   kind, held by one living person at a time, and some can be lost (a single defeat ends the Undefeated). Your profile
-  shows the title you bear beside your name and a row of your titles (press one for its story); Records lists them,
-  the ones you lost and the rumours you have heard. Other people's profiles show theirs. The legends keep their titles
+  shows the title you bear beside your name and a row of your titles (press one for its story); Records lists them
+  and the ones you lost. Other people's profiles show theirs. The legends keep their titles
   and their strength exactly as before; the Sword Saint's is both a title and a class. Saved games load with no titles.
 - **Skills evolve.** When a skill reaches level 10 and you have what its next rank asks (the concepts and, from rank B,
   a deed; thirty years for the highest), it evolves: the new skill begins beside the old one, which you keep. The log
