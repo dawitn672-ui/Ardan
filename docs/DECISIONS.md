@@ -3205,3 +3205,61 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
 - **Deferred:** the skills' own `growth` effect type still has no reader (titles' growth reads through `boost`); an
   income boost reads a post's yearly pay only (not offices' pay or trade); the descriptions' pay factors do not list a
   title's; `pupil_taught` and `king_made` still have no source.
+
+### D-191 · The bestiary's bands by nature: three ancient dragons, 33 ancient demons, at most 100 dragons; the High Roost removed (2026-11-26; orders 95 and 96, and the owner's follow-up to 95)
+- **The owner's worry (order 95): "explain the 74 types between 600-800, im worried some usually weak creatures were given
+  high levels to fit the gap."** He was right. D-185 stretched every older kind by about 1.55 and read the release's 25
+  beasts' levels from their duel rows, so apex animals stood among the dragons (the Avalanche Ape 624, the Boar-King and
+  the Striped Shade 649, the Ironbrow Rhino and the Tusk-Mother 675, the Mountain Father 688, the Queen of the Canopy 725,
+  the Thunder Mammoth 611), and trolls and ogres with them (the Stone Troll 637, the Troll Grandsire 725, the Ogre Hetman
+  649). Of the 74 kinds from 600 to 800, 34 left it.
+- **Levels by nature, not by stretching.** Every line in `tools/powers/gen-bestiary.mjs` is now written in the owner's
+  levels (`lv`; t, the even log scale, is read from them, `tOfLevel`), and every kind carries a nature, `tier`: animal,
+  great beast (the kings and monstrous apex forms of animals), monster, drake, giant, undead, spirit, fey, construct,
+  young / grown / elder / ancient dragon, lower / great / ancient demon, calamity. The bands: plain animals at most 200;
+  great beasts 110-340 (a band of soldiers or knights can face them); trolls, ogres and ettins 120-380 (soldier to
+  elite); drakes and wyrms 50-480; giants by kind (a fell giant 400, a mountain giant 540, the first giants 640, below the
+  King under Jotunhall's 700); titans 600-775; young dragons 300-480; grown dragons 690-710 (mean 699); elder dragons
+  745-765 (mean 755); lower demons 300-480; great demons 620-680 (mean 649); ancient demons 745-765 (mean 754); the
+  calamities 600-775. From 600 to 800 stand 45 kinds, every one a calamity by nature (dragons grown and older, great and
+  ancient demons, the first giants, titans, liches, the leviathans and the elder kraken, the great spirits, the colossi of
+  legend, the hydra-mother, the million-mother, the master of the Grey Hunt, the sky-tyrant, the sea-girdlers). Within a
+  line the lesser forms keep their nature (the Marsh and Nine-Headed Hydras are monsters; only the Hydra-Mother of the
+  Fens is a calamity). Every kind, its old and new level and its reason: `docs/design/bestiary-bands.md`.
+- **Three ancient dragons (order 95).** Ash, Frost and Storm (772, 776, 780; 782, 786, 790 with the Old Blood), each one
+  of a kind (`unique`, `world: 1`) on its own line, so no dragon of the wilds rises to one (an elder is the top a dragon
+  can grow to). The owner's follow-up, his own instruction: **"remove the dragon of high roost"**: the High Roost Dragon
+  and the Dragon Lord of the High Roost, both new in D-185, are removed and archived in `archive/bestiary-high-roost/`
+  (nothing else named them). The Red Widow, one of a kind, is an elder (760).
+- **Ancient demons rival elder dragons (order 95), and there are 33 (order 96).** Four new kinds, each its own line (no
+  demon of the wilds rises to one), born with a Hell-Born title (a ward): the Marquis of the Burning Court (745, 20 in the
+  world), the Pit-Mother (750, 6), the Ledger-Keeper (755, 3), the Pit Wyrm (765, 4); 33 in all, their mean 754 against the
+  elders' 755. The 33 are individuals; the figures registry (another builder, order 96) writes each one's profile.
+- **Few elder dragons; at most 100 dragons (order 96).** A counted kind carries `world` (how many live) and the dragons'
+  family a `cap` of 100; the generator fails a family whose counts pass its cap. The choice: 36 young (hatchlings 8, 7, 7, 7
+  and the ash dragonet 7), 36 grown (9 of each), **9 elder** (ash 3, frost 2, storm 2, brine 1, the Red Widow), 3 ancient:
+  **84 in all**, Sarnavoth apart. The wyrms and drakes are not dragons (the "Sand Dragon" is a 20-kilo lizard).
+- **The wilds keep the counts.** `A.POWER.room(st, sp)` (`src/world/9999970-powers/b-wilds.core.js`): a counted kind is
+  spawned, or a wild monster rises into it, only while the wilds track fewer of it than the world holds and fewer of its
+  family than the cap. It only counts (no draw), so no seed's world moves until a kind is full. The encounter cards
+  (`c-meet`) only meet kinds and add no individual.
+- **The release's beasts.** Their duel rows no longer set their level: the release's duel engine saturates near the top
+  of human worth, so it read a cave bear (400-600 kg) like a world's best man (504) and the Great Ash Dragon below every
+  other grown dragon (558). They take their level by nature (the Great Ash Dragon is the grown ash dragon, 700); what the
+  row measures stays as `duelT`, and `pwBestiary` still checks it against the live rows. A beast met in the wilds fights
+  with `A.POWER.fighter`, built from its level, so the odds read and the fight agree. **Conflict recorded:** the release's
+  own hunts of its 25 beasts (`A.fighterBeast('CRE-..')`) still fight with the release's rows, so a cave bear hunted
+  through a release card is stronger than one met in the wilds. Fixing the rows would rebalance the release's hunts and
+  duels; it is left for a step of its own (a follow-up, not done here).
+- **Kept.** The curve, the legends and their matchups (Sarnavoth 0.41 against the three Archdemons, Cael 0.53 / 0.46 /
+  0.47 against each, 0.77 over the Lord of the Sea), the masters (615-700), the low creatures already on the anchors.
+  `data/power.json`'s band words follow the new bands (no "great bear" among the champions). Legends that are beasts
+  (Saqqar the fire-lion, the Pale Shepherd) are one of a kind and stay legends.
+- **Tests.** `pwBands` (new): the animal families at most 350 (340 measured), plain animals at most 250 (200), great beasts
+  at most 350 (340), trolls and ogres at most 420 (380), young dragons below 500; exactly three ancient dragons, one each,
+  780-800 and above every elder; 7-12 elders in the world (9); every dragon counted and at most 100 (84); 3-6 ancient demon
+  kinds, 33 in all, each 740-770, their mean within 25 of the elders' (1.2 apart); great demons' mean 625-675 (649); and
+  the wilds filled with every counted dragon, spawned 300 times and run 40 years never pass a count or the cap.
+  `pwStretched`: 600-800 holds only calamity natures, 30 to 73 kinds (45), the High Roost gone, D-185's ten remaining new
+  lines reach the band at their apex, the widest hole at most 30 (25). `pwLadder`: the Great Ash Dragon among the grown,
+  the three ancient 780-800 above every elder. `pwBestiary`: the duel rows against `duelT`.

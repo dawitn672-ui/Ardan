@@ -34,43 +34,43 @@
       "from": 80,
       "r": "E",
       "w": "a soldier's match",
-      "d": "A regular soldier (80 to 180), a hill wolf, a wild boar. One against one, either can die."
+      "d": "A regular soldier (80 to 180), a wolf of the pack, a wild boar, a black bear. One against one, either can die."
     },
     {
       "from": 230,
       "r": "D",
       "w": "a knight's match",
-      "d": "A knight (230 to 299 for an ordinary one; past 300 he is more than an ordinary knight), a bear, a pack of wolves. A village loses men to it."
+      "d": "A knight (230 to 299 for an ordinary one; past 300 he is more than an ordinary knight), the kings of the beasts (an ironhide bear, a striped shade), a cave troll. A village loses men to it."
     },
     {
       "from": 300,
       "r": "C",
       "w": "an elite's match",
-      "d": "The elite of a realm (300 to 420, higher in a strong realm), a great cat, a troll, the lower demons (300 to 500). A lord sends hunters with spears and dogs."
+      "d": "The elite of a realm (300 to 420, higher in a strong realm), the monstrous apex beasts (a boar-king, the mountain father: none past 350), a stone troll, an ogre hetman, a dragon's hatchling, the lower demons (300 to 500). A lord sends hunters with spears and dogs."
     },
     {
       "from": 420,
       "r": "B",
       "w": "a kingdom's champion",
-      "d": "The champions of the kingdoms, an ordinary grown giant, a great bear, a young dragon, the greater fiends. The heroes of the songs stand here."
+      "d": "The champions of the kingdoms, a frost-fell giant, a dragonet, the greater fiends, the amber elder. The heroes of the songs stand here."
     },
     {
       "from": 500,
       "r": "A",
       "w": "the strongest of the peoples",
-      "d": "The strongest humans, elves, dwarves and the other peoples of the continent (500 to 700, and very few of them), the masters of the races, the great beasts of the old lore. A kingdom's champion dies here alone."
+      "d": "The strongest humans, elves, dwarves and the other peoples of the continent (500 to 700, and very few of them), the masters of the races, a mountain giant, the hydras and hive-empresses, the bone sovereigns of the restless dead. A kingdom's champion dies here alone."
     },
     {
       "from": 640,
       "r": "S",
       "w": "a grown dragon",
-      "d": "The great demons (about 650), an average grown dragon (about 700), the giant kings, the great spirits. Only a host can stand against one."
+      "d": "The great demons (about 650), an average grown dragon (about 700), the giant kings, the titans, the great spirits, the leviathans. Only a host can stand against one."
     },
     {
       "from": 740,
       "r": "SS",
       "w": "a calamity",
-      "d": "The strong dragons, the elder wyrms, the sea monsters that sink fleets, and the calamities up to the legends: titans, hydras, the lich-kings, the hive-empresses, the serpents that girdle the sea. Kingdoms make their peace with them, or move out of their way."
+      "d": "The elder dragons (few: nine in all the world), the thirty-three ancient demons under the three Archdemons, the three ancient dragons who serve the King, and the calamities up to the legends: the first titans, the deathless king, the serpents that girdle the sea, the colossus of the first forge. Kingdoms make their peace with them, or move out of their way."
     },
     {
       "from": 800,

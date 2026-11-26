@@ -9,9 +9,12 @@
 // wise: only speaking and wise beings reason through A.WHY), habitats on the map's terrain kinds, diet, active seasons,
 // what it leaves (future economy), and the step to the next form. The top form of a line is its apex: an individual that
 // rises to it takes a name and a mind (speaking at least).
-// The release's LORE creatures with duel rows (A.BEASTS) keep their place: their level is derived from their duel worth
-// and blood (CRE below, measured on the release's own A.fighterBeast and A.CR, seed 7), never written by hand, so the
-// test can check the data against the live rows. Pure: no randomness; jitter comes from a hash of the name.
+// Since D-191 (order 95) every level is written by nature, on the owner's anchors, with a TIER saying what the form is.
+// The release's LORE creatures with duel rows (A.BEASTS) keep their ids; what their duel worth and blood measure (CRE
+// below, on the release's own A.fighterBeast and A.CR, seed 7) is kept as duelT, so the test can still check the data
+// against the live rows, but it no longer sets the level: the release's duel engine reads a cave bear like a world's best
+// man. Kinds the canon counts carry world (how many live), and a family may carry a cap (the dragons: 100, order 96).
+// Pure: no randomness; jitter comes from a hash of the name.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -38,6 +41,9 @@ export const mightOf = t => 0.01 * Math.pow(10, t / 10);
 const CV = POWER.levelCurve, gOf = L => CV.a + CV.b * L + CV.c * L * L, X20 = gOf(CV.low.from);
 // the level from the might: the root of a + bL + cL^2 = log10(might) above level 20, fifteen levels a decade below
 export const curveLevel = m => { const x = Math.log10(m); if (x < X20) return Math.max(1, Math.round(CV.low.from + (x - X20) * CV.low.perDecade)); return Math.min(POWER.levels.max, Math.round((-CV.b + Math.sqrt(CV.b * CV.b + 4 * CV.c * (x - CV.a))) / (2 * CV.c))); };
+// t from the owner's level (the inverse of curveLevel), to two places: the lines are written in levels since D-191
+export const mightOfLevel = L => Math.pow(10, L >= CV.low.from ? gOf(L) : X20 + (L - CV.low.from) / CV.low.perDecade);
+export const tOfLevel = L => Math.round(1000 * Math.log10(mightOfLevel(L) / 0.01)) / 100;
 const hash = s => { let h = 2166136261 >>> 0; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
 
 // ---------------------------------------------------------------- capabilities (0-10 each; data/power.json describes them)
@@ -50,159 +56,181 @@ const P = (str, spd, hide, venom, flight, regen, ward, swarm, cunning, magic) =>
 const ALL = ['spring', 'summer', 'autumn', 'winter'];
 // a title some kinds are born with (titles are data with buffs; the owner, 2026-11-25): the oldest dragons are born of the old blood
 const OLD = { n: 'Old Blood', honour: 20, buffs: { level: 10, ward: 1 }, born: true, req: 'born' };
-// Order 93 (D-185): the anchors stretched. The levels below are t, the even log scale of the might; on the new curve
-// (data/power.json levelCurve) t 33-45 is a lower demon (300-500), t 55-60 a great demon (about 650), t 61-63 a grown
-// dragon (about 700), t 66-69 the strong and ancient dragons and the calamities up to the legends (750-800)
+// the ancient demons are born of Hell itself (order 95, D-191): a born title, as the oldest dragons' Old Blood
+const HELL = { n: 'Hell-Born', honour: 15, buffs: { ward: 1 }, born: true, req: 'born' };
+// Order 95 (D-191): the bands by nature, not by stretching. The levels below are the owner's levels (lv, 1-1000, on
+// data/power.json's levelCurve); t, the even log scale the odds use, is read from them. A form's TIER says what it is:
+//   animal, great beast (a monstrous apex or king of animals), monster, drake, giant, undead, spirit, fey, construct,
+//   young / grown / elder / ancient dragon, lower / great / ancient demon, calamity
+// The anchors (order 93): plain animals far below a knight (a wolf 50-110, a bear 110-190), their kings and monstrous apex
+// forms where a band of soldiers or knights can face them (150-350); trolls and ogres soldier to elite (120-380); giants by
+// kind (a fell giant 400, a mountain giant 540, the first giants 640, the titans 600-775); lower demons 300-500, great
+// demons about 650, ancient demons about the elder dragons (740-770); young dragons 300-480, grown about 700, elder
+// 745-765, and only three ancient dragons under the King (772-780, 782-790 with the Old Blood). From 600 to 800 stand only
+// calamities: dragons, great and ancient demons, titans, liches, the leviathans and the elder kraken, the great spirits,
+// the colossi of legend, the hydra-mother, the million-mother, the Grey Hunt and the serpents that girdle the sea.
 const FAMILIES = {
-  vermin: { n: 'Vermin', diet: 'carrion', seasons: ALL, int: 'beast', drops: ['pelt', 'meat'], prof: P(1, 5, 1, 0, 0, 1, 0, 7, 3, 0), lines: [
-    { k: 'rat', forms: ['Cellar Rat', 'Plague Rat', 'Rat Matron', 'Warren King'], levels: [5, 10, 15, 21], terr: ['plains', 'marsh', 'hills', 'forest', 'steppe'], drops: ['pelt', 'tail'], prof: { venom: 3 } },
-    { k: 'crow', forms: ['Carrion Crow', 'Gallows Crow', 'Crow Mother'], levels: [4, 10, 17], terr: ['plains', 'steppe', 'hills', 'forest'], prof: { flight: 8, str: 0 }, drops: ['feather'] },
-    { k: 'bat', forms: ['Cave Bat', 'Blood Bat', 'Dusk Bat', 'Night Shroud'], levels: [3, 10, 17, 25], terr: ['mountains', 'hills', 'forest'], diet: 'blood', prof: { flight: 8 }, drops: ['wing', 'fang'] },
-    { k: 'weasel', forms: ['Hedge Weasel', 'Barrow Stoat'], levels: [6, 12], terr: ['plains', 'forest', 'hills'], diet: 'hunter', prof: { swarm: 2, spd: 7 } },
-    { k: 'owl', forms: [{ n: 'Steppe Eagle Owls', cre: 'CRE-59' }, 'Grey Owl of the Barrows'], levels: [9, 19], terr: ['steppe', 'plains'], diet: 'hunter', prof: { flight: 8, swarm: 1, cunning: 4 }, drops: ['feather', 'talon'] },
+  vermin: { n: 'Vermin', diet: 'carrion', seasons: ALL, int: 'beast', tier: 'animal', drops: ['pelt', 'meat'], prof: P(1, 5, 1, 0, 0, 1, 0, 7, 3, 0), lines: [
+    { k: 'rat', forms: ['Cellar Rat', 'Plague Rat', 'Rat Matron', 'Warren King'], lv: [5, 13, 23, 60], terr: ['plains', 'marsh', 'hills', 'forest', 'steppe'], drops: ['pelt', 'tail'], prof: { venom: 3 } },
+    { k: 'crow', forms: ['Carrion Crow', 'Gallows Crow', 'Crow Mother'], lv: [4, 13, 40], terr: ['plains', 'steppe', 'hills', 'forest'], prof: { flight: 8, str: 0 }, drops: ['feather'] },
+    { k: 'bat', forms: ['Cave Bat', 'Blood Bat', 'Dusk Bat', 'Night Shroud'], lv: [2, 13, 30, 70], terr: ['mountains', 'hills', 'forest'], diet: 'blood', prof: { flight: 8 }, drops: ['wing', 'fang'] },
+    { k: 'weasel', forms: ['Hedge Weasel', 'Barrow Stoat'], lv: [7, 16], terr: ['plains', 'forest', 'hills'], diet: 'hunter', prof: { swarm: 2, spd: 7 } },
+    { k: 'owl', forms: [{ n: 'Steppe Eagle Owls', cre: 'CRE-59' }, 'Grey Owl of the Barrows'], lv: [11, 40], terr: ['steppe', 'plains'], diet: 'hunter', prof: { flight: 8, swarm: 1, cunning: 4 }, drops: ['feather', 'talon'] },
   ] },
-  hounds: { n: 'Wolves and hounds', diet: 'hunter', seasons: ALL, int: 'beast', drops: ['hide', 'fang'], prof: P(4, 7, 2, 0, 0, 2, 0, 6, 5, 0), lines: [
-    { k: 'wolf', forms: ['Hill Wolf', 'Pack Wolf', { n: 'The Evenwood Wolf', cre: 'CRE-21' }, { n: 'Moonhowl Wolf', int: 'cunning' }, { n: 'Frostmane Wolf', int: 'cunning' }, 'Elder of the Long Winter'], levels: [18, 25, 0, 42, 49, 57], terr: ['forest', 'hills', 'steppe', 'mountains'], seasons: ALL },
-    { k: 'hound', forms: ['Feral Dog', { n: 'Hael Hounds', cre: 'CRE-56' }, 'Ash Hound', 'Pyre Hound'], levels: [12, 0, 40, 48], terr: ['mountains', 'hills', 'plains'], prof: { magic: 2 } },
-    { k: 'hyena', forms: ['Jackal', { n: 'Cave Hyena', cre: 'CRE-35' }, 'Bone-Crack Hyena'], levels: [10, 0, 43], terr: ['steppe', 'plains', 'desert'], diet: 'carrion' },
+  hounds: { n: 'Wolves and hounds', diet: 'hunter', seasons: ALL, int: 'beast', tier: 'animal', apexTier: 'great beast', drops: ['hide', 'fang'], prof: P(4, 7, 2, 0, 0, 2, 0, 6, 5, 0), lines: [
+    { k: 'wolf', forms: ['Hill Wolf', 'Pack Wolf', { n: 'The Evenwood Wolf', cre: 'CRE-21' }, { n: 'Moonhowl Wolf', int: 'cunning', tier: 'great beast' }, { n: 'Frostmane Wolf', int: 'cunning', tier: 'great beast' }, 'Elder of the Long Winter'], lv: [50, 75, 110, 170, 240, 330], terr: ['forest', 'hills', 'steppe', 'mountains'], seasons: ALL },
+    { k: 'hound', forms: ['Feral Dog', { n: 'Hael Hounds', cre: 'CRE-56' }, 'Ash Hound', 'Pyre Hound'], lv: [16, 90, 170, 260], terr: ['mountains', 'hills', 'plains'], prof: { magic: 2 } },
+    { k: 'hyena', forms: ['Jackal', { n: 'Cave Hyena', cre: 'CRE-35' }, 'Bone-Crack Hyena'], lv: [13, 90, 180], terr: ['steppe', 'plains', 'desert'], diet: 'carrion' },
   ] },
-  cats: { n: 'Great cats', diet: 'hunter', seasons: ALL, int: 'beast', drops: ['pelt', 'claw'], prof: P(5, 8, 2, 0, 0, 2, 0, 0, 7, 0), lines: [
-    { k: 'lynx', forms: ['Lynx', 'Mountain Lion', 'Ghost Cat'], levels: [17, 26, 35], terr: ['mountains', 'hills', 'forest'] },
-    { k: 'tiger', forms: ['Jungle Leopard', { n: 'Tiger of Ranpur', cre: 'CRE-49' }, { n: 'Striped Shade', int: 'cunning' }, 'Queen of the Canopy'], levels: [33, 0, 58, 64], terr: ['forest', 'marsh'] },
-    { k: 'sandcat', forms: ['Dune Cat', 'Sand Panther', 'Sunfang'], levels: [9, 24, 38], terr: ['desert', 'steppe'], seasons: ['spring', 'summer', 'autumn'] },
+  cats: { n: 'Great cats', diet: 'hunter', seasons: ALL, int: 'beast', tier: 'animal', apexTier: 'great beast', drops: ['pelt', 'claw'], prof: P(5, 8, 2, 0, 0, 2, 0, 0, 7, 0), lines: [
+    { k: 'lynx', forms: ['Lynx', 'Mountain Lion', 'Ghost Cat'], lv: [50, 100, 180], terr: ['mountains', 'hills', 'forest'] },
+    { k: 'tiger', forms: ['Jungle Leopard', { n: 'Tiger of Ranpur', cre: 'CRE-49' }, { n: 'Striped Shade', int: 'cunning', tier: 'great beast' }, 'Queen of the Canopy'], lv: [90, 160, 240, 330], terr: ['forest', 'marsh'] },
+    { k: 'sandcat', forms: ['Dune Cat', 'Sand Panther', 'Sunfang'], lv: [11, 95, 200], terr: ['desert', 'steppe'], seasons: ['spring', 'summer', 'autumn'] },
   ] },
-  bears: { n: 'Bears and apes', diet: 'omnivore', seasons: ['spring', 'summer', 'autumn'], int: 'beast', drops: ['hide', 'fat', 'claw'], prof: P(8, 4, 5, 0, 0, 4, 1, 0, 3, 0), lines: [
-    { k: 'bear', forms: ['Black Bear', { n: 'Cave Bear', cre: 'CRE-25' }, 'Ironhide Bear', 'Mountain Father'], levels: [28, 0, 54, 61], terr: ['forest', 'mountains', 'hills'] },
-    { k: 'ape', forms: ['Rock Ape', { n: 'Snow Ape', cre: 'CRE-31' }, 'Avalanche Ape'], levels: [27, 0, 56], terr: ['mountains'], seasons: ALL, prof: { cunning: 5 } },
-    { k: 'forestmen', forms: [{ n: 'Forest Men', cre: 'CRE-55' }, { n: 'Old Silverback', int: 'cunning' }], levels: [0, 53], terr: ['forest', 'marsh'], seasons: ALL, prof: { cunning: 6, swarm: 3 } },
+  bears: { n: 'Bears and apes', diet: 'omnivore', seasons: ['spring', 'summer', 'autumn'], int: 'beast', tier: 'animal', apexTier: 'great beast', drops: ['hide', 'fat', 'claw'], prof: P(8, 4, 5, 0, 0, 4, 1, 0, 3, 0), lines: [
+    { k: 'bear', forms: ['Black Bear', { n: 'Cave Bear', cre: 'CRE-25' }, { n: 'Ironhide Bear', tier: 'great beast' }, 'Mountain Father'], lv: [110, 180, 250, 340], terr: ['forest', 'mountains', 'hills'] },
+    { k: 'ape', forms: ['Rock Ape', { n: 'Snow Ape', cre: 'CRE-31' }, 'Avalanche Ape'], lv: [80, 160, 280], terr: ['mountains'], seasons: ALL, prof: { cunning: 5 } },
+    { k: 'forestmen', forms: [{ n: 'Forest Men', cre: 'CRE-55' }, { n: 'Old Silverback', int: 'cunning' }], lv: [120, 220], terr: ['forest', 'marsh'], seasons: ALL, prof: { cunning: 6, swarm: 3 } },
   ] },
-  hooved: { n: 'Boars and great hooved beasts', diet: 'grazer', seasons: ALL, int: 'beast', drops: ['hide', 'horn', 'meat'], prof: P(7, 5, 4, 0, 0, 2, 0, 2, 1, 0), lines: [
-    { k: 'boar', forms: ['Wild Boar', 'Tusker', { n: 'Hell Boar', cre: 'CRE-23' }, 'Thornback Boar', 'Boar-King'], levels: [20, 30, 0, 51, 58], terr: ['forest', 'hills', 'marsh'], diet: 'omnivore', drops: ['hide', 'tusk', 'meat'] },
-    { k: 'ox', forms: ['Wild Ox', { n: 'Aurochs', cre: 'CRE-20' }, 'Stormhorn Bull'], levels: [22, 0, 53], terr: ['forest', 'plains', 'steppe'] },
-    { k: 'stag', forms: ['Red Deer', { n: 'The Grey Stag', cre: 'CRE-19' }, { n: 'Antlered Lord', int: 'speaking' }], levels: [8, 0, 57], terr: ['forest'], prof: { spd: 7, ward: 3 } },
-    { k: 'mammoth', forms: ['Steppe Mammoth', { n: 'The Thunder Mammoth', cre: 'CRE-33' }], levels: [40, 0], terr: ['steppe', 'plains'], prof: { str: 10, hide: 6 } },
-    { k: 'rhino', forms: ['Steppe Rhino', { n: 'Woolly Rhino', cre: 'CRE-34' }, 'Ironbrow Rhino'], levels: [38, 0, 60], terr: ['steppe', 'plains'], prof: { str: 9, hide: 8 } },
-    { k: 'riverhorse', forms: ['Mud Wallower', { n: 'River Horse', cre: 'CRE-45' }], levels: [30, 0], terr: ['marsh'], prof: { str: 9, hide: 6 } },
-    { k: 'elephant', forms: [{ n: 'White Elephant', cre: 'CRE-50' }, { n: 'Tusk-Mother', int: 'cunning' }], levels: [52, 60], terr: ['forest', 'marsh'], prof: { str: 10, hide: 6, cunning: 4 }, drops: ['ivory', 'hide'] },
-    { k: 'oryx', forms: [{ n: 'White Oryx', cre: 'CRE-41' }, 'Spear-Horn Oryx'], levels: [15, 28], terr: ['desert', 'steppe'], prof: { spd: 7 } },
+  hooved: { n: 'Boars and great hooved beasts', diet: 'grazer', seasons: ALL, int: 'beast', tier: 'animal', apexTier: 'great beast', drops: ['hide', 'horn', 'meat'], prof: P(7, 5, 4, 0, 0, 2, 0, 2, 1, 0), lines: [
+    { k: 'boar', forms: ['Wild Boar', 'Tusker', { n: 'Hell Boar', cre: 'CRE-23' }, { n: 'Thornback Boar', tier: 'great beast' }, 'Boar-King'], lv: [80, 120, 170, 230, 310], terr: ['forest', 'hills', 'marsh'], diet: 'omnivore', drops: ['hide', 'tusk', 'meat'] },
+    { k: 'ox', forms: ['Wild Ox', { n: 'Aurochs', cre: 'CRE-20' }, 'Stormhorn Bull'], lv: [85, 140, 240], terr: ['forest', 'plains', 'steppe'] },
+    { k: 'stag', forms: ['Red Deer', { n: 'The Grey Stag', cre: 'CRE-19' }, { n: 'Antlered Lord', int: 'speaking' }], lv: [10, 130, 280], terr: ['forest'], prof: { spd: 7, ward: 3 } },
+    { k: 'mammoth', forms: ['Steppe Mammoth', { n: 'The Thunder Mammoth', cre: 'CRE-33' }], lv: [160, 280], terr: ['steppe', 'plains'], prof: { str: 10, hide: 6 } },
+    { k: 'rhino', forms: ['Steppe Rhino', { n: 'Woolly Rhino', cre: 'CRE-34' }, 'Ironbrow Rhino'], lv: [130, 180, 280], terr: ['steppe', 'plains'], prof: { str: 9, hide: 8 } },
+    { k: 'riverhorse', forms: ['Mud Wallower', { n: 'River Horse', cre: 'CRE-45' }], lv: [90, 160], terr: ['marsh'], prof: { str: 9, hide: 6 } },
+    { k: 'elephant', forms: [{ n: 'White Elephant', cre: 'CRE-50' }, { n: 'Tusk-Mother', int: 'cunning' }], lv: [200, 300], terr: ['forest', 'marsh'], prof: { str: 10, hide: 6, cunning: 4 }, drops: ['ivory', 'hide'] },
+    { k: 'oryx', forms: [{ n: 'White Oryx', cre: 'CRE-41' }, 'Spear-Horn Oryx'], lv: [23, 70], terr: ['desert', 'steppe'], apexTier: 'animal', prof: { spd: 7 } },
   ] },
-  serpents: { n: 'Serpents and great lizards', diet: 'hunter', seasons: ['spring', 'summer', 'autumn'], int: 'beast', drops: ['skin', 'venom'], prof: P(4, 5, 4, 7, 0, 3, 1, 0, 4, 0), lines: [
-    { k: 'adder', forms: ['Grass Adder', 'Pit Viper', 'Ash Viper', 'Viper Queen'], levels: [7, 16, 25, 34], terr: ['plains', 'steppe', 'hills', 'desert'], prof: { venom: 9, str: 1 } },
-    { k: 'constrictor', forms: ['Rock Python', { n: 'Green Anaconda', cre: 'CRE-47' }, { n: 'World Python', cre: 'CRE-51' }, 'Coil-Mother'], levels: [25, 0, 0, 50], terr: ['marsh', 'forest'], prof: { venom: 0, str: 8 } },
-    { k: 'basilisk', forms: ['Sand Lizard', { n: 'Basilisk', cre: 'CRE-38' }, { n: 'Stone-Eye', int: 'cunning' }], levels: [8, 0, 45], terr: ['desert', 'hills'], prof: { magic: 6, ward: 4 } },
-    { k: 'croc', forms: ['Marsh Crocodile', { n: 'Great Crocodile', cre: 'CRE-44' }, { n: 'Mire Tyrant', int: 'cunning' }], levels: [32, 0, 62], terr: ['marsh'], coast: true, prof: { str: 8, hide: 8, venom: 0 } },
-    // the high band (orders 92, 93; D-185): the calamities around the grown dragons (about 700) and up to the legends (800 to 1000)
-    { k: 'hydra', forms: ['Marsh Hydra', 'Nine-Headed Hydra', { n: 'Hydra-Mother of the Fens', int: 'cunning' }], levels: [55, 62, 68], terr: ['marsh'], apexInt: 'cunning', prof: { venom: 10, regen: 10, str: 8, hide: 7, swarm: 3 }, drops: ['hydra head', 'venom'] },
+  serpents: { n: 'Serpents and great lizards', diet: 'hunter', seasons: ['spring', 'summer', 'autumn'], int: 'beast', tier: 'animal', apexTier: 'great beast', drops: ['skin', 'venom'], prof: P(4, 5, 4, 7, 0, 3, 1, 0, 4, 0), lines: [
+    { k: 'adder', forms: ['Grass Adder', 'Pit Viper', 'Ash Viper', 'Viper Queen'], lv: [8, 40, 100, 180], terr: ['plains', 'steppe', 'hills', 'desert'], prof: { venom: 9, str: 1 } },
+    { k: 'constrictor', forms: ['Rock Python', { n: 'Green Anaconda', cre: 'CRE-47' }, { n: 'World Python', cre: 'CRE-51' }, 'Coil-Mother'], lv: [80, 110, 150, 260], terr: ['marsh', 'forest'], prof: { venom: 0, str: 8 } },
+    { k: 'basilisk', forms: ['Sand Lizard', { n: 'Basilisk', cre: 'CRE-38', tier: 'monster' }, { n: 'Stone-Eye', int: 'cunning' }], lv: [10, 160, 300], terr: ['desert', 'hills'], apexTier: 'monster', prof: { magic: 6, ward: 4 } },
+    { k: 'croc', forms: ['Marsh Crocodile', { n: 'Great Crocodile', cre: 'CRE-44' }, { n: 'Mire Tyrant', int: 'cunning' }], lv: [100, 170, 300], terr: ['marsh'], coast: true, prof: { str: 8, hide: 8, venom: 0 } },
+    // the hydras (D-185): monsters of the fens, and one calamity, the mother of them that lies under a whole fen
+    { k: 'hydra', forms: ['Marsh Hydra', 'Nine-Headed Hydra', { n: 'Hydra-Mother of the Fens', int: 'cunning' }], lv: [420, 560, 720], tier: 'monster', apexTier: 'calamity', terr: ['marsh'], apexInt: 'cunning', prof: { venom: 10, regen: 10, str: 8, hide: 7, swarm: 3 }, drops: ['hydra head', 'venom'] },
   ] },
-  wyrms: { n: 'Wyrms and drakes', diet: 'hunter', seasons: ALL, int: 'cunning', drops: ['scale', 'blood'], prof: P(6, 6, 6, 3, 4, 4, 4, 0, 5, 4), lines: [
-    { k: 'whitewyrm', forms: ['Cave Wyrmling', { n: 'White Wyrm', cre: 'CRE-26' }, 'Pale Wyrm', 'Deep Wyrm'], levels: [22, 0, 44, 55], terr: ['mountains', 'hills'], prof: { flight: 0 } },
-    { k: 'snowdrake', forms: ['Ice Drakeling', { n: 'Snow Drake', cre: 'CRE-06' }, 'Rime Drake'], levels: [24, 0, 46], terr: ['mountains'], seasons: ['autumn', 'winter', 'spring'], prof: { flight: 8, magic: 5 } },
-    { k: 'wyvern', forms: [{ n: 'Sunwall Wyvern', cre: 'CRE-03' }, 'Crag Wyvern', 'Storm Wyvern'], levels: [0, 48, 56], terr: ['mountains', 'hills', 'desert'], prof: { flight: 9, venom: 7 } },
-    { k: 'amber', forms: ['Amber Crawler', { n: 'Amber Wyrm', cre: 'CRE-05' }, { n: 'Amber Elder', int: 'speaking' }], levels: [38, 0, 65], terr: ['forest', 'marsh'], prof: { flight: 0, str: 9, hide: 8 } },
-    { k: 'seadrake', forms: [{ n: 'Sea Drake', cre: 'CRE-04' }, 'Tide Drake'], levels: [42, 52], terr: ['hills', 'plains'], coast: true, prof: { flight: 8, magic: 5 } },
-    { k: 'sanddragon', forms: [{ n: 'Sand Dragon', cre: 'CRE-43' }, 'Dune Drake'], levels: [0, 38], terr: ['desert'], int: 'beast', prof: { flight: 0, spd: 7 } },
+  wyrms: { n: 'Wyrms and drakes', diet: 'hunter', seasons: ALL, int: 'cunning', tier: 'drake', drops: ['scale', 'blood'], prof: P(6, 6, 6, 3, 4, 4, 4, 0, 5, 4), lines: [
+    { k: 'whitewyrm', forms: ['Cave Wyrmling', { n: 'White Wyrm', cre: 'CRE-26' }, 'Pale Wyrm', 'Deep Wyrm'], lv: [60, 120, 220, 360], terr: ['mountains', 'hills'], prof: { flight: 0 } },
+    { k: 'snowdrake', forms: ['Ice Drakeling', { n: 'Snow Drake', cre: 'CRE-06' }, 'Rime Drake'], lv: [50, 110, 240], terr: ['mountains'], seasons: ['autumn', 'winter', 'spring'], prof: { flight: 8, magic: 5 } },
+    { k: 'wyvern', forms: [{ n: 'Sunwall Wyvern', cre: 'CRE-03' }, 'Crag Wyvern', 'Storm Wyvern'], lv: [150, 230, 340], terr: ['mountains', 'hills', 'desert'], prof: { flight: 9, venom: 7 } },
+    { k: 'amber', forms: ['Amber Crawler', { n: 'Amber Wyrm', cre: 'CRE-05' }, { n: 'Amber Elder', int: 'speaking' }], lv: [160, 300, 480], terr: ['forest', 'marsh'], prof: { flight: 0, str: 9, hide: 8 } },
+    { k: 'seadrake', forms: [{ n: 'Sea Drake', cre: 'CRE-04' }, 'Tide Drake'], lv: [170, 290], terr: ['hills', 'plains'], coast: true, prof: { flight: 8, magic: 5 } },
+    { k: 'sanddragon', forms: [{ n: 'Sand Dragon', cre: 'CRE-43' }, 'Dune Drake'], lv: [60, 150], terr: ['desert'], int: 'beast', prof: { flight: 0, spd: 7 } },
   ] },
-  dragons: { n: 'Dragons', diet: 'hunter', seasons: ALL, int: 'speaking', apexInt: 'wise', drops: ['dragon scale', 'dragon heart'], prof: P(9, 7, 9, 2, 9, 6, 7, 0, 7, 9), lines: [
-    { k: 'ashdragon', forms: [{ n: 'Ash Hatchling', int: 'cunning' }, { n: 'Ash Dragonet', int: 'cunning' }, { n: 'Great Ash Dragon', cre: 'CRE-01' }, 'Elder Ash Dragon', { n: 'Ancient Ash Dragon', born: OLD }], levels: [36, 44, 0, 66, 68], terr: ['mountains', 'hills'], places: ['the Dragon Mountains'] },
-    { k: 'frostdragon', forms: [{ n: 'Frost Hatchling', int: 'cunning' }, 'Frost Dragon', 'Elder Frost Dragon', { n: 'Ancient Frost Dragon', born: OLD }], levels: [38, 62, 66, 68], terr: ['mountains'], places: ['the Dragon Mountains'], seasons: ['autumn', 'winter', 'spring'] },
-    { k: 'stormdragon', forms: [{ n: 'Storm Hatchling', int: 'cunning' }, 'Storm Dragon', 'Elder Storm Dragon', { n: 'Ancient Storm Dragon', born: OLD }], levels: [40, 63, 67, 69], terr: ['mountains', 'hills', 'steppe'], places: ['the Dragon Mountains'] },
-    { k: 'brinedragon', forms: [{ n: 'Brine Hatchling', int: 'cunning' }, 'Brine Dragon', 'Elder Brine Dragon'], levels: [37, 61, 66], terr: ['hills', 'marsh'], coast: true, places: ['the Dragon Mountains', 'the coasts below them'] },
-    { k: 'redwidow', forms: [{ n: 'The Red Widow', cre: 'CRE-02' }], levels: [66], terr: ['mountains'], unique: true, places: ['the Dragon Mountains'] },
-    // the high band (orders 92, 93; D-185): the calamities around the grown dragons (about 700) and up to the legends (800 to 1000)
-    { k: 'highroost', forms: ['High Roost Dragon', { n: 'Dragon Lord of the High Roost', born: OLD }], levels: [65, 68], terr: ['mountains'], apexInt: 'wise', places: ['the Dragon Mountains', 'the roosts below the highest peak'], prof: { str: 10, hide: 10, magic: 10, ward: 8 } },
+  // the dragons (orders 95, 96): the young lower, the grown about 700, the elder 745-765 and few (nine in the world); the
+  // ancient are three, each one of a kind, serving the King of Dragons: no dragon rises to it, so their lines are their own
+  // (unique: never met in the wild). The world holds at most 100 dragons of every age and kind (cap; world: how many of
+  // each, 84 in all, Sarnavoth apart); the wilds never track more of a kind than the world holds
+  dragons: { n: 'Dragons', cap: 100, diet: 'hunter', seasons: ALL, int: 'speaking', apexInt: 'wise', drops: ['dragon scale', 'dragon heart'], prof: P(9, 7, 9, 2, 9, 6, 7, 0, 7, 9), lines: [
+    { k: 'ashdragon', forms: [{ n: 'Ash Hatchling', int: 'cunning' }, { n: 'Ash Dragonet', int: 'cunning' }, { n: 'Great Ash Dragon', cre: 'CRE-01' }, 'Elder Ash Dragon'], lv: [300, 480, 700, 750], world: [8, 7, 9, 3], tiers: ['young dragon', 'young dragon', 'grown dragon', 'elder dragon'], terr: ['mountains', 'hills'], places: ['the Dragon Mountains'] },
+    { k: 'frostdragon', forms: [{ n: 'Frost Hatchling', int: 'cunning' }, 'Frost Dragon', 'Elder Frost Dragon'], lv: [310, 695, 755], world: [7, 9, 2], tiers: ['young dragon', 'grown dragon', 'elder dragon'], terr: ['mountains'], places: ['the Dragon Mountains'], seasons: ['autumn', 'winter', 'spring'] },
+    { k: 'stormdragon', forms: [{ n: 'Storm Hatchling', int: 'cunning' }, 'Storm Dragon', 'Elder Storm Dragon'], lv: [320, 710, 765], world: [7, 9, 2], tiers: ['young dragon', 'grown dragon', 'elder dragon'], terr: ['mountains', 'hills', 'steppe'], places: ['the Dragon Mountains'] },
+    { k: 'brinedragon', forms: [{ n: 'Brine Hatchling', int: 'cunning' }, 'Brine Dragon', 'Elder Brine Dragon'], lv: [300, 690, 745], world: [7, 9, 1], tiers: ['young dragon', 'grown dragon', 'elder dragon'], terr: ['hills', 'marsh'], coast: true, places: ['the Dragon Mountains', 'the coasts below them'] },
+    { k: 'redwidow', forms: [{ n: 'The Red Widow', cre: 'CRE-02' }], lv: [760], world: [1], tier: 'elder dragon', terr: ['mountains'], unique: true, places: ['the Dragon Mountains'] },
+    { k: 'ancientash', forms: [{ n: 'Ancient Ash Dragon', born: OLD }], lv: [772], world: [1], tier: 'ancient dragon', terr: ['mountains', 'hills'], unique: true, places: ['the Dragon Mountains'] },
+    { k: 'ancientfrost', forms: [{ n: 'Ancient Frost Dragon', born: OLD }], lv: [776], world: [1], tier: 'ancient dragon', terr: ['mountains'], unique: true, places: ['the Dragon Mountains'], seasons: ['autumn', 'winter', 'spring'] },
+    { k: 'ancientstorm', forms: [{ n: 'Ancient Storm Dragon', born: OLD }], lv: [780], world: [1], tier: 'ancient dragon', terr: ['mountains', 'hills', 'steppe'], unique: true, places: ['the Dragon Mountains'] },
   ] },
-  giants: { n: 'Wild giants and trolls', diet: 'omnivore', seasons: ALL, int: 'cunning', apexInt: 'speaking', drops: ['bone', 'tooth', 'hide'], prof: P(9, 3, 5, 0, 0, 6, 2, 1, 3, 0), lines: [
-    { k: 'troll', forms: ['Bog Troll', 'Hill Troll', 'Cave Troll', 'Stone Troll', 'Troll Grandsire'], levels: [36, 43, 50, 57, 64], terr: ['marsh', 'hills', 'mountains', 'forest'], prof: { regen: 9 } },
-    { k: 'fellgiant', forms: [{ n: 'Fell Giant', int: 'speaking' }, { n: 'Frost-Fell Giant', int: 'speaking' }, { n: 'Mountain Giant', int: 'speaking' }, 'Giant of the First Snows'], levels: [44, 52, 60, 68], terr: ['mountains', 'hills'], apexInt: 'wise', prof: { str: 10, hide: 6, cunning: 5 } },
-    { k: 'ettin', forms: ['Ettin', { n: 'Ettin Chieftain', int: 'speaking' }], levels: [48, 55], terr: ['hills', 'forest'], prof: { str: 9 } },
-    // the high band (orders 92, 93; D-185): the calamities around the grown dragons (about 700) and up to the legends (800 to 1000)
-    { k: 'titan', forms: [{ n: 'Hill Titan', int: 'speaking' }, { n: 'Storm Titan', int: 'speaking' }, 'Titan of the First Mountains'], levels: [56, 63, 69], terr: ['mountains', 'hills'], apexInt: 'wise', prof: { str: 10, hide: 8, cunning: 5, magic: 4, regen: 6 }, drops: ['titan bone', 'heart-stone'] },
+  giants: { n: 'Wild giants and trolls', diet: 'omnivore', seasons: ALL, int: 'cunning', apexInt: 'speaking', tier: 'monster', drops: ['bone', 'tooth', 'hide'], prof: P(9, 3, 5, 0, 0, 6, 2, 1, 3, 0), lines: [
+    { k: 'troll', forms: ['Bog Troll', 'Hill Troll', 'Cave Troll', 'Stone Troll', 'Troll Grandsire'], lv: [130, 180, 240, 300, 380], terr: ['marsh', 'hills', 'mountains', 'forest'], prof: { regen: 9 } },
+    { k: 'fellgiant', forms: [{ n: 'Fell Giant', int: 'speaking' }, { n: 'Frost-Fell Giant', int: 'speaking' }, { n: 'Mountain Giant', int: 'speaking' }, 'Giant of the First Snows'], lv: [400, 460, 540, 640], tier: 'giant', terr: ['mountains', 'hills'], apexInt: 'wise', prof: { str: 10, hide: 6, cunning: 5 } },
+    { k: 'ettin', forms: ['Ettin', { n: 'Ettin Chieftain', int: 'speaking' }], lv: [260, 360], terr: ['hills', 'forest'], prof: { str: 9 } },
+    // the titans (D-185): primordial giants, calamities all
+    { k: 'titan', forms: [{ n: 'Hill Titan', int: 'speaking' }, { n: 'Storm Titan', int: 'speaking' }, 'Titan of the First Mountains'], lv: [600, 690, 775], tier: 'calamity', terr: ['mountains', 'hills'], apexInt: 'wise', prof: { str: 10, hide: 8, cunning: 5, magic: 4, regen: 6 }, drops: ['titan bone', 'heart-stone'] },
   ] },
-  ogres: { n: 'Ogres', diet: 'omnivore', seasons: ALL, int: 'speaking', drops: ['hide', 'tusk'], prof: P(8, 4, 4, 0, 0, 3, 2, 2, 4, 0), lines: [
-    { k: 'ogre', forms: ['Ogre', 'Ogre Brute', 'Ogre Glutton', 'Ogre Hetman'], levels: [38, 45, 52, 58], terr: ['hills', 'forest', 'mountains'] },
-    { k: 'marshogre', forms: ['Marsh Ogre', 'Ogre Hedge-Witch'], levels: [40, 54], terr: ['marsh'], apexInt: 'wise', prof: { magic: 6 } },
+  ogres: { n: 'Ogres', diet: 'omnivore', seasons: ALL, int: 'speaking', tier: 'monster', drops: ['hide', 'tusk'], prof: P(8, 4, 4, 0, 0, 3, 2, 2, 4, 0), lines: [
+    { k: 'ogre', forms: ['Ogre', 'Ogre Brute', 'Ogre Glutton', 'Ogre Hetman'], lv: [120, 180, 250, 330], terr: ['hills', 'forest', 'mountains'] },
+    { k: 'marshogre', forms: ['Marsh Ogre', 'Ogre Hedge-Witch'], lv: [140, 300], terr: ['marsh'], apexInt: 'wise', prof: { magic: 6 } },
   ] },
-  skyborne: { n: 'Harpies, griffons and great birds', diet: 'hunter', seasons: ALL, int: 'beast', drops: ['feather', 'talon'], prof: P(4, 8, 2, 0, 9, 2, 1, 3, 4, 0), lines: [
-    { k: 'harpy', forms: [{ n: 'Harpy', int: 'cunning' }, { n: 'Shrieking Harpy', int: 'cunning' }, { n: 'Harpy Matriarch', int: 'speaking' }], levels: [26, 33, 42], terr: ['mountains', 'hills'], coast: true, prof: { swarm: 6 } },
-    { k: 'griffon', forms: ['Griffon', 'Royal Griffon', 'Griffon of the High Aeries'], levels: [44, 52, 60], terr: ['mountains', 'hills', 'steppe'], prof: { str: 7, cunning: 5 } },
-    { k: 'eagle', forms: [{ n: 'Bone-breaker', cre: 'CRE-32' }, { n: 'Crown Eagle', cre: 'CRE-29' }, 'Sky Eagle'], levels: [11, 15, 26], terr: ['mountains', 'hills'] },
-    { k: 'roc', forms: [{ n: 'Thunderbird of Great Amber', cre: 'CRE-52' }, { n: 'The Roc', cre: 'CRE-53' }, 'Storm Roc'], levels: [30, 0, 56], terr: ['forest', 'hills', 'mountains'], prof: { str: 7, magic: 2 } },
-    // the high band (orders 92, 93; D-185): the calamities around the grown dragons (about 700) and up to the legends (800 to 1000)
-    { k: 'tempest', forms: ['Tempest Roc', { n: 'Thunder-Wing', int: 'cunning' }, 'Sky-Tyrant'], levels: [54, 61, 67], terr: ['mountains', 'steppe', 'hills'], prof: { str: 9, spd: 9, flight: 10, magic: 6, cunning: 6 }, drops: ['storm feather', 'talon'] },
+  skyborne: { n: 'Harpies, griffons and great birds', diet: 'hunter', seasons: ALL, int: 'beast', tier: 'monster', drops: ['feather', 'talon'], prof: P(4, 8, 2, 0, 9, 2, 1, 3, 4, 0), lines: [
+    { k: 'harpy', forms: [{ n: 'Harpy', int: 'cunning' }, { n: 'Shrieking Harpy', int: 'cunning' }, { n: 'Harpy Matriarch', int: 'speaking' }], lv: [60, 110, 200], terr: ['mountains', 'hills'], coast: true, prof: { swarm: 6 } },
+    { k: 'griffon', forms: ['Griffon', 'Royal Griffon', 'Griffon of the High Aeries'], lv: [200, 280, 360], terr: ['mountains', 'hills', 'steppe'], prof: { str: 7, cunning: 5 } },
+    { k: 'eagle', forms: [{ n: 'Bone-breaker', cre: 'CRE-32' }, { n: 'Crown Eagle', cre: 'CRE-29' }, 'Sky Eagle'], lv: [14, 23, 50], tier: 'animal', terr: ['mountains', 'hills'] },
+    { k: 'roc', forms: [{ n: 'Thunderbird of Great Amber', cre: 'CRE-52' }, { n: 'The Roc', cre: 'CRE-53' }, 'Storm Roc'], lv: [90, 260, 380], tiers: ['animal', 'great beast', 'monster'], terr: ['forest', 'hills', 'mountains'], prof: { str: 7, magic: 2 } },
+    // the tempest rocs (D-185): the storm-birds of the steppe, and one calamity, the tyrant the storms follow
+    { k: 'tempest', forms: ['Tempest Roc', { n: 'Thunder-Wing', int: 'cunning' }, 'Sky-Tyrant'], lv: [480, 560, 640], apexTier: 'calamity', terr: ['mountains', 'steppe', 'hills'], prof: { str: 9, spd: 9, flight: 10, magic: 6, cunning: 6 }, drops: ['storm feather', 'talon'] },
   ] },
-  crawlers: { n: 'Spiders and great insects', diet: 'hunter', seasons: ['spring', 'summer', 'autumn'], int: 'beast', drops: ['silk', 'venom', 'shell'], prof: P(3, 6, 5, 7, 0, 2, 1, 5, 4, 0), lines: [
-    { k: 'spider', forms: [{ n: 'Deepweaver', cre: 'CRE-27' }, 'Tunnel Spider', 'Giant Spider', { n: 'Web Matron', int: 'cunning' }, 'Hollow Queen'], levels: [6, 18, 28, 38, 50], terr: ['forest', 'mountains', 'hills', 'marsh'], seasons: ALL },
-    { k: 'scorpion', forms: [{ n: 'Deathstalker', cre: 'CRE-40' }, 'Dune Scorpion', 'Sand Emperor'], levels: [9, 24, 40], terr: ['desert'], seasons: ALL, prof: { venom: 9, hide: 7 } },
-    { k: 'beetle', forms: ['Midden Beetle', 'Plated Beetle', 'Siege Beetle'], levels: [4, 20, 36], terr: ['plains', 'forest', 'steppe', 'desert'], diet: 'carrion', prof: { hide: 9, venom: 0 } },
-    { k: 'swarm', forms: ['Locust Cloud', 'Devouring Swarm', 'The Grey Hunger'], levels: [14, 30, 46], terr: ['plains', 'steppe', 'desert'], diet: 'grazer', seasons: ['summer', 'autumn'], prof: { swarm: 10, flight: 6, hide: 0, venom: 1 } },
-    { k: 'moth', forms: [{ n: 'Moon Moths', cre: 'CRE-64' }, 'Dream Moth', 'Moon-Moth Queen'], levels: [3, 15, 27], terr: ['forest'], diet: 'mana', seasons: ['summer'], prof: { flight: 7, magic: 5, swarm: 6, str: 0 } },
-    { k: 'crawler', forms: ['Rock Crawler', 'Thousand-Leg'], levels: [12, 26], terr: ['mountains', 'hills'], prof: { venom: 6 } },
-    // the high band (orders 92, 93; D-185): the calamities around the grown dragons (about 700) and up to the legends (800 to 1000)
-    { k: 'hive', forms: [{ n: 'Hive Queen', int: 'cunning' }, { n: 'Hive Empress', int: 'cunning' }, 'The Million-Mother'], levels: [53, 60, 66], terr: ['forest', 'marsh', 'desert'], seasons: ALL, apexInt: 'cunning', prof: { swarm: 10, venom: 9, hide: 7, str: 5, flight: 4 }, drops: ['royal jelly', 'shell'] },
+  crawlers: { n: 'Spiders and great insects', diet: 'hunter', seasons: ['spring', 'summer', 'autumn'], int: 'beast', tier: 'animal', apexTier: 'great beast', drops: ['silk', 'venom', 'shell'], prof: P(3, 6, 5, 7, 0, 2, 1, 5, 4, 0), lines: [
+    { k: 'spider', forms: [{ n: 'Deepweaver', cre: 'CRE-27' }, 'Tunnel Spider', 'Giant Spider', { n: 'Web Matron', int: 'cunning', tier: 'great beast' }, 'Hollow Queen'], lv: [7, 50, 130, 220, 320], terr: ['forest', 'mountains', 'hills', 'marsh'], seasons: ALL },
+    { k: 'scorpion', forms: [{ n: 'Deathstalker', cre: 'CRE-40' }, 'Dune Scorpion', 'Sand Emperor'], lv: [11, 90, 220], terr: ['desert'], seasons: ALL, prof: { venom: 9, hide: 7 } },
+    { k: 'beetle', forms: ['Midden Beetle', 'Plated Beetle', 'Siege Beetle'], lv: [4, 60, 180], terr: ['plains', 'forest', 'steppe', 'desert'], diet: 'carrion', prof: { hide: 9, venom: 0 } },
+    { k: 'swarm', forms: ['Locust Cloud', 'Devouring Swarm', 'The Grey Hunger'], lv: [19, 120, 300], terr: ['plains', 'steppe', 'desert'], diet: 'grazer', seasons: ['summer', 'autumn'], prof: { swarm: 10, flight: 6, hide: 0, venom: 1 } },
+    { k: 'moth', forms: [{ n: 'Moon Moths', cre: 'CRE-64' }, 'Dream Moth', 'Moon-Moth Queen'], lv: [2, 23, 120], terr: ['forest'], diet: 'mana', seasons: ['summer'], prof: { flight: 7, magic: 5, swarm: 6, str: 0 } },
+    { k: 'crawler', forms: ['Rock Crawler', 'Thousand-Leg'], lv: [16, 110], terr: ['mountains', 'hills'], prof: { venom: 6 } },
+    // the hives (D-185): monsters, and one calamity, the mother that eats a province bare
+    { k: 'hive', forms: [{ n: 'Hive Queen', int: 'cunning' }, { n: 'Hive Empress', int: 'cunning' }, 'The Million-Mother'], lv: [380, 520, 660], tier: 'monster', apexTier: 'calamity', terr: ['forest', 'marsh', 'desert'], seasons: ALL, apexInt: 'cunning', prof: { swarm: 10, venom: 9, hide: 7, str: 5, flight: 4 }, drops: ['royal jelly', 'shell'] },
   ] },
-  undead: { n: 'The restless dead', diet: 'souls', seasons: ['autumn', 'winter'], int: 'beast', apexInt: 'wise', drops: ['grave dust', 'bone'], prof: P(5, 3, 3, 2, 0, 5, 6, 4, 3, 4), lines: [
-    { k: 'dead', forms: ['Restless Dead', { n: 'Barrow Wight', int: 'speaking' }, { n: 'Grave Lord', int: 'speaking' }, 'Bone Sovereign'], levels: [18, 32, 48, 62], terr: ['hills', 'plains', 'marsh', 'steppe'] },
-    { k: 'ghoul', forms: ['Ghoul', 'Charnel Ghoul', { n: 'Ghoul Elder', int: 'cunning' }], levels: [22, 31, 40], terr: ['plains', 'marsh', 'forest'], diet: 'carrion', prof: { venom: 5, swarm: 6 } },
-    { k: 'revenant', forms: [{ n: 'Revenant', int: 'speaking' }, { n: 'Wrath Revenant', int: 'speaking' }], levels: [35, 45], terr: ['plains', 'hills', 'steppe'], prof: { regen: 8, str: 7 } },
-    { k: 'wraith', forms: ['Shade', { n: 'Wraith', int: 'cunning' }, { n: 'Night Wraith', int: 'speaking' }], levels: [25, 38, 50], terr: ['marsh', 'forest', 'mountains'], prof: { flight: 5, ward: 8, str: 2, magic: 6 } },
-    // the high band (orders 92, 93; D-185): the calamities around the grown dragons (about 700) and up to the legends (800 to 1000)
-    { k: 'lich', forms: [{ n: 'Barrow Sorcerer', int: 'speaking' }, { n: 'Lich of the Long Night', int: 'speaking' }, 'Deathless King'], levels: [54, 61, 69], terr: ['marsh', 'hills', 'plains'], prof: { magic: 10, ward: 9, regen: 6, str: 3, swarm: 6, cunning: 8 }, drops: ['phylactery shard', 'grave dust'] },
+  undead: { n: 'The restless dead', diet: 'souls', seasons: ['autumn', 'winter'], int: 'beast', apexInt: 'wise', tier: 'undead', drops: ['grave dust', 'bone'], prof: P(5, 3, 3, 2, 0, 5, 6, 4, 3, 4), lines: [
+    { k: 'dead', forms: ['Restless Dead', { n: 'Barrow Wight', int: 'speaking' }, { n: 'Grave Lord', int: 'speaking' }, 'Bone Sovereign'], lv: [60, 200, 380, 560], terr: ['hills', 'plains', 'marsh', 'steppe'] },
+    { k: 'ghoul', forms: ['Ghoul', 'Charnel Ghoul', { n: 'Ghoul Elder', int: 'cunning' }], lv: [80, 150, 250], terr: ['plains', 'marsh', 'forest'], diet: 'carrion', prof: { venom: 5, swarm: 6 } },
+    { k: 'revenant', forms: [{ n: 'Revenant', int: 'speaking' }, { n: 'Wrath Revenant', int: 'speaking' }], lv: [220, 340], terr: ['plains', 'hills', 'steppe'], prof: { regen: 8, str: 7 } },
+    { k: 'wraith', forms: ['Shade', { n: 'Wraith', int: 'cunning' }, { n: 'Night Wraith', int: 'speaking' }], lv: [120, 250, 400], terr: ['marsh', 'forest', 'mountains'], prof: { flight: 5, ward: 8, str: 2, magic: 6 } },
+    // the liches (D-185): a sorcerer of the barrows, then the calamities, the lich and the deathless king
+    { k: 'lich', forms: [{ n: 'Barrow Sorcerer', int: 'speaking' }, { n: 'Lich of the Long Night', int: 'speaking', tier: 'calamity' }, 'Deathless King'], lv: [500, 640, 770], apexTier: 'calamity', terr: ['marsh', 'hills', 'plains'], prof: { magic: 10, ward: 9, regen: 6, str: 3, swarm: 6, cunning: 8 }, drops: ['phylactery shard', 'grave dust'] },
   ] },
-  spirits: { n: 'Spirits and elementals', diet: 'mana', seasons: ALL, int: 'beast', apexInt: 'wise', drops: ['spirit core'], prof: P(4, 6, 2, 0, 4, 7, 8, 2, 4, 7), lines: [
-    { k: 'fire', forms: ['Ember Sprite', { n: 'Flame Spirit', int: 'speaking' }, { n: 'Blaze Lord', int: 'speaking' }, 'Heart of Fire'], levels: [12, 28, 45, 60], terr: ['desert', 'mountains'], seasons: ['summer', 'autumn'], prof: { magic: 9 } },
-    { k: 'water', forms: ['Tide Sprite', { n: 'River Spirit', int: 'speaking' }, 'Flood Lord'], levels: [11, 27, 44], terr: ['marsh', 'plains'], coast: true, seasons: ['spring', 'summer'] },
-    { k: 'wind', forms: ['Breeze Sprite', { n: 'Gale Spirit', int: 'speaking' }, { n: 'Storm Lord', int: 'speaking' }, 'Sky-Breaker'], levels: [10, 26, 43, 58], terr: ['steppe', 'mountains', 'hills'], prof: { flight: 9, spd: 9 } },
-    { k: 'earth', forms: ['Pebble Sprite', { n: 'Stone Spirit', int: 'speaking' }, 'Mountain Heart'], levels: [13, 29, 46], terr: ['mountains', 'hills'], prof: { hide: 9, str: 8, flight: 0, spd: 2 } },
-    { k: 'frost', forms: ['Frost Sprite', { n: 'Winter Spirit', int: 'speaking' }, 'White Lord'], levels: [12, 30, 47], terr: ['mountains', 'steppe', 'forest'], seasons: ['winter'] },
-    { k: 'grove', forms: ['Grove Sprite', { n: 'Leaf Spirit', int: 'speaking' }], levels: [9, 22], terr: ['forest'], seasons: ['spring', 'summer'] },
-    // the high band (orders 92, 93; D-185): the calamities around the grown dragons (about 700) and up to the legends (800 to 1000)
-    { k: 'caldera', forms: [{ n: 'Caldera Spirit', int: 'speaking' }, { n: 'Mountain Wrath', int: 'speaking' }, 'Heart of the Burning Deep'], levels: [57, 64, 68], terr: ['mountains', 'desert'], seasons: ['summer', 'autumn'], prof: { magic: 10, ward: 9, hide: 6, str: 6, flight: 0, swarm: 4 }, drops: ['fire core', 'obsidian'] },
+  spirits: { n: 'Spirits and elementals', diet: 'mana', seasons: ALL, int: 'beast', apexInt: 'wise', tier: 'spirit', drops: ['spirit core'], prof: P(4, 6, 2, 0, 4, 7, 8, 2, 4, 7), lines: [
+    { k: 'fire', forms: ['Ember Sprite', { n: 'Flame Spirit', int: 'speaking' }, { n: 'Blaze Lord', int: 'speaking' }, 'Heart of Fire'], lv: [16, 160, 360, 600], apexTier: 'calamity', terr: ['desert', 'mountains'], seasons: ['summer', 'autumn'], prof: { magic: 9 } },
+    { k: 'water', forms: ['Tide Sprite', { n: 'River Spirit', int: 'speaking' }, 'Flood Lord'], lv: [14, 150, 480], terr: ['marsh', 'plains'], coast: true, seasons: ['spring', 'summer'] },
+    { k: 'wind', forms: ['Breeze Sprite', { n: 'Gale Spirit', int: 'speaking' }, { n: 'Storm Lord', int: 'speaking' }, 'Sky-Breaker'], lv: [13, 140, 360, 610], apexTier: 'calamity', terr: ['steppe', 'mountains', 'hills'], prof: { flight: 9, spd: 9 } },
+    { k: 'earth', forms: ['Pebble Sprite', { n: 'Stone Spirit', int: 'speaking' }, 'Mountain Heart'], lv: [17, 170, 500], terr: ['mountains', 'hills'], prof: { hide: 9, str: 8, flight: 0, spd: 2 } },
+    { k: 'frost', forms: ['Frost Sprite', { n: 'Winter Spirit', int: 'speaking' }, 'White Lord'], lv: [16, 180, 500], terr: ['mountains', 'steppe', 'forest'], seasons: ['winter'] },
+    { k: 'grove', forms: ['Grove Sprite', { n: 'Leaf Spirit', int: 'speaking' }], lv: [11, 100], terr: ['forest'], seasons: ['spring', 'summer'] },
+    // the caldera spirits (D-185): great spirits, the fire under the mountain
+    { k: 'caldera', forms: [{ n: 'Caldera Spirit', int: 'speaking' }, { n: 'Mountain Wrath', int: 'speaking' }, 'Heart of the Burning Deep'], lv: [620, 700, 765], tier: 'calamity', terr: ['mountains', 'desert'], seasons: ['summer', 'autumn'], prof: { magic: 10, ward: 9, hide: 6, str: 6, flight: 0, swarm: 4 }, drops: ['fire core', 'obsidian'] },
   ] },
-  demons: { n: 'Demons', diet: 'souls', seasons: ALL, int: 'speaking', apexInt: 'wise', drops: ['horn', 'brimstone core'], prof: P(6, 6, 5, 3, 3, 5, 7, 2, 8, 7), lines: [
-    { k: 'imp', forms: [{ n: 'Imp', int: 'cunning' }, 'Fiend', 'Greater Fiend', { n: 'Pit Prince', born: { n: 'Pit-Born', honour: 0, buffs: { ward: 1 }, born: true, req: 'born' } }], levels: [33, 37, 42, 57], terr: ['desert', 'mountains', 'marsh'] },
-    { k: 'cinderhound', forms: [{ n: 'Cinder Hound', int: 'beast' }, { n: 'Brimstone Hound', int: 'cunning' }], levels: [34, 40], terr: ['desert', 'hills', 'mountains'], prof: { spd: 8, swarm: 5, magic: 5 } },
-    { k: 'tempter', forms: ['Whisperer', 'Soul Broker'], levels: [35, 45], terr: ['plains', 'forest', 'hills'], prof: { str: 2, cunning: 10, magic: 8 } },
-    { k: 'horror', forms: [{ n: 'Gate Horror', int: 'cunning' }, { n: 'Gate Tyrant', born: { n: 'Gate-Born', honour: 0, buffs: { str: 1, ward: 1 }, born: true, req: 'born' } }], levels: [55, 60], terr: ['desert', 'mountains'], prof: { str: 9, hide: 8 } },
-    // the high band (orders 92, 93; D-185): the calamities around the grown dragons (about 700) and up to the legends (800 to 1000)
-    { k: 'gateduke', forms: ['Gate Duke', { n: 'Duke of Cinders', born: { n: 'Gate-Born', honour: 0, buffs: { str: 1, ward: 1 }, born: true, req: 'born' } }], levels: [57, 60], terr: ['desert', 'mountains'], prof: { str: 8, hide: 7, magic: 9, cunning: 9 } },
+  // the demons (orders 93, 95, 96): the lower 300-500, the great about 650, and the ancient, the oldest lords of Hell under
+  // the three Primordial Archdemons, about the elder dragons (740-770): four kinds and exactly thirty-three of them (world:
+  // 20 marquises, 6 pit-mothers, 3 ledger-keepers, 4 pit wyrms; each an individual of the figures registry to come); no
+  // demon of the wilds rises to one
+  demons: { n: 'Demons', diet: 'souls', seasons: ALL, int: 'speaking', apexInt: 'wise', tier: 'lower demon', drops: ['horn', 'brimstone core'], prof: P(6, 6, 5, 3, 3, 5, 7, 2, 8, 7), lines: [
+    { k: 'imp', forms: [{ n: 'Imp', int: 'cunning' }, 'Fiend', 'Greater Fiend', { n: 'Pit Prince', born: { n: 'Pit-Born', honour: 0, buffs: { ward: 1 }, born: true, req: 'born' } }], lv: [300, 360, 450, 640], apexTier: 'great demon', terr: ['desert', 'mountains', 'marsh'] },
+    { k: 'cinderhound', forms: [{ n: 'Cinder Hound', int: 'beast' }, { n: 'Brimstone Hound', int: 'cunning' }], lv: [310, 400], terr: ['desert', 'hills', 'mountains'], prof: { spd: 8, swarm: 5, magic: 5 } },
+    { k: 'tempter', forms: ['Whisperer', 'Soul Broker'], lv: [330, 480], terr: ['plains', 'forest', 'hills'], prof: { str: 2, cunning: 10, magic: 8 } },
+    { k: 'horror', forms: [{ n: 'Gate Horror', int: 'cunning' }, { n: 'Gate Tyrant', born: { n: 'Gate-Born', honour: 0, buffs: { str: 1, ward: 1 }, born: true, req: 'born' } }], lv: [620, 665], tier: 'great demon', terr: ['desert', 'mountains'], prof: { str: 9, hide: 8 } },
+    { k: 'gateduke', forms: ['Gate Duke', { n: 'Duke of Cinders', born: { n: 'Gate-Born', honour: 0, buffs: { str: 1, ward: 1 }, born: true, req: 'born' } }], lv: [640, 680], tier: 'great demon', terr: ['desert', 'mountains'], prof: { str: 8, hide: 7, magic: 9, cunning: 9 } },
+    { k: 'marquis', forms: [{ n: 'Marquis of the Burning Court', int: 'wise', born: HELL }], lv: [745], world: [20], tier: 'ancient demon', terr: ['desert', 'mountains'], places: ['Hell'], prof: { str: 8, hide: 8, magic: 10, cunning: 10, swarm: 6 }, drops: ['horn', 'brimstone crown'] },
+    { k: 'broodmother', forms: [{ n: 'Pit-Mother', int: 'wise', born: HELL }], lv: [750], world: [6], tier: 'ancient demon', terr: ['desert', 'marsh'], places: ['Hell'], prof: { str: 7, hide: 9, regen: 10, swarm: 10, magic: 8, venom: 6 }, drops: ['brood-heart', 'brimstone core'] },
+    { k: 'judge', forms: [{ n: 'Ledger-Keeper', int: 'wise', born: HELL }], lv: [755], world: [3], tier: 'ancient demon', terr: ['plains', 'mountains'], places: ['Hell'], prof: { str: 4, spd: 7, ward: 10, magic: 10, cunning: 10 }, drops: ['ledger leaf', 'brimstone core'] },
+    { k: 'pitwyrm', forms: [{ n: 'Pit Wyrm', int: 'wise', born: HELL }], lv: [765], world: [4], tier: 'ancient demon', terr: ['desert', 'mountains'], places: ['Hell'], prof: { str: 10, hide: 10, flight: 8, magic: 10, regen: 7 }, drops: ['pit-scale', 'brimstone core'] },
   ] },
-  deep: { n: 'Monsters of the sea and the deep', diet: 'hunter', seasons: ALL, int: 'beast', drops: ['oil', 'bone', 'shell'], prof: P(7, 5, 6, 1, 0, 4, 2, 2, 3, 1), lines: [
-    { k: 'crab', forms: [{ n: 'Giant Spider Crab', cre: 'CRE-15' }, 'Reef Crusher'], levels: [14, 28], terr: [], coast: true, prof: { hide: 9 } },
-    { k: 'seal', forms: [{ n: 'Salt Sea Seals', cre: 'CRE-63' }, 'Bull Seal'], levels: [8, 16], terr: [], coast: true },
-    { k: 'orca', forms: [{ n: 'Wolves of the Sea', cre: 'CRE-18' }, { n: 'Deep Hunter', int: 'cunning' }], levels: [44, 54], terr: [], coast: true, prof: { swarm: 6, cunning: 7, spd: 8 } },
-    { k: 'seaserpent', forms: ['Reef Eel', { n: 'Middle Sea Serpent', cre: 'CRE-11' }, 'Deep Serpent'], levels: [16, 38, 52], terr: [], coast: true, prof: { venom: 4 } },
-    { k: 'kraken', forms: ['Giant Squid', { n: 'Kraken', cre: 'CRE-10' }, { n: 'Elder Kraken', int: 'cunning' }], levels: [30, 50, 64], terr: [], coast: true, prof: { str: 9, cunning: 6 } },
-    { k: 'leviathan', forms: [{ n: 'Grey Leviathan', cre: 'CRE-09' }, { n: 'The Black Maw', cre: 'CRE-14' }, 'Abyss Leviathan'], levels: [58, 63, 69], terr: [], coast: true, prof: { str: 10, hide: 8 } },
-    { k: 'frostleviathan', forms: [{ n: 'Frost Leviathan', cre: 'CRE-61' }], levels: [61], terr: [], coast: true, prof: { str: 10, hide: 8, magic: 3 } },
-    { k: 'turtle', forms: [{ n: 'Isle-Turtle', cre: 'CRE-12' }, 'Island-Back'], levels: [52, 62], terr: [], coast: true, prof: { hide: 10, spd: 1, regen: 6 } },
-    { k: 'catfish', forms: ['River Catfish', { n: 'Old Whiskers', cre: 'CRE-13' }], levels: [12, 30], terr: ['marsh'], prof: { hide: 3 } },
-    // the high band (orders 92, 93; D-185): the calamities around the grown dragons (about 700) and up to the legends (800 to 1000)
-    { k: 'girdler', forms: ['Trench Serpent', 'Fleet-Breaker', 'Sea-Girdler'], levels: [59, 65, 69], terr: [], coast: true, apexInt: 'cunning', prof: { str: 10, hide: 9, spd: 6, magic: 2, regen: 6 }, drops: ['serpent scale', 'oil'] },
+  deep: { n: 'Monsters of the sea and the deep', diet: 'hunter', seasons: ALL, int: 'beast', tier: 'animal', drops: ['oil', 'bone', 'shell'], prof: P(7, 5, 6, 1, 0, 4, 2, 2, 3, 1), lines: [
+    { k: 'crab', forms: [{ n: 'Giant Spider Crab', cre: 'CRE-15' }, 'Reef Crusher'], lv: [19, 80], terr: [], coast: true, prof: { hide: 9 } },
+    { k: 'seal', forms: [{ n: 'Salt Sea Seals', cre: 'CRE-63' }, 'Bull Seal'], lv: [10, 40], terr: [], coast: true },
+    { k: 'orca', forms: [{ n: 'Wolves of the Sea', cre: 'CRE-18' }, { n: 'Deep Hunter', int: 'cunning' }], lv: [160, 260], apexTier: 'great beast', terr: [], coast: true, prof: { swarm: 6, cunning: 7, spd: 8 } },
+    { k: 'seaserpent', forms: ['Reef Eel', { n: 'Middle Sea Serpent', cre: 'CRE-11' }, 'Deep Serpent'], lv: [40, 180, 340], tiers: ['animal', 'monster', 'monster'], terr: [], coast: true, prof: { venom: 4 } },
+    { k: 'kraken', forms: ['Giant Squid', { n: 'Kraken', cre: 'CRE-10' }, { n: 'Elder Kraken', int: 'cunning' }], lv: [150, 350, 690], tiers: ['animal', 'monster', 'calamity'], terr: [], coast: true, prof: { str: 9, cunning: 6 } },
+    { k: 'leviathan', forms: [{ n: 'Grey Leviathan', cre: 'CRE-09' }, { n: 'The Black Maw', cre: 'CRE-14' }, 'Abyss Leviathan'], lv: [580, 650, 765], tiers: ['monster', 'calamity', 'calamity'], terr: [], coast: true, prof: { str: 10, hide: 8 } },
+    { k: 'frostleviathan', forms: [{ n: 'Frost Leviathan', cre: 'CRE-61' }], lv: [620], tier: 'calamity', terr: [], coast: true, prof: { str: 10, hide: 8, magic: 3 } },
+    { k: 'turtle', forms: [{ n: 'Isle-Turtle', cre: 'CRE-12' }, 'Island-Back'], lv: [220, 480], tiers: ['great beast', 'monster'], terr: [], coast: true, prof: { hide: 10, spd: 1, regen: 6 } },
+    { k: 'catfish', forms: ['River Catfish', { n: 'Old Whiskers', cre: 'CRE-13' }], lv: [16, 120], apexTier: 'great beast', terr: ['marsh'], prof: { hide: 3 } },
+    // the sea-girdlers (D-185): calamities of the open sea, which eat leviathans
+    { k: 'girdler', forms: ['Trench Serpent', 'Fleet-Breaker', 'Sea-Girdler'], lv: [600, 690, 770], tier: 'calamity', terr: [], coast: true, apexInt: 'cunning', prof: { str: 10, hide: 9, spd: 6, magic: 2, regen: 6 }, drops: ['serpent scale', 'oil'] },
   ] },
-  fey: { n: 'The fey', diet: 'mana', seasons: ['spring', 'summer', 'autumn'], int: 'speaking', apexInt: 'wise', drops: ['fey dust', 'glamour core'], prof: P(2, 8, 1, 2, 4, 5, 9, 3, 9, 8), lines: [
-    { k: 'fox', forms: [{ n: 'Red Fox', int: 'beast' }, { n: 'Glamour Fox', int: 'cunning' }, 'Thousand-Wile Fox'], levels: [6, 20, 36], terr: ['forest', 'hills', 'plains'], seasons: ALL, prof: { flight: 0 } },
-    { k: 'pixie', forms: [{ n: 'Pixie', int: 'cunning' }, 'Thorn Sprite', 'Barrow Fey', 'Fey Countess'], levels: [6, 15, 30, 48], terr: ['forest', 'hills'] },
-    { k: 'kelpie', forms: [{ n: 'Kelpie', int: 'cunning' }, 'Drowning Steed'], levels: [34, 46], terr: ['marsh'], coast: true, seasons: ALL, prof: { str: 6, flight: 0 } },
-    { k: 'grove', forms: [{ n: 'Bark Walker', int: 'beast' }, { n: 'Old Man of the Trees', cre: 'CRE-24', int: 'cunning' }, 'Grove Father'], levels: [30, 0, 60], terr: ['forest'], prof: { str: 8, hide: 7, spd: 2, flight: 0 } },
-    { k: 'changeling', forms: ['Changeling', 'Hollow Hill Lord'], levels: [22, 45], terr: ['hills', 'forest'], seasons: ALL },
-    // the high band (orders 92, 93; D-185): the calamities around the grown dragons (about 700) and up to the legends (800 to 1000)
-    { k: 'greyhunt', forms: ['Grey Huntsman', 'Master of the Grey Hunt'], levels: [58, 66], terr: ['forest', 'hills'], seasons: ['autumn', 'winter'], prof: { str: 6, spd: 10, flight: 6, magic: 9, swarm: 6 } },
+  fey: { n: 'The fey', diet: 'mana', seasons: ['spring', 'summer', 'autumn'], int: 'speaking', apexInt: 'wise', tier: 'fey', drops: ['fey dust', 'glamour core'], prof: P(2, 8, 1, 2, 4, 5, 9, 3, 9, 8), lines: [
+    { k: 'fox', forms: [{ n: 'Red Fox', int: 'beast', tier: 'animal' }, { n: 'Glamour Fox', int: 'cunning' }, 'Thousand-Wile Fox'], lv: [7, 80, 200], terr: ['forest', 'hills', 'plains'], seasons: ALL, prof: { flight: 0 } },
+    { k: 'pixie', forms: [{ n: 'Pixie', int: 'cunning' }, 'Thorn Sprite', 'Barrow Fey', 'Fey Countess'], lv: [7, 23, 150, 360], terr: ['forest', 'hills'] },
+    { k: 'kelpie', forms: [{ n: 'Kelpie', int: 'cunning' }, 'Drowning Steed'], lv: [180, 300], terr: ['marsh'], coast: true, seasons: ALL, prof: { str: 6, flight: 0 } },
+    { k: 'grove', forms: [{ n: 'Bark Walker', int: 'beast' }, { n: 'Old Man of the Trees', cre: 'CRE-24', int: 'cunning' }, 'Grove Father'], lv: [140, 260, 450], terr: ['forest'], prof: { str: 8, hide: 7, spd: 2, flight: 0 } },
+    { k: 'changeling', forms: ['Changeling', 'Hollow Hill Lord'], lv: [80, 380], terr: ['hills', 'forest'], seasons: ALL },
+    // the Grey Hunt (D-185): a huntsman of the hollow hills, and its master, a calamity of the hunting nights
+    { k: 'greyhunt', forms: ['Grey Huntsman', 'Master of the Grey Hunt'], lv: [520, 660], apexTier: 'calamity', terr: ['forest', 'hills'], seasons: ['autumn', 'winter'], prof: { str: 6, spd: 10, flight: 6, magic: 9, swarm: 6 } },
   ] },
-  oozes: { n: 'Slimes and oozes', diet: 'anything', seasons: ALL, int: 'beast', drops: ['slime core', 'gel'], prof: P(3, 2, 1, 4, 0, 9, 5, 2, 1, 2), lines: [
-    { k: 'slime', forms: ['Puddle Slime', 'Bog Slime', 'Acid Ooze', 'Gulping Ooze', 'Lake-Eater', 'Grey Tide', 'Thinking Ooze'], levels: [2, 8, 16, 24, 34, 44, 54], terr: ['marsh', 'forest', 'plains', 'hills'], apexInt: 'wise', prof: { venom: 6 } },
-    { k: 'caveslime', forms: ['Drip Slime', 'Cave Jelly', 'Stone-Eater Ooze', 'Deep Ooze'], levels: [3, 11, 22, 33], terr: ['mountains', 'hills'], prof: { hide: 4 } },
-    { k: 'emberooze', forms: ['Ember Slime', 'Magma Ooze', 'Molten Heart'], levels: [9, 25, 41], terr: ['mountains', 'desert'], prof: { magic: 7, ward: 6 } },
-    { k: 'frostjelly', forms: ['Frost Jelly', 'Glacier Ooze'], levels: [7, 23], terr: ['mountains', 'steppe'], seasons: ['autumn', 'winter'] },
-    { k: 'venomslime', forms: ['Venom Slime', 'Plague Ooze', 'Rot Tide'], levels: [10, 26, 40], terr: ['marsh', 'forest'], prof: { venom: 10 } },
-    { k: 'mimic', forms: [{ n: 'Lurking Ooze', int: 'cunning' }, { n: 'Hoard Mimic', int: 'cunning' }], levels: [14, 28], terr: ['hills', 'mountains', 'forest'], prof: { cunning: 8 } },
+  oozes: { n: 'Slimes and oozes', diet: 'anything', seasons: ALL, int: 'beast', tier: 'monster', drops: ['slime core', 'gel'], prof: P(3, 2, 1, 4, 0, 9, 5, 2, 1, 2), lines: [
+    { k: 'slime', forms: ['Puddle Slime', 'Bog Slime', 'Acid Ooze', 'Gulping Ooze', 'Lake-Eater', 'Grey Tide', 'Thinking Ooze'], lv: [1, 10, 40, 100, 200, 320, 450], terr: ['marsh', 'forest', 'plains', 'hills'], apexInt: 'wise', prof: { venom: 6 } },
+    { k: 'caveslime', forms: ['Drip Slime', 'Cave Jelly', 'Stone-Eater Ooze', 'Deep Ooze'], lv: [2, 14, 90, 180], terr: ['mountains', 'hills'], prof: { hide: 4 } },
+    { k: 'emberooze', forms: ['Ember Slime', 'Magma Ooze', 'Molten Heart'], lv: [11, 120, 260], terr: ['mountains', 'desert'], prof: { magic: 7, ward: 6 } },
+    { k: 'frostjelly', forms: ['Frost Jelly', 'Glacier Ooze'], lv: [8, 100], terr: ['mountains', 'steppe'], seasons: ['autumn', 'winter'] },
+    { k: 'venomslime', forms: ['Venom Slime', 'Plague Ooze', 'Rot Tide'], lv: [13, 120, 260], terr: ['marsh', 'forest'], prof: { venom: 10 } },
+    { k: 'mimic', forms: [{ n: 'Lurking Ooze', int: 'cunning' }, { n: 'Hoard Mimic', int: 'cunning' }], lv: [19, 130], terr: ['hills', 'mountains', 'forest'], prof: { cunning: 8 } },
   ] },
-  constructs: { n: 'Constructs', diet: 'none', seasons: ALL, int: 'beast', apexInt: 'speaking', drops: ['rune core', 'iron'], prof: P(8, 2, 9, 0, 0, 0, 6, 0, 1, 2), lines: [
-    { k: 'clay', forms: ['Clay Servant', 'Stone Warden', 'Iron Colossus'], levels: [20, 34, 52], terr: ['hills', 'mountains', 'desert'] },
-    { k: 'bone', forms: ['Bone Puppet', 'Bone Golem'], levels: [15, 33], terr: ['marsh', 'hills', 'plains'], prof: { hide: 5, regen: 3 } },
-    { k: 'brass', forms: ['Brass Hound', 'Brass Sentinel'], levels: [25, 40], terr: ['desert', 'hills'], prof: { spd: 6 } },
-    { k: 'rune', forms: ['Rune Guardian', 'Gate Colossus'], levels: [46, 60], terr: ['mountains'], prof: { ward: 10, magic: 5 } },
-    // the high band (orders 92, 93; D-185): the calamities around the grown dragons (about 700) and up to the legends (800 to 1000)
-    { k: 'colossus', forms: ['War Colossus', 'Colossus of the First Forge'], levels: [61, 69], terr: ['mountains', 'desert', 'hills'], prof: { str: 10, hide: 10, ward: 10, magic: 4 }, drops: ['rune core', 'star-iron'] },
+  constructs: { n: 'Constructs', diet: 'none', seasons: ALL, int: 'beast', apexInt: 'speaking', tier: 'construct', drops: ['rune core', 'iron'], prof: P(8, 2, 9, 0, 0, 0, 6, 0, 1, 2), lines: [
+    { k: 'clay', forms: ['Clay Servant', 'Stone Warden', 'Iron Colossus'], lv: [80, 220, 400], terr: ['hills', 'mountains', 'desert'] },
+    { k: 'bone', forms: ['Bone Puppet', 'Bone Golem'], lv: [23, 200], terr: ['marsh', 'hills', 'plains'], prof: { hide: 5, regen: 3 } },
+    { k: 'brass', forms: ['Brass Hound', 'Brass Sentinel'], lv: [120, 260], terr: ['desert', 'hills'], prof: { spd: 6 } },
+    { k: 'rune', forms: ['Rune Guardian', 'Gate Colossus'], lv: [380, 540], terr: ['mountains'], prof: { ward: 10, magic: 5 } },
+    // the colossi of legend (D-185): calamities of the first age
+    { k: 'colossus', forms: ['War Colossus', 'Colossus of the First Forge'], lv: [620, 770], tier: 'calamity', terr: ['mountains', 'desert', 'hills'], prof: { str: 10, hide: 10, ward: 10, magic: 4 }, drops: ['rune core', 'star-iron'] },
   ] },
 };
 
@@ -311,7 +339,15 @@ const BEH_LINE = {
   'constructs.brass': { drives: ['duty'], social: 'pack', hunt: 'chase', provoked: ['a thief'], calmed: ['the house\'s token'] },
   // the high band (orders 92, 93; D-185)
   'serpents.hydra': { social: 'solitary', time: 'any', people: 'hunts', drives: ['hunger', 'territory'], provoked: ['a head cut off', 'its fen drained'], calmed: ['fire on the stumps', 'the fen left alone'], others: 'grows two heads for each one lost, the fen-folk say; eats crocodiles', where: { marsh: 'lies under a whole fen; the reeds are its heads' } },
-  'dragons.highroost': { drives: ['pride', 'territory', 'hunger'], social: 'court', time: 'day', people: 'bargains', guards: 'the roosts of its king', provoked: ['the highest peak climbed', 'its king named without honour'], calmed: ['tribute', 'a bowed head', 'news of its king'], others: 'keeps the lesser dragons in their places; waits for the King under the mountain to wake' },
+  // the three ancient dragons (order 95, D-191): one each, the oldest under the King of Dragons, his court while he sleeps
+  'dragons.ancientash': { drives: ['pride', 'hoarding', 'memory'], social: 'court', time: 'any', people: 'bargains', guards: 'the King\'s hoard', provoked: ['the King named without honour', 'its hoard touched'], calmed: ['tribute', 'a bowed head', 'news of its King'], others: 'one of the three who serve the King of Dragons; the lesser dragons keep out of its sky' },
+  'dragons.ancientfrost': { drives: ['pride', 'territory', 'memory'], social: 'court', time: 'any', people: 'bargains', guards: 'the high ice', provoked: ['fire on its glacier', 'the King named without honour'], calmed: ['silence', 'tribute of meat', 'news of its King'], others: 'one of the three who serve the King of Dragons; nests in the oldest glacier-cave', where: { mountains: 'sleeps in the ice where the King sleeps under the stone' } },
+  'dragons.ancientstorm': { drives: ['pride', 'territory', 'hunger'], social: 'court', time: 'day', people: 'bargains', guards: 'the roads of the sky', provoked: ['bells', 'a tower on its ridge', 'the King named without honour'], calmed: ['a storm passing', 'courtesy', 'news of its King'], others: 'one of the three who serve the King of Dragons; keeps the other dragons to their own skies' },
+  // the ancient demons (order 95, D-191): the oldest lords of Hell, under the three Primordial Archdemons, each sworn to one
+  'demons.marquis': { drives: ['ambition', 'pride', 'cruelty'], social: 'court', hunt: 'lure', time: 'any', people: 'bargains', guards: 'a court of Hell', provoked: ['its court mocked', 'a bargain broken', 'holy ground'], calmed: ['a counter-offer', 'flattery that costs something', 'its true name'], others: 'one of the twenty lords of Hell\'s courts; commands legions of fiends and gate-dukes, and plays the three Archdemons against one another' },
+  'demons.broodmother': { drives: ['young', 'hunger', 'territory'], social: 'host', hunt: 'crush', time: 'any', people: 'hates', guards: 'the brood-pits', provoked: ['its brood harmed', 'anything alive in the pits'], calmed: ['the pits left alone'], others: 'the imps and fiends of Hell crawl out of the pits of the six mothers; they come when she calls' },
+  'demons.judge': { drives: ['ambition', 'curiosity', 'memory'], social: 'solitary', hunt: 'lure', time: 'night', people: 'bargains', guards: 'the ledger of every soul sold', provoked: ['a debt denied', 'a lie in its hearing'], calmed: ['a debt paid', 'a bargain kept to the letter'], others: 'one of the three who keep the account of every bargain made through the gates; even the Archdemons are in its books' },
+  'demons.pitwyrm': { drives: ['hunger', 'pride', 'cruelty'], social: 'solitary', hunt: 'chase', time: 'any', people: 'hates', guards: 'its pit', provoked: ['a dragon named', 'its pit entered'], calmed: ['a dragon\'s bones thrown down'], others: 'a demon in a dragon\'s shape that hates dragons; four of them in all of Hell, and one has eaten two dragons, the old songs say' },
   'giants.titan': { drives: ['territory', 'pride', 'memory'], social: 'solitary', time: 'day', people: 'tolerates', guards: 'the old roads of the giants', provoked: ['a quarry cut into its mountain', 'a lie'], calmed: ['a fair word', 'a song of the giants\' age'], others: 'the giant kings send it gifts; trolls flee its valley', where: { mountains: 'sleeps standing, and is taken for a peak', hills: 'walks the old roads once in a generation' } },
   'skyborne.tempest': { drives: ['hunger', 'territory'], social: 'pair', hunt: 'chase', time: 'day', people: 'ignores', provoked: ['its eyrie', 'a bell rung in a storm'], calmed: ['the storm passing', 'a herd left in the open'], others: 'carries off whole herds; the storms follow it', where: { steppe: 'hunts the horse herds in the thunder season' } },
   'crawlers.hive': { drives: ['hunger', 'young'], social: 'swarm', hunt: 'crush', time: 'any', people: 'hunts', stock: 'raids', provoked: ['anything in its province'], calmed: [], others: 'eats every other kind out of its land, then sends a swarm to the next' },
@@ -347,6 +383,8 @@ const behOf = (fk, lk, apex, int) => {
 };
 
 const INT = ['beast', 'cunning', 'speaking', 'wise'];
+const TIERS = ['animal', 'great beast', 'monster', 'drake', 'giant', 'undead', 'spirit', 'fey', 'construct', 'young dragon', 'grown dragon',
+  'elder dragon', 'ancient dragon', 'lower demon', 'great demon', 'ancient demon', 'calamity'];
 const slug = s => s.toLowerCase().replace(/^the /, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 
@@ -354,14 +392,16 @@ export function generate() {
   const species = [], fam = {}, lines = {};
   for (const [fk, Fm] of Object.entries(FAMILIES)) {
     fam[fk] = { n: Fm.n, lines: [] };
+    if (Fm.cap) fam[fk].cap = Fm.cap;   // the most of this family the world holds, every age and kind (order 96)
     for (const L of Fm.lines) {
       const lk = `${fk}.${L.k}`;
       const ids = [];
       L.forms.forEach((f0, i) => {
         const f = typeof f0 === 'string' ? { n: f0 } : f0;
-        let level = L.levels[i];
-        if (f.cre && CRE[f.cre]) level = levelOf(creMight(...CRE[f.cre]));
-        if (!(level > 0)) throw new Error(`${lk} ${f.n}: no level`);
+        // the owner's level, written by nature (order 95, D-191); t, the even log scale, is read from it
+        const lv = L.lv[i];
+        if (!(lv >= 1 && lv <= POWER.levels.max)) throw new Error(`${lk} ${f.n}: no level`);
+        const level = tOfLevel(lv);
         const apex = i === L.forms.length - 1 && L.forms.length > 1;
         let int = f.int || L.int || Fm.int;
         if (apex) { const want = L.apexInt || Fm.apexInt || 'speaking'; if (INT.indexOf(want) > INT.indexOf(int)) int = want; }
@@ -377,13 +417,22 @@ export function generate() {
         prof.fire = clamp(Math.round(prof.magic * (['dragons', 'spirits', 'demons'].includes(fk) ? 0.8 : 0.4) + (prof.swarm >= 8 ? 2 : 0)), 0, 10);
         prof.duel = clamp(Math.round((prof.spd + prof.cunning) * 0.3), 0, 10);
         const id = slug(f.n), worth = Math.round(2 * Math.pow(10, level / 25));
+        // what it is (order 95): the form's own tier, the line's per form, the apex's, the line's, the family's
+        const tier = f.tier || (L.tiers && L.tiers[i]) || (apex || L.unique ? (L.apexTier || L.tier || Fm.apexTier || Fm.tier) : (L.tier || Fm.tier));
+        if (!TIERS.includes(tier)) throw new Error(`${lk} ${f.n}: tier ${tier}`);
         const sp = {
-          id, n: f.n, fam: fk, line: lk, form: i, t: level, level: curveLevel(mightOf(level)), might: +mightOf(level).toPrecision(3), int,
+          id, n: f.n, fam: fk, line: lk, form: i, tier, t: level, level: curveLevel(mightOf(level)), might: +mightOf(level).toPrecision(3), int,
           prof, terr: L.terr.slice(), coast: !!L.coast, diet: L.diet || Fm.diet, seasons: (L.seasons || Fm.seasons).slice(),
           drops: (L.drops || Fm.drops).map((k, j) => ({ k, worth: Math.max(1, Math.round(worth / (j + 1))) })),
           next: null, apex: apex || !!L.unique, beh: behOf(fk, lk, apex || !!L.unique, int),
         };
-        if (f.cre) sp.cre = f.cre;
+        // a release beast keeps its id, and what its own duel row measures (t on the people's scale): the release's duel
+        // engine saturates near the top of human worth, so a cave bear's row reads like a world's best man; its level is
+        // its nature (D-191), and the row stays for the release's own hunts
+        if (f.cre) { sp.cre = f.cre; if (CRE[f.cre]) sp.duelT = levelOf(creMight(...CRE[f.cre])); }
+        // how many the world holds, where the canon counts them (order 96): the dragons, the ancient demons
+        const world = f.world != null ? f.world : L.world && L.world[i];
+        if (world != null) sp.world = world;
         if (L.places) sp.places = L.places.slice();   // named places, so the final map can place them in one pass
         if (f.born) sp.titles = [f.born];
         if (L.unique) sp.unique = true;
@@ -410,6 +459,12 @@ export function validate(B) {
     if (!s.terr.length && !s.coast) errs.push(`${s.id}: no habitat`);
     if (s.level < 1 || s.level > POWER.levels.max) errs.push(`${s.id}: level ${s.level}`);
     for (const k of POWER.capabilities.map(c => c.k)) if (!(s.prof[k] >= 0 && s.prof[k] <= 10)) errs.push(`${s.id}: capability ${k}`);
+    if (s.world != null && !(Number.isInteger(s.world) && s.world >= 1)) errs.push(`${s.id}: world count ${s.world}`);
+  }
+  for (const [fk, F_] of Object.entries(B.fam)) if (F_.cap) {
+    const sum = B.species.filter(s => s.fam === fk).reduce((a, s) => a + (s.world || 0), 0);
+    if (B.species.some(s => s.fam === fk && s.world == null)) errs.push(`${fk}: a kind with no world count under a cap`);
+    if (sum > F_.cap) errs.push(`${fk}: ${sum} in the world, over the cap of ${F_.cap}`);
   }
   for (const [lk, ids2] of Object.entries(B.lines)) for (let i = 1; i < ids2.length; i++) {
     const a = B.species.find(s => s.id === ids2[i - 1]), b = B.species.find(s => s.id === ids2[i]);
@@ -439,6 +494,6 @@ if (isMain) {
     console.log(`${g.species.length} species, ${Object.keys(g.fam).length} families, ${Object.keys(g.lines).length} lines ` +
       `(${Object.values(g.lines).filter(l => l.length > 1).length} with evolution), ${apex} apex forms, ${cre} from LORE; ` +
       `levels ${Math.min(...g.species.map(s => s.level))}-${Math.max(...g.species.map(s => s.level))}; ${JSON.stringify(byInt)}`);
-    for (const s of g.species.filter(s => s.cre && CRE[s.cre])) console.log(`  ${s.cre} ${s.n}: t ${s.t}, level ${s.level}`);
+    for (const s of g.species.filter(s => s.cre && CRE[s.cre])) console.log(`  ${s.cre} ${s.n}: level ${s.level} (${s.tier}); its duel row reads t ${s.duelT}`);
   }
 }

@@ -303,11 +303,21 @@
   const NAME_A = ['Old', 'Red', 'Black', 'Grey', 'Hollow', 'Iron', 'Bitter', 'Long', 'Pale', 'Night', 'Ash', 'Salt', 'Crook', 'Mother', 'Thorn'];
   const NAME_B = ['tooth', 'maw', 'hide', 'eye', 'claw', 'back', 'horn', 'coil', 'wing', 'hunger', 'jaw', 'tongue', 'mane', 'heart', 'shadow'];
   PW.nameFor = w => { const h = PW.hash(`${A.S.seed}|${w.id}|${w.sp}`); return NAME_A[h % NAME_A.length] + NAME_B[(h >>> 8) % NAME_B.length]; };
+  // room in the world (order 96, D-191): a kind the canon counts (world: how many live) and a family under a cap (the
+  // dragons: at most 100 of every age and kind) never have more tracked in the wilds than the world holds. Pure: counts only
+  PW.room = function (st, s) {
+    if (!s) return false;
+    const cap = (PW.BD.families[s.fam] || {}).cap;
+    if (s.world == null && !cap) return true;
+    let kind = 0, fam = 0;
+    for (const w of st.wild) { if (w.dead) continue; const ws = PW.species(w.sp); if (!ws) continue; if (ws.id === s.id) kind++; if (ws.fam === s.fam) fam++; }
+    return (s.world == null || kind < s.world) && (!cap || fam < cap);
+  };
   PW.spawnWild = function (st, rng) {
     const wild = provs().filter(P => isWild(P) || ['mountains', 'marsh'].includes(P.terr));
     if (!wild.length) return null;
     const P = rng.pick(wild), se = PW.season();
-    const cands = PW.BD.species.filter(s => !s.apex && s.evolve && s.t >= 12 && s.t <= 45 && terrOk(s, P));
+    const cands = PW.BD.species.filter(s => !s.apex && s.evolve && s.t >= 12 && s.t <= 45 && terrOk(s, P) && PW.room(st, s));
     const s = wpick(rng, cands, x => Math.exp(-x.t / 18));
     if (!s) return null;
     const w = { id: 'w' + (++st.n), sp: s.id, at: P.id, fed: 0, wins: 0, yrs: 0, born: A.S.year, key: 'w' + st.n };
@@ -340,7 +350,7 @@
       }
       // the rise: fed, won and lived long enough at this form
       const E_ = s.evolve, nx = s.next && PW.species(s.next);
-      if (E_ && nx && w.fed >= E_.feeds && w.wins >= E_.wins && w.yrs >= E_.years) {
+      if (E_ && nx && w.fed >= E_.feeds && w.wins >= E_.wins && w.yrs >= E_.years && PW.room(st, nx)) {
         const rec = { y: A.S.year, id: w.id, from: s.id, to: nx.id, at: P.id,
           why: `fed ${w.fed} times on ${w.ate || 'what it caught'}, won ${w.wins} fight${w.wins === 1 ? '' : 's'} (the last against ${w.won || 'a rival'}), ${w.yrs} year${w.yrs === 1 ? '' : 's'} at its form` };
         w.sp = nx.id; w.fed = 0; w.wins = 0; w.yrs = 0;

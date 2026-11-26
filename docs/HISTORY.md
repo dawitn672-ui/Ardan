@@ -3350,3 +3350,41 @@ contradiction, no check rose. Not run: the whole suite, the balance harness, a p
 
 **Undo.** Revert the four commits; a save made at version 21 would then be refused as newer. The advance is restorable
 from `archive/skills2-advance/`.
+
+### H-155 · 2026-11-26 · The bestiary's bands by nature: three ancient dragons, 33 ancient demons, at most 100 dragons (orders 95 and 96; D-191)
+
+**What.** The owner's order 95: "ancient demons rival elder dragons and make sure there are only 3 ancient dragons under
+the dragon king", "explain the 74 types between 600-800, im worried some usually weak creatures were given high levels
+to fit the gap", and his follow-up "remove the dragon of high roost"; order 96: 33 ancient demons, few elder dragons, at
+most 100 dragons. D-185 had stretched every older kind by about 1.55, which put apex animals, trolls and ogres among the
+dragons. Every level is now written by nature in the generator, each kind with a `tier`; the 600-800 band holds 45
+calamities (was 74); three ancient dragons (Ash, Frost, Storm), each one of a kind; four ancient demon kinds, 33 in the
+world, about the elder dragons; nine elder dragons and 84 dragons in all under a cap of 100, which the wilds keep
+(`A.POWER.room`). The High Roost's two dragons are removed. D-191 has the rules and the choices;
+`docs/design/bestiary-bands.md` lists every kind from 500 to 800 and every kind that moved, with its reason.
+
+**Files.** `tools/powers/gen-bestiary.mjs` (lines in levels, tiers, world counts and the cap, the ancient lines, `duelT`),
+`data/bestiary.json` (generated), `data/power.json` (band words), `src/world/9999970-powers/b-wilds.core.js`
+(`PW.room` and its two calls), `src/world/9999970-powers/test.mjs` (`pwBands` new; `pwLadder`, `pwStretched`, `pwBestiary`),
+`src/world/9999970-powers/README.md`, `docs/design/powers.md`, `docs/design/bestiary-bands.md` (new, in `docs/README.md`),
+`archive/bestiary-high-roost/` (new, in `archive/README.md`).
+
+**Proof.** On a private build (`/tmp/ardan/bb/x.html`, workers 2): the eleven powers tests pass (`pwBands`: animal
+families at most 340, ancient dragons 782/786/790, elders 745-765 mean 755 and 9 in the world, 84 dragons of a cap of 100,
+ancient demons 745-765 mean 753.8 and 33, great demons mean 649, the full wilds at most 80 dragons through 40 years;
+`pwStretched`: 45 kinds in 11 families from 600 to 790, the widest hole 25; `pwPowerNotLevel`: Sarnavoth 0.41 against the
+three, Cael 0.53/0.46/0.47, 0.77 over the Lord of the Sea); `ttEarned`, `ttDeterministic`, `ttUnique`, `ttCaps`, `ttNpc`,
+`ttPhone`, `ttLegends`, `ttHidden`, `uiSmoke`, `renderRng` and `v2svRoundTrip` pass. Two fail: `ttSave` fails the same way
+on a build of main (5e5dab5e..827c7789: the alpha 19 sample save carries 27 ledgers), not this step's; `lvFromDefeats`
+fails its beast clause: it kills the release's Evenwood Wolf, now level 110 (an animal), at a hero of 164-169, and the
+ladder rightly gives nothing for a foe 59 levels down, but the clause's escape reads `b.F + 30 <= 0` where it means the
+hero's level. That test is the level builder's (`src/people/9999975-level`, not this step's to edit): the fix is to
+record the hero's level with the kill and test `b.F + 30 <= L`. Engine tests 164 of 164; `lint-titles`, `lint-docs-index`,
+`version.mjs check`, `gen-bestiary --check`, `lint-reasons` (41, at its baseline), `lint-stages`. Not run: the whole suite,
+the long tier, the balance harness (wild encounters now draw bears and wolves at their new, lower levels), coherency, a
+playtester and a separate reviewer (the integrator's).
+
+**Archived.** `archive/bestiary-high-roost/`: the High Roost Dragon and the Dragon Lord of the High Roost (the generator's
+line and the two species rows); the last commit that built them is `1c8631b6`.
+
+**Undo.** Revert this step's commits; to keep the bands but bring back the High Roost, see its `NOTE.md`.

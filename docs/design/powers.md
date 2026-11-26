@@ -45,10 +45,11 @@ Code: `src/world/9999970-powers/` (README there). Data: `data/power.json`, `data
 | A kingdom's elite (a strong realm's higher) | 300-420 | might 25-60 reads 321-376; 420 is might 122 |
 | The strongest of the peoples, very few (the best man of a world) | 500-700 | 493, 550, 508, 552 |
 | The masters of the races (Skull-Khan, Eldest Blade, Anvil-Warden, King under Jotunhall) | 500-700, above every man | 615, 655, 670, 700 (the first three keep their might; the giant king was 760 by his, brought to 700) |
-| The lower demons (imps, fiends, cinder hounds, whisperers, soul brokers) | 300-500 | 307 to 477 |
-| An average great demon (pit princes, gate horrors and tyrants, gate dukes, the Duke of Cinders) | about 650 | 611 to 675, average 647 |
-| An average grown dragon | about 700 | 688, 700, 713 (brine, frost, storm); the strong ones 750-762, the ancient 785-797 with the Old Blood |
-| The calamities (order 92's 29 kinds): titans, hydras, liches, hive-empresses, the sea-girdling serpents | around the dragons, up to the legends | 585 to 787; from 600 to 800 stand 74 kinds of 17 families, no hole wider than 13 levels |
+| The lower demons (imps, fiends, cinder hounds, whisperers, soul brokers) | 300-500 | 300 to 480 |
+| An average great demon (pit princes, gate horrors and tyrants, gate dukes, the Duke of Cinders) | about 650 | 620 to 680, average 649 |
+| The ancient demons (order 95: they rival the elder dragons; order 96: 33 of them) | about 740-770 | four kinds, 745 to 765, average 754; 20 + 6 + 3 + 4 in the world |
+| An average grown dragon | about 700 | 690, 695, 700, 710 (brine, frost, ash, storm); the elder 745-765 and nine in the world; three ancient (Ash, Frost, Storm, order 95) 782-790 with the Old Blood; at most 100 dragons (order 96) |
+| The calamities: titans, liches, leviathans, great spirits, colossi, the hydra-mother, the million-mother, the sea-girdling serpents | around the dragons, up to the legends | 600 to 775; from 600 to 800 stand 45 kinds, every one a calamity by nature (D-191, `docs/design/bestiary-bands.md`), no hole wider than 25 levels |
 | The legends (order 92: each x 1000/800) | from 800 up | 800 to 1000 |
 | The Lord of the Sea | about 863 (was 690), below the Saint but in reach | 863; 0.55 of the Saint's power; the Saint wins 0.77 |
 | Cael Vardan, the Sword Saint, alive, old | about 875 (was 700), even with one archdemon | 875; against Ghazrul 0.53, Morvane 0.46, Vethrael 0.47 |
@@ -106,30 +107,25 @@ regeneration against no magic, numbers, magic against a ward, cunning. A person'
 makes a being stronger. Some are born (`born: true`: "Primordial Archdemon", "Old Blood" of the ancient dragons,
 "Gate-Born", "Dragon-Born of the First Clutch"); the rest carry `req: "hidden"`. Since D-183 every title lives in `data/titles/` (the legends' and masters' sheets name theirs by id, read as before: nothing moved) beside the titles people earn (`src/people/9999976-titles`); *the Sword Saint* is both Cael's title and a class a person may earn when he is gone.
 
-## 3. The bestiary: 299 kinds
+## 3. The bestiary: 301 kinds
 
-19 families, 101 lines (99 with evolution), levels 1 to 786. Each kind: level, profile, intelligence, habitats (the map's
+19 families, 107 lines (98 with evolution), levels 1 to 790 (with the Old Blood). Each kind: level, profile, intelligence, habitats (the map's
 seven terrains, the coast, and named places where the canon fixes one: the dragons' "the Dragon Mountains"), diet, active
 seasons, what it leaves (worth in suns, for the economy to come), the step to its next form, and a behaviour profile:
 drives, social, how it hunts, time of day, mating season, what it guards, what provokes and what turns it, how it treats
 people, livestock and other kinds, its daily and yearly habit, how it differs by ground. The 46 LORE creatures that are
 real beasts keep their ids (`cre`); `A.BEASTS` is untouched.
 
-**The high band (orders 92 and 93, D-185).** A first 29 kinds fill the levels around the grown dragons and up to the weakest
-legend (800), in eleven new lines of eleven families, each specified like every other kind (profile, mind, ground, diet,
-seasons, drops, behaviour and, for the hive, a nature): the Hive Queen, Empress and the Million-Mother (585-750, hungry:
-nothing soothes a hive); the Barrow Sorcerer, the Lich of the Long Night and the Deathless King (598-787); the Tempest Roc,
-Thunder-Wing and Sky-Tyrant (598-762); the Hill Titan, Storm Titan and the Titan of the First Mountains (624-787); the Marsh
-Hydra, Nine-Headed Hydra and the Hydra-Mother of the Fens (611-775); the Caldera Spirit, Mountain Wrath and the Heart of the
-Burning Deep (637-775); the Trench Serpent, Fleet-Breaker and the Sea-Girdler (662-787); the High Roost Dragon and the Dragon
-Lord of the High Roost (737-785, born of the Old Blood); the Grey Huntsman and the Master of the Grey Hunt (649-750); the Gate
-Duke and the Duke of Cinders (637-675, great demons, gate-born); the War Colossus and the Colossus of the First Forge
-(688-787). Order 93 also set the demons by kind (imp 307, fiend 365, greater fiend 436, cinder and brimstone hounds 321 and
-408, whisperer 336, soul broker 477; pit prince 637, gate horror 611, gate tyrant 675) and the dragons (grown 688-713, elder
-750-762, ancient 775-787 before the Old Blood's ten), and the abyss leviathan to 787, so nothing below the legends reaches
-800. No new kind is born into the wild provinces (they spawn at t 12-45) and the cards' draw centres far below them, so a life
-meets them only as the world grows toward them (the map's lairs and Hell, later waves); from 600 to 800 the widest hole is 13
-levels (`pwStretched`).
+**The high band (orders 92 and 93, D-185; set by nature in D-191).** D-185 added 29 kinds in eleven new lines to fill the
+levels around the grown dragons and up to the weakest legend (800), and stretched every older kind by about 1.55, which put
+apex animals, trolls and ogres among the dragons. Orders 95 and 96 (D-191) set every level by nature instead: each kind has
+a `tier` (animal, great beast, monster, drake, giant, undead, spirit, fey, construct, young, grown, elder or ancient dragon,
+lower, great or ancient demon, calamity), the lines are written in the owner's levels (`lv`), and from 600 to 800 stand only
+the 45 calamities. The dragons of the High Roost are removed (archived in `archive/bestiary-high-roost/`); the three
+ancient dragons are Ash, Frost and Storm, each one of a kind on its own line; four ancient demon kinds (33 individuals)
+stand with the elder dragons. Counted kinds carry `world` and the dragons' family a `cap` of 100, which the wilds keep
+(`A.POWER.room`). The release's 25 beasts take their level by nature too; their duel rows stay as `duelT`. Every kind from
+500 to 800 and every kind that moved, with its reason: `docs/design/bestiary-bands.md`.
 
 **Intelligence:** beast (instinct), cunning (ambush, memory, no bargaining), speaking (bargains, grudges; decides through
 A.WHY), wise (plans for years). **Natures:** 21 kinds act from their nature (bloodthirsty, relentless, mindless, cruel,

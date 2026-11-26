@@ -27,7 +27,8 @@ export default {
         out.tops.push(hs[hs.length - 1]); out.meds.push(cs.length ? cs[cs.length >> 1] : 0);
       }
       out.masters = PW.D.masters.map(m => PW.level(m.id));
-      out.dragons = ['frost-dragon', 'storm-dragon', 'brine-dragon'].map(id => PW.level(id));
+      out.dragons = ['great-ash-dragon', 'frost-dragon', 'storm-dragon', 'brine-dragon'].map(id => PW.level(id));
+      out.ancient = ['ancient-ash-dragon', 'ancient-frost-dragon', 'ancient-storm-dragon'].map(id => PW.level(id));
       out.strong = ['elder-ash-dragon', 'elder-frost-dragon', 'elder-storm-dragon', 'elder-brine-dragon'].map(id => PW.level(id));
       out.lower = ['imp', 'fiend', 'greater-fiend', 'cinder-hound', 'brimstone-hound', 'whisperer', 'soul-broker'].map(id => PW.level(id));
       out.great = ['pit-prince', 'gate-horror', 'gate-tyrant', 'gate-duke', 'duke-of-cinders'].map(id => PW.level(id));
@@ -48,11 +49,11 @@ export default {
     const ok = r.bands.join() === 'G,F,E,D,C,B,A,S,SS,SSS' && !r.godBand && r.allTitled &&
       min >= 480 && max <= 700 && r.meds.every(m => m >= 25 && m <= 50) &&
       C.soldier[0] >= 80 && C.soldier[1] <= 180 && C.knight[0] >= 230 && C.knight[0] <= 299 && C.knight[1] > 299 && C.elite[0] >= 300 && C.elite[1] <= 420 && C.past > 300 &&
-      r.masters.every(x => x > max && x <= 700) && Math.abs(avg(r.dragons) - 700) <= 20 && r.strong.every(x => x > Math.max(...r.dragons) && x < 800) &&
+      r.masters.every(x => x > max && x <= 700) && Math.abs(avg(r.dragons) - 700) <= 20 && r.strong.every(x => x > Math.max(...r.dragons) && x < 800) && r.ancient.every(x => x >= 780 && x <= 800 && x > Math.max(...r.strong)) &&
       r.lower.every(x => x >= 300 && x <= 500) && Math.abs(avg(r.great) - 650) <= 25 &&
       L.every(x => x[1] >= 800) && L[0][0] === 'sarnavoth' && L[0][1] === 1000 &&
       r.arch.length === 3 && r.arch.every(x => x >= 955 && x <= 985) && Math.abs(r.saint - 875) <= 10 && r.saintHuman && !r.pcts;
-    return { ok, detail: `strongest human by world ${r.tops.join(', ')}, median ${r.meds.join(', ')}; the curve: a soldier (might 1-2) ${C.soldier.join('-')}, a knight (9-25) ${C.knight.join('-')}, an elite (25-60) ${C.elite.join('-')}; masters ${r.masters.join(', ')}; grown dragons ${r.dragons.join(', ')}, strong ${r.strong.join(', ')}; lower demons ${r.lower.join(', ')}, great ${r.great.join(', ')}; legends ${L.map(x => x[0] + ' ' + x[1]).join(', ')}; the best man against a giant king, a grown dragon, the Saint, the Dragon King: ${r.words.join(' / ')}` };
+    return { ok, detail: `strongest human by world ${r.tops.join(', ')}, median ${r.meds.join(', ')}; the curve: a soldier (might 1-2) ${C.soldier.join('-')}, a knight (9-25) ${C.knight.join('-')}, an elite (25-60) ${C.elite.join('-')}; masters ${r.masters.join(', ')}; grown dragons ${r.dragons.join(', ')}, elder ${r.strong.join(', ')}, the three ancient ${r.ancient.join(', ')}; lower demons ${r.lower.join(', ')}, great ${r.great.join(', ')}; legends ${L.map(x => x[0] + ' ' + x[1]).join(', ')}; the best man against a giant king, a grown dragon, the Saint, the Dragon King: ${r.words.join(' / ')}` };
   },
 
   // the level is not everything (the owner, 2026-11-25 and 26): each level multiplies the might by more than the one before,
@@ -88,10 +89,11 @@ export default {
   },
 
   // orders 92 and 93 (D-185): the scale stretched. Every legend stands at its old level x 1000/800 (Sarnavoth 800 -> 1000,
-  // the archdemons 770-780 -> 963-975, the Saint 700 -> 875, the Lord of the Sea 690 -> 863); the band from the strongest of
-  // the peoples (600) up to the weakest legend holds the great demons, the grown and strong dragons and the calamities of
-  // order 92's eleven new lines: many kinds over many families, spread with no wide hole, each a whole species, every one
-  // far below a legend
+  // the archdemons 770-780 -> 963-975, the Saint 700 -> 875, the Lord of the Sea 690 -> 863). Order 95 (D-191): the band from
+  // 600 up to the weakest legend holds only calamities by nature (dragons grown and older, great and ancient demons, the
+  // giants of the first age, titans, liches, leviathans, the great spirits, the colossi of legend), no weak kind raised to
+  // fill a gap: fewer kinds than D-185's 74, over many families, each a whole species, every one far below a legend; D-185's
+  // new lines each reach it at their apex, and the dragons of the High Roost are gone (the owner's follow-up to order 95)
   async pwStretched(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     const r = await pg.evaluate(() => {
@@ -100,23 +102,83 @@ export default {
       const OLD = { sarnavoth: 800, ghazrul: 780, morvane: 775, vethrael: 770, 'sword-saint': 700, vaskareth: 692, tessaly: 690, hrimgala: 682, ulmavren: 680, orrun: 674, serrath: 672, kethra: 664, ommul: 658, saqqar: 650, 'pale-shepherd': 648, 'iron-warden': 640 };
       const wrong = PW.LD.legends.filter(l => OLD[l.id] == null || PW.level(l.id) !== Math.round(OLD[l.id] * 1000 / 800)).map(l => `${l.id} ${PW.level(l.id)}`);
       const legs = PW.LD.legends.map(l => PW.being(l.id)), low = Math.min(...legs.map(b => b.level)), weakest = Math.min(...legs.map(b => b.power));
-      const NEW = ['hydra', 'highroost', 'titan', 'tempest', 'hive', 'lich', 'caldera', 'gateduke', 'girdler', 'greyhunt', 'colossus'];
-      const fresh = PW.BD.species.filter(s => NEW.includes(s.line.split('.')[1])), freshOut = fresh.filter(s => !(PW.level(s.id) >= 580 && PW.level(s.id) < low)).map(s => s.id);
+      const NEW = ['hydra', 'titan', 'tempest', 'hive', 'lich', 'caldera', 'gateduke', 'girdler', 'greyhunt', 'colossus'];
+      const apexOut = NEW.filter(k => {
+        const e = Object.entries(PW.BD.lines).find(([lk]) => lk.split('.')[1] === k), top = e && PW.level(e[1][e[1].length - 1]);
+        return !(top >= 600 && top < low);
+      });
+      const roost = PW.BD.species.filter(s => /roost/i.test(s.id + s.line)).map(s => s.id);
+      const CAL = ['grown dragon', 'elder dragon', 'ancient dragon', 'great demon', 'ancient demon', 'giant', 'calamity'];
       const band = PW.BD.species.filter(s => PW.level(s.id) >= 600 && PW.level(s.id) < low).sort((a, b) => PW.level(a.id) - PW.level(b.id));
       const lv = band.map(s => PW.level(s.id)), holes = lv.slice(1).map((x, i) => x - lv[i]);
+      const notCal = band.filter(s => !CAL.includes(s.tier)).map(s => `${s.n} (${s.tier})`);
       const whole = band.every(s => s.beh && s.beh.drives.length && s.beh.social && s.beh.people && s.drops.length && s.seasons.length && (s.terr.length || s.coast) && s.prof && PW.D.capabilities.every(c => s.prof[c.k] >= 0 && s.prof[c.k] <= 10));
       const strongestKind = Math.max(...band.map(s => PW.power(s.id)));
       // each level exponentially harder, and more so the higher: the step from 990 to 1000 is wider than from 800 to 810
       const wider = PW.mightOf(1000) / PW.mightOf(990) > PW.mightOf(810) / PW.mightOf(800);
-      return { wrong, low, fresh: fresh.length, freshOut, n: band.length, fams: [...new Set(band.map(s => s.fam))].length, lines: [...new Set(band.map(s => s.line))].length,
+      return { wrong, low, apexOut, roost, notCal, n: band.length, fams: [...new Set(band.map(s => s.fam))].length, lines: [...new Set(band.map(s => s.line))].length,
         top: lv[lv.length - 1], bottom: lv[0], hole: Math.max(0, ...holes), ints: [...new Set(band.map(s => s.int))], whole, below: weakest / strongestKind, wider,
         names: band.map(s => `${s.n} ${PW.level(s.id)}`) };
     });
-    const ok = !r.wrong.length && r.low === 800 && r.fresh >= 25 && !r.freshOut.length && r.n >= 40 && r.fams >= 8 && r.lines >= 15 && r.bottom <= 620 && r.top >= 780 && r.hole <= 20 && r.ints.length >= 3 && r.whole && r.below > 20 && r.wider;
-    return { ok, detail: `legends off their stretched level: ${r.wrong.join(', ') || 'none'} (the weakest at ${r.low}); order 92's ${r.fresh} new kinds all in the band (outside: ${r.freshOut.join(', ') || 'none'}); from 600 to the legends: ${r.n} kinds in ${r.fams} families and ${r.lines} lines, levels ${r.bottom} to ${r.top}, the widest hole ${r.hole} levels, minds ${r.ints.join('/')}; the weakest legend ${r.below.toFixed(0)} times its strongest; a level at 1000 worth more than one at 800 ${r.wider}: ${r.names.join(', ')}` };
+    const ok = !r.wrong.length && r.low === 800 && !r.apexOut.length && !r.roost.length && !r.notCal.length && r.n >= 30 && r.n < 74 && r.fams >= 8 && r.lines >= 15 &&
+      r.bottom <= 620 && r.top >= 780 && r.hole <= 30 && r.ints.length >= 2 && r.whole && r.below > 20 && r.wider;
+    return { ok, detail: `legends off their stretched level: ${r.wrong.join(', ') || 'none'} (the weakest at ${r.low}); D-185's lines whose apex is not in the band: ${r.apexOut.join(', ') || 'none'}; the High Roost: ${r.roost.join(', ') || 'gone'}; not a calamity by nature: ${r.notCal.join(', ') || 'none'}; from 600 to the legends: ${r.n} kinds in ${r.fams} families and ${r.lines} lines, levels ${r.bottom} to ${r.top}, the widest hole ${r.hole} levels, minds ${r.ints.join('/')}; the weakest legend ${r.below.toFixed(0)} times its strongest; a level at 1000 worth more than one at 800 ${r.wider}: ${r.names.join(', ')}` };
   },
 
-  // the bestiary: countless kinds in families and evolution lines; the release's beasts placed by their own duel rows
+  // orders 95 and 96 (D-191): the bands by nature. Plain and apex animals far below the dragons (their kings and monstrous
+  // apex forms at most 350, plain animals at most 250), trolls and ogres soldier to elite; exactly three ancient dragons
+  // under the King (Ash, Frost, Storm: one each, 780-800 with the Old Blood, above every elder); few elder dragons (7 to 12
+  // in the world) and at most 100 dragons in all; the ancient demons about the elder dragons (their mean within 25) and
+  // exactly 33 of them; the great demons' mean 625-675. And the wilds never hold more of a counted kind than the world
+  // does, nor more than 100 dragons, however full they are and however long they run (deterministic: counts, no draw)
+  async pwBands(pg) {
+    if (!(await pg.evaluate(GATE))) return NO;
+    const r = await pg.evaluate(() => {
+      const PW = A.POWER, S = PW.BD.species, avg = xs => xs.reduce((a, x) => a + x, 0) / Math.max(1, xs.length);
+      A.newGame({ seed: 7, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      const top = f => Math.max(...S.filter(f).map(s => PW.level(s.id)));
+      const ANIMAL = ['vermin', 'hounds', 'cats', 'bears', 'hooved'];
+      const animalTop = top(s => ANIMAL.includes(s.fam)), plainTop = top(s => s.tier === 'animal'), greatTop = top(s => s.tier === 'great beast');
+      const brutes = top(s => ['giants.troll', 'giants.ettin', 'ogres.ogre', 'ogres.marshogre'].includes(s.line)), young = top(s => s.tier === 'young dragon');
+      const anc = S.filter(s => s.tier === 'ancient dragon'), elders = S.filter(s => s.tier === 'elder dragon');
+      const ancL = anc.map(s => PW.level(s.id)), elderL = elders.map(s => PW.level(s.id));
+      const dem = S.filter(s => s.tier === 'ancient demon'), great = S.filter(s => s.tier === 'great demon');
+      const dragons = S.filter(s => s.fam === 'dragons'), cap = PW.BD.families.dragons.cap;
+      // the wilds at their fullest: every counted dragon kind tracked to its world count, all fed and blooded past any rise;
+      // then spawns and years: no kind past its count, the family never past its cap
+      const st = PW.state(), P = A.S.prov.find(p => p.terr === 'mountains') || A.S.prov[0];
+      st.wild.length = 0;
+      let n = 0;
+      for (const s of dragons) if (!s.unique) for (let k = 0; k < s.world; k++) st.wild.push({ id: 'tb' + (++n), sp: s.id, at: P.id, fed: 99, wins: 99, yrs: 99, born: A.S.year, key: 'tb' + n });
+      const over = [];
+      const check = when => {
+        const by = {}; let fam = 0;
+        for (const w of st.wild) { if (w.dead) continue; const s = PW.species(w.sp); if (s && s.fam === 'dragons') { fam++; by[s.id] = (by[s.id] || 0) + 1; } }
+        if (fam > cap) over.push(`${when}: ${fam} dragons`);
+        for (const id in by) if (by[id] > PW.species(id).world) over.push(`${when}: ${by[id]} ${id}`);
+        return fam;
+      };
+      const full = check('full'), rng = PW.rng('bands');
+      for (let i = 0; i < 300; i++) PW.spawnWild(st, rng);
+      check('after 300 spawns');
+      const room = PW.room(st, PW.species('frost-hatchling'));
+      let most = 0;
+      for (let y = 0; y < 40; y++) { A.S.year++; PW.wildYear(rng); most = Math.max(most, check('year ' + y)); }
+      return { animalTop, plainTop, greatTop, brutes, young, anc: anc.map(s => s.id), ancL, ancOk: anc.every(s => s.unique && s.world === 1 && !S.some(x => x.next === s.id)),
+        elderL, elderWorld: elders.reduce((a, s) => a + s.world, 0), dragonWorld: dragons.reduce((a, s) => a + (s.world || 0), 0), cap, allCounted: dragons.every(s => s.world >= 1),
+        dem: dem.map(s => `${s.n} ${PW.level(s.id)} x${s.world}`), demL: dem.map(s => PW.level(s.id)), demWorld: dem.reduce((a, s) => a + (s.world || 0), 0), great: great.map(s => PW.level(s.id)),
+        demMean: avg(dem.map(s => PW.level(s.id))), elderMean: avg(elderL), greatMean: avg(great.map(s => PW.level(s.id))), full, most, over, room };
+    });
+    const ok = r.animalTop <= 350 && r.plainTop <= 250 && r.greatTop <= 350 && r.brutes <= 420 && r.young < 500 &&
+      r.anc.length === 3 && ['ancient-ash-dragon', 'ancient-frost-dragon', 'ancient-storm-dragon'].every(id => r.anc.includes(id)) && r.ancOk && r.ancL.every(x => x >= 780 && x <= 800 && x > Math.max(...r.elderL)) &&
+      r.elderWorld >= 7 && r.elderWorld <= 12 && r.allCounted && r.cap === 100 && r.dragonWorld <= r.cap &&
+      r.dem.length >= 3 && r.dem.length <= 6 && r.demWorld === 33 && Math.abs(r.demMean - r.elderMean) <= 25 && r.demL.every(x => x >= 740 && x <= 770) &&
+      r.greatMean >= 625 && r.greatMean <= 675 && !r.over.length && r.full > 0 && !r.room;
+    return { ok, detail: `animal families at most ${r.animalTop}, plain animals ${r.plainTop}, great beasts ${r.greatTop}, trolls and ogres ${r.brutes}, young dragons ${r.young}; ancient dragons ${r.anc.map((id, i) => id + ' ' + r.ancL[i]).join(', ')}; elder ${r.elderL.join(', ')} (mean ${r.elderMean.toFixed(1)}, ${r.elderWorld} in the world); dragons in the world ${r.dragonWorld} of a cap of ${r.cap}; ancient demons ${r.dem.join(', ')} (${r.demWorld} in all, mean ${r.demMean.toFixed(1)}); great demons ${r.great.join(', ')} (mean ${r.greatMean.toFixed(1)}); the wilds full at ${r.full} dragons, at most ${r.most} through 40 years${r.over.length ? ' OVER ' + r.over.slice(0, 5).join('; ') : ''}; room for another frost hatchling when full: ${r.room}` };
+  },
+
+  // the bestiary: countless kinds in families and evolution lines; the release's beasts mapped, their own duel rows recorded
+  // (duelT) and checked against the live rows
   async pwBestiary(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     const r = await pg.evaluate(() => {
@@ -129,7 +191,8 @@ export default {
         const s = PW.speciesOfCre(cre);
         if (!s) { bad.push(cre + ' unmapped'); continue; }
         const f = A.fighterBeast(cre), c = Math.exp(PW.D.people.lnA + PW.D.people.lnB * worth(f)) * Math.sqrt(f.maxHp / 100);
-        if (Math.abs(PW.tOf(c * c) - s.t) > 1) bad.push(`${cre} ${s.n}: data ${s.t}, live ${PW.tOf(c * c)}`);
+        // the release's duel row, as the data records it (duelT; the level is the kind's nature since D-191)
+        if (!(Math.abs(PW.tOf(c * c) - s.duelT) <= 1)) bad.push(`${cre} ${s.n}: data ${s.duelT}, live ${PW.tOf(c * c)}`);
       }
       const ints = {}; for (const s of B.species) ints[s.int] = (ints[s.int] || 0) + 1;
       const noCalm = B.species.filter(s => !s.beh.calmed.length && s.beh.nature && s.beh.nature.spec).length;
@@ -138,7 +201,7 @@ export default {
         fighter: (() => { const f = A.fighterBeast('thinking-ooze'); return f && f.beast === 'thinking-ooze' && f.name === 'Thinking Ooze' && f.maxHp > 0; })() };
     });
     const ok = r.n >= 150 && r.fams >= 15 && r.evo >= 40 && r.beasts === 25 && !r.bad.length && r.fighter && r.behOk && r.noCalm >= 10 && Object.keys(r.ints).length === 4;
-    return { ok, detail: `${r.n} species, ${r.fams} families, ${r.evo} evolution lines, ${r.apex} apex forms; minds ${JSON.stringify(r.ints)}; ${r.noCalm} kinds nothing soothes; the release's 25 beasts on the scale by their own rows${r.bad.length ? ' BAD ' + r.bad.join('; ') : ''}` };
+    return { ok, detail: `${r.n} species, ${r.fams} families, ${r.evo} evolution lines, ${r.apex} apex forms; minds ${JSON.stringify(r.ints)}; ${r.noCalm} kinds nothing soothes; the release's 25 beasts mapped, their duel rows as recorded${r.bad.length ? ' BAD ' + r.bad.join('; ') : ''}` };
   },
 
   // the level is not the whole: two beings of one level fight differently, and the reasons are in words
