@@ -127,7 +127,7 @@
       // his titles (src/people/9999976-titles) are named here for the cards; what they give is in his worth already, so
       // they carry no buffs and his power stays his might; a title that is a class (the Sword Saint) is his class
       return { kind: 'person', id: x.id, n: A.fullName ? A.fullName(x, false) : 'a person', level: A.LV ? A.LV.level(x, m) : PW.levelOf(m), t: PW.tOf(m), might: m, power: m, mastery: null, prof, int: 'wise',
-        titles: A.TT && x.tt ? A.TT.shownOf(x) : [], cls: A.TT && x.tt ? A.TT.classOf(x) : null,
+        titles: A.TT && x.tt ? A.TT.shownOf(x) : [], cls: (A.LV && A.LV.className ? A.LV.className(x) : null) || (A.TT && x.tt ? A.TT.classOf(x) : null),
         ranged: !!(x.gear && x.gear.ranged), hardy: clamp(((A.stat ? A.stat(x, 'sta') : 50) || 50) / 10, 0, 10) };
     }
     if (typeof x === 'object' && x.sp) {   // a wild individual: its species, its temper, its own name and titles
@@ -147,7 +147,9 @@
     const L = LEG.get(id) || MAS.get(id);
     if (L) {
       // the level's might x titles x items x art (its skills' ranks and levels); the profile with what each of them adds
-      const w = PW.withTitles(PW.addCaps(PW.addCaps(L.prof, L.skills, 'cap'), L.items, 'gives'), L.level, L.titles), m = PW.mightOf(w.level);
+      // its level is the data's plus what it has gained by defeats since (order 92, D-184: the legends grow too, slowly)
+      const lvG = A.LV && A.LV.legendGain ? A.LV.legendGain(id) : 0;
+      const w = PW.withTitles(PW.addCaps(PW.addCaps(L.prof, L.skills, 'cap'), L.items, 'gives'), L.level + lvG, L.titles), m = PW.mightOf(w.level);
       const pw = m * PW.titleMult(L.titles) * PW.itemMult(L.items) * PW.artMult(L.skills);
       return { kind: LEG.has(id) ? 'legend' : 'master', id, n: L.n, level: clamp(w.level, 1, LV.max), t: PW.tOf(pw), might: m, power: pw, art: PW.artOf(L.skills), prof: w.prof, int: L.int, cls: L.class || null,
         titles: L.titles || [], base: L.level, ranged: true, hardy: w.prof.regen };

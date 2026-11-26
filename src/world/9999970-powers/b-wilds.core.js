@@ -289,6 +289,8 @@
     kg.ridge = kg.woke;
     const c = PW.compare('sword-saint', 'sarnavoth'), saintWins = rng.chance(c.p);
     const lose = legOf(saintWins ? 'sarnavoth' : 'sword-saint');
+    // the winner counts the defeat (order 92, D-184): a level for one of these is the work of ages
+    if (A.LV && A.LV.legendDefeat) A.LV.legendDefeat(saintWins ? 'sword-saint' : 'sarnavoth', PW.being(saintWins ? 'sarnavoth' : 'sword-saint').level, 'defeat');
     lose.hurt = (lose.hurt || 0) + 8; if (saintWins) { lose.wokeUntil = A.S.year - 1; lose.awake = false; }
     if (!saintWins) lose.hurt += 4;   // an old man's wounds
     A.news(saintWins ? 'On the Saint\'s Stair the fight of sixty years ago has been fought again. The old man came down from his hut with his sword, and the King of Dragons has gone back under the mountain.'

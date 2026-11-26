@@ -7,9 +7,11 @@
 //   A.LV.seed(p)           gives him his held level: the computed one (and the floor), with nothing waiting, so nobody's
 //                          stats change; the player at his first month (or a save's load), anyone else at his first defeat
 //   A.LV.defeat(p, F, how) one foe of level F defeated ('kill', 'defeat' or 'spar'): experience scaled by the foe's level
-//                          against his own on the ladder; a far weaker foe gives almost nothing and never lifts him more
-//                          than xp.ceilAbove levels above itself (no farming). Returns the levels gained
-//   A.LV.need(L)           the experience from L to L+1 (in the ladder's might): exponential, each gap wider than the last
+//                          against his own on the ladder; every foe gives some, a far weaker one very little (order 91,
+//                          D-184: no line). Returns the levels gained
+//   A.LV.need(L)           the experience from L to L+1 (in defeats of a peer): exponential, each gap wider than the last,
+//                          and the step into each hundredth level a wall (xp.wall: many times the step before it). At the
+//                          wall a person takes a class or a stat boost (c-classes.core.js, order 91-92, D-184)
 //   A.LV.room / cap / cost / canPlace / place   the stat points: a stat's ceiling (the person's potential, as A.train's),
 //                          the body's room at this age, the cost of the next point (1, 2 or 3 near the ceiling), placing one
 //   A.LV.withPut(p, s, v)  what A.stat reads: the base (st, or the trained body's floor) plus the placed points, held to the
@@ -33,7 +35,11 @@
   const isPc = p => !!(p && A.S && p.id === A.S.pc);
 
   // ---------------------------------------------------------------- the level
-  LV.need = L => X.e0 * Math.pow(X.growth, L) * PW.mightOf(L);
+  // the wall: the step into the k-th hundredth level asks wall.mul[k-1] times as much (orders 91, 92; D-184)
+  const WL = X.wall || { every: 100, mul: [1] };
+  LV.wallMul = L => ((L + 1) % WL.every === 0 ? WL.mul[Math.min(WL.mul.length, (L + 1) / WL.every) - 1] : 1);
+  // in defeats of a peer (a man of his own level): the gap, never the might, so the ladder's rescale cannot move it
+  LV.need = L => X.e0 * Math.pow(X.growth, L) * LV.wallMul(L);
   LV.computed = (p, m) => PW.levelOf(m != null ? m : PW.personMight(p));
   // the level an ordinary grown person of this body stands at (the owner's average human, 20-30), and the floor of his years
   LV.grown = function (p) {
@@ -58,33 +64,37 @@
     if (p.lv && p.lv.L != null) return p.lv;
     p.lv = { L: LV.level(p), f: 0, pts: 0 };
     if (isPc(p)) { p.lv.k0 = p.kills || 0; p.lv.kc = 0; }
+    // the walls he already stands past: the classes his road gives, worn, with nothing paid (c-classes.core.js)
+    if (LV.settleSeeded) LV.settleSeeded(p);
     return p.lv;
   };
   LV.progress = p => (p && p.lv ? clamp(p.lv.f || 0, 0, 1) : 0);
   LV.progressWord = function (f) { for (const [at, w] of D.words.progress) if (f >= at) return w; return D.words.progress[D.words.progress.length - 1][1]; };
 
   // ---------------------------------------------------------------- experience from a defeat
-  // in the ladder's might, measured at his own level L: a stronger foe gives its share of might over his (past upTo, the
-  // root of the rest), a weaker one that share to the power weakPow; nothing once he stands ceilAbove levels over it
+  // in defeats of a peer: a stronger foe doubles it every upHalf levels above him (past upTo, the root of the rest), a
+  // weaker one halves it every downHalf levels below: never nothing (order 91, D-184), only very little
   LV.xpFor = function (F, L) {
-    if (!(F > 0) || F + X.ceilAbove <= L) return 0;
-    const m = PW.mightOf(L), rho = PW.mightOf(F) / m;
-    if (rho >= 1) return m * (rho <= X.upTo ? rho : X.upTo * Math.sqrt(rho / X.upTo));
-    return m * Math.pow(rho, X.weakPow);
+    if (!(F > 0)) return 0;
+    const d = F - L;
+    if (d >= 0) { const x = Math.pow(2, d / X.upHalf); return x <= X.upTo ? x : X.upTo * Math.sqrt(x / X.upTo); }
+    return Math.pow(2, d / X.downHalf);
   };
   LV.pointsAt = (p, L) => ((RACE(p).points != null ? RACE(p).points : PT.perLevel) + (PT.bonusEvery && L % PT.bonusEvery === 0 ? 1 : 0));
   LV.up = function (p, lv) {
     lv.L++;
     lv.pts = (lv.pts || 0) + LV.pointsAt(p, lv.L);
     if (!isPc(p)) LV.queue(p);
+    // a hundredth level reached by experience: the wall's reward, a class or a stat boost (c-classes.core.js)
+    if (lv.L % WL.every === 0 && LV.atWall) LV.atWall(p, lv);
   };
   LV.defeat = function (p, F, how) {
     if (!p || !p.st || p.alive === false) return 0;
     const lv = LV.seed(p);
     if (!lv) return 0;
-    const L0 = lv.L, ceil = Math.min(LVMAX, Math.round(F) + X.ceilAbove);
+    const L0 = lv.L;
     let g = LV.xpFor(F, lv.L) * (X.how[how] != null ? X.how[how] : 1);
-    while (g > 0 && lv.L < ceil) {
+    while (g > 0 && lv.L < LVMAX) {
       const need = LV.need(lv.L), room = (1 - (lv.f || 0)) * need;
       if (g >= room) { g -= room; LV.up(p, lv); lv.f = 0; }
       else { lv.f = (lv.f || 0) + g / need; g = 0; }
@@ -135,6 +145,32 @@
     if (A.TT && A.TT.field) A.TT.field(won);   // D-183: a field battle won is a deed the titles count
   };
 
+  // ---------------------------------------------------------------- the legends grow too (order 92, D-184)
+  // A great being (a legend or a master of A.POWER) rises by the same rule as anyone: a defeat pays by the gap against its
+  // own level's need, and at its height a level asks so much that one is a matter of ages. Its level stays the data's
+  // (data/legends.json, data/power.json: read, never written here) plus what it has gained, kept in A.S.pw.leg[id].lg
+  // (levels and the share of the next). PW.being reads LV.legendGain.
+  const legRec = (id, make) => {
+    const S = A.S; if (!S) return null;
+    const pw = S.pw && typeof S.pw === 'object' ? S.pw : (make ? (S.pw = {}) : null); if (!pw) return null;
+    const leg = pw.leg && typeof pw.leg === 'object' ? pw.leg : (make ? (pw.leg = {}) : null); if (!leg) return null;
+    return leg[id] || (make ? (leg[id] = {}) : null);
+  };
+  LV.legendGain = function (id) { const g = legRec(id, false); return g && Array.isArray(g.lg) ? g.lg[0] || 0 : 0; };
+  LV.legendDefeat = function (id, F, how) {
+    const L0 = PW.LEG && (PW.LEG.get(id) || (PW.MAS && PW.MAS.get(id)));
+    if (!L0 || !(F > 0)) return 0;
+    const g = legRec(id, true); if (!g) return 0;
+    const lg = Array.isArray(g.lg) ? g.lg : (g.lg = [0, 0]);
+    let L = L0.level + lg[0], f = lg[1] || 0, gain = LV.xpFor(F, L) * (X.how[how] != null ? X.how[how] : 1), n = 0;
+    while (gain > 0 && L < LVMAX) {
+      const need = LV.need(L), room = (1 - f) * need;
+      if (gain >= room) { gain -= room; L++; n++; f = 0; } else { f += gain / need; gain = 0; }
+    }
+    lg[0] += n; lg[1] = Math.round(clamp(f, 0, 0.999) * 1e6) / 1e6;
+    return n;
+  };
+
   // ---------------------------------------------------------------- stat points: ceiling, room, cost
   LV.cap = (p, s) => (p.pot && isFinite(p.pot[s]) ? p.pot[s] : 40) * PT.capMul;
   LV.roomShare = function (p) {
@@ -144,9 +180,11 @@
   LV.room = (p, s) => LV.cap(p, s) * LV.roomShare(p);
   LV.withPut = function (p, s, v) {
     const u = p.lv && p.lv.put && p.lv.put[s];
-    if (!u) return v;
+    // a class's buff (c-classes.core.js): a stat raised for a few months, above what the body holds
+    const b = p.lv && p.lv.bf && LV.buffOn ? LV.buffOn(p, s) : 0;
+    if (!u) return v + b;
     const room = LV.room(p, s);
-    return v >= room ? v : Math.min(room, v + u);
+    return (v >= room ? v : Math.min(room, v + u)) + b;
   };
   // the stat before age, wounds and the rest: what the body holds (st, or the trained body's floor) with the points
   LV.base = (p, s) => (A.statFloor ? Math.max((p.st && p.st[s]) || 0, A.statFloor(p, s)) : (p.st && p.st[s]) || 0);
@@ -235,6 +273,7 @@
   // a stream of its own, from the seed, the person and the year: the main stream never moves for a placement
   const hash = PW.hash;
   const stream = key => { let s = hash(key) >>> 0; return () => { s = (s + 0x6d2b79f5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
+  LV.stream = stream;   // (the classes' choices at a wall draw from one too: c-classes.core.js)
   LV.placeByWhy = function (p, mode) {
     if (!p || !p.lv || !A.WHY || !A.WHY.decide) return [];
     const head = mode === 'household' ? LV.headOf(p) : null;
