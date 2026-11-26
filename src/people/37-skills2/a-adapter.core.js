@@ -201,11 +201,12 @@
   };
   // a rung's own name ("Measured Blade"): family c's skill of that rank
   SK2.rungName = function (c, rank) { const id = SK2.E().rungOf(IX, famOf(c) || c, rank), s = id && IX.BY[id]; return s ? s.name : SK.name(c); };
-  // "C · Lv 3"; with { name: true } "Basic Swordsmanship · C · Lv 3"; rusty: "Rusty · C · Lv 3"
+  // "C · Lv 3"; with { name: true } "Basic Swordsmanship · C · Lv 3"; rusty: "Rusty · C · Lv 3"; with { compact: true }
+  // "C·Lv 3" (two words, for a row that already names the skill: the Profile's page, under its word budget)
   SK2.label = function (p, k, o) {
     o = o || {};
     const r = SK2.rungFor(p, k); if (!r) return 'untried';
-    let t = SK2.E().label(r.rank, r.lv);
+    let t = o.compact ? `${r.rank}·Lv ${r.lv}` : SK2.E().label(r.rank, r.lv);
     if (o.name) t = SK2.rungName(r.c, r.rank) + ' · ' + t;
     const s = p.sk && p.sk[r.c];
     if (!o.bare && s && s.rust > 0) t = 'Rusty · ' + t;

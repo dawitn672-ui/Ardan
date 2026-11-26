@@ -233,7 +233,7 @@ export default {
       const BARE = /(?<![\d.,:/×-])\b(\d{1,3})(?:\.\d+)?\b(?![\d,.:/]\d)(?!\s*(?:km|kg|cm|m\/s|ms|suns?|years?|days?|months?|men|more|hours?|initiative|of \d))/;
       // (a year, a log line's day and month, a count of friends are not scales) (round 4: nor a count of provinces, "Hold 25 provinces", on the Goals tab)
       // (a skill's level, "C · Lv 3", is the one number a player reads: skills-v2 §8, the skills rebuild's switch)
-      const LVL = /\b[DCBAS] · Lv \d{1,2}\b/g;
+      const LVL = /\b[DCBAS] ?· ?Lv \d{1,2}\b/g;
       const plain = l => l.replace(LVL, '').replace(/\b1[01]\d\d\b/g, '').replace(/^\s*\d{1,2} [A-Z][a-z]{2}/, '').replace(/\d+ friends?|\(up to \d+\)|at its best at \d+|until about \d+|fading since about \d+|\bHold \d+ provinces\b/g, '');
       const check = (where, t) => { for (const line of String(t).split('\n')) if (BARE.test(plain(line))) bad.push(`${where}: ${line.trim().slice(0, 90)}`); };
       // verifier, round 5: titles and aria-labels went only through the ruler pass's scanR, which reads a line only when it
@@ -468,8 +468,8 @@ export default {
       // gives the life a subordinate on a page the test reads since the market fix shifted the stream. The bond word is read
       // apart from the age that follows it.)
       // (the skills rebuild's switch: a skill's level, "C · Lv 3", is the one number a player reads, skills-v2 §8)
-      const ROW = l => l.replace(/^under your command · \d{1,3} · /i, '').replace(/\b[DCBAS] · Lv \d{1,2}\b/g, '');
-      const NOLV = t => t.replace(/\b[DCBAS] · Lv \d{1,2}\b/g, '');
+      const ROW = l => l.replace(/^under your command · \d{1,3} · /i, '').replace(/\b[DCBAS] ?· ?Lv \d{1,2}\b/g, '');
+      const NOLV = t => t.replace(/\b[DCBAS] ?· ?Lv \d{1,2}\b/g, '');
       const scan = async where => {
         await tick();
         const root = document.querySelector('#modal') && document.querySelector('#modal').innerText.trim() ? document.querySelector('#modal') : document.querySelector('#tabbody');

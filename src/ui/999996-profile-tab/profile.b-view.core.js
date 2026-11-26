@@ -125,7 +125,8 @@
 
   PF.addSection({
     k: 'skills', title: 'Skills and fighting style',
-    sum: p => { const t = PF.skills(p, false)[0]; return t ? `${t.name}, ${t.tier.toLowerCase()}` : 'Nothing practised yet'; },
+    // (the summary names the best skill's rank, no digit: a level shown here would be a number with no description)
+    sum: p => { const t = PF.skills(p, false)[0]; return t ? `${t.name}, ${t.rank}` : 'Nothing practised yet'; },
     body: p => {
       const rows = PF.skills(p, true); // Records holds all of them
       let s = '';
@@ -250,7 +251,7 @@
     return true;
   };
   // on the page a skill is one control (the whole row opens its description); Records keeps the tier as its own
-  const skillRow = r => trig(['skill', r.k], `<span class="pf-l">${esc(r.name)}${r.apt === 'apt' ? ' <span class="pf-apt" aria-label="quick to learn">★</span>' : r.apt === 'slow' ? ' <span class="pf-apt" aria-label="slow to learn">▽</span>' : ''}</span><span class="pf-tier">${esc(r.tier)}</span><span class="pf-prog" aria-hidden="true"><i style="transform:scaleX(${Math.round(r.frac * 1000) / 1000})"></i></span>`, 'pf-sk', 'li');
+  const skillRow = r => trig(['skill', r.k], `<span class="pf-l">${esc(r.name)}${r.apt === 'apt' ? ' <span class="pf-apt" aria-label="quick to learn">★</span>' : r.apt === 'slow' ? ' <span class="pf-apt" aria-label="slow to learn">▽</span>' : ''}</span><span class="pf-tier">${esc(r.short)}</span><span class="pf-prog" aria-hidden="true"><i style="transform:scaleX(${Math.round(r.frac * 1000) / 1000})"></i></span>`, 'pf-sk', 'li');
   PF.addPanel({ k: 'skills', label: 'Skills', body: p => {
     const arts = PF.styles(p).filter(x => x.rank > 0).slice(0, 2), rows = PF.skills(p, false).slice(0, 4);   // (S1b CI 137: four, a level is two words where a tier was one; the page's word budget, D-077)
     let s = '';

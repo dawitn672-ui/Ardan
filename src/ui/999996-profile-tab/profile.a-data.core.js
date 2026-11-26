@@ -152,10 +152,13 @@ PF.sync = function (p) {
 // ---- skills: named tiers, best first ----------------------------------------------------------------------------------
 PF.skills = function (p, all) {
   if (UI.scope && !UI.scope(p).sees('skills')) return [];   // B5 part 2 (D-055): a babe has learned nothing to list
-  // S1b (D-072): a skill is its level in words; the bar is the way to the next step (the player's), never a number
+  // a skill is its rank and level (the skills rebuild's switch: A.SK2.label, never a word): tier in full for Records,
+  // short ("C·Lv 3") for the page's rows, rank ("rank C", no digit) for a section's one-line summary; the bar is the way
+  // to the next level (the player's), never a number
   const SK = A.SK; if (!SK) return [];
   const ks = SK.ranked(p);
-  return ks.slice(0, all ? ks.length : 8).map(k => ({ k, name: SK.name(k), tier: SK.levelLabel(p, k), frac: SK.bar(p, k).f, next: null, apt: '', n: ks.length }));
+  const K2 = A.SK2, rk = k => { const r = K2 && K2.rungFor(p, k); return r ? 'rank ' + r.rank : 'untried'; };
+  return ks.slice(0, all ? ks.length : 8).map(k => ({ k, name: SK.name(k), tier: SK.levelLabel(p, k), short: K2 ? K2.label(p, k, { compact: true }) : SK.levelLabel(p, k), rank: rk(k), frac: SK.bar(p, k).f, next: null, apt: '', n: ks.length }));
 };
 PF.skillCount = p => (A.SK ? A.SK.ranked(p).length : 0);
 PF.styles = function (p) {
