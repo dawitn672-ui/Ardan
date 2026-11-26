@@ -103,8 +103,8 @@
   };
   SK2.kd = pc => (pc.kd && typeof pc.kd === 'object' ? pc.kd : (pc.kd = {}));
   SK2.artFacts = function (pc) {
-    const fam = {}, ix = IX();
-    for (const f of ix.fams) fam[f.id] = A.skill(pc, f.id);
+    // read a family only when a route asks for it (H-163: 28 reads a month, most never asked)
+    const famRead = {}, fam = new Proxy(famRead, { get: (o, k) => (typeof k === 'string' ? (k in o ? o[k] : (o[k] = A.skill(pc, k))) : undefined) });
     const deeds = [], K = pc.kd || {};
     for (const k in K) if (K[k] > 0 && !/Y$/.test(k)) deeds.push({ kind: k, n: K[k] });
     const skills = {}; for (const h of SK2.artsHeld(pc)) skills[h.id] = { lv: h.lv };

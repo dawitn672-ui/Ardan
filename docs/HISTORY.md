@@ -3482,7 +3482,9 @@ A CPU profile of the test's 1,000 months showed two new monthly costs from steps
 every family for its top rung each month (28 rung reads through `SK2.tops`), and the arts' month asked the household for a
 teacher once per route. The merge offer is now skipped when fewer than two rungs stand at Lv 10 (every recipe joins two
 level-10 parts, lint-skills check 8), and a month's facts keep one answer per skill and rank a teacher must hold.
-`s1Cost` read 0.704 ms here with two builders running beside it; `sk2Merge` and `sk2Evolve` pass. The merchant's lower
+CI's quick tier on 8c8c624c still read 1.099 ms, so the arts' month now reads a family only when a route asks for it (a lazy
+`facts.family`; 28 reads a month before, most never asked): the month's CPU fell by a third in the profile, `s1Cost` 0.571 ms
+with two builders running beside it (`sk2ArtsMonth`, `sk2Active`, `sk2ArtsView` pass); `sk2Merge` and `sk2Evolve` pass. The merchant's lower
 peak coin (balance, 49,935 over 24 lives) is a real drop since alpha 20 (114,768) and has its own builder (H-162).
 
 **Undo.** Revert this commit.
