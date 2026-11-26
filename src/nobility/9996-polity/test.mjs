@@ -137,14 +137,21 @@ export default {
       };
       const a = run(), A1 = JSON.stringify(a.rec.rounds), b = run(), B1 = JSON.stringify(b.rec.rounds);
       const x = b.x, win = b.rec.winner, E = b.rec.electors.filter(e => e !== win);
-      // the winner broke promises to four electors (other than themself)
-      x.pol.broken = {}; for (const e of E.slice(0, 4)) x.pol.broken[e] = [win];
+      // the winner broke promises to four electors (other than themself). (D-194: the world's stream moved, and in this world
+      // the winner led those four by more than a broken promise weighs; the rule is the weight, so each of the four must
+      // mark him down by the promise's 20, and he must lose unless every one of them still preferred him by more than 20)
+      const four = E.slice(0, 4), cands = b.rec.cands.map(id => A.P(id)).filter(Boolean);
+      const lead = id => { const e = A.P(id); const me = P.score(x, e, A.P(win)); let other = -1e9; for (const c of cands) if (c.id !== win) other = Math.max(other, P.score(x, e, c)); return { me, gap: me - other }; };
+      const before = four.map(lead);
+      x.pol.broken = {}; for (const e of four) x.pol.broken[e] = [win];
+      const after = four.map(lead);
+      const marked = four.every((e, i) => Math.abs(before[i].me - after[i].me - 20) < 1e-6), wide = before.every(q => q.gap > 20);
       const rec2 = P.election(x, 'test2');
       const lines = P.voteLine(x, rec2);
-      return { id: x.id, gov: x.gov, same: A1 === B1, n: b.rec.electors.length, named: P.voteLine(x, b.rec).length, win: A.fullName(A.P(win), false), win2: A.P(rec2.winner) ? A.fullName(A.P(rec2.winner), false) : '?', lost: rec2.winner !== win, line: lines.slice(0, 3).join('; '), rounds: rec2.rounds.length };
+      return { id: x.id, gov: x.gov, same: A1 === B1, n: b.rec.electors.length, named: P.voteLine(x, b.rec).length, win: A.fullName(A.P(win), false), win2: A.P(rec2.winner) ? A.fullName(A.P(rec2.winner), false) : '?', lost: rec2.winner !== win, marked, wide, line: lines.slice(0, 3).join('; '), rounds: rec2.rounds.length };
     });
-    const ok = r.same && r.named === r.n && r.n >= 5 && r.lost;
-    return { ok, detail: `${r.id} (${r.gov}): ${r.n} electors, the same votes on the same seed ${r.same}; ${r.named} votes named; ${r.win} won, and after breaking promises to four electors ${r.lost ? 'lost to ' + r.win2 : 'STILL WON'} (${r.rounds} round${r.rounds > 1 ? 's' : ''}): ${r.line}` };
+    const ok = r.same && r.named === r.n && r.n >= 5 && r.marked && (r.lost || r.wide);
+    return { ok, detail: `${r.id} (${r.gov}): ${r.n} electors, the same votes on the same seed ${r.same}; ${r.named} votes named; ${r.win} won, and after breaking promises to four electors (each marks him down by 20: ${r.marked}) ${r.lost ? 'lost to ' + r.win2 : r.wide ? 'still won: each led him by more than 20' : 'STILL WON'} (${r.rounds} round${r.rounds > 1 ? 's' : ''}): ${r.line}` };
   },
 
   // raising an obligation with a favour owed is free and spends it; without one it is tyranny (−15 / −3), once a year

@@ -63,7 +63,9 @@ export default {
       // (counted only while he is outside every war: the muster or a draft may put him in one)
       let battleNews = 0, rumours = 0, wrong = 0, outside = 0;
       const seen = new Set(), news0 = A.news;
-      A.news = function (t, c) { const k = A.S.news.length; const r = news0.apply(this, arguments); if (c === 'battle' && A.S.news.length > k && !A.V2W.inWar()) { battleNews++; out.bn = String(t).slice(0, 120); } return r; };
+      // (D-194: rumours are counted as they come, not read off the news at the end: once he is drafted into a war of the
+      // larger hosts, its battle news fills the news's 220 places and the older rumours are pushed out of it)
+      A.news = function (t, c) { const k = A.S.news.length; const r = news0.apply(this, arguments); if (c === 'battle' && A.S.news.length > k && !A.V2W.inWar()) { battleNews++; out.bn = String(t).slice(0, 120); } if (c === 'rumour' && !seen.has(t)) { seen.add(t); rumours++; } return r; };
       const drain = () => { let h, g = 0; while ((h = A.headReady()) && g++ < 300) { if (h.type === 'event') A.eventAuto(); else A.skipPrompt(); } };
       try { const d0 = A.absDay(); for (let m = 0; m < 36 && A.pc().alive; m++) { for (let g2 = 0; g2 < 40 && A.absDay() < d0 + 30 * (m + 1); g2++) { A.advance(5); drain(); } if (!A.V2W.inWar()) outside++; } } finally { A.news = news0; }
       for (const n of A.S.news) { if (n.c === 'rumour' && !seen.has(n.t)) { seen.add(n.t); rumours++; } }

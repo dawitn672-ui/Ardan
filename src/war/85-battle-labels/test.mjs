@@ -100,6 +100,9 @@ export default {
         A._battlePlace = F.loc; let B; try { B = A.newBattleForPC(pc, F.war, F.aIds.includes(pc.mil.div) ? F.b : F.a); } finally { A._battlePlace = null; }
         if (!B.co) continue;
         A.S.queue.unshift({ type: 'battle', b: B }); A.battleStep();
+        // (D-194: with the larger hosts a fight can be so uneven that its battle ends at the first step, and an ended battle
+        // has no action row: such a world is passed over for the next)
+        if (B.phase === 'end') { A.S.queue.shift(); continue; }
         const h0 = T.hash(A.S), rng0 = A.rngState;
         let mine = 0, bands = 0;
         const m0 = UI.bfMine, b0 = UI.bfBands;
