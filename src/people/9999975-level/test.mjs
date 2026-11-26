@@ -160,7 +160,9 @@ export default {
         const after = read(); let n = 0, diff = 0;
         for (const id in before) { n++; if (after[id] !== before[id]) { diff++; if (diff <= 3) bad.push(id + ' ' + before[id] + ' -> ' + after[id]); } }
         const pc = A.pc();
-        if (pc && pc.alive) {
+        // a save made since the level (version 18 and on) keeps the level it held, earned in play: only an older one is seeded
+        if (pc && pc.alive && ver0 >= 18) { if (!pc.lv || !(pc.lv.L >= 1)) bad.push('no held level'); }
+        else if (pc && pc.alive) {
           if (!pc.lv || !(pc.lv.L >= 1)) bad.push('no held level');
           else {
             if (pc.lv.pts) bad.push('points waiting ' + pc.lv.pts);
