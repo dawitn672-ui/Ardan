@@ -210,7 +210,8 @@ A.forcesAI = function (r) {
 // ---------------------------------------------------------------- sellswords
 
 const COMPANY = ['Grey', 'Red', 'Free', 'Iron', 'Black', 'Golden', 'Salt', 'Wolf', 'Lantern', 'Ashen'];
-const normalHost = r => { const L = LORE.realms[r.id]; return (L ? L.army : r.army0 || r.army) * (r.provPop || 1) / (r.basePop || 1); };
+// D-194: the realm's normal host by its people, purse and kind (src/war/9999978-standing), the release's rule for a rebel
+const normalHost = r => { if (A.MIL && A.MIL.has(r)) return A.MIL.normal(r); const L = LORE.realms[r.id]; return (L ? L.army : r.army0 || r.army) * (r.provPop || 1) / (r.basePop || 1); };
 RI.mercs = r => (r.forces ? r.forces.divs.filter(d => d.riMerc) : []);
 RI.mercMen = r => RI.mercs(r).reduce((a, d) => a + d.men, 0);
 const mercTpl = r => {

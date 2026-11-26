@@ -424,6 +424,8 @@ A.forcesYear = function (r) {
     A.locDirty();
   }
   A.forcesSync(r);
+  // [D-194] the year's reading of its knights by command (src/war/9999978-standing), kept so a battle reads it alike
+  if (A.MIL && A.MIL.year) A.MIL.year(r);
 };
 
 A.forcesAI = function (r) {
@@ -467,7 +469,12 @@ A.forcesAI = function (r) {
     }
   }
   const L = LORE.realms[r.id],
-    base = (((L ? L.army : r.army0 || r.army) * (r.provPop || 1)) / (r.basePop || 1)) * (war ? 1.15 : 1),
+    // [D-194, order 95] the host the crown keeps: its normal host by its people, purse and kind, raised, kept or cut by
+    // its own yearly choice (A.MIL.want, through A.WHY); a rebel host keeps the release's rule
+    base =
+      (A.MIL && A.MIL.has(r)
+        ? A.MIL.want(r)
+        : (((L ? L.army : r.army0 || r.army) * (r.provPop || 1)) / (r.basePop || 1))) * (war ? 1.15 : 1),
     // [W1-4] conscript foot of a call is not trained from the roll, and does not count toward the standing host
     tids = Object.keys(F.tpl).filter(t => !F.tpl[t].call),
     inQ = F.queue.reduce((a, q) => a + q.men, 0),

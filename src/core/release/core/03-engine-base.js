@@ -1759,7 +1759,9 @@ A.initWorld = function () {
         debt: /none|^-|no debt/i.test(L.debts) ? 0 : Math.round(L.income * 0.4),
         stability: A.STAB[L.stability] || 50,
         legit: 70,
-        army: L.army,
+        // [D-194, order 95] the standing host by the realm's people, purse and kind (src/war/9999978-standing), not the
+        // lore's figure: tens of thousands for a kingdom, a few hundred thousand for the great empires
+        army: A.MIL && A.MIL.seedArmy ? A.MIL.seedArmy(L) : L.army,
         roll: L.roll,
         armyQ:
           0.9 + (L.comp ? Math.min(0.25, ((L.comp.heavyHorse + L.comp.heavyFoot) / Math.max(1, L.army)) * 0.6) : 0),
