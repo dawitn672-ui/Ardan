@@ -227,7 +227,8 @@ UI.TAB.codex = function (pc) {
       '<div class="row" style="margin-bottom:8px">',
       `<div class="row" style="margin-bottom:8px"><button class="small ${UI.codex === "power" ? "primary" : ""}" data-a="codex" data-v="power">Power &amp; scale</button>`,
     )),
-    UI.codex === "power" && (h += UI.powerPage(pc)),
+    // powers wave 1 (src/world/9999970-powers): the level scale and the great beings below the human tiers
+    UI.codex === "power" && (h += UI.powerPage(pc) + (UI.powersPage ? UI.powersPage(pc) : "")),
     UI.codex === "beasts")
   ) {
     const i = h.indexOf('<div class="card"><b>' + UI.esc(LORE.creatures[0].name)),

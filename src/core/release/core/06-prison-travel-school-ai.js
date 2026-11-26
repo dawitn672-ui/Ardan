@@ -1770,7 +1770,12 @@ A.fighterFrom = function (p, opts = {}) {
 };
 
 A.fighterBeast = function (cid, mod = 1) {
-  const L = LORE.creatures.find(c => c.id === cid),
+  // powers wave 1 (src/world/9999970-powers): a bestiary species that is not one of the release's beasts gets its fighter there
+  if (!A.BEASTS[cid] && A.POWER && A.POWER.fighter) {
+    const f0 = A.POWER.fighter(cid, mod);
+    if (f0) return f0;
+  }
+  const L =LORE.creatures.find(c => c.id === cid),
     B = A.BEASTS[cid],
     f = {
       pid: null,

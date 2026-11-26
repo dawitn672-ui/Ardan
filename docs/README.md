@@ -18,6 +18,7 @@ left the tree on that day; git history holds them (the last commit with them is 
 | [DECISIONS.md](DECISIONS.md) | Every decision: what, what else was considered, why |
 | [HISTORY.md](HISTORY.md) | What was done, step by step, and how to undo it (append only) |
 | [VERSIONS.md](VERSIONS.md) | Every version, its commit and its sample save |
+| [BALANCE_BASELINE.md](BALANCE_BASELINE.md) | What the bot lives read (age, coin, renown, crowns, best skill levels), so a change that eases or hardens a life shows; no targets |
 | [BRANCHES.md](BRANCHES.md) | The branches on GitHub and why each is there |
 | [TOOLING.md](TOOLING.md) | Skills, plugins and connectors: what is on, what is off, and why |
 | [IDEAS.md](IDEAS.md) | Ideas parked for later, each with why |
@@ -39,6 +40,7 @@ left the tree on that day; git history holds them (the last commit with them is 
 | [design/growth-standard.md](design/growth-standard.md) | The growth standard everyone is held to |
 | [design/households.md](design/households.md) | Households and kin |
 | [design/names-and-cultures.md](design/names-and-cultures.md) | Names and cultures |
+| [design/powers.md](design/powers.md) | Powers wave 1: one level scale for every being, the bestiary, the great beings, the wilds |
 | [design/economy-and-items.md](design/economy-and-items.md) | Economy and items |
 | [design/pacing.md](design/pacing.md) | Pacing of a month and a year |
 | [design/r1-audit.md](design/r1-audit.md) | The reasons audit (A.WHY) |

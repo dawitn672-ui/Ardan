@@ -2758,6 +2758,16 @@ canon, professions); v5 = the phone release. Written in `docs/VERSIONS.md` and `
 `docs/V3_SPEC.md`'s living world (economy, armoury, growth): those now belong to professions (v4) and the skills rebuild
 (v3); the newest instruction wins. **Why:** the owner asked me to own the basis.
 
+### D-176 · 2026-11-25 · Powers: might is conscripts squared; level on the owner's anchors; power reads titles and mastery
+**Choice:** one number for every being, its might (a person's fighting worth in conscripts squared, Lanchester; the
+release's beasts by their duel rows), read as a level 1-1000 on a convex curve fitted to the owner's anchors (an average
+human 25, a soldier 100, a kingdom's best 300-380, a grown dragon 450, a strong one 525, legends 600-800); rank words G to
+SSS over it; and fighting power = the level's might x titles' power x mastery, which the odds and the ranking read with
+the capability profile. **Why:** the owner's orders of 2026-11-25 in turn (levels, a huge spread, each level worth more
+than the last, level is not everything, the Saint above the Lord of the Sea); conscripts are what the sheet already
+shows, so no person changed. The world's own draws use a seeded stream of their own so the main stream moves only when
+the player is involved. No gods; no demon realm.
+
 ### D-NEW-1 · The skills rebuild, step 5 (the switch): where the design and the code met (2026-11-26)
 - **The rungs hold the level; S1's table stays the experience engine under them.** `A.SK2.on = true`: every check reads
   through the rungs (`A.SK.reads` → `SK2.reads`), the mirror `p.skills[k]` is the rung's value, `pc.ks` is written at
