@@ -478,6 +478,9 @@ order is replaced, strike it through and say by what.
     Sword Saint, the strongest one-to-one combat class; the Dragon King's and each archdemon's unique titles carry far more raw
     firepower (D-177 addendum).
 
+90. **Sarnavoth slightly behind the three** · recorded 2026-11-26. "change sarnavoth to being at a slight disadvantage against
+    the 3 primordials": against the three archdemons together he wins a little less than half the time (D-177 addendum).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,

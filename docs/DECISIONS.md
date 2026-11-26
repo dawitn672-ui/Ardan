@@ -2781,3 +2781,4 @@ points (skills-v2 §12, after step 6).
 **D-177 addendum (order 89).** Archdemons 770-780; Sarnavoth about 800, even with the three; Cael about 700 (the owner's
 "7000" read as 700), even with one archdemon by titles, skills and his Sword Saint class (the strongest one-to-one class);
 the Dragon King's and archdemons' titles give raw firepower, the Saint's class the duel; the profile carries both.
+**D-177 addendum (order 90).** Sarnavoth against the three archdemons together: a slight disadvantage (about 40-45 in 100).
