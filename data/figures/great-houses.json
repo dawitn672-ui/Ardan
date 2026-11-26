@@ -5,7 +5,6 @@
  "voice": {
   "head": "{Name} heads {house}, {rank} in {realm}.",
   "since": "{Khe} has held it since {since}.",
-  "seat": "The house is seated at {seat}.",
-  "age": "{Khe} is {age}."
+  "seat": "The house is seated at {seat}."
  }
 }

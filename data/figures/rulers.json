@@ -4,8 +4,7 @@
  "rule": { "from": "realms", "known": "all" },
  "voice": {
   "reign": "{Name} has ruled {realm} since {since}.",
-  "line": "The {nth} of {line} on its throne.",
-  "first": "The first of {line} to rule it.",
-  "age": "{Khe} is {age}."
+  "line": "The {nth} of the {line} on its throne.",
+  "first": "The first of the {line} to rule it."
  }
 }

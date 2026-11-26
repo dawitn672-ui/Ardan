@@ -1,7 +1,7 @@
 // Powers wave 1 (the owner, 2026-11-25: "make the powerscaling of this world much larger"; docs/design/powers.md).
 //
 // A.POWER: one power scale for every being, people and beasts alike.
-//   A.POWER.level(x)       a being's level, 1 to 100 (ten levels = ten times the might); x: a person, a species id, a
+//   A.POWER.level(x)       a being's level, 1 to 1000; x: a person, a species id, a figure's id (9999977-figures), a
 //                          legend or master id, a wild individual ({ sp, key }), or a being from A.POWER.being
 //   A.POWER.might(x)       the one number behind the level: a person's fighting worth in conscripts, squared
 //   A.POWER.being(x)       { kind, id, n, level, might, prof, int, titles, ranged, hardy }: the level, the profile of ten
@@ -144,7 +144,9 @@
       return { kind: 'species', id, sp: id, n: s.n, level: clamp(w.level, 1, LV.max), t: PW.tOf(m * PW.titleMult(s.titles)), might: m, power: m * PW.titleMult(s.titles), prof: w.prof, int: s.int, titles: s.titles || [], ranged: s.prof.flight >= 6 || s.prof.magic >= 6, hardy: s.prof.regen };
     }
     if (BYCRE.has(id)) return PW.being(BYCRE.get(id).id);
-    const L = LEG.get(id) || MAS.get(id);
+    // the figures registry's fixed beings (src/world/9999977-figures, D-193: the ancient demons and dragons) are read the
+    // way the legends and the masters are, from their own sheets (PW.FIG, set when that feature loads)
+    const L = LEG.get(id) || MAS.get(id) || (PW.FIG && PW.FIG.get(id));
     if (L) {
       // the level's might x titles x items x art (its skills' ranks and levels); the profile with what each of them adds
       // its level is the data's plus what it has gained by defeats since (order 92, D-184: the legends grow too, slowly)
@@ -152,7 +154,7 @@
       const w = PW.withTitles(PW.addCaps(PW.addCaps(L.prof, L.skills, 'cap'), L.items, 'gives'), L.level + lvG, L.titles), m = PW.mightOf(w.level);
       // and refined by the years (order 95: the great grow mostly by refining their arts; 1 in a fresh world, alike for all)
       const pw = m * PW.titleMult(L.titles) * PW.itemMult(L.items) * PW.artMult(L.skills) * (A.LV && A.LV.legendRefine ? A.LV.legendRefine(id) : 1);
-      return { kind: LEG.has(id) ? 'legend' : 'master', id, n: L.n, level: clamp(w.level, 1, LV.max), t: PW.tOf(pw), might: m, power: pw, art: PW.artOf(L.skills), prof: w.prof, int: L.int, cls: L.class || null,
+      return { kind: LEG.has(id) ? 'legend' : MAS.has(id) ? 'master' : 'figure', id, n: L.n, level: clamp(w.level, 1, LV.max), t: PW.tOf(pw), might: m, power: pw, art: PW.artOf(L.skills), prof: w.prof, int: L.int, cls: L.class || null,
         titles: L.titles || [], base: L.level, ranged: true, hardy: w.prof.regen };
     }
     return null;

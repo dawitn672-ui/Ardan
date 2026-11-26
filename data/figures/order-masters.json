@@ -4,7 +4,6 @@
  "rule": { "from": "orders", "known": "all" },
  "voice": {
   "master": "{Name} is Grand Master of {order}, the elite order of {realm}.",
-  "since": "{Khe} has held it since {since}.",
-  "age": "{Khe} is {age}."
+  "since": "{Khe} has held it since {since}."
  }
 }

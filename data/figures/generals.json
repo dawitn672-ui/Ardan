@@ -6,7 +6,6 @@
   "leads": "{Name} leads {host} for {realm}.",
   "senior": "The senior General of {realm}, with a seat at its council.",
   "byRight": "{Khe} leads the first host of {house} by right of rank.",
-  "battles": "{Khe} has seen {battles}.",
-  "age": "{Khe} is {age}."
+  "battles": "{Khe} has seen {battles}."
  }
 }
