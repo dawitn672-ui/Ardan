@@ -215,7 +215,8 @@
   };
 
   // the crown answers a raid through A.WHY: send a host after it, or endure (a host far below it dies for nothing)
-  PW.hostOf = r => { const n = Math.max(100, Math.round((r.army || 0) * 0.1)); return { kind: 'host', id: 'host:' + r.id, n: `the host of ${r.short}`, level: PW.levelOf(Math.pow(n, 1.35) * 2), might: Math.pow(n, 1.35) * 2, t: PW.tOf(Math.pow(n, 1.35) * 2), prof: { str: 5, spd: 4, hide: 4, venom: 0, flight: 0, regen: 0, ward: 3, swarm: 10, cunning: 5, magic: 0 }, int: 'wise', titles: [], ranged: true, hardy: 5, men: n }; };
+  // (D-194: a tenth of the host can reach the beast, its knights among them counted at a knight's worth, A.MIL.host)
+  PW.hostOf = r => { const n0 = Math.max(100, Math.round((r.army || 0) * 0.1)), n = A.MIL && A.MIL.host ? Math.max(n0, A.MIL.host(r, n0, Math.round(A.MIL.knights(r) * 0.1)).eff) : n0; return { kind: 'host', id: 'host:' + r.id, n: `the host of ${r.short}`, level: PW.levelOf(Math.pow(n, 1.35) * 2), might: Math.pow(n, 1.35) * 2, t: PW.tOf(Math.pow(n, 1.35) * 2), prof: { str: 5, spd: 4, hide: 4, venom: 0, flight: 0, regen: 0, ward: 3, swarm: 10, cunning: 5, magic: 0 }, int: 'wise', titles: [], ranged: true, hardy: 5, men: n0 }; };
   PW.realmAnswer = function (L, g, r, P, rng) {
     const host = PW.hostOf(r), c = PW.compare(host, L.id);
     const opts = [
