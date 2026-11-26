@@ -25,6 +25,17 @@ What changed for the player, in plain words, one section per version (newest fir
   moments. Joined, both read through the new art and neither grows alone again.
 - **A rare leap.** Once in a life, in a fight won far above you or at the edge of death, a skill may leap to the next
   rank at once. It always leaves a mark.
+- **Arts: actives, passives and buffs.** Beside your skills you now learn arts of three kinds. Actives are moves you use
+  in a fight (Quick Cut, Haft Sweep, Snap Shot, Shield Bash, Hip Throw, Lance Charge and more), each once a fight or
+  every few exchanges, for a little or much of your wind. Passives fire by themselves when their moment comes: when you
+  are wounded, at the very edge, in the first exchange, against someone stronger, at first light or in the dark. Buffs
+  heal or steel you: bind a wound mid-fight, roar a war cry for three exchanges, dress a wound or nurse a fever once a
+  month, sharpen your eyes for a season's hunting. You learn them by practice, from a teacher, by what you go through,
+  or out of an art you have mastered; they grow as you use them. Ready a few in the places you have (more as you grow
+  and master things) on the Skills sheet; what you ready is in hand from the next month. In a fight your readied arts
+  are buttons; your foes use theirs too, and some monsters breathe fire or freeze their hides with mana that no person
+  has. Every art says what it does in words when you press its name. Saved games load with no arts; what your skills
+  already open comes at the first month.
 
 ## v2.1.0-alpha.18 (2026-11-26 06:13 ET) · Skills that do things (effects and their caps, step 6) and a person's level on the ladder, earned by defeating people and beasts, with stat points to place
 

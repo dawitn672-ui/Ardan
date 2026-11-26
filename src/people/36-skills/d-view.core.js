@@ -119,7 +119,7 @@
     const P = (h, t) => `<div class="sk-sec"><div class="sk-h">${esc(h)}</div>${t}</div>`;
     const line = t => `<div class="sk-l">${t}</div>`;
     const r2 = K2().rungFor(p, k);
-    let h = `<div class="sk-sheet"><div class="sk-title"><b>${esc(name)}</b><span class="sk-word"${UI.ttAttrs ? UI.ttAttrs("skillWord", K2().label(p, k, { bare: true })) : ""}>${esc(r2 ? `${K2().rungName(k, r2.rank)} · ${r2.rank}-rank · Lv ${r2.lv}` : 'untried')}</span></div>`;
+    let h = `<div class="sk-sheet"><div class="sk-title"><b>${esc(name)}</b><span class="sk-word"${UI.ttAttrs ? UI.ttAttrs("skillWord", K2().label(p, k, { bare: true })) : ""}>${esc(r2 ? `${K2().rungName(k, r2.rank)} · ${r2.rank}-rank · Lv ${r2.lv}` : 'untried')}</span><span class="art-k art-passive">Passive</span></div>`;   // a ladder is a passive: always at work (the three kinds, D-186)
     const desc = S.desc || (GD.SKILL_DESC && GD.SKILL_DESC[k]) || '';
     if (desc) h += `<div class="sk-desc">${esc(desc)}</div>`;
     if (!s) {   // someone else: the level, and what he is known for

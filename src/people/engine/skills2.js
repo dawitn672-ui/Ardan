@@ -166,9 +166,11 @@ export function budget(ix, skill, at) {
   return per * at * (1 + bonus);
 }
 const tagKind = (ix, tag) => (ix.FAM[tag] ? 'family' : ix.groups.has(tag) ? 'group' : 'narrow');
-export function effectCost(ix, e) {
+// skill (optional): an art of the three kinds (order 92, D-186) prices its active by its cooldown, not by `limit`
+export function effectCost(ix, e, skill) {
+  if (Array.isArray(e)) return e.reduce((t, x) => t + effectCost(ix, x, skill), 0);
   if (!e || typeof e !== 'object') return 0;
-  const C = ix.V.costs, a = Math.abs(+e.v || 0);
+  const C = ix.V.costs, a = Math.abs(+e.v || 0), K = C.kinds || {}, sh = Math.abs(+e.share || 0);
   switch (e.type) {
     case 'stat': return C.stat * a;
     case 'edge': { const k = tagKind(ix, e.tag); return (k === 'family' ? C.edgeFamily : k === 'group' ? C.edgeGroup : C.edgeNarrow) * a; }
@@ -181,8 +183,15 @@ export function effectCost(ix, e) {
     case 'growth': return C.growthPer10 * a / 10;
     case 'unlock': return (C.unlockBigKinds || []).includes(String(e.what || '').split(':')[0]) ? C.unlockBig : C.unlockSmall;
     case 'perk': return e.legacy ? C.perkLegacy : C.perk * (a || 1);
-    case 'trigger': return effectCost(ix, e.do) * ((ix.V.rareTriggers || []).includes(e.on) ? C.triggerRare : C.trigger);
-    case 'active': return effectCost(ix, e.do) * (ix.V.limits[e.limit] != null ? ix.V.limits[e.limit] : 1);
+    case 'trigger': return effectCost(ix, e.do, skill) * ((ix.V.rareTriggers || []).includes(e.on) ? C.triggerRare : C.trigger);
+    case 'active': return effectCost(ix, e.do, skill) * (isArt(skill) && skill.spec && skill.spec.cooldown ? coolFactor(skill.spec.cooldown) : ix.V.limits[e.limit] != null ? ix.V.limits[e.limit] : 1);
+    // the three kinds' moments (step 11, D-186): a share of the user's fighting worth as a blow, of his blood or wind
+    // healed, of the harm a guard takes off; a stat raised for a while; a foe's state; each in vocab.json's costs.kinds
+    case 'strike': return (K.strikeShare || 0) * sh * (e.tag === 'all' ? K.allTag || 1 : 1) + (K.pierce || 0) * Math.abs(+e.pierce || 0);
+    case 'heal': return e.of === 'wounds' ? (K.healWound || 0) * a : (K.healShare || 0) * sh;
+    case 'raise': return (skill && skill.spec && skill.spec.duration && /^(month|season|year)$/.test(skill.spec.duration.unit) ? K.raiseMonth : K.raise || 0) * a;
+    case 'guard': return (K.guardShare || 0) * sh;
+    case 'status': return ((K.status || {})[e.of] || 0) * a;
     default: return 0;
   }
 }
@@ -201,7 +210,7 @@ export function effectsAt(skill, lv) {
   }
   return [...held.values()];
 }
-export const spendAt = (ix, skill, lv) => effectsAt(skill, lv).reduce((t, e) => t + effectCost(ix, e), 0);
+export const spendAt = (ix, skill, lv) => effectsAt(skill, lv).reduce((t, e) => t + effectCost(ix, e, skill), 0);
 // every band over its budget (a flaw: under what it owes at its first band)
 export function budgetFaults(ix, skill) {
   const out = [];
@@ -227,7 +236,11 @@ export function stack(values, cap, weights) {
 // the cap of a kind of bonus for the highest rank among its sources
 // The design's caps for the human ranks (§2.4), a ceiling the data cannot lift (step 6, D-180): vocab.json may tune a
 // cap lower, never higher. Above S the caps are the data's, rising by rank (§15.1).
-export const CAP_HUMAN = { edge: 12, fightShare: 0.15, aura: 3, blunderSurge: 2, resist: 3, growth: 50, stat: 10 };
+export const CAP_HUMAN = { edge: 12, fightShare: 0.15, aura: 3, blunderSurge: 2, resist: 3, growth: 50, stat: 10,
+  // the three kinds in a fight (step 11, D-186): one blow at most 0.4 of the user's fighting worth; what is healed in one
+  // fight at most 0.35 of his blood; a guard takes at most half of a blow; a stat raised by buffs at most +10 (the stat
+  // cap, kept apart from it: a buff wears off); a foe held stunned or off balance at most 2 rounds
+  strikeShare: 0.4, healShare: 0.35, guardShare: 0.5, raise: 10, status: 2 };
 export function capOf(ix, what, topRank) {
   const C = (ix.V.caps || {})[what], hard = HUMAN.includes(topRank) || rankIx(topRank) < 0 ? CAP_HUMAN[what] : undefined;
   const v = !C ? Infinity : C[topRank] != null ? C[topRank] : C.S != null ? C.S : Infinity;
@@ -591,4 +604,325 @@ export function perkRows(ix) {
   }
   for (const k in out) out[k].sort((a, b) => a[0] - b[0]);
   return out;
+}
+
+// ---- 11. the three kinds of order 92: active, passive and buff (step 11, D-186) ----------------------------------------
+// An art is a skill of one of the owner's three kinds (order 92): an ACTIVE is used on purpose in a fight (a blow, a throw,
+// a shot, a foe's state), readied in a slot (§3.5), with a cooldown and a cost of stamina or mana; a PASSIVE fires by
+// itself when its condition holds (wounded, outnumbered, at dawn, the foe stronger, the first exchange...), needs no
+// slot and costs nothing but its place in the caps; a BUFF heals (blood or wind in a fight; a wound or an illness in a
+// month) or raises a stat for a while, readied like an active when it is used in a fight. Every art is fully specified
+// (§15.6): spec.cooldown, spec.cost, spec.effect (its Lv-1 amount or share, the bands raise it), spec.duration and
+// spec.conditions (the weapon it needs, or the being that can hold it: mana-based arts only beings with mana).
+// Everything here is pure: the adapter (src/people/37-skills2/f-kinds) runs the fight, the month and the screen.
+export const KINDS3 = ['active', 'passive', 'buff'];
+// an art carries `art: true` (a ladder's rung and a merge's result are passives of the older sense: always on, no moment)
+export function isArt(s) { return !!(s && s.art === true && KINDS3.includes(s.kind)); }
+export const BASES = ['strike', 'feint', 'guard', 'press', 'grapple'];     // the duel's moves an art rides on
+export const USE_TYPES = { active: ['strike', 'status', 'fight', 'heal'], buff: ['heal', 'raise', 'guard', 'fight'], passive: ['fight', 'guard', 'heal', 'status', 'strike'] };
+export const STATUS = ['stun', 'knock', 'bleed', 'slow', 'disarm', 'tire'];
+export const HEAL_OF = ['hp', 'wind', 'wounds', 'illness'];
+export const COOL_UNITS = ['round', 'duel', 'battle', 'day', 'month', 'season', 'year'];
+export const MONTHS_OF = { month: 1, season: 3, year: 12 };
+export const doList = e => (!e || e.do == null ? [] : Array.isArray(e.do) ? e.do : [e.do]);
+// the budget's factor for a cooldown: once a fight (or a battle, or a day) 1; every v rounds up to 1.5 (every third
+// round); once in v months 0.5 / v, a season 0.4, a year 0.25
+export function coolFactor(cd) {
+  if (!cd || typeof cd !== 'object') return 1;
+  const v = Math.max(1, +cd.v || 1);
+  switch (cd.per) {
+    case 'round': case 'turn': return Math.min(1.5, 4.5 / v);
+    case 'duel': case 'battle': case 'day': return 1 / v;
+    case 'week': return 0.75 / v;
+    case 'month': return 0.5 / v;
+    case 'season': return 0.4 / v;
+    case 'year': return 0.25 / v;
+    default: return 1;
+  }
+}
+// what an art is at a level: its moment ({ type: 'active' | 'trigger', name, base, on, do }), and its specification
+export function artUse(ix, s, lv) {
+  if (!isArt(s)) return null;
+  lv = Math.max(1, Math.min(MAX_LV, lv | 0));
+  const e = effectsAt(s, lv).find(x => x.type === 'active' || x.type === 'trigger');
+  if (!e) return null;
+  const sp = s.spec || {};
+  return { id: s.id, kind: s.kind, name: s.name, rank: s.rank, lv, base: e.base || null, on: e.on || null, do: doList(e),
+    cd: sp.cooldown || null, cost: Array.isArray(sp.cost) ? sp.cost : [], dur: sp.duration || null, cond: Array.isArray(sp.conditions) ? sp.conditions : [],
+    value: Math.round(spendAt(ix, s, lv) * 100) / 100 };
+}
+// the resource an art spends (stamina, mana or time), and how much
+export const costOf = (u, res) => ((u && u.cost) || []).reduce((t, c) => t + (c && c.res === res ? +c.v || 0 : 0), 0);
+export const usesMana = s => !!(s && s.spec && Array.isArray(s.spec.cost) && s.spec.cost.some(c => c && c.res === 'mana'));
+// a weapon condition against a fighter: { weapon: skill key, shield, mounted, ranged, beast }
+export function weaponOk(ix, list, ctx) {
+  if (!list || !list.length || list.includes('any')) return true;
+  ctx = ctx || {};
+  for (const w of list) {
+    if (w === 'melee' && !ctx.beast) return true;
+    if (w === 'shield' && ctx.shield) return true;
+    if (w === 'mounted' && ctx.mounted) return true;
+    if (w === 'ranged' && ctx.ranged) return true;
+    if (w === 'beast' && ctx.beast) return true;
+    if (ctx.weapon && !ctx.beast && (w === ctx.weapon || w === famOf(ix, ctx.weapon))) return true;
+  }
+  return false;
+}
+// a being's condition: { fam: [...], magic: n } against { fam, magic } (a monster's or a legend's profile)
+export function beingOk(need, b) {
+  if (!need) return true;
+  if (!b) return false;
+  if (Array.isArray(need.fam) && need.fam.length && !need.fam.includes(b.fam)) return false;
+  if (need.magic != null && !((+b.magic || 0) >= need.magic)) return false;
+  return true;
+}
+// can this fighter use it at all (its spec's conditions): the weapon, the being, and mana for a mana-based art
+export function condOk(ix, u, ctx) {
+  ctx = ctx || {};
+  for (const c of (u && u.cond) || []) {
+    if (!c || typeof c !== 'object') continue;
+    if (c.weapon && !weaponOk(ix, [].concat(c.weapon), ctx)) return false;
+    if (c.being && !beingOk(c.being, ctx.being)) return false;
+  }
+  if (costOf(u, 'mana') > 0 && !(ctx.mana > 0)) return false;
+  return true;
+}
+// a passive's (or an active's own) trigger in a fight's moment. ctx: { round, hp, foeHp (shares of the full), light,
+// outnumbered, foeStronger, won, lost, parried, foeAct }. Triggers a duel never has (a rout, a siege, a sea storm, a feast)
+// are false here: they wait for the systems that hold them (battles: D-186)
+export function fires(on, ctx) {
+  if (!on) return true;
+  ctx = ctx || {};
+  switch (on) {
+    case 'duel_start': case 'first_strike': return ctx.round === 1;
+    case 'attacked_first': return ctx.round === 1 && (ctx.foeAct === 'strike' || ctx.foeAct === 'press');
+    case 'wounded': return ctx.hp < 0.5;
+    case 'near_death': return ctx.hp < 0.2;
+    case 'foe_wounded': return ctx.foeHp < 0.5;
+    case 'outnumbered': return !!ctx.outnumbered;
+    case 'foe_stronger': return !!ctx.foeStronger;
+    case 'dawn': return ctx.light === 'dawn' || ctx.light === 'dusk';
+    case 'night': return ctx.light === 'night' || ctx.light === 'torch';
+    case 'win': return !!ctx.won;
+    case 'lose': return !!ctx.lost;
+    case 'parried': return !!ctx.parried;
+    default: return false;
+  }
+}
+// slots for actives (§3.5): 1 at 12, 2 at 16, +1 for intellect and will both 50 or more, and from 30 +1 if any held skill
+// is B or higher, +1 more if A or higher; at most 5. f: { age, int, wil, best } (best: the highest rank held)
+export const SLOTS_MAX = 5;
+export function slots(f) {
+  f = f || {};
+  if (!(f.age >= 12)) return 0;
+  let n = f.age >= 16 ? 2 : 1;
+  if (f.int >= 50 && f.wil >= 50) n++;
+  if (f.age >= 30 && rankIx(f.best) >= rankIx('B')) n++;
+  if (f.age >= 30 && rankIx(f.best) >= rankIx('A')) n++;
+  return Math.min(SLOTS_MAX, n);
+}
+// is a readied art ready now? st: { used: {id: n}, next: {id: round}, last: {id: absMonth} (cooldowns of months),
+// fat, mana }; ctx: { round, month } and the moment's facts for an art with its own trigger
+export function ready(u, st, ctx) {
+  if (!u || u.kind === 'passive') return false;
+  st = st || {}; ctx = ctx || {};
+  const cd = u.cd, per = cd && cd.per, v = Math.max(1, +(cd && cd.v) || 1);
+  if (per === 'round' || per === 'turn') { if ((st.next || {})[u.id] > ctx.round) return false; }
+  else if (MONTHS_OF[per]) {
+    const l = (st.last || {})[u.id];
+    if (l != null && ctx.month != null && ctx.month - l < v * MONTHS_OF[per]) return false;
+    if ((st.used || {})[u.id]) return false;
+  } else if (((st.used || {})[u.id] || 0) >= 1) return false;     // once a fight (duel, battle, day)
+  const sta = costOf(u, 'stamina'), mana = costOf(u, 'mana');
+  if (sta > 0 && (st.fat || 0) + sta > 90) return false;
+  if (mana > 0 && !((st.mana || 0) >= mana)) return false;
+  if (u.on && !fires(u.on, ctx)) return false;
+  return true;
+}
+// the round from which a round-cooldown art may be used again (used in round r)
+export const nextRound = (u, r) => (u && u.cd && (u.cd.per === 'round' || u.cd.per === 'turn') ? r + Math.max(1, +u.cd.v || 1) : Infinity);
+// which arts a fighter readies when nobody chooses for him (anyone but the player): the actives and buffs he can use with
+// the weapon in his hand, best first by what they are worth at their level, at least one buff among two places or more
+// when he holds one; ties by id. ctx: { ix, weapon, shield, ... } for the conditions (none: all). Pure.
+export function chooseReady(uses, n, ctx) {
+  const ok = (uses || []).filter(u => u && u.kind !== 'passive' && (!ctx || !ctx.ix || condOk(ctx.ix, u, ctx))).sort((a, b) => b.value - a.value || (a.id < b.id ? -1 : 1));
+  if (!(n > 0) || !ok.length) return [];
+  const out = ok.slice(0, n);
+  if (n >= 2 && !out.some(u => u.kind === 'buff')) { const b = ok.find(u => u.kind === 'buff'); if (b) { out.pop(); out.push(b); } }
+  return out.map(u => u.id);
+}
+// which readied art a fighter uses this round, or null (pure: anyone's choice, and the player's when he lets the fight
+// run). Only an art whose move is the move he makes (ctx.act); a heal when under half his blood (his wind when spent), a
+// buff not in force in the first three rounds or when behind (ctx.behind), an active whenever it is ready; the best by
+// its worth; ties by id. A wound or an illness is healed in a month, never in a fight.
+export function plan(uses, st, ctx) {
+  ctx = ctx || {}; st = st || {};
+  let best = null, bs = -Infinity;
+  for (const u of uses || []) {
+    if (!u || u.base !== ctx.act || !ready(u, st, ctx)) continue;
+    const d = u.do[0] || {}, t = d.type;
+    let sc;
+    if (t === 'heal' && (d.of || 'hp') === 'hp') { if (!(ctx.hp < 0.5)) continue; sc = 3; }
+    else if (t === 'heal' && d.of === 'wind') { if (!((st.fat || 0) > 40)) continue; sc = 2.5; }
+    else if (t === 'heal') continue;
+    else if (u.kind === 'buff') { if ((st.inForce || []).some(x => x.id === u.id) || !(ctx.round <= 3 || ctx.behind)) continue; sc = 2; }
+    else sc = 1;
+    sc += (u.value || 0) / 1000;
+    if (sc > bs || (sc === bs && best && u.id < best.id)) { best = u; bs = sc; }
+  }
+  return best ? best.id : null;
+}
+// a monster's or a legend's arts (mana-based ones only if it has mana): every art a newborn of its kind is born with
+// (a `birth` route whose need is `being`), at a level from its own (1 at level 1, 4 at 10, 7 at 100, 10 at 1,000)
+export const beingLevel = L => Math.max(1, Math.min(MAX_LV, Math.round(1 + 3 * Math.log10(Math.max(1, +L || 1)))));
+export function beingArts(ix, b) {
+  const out = [];
+  if (!b) return out;
+  for (const s of ix.skills) {
+    if (!isArt(s)) continue;
+    const r = (s.acquire || []).find(a => a.via === 'birth' && a.needs && a.needs.being && beingOk(a.needs.being, b));
+    if (!r || (usesMana(s) && !(b.magic > 0))) continue;
+    out.push({ id: s.id, lv: beingLevel(b.level) });
+  }
+  return out;
+}
+// mana: a being's pool, from its magic (0-10 on the bestiary's profile): ten a step; a person has none until magic (§17)
+export const manaOf = b => (b && b.magic > 0 ? Math.round(10 * b.magic) : 0);
+// anyone's arts in the closed form (a person who is not the player): every art whose practice, teacher or school route
+// (or an evolution from one he holds at Lv 10) his reads meet, at a level from how far past the need his read stands (a
+// level each three points); mana-based arts and arts a being is born with never. reads(fam) is his read of a family;
+// facts: { stat, age }.
+export function npcArts(ix, reads, facts) {
+  const out = [], held = {};
+  facts = facts || {};
+  const lvOf = needs => {
+    const fam = needs && needs.family; if (!fam) return 0;
+    let lv = MAX_LV;
+    for (const f in fam) { const r = reads(f); if (!(r >= fam[f])) return 0; lv = Math.min(lv, 1 + Math.floor((r - fam[f]) / 3)); }
+    for (const st in needs.stat || {}) if (!((facts.stat || {})[st] >= needs.stat[st])) return 0;
+    if (needs.age && !(facts.age >= needs.age[0] && facts.age <= needs.age[1])) return 0;
+    return Math.max(1, Math.min(MAX_LV, lv));
+  };
+  const arts = ix.skills.filter(isArt);
+  // a few passes: an evolution needs its source first (the data's chains are short)
+  for (let pass = 0; pass < 4; pass++) for (const s of arts) {
+    if (held[s.id] || usesMana(s)) continue;
+    let lv = 0;
+    for (const r of s.acquire || []) {
+      if (r.via === 'practice' || r.via === 'teacher' || r.via === 'school') lv = Math.max(lv, lvOf(r.needs));
+      else if (r.via === 'evolve' && held[r.from] >= MAX_LV) lv = Math.max(lv, lvOf(r.needs));
+    }
+    if (lv > 0) held[s.id] = lv;
+  }
+  for (const id of Object.keys(held).sort()) out.push({ id, lv: held[id] });
+  return out;
+}
+// the faults of an art of the three kinds (§2.7 check 11; D-186), [] when whole
+const an = w => (/^[aeiou]/.test(String(w)) ? 'an ' : 'a ') + w;
+export function kindFaults(ix, s) {
+  const out = [];
+  if (!isArt(s)) return out;
+  const V = ix.V, sp = s.spec || {}, trig = new Set(V.triggers || []);
+  const moments = [];
+  for (const b of s.levels || []) for (const e of b.effects || []) {
+    if (e.type === 'active' || e.type === 'trigger') moments.push([b.at, e]);
+    else out.push(`Lv ${b.at}: ${an(e.type)} effect; an art acts only in its moment (an active or a trigger)`);
+  }
+  if (!moments.length) out.push('no moment (an active or a trigger effect)');
+  const want = s.kind === 'passive' ? 'trigger' : 'active';
+  for (const [at, e] of moments) {
+    if (e.type !== want) out.push(`Lv ${at}: ${an(s.kind)} acts by ${want === 'trigger' ? 'a trigger' : 'an active'}, not ${e.type}`);
+    if (e.type === 'trigger' && !trig.has(e.on)) out.push(`Lv ${at}: trigger on ${e.on}`);
+    if (e.type === 'active') {
+      if (!BASES.includes(e.base)) out.push(`Lv ${at}: base ${e.base} (one of ${BASES.join(', ')})`);
+      if (e.on != null && !trig.has(e.on)) out.push(`Lv ${at}: an active's own trigger ${e.on}`);
+    }
+    const L = doList(e);
+    if (!L.length) out.push(`Lv ${at}: nothing done`);
+    for (const d of L) {
+      if (!d || !USE_TYPES[s.kind].includes(d.type)) { out.push(`Lv ${at}: ${an(s.kind)} cannot ${d && d.type}`); continue; }
+      if ((d.type === 'strike' || d.type === 'guard') && !(d.share > 0)) out.push(`Lv ${at}: ${d.type} without a share`);
+      if (d.type === 'heal' && !HEAL_OF.includes(d.of)) out.push(`Lv ${at}: heal of ${d.of}`);
+      if (d.type === 'heal' && (d.of === 'wounds' ? !(d.v >= 1) : !(d.share > 0))) out.push(`Lv ${at}: heal without its amount`);
+      if (d.type === 'status' && (!STATUS.includes(d.of) || !(d.v > 0))) out.push(`Lv ${at}: status ${d.of} ${d.v}`);
+      if (d.type === 'raise' && (!(V.stats || []).includes(d.stat) || !(d.v > 0))) out.push(`Lv ${at}: raise ${d.stat} ${d.v}`);
+      if (d.type === 'fight' && !(d.v > 0)) out.push(`Lv ${at}: fight without its points`);
+    }
+  }
+  // the specification, whole (§15.6): an active and a buff have their cooldown, cost and effect; a passive its effect; every
+  // art its conditions (a list); a buff that raises or guards its duration; a cooldown in the units an art knows
+  const cd = sp.cooldown, kindsOf = new Set(moments.flatMap(([, e]) => doList(e).map(d => d && d.type)));
+  if (s.kind !== 'passive') {
+    if (!cd) out.push('no cooldown');
+    if (!Array.isArray(sp.cost) || !sp.cost.length) out.push('no cost');
+    else for (const c of sp.cost) if (!['stamina', 'mana', 'time'].includes(c && c.res)) out.push(`cost in ${c && c.res} (stamina, mana or time)`);
+    if (s.slot !== true) out.push('an active or a buff takes a slot (slot: true)');
+  } else if (s.slot) out.push('a passive takes no slot');
+  if (cd && !COOL_UNITS.includes(cd.per)) out.push(`cooldown per ${cd.per}`);
+  if (!sp.effect) out.push('no effect');
+  if (!Array.isArray(sp.conditions)) out.push('no conditions list');
+  if (s.kind === 'buff' && (kindsOf.has('raise') || kindsOf.has('guard') || kindsOf.has('fight')) && !sp.duration) out.push('a buff that raises or guards has no duration');
+  // the spec's effect is the Lv-1 band's first amount
+  const m1 = moments.find(([at]) => at === 1), d1 = m1 && doList(m1[1])[0];
+  if (sp.effect && d1) {
+    const share = d1.share != null ? d1.share : null, amt = d1.v != null ? d1.v : null;
+    if (sp.effect.share != null ? sp.effect.share !== share : sp.effect.amount !== amt) out.push(`spec.effect ${JSON.stringify(sp.effect)} is not the Lv-1 band's ${JSON.stringify(share != null ? { share } : { amount: amt })}`);
+  }
+  // mana: only a being that has it holds a mana-based art (no person until magic, §17): every route asks a being with magic
+  if (usesMana(s)) {
+    for (const r of s.acquire || []) if (!(r.needs && r.needs.being && r.needs.being.magic > 0)) out.push(`a mana-based art reachable without mana (via ${r.via})`);
+    if (!(sp.conditions || []).some(c => c && c.being && c.being.magic > 0)) out.push('a mana-based art whose conditions ask no being with mana');
+  }
+  // a being's art is born, never trained; a person's art trains a family
+  const born = (s.acquire || []).length > 0 && (s.acquire || []).every(r => r.via === 'birth' || r.via === 'awaken');
+  if (!born && !(s.trains && ix.FAM[s.trains])) out.push(`trains ${s.trains}: a person's art grows from a family's work`);
+  // an evolution of one art to another stays an art
+  for (const t of s.evolvesTo || []) if (ix.BY[t.id] && !isArt(ix.BY[t.id])) out.push(`evolves to ${t.id}, which is not an art`);
+  return out;
+}
+// an art's numbers in words for the player (no percentages): a share as a part ("a fifth"), a cooldown, a cost
+export function shareWord(x) {
+  x = +x || 0;
+  if (x <= 0) return 'nothing';
+  const W = [[0.035, 'a sliver'], [0.075, 'a twentieth'], [0.115, 'a tenth'], [0.155, 'an eighth'], [0.185, 'a sixth'], [0.23, 'a fifth'], [0.29, 'a quarter'], [0.37, 'a third'], [0.45, 'two fifths'], [0.6, 'half'], [0.8, 'two thirds']];
+  for (const [t, w] of W) if (x < t) return w;
+  return 'nearly all';
+}
+const NUMW = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
+export function coolWord(cd) {
+  if (!cd) return 'whenever its moment comes';
+  const v = Math.max(1, +cd.v || 1), n = NUMW[v] || 'many';
+  switch (cd.per) {
+    case 'round': case 'turn': return v === 1 ? 'every exchange' : `once in ${n} exchanges`;
+    case 'duel': return v === 1 ? 'once a fight' : `once in ${n} fights`;
+    case 'battle': return 'once a battle';
+    case 'day': return 'once a day';
+    case 'month': return v === 1 ? 'once a month' : `once in ${n} months`;
+    case 'season': return 'once a season';
+    case 'year': return 'once a year';
+    default: return 'now and then';
+  }
+}
+export function costWord(cost) {
+  const L = (cost || []).filter(c => c && c.v > 0);
+  if (!L.length) return 'nothing';
+  return L.map(c => {
+    const v = +c.v;
+    if (c.res === 'stamina') return v <= 5 ? 'a little wind' : v <= 10 ? 'some wind' : v <= 16 ? 'much wind' : 'most of your wind';
+    if (c.res === 'mana') return v <= 10 ? 'a little mana' : v <= 20 ? 'much mana' : 'a great draw of mana';
+    if (c.res === 'time') return v <= 1 ? 'a day' : v <= 3 ? 'a few days' : 'a week or more';
+    return c.res;
+  }).join(' and ');
+}
+export function durWord(d) {
+  if (!d) return 'at once';
+  const v = Math.max(1, +d.v || 1), n = NUMW[v] || 'many';
+  switch (d.unit) {
+    case 'round': case 'turn': return v === 1 ? 'for an exchange' : `for ${n} exchanges`;
+    case 'duel': case 'battle': return 'for the rest of the fight';
+    case 'day': return 'for a day';
+    case 'month': return v === 1 ? 'for a month' : `for ${n} months`;
+    case 'season': return 'for a season';
+    default: return 'for a while';
+  }
 }

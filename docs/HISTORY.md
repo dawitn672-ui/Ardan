@@ -3072,6 +3072,74 @@ lint-choices (`--feature=titles`: 0 obviously best), `version.mjs check`; cohere
 **Undo.** Revert the step's commits; a save made at version 19 would then be refused as newer. The legends' titles
 return inline with `git checkout <base> -- data/legends.json data/power.json`.
 
+### H-150 · 2026-11-26 · The three kinds of skill: actives, passives and buffs (skills-v2 §10 step 11, §16; order 92; D-186)
+
+**What.** The owner's order 92: "active skills like combat oriented from melee and swordsmanship to mana based ... passive
+skills that activate under certain conditions give large effects or boosts and then ... buff skills like healing and
+temporary stat increasing skill." Step 11 of the skills rebuild, made the owner's three kinds:
+
+- **Data and validator.** An art is `kind` active, passive or buff with `art: true` (`data/skills/kinds/arms.json`,
+  `body.json`, `beings.json`: 46 arts, 20 active, 15 passive, 11 buff; D 9, C 20, B 13, A 2, S 1, SS 1). Each fully
+  specified (§15.6): cooldown, cost (stamina, mana or time), effect (the Lv-1 band's amount or share), duration,
+  conditions (the weapon, or the being); routes practice, teacher, evolve, deed (and birth for monsters). `vocab.json`:
+  the effects strike, heal, raise, guard, status with their costs; the kinds' caps by rank; weapon and being conditions;
+  three triggers (foe_stronger, first_strike, foe_wounded). The validator's check 11 (`E.kindFaults`); `seed-data` does not
+  write `data/skills/kinds/`.
+- **Engine** (`src/people/engine/skills2.js` §11, pure): costs by cooldown (`coolFactor`), `artUse`, `ready`, `plan` (the
+  choice of an art in a fight), `chooseReady` (readying), `slots` (§3.5), `fires` (the passives' conditions),
+  `beingArts` and `manaOf` (monsters and legends only), `npcArts` (the closed form), `kindFaults`, and the words a
+  player reads (`shareWord`, `coolWord`, `costWord`, `durWord`). `CAP_HUMAN` gains five caps (a blow 0.4 of the worth,
+  a fight's heals 0.35 of the blood, a guard half a blow, a raise +10, a foe held two exchanges).
+- **In play** (`src/people/37-skills2/f-kinds.core.js`): the player's arts (`pc.ka`), learned by their routes at the
+  month's turn (at most two a month) and grown by use and half the family's month; anyone else's in the closed form;
+  slots and readying (`pc.kr`, in hand from the next month); the duel (both sides; a press for the player, `E.plan` for
+  the foe and for a fight that runs by itself); a month's buffs from the Skills sheet (a wound, an illness, a stat for a
+  month through `SK2.statOf`). Release edits, each guarded: `A.duelAct`, `A.applyHit`, `A.duelFinish`, `A.duelAuto`
+  (07-duels), `A.CR` and `startDuelNow` (06), `UI.profBlock` and `UI.duelModalTech` (23-ui-b). No new stage.
+- **View** (`g-view.core.js`): the Skills sheet and the old profile list the arts with their kind, rank and level, what
+  is in hand and the places, Ready, Put away and Use, each art's description in words on a press; the duel shows a bar of
+  the readied arts; the profile tab's Skills panel says what is in hand with a button to the sheet; a ladder's sheet says
+  it is a passive.
+- **Save version 20** (step `skills2arts`: the player's `pc.ka` and `pc.kr`, empty).
+- **Honest odds.** The foe's arts moved real duels off the shown odds (honestOddsCells' even cell 39 shown, 30 won;
+  flBeastOdds a bin 18 points off): the duel screen's measure and `A.shownDuelOdds` now add each side's arts' worth
+  (`SK2.artsWorth`, `SK2.artsWorthOf`; fitted on the duel engine), never `A.fightWorth`. `honestOdds`' monotone check sorts
+  by the same measure (24-honest-duel-odds' test, edited).
+
+**Files.** `data/skills/vocab.json`, `data/skills/kinds/*.json`, `src/people/engine/skills2.js` (and the v2 bundle),
+`tools/lib/skills2-check.mjs`, `tools/lint-skills.mjs`, `src/people/37-skills2/` (`f-kinds`, `g-view`, `c-effects`,
+`e-merge`, `test.mjs`, `README.md`), `src/people/36-skills/d-view.core.js`, `src/ui/999996-profile-tab/profile.b-view.core.js`,
+`src/core/99998-v2-saves/saves.core.js`, `src/core/release/core/06-prison-travel-school-ai.js`, `07-duels.js`, `23-ui-b.js`,
+`tests/v2/skills2-kinds.test.js`, `tests/v2/skills2-data.test.js`, `tests/long-tests.json` (`sk2ArtsMonth`),
+`src/people/48-event-fight-rules/fight.core.js`, `src/people/24-honest-duel-odds/odds.core.js` and `test.mjs`; docs:
+skills-v2 §10 row 11 and §16, D-186, CHANGELOG.
+
+**Proof.** On a private build (`/tmp/ardan/o92k/x.html`), 39 of 39 pass: the new `sk2Active` (8 duels in worlds
+9861-9864: the player's arts used 38 times, the foes' 11, none oftener than its cooldown; the war cry's strength for its
+exchanges and gone after, the shell's guard likewise), `sk2KindCaps` (16 fights, 6 against monsters with mana, 64
+exchanges with every art at Lv 10 readied: fight points at most 15 in 100 of the worth, a guard 0.5, a fight's heals 0.35
+of the blood, 21 blows each inside its share; 0 over a cap), `sk2DuelReplay` (world 9881: alone, drawn at every exchange,
+and again: the same log, result, random stream and state), `sk2ArtsMonth` (long tier; three lives of five years: 7 arts
+learned, each by an open route, never a mana art; 428 of 900 grown people hold arts in the closed form; a month's buff
+heals a wound once, insight 32 -> 42 for its month and 32 after; no die drawn), `sk2ArtsView` (375 x 667: 7 arts, three
+kinds, 0 controls under 44 points, nothing too wide, no percentage, a press opens and a hover does not; the duel's bar
+fits); and `sk2Caps`, `sk6PerkSums`, `sk2Evolve`, `sk2Merge`, `sk2Advance`, `sk2Migrate` (25 saves), `s1Migrate`,
+`uiSmoke`, `renderRng`, `replayWithRender`, `v2svRoundTrip`, `pfNumbers`, `pfFits`, `pfDuelFoesOnDemand`, `flDuelOdds`
+(mean 1.4), `flDuelFace`, `flBeastOdds` (mean 1.8, worst bin 6.8; base 2.0, 6.2), `flHonest`, `flAudit`, `flScreens`,
+`honestOdds`, `honestOddsCells` (worst 2.7; base 4.2), `foBadge`, `foMeasureMod`, `foInLives`, `lnHonestOdds`,
+`lnBrawlFists`, `lnRenderPure`, `v2sWorthFit`, `lvFromDefeats`, `lvNoFarm`, `ttCaps`, `clickLint`, `clickNoHover`. Engine
+tests 164 of 164 (`tests/v2/skills2-kinds.test.js`: sk2Kinds and eight more); lint-skills (194 skills), lint-stages (at its
+baseline), lint-reasons (41, at its baseline), lint-events and lint-choices (`--feature=skills2`: 0 errors, 0 obviously
+best), lint-kin, lint-docs-index, `version.mjs check`, `seed-data --check`, `--check-tiers` (67 long of 1,010); coherency
+`--baseline=quick`: no contradiction, no check rose. Not run: the whole suite, the balance harness, a playtester agent and
+a separate reviewer (the integrator's).
+
+**Deferred** (§16.6): battles and auras into the war core, actives at work, NPCs' month buffs, legends' arts in their own
+fights, the rest of the library (check 9's shares bind at 200; the library is 194).
+
+**Undo.** Revert the step's commits; a save made at version 20 would then be refused as newer (the version is the
+integrator's to settle with the level-and-classes builder's).
+
 ### H-153 · 2026-11-26 · The month's skill pass fast again (s1Cost on d02e03f0)
 
 **What.** CI's quick tier on d02e03f0 (steps 7-8 with titles) failed `s1Cost`: 1.086 ms of CPU a month for a full sheet

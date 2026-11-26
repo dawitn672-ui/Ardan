@@ -141,7 +141,7 @@
   // ---- fight: A.fighterFrom's hook --------------------------------------------------------------------------------------
   // the worth A.fightWorth gives this fighter (the same sum), before any skill's fight effect
   SK2.worthOfFighter = function (f) {
-    const v = A.CR(Object.assign({ fat: 0, burst: 0, fury: 0, hp: 100, maxHp: 100, adapt: 0, mounted: false }, f, { sk2: null }), { round: 5 });
+    const v = A.CR(Object.assign({ fat: 0, burst: 0, fury: 0, hp: 100, maxHp: 100, adapt: 0, mounted: false }, f, { sk2: null, k2: null }), { round: 5 });
     return Math.max(0, v + (f.wdmg || 3) * 0.9 + (f.prot || 0) * 1.1 + (f.shield || 0) * 1.4);
   };
   SK2.fightOn = function (f, p) {

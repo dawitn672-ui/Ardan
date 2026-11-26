@@ -11,12 +11,283 @@ const saveFiles = () => [...fs.readdirSync(SAVES_DIR).filter(f => f.endsWith('.a
   ...fs.readdirSync(path.join(SAVES_DIR, 'press')).filter(f => f.endsWith('.ardan')).map(f => path.join(SAVES_DIR, 'press', f))];
 const b64 = f => fs.readFileSync(f).toString('base64');
 
-export const limits = { sk5Lives: 3600, sk2Migrate: 2400, sk2Caps: 900, sk6PerkSums: 1800, sk2Evolve: 2400, sk2Merge: 900, sk2Advance: 900 };
+export const limits = { sk5Lives: 3600, sk2Migrate: 2400, sk2Caps: 900, sk6PerkSums: 1800, sk2Evolve: 2400, sk2Merge: 900, sk2Advance: 900, sk2Active: 900, sk2KindCaps: 900, sk2DuelReplay: 600, sk2ArtsMonth: 1200, sk2ArtsView: 600 };
+// step 11 (D-186): the player holds these arts at these levels, every fightable one readied (settled: readied last month)
+const ARTS = `((pc, list) => { pc.ka = {}; pc.kr = []; for (const [id, lv] of list) pc.ka[id] = { lv, xp: 0, y: A.S.year, via: 'planted' };
+  for (const [id] of list) { const s = A.SK2.art(id); if (s && s.kind !== 'passive' && A.SK2.inFight(s)) pc.kr.push({ id, m: -1 }); } })`;
+// a grown noble with a sword and a shield, the queue empty
+const ARMED = `((seed, age) => { T.enter({ seed, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: age || 30 }); A.S.queue = [];
+  const pc = A.pc(); pc.gear = pc.gear || {}; pc.gear.weapon = 'sword'; pc.gear.shield = 'shield'; pc.gear.ranged = null; return pc; })`;
+// two foes of the world with a sword at C or better (the closed form gives them arts), by id
+const FOES = `(pc => Object.values(A.S.people).filter(p => p && p.alive && p.id !== pc.id && p.st && A.isAdult(p) && A.skill(p, 'sword') >= 38).sort((a, b) => (a.id < b.id ? -1 : 1)).slice(0, 2))`;
 // a grown player whose body carries rank B (C9 holds a skill to what its stats carry), and a family planted at an S1 step
 // with its bar full (15: C · Lv 10)
 const GROW = `(pc => { for (const st of GD.STATS) { pc.pot[st] = Math.max(pc.pot[st], 90); pc.st[st] = Math.max(pc.st[st], 85); } })`;
 const PLANT = `((pc, c, step) => { A.SK.set(pc, c, step, 'planted'); pc.sk[c].xp = A.SK.E().cost(step) - 0.01; A.SK.mirror(pc, c); A.SK2.syncFam(pc, c); })`;
 export default {
+  // step 11 (D-186): a readied active is used at most once per its cooldown in a duel, on its own move; a buff raises or
+  // guards for its rounds and then wears off, and a heal gives blood back; the foe uses his own arts (the closed form) by
+  // the same rules. Pooled over the first worlds of a run that have two swordsmen at C or better (seed fallback, H-082).
+  async sk2Active(pg) {
+    const r = await pg.evaluate(({ ARTS, ARMED, FOES }) => {
+      const SK2 = A.SK2; if (!SK2 || !SK2.duelStart || !SK2.duelPick) return { none: true };
+      const arts = eval(ARTS), armed = eval(ARMED), foes = eval(FOES);
+      const out = { duels: 0, uses: 0, npcUses: 0, raise: 0, wore: 0, guard: 0, guardOff: 0, heal: 0, bad: [], seeds: [], ends: 0 };
+      const bad = s => { if (out.bad.length < 10) out.bad.push(s); };
+      const LIST = [['quick_cut', 10], ['twin_cut', 6], ['shield_bash', 8], ['shell_of_oak', 6], ['second_wind', 10], ['war_cry', 10]];
+      const slots0 = SK2.slotsOf; SK2.slotsOf = p => (p && p.id === A.S.pc ? 9 : slots0(p));
+      const check = (f, who) => {
+        const by = {};
+        for (const x of f.k2.uses) (by[x.id] = by[x.id] || []).push(x.r);
+        for (const id in by) {
+          const u = f.k2.arts.find(a => a.id === id), rs = by[id];
+          if (!u) { bad(`${who} used ${id}, not readied`); continue; }
+          if (u.cd && u.cd.per === 'round') { for (let i = 1; i < rs.length; i++) if (rs[i] - rs[i - 1] < u.cd.v) bad(`${who} ${id} in rounds ${rs.join(',')}, cooldown ${u.cd.v}`); }
+          else if (rs.length > 1) bad(`${who} ${id} ${rs.length} times in one fight`);
+        }
+      };
+      try {
+        for (const seed of T.seedRun(9861, 8)) {
+          if (out.duels >= 8) break;
+          const pc = armed(seed, 30), fs = foes(pc); if (fs.length < 2) continue;
+          out.seeds.push(seed);
+          for (const foe of fs) {
+            arts(pc, LIST);
+            A.S.queue = [];
+            const D = A.startDuel(pc, foe, { kind: 'duel', lethal: false, light: 'day' });
+            if (!D || !D.a || !D.a.k2) { bad('seed ' + seed + ': no arts in the fight'); continue; }
+            out.duels++;
+            const base = D.a.str, hist = [];
+            for (let g = 0; !D.over && g < 40; g++) {
+              const ready = id => { const u = D.a.k2.arts.find(x => x.id === id); return u && SK2.duelReady(D, D.a, u) ? u : null; };
+              const hp = D.a.hp / D.a.maxHp, r1 = D.round + 1;
+              const u = (r1 <= 2 && (ready('war_cry') || ready('shell_of_oak'))) || (hp < 0.6 && ready('second_wind')) || ready('twin_cut') || ready('quick_cut') || ready('shield_bash');
+              const hp0 = D.a.hp;
+              A.duelAct(u ? 'k:' + u.id : 'strike');
+              hist.push({ r: r1, id: u ? u.id : null, str: D.a.str, guard: D.a.k2.guard, hp0, hp: D.a.hp, over: D.over });
+            }
+            check(D.a, 'player'); if (D.b.k2) { check(D.b, 'foe'); out.npcUses += D.b.k2.uses.length; }
+            out.uses += D.a.k2.uses.length;
+            // the cry: its strength for three exchanges, then gone; the shell: its guard for three, then none
+            for (const id of ['war_cry', 'shell_of_oak']) {
+              const at = D.a.k2.uses.find(x => x.id === id); if (!at) continue;
+              const rows = hist.filter(h => h.r >= at.r && h.r <= at.r + 3);
+              for (const h of rows) {
+                // (seen after the exchange: the cry's strength is the next exchange's, the guard the one just fought)
+                const on = h.r < at.r + (id === 'war_cry' ? 2 : 3);
+                if (id === 'war_cry') { if (on && !(h.str > base)) bad(`round ${h.r}: the cry's strength is gone early`); if (!on && !h.over && h.str !== base) bad(`round ${h.r}: the cry's strength stays (${h.str} for ${base})`); if (on) out.raise++; else if (h.str === base) out.wore++; }
+                else { if (on && !(h.guard > 0)) bad(`round ${h.r}: the shell's guard is gone early`); if (on) out.guard++; else if (h.guard === 0) out.guardOff++; }
+              }
+            }
+            const sw = D.a.k2.uses.find(x => x.id === 'second_wind');
+            if (sw) { const h = hist.find(x => x.r === sw.r); if (h && h.hp0 < D.a.maxHp * 0.6) out.heal++; }
+            if (D.a.k2.healed > D.a.maxHp * 0.35 + 1e-9) bad('healed ' + D.a.k2.healed + ' of ' + D.a.maxHp);
+            // nothing a buff did in the fight touched the person
+            // at the end the fighter's strength is his own plus only what is still in force
+            if (D.a.str !== base + (D.a.k2.raised.str || 0)) bad(`strength ${D.a.str} at the end for ${base} and ${D.a.k2.raised.str || 0} in force`); else out.ends++;
+            if (!A.S.queue.length || A.S.queue[0].type !== 'duel') {} else A.duelClose();
+          }
+        }
+      } finally { SK2.slotsOf = slots0; }
+      return out;
+    }, { ARTS, ARMED, FOES });
+    if (r.none) return { ok: false, detail: 'no arts in the build (A.SK2.duelStart)' };
+    const ok = !r.bad.length && r.duels >= 6 && r.uses >= 15 && r.npcUses >= 1 && r.raise >= 3 && r.wore >= 1 && r.guard >= 3 && r.guardOff >= 1 && r.ends === r.duels;
+    return { ok, detail: `${r.duels} duels in worlds ${r.seeds.join(', ')}: the player used his arts ${r.uses} times, the foes theirs ${r.npcUses}; none oftener than its cooldown; the cry raised strength in ${r.raise} exchanges and wore off in ${r.wore}, the shell guarded ${r.guard} and was gone in ${r.guardOff}; a heal under half the blood ${r.heal}; the fighter's strength his own plus what is in force at every end (${r.ends})${r.bad.length ? '; ' + r.bad.join('; ') : ''}` };
+  },
+
+  // step 11 (D-186): the caps hold with every art readied. The player holds every person's art at Lv 10, every one readied
+  // (the places lifted for the test); he fights swordsmen of the world and two monsters with mana (a spirit and a dragon,
+  // whose SS hide rises the guard's cap). In every exchange each side's fight points from the arts stay inside the fight's
+  // share less what the rungs already give, the guard inside its share, what one fight heals inside its share of the blood,
+  // a raised stat at most +10, a stun at most two exchanges, and every blow at most the blow's share of the worth.
+  async sk2KindCaps(pg) {
+    const r = await pg.evaluate(({ ARTS, ARMED, FOES }) => {
+      const SK2 = A.SK2; if (!SK2 || !SK2.duelStart) return { none: true };
+      const E = SK2.E(), I = SK2.IX(), arts = eval(ARTS), armed = eval(ARMED), foes = eval(FOES);
+      const out = { duels: 0, rounds: 0, seeds: [], bad: [], nBad: 0, maxFight: 0, maxGuard: 0, maxHeal: 0, blows: 0, mana: 0 };
+      const bad = s => { out.nBad++; if (out.bad.length < 10) out.bad.push(s); };
+      const ALL = SK2.arts().filter(s => s.trains).map(s => [s.id, 10]);
+      const slots0 = SK2.slotsOf; SK2.slotsOf = p => (p && p.id === A.S.pc ? 99 : slots0(p));
+      const look = (D, f, tag) => {
+        const k = f.k2; if (!k) return;
+        const room = k.worth * E.capOf(I, 'fightShare', k.top) - (f.sk2 ? Math.max(0, f.sk2.total || 0) : 0);
+        if (k.fight > Math.max(0, room) + 1e-6) bad(`${tag}: fight ${k.fight} over ${room}`);
+        if (k.guard > E.capOf(I, 'guardShare', k.top) + 1e-9) bad(`${tag}: guard ${k.guard}`);
+        if (k.healed > f.maxHp * E.capOf(I, 'healShare', k.top) + 1e-6) bad(`${tag}: healed ${k.healed} of ${f.maxHp}`);
+        for (const s in k.raised) if (k.raised[s] > E.capOf(I, 'raise', k.top) + 1e-9) bad(`${tag}: ${s} raised ${k.raised[s]}`);
+        if (f.st && (f.st.stun > 2 || f.st.knock > 2)) bad(`${tag}: held ${f.st.stun}/${f.st.knock}`);
+        out.maxFight = Math.max(out.maxFight, k.worth > 0 ? k.fight / k.worth : 0); out.maxGuard = Math.max(out.maxGuard, k.guard); out.maxHeal = Math.max(out.maxHeal, k.healed / f.maxHp);
+      };
+      const fight = (pc, foe, opts) => {
+        A.S.queue = [];
+        const D = A.startDuel(pc, foe, opts);
+        if (!D || !D.a || !D.a.k2) { bad('no arts'); return; }
+        out.duels++;
+        const worth = { a: D.a.k2.worth, b: D.b.k2 ? D.b.k2.worth : 0 }, top = { a: D.a.k2.top, b: D.b.k2 ? D.b.k2.top : 'D' };
+        for (let g = 0; !D.over && g < 40; g++) {
+          const n0 = D.log.length;
+          A.duelAuto ? (() => { let act = A.aiAction(D.a, D.b, D); const k = SK2.duelPlanFor(D, D.a, D.b, act, true); A.duelAct(k ? 'k:' + k : act); })() : A.duelAct('strike');
+          out.rounds++;
+          look(D, D.a, 'player r' + D.round); look(D, D.b, 'foe r' + D.round);
+          // every blow of an art: "<name> lands on <whom>: N more."
+          for (const l of D.log.slice(n0)) { const m = / lands on (you|.+): (\d+) more\.$/.exec(l); if (!m) continue; out.blows++; const w = m[1] === 'you' ? worth.b : worth.a, t = m[1] === 'you' ? top.b : top.a;
+            if (+m[2] > Math.ceil(w * E.capOf(I, 'strikeShare', t)) + 1) bad(`a blow of ${m[2]} for a worth of ${Math.round(w)} (${l})`); }
+        }
+        if (D.b.k2 && D.b.k2.mana0 > 0) out.mana++;
+        if (A.S.queue.length && A.S.queue[0].type === 'duel') A.duelClose();
+      };
+      try {
+        for (const seed of T.seedRun(9871, 6)) {
+          if (out.duels >= 16) break;
+          const pc = armed(seed, 32), fs = foes(pc); if (!fs.length) continue;
+          out.seeds.push(seed);
+          for (const foe of fs) { arts(pc, ALL); fight(pc, foe, { kind: 'duel', lethal: false, light: 'dusk' }); }
+          // two monsters with mana: a spirit and the oldest dragon the bestiary has
+          const SP = [...A.POWER.SP.values()];
+          const spirit = SP.filter(s => s.fam === 'spirits' && s.prof.magic >= 7).sort((a, b) => a.level - b.level)[0];
+          const dragon = SP.filter(s => s.fam === 'dragons' && s.prof.magic >= 8).sort((a, b) => b.level - a.level)[0], first = out.seeds.length === 1;
+          // (the dragon once, weakened, so the fight lasts more than an exchange)
+          for (const [s, mod] of [[spirit, 1], [first ? dragon : null, 0.2]]) if (s && pc.alive) { arts(pc, ALL); fight(pc, { beastId: s.id, mod }, { kind: 'beast', forceSolo: true, grounded: true, lethal: false }); }
+        }
+      } finally { SK2.slotsOf = slots0; }
+      return out;
+    }, { ARTS, ARMED, FOES });
+    if (r.none) return { ok: false, detail: 'no arts in the build' };
+    const ok = r.nBad === 0 && r.duels >= 10 && r.rounds >= 30 && r.blows >= 5 && r.mana >= 2;
+    return { ok, detail: `${r.duels} fights (worlds ${r.seeds.join(', ')}; ${r.mana} against a monster with mana), ${r.rounds} exchanges with every art at Lv 10 readied: fight points from the arts at most ${Math.round(r.maxFight * 1000) / 10} in 100 of the worth, a guard at most ${Math.round(r.maxGuard * 100) / 100}, a fight's heals at most ${Math.round(r.maxHeal * 100) / 100} of the blood, ${r.blows} blows of an art each inside its share; ${r.nBad} over a cap${r.nBad ? ': ' + r.bad.join('; ') : ''}` };
+  },
+
+  // step 11 (D-186): the duel is deterministic on replay, and drawing it changes nothing. The same world, the same arts
+  // and the same foe give the same fight three times: once alone, once drawn on the duel screen at every exchange, once
+  // more alone; the log, the result, the random stream after it and the state are the same.
+  async sk2DuelReplay(pg) {
+    const r = await pg.evaluate(({ ARTS, ARMED, FOES }) => {
+      const SK2 = A.SK2; if (!SK2 || !SK2.duelStart) return { none: true };
+      const arts = eval(ARTS), armed = eval(ARMED), foes = eval(FOES);
+      const LIST = [['quick_cut', 10], ['twin_cut', 8], ['shield_bash', 8], ['shell_of_oak', 6], ['second_wind', 10], ['war_cry', 10], ['last_stand', 6], ['binding_parry', 8]];
+      const run = (seed, draw) => {
+        const pc = armed(seed, 30), foe = foes(pc)[0]; if (!foe) return null;
+        arts(pc, LIST); pc.kr = pc.kr.slice(0, 3);
+        A.S.queue = [];
+        const D = A.startDuel(pc, foe, { kind: 'duel', lethal: false, light: 'dawn' });
+        if (!D || !D.a) return null;
+        for (let g = 0; !D.over && g < 40; g++) { if (draw) { UI.ov = null; UI.renderModal(); if (UI.duelArtsBar) UI.duelArtsBar(D); } A.duelAuto ? (() => { let act = A.aiAction(D.a, D.b, D); const k = SK2.duelPlanFor(D, D.a, D.b, act, true); A.duelAct(k ? 'k:' + k : act); })() : A.duelAct('strike'); }
+        if (draw) UI.renderModal();
+        const res = { log: D.log.join('\n'), result: D.result, uses: JSON.stringify([D.a.k2 && D.a.k2.uses, D.b.k2 && D.b.k2.uses]), rng: JSON.stringify(A.rngState), state: T.hash(A.S) };
+        if (A.S.queue.length && A.S.queue[0].type === 'duel') A.duelClose();
+        return res;
+      };
+      const f = T.trySeeds(T.seedRun(9881, 6), seed => { const a = run(seed, false); return a && a.uses !== '[[],[]]' ? { a, seed } : null; });
+      if (!f.res) return { tried: f.tried };
+      const b = run(f.res.seed, true), c = run(f.res.seed, false), a = f.res.a;
+      return { seed: f.res.seed, len: a.log.split('\n').length, uses: a.uses, sameLog: a.log === b.log && a.log === c.log, sameRes: a.result === b.result && a.result === c.result, sameRng: a.rng === b.rng && a.rng === c.rng, sameState: a.state === b.state && a.state === c.state };
+    }, { ARTS, ARMED, FOES });
+    if (r.none) return { ok: false, detail: 'no arts in the build' };
+    if (!r.seed) return { ok: false, detail: 'no world with an art used in a duel among ' + r.tried.join(', ') };
+    const ok = r.sameLog && r.sameRes && r.sameRng && r.sameState;
+    return { ok, detail: `world ${r.seed}: a duel of ${r.len} lines with arts used (${r.uses.slice(0, 120)}), alone, drawn at every exchange, and alone again: the same log ${r.sameLog}, result ${r.sameRes}, random stream ${r.sameRng}, state ${r.sameState}` };
+  },
+
+  // step 11 (D-186): the month (the long tier: three bot lives of five years). Over bot lives the player learns arts only by a route the data names, at most two a month,
+  // never a mana-based one, and readies what he learns while a place is free; anyone else holds arts in the closed form by
+  // the same routes, never a mana-based one. A month's buff heals a wound (and not twice a month), and a month's raise lifts
+  // a stat for its month and is gone after it. No die is drawn by any of it.
+  async sk2ArtsMonth(pg) {
+    const r = await pg.evaluate(({ ARTS, ARMED }) => {
+      const SK2 = A.SK2; if (!SK2 || !SK2.artsMonth) return { none: true };
+      const E = SK2.E(), arts = eval(ARTS), armed = eval(ARMED);
+      const out = { lives: 0, learned: 0, routes: {}, bad: [], npcs: 0, npcArts: 0, readied: 0 };
+      const bad = s => { if (out.bad.length < 10) out.bad.push(s); };
+      const learn0 = SK2.learnArt; let month = null, inMonth = 0;
+      SK2.learnArt = function (pc, id, via) {
+        const s = SK2.art(id), rt = s && SK2.artRoute(pc, s, SK2.artFacts(pc));
+        if (!rt || rt.via !== via) bad(`${id} learned by ${via} with no route open`);
+        if (E.usesMana(s)) bad(`${id}: a mana-based art for a person`);
+        const m = SK2.absMonth(); if (m !== month) { month = m; inMonth = 0; } if (++inMonth > SK2.ART_LEARN_MAX) bad(`${inMonth} arts in one month`);
+        const ok = learn0.apply(this, arguments); if (ok) { out.learned++; out.routes[via] = (out.routes[via] || 0) + 1; }
+        return ok;
+      };
+      try {
+        for (const [seed, status, age] of [[9891, 'noble', 14], [9892, 'peasant', 15], [9893, 'noble', 20]]) {
+          T.enter({ seed, race: 'human', realm: 'POL-01', status, sex: 'M', startAge: age }); T.play(5);
+          const pc = A.pc(); if (!pc || !pc.alive) continue;
+          out.lives++;
+          out.readied += SK2.readiedOf(pc).length;
+          for (const id in pc.ka || {}) { const e = pc.ka[id]; if (!(e.lv >= 1 && e.lv <= 10)) bad(`${id} at Lv ${e.lv}`); }
+          if (SK2.readiedOf(pc).length > SK2.slotsOf(pc)) bad('more readied than places');
+          // anyone else: the closed form
+          for (const p of Object.values(A.S.people).filter(p => p && p.alive && p.id !== pc.id && p.st && A.isAdult(p)).slice(0, 300)) {
+            const h = SK2.artsHeld(p); out.npcs++; if (h.length) out.npcArts++;
+            for (const x of h) if (E.usesMana(SK2.art(x.id))) bad(`${p.id} holds the mana-based ${x.id}`);
+          }
+        }
+      } finally { SK2.learnArt = learn0; }
+      // a month's buffs, on a grown player: a wound healed, not twice in a month; a stat raised for its month only
+      const pc = armed(9895, 30); arts(pc, [['field_dressing', 1], ['hunters_season', 10]]);
+      // (a wound itself is placed on the body by the game's dice: only the buffs' uses are held to drawing nothing)
+      let pure = true;
+      const use = id => { const r0 = JSON.stringify(A.rngState), r1 = SK2.useOutside(pc, id); if (JSON.stringify(A.rngState) !== r0) pure = false; return r1; };
+      A.addWound(pc, 'deep_cut'); A.S.time = 20;
+      const w0 = pc.wounds.filter(w => w.until && w.until > A.S.year).length;
+      const u1 = use('field_dressing'), w1 = pc.wounds.filter(w => w.until && w.until > A.S.year).length;
+      A.addWound(pc, 'scar_arm'); const u2 = use('field_dressing');
+      const ins0 = A.stat(pc, 'ins'), u3 = use('hunters_season'), ins1 = A.stat(pc, 'ins'), u4 = use('hunters_season');
+      const y = A.S.year; A.S.year = y + 1; const ins2 = A.stat(pc, 'ins'); A.S.year = y;
+      out.buffs = { w0, w1, healed: u1.ok, twice: u2.ok, ins0, ins1, ins2, again: u4.ok, raised: u3.ok, pure };
+      return out;
+    }, { ARTS, ARMED });
+    if (r.none) return { ok: false, detail: 'no arts in the build' };
+    const B = r.buffs;
+    const ok = !r.bad.length && r.lives >= 2 && r.learned >= 3 && r.npcArts >= 10 && B.healed && B.w1 === B.w0 - 1 && !B.twice && B.raised && B.ins1 > B.ins0 && B.ins1 - B.ins0 <= 10 && B.ins2 === B.ins0 && !B.again && B.pure;
+    return { ok, detail: `${r.lives} lives of five years: ${r.learned} arts learned (${Object.entries(r.routes).map(([k, v]) => k + ' ' + v).join(', ')}), every one by an open route, at most two a month, none mana-based; ${r.readied} readied at the end; ${r.npcArts} of ${r.npcs} grown people hold arts in the closed form, none mana-based; ` +
+      `a month's buff healed a wound (${B.w0} -> ${B.w1}) and not twice (${B.twice ? 'twice!' : 'refused'}); insight ${B.ins0} -> ${B.ins1} for the month, ${B.ins2} after it; no die drawn ${B.pure}${r.bad.length ? '; ' + r.bad.join('; ') : ''}` };
+  },
+
+  // step 11 (D-186): the player's view at 375 x 667. The Skills sheet shows the arts with their kinds and what is in hand,
+  // a button to put one away or ready one, a month's buff's Use; every control at least 44 points; nothing wider than the
+  // screen; no percentage; a press on an art's name opens its description and a hover opens nothing. In a fight the bar
+  // of readied arts fits too.
+  async sk2ArtsView(pg) {
+    await pg.setViewportSize({ width: 375, height: 667 });
+    try {
+      await pg.evaluate(({ ARTS, ARMED }) => {
+        const arts = eval(ARTS), armed = eval(ARMED), pc = armed(9901, 30);
+        arts(pc, [['quick_cut', 4], ['twin_cut', 2], ['shell_of_oak', 3], ['war_cry', 5], ['last_stand', 2], ['field_dressing', 1], ['hunters_season', 2]]);
+        pc.kr = pc.kr.slice(0, 2); A.S.time = 20;
+        UI.ov = { type: 'profs' }; UI.renderModal();
+      }, { ARTS, ARMED });
+      const probe = () => pg.evaluate(sel => {
+        const root = document.querySelector(sel); if (!root) return { none: true };
+        const ctl = [...root.querySelectorAll('button, [role="button"], [data-a]')].filter(el => el.offsetParent !== null);
+        const small = ctl.filter(el => { const b = el.getBoundingClientRect(); return b.height < 43.5 || b.width < 43.5; }).map(el => (el.textContent || el.getAttribute('aria-label') || '').trim().slice(0, 30));
+        const wide = [...root.querySelectorAll('*')].filter(el => el.getBoundingClientRect().right > window.innerWidth + 1).length;
+        return { ctl: ctl.length, small, wide, pct: /%/.test(root.innerText), text: root.innerText.slice(0, 400), kinds: [...root.querySelectorAll('.art-k')].map(x => x.textContent), notes: root.querySelectorAll('.art-n[data-tt], .art-n[role="button"], .art-row .tt-i').length, rows: root.querySelectorAll('.art-row').length, hscroll: document.documentElement.scrollWidth > window.innerWidth + 1 };
+      }, '.arts');
+      const sheet = await probe();
+      // a hover opens nothing; a press on a name opens its description
+      await pg.hover('.arts .art-n'); const hov = await pg.evaluate(() => (UI.TT && UI.TT.depth ? UI.TT.depth() : 0));
+      await pg.click('.arts .art-n'); const open = await pg.evaluate(() => (UI.TT && UI.TT.depth ? UI.TT.depth() : 0));
+      const note = await pg.evaluate(() => { const p = document.querySelector('.tt-pop'); return p ? p.innerText : ''; });
+      await pg.keyboard.press('Escape');
+      // put one away and ready another, by their buttons
+      await pg.click('.arts [data-a="artUnready"]');
+      const after = await pg.evaluate(() => A.SK2.readiedOf(A.pc()).map(x => x.id));
+      await pg.click('.arts [data-a="artReady"]');
+      const after2 = await pg.evaluate(() => A.SK2.readiedOf(A.pc()).map(x => x.id));
+      // the duel's bar
+      const duel = await pg.evaluate(() => { const pc = A.pc(); pc.kr.forEach(x => { x.m = -1; }); const foe = Object.values(A.S.people).find(p => p && p.alive && p.id !== pc.id && p.st && A.isAdult(p));
+        UI.ov = null; A.S.queue = []; A.startDuel(pc, foe, { kind: 'duel', lethal: false, light: 'day' }); UI.renderModal(); return !!document.querySelector('.artbar'); });
+      const bar = await pg.evaluate(() => { const root = document.querySelector('.artbar'); if (!root) return null; const ctl = [...root.querySelectorAll('button')];
+        return { n: ctl.length, small: ctl.filter(el => el.getBoundingClientRect().height < 43.5).length, wide: [...root.querySelectorAll('*')].filter(el => el.getBoundingClientRect().right > window.innerWidth + 1).length, pct: /%/.test(root.innerText) }; });
+      await pg.evaluate(() => { if (A.S.queue.length && A.S.queue[0].type === 'duel') { A.S.queue.shift(); } UI.ov = null; UI.renderModal(); });
+      const ok = !sheet.none && sheet.rows >= 7 && sheet.small.length === 0 && sheet.wide === 0 && !sheet.hscroll && !sheet.pct && ['Active', 'Passive', 'Buff'].every(k => sheet.kinds.includes(k)) && sheet.notes >= 7 &&
+        hov === 0 && open === 1 && note.length > 40 && !/%|\d/.test(note) && after.length === 1 && after2.length === 2 && duel && bar && bar.n >= 1 && bar.small === 0 && bar.wide === 0 && !bar.pct;
+      return { ok, detail: `the sheet at 375: ${sheet.rows} arts (${[...new Set(sheet.kinds)].join(', ')}), ${sheet.ctl} controls, under 44 points ${sheet.small.length}${sheet.small.length ? ' (' + sheet.small.join(', ') + ')' : ''}, wider than the screen ${sheet.wide}, sideways ${sheet.hscroll}, percentages ${sheet.pct}; ` +
+        `descriptions ${sheet.notes}, hover opens ${hov}, a press opens ${open} ("${note.slice(0, 80)}"); put away -> ${after.length} in hand, readied -> ${after2.length}; the duel's bar: ${bar ? bar.n + ' buttons, small ' + bar.small + ', too wide ' + bar.wide : 'none'}` };
+    } finally { await pg.setViewportSize({ width: 1366, height: 768 }); }
+  },
+
   // step 8 (D-182): merging. A grown player with a known recipe's two parts at C · Lv 10 and someone to show it (seed
   // fallback, H-082: the first world of the run whose planted player has a teacher or a school for one recipe) is offered
   // the merge at the month's turn; joined, the result is held at Lv 1, the parts are absorbed (shown nowhere, sealed: the
