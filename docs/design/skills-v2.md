@@ -1253,7 +1253,7 @@ someone he learns from at the rank; deed: counted in `pc.kd`; evolve: the art be
 grows by use and by half his month's experience in its family. Anyone else holds arts in the closed form (`E.npcArts`):
 every art whose practice, teacher or school route his reads meet, a level each three points past the need. **Mana**
 belongs only to beings whose data has magic: a monster's or a legend's pool is ten a step of its bestiary magic
-(`E.manaOf`), and its arts are those its kind is born with (`E.beingArts`, a level from its own: 1 at level 1, 10 at
+(`E.manaOf`), and its arts are those its kind is born with (`E.beingArts`, a level from its own by `E.beingLevel`: Lv 1 up to a soldier's level 100, Lv 10 at
 1,000). A mana-based art is refused by the validator unless every route and its conditions ask a being with magic; a
 person has none until magic (`docs/MASTER_PROMPT.md` §17).
 

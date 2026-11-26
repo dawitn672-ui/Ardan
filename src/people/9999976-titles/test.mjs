@@ -262,6 +262,9 @@ export default {
         if (A.S.ver !== SV.VER || SV.VER < 19) bad.push('version ' + A.S.ver);
         const steps = (SV.last && SV.last.steps) || [];
         if (ver0 < 19 && !steps.includes('titles')) bad.push('no titles step (' + steps.join(',') + ')');
+        // a save made at version 19 or later was made with titles (alpha 19's sample holds ledgers and titles earned in
+        // play): it loads as it was, with its census; only an older one must come with none (as statMigrate, H-147)
+        if (ver0 >= 19) { if (!A.S.tt || typeof A.S.tt.u !== 'object') bad.push('no census'); return { f: name, ver0, bad }; }
         if (!A.S.tt || Object.keys(A.S.tt.u || {}).length) bad.push('census ' + JSON.stringify(A.S.tt));
         let led = 0, held = 0;
         for (const id in A.S.people) { const p = A.S.people[id]; if (p && p.dl) led++; if (p && p.tt && p.tt.h && Object.keys(p.tt.h).length) held++; }

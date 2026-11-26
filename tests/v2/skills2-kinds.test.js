@@ -161,12 +161,13 @@ test('fires: each condition of a passive in a fight', () => {
 test('beings: a monster is born with its arts, mana-based only with magic; a person in the closed form never holds one', () => {
   const dragon = E.beingArts(IX, { fam: 'dragons', magic: 10, level: 692 }).map(x => x.id);
   for (const id of ['wyrmfire', 'ancient_hide', 'ember_breath', 'frost_veil', 'dread_gaze']) assert.ok(dragon.includes(id), id);
-  assert.equal(E.beingArts(IX, { fam: 'dragons', magic: 10, level: 692 })[0].lv, 10);
+  assert.equal(E.beingArts(IX, { fam: 'dragons', magic: 10, level: 692 })[0].lv, 9);
   const wolf = E.beingArts(IX, { fam: 'hounds', magic: 0, level: 5 }).map(x => x.id);
   assert.deepEqual(wolf, ['cornered_fury']);
   assert.ok(E.beingArts(IX, { fam: 'spirits', magic: 0, level: 50 }).every(x => !E.usesMana(by(D0, x.id))), 'no magic, no mana art');
   assert.equal(E.manaOf({ magic: 7 }), 70); assert.equal(E.manaOf({ magic: 0 }), 0); assert.equal(E.manaOf(null), 0);
-  assert.equal(E.beingLevel(1), 1); assert.equal(E.beingLevel(10), 4); assert.equal(E.beingLevel(1000), 10);
+  // (H-157: Lv 1 up to a soldier's level 100, Lv 10 at 1,000; a wolf of 225 at Lv 4)
+  assert.equal(E.beingLevel(1), 1); assert.equal(E.beingLevel(100), 1); assert.equal(E.beingLevel(225), 4); assert.equal(E.beingLevel(1000), 10);
   // a swordsman of C · Lv 5 (read 42) and a D-rank brawler: what their reads open, at levels from the margin
   const reads = { sword: 42, melee: 20, unarmed: 13, athletics: 0 };
   const held = E.npcArts(IX, f => reads[f] || 0, { age: 30, stat: { str: 40, wil: 40 } });

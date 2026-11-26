@@ -30,23 +30,6 @@
           ]
         },
         {
-          "at": 5,
-          "effects": [
-            {
-              "type": "trigger",
-              "on": "outnumbered",
-              "do": [
-                {
-                  "type": "fight",
-                  "tag": "all",
-                  "part": "atk",
-                  "v": 5
-                }
-              ]
-            }
-          ]
-        },
-        {
           "at": 10,
           "effects": [
             {
@@ -57,7 +40,7 @@
                   "type": "fight",
                   "tag": "all",
                   "part": "atk",
-                  "v": 10
+                  "v": 3
                 }
               ]
             }

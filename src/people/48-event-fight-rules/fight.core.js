@@ -345,7 +345,7 @@ FL.duelMeasure = function (D) {
   let p;
   // the arts both sides hold in this fight count in its chance (37-skills2's SK2.artsWorth, D-186): the tiers stay the worth's
   const aA = A.SK2 && A.SK2.artsWorth ? A.SK2.artsWorth(D, a) : 0, aB = A.SK2 && A.SK2.artsWorth ? A.SK2.artsWorth(D, b) : 0;
-  if (aA || aB) m.arts = [Math.round(aA * 10) / 10, Math.round(aB * 10) / 10];
+  if (aA || aB) m.arts = [aA, aB];   // as the chance reads them (59-descriptions' breakdown gives them their own line)
   if (b.beast) {
     const row = FL.duelRow(b.beast), party = !!D.party, w50 = party ? row[2] : row[0], s = party ? row[3] : row[1];
     p = w50 == null ? 0 : logistic((m.wA + aA - w50 - aB) / s + FL.BEAST_HEALTH * (hfA - 1));
