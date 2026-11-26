@@ -332,9 +332,11 @@ export default {
     return { ok, detail: `every sheet's titles resolve from data/titles/ ${r.resolved}; Sarnavoth against the three ${r.king.toFixed(3)}; the Saint against each archdemon ${r.one.map(x => x.toFixed(3)).join(', ')}; over the Lord of the Sea ${r.sea.toFixed(3)}; the Sword Saint a title and a class ${r.cls}, a person may earn it ${r.person}; archdemons born to their title ${r.born}; firepower in the Dragon King's and archdemons' titles ${r.fire}` };
   },
 
-  // hints and the hidden: a man who has done one of a title's deeds can hear of it (tt_hint becomes possible), at most once
-  // a title; a man who has done none cannot; the hint card's words name no condition; the rendered pages of a life of
-  // thirty years show no deed kind and no condition word
+  // no hints (order 92, "no hints throughout the games on titles"; D-185): no rumour card and no reader of one, no title
+  // carrying a hint, a man with deeds toward titles he does not hold hears nothing of them (Records has no "Things you
+  // have heard", even for an older save that heard some), the crown withholding a title says nothing to him, another man's
+  // title card names no deed (the player's own still tells what he did: a title is announced when it is earned), and the
+  // rendered pages of a life of thirty years show no deed kind and no condition word
   async ttHidden(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     const r = await pg.evaluate(() => {
@@ -342,23 +344,44 @@ export default {
       T.enter({ seed: 9891, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
       A.S.queue = [];
       const pc = A.pc();
-      out.none = TT.hintable(pc).length;
-      A.deedDone(pc, 'duel_won');
-      const l = TT.hintable(pc).map(t => t.id); out.some = l;
-      out.cond = !!A.EV.tt_hint.cond(pc, A.C);
-      A.S.queue = [{ type: 'event', ev: 'tt_hint', ctx: {} }];
-      const v = A.eventView(A.S.queue[0]); out.text = v && v.text; A.eventChoose(0); A.S.queue = [];
-      out.heard = (pc.tt.hd || []).slice();
-      out.after = TT.hintable(pc).map(t => t.id).filter(id => out.heard.includes(id)).length;
-      out.digits = /\d/.test(out.text || '');
+      out.card = !!(A.EV && A.EV.tt_hint);
+      out.reader = typeof TT.hintable === 'function' || typeof TT.heard === 'function';
+      out.hinted = [...TT.BY.values()].filter(t => 'hint' in t).map(t => t.id);
+      // deeds toward several titles, none earned: nothing tells of them
+      for (let i = 0; i < 5; i++) A.deedDone(pc, 'duel_won');
+      for (let i = 0; i < 2; i++) A.deedDone(pc, 'treaty_made', { key: 'w' + i });
+      A.deedDone(pc, 'bribe_refused');
+      out.queued = A.S.queue.map(q => q.ev).filter(Boolean);
+      A.S.queue = [];
+      pc.tt = Object.assign(pc.tt || {}, { hd: ['undefeated', 'peacemaker'] });   // an older save's rumours heard
+      UI.tab = 'profile'; UI.ov = null; UI.PF.view = 'records'; UI.PF.open.titles = true; UI.render();
+      out.heardShown = /Things you have heard|A tale/.test((document.getElementById('tabbody') || document.body).innerText);
+      // the crown withholds a title: no line in the log
+      const sw = TT.BY.get('sword-of-the-realm'), why = A.WHY.decide, log = A.log;
+      let lines = 0;
+      A.WHY.decide = () => ({ chose: 'withhold' }); A.log = function () { lines++; return log.apply(this, arguments); };
+      try { out.granted = TT.granted(pc, sw); } finally { A.WHY.decide = why; A.log = log; }
+      out.logLines = lines;
+      // another man's title card names no deed; the player's own tells what he did
+      const npc = Object.values(A.S.people).filter(p => p.alive && p.st && p.id !== pc.id && A.age(p) >= 20 && A.age(p) <= 40).sort((a, b) => (a.id < b.id ? -1 : 1))[0];
+      const U = TT.BY.get('undefeated');
+      for (let i = 0; i < 25 && !TT.holds(npc, 'undefeated'); i++) A.deedDone(npc, 'duel_won');
+      for (let i = 0; i < 25 && !TT.holds(pc, 'undefeated'); i++) A.deedDone(pc, 'duel_won');
+      A.S.queue = [];
+      const theirs = TT.cardText(npc, 'undefeated'), mine = TT.cardText(pc, 'undefeated'), hw = ((npc.tt && npc.tt.h && npc.tt.h.undefeated) || {}).w || '';
+      out.npcHeld = TT.holds(npc, 'undefeated'); out.pcHeld = TT.holds(pc, 'undefeated');
+      out.theirs = theirs; out.theirsDeed = !!(hw && theirs.includes(hw)) || theirs.includes(U.text) || /twent/i.test(theirs);
+      out.mineDeed = mine.includes(U.text);
+      UI.PF.view = 'profile'; UI.render();
       T.play(30);
       const kinds = Object.keys(TT.V.deeds).filter(k => k.includes('_'));   // the ledger's own words (battle alone is English)
       let shown = [];
-      for (const tab of T.tabs()) { UI.tab = tab; UI.ov = null; try { UI.render(); } catch (e) {} const txt = document.body.innerText + ' ' + [...document.querySelectorAll('[data-v]')].map(e => e.getAttribute('data-v')).join(' '); shown = shown.concat(kinds.filter(k => txt.includes(k))); if (/"requires"|"watch"/.test(txt)) shown.push(tab + ':condition'); }
+      for (const tab of T.tabs()) { UI.tab = tab; UI.ov = null; try { UI.render(); } catch (e) {} const txt = document.body.innerText + ' ' + [...document.querySelectorAll('[data-v]')].map(e => e.getAttribute('data-v')).join(' '); shown = shown.concat(kinds.filter(k => txt.includes(k))); if (/"requires"|"watch"/.test(txt)) shown.push(tab + ':condition'); if (/Things you have heard/.test(txt)) shown.push(tab + ':heard'); }
       out.shown = [...new Set(shown)];
       return out;
     });
-    const ok = r.none === 0 && r.some.length >= 1 && r.cond && !!r.text && r.heard.length === 1 && r.after === 0 && !r.digits && !r.shown.length;
-    return { ok, detail: `no deed: ${r.none} titles to hear of; one duel won: ${r.some.join(', ')} (the card can come ${r.cond}); heard ${r.heard.join()}, again ${r.after}; the card's words "${(r.text || '').slice(0, 120)}..." with digits ${r.digits}; thirty years' pages show ${r.shown.length ? r.shown.join(', ') : 'no condition'}` };
+    const ok = !r.card && !r.reader && !r.hinted.length && !r.queued.includes('tt_hint') && !r.heardShown && r.granted === false && r.logLines === 0 &&
+      r.npcHeld && r.pcHeld && !r.theirsDeed && r.mineDeed && !r.shown.length;
+    return { ok, detail: `rumour card ${r.card}, reader ${r.reader}, titles with a hint ${r.hinted.join(', ') || 'none'}; deeds toward four titles queued ${r.queued.join(', ') || 'nothing'}; Records shows rumours ${r.heardShown}; the crown withholding wrote ${r.logLines} line(s); another man's Undefeated: "${r.theirs}" (a deed in it ${r.theirsDeed}); the player's own names it ${r.mineDeed}; thirty years' pages show ${r.shown.length ? r.shown.join(', ') : 'no condition'}` };
   },
 };

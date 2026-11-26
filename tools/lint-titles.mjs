@@ -9,6 +9,8 @@
 //   - a legend's or a master's sheet naming a title not in data/titles/, or a title whose holders disagree with the sheets
 //   - a card choice table naming a deed kind not declared
 //   - any file under src/ui/ or any *view*.core.js reading .requires or .watch (the conditions are never shown)
+//   - a title carrying a hint, or a card or a screen telling of titles not yet held (order 92: no hints anywhere; the
+//     tavern rumours of D-183 are in archive/titles-hints/)
 // Prints the deed kinds no source records yet (deferred), which is not a failure.
 //   node tools/lint-titles.mjs [--json]
 import fs from 'node:fs';
@@ -120,9 +122,9 @@ for (const t of LIST) {
     }
     for (const s in stat) if (stat[s] > V.statMax) fail(t, `+${stat[s]} ${s}: at most +${V.statMax} a stat a title`);
     if (spend > budget(t) + 1e-9) fail(t, `spends ${spend}, over its budget of ${budget(t)} (${t.weight}${t.unique ? ', unique' : ''}${t.rarity === 'legendary' ? ', legendary' : ''})`);
-    if (t.hint && /\d/.test(t.hint)) fail(t, 'a hint names nothing exact: no numbers');
   } else if (t.effects && t.effects.length) fail(t, 'person effects on a title no person may hold');
   if (t.buffs && typeof t.buffs !== 'object') fail(t, 'buffs is an object');
+  if ('hint' in t) fail(t, 'carries a hint: no title is hinted at anywhere (order 92)');
 }
 
 // ---- the great beings' sheets name their titles by id; holders agree
@@ -150,6 +152,13 @@ for (const f of walkDir(path.join(root, 'src')).filter(f => f.endsWith('.js'))) 
   const rel = path.relative(root, f);
   if (!(rel.startsWith('src/ui/') || /view[^/]*\.core\.js$/.test(rel))) continue;
   fs.readFileSync(f, 'utf8').split('\n').forEach((line, i) => { if (RX.test(line) && /\b(t|title|T|def|x)\.(requires|watch)\b/.test(line)) bad.push(`${rel}:${i + 1}: a screen reads a title's conditions`); });
+}
+
+// ---- no hints (order 92): no card of rumours, no reader of a title's hint, no "Things you have heard"
+const HINT = /\btt_hint\b|\bhintable\b|Things you have heard|\bTT\.heard\b|\.BY\.get\([^)]*\)\.hint\b/;
+for (const f of walkDir(path.join(root, 'src')).filter(f => f.endsWith('.js'))) {
+  const rel = path.relative(root, f);
+  fs.readFileSync(f, 'utf8').split('\n').forEach((line, i) => { if (HINT.test(line) && !/^\s*\/\//.test(line)) bad.push(`${rel}:${i + 1}: a hint about a title (order 92: none anywhere)`); });
 }
 
 const deferred = Object.keys(DEEDS).filter(k => DEEDS[k].deferred);

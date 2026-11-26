@@ -10,8 +10,9 @@
   stay posts (`999990-posts`, one holder a post).
 - **Hidden requirements.** `requires` and `watch` are read only by this folder and the validator; no screen prints a
   condition or a count (the validator fails any `src/ui/` or `*view*.core.js` file reading them; `ttHidden` and `ttPhone`
-  read the rendered pages). At most a **hint**, a rumour told once a title, a life (`tt_hint`), to someone who has done
-  one of its deeds, kept in Records under "Things you have heard".
+  read the rendered pages). **No hints anywhere** (order 92, D-185): no rumour, no card, no line in Records or the log
+  tells of a title before it is earned, and another person's title card shows its name, rarity, gifts and honour, never
+  the deed (D-183's tavern rumours are in `archive/titles-hints/`; `tools/lint-titles.mjs` fails a title carrying a hint).
 - **The deed ledger.** `A.deedDone(p, kind, ctx)` is the one door: `p.dl = { kind: [count, streak, lastYear, best, keys] }`
   (only the kinds `vocab.json` declares, at most eight keys a kind). It breaks the streaks the deed breaks, takes away
   the titles it loses, then checks only the titles watching that kind (an index built once). The sources call it beside
@@ -39,8 +40,8 @@
   `reasons` give a decider reasons (`A.WHY.appointGeneral`: the soldiers follow an Undefeated captain).
 - **The player sees** the title borne under his name ("Aldric the Undefeated"), a strip of chips (a gem and a name; a
   press opens its card: rarity, when and why in the world's words, what it gives in words, its honour), Records'
-  "Titles" (held, with "Bear it"; lost; heard of), the same chips on other people's profiles, and a notable card when
-  one is earned (`tt_earned`) or lost (`tt_lost`).
+  "Titles" (held, with "Bear it"; and lost), the same chips on other people's profiles (without the deed), and a notable
+  card when one is earned (`tt_earned`) or lost (`tt_lost`): a title is announced when it comes, never before.
 
 ## Deed sources (guarded calls beside each system's own record)
 
@@ -62,9 +63,9 @@
 
 | File | What |
 | --- | --- |
-| `a-titles.core.js` | `A.TT`: the data (`A.DATA.titles`), the watch index, the census, the ledger (`A.deedDone`), the predicates (`TT.met`), check, grant, earn, lose, the month and the year, the sources, the adapter's sources, social and reasons, hints, the save step |
+| `a-titles.core.js` | `A.TT`: the data (`A.DATA.titles`), the watch index, the census, the ledger (`A.deedDone`), the predicates (`TT.met`), check, grant, earn, lose, the month and the year, the sources, the adapter's sources, social and reasons, the save step |
 | `b-view.core.js` | What a title gives in words, the card's text, the chips (`UI.TTV.chips`, `PF.cardTitles`), Records' section, `ttBear` |
-| `titles.events.js` | `tt_earned`, `tt_lost` (queued, notable), `tt_hint` (a rumour), `tt_faith` (the cell) |
+| `titles.events.js` | `tt_earned`, `tt_lost` (queued, notable), `tt_faith` (the cell) |
 | `data/titles/vocab.json` | rarities, weights, budget, kinds, beings, effect types, social groups, predicates, deed kinds and their sources, the choice table, the deed lines, serious wounds, the strength words |
 | `data/titles/people.json` | the sixteen titles a person may earn (§11.8's fifteen; the Sword Saint is in legends.json) |
 | `data/titles/legends.json` | the great beings' titles (30), moved from `data/legends.json` and `data/power.json` |
@@ -104,7 +105,8 @@ any budget: +12, 15%, +10 and potential + 5, 3, 3; every read back once gone), `
 real duel and loses it in one), `ttSave` (every sample save: no title, no ledger, an empty census, version 19; the first
 deed starts the ledger), `ttPhone` (375 x 667: chips and Bear buttons 44 points, a press opens, a hover does not, no
 condition, no percentage, nothing sideways), `ttLegends` (every sheet's titles from data; the three matchups),
-`ttHidden` (hints only after a deed, once; thirty years' pages show no condition).
+`ttHidden` (no hints, order 92: no rumour card, no title carrying a hint, Records without "Things you have heard", another
+man's title card naming no deed, the crown's withholding silent, and thirty years' pages showing no deed kind or condition).
 
 Deferred: `ttRare` (pooled over 200 bot lives: a balance-harness run), the sources of `king_made` and `pupil_taught`,
 monsters' own ledgers (a dragon's *Calamity of the Fens*), titles in a duel's or court's card ("Sir Rauf, called ...").

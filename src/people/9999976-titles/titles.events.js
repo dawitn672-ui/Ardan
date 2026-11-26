@@ -1,6 +1,5 @@
 // Titles (D-183): the cards. tt_earned and tt_lost are queued by A.TT when a title is earned or lost (notable: they stop a
-// step); tt_hint is a rumour of a title the person has done one of its deeds toward (at most once a title, a life); tt_faith
-// is the cell where a man of another faith than his realm's is offered the door for one word against his own.
+// step); tt_faith is the cell where a man of another faith than his realm's is offered the door for one word against his own.
 A.defEvents([
   { id: 'tt_earned', title: (p, ctx) => ctx.ttl || 'A name of your own', trigger: true, cool: 0, scene: 'street',
     cond: (p, C) => C.age(p) >= 0,
@@ -19,22 +18,6 @@ A.defEvents([
     choices: [
       { t: 'Let it go', r: 'Names come and go. You are still here.', fx: { wil: 0.5 } },
       { t: 'Swear to earn it back', r: 'You say it to no one but yourself. It is enough to get up in the morning.', fx: { happy: -2, wil: 1, flag: 'tt_swore_back' } },
-    ] },
-  { id: 'tt_hint', title: 'A name in the telling', w: 1, cool: 6, scene: 'tavern',
-    cond: (p, C) => C.adult(p) && !C.prison(p) && !!(A.TT && A.TT.hintable(p).length),
-    setup: (p, ctx) => {
-      const l = A.TT ? A.TT.hintable(p) : [];
-      if (!l.length) { ctx.skip = true; return; }
-      const t = A.pick(l);
-      ctx.tid = t.id; ctx.hint = t.hint;
-      ctx.teller = { faith: 'an old priest', service: 'an old clerk of the courts', mastery: 'a minstrel', infamy: 'a drunk in the corner', world: 'a pedlar from the coast' }[t.kind] || 'an old soldier';
-    },
-    text: 'Over a cup, {teller} tells a story to whoever will listen. "{hint}" Then the talk moves on, as talk does.',
-    choices: [
-      { t: 'Buy the teller another cup, and listen', r: 'The rest of the tale is mostly the cup talking. Some of it stays with you.',
-        fx: (p, ctx) => { if (A.TT) A.TT.heard(p, ctx.tid); p.coin = Math.max(0, (p.coin || 0) - 2); p.happy = Math.min(100, (p.happy || 0) + 1); return ''; } },
-      { t: 'Laugh, and finish your own cup', r: 'A tale for the credulous. Still, you remember it on the road home.',
-        fx: (p, ctx) => { if (A.TT) A.TT.heard(p, ctx.tid); p.happy = Math.min(100, (p.happy || 0) + 2); return ''; } },
     ] },
   { id: 'tt_faith', title: 'One word at the door', w: 1, once: true, scene: 'prison',
     cond: (p, C) => C.adult(p) && C.prison(p) && !!p.faith && !C.faith(p, (A.realm(p.realm) || {}).faith),

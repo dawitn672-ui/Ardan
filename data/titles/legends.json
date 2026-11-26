@@ -509,7 +509,6 @@
     { "type": "stat", "stat": "spd", "v": 2 },
     { "type": "resist", "of": "fear", "v": 3 }
    ],
-   "hint": "Old soldiers say the Saint will name no heir: the sword, they say, will know the next one when he is gone, and not before.",
    "earned": "The last of the old masters lays down his blade before yours, and by the next feast the whole country calls you what it called Cael Vardan.",
    "style": "{name}, the Sword Saint",
    "text": "A title and a class: the strongest art of one man against one foe the world has known. One living holder; for sixty years and more it was Cael Vardan's."
