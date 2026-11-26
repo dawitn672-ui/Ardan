@@ -52,7 +52,8 @@
   let XREG = false;
   SK2.addSource = s => { if (s && s.id) { XSRC.set(s.id, s); XREG = false; } };
   const regX = () => { if (XREG) return; const B = IX().BY; for (const [id, s] of XSRC) if (!B[id]) B[id] = s; XREG = true; };
-  const xOf = p => (SK2.xHeld && p ? SK2.xHeld(p) : null);
+  // (and a person's class, src/people/9999975-level/c-classes, D-184: SK2.xClass lists it the same way)
+  const xOf = p => { if (!p) return null; const a = SK2.xHeld ? SK2.xHeld(p) : null, c = SK2.xClass ? SK2.xClass(p) : null; return a && c ? a.concat(c) : a || c; };
   const off = p => !p || (active().none && !xOf(p));
 
   // ---- what a person holds that may carry effects ------------------------------------------------------------------------

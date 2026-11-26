@@ -36,7 +36,7 @@
   "town_put_to_sword": { "src": "a card's choice (choices below); key: the place" },
   "tourney_won": { "src": "the release's deed line 'Champion of ...' (a tourney won), read each month" },
   "king_made": { "src": "the release's deed lines of a crown won for another (none yet: the realm's peace W1-6 will call A.deedDone when a claimant the player backed is crowned); key: the ruler", "deferred": true },
-  "pupil_taught": { "src": "none yet: teaching another to a rung (the training screen, skills-v2 §12.3)", "deferred": true }
+  "pupil_taught": { "src": "a class's teaching activity done well (src/people/9999975-level/c-classes.core.js: Teach the sword for pay, Drill the young spears, Keep a fencing hall; D-184); the training screen later (skills-v2 §12.3)" }
  },
  "deedLines": [
   { "rx": "^Champion of ", "kind": "tourney_won" }

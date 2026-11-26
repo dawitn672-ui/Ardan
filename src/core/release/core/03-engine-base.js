@@ -752,7 +752,8 @@ A.stat = function (p, s) {
   let v = A.statFloor ? Math.max(p.st[s] || 0, A.statFloor(p, s)) : p.st[s] || 0;
   // D-181: the stat points a level brought (src/people/9999975-level), held to the body's room at this age; age, traits,
   // wounds and weariness below lower what is read, never what is placed
-  if (p.lv && p.lv.put && A.LV) v = A.LV.withPut(p, s, v);
+  // (and a class's buff, a stat raised for a few months: D-184)
+  if (p.lv && (p.lv.put || p.lv.bf) && A.LV) v = A.LV.withPut(p, s, v);
   // D-183: what titles' (and skills') stat effects add (37-skills2's SK2.statOf: at most +10 a stat, the adapter's cap),
   // never past the potential by more than 5 (src/people/9999976-titles); 0 for anyone who holds none
   if (A.SK2 && A.SK2.statOf) {

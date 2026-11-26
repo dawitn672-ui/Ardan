@@ -1052,7 +1052,12 @@ GD.STYLE_XP = [0, 40, 110, 230, 420];
 
 GD.STYLE_PROF = [5, 20, 40, 62, 82];
 
-A.style = id => (A.S && A.S.styles && A.S.styles[id]) || (LORE.styles && LORE.styles[id]) || null;
+// (a class's techniques, D-184, are kept under a style id of their own, "class:<id>": src/people/9999975-level/c-classes)
+A.style = id =>
+  (A.LV && A.LV.classStyle && typeof id === "string" && id.startsWith("class:") ? A.LV.classStyle(id) : null) ||
+  (A.S && A.S.styles && A.S.styles[id]) ||
+  (LORE.styles && LORE.styles[id]) ||
+  null;
 
 A.allStyles = () => Object.values(LORE.styles || {}).concat(Object.values((A.S && A.S.styles) || {}));
 
@@ -1064,7 +1069,9 @@ A.styleRankName = (st, r) => (st && st.ranks && st.ranks[r - 1]) || GD.STYLE_RAN
 
 A.techsOf = function (p) {
   const out = [];
-  if (!p || !p.styles) return out;
+  if (!p) return out;
+  // (without styles, only a class's techniques: D-184)
+  if (!p.styles) return A.LV && A.LV.classTechs ? A.LV.classTechs(p) : out;
   for (const sid in p.styles) {
     const st = A.style(sid);
     if (!st) continue;
@@ -1086,6 +1093,8 @@ A.techsOf = function (p) {
         stolen: true,
       });
   }
+  // the techniques his classes gave him (D-184: an active skill a class adds)
+  if (A.LV && A.LV.classTechs) for (const x of A.LV.classTechs(p)) if (!out.some(o => o.t.id === x.t.id)) out.push(x);
   return out;
 };
 
@@ -1124,6 +1133,8 @@ A.styleFighter = function (f, p) {
     hamstring: 0,
     fury: 0,
   };
+  // his classes' passives, which fire under their conditions in A.techEdge (D-184)
+  if (A.LV && A.LV.fighterClass) A.LV.fighterClass(f, p);
   const main =
     p && p.styleMain && p.styles && p.styles[p.styleMain]
       ? p.styleMain
@@ -1232,6 +1243,8 @@ A.techEdge = function (D, f, o, t, act, oact) {
     if (f.st.knock > 0) e -= 2;
     if (f.st.fury > 0) e += 1;
   }
+  // a class's passive under its condition: low on blood, against a beast, the first exchange, ... (D-184)
+  if (f.lvp && A.LV && A.LV.passiveEdge) e += A.LV.passiveEdge(D, f, o, act, oact);
   return e;
 };
 
@@ -1318,6 +1331,7 @@ A.techSteal = function (D, pc) {
   const used = D.bUsed || [],
     out = [];
   for (const u of used) {
+    if (typeof u.sid === "string" && u.sid.startsWith("class:")) continue;   // a class's own art is not learned by watching (D-184)
     if (A.techsOf(pc).some(x => x.t.id === u.tid)) continue;
     const ch = A.clamp(
       A.stat(pc, "ins") / 260 + A.stat(pc, "int") / 520 + (D.result === "win" ? 0.08 : 0.03),

@@ -477,6 +477,8 @@ A.canAct = function (key) {
   const pc = A.pc(),
     D = GD.ACTIVITIES[key];
   if (!D || !pc || !pc.alive) return [false, "Not possible"];
+  // an activity a class gives (D-184): only for those who hold it ("Not in your position" hides it from the Life tab)
+  if (D.lvCls && !(A.LV && A.LV.hasAct && A.LV.hasAct(pc, key))) return [false, "Not in your position"];
   const age = A.age(pc),
     R2 = GD.RACES[pc.race],
     scale = R2.adult / 16;

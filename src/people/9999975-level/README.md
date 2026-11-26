@@ -1,7 +1,8 @@
 # 9999975-level: a person's level and its stat points
 
-**Aspect:** skills-v2 §12.1 and §12.2 as the owner's answers 4, 5 and 9 change them (§15; orders 82, 87, 88, 89; D-178,
-D-181) · **Kind:** system, two readable core files, one data file (`data/level.json`), tests. No events.
+**Aspect:** skills-v2 §12.1 and §12.2 as the owner's answers 4, 5 and 9 change them (§15; orders 82, 87, 88, 89, 91-94;
+D-178, D-181, D-184) · **Kind:** system, three readable core files, two data files (`data/level.json`, `data/classes.json`),
+two cards (`level.events.js`), tests.
 
 ## What it does
 
@@ -20,18 +21,47 @@ D-181) · **Kind:** system, two readable core files, one data file (`data/level.
     a duel;
   - **growing up**: a floor of `grown x (age / grown age)^1.3`, where `grown` is 24 moved by his mean potential (20 to
     30). After the grown age only defeats raise it. Ordinary life, crafts and trade raise skills, never the level (order 88).
-- **The experience** (`data/level.json` xp): from L to L+1 needs `1.006^L x might(L)`: exponential, each gap wider. A
-  stronger foe gives `might(L) x rho` (`rho` = its might over his; past 8 times, the root of the rest), a weaker one
-  `might(L) x rho^2.5`, and none once he stands 25 levels above it, which it can never lift him past. So a man 40 levels
-  above his foe gains under a ten-thousandth of a level, and grinding cannot farm. Calibration (a model of the rule):
+- **The experience** (`data/level.json` xp; orders 91-94, D-184), counted in defeats of a man of one's own level (a
+  peer), from the level gap alone, so the ladder's rescale of might cannot move what a life earns. From L to L+1 needs
+  `1.01^L` peers: exponential, each gap wider. A stronger foe gives `2^(gap / 20)` (past four, the root of the rest), a
+  weaker one `2^(-gap / 6)`: **every foe gives something, whatever his level**, a far weaker one very little (a foe forty
+  levels down, under a fiftieth of a level), so farming is slow and never nothing.
+- **The walls.** The step into each hundredth level (99 to 100, 199 to 200 ...) asks 6, 10, 12, 12, then 15 times the
+  step before it: thresholds, hard but crossable, never ceilings (order 94). Lives thin out as the cost climbs and the
+  able break through. Calibration (a model of the rule, on the owner's anchors of order 93):
 
-  | From | Beating | 20 | 80 | any number |
-  | --- | --- | --- | --- | --- |
-  | 24 | soldiers (100) | 71 | 110 | never past 125 |
-  | 24 | his peers (25) | 36 | 50 | 50 |
-  | 100 | knights (175) | 136 | 173 | 200 |
-  | 225 | a kingdom's best (340) | 261 | 305 | 365 |
+  | From | Beating | 20 | 80 | 300 | 1,000 |
+  | --- | --- | --- | --- | --- | --- |
+  | 30 | soldiers (130) | 94 | 128 | 147 | 158 |
+  | 30 | his peers (40) | 45 | 56 | 66 | 76 |
+  | 200 | knights (265) | 214 | 238 | 265 | 281 |
+  | 250 | the best knights (320) | 260 | 280 | 300 | 329 |
+  | 280 | a kingdom's elite (360) | 289 | 300 | 334 | 364 |
 
+- **At each wall, a class or a stat boost** (`c-classes.core.js`, `data/classes.json`; orders 91 and 92). The reward is a
+  **branch the person chooses**: the classes open to him (those that follow the class he holds, or the first classes of
+  a road if he holds none; his best skill of the class's families at C, B or A by its step; the Sword Saint only for the
+  bearer of the Sword Saint's title, Cael Vardan's while he lives) or a stat boost instead (6, 10, 15, 20 points by the
+  wall, through `LV.grant`). The player chooses on a card (`lv_wall`: two to four choices; `lv_boost` when no class is
+  open: where the points go); anyone else through `A.WHY.decide` (his skills, his way of life, his deeds, his temper) on a
+  stream of its own, so the main stream never moves.
+  - **A tree of 29 classes** in three steps over eight roads (blade, spear, bow, shield, mounted, brawler, hunter, any
+    weapon): Swordsman, Spearman, Archer, Shieldbearer, Rider, Brawler, Hunter, Warrior; then Sword Master, Duelist,
+    Blade Dancer, Spear Master, Lancer, Marksman, Ranger, Guardian, Warden, Pit Fighter, Beastslayer, Berserker; then
+    Sword Saint (one living holder), Blade Master, Dragon Spear, Hawkeye, Bulwark, Warlord, Oathsworn, Banner Rider, Wild
+    Hunter. Seventeen classes lead to two or more.
+  - **A class adds things to do** (order 92): a **technique** for duels (an active skill in the duel's bar, NPCs use it
+    too), a **passive** that fires under its condition (low on blood, against a beast, the first exchange, on horseback,
+    behind a shield, against a guard, a long fight), a **buff** (an activity: a stat raised for some months, or blood
+    recovered) and a **way to earn** (an activity: teaching, pit fights, bounties, guarding roads, raids). Every class on
+    his road keeps its parts; the one he holds now gives its effects in the skills adapter, under the caps with his skills
+    and titles. Each class adds a part its parents lack (`lvClassParts`).
+  - **Worn classes.** A person given his held level (the player at his first month or on load, anyone else at his first
+    fight) has the walls he already stands past settled with the road his skills give: worn, with their parts and no
+    effects, honour or points, so nothing a check reads moves. Someone never recorded is shown the class his road would give.
+- **The legends grow too** (order 92): a great being's level is its data's plus what it has gained by the same rule
+  (`LV.legendDefeat`, `LV.legendGain`, `A.S.pw.leg[id].lg`): a man it beats, or the King and the Saint on the ridge. At its
+  height a hundred defeats of its equal give it under a level.
 - **Stat points.** Each level brings one point (a race may set `GD.RACES[r].points`), one more at every 50th. Points are
   placed into the six stats and **never move** (`p.lv.put`); what `A.stat` reads is the body's base (`p.st`, or the trained
   body's floor) plus the placed points, held to the **body's room at this age** (the ceiling below the grown age:
@@ -54,6 +84,9 @@ D-181) · **Kind:** system, two readable core files, one data file (`data/level.
 | File | What |
 | --- | --- |
 | `a-level.core.js` | `A.LV`: the level, seeding, the floor, experience and defeats, points, room, cost, placing by reasons, the month and the year, the save step; `LV.grant(p, n, why)`, an evolution's gift of points (37-skills2, D-182), recorded on the level (`lv.gx`, `lv.gw`) |
+| `c-classes.core.js` | `A.LV.CL`: the class tree, the options at a wall, the choice (the card's answer, `A.WHY.decide` for NPCs), the boost, worn classes at seeding, the parts in play (techniques, passives, activities, buffs), the adapter's sources, the save step `classes` |
+| `level.events.js` | `lv_wall` (a class or the strength), `lv_boost` (where the points go) |
+| `data/classes.json` | the classes, their needs, the boost |
 | `b-sheet.core.js` | The profile's line (`UI.PF.sheetTop`: "Level 24", ten marks toward the next, the button) and the allocation sheet (`UI.ov = { type: 'lvSheet' }`: six rows, a bar with the ceiling and the age's room, the stat's word, the next point's cost in marks, - and +, Keep) |
 | `data/level.json` | every number above |
 
@@ -65,19 +98,33 @@ D-181) · **Kind:** system, two readable core files, one data file (`data/level.
 - `src/world/9999970-powers/a-power.core.js` `PW.being`: a person's level is `A.LV.level` (his might, and so the odds, unchanged).
 - `src/world/9999970-powers/c-meet.core.js` `PW.resolve`: a beast killed outright pays its level.
 - `src/ui/999996-profile-tab/profile.b-view.core.js` `PF.sheet`: reads `PF.sheetTop`.
-- `src/core/99998-v2-saves/saves.core.js`: `SV.VER` 18.
+- `src/core/99998-v2-saves/saves.core.js`: `SV.VER` 18, then 20 (the step `classes`, D-184).
+- D-184: release `07-duels.js` `A.style` (a class's style id), `A.techsOf` (a class's techniques), `A.styleFighter` (its
+  passives), `A.techEdge` (a passive under its condition), `A.techSteal` (never a class's); `04-...-b.js` `A.canAct` (an
+  activity held to its class); `03-engine-base.js` `A.stat` (a buff); `37-skills2/c-effects.core.js` `xOf` (`SK2.xClass`);
+  `9999970-powers/a-power.core.js` `PW.being` (a legend's gain, a person's class), `b-wilds.core.js` `PW.ridge` and
+  `c-meet.core.js` `PW.greatAnswer` (a legend's defeats); `data/titles/vocab.json` (`pupil_taught` has a source).
 
 No `A.addStage`. One wrapper of `UI.ovModal` (as 99998-click-open's sheet does), no new name defined twice.
 
 ## State (optional; old saves load)
 
-`p.lv = { L, f, pts, put, why (the last three placements), k0, kc }` on the player and on the people who have fought since; `A.S.lvq` (NPCs with
-points waiting, at most 400). Old saves: the step `level` seeds the player; everyone else is seeded when he first fights.
+`p.lv = { L, f, pts, put, why (the last three placements), k0, kc, gx, gw, ct (the walls settled), cr ([[class, year,
+earned 1 or worn 0]]), wp (the player's walls waiting for an answer), bf ([stat, v, months]: a buff) }` on the player and on
+the people who have fought since; `A.S.lvq` (NPCs with points waiting, at most 400); `A.S.pw.leg[id].lg` (a legend's gain).
+Old saves: the step `level` seeds the player; the step `classes` (version 20) settles everyone's walls, worn.
 
 ## Tests (`test.mjs`)
 
 `lvFromDefeats` (a duel won pays the rule's experience to the rounding; a beast killed pays; a foe 40 down under a fiftieth
-of a level, 25 down nothing), `lvNoFarm` (a thousand defeats of far weaker men stop at the line; twenty soldiers do more),
+of a level and never nothing), `lvNoFarm` (a thousand defeats of men twenty down: a little, slower and slower; twenty soldiers
+do more), `lvWalls` (each wall six to fifteen times its neighbours, every other step rising with widening gaps, a wall's
+step several times the defeats of the step before it, and crossable), `lvClass` (a swordsman's card offers the Swordsman
+first and he takes it, with its technique and its source; no art of arms gives the boost card and its points; forty NPCs
+choose by their reasons, the same on a replay, the main stream unmoved; the Sword Saint shut while Cael lives),
+`lvClassParts` (the tree's data; a technique and a passive in a duel; activities held to the class; a buff for its months;
+the class and its note on the profile at 375), `lvLegends` (the legends at the data's level in a fresh world; a hundred
+defeats of an equal give under a level), `lvAnchors` (long: pooled bot lives land in the owner's bands),
 `statBounds` (180 people with 400 points: nothing past the room or the ceiling, a limp and forty-five years lower the
 read and keep the points, the main stream unmoved), `statMigrate` (every sample save loads with the same `A.stat` for
 everyone, the player at his held level with nothing waiting), `statNpc` (the same placements on a replay; most points go

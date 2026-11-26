@@ -30,7 +30,11 @@
     if (!p || !p.st || A.age(p) < 1) return '';
     const L = LV.level(p), band = A.POWER.band(L), f = LV.progress(p);
     const text = `Level ${L} on the scale of all beings: rank ${band.r}, ${band.w}. ${band.d} A level comes from defeating people and beasts, more for a stronger foe; each one brings points for the body and mind. Toward the next: ${LV.progressWord(f)}.`;
-    let h = `<div class="lv-line">${note(text, `<b>Level ${esc(L)}</b>`)}${pips(10, Math.floor(f * 10), 'lv-next')}`;
+    let h = `<div class="lv-line">${note(text, `<b>Level ${esc(L)}</b>`)}`;
+    // the class beside the level (D-184): its note says what it is and what it gives
+    const cls = LV.CL ? LV.CL.shown(p) : null;
+    if (cls) h += `<span class="lv-cls">${note(LV.CL.note(p), esc(cls.name))}</span>`;
+    h += pips(10, Math.floor(f * 10), 'lv-next');
     const pts = (p.lv && p.lv.pts) || 0;
     if (pts > 0 && LV.canChoose(p)) h += `<button type="button" class="lv-place" data-a="lvSheet">${esc(LV.countWords(pts))} to place</button>`;
     return h + '</div>';
@@ -105,6 +109,7 @@
 .lv-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 6px}
 .lv-pips{display:inline-flex;gap:2px}.lv-pips i{width:6px;height:6px;border-radius:50%;border:1px solid var(--line,#999);display:inline-block}.lv-pips i.on{background:var(--accent,#a77);border-color:var(--accent,#a77)}
 .lv-place{min-height:44px;min-width:44px;padding:0 12px}
+.lv-cls{font-style:italic}
 .lv-sheet{max-width:560px}
 .lv-rows{display:flex;flex-direction:column;gap:4px;margin:8px 0}
 .lv-row{display:grid;grid-template-columns:minmax(64px,1fr) minmax(60px,2fr) auto;grid-template-areas:"n b c" "w w k";align-items:center;gap:2px 8px;min-width:0}
