@@ -106,12 +106,12 @@
   .art-t{display:flex;align-items:center;gap:8px;min-width:0;flex:1 1 12em}
   .art-n{font-size:16px;overflow:hidden;text-overflow:ellipsis;min-height:44px;display:inline-flex;align-items:center}
   .art-l{white-space:nowrap;opacity:.8;font-size:14px}
-  .art-k{font-size:12px;letter-spacing:.04em;padding:1px 6px;border-radius:9px;border:1px solid var(--line,rgba(127,127,127,.35));white-space:nowrap}
+  .art-k{font-size:14px;letter-spacing:.04em;padding:1px 6px;border-radius:9px;border:1px solid var(--line,rgba(127,127,127,.35));white-space:nowrap}
   .art-active{color:var(--gold,#c9a24a)}.art-buff{color:var(--good,#7fb069)}.art-passive{opacity:.8}
   .art-b{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
   .art-b button{min-height:44px;min-width:44px}
   .artbar .artbtn{min-height:44px}
-  .pf-arts{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px}.pf-arts button{min-height:44px;min-width:44px}
+  .pf-arts{display:block;width:100%;min-height:44px;margin-top:4px;text-align:left;white-space:normal}
   `;
   if (typeof document !== 'undefined' && !document.getElementById('arts-style')) { const st = document.createElement('style'); st.id = 'arts-style'; st.textContent = css; (document.head || document.documentElement).appendChild(st); }
 })();

@@ -3138,3 +3138,12 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
 - **Deferred** (skills-v2 §16.6): battles (the line battle's personal fight and the companies), auras into the war core,
   actives at work (an edge on a card's check), NPCs' month buffs, legends' arts in their own fights, and the rest of the
   library (check 9's shares bind at 200 skills; the library is 194).
+- **Addendum (H-157): a beast's arts are read from its level against the human scale.** `E.beingLevel` was
+  1 + 3 log10(level), so a wolf of level 225 fought with its arts at Lv 8 and Cornered Fury, firing every exchange with a
+  hunting party round it, undid the party: the release's tier texts failed (an animal against Trained with a party 78.6
+  in 100, the text 90; a great beast against a Master with a party 39.8, the text 50). Now Lv 1 up to a soldier's level
+  (100) and Lv 10 at 1,000, a level for each step of the logarithm between (a wolf of 225 at Lv 4, a great beast at 5 or
+  6, the oldest dragons near 10); only the level is read, so the bestiary's re-banding carries over. Cornered Fury is
+  +1 below Lv 10 and +3 at Lv 10 (it was 1, 5 and 10). The texts hold (86.8 for 90; 43.6 for 50) and the beasts' odds
+  fit better than before (flBeastOdds mean 1.6, worst bin 4.7). **Considered:** changing the tier texts (the release's
+  measured claims; the arts were what moved them).

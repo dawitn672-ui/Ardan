@@ -143,17 +143,19 @@
 
   // ---- the duel screen --------------------------------------------------------------------------------------------------
   const duel = () => { const q = A.S.queue[0]; return TT.cur.duel || (q && q.type === 'duel' ? q.d : null); };
+  // the arts both sides hold in this fight (D-186: 48's measure counts them): their own line, so the parts sum to the chance
+  const artsRow = (m, s) => (m.arts ? [['The arts in hand: yours against theirs', (m.arts[0] - m.arts[1]) / s]] : []);
   TT.duelParts = function (D0) {
     const m = D0 && D0.measure, FL = A.FL; if (!m || !FL) return null;
     const a = D0.a, b = D0.b, hA = a.maxHp ? A.clamp(a.hp / a.maxHp, 0.3, 1) : 1;
     if (b.beast) {
       if (m.w50 == null) return null;
       const row = FL.duelRow(b.beast), s = m.party ? row[3] : row[1];
-      return steps([[`You, ${esc(m.tA)} ${m.wA}, against the beast's mark of ${m.w50}`, (m.wA - m.w50) / s], [`Your blood ${r0(a.hp)} of ${r0(a.maxHp)}`, FL.BEAST_HEALTH * (hA - 1)]], FL.CLAMP[0], FL.CLAMP[1], m.pct);
+      return steps([[`You, ${esc(m.tA)} ${m.wA}, against the beast's mark of ${m.w50}`, (m.wA - m.w50) / s], [`Your blood ${r0(a.hp)} of ${r0(a.maxHp)}`, FL.BEAST_HEALTH * (hA - 1)]].concat(artsRow(m, s)), FL.CLAMP[0], FL.CLAMP[1], m.pct);
     }
     const hB = b.maxHp ? A.clamp(b.hp / b.maxHp, 0.3, 1) : 1, RL = FL.RULES[m.rule] || FL.RULES.yield;
     return steps([[`You, ${esc(m.tA)} ${m.wA}, against ${esc(b.short || b.name)}, ${esc(m.tB)} ${m.wB}`, (m.wA - m.wB) / RL[0]], [`The rules: ${esc({ yield: 'to the death, unless one yields', lethal: 'to the death, no quarter', brawl: 'a brawl', spar: 'sparring', tourney: 'a tourney' }[m.rule] || m.rule)}`, RL[1]],
-      [`Blood: yours ${r0(a.hp)} of ${r0(a.maxHp)}, theirs ${r0(b.hp)} of ${r0(b.maxHp)}`, RL[2] * (hA - hB)], ['They draw a weapon as it starts', FL.DREW * (m.drew ? 1 : 0)]], FL.CLAMP[0], FL.CLAMP[1], m.pct);
+      [`Blood: yours ${r0(a.hp)} of ${r0(a.maxHp)}, theirs ${r0(b.hp)} of ${r0(b.maxHp)}`, RL[2] * (hA - hB)], ['They draw a weapon as it starts', FL.DREW * (m.drew ? 1 : 0)]].concat(artsRow(m, RL[0])), FL.CLAMP[0], FL.CLAMP[1], m.pct);
   };
   G.duelOdds = function () {
     const D0 = duel(), parts = TT.duelParts(D0); if (!parts) return '';

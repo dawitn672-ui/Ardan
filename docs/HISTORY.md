@@ -3266,3 +3266,44 @@ readings so far are 0.77, 0.748 and now 0.693, after the titles' and evolutions'
 at 0.65, outside the spread, where a filter that cut the year bare (a ratio near 0.5 or below) still fails.
 
 **Undo.** Revert this commit.
+
+### H-157 · 2026-11-26 · The arts' four quick-tier failures on a58eae53, and ttSave (D-186 addendum)
+
+**What.** CI's quick tier on the merge of the three kinds (a58eae53) failed five tests; four came from the arts.
+- **`ttSums2`** (duel odds, largest gap 11): the duel's measure counts both sides' arts since D-186, and its itemised
+  breakdown (59-descriptions' `TT.duelParts`) did not. The arts have their own line ("The arts in hand: yours against
+  theirs"), and 48's measure keeps them as the chance reads them (`m.arts`, unrounded). Largest gap now 1.
+- **`flTierTexts`**: the beasts fought with their arts at Lv 8 (a wolf of level 225: `E.beingLevel` was 1 + 3 log10), and
+  Cornered Fury, every exchange with a hunting party round them, undid the party (Trained with a party against an animal
+  78.6 in 100, the text 90; a Master with a party against a great beast 39.8, the text 50). The root: the art level read
+  off the ladder without its human anchors. `E.beingLevel` now gives Lv 1 up to a soldier's level (100) and Lv 10 at
+  1,000, a level a step of the logarithm between, read from the level alone, so the bestiary's re-banding carries over;
+  Cornered Fury is +1 below Lv 10 and +3 at it. The release's texts stay: 49.6 (50), 20.6 (25), 86.8 (90), 43.6 (50),
+  12.6 (10), 2.6 (under 25). The beasts' odds fit better than at the merge (flBeastOdds mean 1.6, worst bin 4.7).
+- **`b5Budget`** (desk, ruler, profile: 51 controls of 50): the profile's Skills panel shows what is in hand as one
+  button to the Skills sheet, in the fourth skill row's place when arts are held; no control added.
+- **`phoneTargets`** (12 px kind chip): the chip is 14 px.
+- **`ttSave`** (not the arts'): the level builder's test change of 22b4cdb8, alone: a save made with titles is read as
+  it was (alpha 19's sample holds 27 ledgers and one title).
+
+**Files.** `src/people/engine/skills2.js` (and the v2 bundle), `data/skills/kinds/beings.json`, `tests/v2/skills2-kinds.test.js`,
+`src/ui/59-descriptions/descriptions.more-odds.core.js`, `src/people/48-event-fight-rules/fight.core.js`,
+`src/ui/999996-profile-tab/profile.b-view.core.js`, `src/people/37-skills2/g-view.core.js`,
+`src/people/9999976-titles/test.mjs`; D-186's addendum; skills-v2 §16.5.
+
+**Proof.** On a private build, 16 of 16: `ttSums2`, `flTierTexts`, `b5Budget`, `phoneTargets`, `ttSave`, `sk2Active`,
+`sk2KindCaps`, `sk2ArtsView`, `sk2DuelReplay`, `flDuelOdds`, `honestOddsCells` (worst 2.7), `flBeastOdds`, `uiSmoke`,
+`renderRng`, `pfFits`, `pfNumbers`. Engine tests pass; lint-skills, lint-stages (at its baseline), lint-reasons (41, at
+its baseline), lint-kin, lint-titles, lint-docs-index, `version.mjs check`, `seed-data --check`, `--check-tiers`.
+
+**Undo.** Revert this commit (the five tests fail again on the trunk as at a58eae53).
+
+### H-158 · 2026-11-26 · CI on a58eae53 (the three kinds of skill): five quick fixes (H-157) and kinBotLives' bar
+
+The quick tier failed `ttSums2`, `flTierTexts`, `b5Budget`, `phoneTargets` and `ttSave`; the arts' builder fixed them at
+the root (H-157, merged here). The long tier failed `kinBotLives` on one count only: 4 kin arcs given up of 14 begun,
+over the bar of a quarter (3.5). Each was given up for a reason its arc names (the hero aged past it, no trade, a post);
+14 arcs are few, and one arc swings the share by seven points, so the bar is now a third, which still fails arcs that
+stop finishing.
+
+**Undo.** Revert this commit.
