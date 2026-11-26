@@ -5,6 +5,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { BOT } from '../../../tools/bench/bot.mjs';
 
 const here = p => fileURLToPath(new URL(p, import.meta.url));
 const SAVES_DIR = here('../../../tests/saves');
@@ -434,5 +435,30 @@ export default {
     });
     const ok = r.fresh && r.n < 1 && r.g1[1] > 0 && r.L1 === r.L0 + r.n && r.g2[0] === r.g1[0] && r.g2[1] - r.g1[1] < 0.001;
     return { ok, detail: `a fresh world: every legend at its data's level ${r.fresh}; ${r.id} at ${r.L0}: a hundred defeats of its equal give ${r.n} levels and ${r.g1[1]} of the next; a thousand soldiers then add ${(r.g2[1] - r.g1[1]).toFixed(6)} of a level` };
+  },
+  // the owner's anchors as the typical outcome of ordinary lives (orders 91-94, D-184; long tier): pooled bot lives, half
+  // born peasants and half nobles, played 35 years. A life that never fought (three kills or fewer, at most one duel won)
+  // ends among average people (20-50); one that killed thirty or more ends among soldiers (80-180); nobody stands piled at
+  // a wall (99, 199, 299: thresholds, not ceilings); everyone past a hundred by experience has his walls settled (a class
+  // or the boost, or a card waiting). Readings (2026-11-26, the walls 6/10/12/12/15): see the HISTORY entry H-148.
+  async lvAnchors(pg) {
+    if (!(await pg.evaluate(GATE))) return NO;
+    await pg.evaluate(BOT);
+    const lives = [];
+    for (const st of ['peasant', 'noble']) for (let i = 0; i < 6; i++) {
+      lives.push(await pg.evaluate(([st, i]) => {
+        const pers = ['careful', 'reckless', 'greedy', 'random'][i % 4];
+        B.life({ seed: 8101 + i * 7919 + st.length, race: 'human', realm: 'POL-01', status: st, sex: 'M', startAge: 16 }, pers, i % 2 === 0, 35);
+        const pc = A.P(A.S.pc), lv = pc.lv || {};
+        return { st, i, L: lv.L || A.LV.level(pc), kills: pc.kills || 0, duels: pc.dl && pc.dl.duel_won ? pc.dl.duel_won[0] : 0, ct: lv.ct, cr: (lv.cr || []).map(x => x[0] + (x[2] ? '' : '~')).join('>'), gx: lv.gx || 0, wp: lv.wp || 0 };
+      }, [st, i]));
+    }
+    const quiet = lives.filter(l => l.kills <= 3 && l.duels <= 1 && l.st === 'peasant'), fought = lives.filter(l => l.kills >= 30);
+    const med = a => { const s = a.map(l => l.L).sort((x, y) => x - y); return s.length ? s[s.length >> 1] : null; };
+    const piled = lives.filter(l => [99, 199, 299].includes(l.L));
+    const unsettled = lives.filter(l => l.L >= 100 && !(l.ct === Math.floor(l.L / 100) && (l.cr || l.gx || l.wp)));
+    const ok = quiet.length >= 2 && quiet.every(l => l.L >= 20 && l.L <= 50) && (!fought.length || (med(fought) >= 80 && med(fought) <= 180 && fought.every(l => l.L <= 199))) &&
+      piled.length <= Math.max(1, lives.length / 6) && !unsettled.length;
+    return { ok, detail: `${lives.length} lives: ${lives.map(l => `${l.st} ${l.i}: level ${l.L}, ${l.kills} kills, ${l.duels} duels${l.cr ? ', ' + l.cr : ''}${l.gx ? ', +' + l.gx + ' points' : ''}`).join('; ')} | quiet ${quiet.length} (median ${med(quiet)}), fought ${fought.length} (median ${med(fought)}), at a wall ${piled.length}, unsettled ${unsettled.length}` };
   },
 };
