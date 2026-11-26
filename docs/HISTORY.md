@@ -3475,3 +3475,73 @@ coherency and the balance harness (nothing here moves a world: no draw, no write
   trade; the merchant now plays 24 lives, as the artisan and the noble do (H-096).
 
 **Undo.** Revert this commit.
+
+### H-161 · 2026-11-26 · The standing military: armies of their true size, knights few and strong, the elite ten (order 95; D-194)
+
+**What.** The owner's order 95: "knights are considered powerful and are much smaller units, top 50-3000 within a kingdom,
+whilst an elite is usually top ten in a kingdom. a regular soldier numbers in the 10s-100 thousands based on the
+kingdom", with order 13 (feudal armies) and order 93's anchors (soldiers 80-180, knights 230-299 and past 300, a kingdom's
+elite 300-420). On the branch `army-sizes`, from `main` at 0163f899.
+
+**The survey (before).** A realm's army was the lore's figure (`LORE.realms[id].army`), raised once at the world's birth as
+the war map's divisions (`A.forcesInit`, about 5,000 to 7,500 men each) and kept there by `A.forcesAI` against the same
+figure scaled by its people: 200 (Hrimfell) to 156,000 (Varenna), 1.25 million men in all, 209 divisions at the start.
+Knights were no count: heavy horse battalions (24,600 in Aldmark, 16,000 in Varenna), the N07 rung's five men, and eight
+orders of 200 to 300. The realm's best fighters were whoever held a post: one order master or General at 230-550, then
+nobles at 90-99. What a battle consumed: `A.fightDay`'s frontage of divisions, each struck by `A.divCombat` (its template's
+soft and hard attack, defence and break, by equipment, drill, quality and its General; men only as hit points); a host
+against a legend read `PW.hostOf` (a tenth of the army, N^1.35 x 2). What the player saw: the realm card's "army
+110,000" (exact for a ruler, an estimate or hearsay otherwise, `A.V2DIP.armyText`).
+
+**Built** (`src/war/9999978-standing`, `data/military/standing.json`; see its README):
+- **Regulars by size, wealth and kind** (`A.MIL.normal`): people x a kind's rate, a floor of 10,000 for 300,000 people,
+  never more than the purse keeps, at most 400,000; raised at the world's birth (`A.MIL.seedArmy` in `A.initWorld`) and
+  kept by the crown's yearly choice through `A.WHY` (kind `standing`: raise, keep or cut, `A.MIL.want`, read by
+  `A.forcesAI`); the court's sellswords measure against it. At the start: Zanara 275,000, Varenna 216,000, Aldmark
+  183,000, kingdoms 47,000 to 126,000, small kingdoms and cities 10,000 to 27,000, hordes and tents 21,000 to 42,000,
+  elves and dwarves 3,000 to 12,500, the Abbey 3,900, Corvasse 5,400, the giants 190 and 290: 1.9 million in all, 309
+  divisions.
+- **Knights** 50 to 3,000 (Varenna and Zanara 3,000, Aldmark 2,068, Ashmere 1,304, Morhaven 682, Lucerna 184, Northreach
+  179, Ughrak 77, Corvasse 37, the giants 41 and 23), dealt to the orders, the crown and the houses by rung, kept by
+  command as `r.kn` (save version 23, step `standing`).
+- **Levels** through A.POWER: soldiers 108 to 173, knights 249 to 294, the elite's best 334 to 412 (giants 420-600).
+- **The elite**: the realm's own people at 300 or more, filled by named seeds (no person made) to its count (order 97:
+  not a fixed ten; 3 to 20, the great empires 14 to 16).
+- **Battles**: `A.divCombat` multiplies a division's blows and break by its knights at their worth by the host rule
+  (a crown line division of 7,331 with 40 knights x1.012; a knight worth 2.66 soldiers in Aldmark), `PW.hostOf` counts them.
+- **The realm card**: "Might: about 216,000 soldiers, some 3,000 knights" (order 97's word), and *its best* (a note,
+  44 points: infantry, archers and cavalry, then the champions).
+- **What the larger hosts showed** (fixed where it lives): `A.wsDay` keeps contingents whole weekly, the commands' audit
+  leaves a division in a fight where it is, the muster reads the bulk of its host as a reason (`MU.mix`) and never offers
+  a branch with no reason.
+- **Order 97, given while this was built** (it wins over 95 where they differ): "soldiers", never "men under arms" or
+  "men-at-arms", split by kind in the note (infantry, archers, cavalry; mages when there are any); the elite are not a
+  fixed ten (3 to 20 by the realm's people); and the day-by-day war is to go, so nothing here deepens it: the sizes are
+  read by the battle's own strike (`A.divCombat`) and the one change in `A.wsDay` is a weekly check that keeps a lord's
+  contingent in one army (cheap: it returns at once for a realm with one army).
+
+**Speed.** Three bot lives of 20 years (seeds 7, 11, 23; no other load): 67.1 s before, 66.2 s after. The press gate on a
+machine shared with two test workers and other sessions (load 9-10 on 4 cores; quiet-month medians before -> after): y0
+207 -> 220 ms, y0 after a death 176 -> 128, y50 215 -> 219, y50 after a death 198 -> 190, y50 at 4x throttle 1,196 ->
+1,034 (wall 1,130 -> 877): within the noise of that machine; both builds were over the budgets there alike. A fresh
+world's Next month (`--new=7:noble:M:20`, 24 presses): mean CPU 303 -> 334 ms, engine share 248 -> 162 (noisy). No
+per-soldier object: counts on the realm and a weight per division read in a fight (O(divisions of the realm)).
+
+**Tests.** On private builds (`/tmp/ardan/army/`, workers 2): the six of this feature; the quick tier of every war,
+diplomacy and nobility feature and the core suites (244 tests, run in two passes, the first stopped at 135 by the
+session's time limit and the rest run by name); `uiSmoke`, `renderRng`, `replayWithRender`, `v2svRoundTrip`, `statMigrate`
+pass; coherency `--baseline=quick`: no contradiction, no check rose; `lint-reasons` 41 (baseline), `lint-stages`,
+`lint-skills`, `lint-titles`, `lint-docs-index`, `version.mjs check`, engine tests 166 of 166. Failures met and answered:
+`riGoldGetsUsed` and `riHostFitsRealm` measured the old normal host (now `A.MIL.normal`; the court's host upkeep rose
+from 11.4% to 16.6% of income, its armies 0.4-1.6 of normal); `cmEveryManOneCommand` (a contingent split: fixed in the
+engine and the audit); `mdSpread` (an offer with no reason: fixed in the muster); world-robust rewrites (H-082) of
+`coRoutineOnce`, `siegeInARealWar`, `coOrdersByRank`, `bfYouAndSides`, `v2wNoSpectate` (rumours counted as they come: the
+news's 220 places filled with the larger war's battle news), `paRoadsDiffer`, `unDrillMonth`, `peFactionLab`,
+`riRulerHearsCouncil` (its press is A.WHY's since W1-6), `poElectionDeterministic` (the rule is the promise's weight),
+and `cmSummonsRange`'s bar at half or more. Not run: the long tier (twelve war, diplomacy and nobility long tests, about
+two hours of CI), the balance harness, a playtester and a separate reviewer (the machine was shared and loaded).
+
+**Archived.** Nothing.
+
+**Undo.** Revert the step's commits; without `src/war/9999978-standing` every guarded call falls back to the release's
+rule (the lore's armies, no knights' factor, no might line). A save of version 23 needs this build or later.
