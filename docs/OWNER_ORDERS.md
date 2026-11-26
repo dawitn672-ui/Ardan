@@ -548,6 +548,57 @@ order is replaced, strike it through and say by what.
       all the ancient dragons and demons and the like, in a **clear organization by category** (full profiles: skills,
       levels, items, titles, personality and story, as order 87 asked of the legends).
 
+97. **The world rebuilt in depth; a full diagnostic, then wait** · recorded 2026-11-26. Kept unchanged in
+    `docs/prompts/2026-11-26-world-rebuild-and-diagnostic.md`. The newest order; where it differs from 91-96 it wins.
+    **Immediate:** review the whole system for contradictions and bugs (most recent first), finish the work in flight and
+    what is quick to test and fits now, then **pause and give a complete diagnostic of the world of Ardan** (pages of
+    categorical detail) and **wait for direction**. The rest is the next build's brief:
+    - **Map:** remove the Dawnlands and the Sunset Isles; expand the one continent with more nations, each as deep as
+      Ardan's; every town, village and city with its makeup; at least 1,000 provinces, larger than Earth's scale would
+      make sense of; roads and way-stations between settlements, not only trade routes. **Hell lies off the southern
+      coast,** mostly closed unless conditions are met; every demon lives there. **Imperial units:** miles, feet, pounds.
+    - **Naming:** study naming in historical and fantasy works; every name understandable to a newcomer ("Kesh" becomes
+      "Kingdom of Kesh"; "the Seventh Gate" carries its plain meaning). Easy to learn, long to master.
+    - **Lore:** recalibrated for every addition, with depth (why the Sword Saint lives where he does, why he does not rule
+      or fight the Dragon King); a retraceable history of how each part was made.
+    - **Profiles:** every notable person, down to merchants and people of promise; every noteworthy house playable.
+    - **War:** no day-by-day war and no grand-strategy map; clear fronts; each battle playable as before, with rank
+      mattering more: a soldier controls only himself and touches only those around him. "Soldiers", split by kind
+      (cavalry, archers, mages), never "men under arms".
+    - **Relationships:** none handed out; the player chooses to build one and can drop most, except those he must see daily
+      or is tied to (which can change when he moves or things happen).
+    - **Speed:** faster again; a visible sign when the game is working.
+    - **Beings:** trolls and ogres 230-270, leaders higher; giants very few; up to 300 dragons (160-200 more young, the
+      rest grown, one more elder); the three ancient dragons rule dominions of storm, inferno and water (after
+      Rayquaza, Groudon, Kyogre), storm the strongest; Vaskareth becomes the storm ancient, with a wide gap above the
+      other two; every dragon has a dominion; the Dragon King a dominion fit for a king; dragons hostile to humans in most
+      cases but intelligent. **Dragonoid Form:** a hereditary legendary active skill of all dragons (the King's own is
+      unique and unlimited), 3 minutes a day for the young up to 3 hours for ancients, trading firepower for close combat.
+    - **Demons:** no demon species; known by rank, each unique, all horned, each with its own abilities and title; ancient
+      demons' average level about ten lower; lower demons far less intelligent. Ogres, orcs and most monsters are demonic
+      creatures without enough demonic power to be demons. **The three Primordials:** Noir (dragonoid look, larger horns,
+      black eyes, ash skin; darkness and shadow), Blanc (female, white-haired albino vampire; blood magic), Red (hellfire;
+      large demonic wings, dark crimson skin, black wings and horns). An archdemon who beats an equal a hundred times gains
+      twenty levels (it is near impossible to survive that). Ancient, primordial and the Dragon King are irreplaceable;
+      only an heir succeeds.
+    - **One rarity ladder for everything:** basic, rare, epic, legendary, mythical (with levels a separate system beside
+      it). Titles reworked after a study of *Overgeared*'s titles: uncommon titles give fitting reputation and small boosts;
+      legendary titles very few and nearly impossible, able to change a life (experience, stat gain per level, their own
+      skills). Legendary classes (one holder at a time; they cannot be advanced). The Primordials, the Dragon King and the
+      Sword Saint hold mythical titles and skill sets; ancient demons and dragons legendaries of their own. Classes: as
+      many as are worth having (over 300 if sensible).
+    - **Skills:** thousands, far rarer up each rank; kinds passive, active, buffs and debuffs, spells (with subkinds);
+      levels come from training alone, never race; quality (rarity) from evolution, heredity or race; merging can raise
+      rarity, evolving does not but shows its stage; family and hereditary arts cannot merge and may be rejected by low
+      affinity; skill and its use both matter (a swordmaster with a basic technique still beats an unskilled man with an
+      epic style, by insight, body and experience).
+    - **Stats:** say exactly what each point gives (damage, health, stamina and the rest), with *Overgeared* in mind;
+      the study saved in the knowledge base.
+    - **Numbers are guides:** the owner's numbers may be raised or lowered by logic; never pad with useless entries.
+    - **Kings:** levels personal (most trained by routine; a warrior king may reach the elite; a political one not).
+      **Elites** are not a fixed top ten (a great empire may hold 10-20). **Merchants:** from comfortable to richer than
+      royals; even a monopoly is possible. **An Archmage** may join the legends.
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
