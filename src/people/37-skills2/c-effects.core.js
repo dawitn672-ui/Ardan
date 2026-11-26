@@ -58,8 +58,10 @@
   const off = p => !p || (active().none && !xOf(p));
 
   // ---- what a person holds that may carry effects ------------------------------------------------------------------------
-  // the rungs of the families that carry effects (his table's, or his number's for anyone else: SK2.rungFor), each with
-  // the rungs below it at Lv 10 (§15.2), and the player's other held skills (named skills, from step 9)
+  // the top rung of each family that carries effects (his table's, or his number's for anyone else: SK2.rungFor), with
+  // its line, the rungs it evolved from, whose effects it carries on (order 95, D-192: the old rungs are gone, what they
+  // gave is not; E.heldOfRung, E.lineEffects; a rung a merge absorbed gives nothing here, its merge does), and the player's
+  // other held skills (named skills, from step 9)
   SK2.held = function (p) {
     const out = [], act = active();
     if (!p) return out;

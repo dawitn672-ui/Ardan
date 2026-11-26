@@ -11,7 +11,7 @@ const saveFiles = () => [...fs.readdirSync(SAVES_DIR).filter(f => f.endsWith('.a
   ...fs.readdirSync(path.join(SAVES_DIR, 'press')).filter(f => f.endsWith('.ardan')).map(f => path.join(SAVES_DIR, 'press', f))];
 const b64 = f => fs.readFileSync(f).toString('base64');
 
-export const limits = { sk5Lives: 3600, sk2Migrate: 2400, sk2Caps: 900, sk6PerkSums: 1800, sk2Evolve: 2400, sk2Merge: 900, sk2Advance: 900, sk2Active: 900, sk2KindCaps: 900, sk2DuelReplay: 600, sk2ArtsMonth: 1200, sk2ArtsView: 600 };
+export const limits = { sk5Lives: 3600, sk2Migrate: 2400, sk2Caps: 900, sk6PerkSums: 1800, sk2Evolve: 2400, sk2Merge: 900, sk2Jump: 900, sk2Active: 900, sk2KindCaps: 900, sk2DuelReplay: 600, sk2ArtsMonth: 1200, sk2ArtsView: 600 };
 // step 11 (D-186): the player holds these arts at these levels, every fightable one readied (settled: readied last month)
 const ARTS = `((pc, list) => { pc.ka = {}; pc.kr = []; for (const [id, lv] of list) pc.ka[id] = { lv, xp: 0, y: A.S.year, via: 'planted' };
   for (const [id] of list) { const s = A.SK2.art(id); if (s && s.kind !== 'passive' && A.SK2.inFight(s)) pc.kr.push({ id, m: -1 }); } })`;
@@ -380,64 +380,91 @@ export default {
       `a found merge offered after ${r.foundAfter} moments and never again; hash rate ${r.rate}; no die drawn ${r.pure && r.pure2 ? 'yes' : 'NO'}; ${r.bad.length} faults${r.bad.length ? ': ' + r.bad.join('; ') : ''}` };
   },
 
-  // step 8 (D-182): advancing. At a named moment a skill held at Lv 5 or more leaps to the next rank's Lv 1, 1 in 100 by
-  // the moment's hash (worlds tried in turn, H-082), once a life, only while D-163's breakthrough budget is open (it spends
-  // one), its concepts deemed grasped, its price a wound that stays, its reason in the record and the log. Thousands of
-  // moments after it bring no second; a life whose budget is spent never advances; no die is drawn.
-  async sk2Advance(pg) {
+  // order 95 (D-192): a rank's jump, the function the level's every hundredth wall calls (sk2Advance, the hash chance at a
+  // named moment, is archived in archive/skills2-advance/). Planted on a grown player at C · Lv 5: nothing met, no jump;
+  // three thousand fights won far above him move nothing (no advance); the concepts alone (one of three) no jump; the
+  // concepts and the deed, a jump to B · Lv 1, the old rung gone, recorded and logged, the family read through the new
+  // one; the concepts and talent jump too; rankJumps with max 1 jumps one family of two; no die drawn, D-163's budget and
+  // the body untouched; an NPC with no post has no deed, with a post and talent S he jumps by his number.
+  async sk2Jump(pg) {
     const r = await pg.evaluate(({ GROW, PLANT }) => {
-      const SK = A.SK, SK2 = A.SK2, out = { bad: [], worlds: [] };
-      if (!SK2 || !SK2.moment || !SK2.advance) return { none: true };
-      const grow = eval(GROW), plant = eval(PLANT), I = SK2.IX(), E = SK2.E();
-      const bad = s => { if (out.bad.length < 10) out.bad.push(s); };
-      const f = T.trySeeds(T.seedRun(9841, 3), seed => {
-        T.enter({ seed, race: 'human', realm: 'POL-02', status: 'peasant', sex: 'M', startAge: 24 }); A.S.queue = [];
-        const pc = A.pc(); SK.month(pc); grow(pc);
-        if (!pc.alive) return null;
-        // sword at C · Lv 5 (S1 13), the one family of his at Lv 5 or more with a next rank
-        for (const c of SK.IDS) if (pc.sk[c] && pc.sk[c].lv > 0) { SK.set(pc, c, 1, 'planted'); SK2.syncFam(pc, c); }
-        plant(pc, 'sword', 13);
-        const rng0 = JSON.stringify(A.rngState), bt0 = pc.btN || 0, w0 = pc.wounds.length;
-        let n = 0, msg = null;
-        while (!(pc.ke && pc.ke.adv) && n < 3000) { n++; const m = SK2.moment(pc, 'deed_above', { k: 'sword', why: 'a planted fight' }); if (m && m.adv) msg = m.adv; }
-        const t = SK2.rungFor(pc, 'sword'), e = ((pc.ke && pc.ke.ev) || []).find(x => x.how === 'advance');
-        out.worlds.push(seed);
-        return { n, msg, t, e, bt: [bt0, pc.btN], wounds: pc.wounds.slice(w0).map(w => w.k), got: SK.E().conceptsOf('sword', 3).every(c => pc.sk.sword.got[c.id] != null), pure: JSON.stringify(A.rngState) === rng0 };
-      });
-      if (!f.res) { bad('no advance in 3000 moments in ' + f.tried.join(', ')); return out; }
-      Object.assign(out, f.res, { seed: f.seed });
-      const pc = A.pc();
-      if (!out.t || out.t.rank !== 'B' || out.t.lv !== 1) bad('not at B · Lv 1: ' + JSON.stringify(out.t));
-      if (!out.e || !(out.e.at >= 5) || !/cost you/.test(out.e.why) || out.e.to !== 'measured_blade') bad('the record: ' + JSON.stringify(out.e));
-      if (!out.got) bad('the concepts not deemed grasped');
-      if (out.bt[1] !== out.bt[0] + 1) bad('the breakthrough budget not spent: ' + out.bt);
-      if (!out.wounds.length) bad('no wound that stays');
-      if (!A.S.log.flatMap(x => x.lines.map(l => l[0])).some(t => /leaps past its last levels to Measured Blade/.test(t))) bad('no log line');
-      // once a life: thousands more moments, with the budget opened again, bring no second
-      pc.btN = 0; pc.btY = null; plant(pc, 'bow', 13);
-      for (let i = 0; i < 3000; i++) SK2.moment(pc, 'near_death', { why: 'a planted moment' });
-      out.second = (pc.ke.ev || []).filter(x => x.how === 'advance').length;
-      if (out.second !== 1 || SK2.rungFor(pc, 'bow').rank !== 'C') bad('a second advance');
-      // a spent budget: no advance at all
-      T.enter({ seed: 9851, race: 'human', realm: 'POL-02', status: 'peasant', sex: 'M', startAge: 24 }); A.S.queue = [];
-      const p2 = A.pc(); SK.month(p2); grow(p2); plant(p2, 'sword', 13); p2.btN = A.BT_MAX;
-      for (let i = 0; i < 3000; i++) SK2.moment(p2, 'deed_above', { k: 'sword', why: 'a planted fight' });
-      out.spent = (p2.ke.ev || []).filter(x => x.how === 'advance').length;
-      if (out.spent) bad('an advance with the budget spent');
-      let hits = 0; for (let i = 0; i < 40000; i++) if (E.unitOf('rate|' + i + '|adv') < E.ADVANCE_CHANCE) hits++;
-      out.rate = hits / 40000;
-      if (!(out.rate > 0.0085 && out.rate < 0.0115)) bad('advance rate ' + out.rate);
+      const SK = A.SK, SK2 = A.SK2, out = { bad: [] };
+      if (!SK2 || !SK2.rankJump || !SK2.jumpVerdict) return { none: true };
+      const grow = eval(GROW), plant = eval(PLANT), E = SK2.E(), B = ['the-measure', 'the-bind'];
+      const bad = s => { if (out.bad.length < 12) out.bad.push(s); };
+      T.enter({ seed: 9841, race: 'human', realm: 'POL-02', status: 'peasant', sex: 'M', startAge: 24 }); A.S.queue = [];
+      const pc = A.pc(); SK.month(pc); grow(pc);
+      const rng0 = JSON.stringify(A.rngState), bt0 = pc.btN || 0, w0 = pc.wounds.length;
+      // sword at C · Lv 5 or 6 (S1 13), B's concepts not grasped, no deed, talent C: one condition of three at most
+      const prep = c => { plant(pc, c, 13); const s = pc.sk[c]; for (const id of B) delete s.got[id]; s.proved = false; pc.tal = Object.assign({}, pc.tal || {}, { [c]: 'C' }); SK2.syncFam(pc, c); };
+      prep('sword');
+      out.at = SK2.rungFor(pc, 'sword');
+      let v = SK2.jumpVerdict(pc, 'sword');
+      out.nil = v && { ok: v.ok, met: v.met, missing: v.missing };
+      if (!v || v.ok || v.met.length) bad('jumps with nothing met: ' + JSON.stringify(out.nil));
+      // a moment no longer leaps (the advance is archived): three thousand fights won far above him change nothing
+      for (let i = 0; i < 3000; i++) SK2.moment(pc, 'deed_above', { k: 'sword', why: 'a planted fight' });
+      out.afterMoments = SK2.rungFor(pc, 'sword');
+      if (out.afterMoments.rank !== 'C' || SK2.advance || SK2.advanceAt || (pc.ke.ev || []).some(e => e.how === 'advance' || e.how === 'jump')) bad('a moment moved a rank: ' + JSON.stringify(out.afterMoments));
+      // the concepts alone: one of three, no jump; with the deed (S1's proof): two of three, it jumps
+      for (const id of B) pc.sk.sword.got[id] = 24;
+      v = SK2.rankJump(pc, 'sword', { why: 'the breakthrough at level 100' });
+      if (!v || v.done || v.met.join() !== 'concepts') bad('jumped on the concepts alone: ' + JSON.stringify(v));
+      pc.sk.sword.proved = true;
+      const dry = SK2.rankJump(pc, 'sword', { why: 'x', dry: true });
+      if (!dry.ok || dry.done || SK2.rungFor(pc, 'sword').rank !== 'C') bad('a dry verdict moved the rung');
+      v = SK2.rankJump(pc, 'sword', { why: 'the breakthrough at level 100' });
+      out.jump = v; out.after = SK2.rungFor(pc, 'sword');
+      const e = (pc.ke.ev || []).filter(x => x.how === 'jump').slice(-1)[0];
+      out.rec = e;
+      if (!v.done || out.after.rank !== 'B' || out.after.lv !== 1) bad('no jump to B · Lv 1: ' + JSON.stringify(out.after));
+      if (pc.ks.basic_swordsmanship || pc.ks.stick_and_lath || !pc.ks.measured_blade) bad('the old rung is not gone: ' + Object.keys(pc.ks).filter(k => /sword|blade|stick/.test(k)).join());
+      if (!e || e.from !== 'basic_swordsmanship' || e.to !== 'measured_blade' || e.met.join() !== 'concepts,deed') bad('the record: ' + JSON.stringify(e));
+      if (!A.S.log.flatMap(x => x.lines.map(l => l[0])).some(t => /jumps a rank and becomes Measured Blade/.test(t))) bad('no log line');
+      out.read = [A.skill(pc, 'sword'), E.value('B', 1)];
+      if (SK2.reads(pc, 'sword') < E.value('B', 1) - 1e-9) bad('the family does not read through the new rung: ' + out.read);
+      // talent and the concepts, no deed: the bow jumps from C too
+      prep('bow'); for (const id of SK.E().conceptsOf('bow', 3).map(c => c.id)) pc.sk.bow.got[id] = 24; pc.tal.bow = 'A';
+      v = SK2.rankJump(pc, 'bow', { why: 'the breakthrough at level 100' });
+      out.bow = [v && v.met, SK2.rungFor(pc, 'bow').rank];
+      if (!v || !v.done || v.met.join() !== 'concepts,talent' || SK2.rungFor(pc, 'bow').rank !== 'B') bad('talent and concepts: ' + JSON.stringify(out.bow));
+      // rankJumps: two families that may jump, at most one does (the better read first)
+      prep('spear'); prep('melee');
+      for (const c of ['spear', 'melee']) { for (const cn of SK.E().conceptsOf(c, 3)) pc.sk[c].got[cn.id] = 24; pc.sk[c].proved = true; }
+      const js = SK2.rankJumps(pc, { why: 'the breakthrough at level 200', max: 1 });
+      out.many = [js.map(x => x.k), SK2.rungFor(pc, 'spear').rank, SK2.rungFor(pc, 'melee').rank];
+      if (js.length !== 1 || [SK2.rungFor(pc, 'spear').rank, SK2.rungFor(pc, 'melee').rank].filter(x => x === 'B').length !== 1) bad('rankJumps max 1: ' + JSON.stringify(out.many));
+      // nothing drawn, D-163's budget untouched, no wound
+      out.pure = JSON.stringify(A.rngState) === rng0;
+      if ((pc.btN || 0) !== bt0) bad('the breakthrough budget moved');
+      if (pc.wounds.length !== w0) bad('a jump cost a wound');
+      // anyone else: his number, by the closed form's facts (his post is his deed, his talent a letter)
+      const npc = Object.values(A.S.people).filter(p => p && p.alive && p.id !== pc.id && p.st && A.age(p) >= 30 && !p.sk && !p.ruler).sort((a, b) => (a.id < b.id ? -1 : 1))[0];
+      if (!npc) bad('no NPC');
+      else {
+        npc.skills = npc.skills || {}; npc.skills.sword = SK.VALUES[13]; npc.tal = Object.assign({}, npc.tal || {}, { sword: 'C' });
+        const job0 = npc.job; delete npc.job; const mil0 = npc.mil; delete npc.mil; const off0 = npc.office; delete npc.office;
+        const v0 = SK2.jumpVerdict(npc, 'sword');
+        npc.job = { c: 'smith', r: 1 }; npc.tal.sword = 'S';
+        const v1 = SK2.rankJump(npc, 'sword', { why: 'the breakthrough at level 100' });
+        out.npc = [v0 && v0.met, v1 && v1.met, npc.skills.sword];
+        if (v0 && v0.met.includes('deed')) bad('an NPC with no post has a deed');
+        if (!v1 || !v1.done || npc.skills.sword !== SK.VALUES[E.s1OfRung('B', 1)]) bad('the NPC did not jump with a post and talent S: ' + JSON.stringify(out.npc));
+        npc.job = job0; if (mil0) npc.mil = mil0; if (off0) npc.office = off0;
+      }
       return out;
     }, { GROW, PLANT });
-    if (r.none) return { ok: false, detail: 'no advancing on the page' };
+    if (r.none) return { ok: false, detail: 'no rank jump on the page (A.SK2.rankJump)' };
     const ok = !r.bad.length && r.pure;
-    return { ok, detail: `world ${r.seed}: after ${r.n} moments at C · Lv 5, ${r.t && r.t.rank + ' · Lv ' + r.t.lv} ("${r.msg}"; record: "${r.e && r.e.why}"); budget ${JSON.stringify(r.bt)}, wounds ${JSON.stringify(r.wounds)}, concepts deemed ${r.got}; ` +
-      `3000 more moments: ${r.second} advance in the life; a spent budget: ${r.spent}; hash rate ${r.rate}; no die drawn ${r.pure ? 'yes' : 'NO'}; ${r.bad.length} faults${r.bad.length ? ': ' + r.bad.join('; ') : ''}` };
+    return { ok, detail: `sword at ${r.at && r.at.rank + ' · Lv ' + r.at.lv}: nothing met ${JSON.stringify(r.nil)}; 3000 moments after: ${r.afterMoments && r.afterMoments.rank} (no advance); ` +
+      `concepts and deed: ${r.after && r.after.rank + ' · Lv ' + r.after.lv} (record "${r.rec && r.rec.why}"), read ${JSON.stringify(r.read)}; concepts and talent (bow) ${JSON.stringify(r.bow)}; rankJumps max 1 ${JSON.stringify(r.many)}; ` +
+      `NPC [no post met, post and talent S met, read] ${JSON.stringify(r.npc)}; no die drawn ${r.pure ? 'yes' : 'NO'}; ${r.bad.length} faults${r.bad.length ? ': ' + r.bad.join('; ') : ''}` };
   },
   // step 7 (D-182): evolution at Lv 10, gated by the rung's own route. (1) The rule, planted on a grown player at Basic
   // Swordsmanship C · Lv 10 with the bar full: two years of practice (no stretch, so no deed) with the B rung's concepts
   // taken away bring no evolution, and the stall names what is wanting; the concepts and a deed bring Measured Blade at
-  // once, the old rung kept at Lv 10, the reason in the record, the log and pc.ke.ev, and the card (from rank B: a stat
+  // once, the old rung gone into it (D-192; an old save's rungs and arts beside their evolutions retired on load, every read
+  // the same), the reason in the record, the log and pc.ke.ev, and the card (from rank B: a stat
   // point through A.LV among its choices). The S rung's route asks thirty years: a man of twenty with every concept and a
   // deed of renown stays at A. Anyone else (the closed form) at the B edge with no post and no stretch won stays; with a
   // post he crosses and gains a recorded point. (2) Bot lives (seed fallback, H-082): every rung the player gains above
@@ -478,11 +505,32 @@ export default {
       // (what was stored at the edge lands at once: Lv 1 or more)
       if (out.after.rank !== 'B' || !(out.after.lv >= 1)) bad('no evolution with the conditions met: ' + JSON.stringify(out.after));
       if (!e || e.to !== 'measured_blade' || e.from !== 'basic_swordsmanship' || !e.ok || !/the deed/.test(e.why) || !/measure/.test(e.why)) bad('the record: ' + JSON.stringify(e));
-      if (!(pc.ks.basic_swordsmanship && pc.ks.basic_swordsmanship.lv === 10 && pc.ks.measured_blade && pc.ks.measured_blade.lv >= 1)) bad('the old rung is not kept at Lv 10 beside the new');
+      // the old rung is gone into the new one (order 95, D-192), and the family reads through the new one
+      out.kept = Object.keys(pc.ks).filter(k => ['stick_and_lath', 'basic_swordsmanship', 'measured_blade'].includes(k)).sort();
+      if (out.kept.join() !== 'measured_blade' || !(pc.ks.measured_blade.lv >= 1)) bad('the old rungs are not gone: ' + out.kept.join());
+      out.read = [SK2.reads(pc, 'sword'), SK2.E().value('B', out.after.lv), SK2.label(pc, 'sword', { name: true })];
+      if (Math.abs(out.read[0] - out.read[1]) > 1e-9 || !/^Measured Blade · B/.test(out.read[2])) bad('the family does not read through the new rung: ' + JSON.stringify(out.read));
+      out.line = SK2.E().heldOfRung(SK2.IX(), 'sword', 'B', out.after.lv);
+      if (out.line.length !== 1 || out.line[0].line.join() !== 'stick_and_lath,basic_swordsmanship') bad('the held line: ' + JSON.stringify(out.line));
       const lines = A.S.log.flatMap(x => x.lines.map(l => l[0]));
-      out.logLine = lines.filter(t => /Measured Blade begins beside it/.test(t)).slice(-1)[0] || '';
+      out.logLine = lines.filter(t => /becomes Measured Blade/.test(t)).slice(-1)[0] || '';
       if (!out.logLine) bad('no log line');
-      if (!(pc.skr || []).some(x => x.t === 'evolve' && /Measured Blade is added/.test(x.text))) bad('no record line');
+      if (!(pc.skr || []).some(x => x.t === 'evolve' && /becomes Measured Blade/.test(x.text))) bad('no record line');
+      // a save of version 20 holds the old rungs at Lv 10 beside the new one, and an art beside its evolution: on load they
+      // are retired (the step skills2line) and nothing any check reads moves
+      if (!A.V2SAVE.STEPS.some(x => x[0] === 'skills2line')) bad('no save step skills2line');
+      pc.ks.stick_and_lath = { lv: 10 }; pc.ks.basic_swordsmanship = { lv: 10 };
+      const k0 = { ka: pc.ka, kr: pc.kr, kcd: pc.kcd };
+      pc.ka = { quick_cut: { lv: 10, xp: 0, y: 1, via: 'practice' }, twin_cut: { lv: 2, xp: 0, y: 2, via: 'evolve' } }; pc.kr = [{ id: 'quick_cut', m: -1 }]; pc.kcd = { quick_cut: -1 };
+      const reads = () => SK.IDS.map(c => A.skill(pc, c) + '/' + A.checkVal(pc, { s: c, d: 45 })).join() + '|' + A.fightWorth(pc) + '|' + JSON.stringify(A.CAPS(pc).held);
+      const before = reads(), n1 = SK2.migrateLine(A.S), after = reads(), n2 = SK2.migrateLine(A.S);
+      out.migrate = [n1, n2, before === after, Object.keys(pc.ka).sort().join(), JSON.stringify(pc.kr), (pc.ka.twin_cut || {}).fr];
+      if (n1 !== 3 || n2 !== 0 || before !== after || pc.ks.stick_and_lath || pc.ks.basic_swordsmanship || !pc.ks.measured_blade) bad('the load: ' + JSON.stringify(out.migrate));
+      if (pc.ka.quick_cut || !pc.ka.twin_cut || (pc.ka.twin_cut.fr || []).join() !== 'quick_cut' || pc.kr.some(x => x.id === 'quick_cut') || (pc.kcd && pc.kcd.quick_cut != null)) bad('the art beside its evolution: ' + JSON.stringify(out.migrate));
+      if (A.SK2.inFight(A.SK2.art('twin_cut')) && !pc.kr.some(x => x.id === 'twin_cut' && x.m === -1)) bad('its place in hand did not pass on: ' + JSON.stringify(pc.kr));
+      SK2.artsMonth(pc, { ledger: [] });
+      if (pc.ka.quick_cut) bad('an art gone into its evolution was learned again');
+      Object.assign(pc, k0);
       // the card, and its point
       const qi = A.S.queue.findIndex(q => q && q.ev === 'sk2_evolved');
       out.card = qi >= 0 ? A.S.queue[qi].ctx : null;
@@ -561,7 +609,12 @@ export default {
             if (!e.ok || !e.why) bad(`${o.seed} ${e.to}: ${JSON.stringify(e)}`);
           }
           const lines = A.S.log.flatMap(x => (x.pc === pc.id ? x.lines.map(l => l[0]) : []));
-          out.logs += lines.filter(t => /begins beside it/.test(t)).length;
+          out.logs += lines.filter(t => /has gone as far as it goes and becomes/.test(t)).length;
+          // of each ladder only the top rung is held (D-192): no rung below it in pc.ks
+          for (const c of SK.IDS) {
+            const t = SK2.topOf(pc.ks, c); if (!t) continue;
+            for (const rk of E.HUMAN) { if (E.rankIx(rk) >= E.rankIx(t.rank)) break; const id = E.rungOf(I, c, rk); if (id && pc.ks[id]) bad(`${o.seed} ${id} held below ${t.id}`); }
+          }
           // every rung above his start's top is an evolution, or a level set outright (a seat's minimum, a card)
           for (const c of SK.IDS) {
             const t = SK2.rungFor(pc, c); if (!t) continue;
@@ -579,6 +632,7 @@ export default {
     const nb = r1.bad.length + r2.bad.length;
     const ok = !nb && r2.ev >= 1 && r2.logs >= r2.ev && r2.lives >= 2;
     return { ok, detail: `planted: two years of practice at C · Lv 10 without the deed left ${r1.held && r1.held.rank + ' · Lv ' + r1.held.lv} (wanting: ${r1.stall}); with the concepts and a deed, ${r1.after && r1.after.rank + ' · Lv ' + r1.after.lv} at once ("${r1.ev && r1.ev.why}"; log: "${r1.logLine}"); ` +
+      `the sword rungs held after it ${JSON.stringify(r1.kept)}, read [rungs, B's value, label] ${JSON.stringify(r1.read)}; an old save's rungs and art beside their evolutions on load [retired, again, reads the same, arts, in hand, gone into]: ${JSON.stringify(r1.migrate)}; ` +
       `the card ${r1.words} words, choices ${JSON.stringify(r1.choices)}, the body's choice gave a point ${JSON.stringify(r1.pts)}; at twenty with every S concept and a renowned deed: ${r1.young && r1.young.rank} (${(r1.youngStall || []).join('; ')}); ` +
       `the closed form's gate at the B edge [no post, a stretch won, a post] ${JSON.stringify(r1.npcGate)}; an NPC there with no post [concepts, read]: ${JSON.stringify(r1.npcNoPost)}, with a post [concepts, read, points before, after]: ${JSON.stringify(r1.npcPost)}. ` +
       `Bot lives ${r2.lives} (${r2.plays.join(', ')}): ${r2.ev} evolutions ${JSON.stringify(r2.byRank)}, ${r2.cards} cards, ${r2.logs} log lines, ${r2.set} rungs from a level set outright; e.g. ${r2.sample.join(' | ')}. ` +
@@ -805,9 +859,13 @@ export default {
           }
           for (const c in pc.sk || {}) if (pc.sk[c].lv > 0 && top[c] !== A.SK.VALUES[pc.sk[c].lv] && !(born && E.s1LevelOfValue(top[c] + 1e-9) === E.s1LevelOfValue(A.SK.VALUES[pc.sk[c].lv] + 1e-9))) bad.push('rung of ' + c + ' reads ' + top[c] + ' for ' + A.SK.VALUES[pc.sk[c].lv]);
           const st = SK2.stale(pc); if (st.length) bad.push('stale ' + st.join(','));
-          // the perks the release reads from the numbers are the perk effects the held rungs carry (§7)
+          // the perks the release reads from the numbers are the perk effects the held rungs carry (§7), with their lines
+          // (the rungs a top rung evolved from, gone into it: D-192)
           const want = new Set(A.perkNames(pc).map(x => x[1])), have = new Set();
-          for (const id in pc.ks || {}) for (const b of IX.BY[id].levels) if (b.at <= pc.ks[id].lv) for (const e of b.effects) if (e.type === 'perk') have.add(e.name);
+          for (const id in pc.ks || {}) {
+            const s = IX.BY[id], h = s.family && E.HUMAN.includes(s.rank) ? E.heldOfRung(IX, s.family, s.rank, pc.ks[id].lv)[0] : null;
+            for (const j of ((h && h.id === id && h.line) || []).concat([id])) for (const b of IX.BY[j].levels) if (b.at <= (j === id ? pc.ks[id].lv : 10)) for (const e of b.effects) if (e.type === 'perk') have.add(e.name);
+          }
           const pk = Object.keys(pc.skills || {}).filter(k => A.SK.LEG[k]);
           if (!pk.length) for (const w of want) if (!have.has(w)) bad.push('perk ' + w + ' on no rung');
         }

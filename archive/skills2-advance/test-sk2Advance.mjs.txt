@@ -1,0 +1,60 @@
+  // moments after it bring no second; a life whose budget is spent never advances; no die is drawn.
+  async sk2Advance(pg) {
+    const r = await pg.evaluate(({ GROW, PLANT }) => {
+      const SK = A.SK, SK2 = A.SK2, out = { bad: [], worlds: [] };
+      if (!SK2 || !SK2.moment || !SK2.advance) return { none: true };
+      const grow = eval(GROW), plant = eval(PLANT), I = SK2.IX(), E = SK2.E();
+      const bad = s => { if (out.bad.length < 10) out.bad.push(s); };
+      const f = T.trySeeds(T.seedRun(9841, 3), seed => {
+        T.enter({ seed, race: 'human', realm: 'POL-02', status: 'peasant', sex: 'M', startAge: 24 }); A.S.queue = [];
+        const pc = A.pc(); SK.month(pc); grow(pc);
+        if (!pc.alive) return null;
+        // sword at C · Lv 5 (S1 13), the one family of his at Lv 5 or more with a next rank
+        for (const c of SK.IDS) if (pc.sk[c] && pc.sk[c].lv > 0) { SK.set(pc, c, 1, 'planted'); SK2.syncFam(pc, c); }
+        plant(pc, 'sword', 13);
+        const rng0 = JSON.stringify(A.rngState), bt0 = pc.btN || 0, w0 = pc.wounds.length;
+        let n = 0, msg = null;
+        while (!(pc.ke && pc.ke.adv) && n < 3000) { n++; const m = SK2.moment(pc, 'deed_above', { k: 'sword', why: 'a planted fight' }); if (m && m.adv) msg = m.adv; }
+        const t = SK2.rungFor(pc, 'sword'), e = ((pc.ke && pc.ke.ev) || []).find(x => x.how === 'advance');
+        out.worlds.push(seed);
+        return { n, msg, t, e, bt: [bt0, pc.btN], wounds: pc.wounds.slice(w0).map(w => w.k), got: SK.E().conceptsOf('sword', 3).every(c => pc.sk.sword.got[c.id] != null), pure: JSON.stringify(A.rngState) === rng0 };
+      });
+      if (!f.res) { bad('no advance in 3000 moments in ' + f.tried.join(', ')); return out; }
+      Object.assign(out, f.res, { seed: f.seed });
+      const pc = A.pc();
+      if (!out.t || out.t.rank !== 'B' || out.t.lv !== 1) bad('not at B · Lv 1: ' + JSON.stringify(out.t));
+      if (!out.e || !(out.e.at >= 5) || !/cost you/.test(out.e.why) || out.e.to !== 'measured_blade') bad('the record: ' + JSON.stringify(out.e));
+      if (!out.got) bad('the concepts not deemed grasped');
+      if (out.bt[1] !== out.bt[0] + 1) bad('the breakthrough budget not spent: ' + out.bt);
+      if (!out.wounds.length) bad('no wound that stays');
+      if (!A.S.log.flatMap(x => x.lines.map(l => l[0])).some(t => /leaps past its last levels to Measured Blade/.test(t))) bad('no log line');
+      // once a life: thousands more moments, with the budget opened again, bring no second
+      pc.btN = 0; pc.btY = null; plant(pc, 'bow', 13);
+      for (let i = 0; i < 3000; i++) SK2.moment(pc, 'near_death', { why: 'a planted moment' });
+      out.second = (pc.ke.ev || []).filter(x => x.how === 'advance').length;
+      if (out.second !== 1 || SK2.rungFor(pc, 'bow').rank !== 'C') bad('a second advance');
+      // a spent budget: no advance at all
+      T.enter({ seed: 9851, race: 'human', realm: 'POL-02', status: 'peasant', sex: 'M', startAge: 24 }); A.S.queue = [];
+      const p2 = A.pc(); SK.month(p2); grow(p2); plant(p2, 'sword', 13); p2.btN = A.BT_MAX;
+      for (let i = 0; i < 3000; i++) SK2.moment(p2, 'deed_above', { k: 'sword', why: 'a planted fight' });
+      out.spent = (p2.ke.ev || []).filter(x => x.how === 'advance').length;
+      if (out.spent) bad('an advance with the budget spent');
+      let hits = 0; for (let i = 0; i < 40000; i++) if (E.unitOf('rate|' + i + '|adv') < E.ADVANCE_CHANCE) hits++;
+      out.rate = hits / 40000;
+      if (!(out.rate > 0.0085 && out.rate < 0.0115)) bad('advance rate ' + out.rate);
+      return out;
+    }, { GROW, PLANT });
+    if (r.none) return { ok: false, detail: 'no advancing on the page' };
+    const ok = !r.bad.length && r.pure;
+    return { ok, detail: `world ${r.seed}: after ${r.n} moments at C · Lv 5, ${r.t && r.t.rank + ' · Lv ' + r.t.lv} ("${r.msg}"; record: "${r.e && r.e.why}"); budget ${JSON.stringify(r.bt)}, wounds ${JSON.stringify(r.wounds)}, concepts deemed ${r.got}; ` +
+      `3000 more moments: ${r.second} advance in the life; a spent budget: ${r.spent}; hash rate ${r.rate}; no die drawn ${r.pure ? 'yes' : 'NO'}; ${r.bad.length} faults${r.bad.length ? ': ' + r.bad.join('; ') : ''}` };
+  },
+  // step 7 (D-182): evolution at Lv 10, gated by the rung's own route. (1) The rule, planted on a grown player at Basic
+  // Swordsmanship C · Lv 10 with the bar full: two years of practice (no stretch, so no deed) with the B rung's concepts
+  // taken away bring no evolution, and the stall names what is wanting; the concepts and a deed bring Measured Blade at
+  // once, the old rung kept at Lv 10, the reason in the record, the log and pc.ke.ev, and the card (from rank B: a stat
+  // point through A.LV among its choices). The S rung's route asks thirty years: a man of twenty with every concept and a
+  // deed of renown stays at A. Anyone else (the closed form) at the B edge with no post and no stretch won stays; with a
+  // post he crosses and gains a recorded point. (2) Bot lives (seed fallback, H-082): every rung the player gains above
+  // his start is an evolution with its conditions met (its concepts grasped, a deed named from rank B) or a level set
+  // outright, and pooled over the lives at least one evolution happens, its reason in the log.

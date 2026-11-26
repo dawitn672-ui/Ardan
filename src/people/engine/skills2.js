@@ -290,8 +290,8 @@ export function missing(needs, facts) {
   return out;
 }
 
-// ---- 7. evolution, merging, advancing (§3.3, §3.4; §15.2: an evolved skill stays beside its evolution, a merge absorbs
-// its parts) -------------------------------------------------------------------------------------------------------------
+// ---- 7. evolution, merging, a rank's jump (§3.3, §3.4; order 95, D-192: an evolved skill becomes its evolution and is
+// gone; a merge absorbs its parts) ---------------------------------------------------------------------------------------
 // held: { id, lv } of a skill the person holds; facts as above (facts.skills lists everything he holds)
 export function evolveRoutes(ix, from) {
   const s = ix.BY[from]; if (!s) return [];
@@ -312,11 +312,13 @@ export function canEvolve(ix, held, facts) {
     return { to, ok: !miss.length, missing: miss };
   });
 }
-// the table after an evolution: the old skill stays where it was, the new one is added at Lv 1 (§15.2)
+// the table after an evolution: the old skill becomes the new one at Lv 1 and is gone (order 95, D-192; it replaced
+// §15.2's "the old one stays beside it"). What the old one gave passes on through the line (heldOfRung, gather).
 export function evolve(table, from, to, at) {
   if (!table[from] || table[to]) return table;
   table[to] = { lv: 1, xp: 0, via: 'evolve', from };
   if (at != null) table[to].y = at;
+  delete table[from];
   return table;
 }
 export function canMerge(ix, recipe, facts) {
@@ -339,18 +341,42 @@ export function merge(ix, table, recipe, at) {
   if (at != null) table[recipe.result].y = at;
   return table;
 }
-// advancing (awakening): a skill at Lv 5 or more jumps to the next rank's Lv 1 at a named moment, once a life (§3.4)
-export const ADVANCE_FROM = 5, ADVANCES_A_LIFE = 1;
-export function canAdvance(ix, held, facts) {
-  const miss = [], s = ix.BY[held && held.id];
-  if (!s) return { ok: false, missing: ['skill'] };
+// a rank's jump (order 95, D-192): at a breakthrough (the level's every hundredth wall: src/people/9999975-level calls
+// it) a skill may jump to the next rank's Lv 1 without the rest of its levels, when several conditions allow it. It
+// replaced the advance, a hash chance at a named moment (archive/skills2-advance/). Pure: what the jump asks, and what
+// of it the facts meet. held: { id, lv } (a family's top rung, or any skill with an evolution of the next rank); facts:
+// as missing()'s, with concepts (fam:id grasped), deeds, talent ({ fam: letter }), age, fame, sealed (ids a merge took).
+// The three conditions, each met in full or not at all:
+//   concepts  every concept the evolution's route asks is grasped
+//   deed      the route's deed is done (a route that asks none: a 'proved' deed of the target's rank or above)
+//   talent    the family's talent letter is at least JUMP_TALENT[target rank]
+// It jumps when the skill stands at Lv JUMP_FROM or more, at least JUMP_NEED of the three are met, and every other need
+// of the route (an age, renown) is met; a skill a merge absorbed never jumps. Returns { ok, from, to, rank, met: [...],
+// missing: [...] } (missing names the conditions not met and anything else wanting).
+export const JUMP_FROM = 5, JUMP_NEED = 2;
+export const JUMP_CONDITIONS = ['concepts', 'deed', 'talent'];
+export const JUMP_TALENT = { C: 'C', B: 'B', A: 'A', S: 'S', SS: 'SSS', SSS: 'SSS', X: 'SSS' };
+export function rankJump(ix, held, facts) {
+  facts = facts || {};
+  const s = ix.BY[held && held.id];
+  if (!s) return { ok: false, from: null, to: null, rank: null, met: [], missing: ['skill'] };
   const to = (s.evolvesTo || []).map(t => ix.BY[t.id]).find(t => t && rankIx(t.rank) === rankIx(s.rank) + 1);
-  if (!to) miss.push('no-next');
-  if (!(held.lv >= ADVANCE_FROM)) miss.push('level');
-  if ((facts.advances || 0) >= ADVANCES_A_LIFE) miss.push('once');
-  if (!(ix.V.moments || []).includes(facts.moment)) miss.push('moment');
-  if (to && (facts.skills || {})[to.id]) miss.push('held');
-  return { ok: !miss.length, missing: miss, to: to ? to.id : null };
+  const out = { ok: false, from: s.id, to: to ? to.id : null, rank: to ? to.rank : null, met: [], missing: [] };
+  if (!to) { out.missing.push('no-next'); return out; }
+  const route = ((to.acquire || []).find(r => r.via === 'evolve' && r.from === s.id) || {}).needs || {};
+  if (!(held.lv >= JUMP_FROM)) out.missing.push('level');
+  if (Array.isArray(facts.sealed) && facts.sealed.includes(s.id)) out.missing.push('absorbed');
+  if ((facts.skills || {})[to.id]) out.missing.push('held');
+  const rest = Object.assign({}, route); delete rest.concept; delete rest.deed;
+  out.missing.push(...missing(rest, facts));
+  // the three conditions
+  if (!missing({ concept: route.concept || [] }, facts).length) out.met.push('concepts');
+  if (route.deed ? !missing({ deed: route.deed }, facts).length : deedCount(facts, 'proved', to.rank) >= 1) out.met.push('deed');
+  const fam = s.family || (s.reads || [])[0];
+  if (fam && TAL.indexOf((facts.talent || {})[fam] || 'C') >= TAL.indexOf(JUMP_TALENT[to.rank] || 'SSS')) out.met.push('talent');
+  if (out.met.length < JUMP_NEED) for (const c of JUMP_CONDITIONS) if (!out.met.includes(c)) out.missing.push('condition:' + c);
+  out.ok = !out.missing.length;
+  return out;
 }
 
 // ---- 7b. in play: an edge of a family's ladder, a merge's entry and its levels, the chances (steps 7 and 8; D-182) ------
@@ -379,8 +405,8 @@ export function edgeVerdict(ix, fam, w, facts) {
   if (e.kind === 'evolve' && facts && Array.isArray(facts.sealed) && facts.sealed.includes(e.from)) miss.push('absorbed');
   return Object.assign(e, { ok: !miss.length, missing: miss });
 }
-// the chances (§3.4), each read from a hash of its own key: no draw from any stream
-export const ADVANCE_CHANCE = 0.01;      // an advance: 1 in 100 a named moment
+// the chance of a found merge (§3.4), read from a hash of its own key: no draw from any stream (the advance's 1 in 100
+// went with it to archive/skills2-advance/, D-192)
 export const FOUND_CHANCE = 1 / 200;     // a found merge: 1 in 200 a named moment, at most once a life
 export function hashKey(str) { let h = 1779033703 ^ str.length; for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); } h = Math.imul(h ^ (h >>> 16), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); return (h ^ (h >>> 16)) >>> 0; }
 export const unitOf = str => (hashKey(String(str)) + 0.5) / 4294967296;
@@ -479,8 +505,9 @@ export function familyRead(ix, entries, fam) {
 }
 
 // ---- 10. effects in play: the capability profile and the caps (step 6, §2.3, §2.4, §3.6; D-180) ------------------------
-// held: [{ id, lv }], every skill a person holds (a family's rungs below his top one at Lv 10, the top one at its level,
-// §15.2). gather() lists every passive effect's sources by slot. Perks are not gathered: the adapter serves them from
+// held: [{ id, lv, line? }], every skill a person holds: of a family's ladder only his top rung, at its level (order 95,
+// D-192: an evolved rung became the next and is gone), with `line`, the rungs it evolved from, whose effects it carries
+// on (gather: lineEffects). gather() lists every passive effect's sources by slot. Perks are not gathered: the adapter serves them from
 // the read of their key, as the release did (perkRows). trigger and active effects are listed, not summed: they act in
 // their moment (steps 7 and 11).
 // One step of blunder or surge is half a deviation of judgment or will (7.5 points on attempt()'s scale of 100 and 15).
@@ -488,17 +515,28 @@ export const STEP_MIND = 7.5;
 // one step of resisting: a tenth off a wound's damage (the fighter's woundRes), a fifth off a foe's stare (fear), a tenth
 // off an illness's monthly toll; poison and mind wait for the systems that read them
 export const RESIST_STEP = { wounds: 0.1, fear: 0.2, illness: 0.1, poison: 0.1, mind: 0.1 };
-// the held list of a family's ladder at (rank, lv): every rung below at Lv 10, the top at its level
+// the held list of a family's ladder at (rank, lv): the top rung at its level, its line the rungs below it (gone into it)
 export function heldOfRung(ix, fam, rank, lv) {
-  const out = [];
+  const out = [], line = [];
   if (!(lv >= 1) || rankIx(rank) < 0) return out;
   for (const r of RANKS) {
     const id = rungOf(ix, fam, r);
-    if (rankIx(r) < rankIx(rank)) { if (id) out.push({ id, lv: MAX_LV }); continue; }
-    if (r === rank && id) out.push({ id, lv: Math.min(MAX_LV, lv) });
+    if (rankIx(r) < rankIx(rank)) { if (id) line.push(id); continue; }
+    if (r === rank && id) out.push(line.length ? { id, lv: Math.min(MAX_LV, lv), line } : { id, lv: Math.min(MAX_LV, lv) });
     break;
   }
   return out;
+}
+// what a held skill gives with its line: each rung it evolved from at Lv 10, lowest first, then its own level, a later
+// rung's effect replacing an earlier one's of the same slot (effectKey), as a later band replaces an earlier one within a
+// skill: an evolution carries on what the old skill gave, so nothing drops when the old one goes (D-192)
+export function lineEffects(ix, h) {
+  const s = ix.BY[h && h.id]; if (!s) return [];
+  if (!Array.isArray(h.line) || !h.line.length) return effectsAt(s, h.lv);
+  const held = new Map();
+  for (const id of h.line) { const x = ix.BY[id]; if (x) for (const e of effectsAt(x, MAX_LV)) held.set(effectKey(e), e); }
+  for (const e of effectsAt(s, h.lv)) held.set(effectKey(e), e);
+  return [...held.values()];
 }
 // the slot an effect's sources stack in, under one cap
 export function srcKey(e) {
@@ -517,7 +555,7 @@ export function gather(ix, held) {
   const src = {}, unlocks = [], actives = [], triggers = [];
   for (const h of held || []) {
     const s = ix.BY[h && h.id]; if (!s) continue;
-    for (const e of effectsAt(s, h.lv)) {
+    for (const e of lineEffects(ix, h)) {
       if (e.type === 'perk') continue;
       if (e.type === 'unlock') { if (!unlocks.includes(e.what)) unlocks.push(e.what); continue; }
       if (e.type === 'active') { actives.push({ id: s.id, name: e.name, limit: e.limit || null, do: e.do }); continue; }
@@ -814,7 +852,10 @@ export function npcArts(ix, reads, facts) {
     }
     if (lv > 0) held[s.id] = lv;
   }
-  for (const id of Object.keys(held).sort()) out.push({ id, lv: held[id] });
+  // an art that evolved is gone into its evolution (order 95, D-192): the source of a held evolution is not held
+  const gone = new Set();
+  for (const s of arts) if (held[s.id]) for (const r of s.acquire || []) if (r.via === 'evolve' && held[r.from] >= MAX_LV) gone.add(r.from);
+  for (const id of Object.keys(held).sort()) if (!gone.has(id)) out.push({ id, lv: held[id] });
   return out;
 }
 // the faults of an art of the three kinds (§2.7 check 11; D-186), [] when whole

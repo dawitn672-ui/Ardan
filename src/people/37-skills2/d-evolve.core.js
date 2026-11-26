@@ -9,8 +9,10 @@
 // the deed `proved`; for S, a `renowned_deed`: the proof done by someone the realm knows, fame SK2.RENOWN or more), its
 // age, and anything later data adds. A rung absorbed by a merge (step 8) never evolves.
 //
-// - The old rung stays and the new one is added at Lv 1 (§15.2): the ladder's entries in pc.ks already keep every rung
-//   below the top at Lv 10.
+// - The old rung becomes the new one at Lv 1 and is gone (order 95, D-192, replacing §15.2's "the old one stays"): the
+//   ladder's entries in pc.ks keep only the top rung (SK2.fromS1), the family reads through it, and what the old rung gave
+//   passes on through its line (E.heldOfRung, E.lineEffects). An older save's rungs below the top are retired on load
+//   (SK2.migrateLine, save version 21), and so is an art whose evolution is held (SK2.artGone).
 // - Every evolution is recorded with its reason (pc.ke.ev, at most SK2.EVO_MAX; the skill's record; the log; the year's
 //   digest), and brings something (§15.5): for the player, a card from rank B up and for his first evolution (a stat point
 //   through A.LV, the new rung's first months of experience, renown, or rest: sk2_evolved); else, and for a child, the
@@ -22,7 +24,7 @@
   const E = () => SK2.E(), IX = () => SK2.IX();
   const isPC = p => !!(p && A.S && p.id === A.S.pc);
   SK2.RENOWN = 30;        // the fame of someone whose deed the realm knows (the S rung's renowned_deed)
-  SK2.EVO_MAX = 24;       // evolutions, merges and an advance kept in pc.ke.ev (the skill's record keeps more)
+  SK2.EVO_MAX = 24;       // evolutions, merges and rank jumps kept in pc.ke.ev (the skill's record keeps more)
   SK2.EVO_CARD_FROM = 'B';
 
   // ---- the store (pc.ke): { v, ev: [{ y, k, from, to, why, how }], m: [merged ids], adv, n, fd, nd, off: { rc: year }, pre }
@@ -106,8 +108,8 @@
     const v = r.g.v, fs = ix.BY[v.from], ts = ix.BY[v.to]; if (!fs || !ts) return false;
     const met = SK2.metWords(r.k, v, r), why = met.join('; ') || SK.untoken(r.by || 'the work');
     SK2.evNote(pc, { k: r.k, from: v.from, to: v.to, why: why.slice(0, 140), ok: v.ok ? 1 : 0, need: Object.keys(v.needs).sort().join(',') });
-    SK.record(pc, r.k, 'evolve', `${fs.name} evolves: ${ts.name} is added (${why})`);
-    A.log(`${fs.name} has gone as far as it goes: ${ts.name} begins beside it, ${ts.rank} · Lv 1 (${why}).`, 'big');
+    SK.record(pc, r.k, 'evolve', `${fs.name} evolves: it becomes ${ts.name} (${why})`);
+    A.log(`${fs.name} has gone as far as it goes and becomes ${ts.name}, ${ts.rank} · Lv 1 (${why}).`, 'big');
     if (SK.notable) SK.notable(pc, { text: `${ts.name}: ${fs.name.toLowerCase()} evolved` });
     SK2.evoGift(pc, r.k, v);
     return true;
@@ -145,6 +147,25 @@
     return '';
   };
   (A.FX_EXTRA = A.FX_EXTRA || []).push('skTurn');
+
+  // ---- the save (version 21, D-192): an evolved rung is gone into its evolution. A save of an older version holds every
+  // rung below a family's top at Lv 10; they are retired, the top kept, so every read is what it was (the family reads its
+  // top rung, and what the rungs below gave passes on through its line); an art whose evolution is held goes the same way.
+  // Idempotent: a state with nothing to retire is left alone. Returns the count retired.
+  SK2.migrateLine = function (S) {
+    S = S || A.S;
+    const pc = S && S.people && S.people[S.pc];
+    if (!pc || !(pc.ks && typeof pc.ks === 'object')) return 0;
+    const Eng = E(), ix = IX();
+    let n = 0;
+    for (const c of SK.IDS) {
+      let top = -1;
+      for (const rank of Eng.HUMAN) { const id = Eng.rungOf(ix, c, rank); if (id && pc.ks[id]) top = Eng.rankIx(rank); }
+      for (const rank of Eng.HUMAN) { if (Eng.rankIx(rank) >= top) break; const id = Eng.rungOf(ix, c, rank); if (id && pc.ks[id]) { delete pc.ks[id]; n++; } }
+    }
+    if (SK2.artGone && pc.ka && typeof pc.ka === 'object') for (const id of Object.keys(pc.ka).sort()) n += SK2.artGone(pc, id, true);
+    return n;
+  };
 
   // ---- the save (version 19): a player's evolutions before this step are noted as made before their reasons were kept ------
   SK2.migrateEvo = function (S) {

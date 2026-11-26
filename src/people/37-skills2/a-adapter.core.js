@@ -10,8 +10,9 @@
 //   (src/people/engine/skills2.js), indexed on first use.
 // - What a person holds: the player's rungs live in pc.ks (one entry a rung: { lv, xp, held, rust, best, used, streak,
 //   focus }, the defaults left out), written from S1's table by SK2.sync once a month and by the save step 'skills2'
-//   (b-migrate). An evolved rung stays beside its evolution (§15.2), so a person at B holds his D and C rungs at Lv 10.
-//   Anyone else's rung is a function of his number (rank by band, level by value, §7), held nowhere.
+//   (b-migrate). Of a family's ladder only the top rung is held: an evolved rung became the next and is gone (order 95,
+//   D-192, replacing §15.2's "it stays beside it"), so a person at B holds measured_blade alone; what the rungs below
+//   gave passes on through its line (c-effects, E.heldOfRung). Anyone else's rung is a function of his number (rank by band, level by value, §7), held nowhere.
 // - SK2.reads(p, k) is what a check reads for key k through the rungs (§5.1): the family's best rung, a focus's shift,
 //   rust; SK2.read(p, k) adds what A.skill adds after (the body's hold, wounds, the clamp). While SK2.on is false nothing
 //   read them but the tests (sk2Shadow); since the switch every check reads them.
@@ -33,14 +34,15 @@
 
   // ---- S1's table as rungs (pure) -----------------------------------------------------------------------------------------
   const famOf = k => (SK.LEG[k] ? SK.LEG[k][0] : SK.BY[k] ? k : null);
-  // the rungs of family c from S1's entry s: every rank below the held one at Lv 10, the held one at its level (§7)
+  // the rung of family c from S1's entry s: the held rank at its level (§7). The ranks below are not written: an evolved
+  // rung is gone into its evolution (order 95, D-192; SK2.migrateLine retires them from an older save)
   SK2.fromS1 = function (c, s, born) {
     const Eng = SK2.E(), ix = IX, out = {};
     if (!s || !(s.lv > 0)) return out;
     const r = SK2.on ? Eng.landed(s.lv, s.xp) : Eng.fromS1(s.lv, s.xp);
     for (const rank of Eng.HUMAN) {
       const id = Eng.rungOf(ix, c, rank); if (!id) continue;
-      if (Eng.rankIx(rank) < Eng.rankIx(r.rank)) { out[id] = { lv: 10 }; continue; }
+      if (Eng.rankIx(rank) < Eng.rankIx(r.rank)) continue;
       if (rank !== r.rank) break;
       const e = out[id] = { lv: r.lv };
       if (r.xp > 0) e.xp = r.xp;
