@@ -287,8 +287,8 @@ export default {
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
       const G = A.GENERALS, minQ = Math.min(...Object.values(G.QUIET));
-      const run = (readAt, until) => {
-        const { F, enemy } = GOT.soldier(86, 'steady');
+      const run = (readAt, until, seed) => {
+        const { F, enemy } = GOT.soldier(seed, 'steady');
         if (!F) return null;
         const d0 = A.absDay(), seen = [];
         if (readAt != null) { A.S.goSeen = {}; for (const k of Object.keys(G.QUIET)) A.S.goSeen[k] = { gen: 'someone else', day: d0 + readAt, war: 'another war', n: 1 }; }
@@ -303,14 +303,21 @@ export default {
         } finally { A.queue = q0; }
         return seen;
       };
-      const first = run(null, 8 * 365);
-      if (!first || !first.length) return { none: true };
-      const D = first[0].day, on = run(D - 30, D - 30 + minQ - 30);
-      return { D, kind: first[0].kind, on };
+      // H-082 seed fallback: a world whose eight years of war bring no letter (the letters are counted as they are queued,
+      // so nothing crowds them out; the powers wave of 2026-11-25 moved seed 86's world) is followed by the next one
+      const tried = [];
+      for (const seed of [86, 87, 88, 89, 90, 91]) {
+        tried.push(seed);
+        const first = run(null, 8 * 365, seed);
+        if (!first || !first.length) continue;
+        const D = first[0].day, on = run(D - 30, D - 30 + minQ - 30, seed);
+        return { D, kind: first[0].kind, on, seed, tried };
+      }
+      return { none: true, tried };
     });
-    if (r.none) return { ok: false, detail: 'no letter in eight years of war' };
+    if (r.none) return { ok: false, detail: `no letter in eight years of war in worlds ${r.tried.join(', ')}` };
     const ok = !!r.on && r.on.length === 0;
-    return { ok, detail: `the first letter ("${r.kind}") on day ${r.D}; with every order read from another general a month before, ${r.on ? r.on.length : '?'} letters in the base quiet after${r.on && r.on.length ? ' (' + r.on.map(x => x.kind + ' on day ' + x.day).join(', ') + ')' : ''}` };
+    return { ok, detail: `world ${r.seed} (tried ${r.tried.join(', ')}): the first letter ("${r.kind}") on day ${r.D}; with every order read from another general a month before, ${r.on ? r.on.length : '?'} letters in the base quiet after${r.on && r.on.length ? ' (' + r.on.map(x => x.kind + ' on day ' + x.day).join(', ') + ')' : ''}` };
   },
 
   async ordersSettle(pg) {

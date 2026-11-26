@@ -129,6 +129,16 @@
       "k": "magic",
       "n": "magic",
       "d": "breath, fire, frost, glamour or spells: the reach of a weapon means little"
+    },
+    {
+      "k": "fire",
+      "n": "firepower",
+      "d": "raw destruction over an area: breath, ruin, the sea risen; it falls on many at once and wins against numbers"
+    },
+    {
+      "k": "duel",
+      "n": "single combat",
+      "d": "the one-to-one art: finding the gap, outlasting a single foe blade to blade; it turns another's firepower aside in a duel"
     }
   ],
   "intelligence": [
@@ -176,21 +186,67 @@
         "ward": 3,
         "swarm": 0,
         "cunning": 6,
-        "magic": 1
+        "magic": 1,
+        "fire": 0,
+        "duel": 3
       },
       "titles": [
         {
           "n": "Breaker of the Ice-Road",
           "honour": 30,
           "buffs": {
-            "str": 1,
-            "level": 10
+            "str": 1
           },
           "req": "hidden"
         }
       ],
       "d": "The eldest giant still on a throne. Three hundred years of war in his arms and shoulders.",
-      "mastery": 7
+      "skills": [
+        {
+          "n": "Breaker of Ice",
+          "rank": "A",
+          "lvl": 10,
+          "kind": "active",
+          "fight": true,
+          "does": "A blow that splits a glacier."
+        },
+        {
+          "n": "Giant's Endurance",
+          "rank": "B",
+          "lvl": 10,
+          "kind": "passive",
+          "fight": true,
+          "does": "Three hundred years of war in his shoulders."
+        },
+        {
+          "n": "War-Bellow",
+          "rank": "C",
+          "lvl": 10,
+          "kind": "aura",
+          "fight": true,
+          "does": "His people fight harder; his foes falter."
+        }
+      ],
+      "items": [
+        {
+          "n": "The Ice-Road Maul",
+          "kind": "maul",
+          "quality": "legendary",
+          "does": "Iron and a whale's jaw.",
+          "gives": {
+            "power": 0.2
+          }
+        },
+        {
+          "n": "A coat of walrus hide",
+          "kind": "armour",
+          "quality": "masterwork",
+          "does": "Thick as a door.",
+          "gives": {
+            "hide": 1
+          }
+        }
+      ]
     },
     {
       "id": "m-dwarf-anvil",
@@ -209,7 +265,9 @@
         "ward": 6,
         "swarm": 0,
         "cunning": 6,
-        "magic": 2
+        "magic": 2,
+        "fire": 0,
+        "duel": 3
       },
       "titles": [
         {
@@ -223,7 +281,53 @@
         }
       ],
       "d": "Two centuries at the forge and the gate. Rune-steel on his back that no smith of men can scratch.",
-      "mastery": 8
+      "skills": [
+        {
+          "n": "Ninth Gate",
+          "rank": "A",
+          "lvl": 10,
+          "kind": "passive",
+          "fight": true,
+          "does": "He has never been moved a step from a gate he held."
+        },
+        {
+          "n": "Rune-Smith",
+          "rank": "A",
+          "lvl": 10,
+          "kind": "passive",
+          "fight": false,
+          "does": "His own steel, his own runes."
+        },
+        {
+          "n": "Hammer and Shield",
+          "rank": "B",
+          "lvl": 10,
+          "kind": "active",
+          "fight": true,
+          "does": "The old dwarf way: block, step, crush."
+        }
+      ],
+      "items": [
+        {
+          "n": "Rune-steel plate",
+          "kind": "armour",
+          "quality": "legendary",
+          "does": "His own making; no smith of men can scratch it.",
+          "gives": {
+            "power": 0.2,
+            "hide": 1
+          }
+        },
+        {
+          "n": "The Gate-Hammer",
+          "kind": "hammer",
+          "quality": "masterwork",
+          "does": "A short hammer that rings like a bell.",
+          "gives": {
+            "power": 0.1
+          }
+        }
+      ]
     },
     {
       "id": "m-elf-blade",
@@ -242,7 +346,9 @@
         "ward": 7,
         "swarm": 0,
         "cunning": 9,
-        "magic": 4
+        "magic": 4,
+        "fire": 0,
+        "duel": 6
       },
       "titles": [
         {
@@ -256,7 +362,47 @@
         }
       ],
       "d": "Four hundred years with one sword. She has outlived every school that tried to teach men her way.",
-      "mastery": 9
+      "skills": [
+        {
+          "n": "The Unhurried Blade",
+          "rank": "A",
+          "lvl": 10,
+          "kind": "passive",
+          "fight": true,
+          "does": "Four hundred years with one sword.",
+          "cap": {
+            "duel": 2
+          }
+        },
+        {
+          "n": "Leaf-Step",
+          "rank": "B",
+          "lvl": 10,
+          "kind": "passive",
+          "fight": true,
+          "does": "She is never where the blow lands."
+        },
+        {
+          "n": "Moon-Cut",
+          "rank": "B",
+          "lvl": 10,
+          "kind": "active",
+          "fight": true,
+          "does": "A cut that finds the gap in any guard."
+        }
+      ],
+      "items": [
+        {
+          "n": "Evenglade's first sword",
+          "kind": "sword",
+          "quality": "legendary",
+          "does": "Forged before the elves came west.",
+          "gives": {
+            "power": 0.2,
+            "duel": 1
+          }
+        }
+      ]
     },
     {
       "id": "m-orc-khan",
@@ -275,7 +421,9 @@
         "ward": 2,
         "swarm": 2,
         "cunning": 5,
-        "magic": 0
+        "magic": 0,
+        "fire": 0,
+        "duel": 3
       },
       "titles": [
         {
@@ -288,7 +436,43 @@
         }
       ],
       "d": "Took his seat over the bodies of forty challengers. No man of the west has lasted a minute with him.",
-      "mastery": 7
+      "skills": [
+        {
+          "n": "Iron Feast",
+          "rank": "B",
+          "lvl": 10,
+          "kind": "passive",
+          "fight": true,
+          "does": "Forty challengers, forty wins: pain does not slow him."
+        },
+        {
+          "n": "Skull-Splitter",
+          "rank": "B",
+          "lvl": 10,
+          "kind": "active",
+          "fight": true,
+          "does": "A two-handed blow nothing human blocks."
+        },
+        {
+          "n": "Khan's Roar",
+          "rank": "C",
+          "lvl": 10,
+          "kind": "aura",
+          "fight": true,
+          "does": "The horde follows him anywhere."
+        }
+      ],
+      "items": [
+        {
+          "n": "The Skull Axe",
+          "kind": "axe",
+          "quality": "masterwork",
+          "does": "Forty notches.",
+          "gives": {
+            "power": 0.1
+          }
+        }
+      ]
     }
   ],
   "myth": "The faiths speak of gods. No one has ever measured one, and the scale does not hold them: it stops at the legends.",
@@ -306,8 +490,15 @@
     "about": "Races have baseline bodies (GD.RACES and the v2 body: a giant grown is about B, a human about F) that lineage, a title had from birth and an innate gift change a great deal; the masters below are what the best of each people reach. A playable lineage system is a later wave."
   },
   "power": {
-    "about": "A being's fighting power is its level's might times its titles' power (each title's buffs.power, +0.5 = half as much again) times its mastery: the mastery and quality of its skills, 0 to 12, worth 2^((mastery - 5) / 2.5) (5 is ordinary for its kind; 12 is the Sword Saint's art). A person's mastery is already inside his fighting worth, so it counts once. The comparison and the ranking read the power and the profile, never the level alone: the Sword Saint at 650 beats the Lord of the Sea at 712.",
-    "masteryBase": 5,
-    "masteryPerDouble": 2.5
+    "about": "A being's fighting power is its level's might times its titles' power (buffs.power), its items' power (gives.power) and its art: 2^(art / artPerDouble), where art is the sum over its fight skills of the rank's weight (D 1, C 2, B 4, A 8, S 16, the skills' power budget of master prompt 9) times level / 10. Skills stop at level 10: past it they only evolve or merge, so strength comes from rank, titles and items, never from levels past 10. A person's skills are already inside his fighting worth, so they count once. A group fights as (sum of the square roots of their powers) squared, Lanchester's law. The comparison and the ranking read the power and the profile, never the level alone.",
+    "rankW": {
+      "D": 1,
+      "C": 2,
+      "B": 4,
+      "A": 8,
+      "S": 16
+    },
+    "artPerDouble": 10,
+    "maxSkillLevel": 10
   }
 }

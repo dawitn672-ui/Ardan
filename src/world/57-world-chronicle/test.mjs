@@ -80,15 +80,19 @@ export default {
     const r = await pg.evaluate(() => {
       // features that read the record (64-npc-beliefs seeds beliefs from its battles; 9991-atlas-of-known-places hears of places from its
       // news) are held back too: they act on what the record says, which is their business; this test is about whether
-      // recording itself changes anything (with the atlas on, only pc.atlas differs: realms, provinces and the stream match)
+      // recording itself changes anything (with the atlas on, only pc.atlas differs: realms, provinces and the stream match).
+      // 999994-generations' deaths read the record's famines (A.MORT.hardYear) to weigh and name a death: held back the same
+      // way (CI on 8f28cb67, a moved world: one death's cause read "the hunger of a failed harvest" with the record on)
       const chron = A.C.chron, ep = A.WC.EPIDEMIC, NB = A.NPCB, seed = NB && NB.seedBattles, AT = A.ATLAS, atOff = AT && AT.OFF;
+      const MO = A.MORT, hard = MO && MO.hardYear;
       const run = off => {
         A.WC.OFF = off; A.WC.EPIDEMIC = false; A.C.chron = () => false; if (NB) NB.seedBattles = () => {}; if (AT) AT.OFF = true;
+        if (hard) MO.hardYear = function () { const h = hard.apply(this, arguments); h.famine = new Set(); return h; };
         try {
           A.newGame({ seed: 9090, race: 'human', realm: 'POL-05', status: 'merchant', sex: 'F', startAge: 20 });
           WCT.years(12);
           return { h: T.hash(A.S.realms) + ':' + T.hash(A.S.people) + ':' + T.hash(A.S.prov.map(P => [P.owner, P.occ, P.unrest])) + ':' + A.rngState, n: A.S.wrec ? A.S.wrec.e.length : 0 };
-        } finally { A.WC.OFF = false; A.WC.EPIDEMIC = ep; A.C.chron = chron; if (NB) NB.seedBattles = seed; if (AT) AT.OFF = atOff; }
+        } finally { A.WC.OFF = false; A.WC.EPIDEMIC = ep; A.C.chron = chron; if (NB) NB.seedBattles = seed; if (AT) AT.OFF = atOff; if (hard) MO.hardYear = hard; }
       };
       const on = run(false), off = run(true);
       return { same: on.h === off.h, on: on.n, off: off.n };

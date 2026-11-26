@@ -334,6 +334,10 @@ export function generate() {
         for (const k of ['str', 'hide', 'regen', 'ward']) if (prof[k] > 0) prof[k] = clamp(Math.round(prof[k] + 2 * g - 1), 0, 10);
         if (int !== 'beast') prof.cunning = clamp(Math.max(prof.cunning, 4 + INT.indexOf(int) * 2), 0, 10);
         if (prof.magic > 0 && g > 0.5) prof.magic = clamp(prof.magic + 1, 0, 10);
+        // firepower (raw destruction over an area) and single combat (the one-to-one art), the owner's 2026-11-26 split:
+        // breath and the elements make firepower; speed and cunning make a duellist
+        prof.fire = clamp(Math.round(prof.magic * (['dragons', 'spirits', 'demons'].includes(fk) ? 0.8 : 0.4) + (prof.swarm >= 8 ? 2 : 0)), 0, 10);
+        prof.duel = clamp(Math.round((prof.spd + prof.cunning) * 0.3), 0, 10);
         const id = slug(f.n), worth = Math.round(2 * Math.pow(10, level / 25));
         const sp = {
           id, n: f.n, fam: fk, line: lk, form: i, t: level, level: curveLevel(mightOf(level)), might: +mightOf(level).toPrecision(3), int,
