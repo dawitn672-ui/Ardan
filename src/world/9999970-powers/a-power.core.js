@@ -150,7 +150,8 @@
       // its level is the data's plus what it has gained by defeats since (order 92, D-184: the legends grow too, slowly)
       const lvG = A.LV && A.LV.legendGain ? A.LV.legendGain(id) : 0;
       const w = PW.withTitles(PW.addCaps(PW.addCaps(L.prof, L.skills, 'cap'), L.items, 'gives'), L.level + lvG, L.titles), m = PW.mightOf(w.level);
-      const pw = m * PW.titleMult(L.titles) * PW.itemMult(L.items) * PW.artMult(L.skills);
+      // and refined by the years (order 95: the great grow mostly by refining their arts; 1 in a fresh world, alike for all)
+      const pw = m * PW.titleMult(L.titles) * PW.itemMult(L.items) * PW.artMult(L.skills) * (A.LV && A.LV.legendRefine ? A.LV.legendRefine(id) : 1);
       return { kind: LEG.has(id) ? 'legend' : 'master', id, n: L.n, level: clamp(w.level, 1, LV.max), t: PW.tOf(pw), might: m, power: pw, art: PW.artOf(L.skills), prof: w.prof, int: L.int, cls: L.class || null,
         titles: L.titles || [], base: L.level, ranged: true, hardy: w.prof.regen };
     }

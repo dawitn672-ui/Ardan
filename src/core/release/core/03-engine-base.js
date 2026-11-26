@@ -813,6 +813,15 @@ A.train = function (p, s, amt) {
   if (age > R2.old) eff = 0.25;
   const room = Math.max(0, (p.pot[s] - p.st[s]) / Math.max(1, p.pot[s])),
     gain = amt * eff * (0.25 + room * 1.1);
+  // order 95 (D-184 addendum): the player's training comes as single +1s. The same gain gathers in p.trn[s] and lands a
+  // whole point at a time, held to the same bound; anyone else still grows by the fraction (nobody reads his halves)
+  if (A.S && p.id === A.S.pc && gain > 0) {
+    const T = p.trn && typeof p.trn === "object" ? p.trn : (p.trn = {});
+    T[s] = Math.round(((T[s] || 0) + gain) * 1000) / 1000;
+    while (T[s] >= 1 && p.st[s] + 1 <= p.pot[s] * 1.02) { p.st[s] += 1; T[s] = Math.round((T[s] - 1) * 1000) / 1000; }
+    if (p.st[s] + 1 > p.pot[s] * 1.02) T[s] = Math.min(T[s], 0.999);
+    return gain;
+  }
   p.st[s] = Math.min(p.pot[s] * 1.02, p.st[s] + gain);
   return gain;
 };

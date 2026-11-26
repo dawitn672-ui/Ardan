@@ -39,9 +39,12 @@
   const WL = X.wall || { every: 100, mul: [1] };
   LV.wallMul = L => ((L + 1) % WL.every === 0 ? WL.mul[Math.min(WL.mul.length, (L + 1) / WL.every) - 1] : 1);
   // in defeats of a peer (a man of his own level): the gap, never the might, so the ladder's rescale cannot move it
-  LV.need = L => X.e0 * Math.pow(X.growth, L) * LV.wallMul(L);
+  // (above slowFrom the step grows by slowGrowth: still each level dearer, but at the summit a hundred defeats of an equal
+  // are a level or two, as the owner asks of an archdemon, order 95, D-184 addendum)
+  const SF = X.slowFrom || Infinity;
+  LV.need = L => X.e0 * (L <= SF ? Math.pow(X.growth, L) : Math.pow(X.growth, SF) * Math.pow(X.slowGrowth || X.growth, L - SF)) * LV.wallMul(L);
   LV.computed = (p, m) => PW.levelOf(m != null ? m : PW.personMight(p));
-  // the level an ordinary grown person of this body stands at (the owner's average human, 20-30), and the floor of his years
+  // the level an ordinary grown person of this body stands at (the owner's average people, 20-50: order 93), and the floor of his years
   LV.grown = function (p) {
     let s = 0, n = 0;
     for (const k of GD.STATS) if (p.pot && isFinite(p.pot[k])) { s += p.pot[k]; n++; }
@@ -53,11 +56,59 @@
     const age = A.age(p), g = RACE(p).grown || 20;
     return age >= g ? LV.grown(p) : Math.max(1, Math.floor(LV.grown(p) * Math.pow(Math.max(0, age) / g, FL.pow)));
   };
+  // the level before he earns one (D-184 addenda, orders 93 and 95): the computed level held inside the band his life
+  // puts him in (data/level.json seed): a commoner who never served at most 50, a noble born 50-99, service by rank and
+  // years, posts by kind, kills outside service by the rule. The might level is a ceiling, the life a floor: a youth of
+  // sixteen never stands among soldiers from his training alone, and an untrained noble stands 50-99 whatever his worth
+  const SD = D.seed || { common: 50, noble: [50, 99], nobleStatus: [], ranks: [], posts: {}, full: 20, maxKills: 0 };
+  LV.band = function (p) {
+    const fl = LV.floor(p), age = A.age(p), ad = RACE(p).adult || 16, sc = age >= ad ? 1 : Math.pow(Math.max(0, age) / ad, FL.pow);
+    let lo = fl, hi = Math.max(fl, SD.common), why = 'common';
+    const take = (l, h, w) => { if (h * sc > hi) { lo = l * sc; hi = h * sc; why = w; } };
+    if ((SD.nobleStatus || []).includes(p.status)) {
+      // order 96: upbringing sets where an untrained noble starts (education, tutors, diet, arms-masters); royals and the
+      // great houses higher on average
+      const U = SD.upbringing || {}, rung = (p.noble && p.noble.rung) || 0;
+      take(Math.min(SD.noble[1], (U[p.status] != null ? U[p.status] : SD.noble[0]) + (rung >= (U.greatRung || 99) ? U.great || 0 : 0)), SD.noble[1], 'noble');
+    }
+    const svc = p.mil || p.veteran || null;
+    if (svc) {
+      const rank = svc.rank || 0, b = (SD.ranks || []).filter(x => rank >= x[0]).pop();
+      if (b) { const yrs = svc.years != null ? svc.years : Math.max(0, age - 18), e = Math.min(1, (yrs + (svc.battles || 0) / 3) / SD.full); take(b[1], b[1] + (b[2] - b[1]) * e, 'service'); }
+    }
+    if (A.POSTS && A.POSTS.held && A.POSTS.parse) {
+      try { for (const k of A.POSTS.held(p.id)) { const b = SD.posts[A.POSTS.parse(k).kind]; if (b) take(b[0], b[1], 'post'); } } catch (e) {}
+    }
+    if (!svc && (p.kills || 0) > 0) {
+      // (pure: the rule's climb from the floor, with nothing queued, placed or decided)
+      let L = fl, f = 0;
+      for (let i = 0; i < Math.min(p.kills, SD.maxKills); i++) {
+        let x = LV.xpFor(D.foes.person, L);
+        while (x > 0 && L < LVMAX) { const need = LV.need(L), room = (1 - f) * need; if (x >= room) { x -= room; L++; f = 0; } else { f += x / need; x = 0; } }
+      }
+      if (L > hi) { hi = L; why = 'kills'; }
+    }
+    return { lo: Math.max(fl, Math.round(lo)), hi: Math.max(fl, Math.round(hi)), why };
+  };
+  // the computed level held in the band: as it is in the band's lower part, softly bent toward the top above it (the
+  // knee, at SD.knee of the band), so nobody piles up at a band's end (a noble born at 99, under the wall)
+  // a named figure's level from data (the figures registry another builder brings: kings, nobles, generals with full
+  // profiles) wins over the band: set LV.fromData = p => level or null
+  LV.fromData = LV.fromData || null;
+  LV.seedLevel = function (p, m) {
+    if (LV.fromData) { const d = LV.fromData(p); if (d > 0) return clamp(Math.round(d), 1, LVMAX); }
+    const b = LV.band(p), c = LV.computed(p, m);
+    if (c <= b.lo) return b.lo;
+    const knee = b.lo + (b.hi - b.lo) * (SD.knee != null ? SD.knee : 0.6);
+    if (c <= knee) return Math.round(c);
+    const x = c - knee, room = b.hi - knee;
+    return Math.min(b.hi, Math.round(knee + room * x / (x + room)));
+  };
   LV.level = function (p, m) {
     if (!p) return 0;
     if (p.lv && p.lv.L != null) return p.lv.L;
     if (!p.st) return 0;
-    return clamp(Math.max(LV.computed(p, m), LV.floor(p)), 1, LVMAX);
+    return clamp(LV.seedLevel(p, m), 1, LVMAX);
   };
   LV.seed = function (p) {
     if (!p || !p.st) return null;
@@ -72,12 +123,13 @@
   LV.progressWord = function (f) { for (const [at, w] of D.words.progress) if (f >= at) return w; return D.words.progress[D.words.progress.length - 1][1]; };
 
   // ---------------------------------------------------------------- experience from a defeat
-  // in defeats of a peer: a stronger foe doubles it every upHalf levels above him (past upTo, the root of the rest), a
+  // in defeats of a peer: a stronger foe doubles it every upHalf levels above him (past upTo, the root of the rest, at
+  // most `most`: an upset over a far stronger foe is a leap of some levels, never of a hundred), a
   // weaker one halves it every downHalf levels below: never nothing (order 91, D-184), only very little
   LV.xpFor = function (F, L) {
     if (!(F > 0)) return 0;
     const d = F - L;
-    if (d >= 0) { const x = Math.pow(2, d / X.upHalf); return x <= X.upTo ? x : X.upTo * Math.sqrt(x / X.upTo); }
+    if (d >= 0) { const x = Math.pow(2, d / X.upHalf); return Math.min(X.most || Infinity, x <= X.upTo ? x : X.upTo * Math.sqrt(x / X.upTo)); }
     return Math.pow(2, d / X.downHalf);
   };
   LV.pointsAt = (p, L) => ((RACE(p).points != null ? RACE(p).points : PT.perLevel) + (PT.bonusEvery && L % PT.bonusEvery === 0 ? 1 : 0));
@@ -157,6 +209,24 @@
     return leg[id] || (make ? (leg[id] = {}) : null);
   };
   LV.legendGain = function (id) { const g = legRec(id, false); return g && Array.isArray(g.lg) ? g.lg[0] || 0 : 0; };
+  // the main road of the great (order 95): a slow yearly refinement of their skills and techniques, the same for all,
+  // kept as A.S.pw.ref[id] (years refined: a store of its own, so no legend's world record is made or touched); PW.being
+  // multiplies a legend's power by it
+  const LG = D.legends || { perYear: 0, max: 0 };
+  LV.legendRefine = function (id) { const r = A.S && A.S.pw && A.S.pw.ref, y = (r && r[id]) || 0; return 1 + Math.min(LG.max, LG.perYear * y); };
+  LV.legendYear = function () {
+    if (!PW.LEG || !A.S) return 0;
+    const pw = A.S.pw && typeof A.S.pw === 'object' ? A.S.pw : (A.S.pw = {});
+    const ref = pw.ref && typeof pw.ref === 'object' ? pw.ref : (pw.ref = {});
+    let n = 0;
+    for (const id of [...PW.LEG.keys(), ...(PW.MAS ? PW.MAS.keys() : [])].sort()) {
+      const g = legRec(id, false); if (g && g.slain) continue;
+      if ((ref[id] || 0) * LG.perYear >= LG.max) continue;
+      ref[id] = (ref[id] || 0) + 1; n++;
+    }
+    return n;
+  };
+  (A.onYear = A.onYear || []).push(function () { try { LV.legendYear(); } catch (e) { console.error('[level] legends refine', e); } });
   LV.legendDefeat = function (id, F, how) {
     const L0 = PW.LEG && (PW.LEG.get(id) || (PW.MAS && PW.MAS.get(id)));
     if (!L0 || !(F > 0)) return 0;

@@ -19,7 +19,12 @@ export default {
       for (const seed of [7, 11, 23, 41]) {
         A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 20 });
         const hs = Object.values(A.S.people).filter(p => p.alive && p.st && p.race === 'human' && A.age(p) >= 16).map(p => PW.level(p)).sort((a, b) => a - b);
-        out.tops.push(hs[hs.length - 1]); out.meds.push(hs[hs.length >> 1]);
+        // the median of the common folk (orders 95 and 96, D-184 addendum: an untrained noble stands 50-99 by upbringing, and
+        // the named people of a world are mostly nobles and post-holders, so the average people's band is read among the
+        // commoners who hold no post and never served)
+        const posts = p => (A.POSTS && A.POSTS.held ? A.POSTS.held(p.id).length : 0);
+        const cs = Object.values(A.S.people).filter(p => p.alive && p.st && p.race === 'human' && A.age(p) >= 16 && !['noble', 'royal', 'gentry'].includes(p.status) && !p.mil && !p.veteran && !posts(p)).map(p => PW.level(p)).sort((a, b) => a - b);
+        out.tops.push(hs[hs.length - 1]); out.meds.push(cs.length ? cs[cs.length >> 1] : 0);
       }
       out.masters = PW.D.masters.map(m => PW.level(m.id));
       out.dragons = ['frost-dragon', 'storm-dragon', 'brine-dragon'].map(id => PW.level(id));

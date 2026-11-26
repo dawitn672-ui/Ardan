@@ -3016,6 +3016,42 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
   **For the rescale's owner:** on D-185's curve a sixteen-year-old's fighting worth reads 105-170 for half the lives
   tried (a might of 1 is level 105), so the seeded level, not the earned one, decides where most nobles and some
   peasants stand; the earned rule only moves them from there.
+- **Addendum, orders 95 and 96 (the same day; the newest wins over the points above where they differ).**
+  - **Seeding by life, the might level a ceiling** (`LV.band`, `LV.seedLevel`; data `level.json` seed). Until a person
+    earns a level, his level is the computed one held inside the band his life puts him in: a commoner who never served
+    [his floor, 50]; a noble born 50-99 by upbringing (order 96: the band's low end by birth, gentry 50, noble 58, royal 68,
+    a great house a few more); service by rank, the high end reached with years and battles (soldiers 80-180, captains
+    150-299, generals 230-420); posts by kind (a knightly order's master 300-700, a host's General 230-420, a division's
+    230-299); kills outside service climb from the floor. Below the band's knee (six tenths) the computed level stands as
+    it is; above it, bent softly toward the band's top, so nobody piles up under a wall. It applies to everyone not yet
+    seeded, so a person's shown level and his seed agree. The floor's grown level is now 30 (20-40) for order 93's
+    average people. **Why everyone, not only the player:** a noble player at 75 beside an NPC brother shown at 150 would
+    read as two scales. Readings: untried sixteen-year-olds, commoners 21-48, nobles 58-81, royals 68-96; per realm among
+    named people, at most one or two elites and one or two knights (the court's few; an army's thousands are numbers);
+    the world's strongest humans (masters of the knightly orders) stay 493-551; the median of commoners without post or
+    service 29-35. `pwLadder` now reads the average people's median among those commoners (the named are mostly nobles).
+    A named figure's level from data wins (`LV.fromData`, the hook for the figures registry to come).
+  - **The breakthrough at every hundredth level** (order 95, replacing the choice of a class or a stat boost): each wall
+    crossed gives the body its points (6, 10, 15, 20), lets one skill jump a rank where several conditions allow it (at
+    least Lv 5 of its rank, the next rung's route wanting no deed, age or renown he lacks, at most one of its concepts
+    still to grasp, and his talent at the next rank's letter; through the skills engine's `edgeVerdict` and `SK.set`, the
+    player only for now), and opens the class branch (the player's card: a class or "keep to the road you are on"; an
+    NPC's `A.WHY.decide`, a class or none). The old rare leap and evolution's replacement are another builder's.
+  - **Classes as in Overgeared** (155 now, toward hundreds): the 29 by hand plus a generator (`data/classes.json`
+    generator: eight templates on nine roads) making advanced and hidden branches with conditions (a skill's level, a
+    deed done often, a birth and house). Rarity common, uncommon, rare, epic, legendary, unique; a class's line keeps its
+    rarity when it advances (tested); rarer classes carry stronger effects and more honour. Every class still adds a part.
+  - **Legends.** Above level 400 each level is only 0.05% dearer than the last, so at an archdemon's 975 a hundred
+    defeats of an equal give him one or two levels (1.36 measured); below 400 nothing changed. Their main road is a slow
+    yearly refinement of their arts (`LV.legendRefine`, `A.S.pw.ref`): power x (1 + 0.004 a year, at most +25%), alike
+    for every legend and master, so a matchup reads as before (Sarnavoth against an archdemon 0.644 before and after ten
+    years). A fresh world reads them all as the data writes them.
+  - **One defeat's gain is at most sixteen peers** (`xp.most`): with youths now seeded low, a win over a foe two hundred
+    levels up would otherwise have lifted a man a hundred levels at once.
+  - **Training as single +1s** (order 95; the smallest version): the player's training gathers in `p.trn` and lands a
+    whole point at a time under the same bound; NPCs still grow by the fraction (nobody reads their halves, and a store
+    on thousands of people would grow every save). The total over a life is the same; the last fraction under the
+    ceiling may never land (at most a point).
 
 ### D-185 · The scale stretched (orders 92, 93, 94): Sarnavoth at 1000, every anchor moved, the legends' balance kept; no hints about titles (2026-11-26)
 - **The legends x 1000/800 (order 92).** "Shift out the levelling system putting Sarnavoth at 1000 and increasing the

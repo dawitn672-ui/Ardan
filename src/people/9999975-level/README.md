@@ -63,6 +63,13 @@ two cards (`level.events.js`), tests.
   - **Worn classes.** A person given his held level (the player at his first month or on load, anyone else at his first
     fight) has the walls he already stands past settled with the road his skills give: worn, with their parts and no
     effects, honour or points, so nothing a check reads moves. Someone never recorded is shown the class his road would give.
+- **Orders 95 and 96** (D-184 addendum): the level before one is earned is the computed one held in the band of the
+  person's life (`LV.band`: commoner, noble by upbringing, service by rank and years, posts by kind, kills), bent softly
+  toward the band's top, with a hook for data (`LV.fromData`); every wall is a **breakthrough** (points, a skill's rank
+  jump where its conditions allow, `CL.jump`, then the class branch); the tree grows by a **generator** (155 classes,
+  rarities common to unique, a line keeps its rarity); above 400 a level is only 0.05% dearer, so an archdemon gains a
+  level or two from a hundred equal defeats; the legends refine yearly (`LV.legendRefine`); one defeat gives at most
+  sixteen peers; the player's training lands as single +1s (`A.train`, `p.trn`).
 - **The legends grow too** (order 92): a great being's level is its data's plus what it has gained by the same rule
   (`LV.legendDefeat`, `LV.legendGain`, `A.S.pw.leg[id].lg`): a man it beats, or the King and the Saint on the ridge. At its
   height a hundred defeats of its equal give it under a level.

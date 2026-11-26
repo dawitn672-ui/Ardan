@@ -43,7 +43,9 @@ export default {
           A.S.queue = [q]; A.duelAuto(q.d); A.S.queue = [];
           if (q.d.result !== 'win' || !pc.alive) continue;
           const want = LV.xpFor(F, L) * LV.D.xp.how.defeat / LV.need(L);
-          out.duels.push({ seed, L, F, f0: Math.round((before - L) * 1000) / 1000, gain: Math.round((stand(pc) - before) * 1000) / 1000, want: Math.round(Math.min(want, 99) * 1000) / 1000 });
+          // (crossing into the next level, the rest is measured against that level's need: a wall's step is dearer than the next)
+          const f0 = before - L, cross = f0 + want >= 1 ? (1 - f0) + (want - (1 - f0)) * LV.need(L) / LV.need(L + 1) : want;
+          out.duels.push({ seed, L, F, f0: Math.round(f0 * 1000) / 1000, gain: Math.round((stand(pc) - before) * 1000) / 1000, want: Math.round(Math.min(want, 99) * 1000) / 1000, cross: Math.round(Math.min(cross, 99) * 1000) / 1000 });
         }
         // a beast of the release, alone (a hunt's fight): a kill raises him by its level on the ladder
         for (let i = 0; i < 12 && out.beasts.length < 1; i++) {
@@ -63,7 +65,9 @@ export default {
       return out;
     });
     // within the level he stood in, the gain is the rule's to the rounding; across a level it is less (the next asks more)
-    const fit = r.duels.every(d => (d.want === 0 ? d.gain === 0 : d.gain > 0 && d.gain <= d.want + 0.002 && (d.f0 + d.want >= 1 || Math.abs(d.gain - d.want) <= 0.002)));
+    // within his level the gain is the rule's to the rounding; crossing into the next, at least the rest of his level and at
+    // most the rule's with the next level's need (more levels after it ask more again)
+    const fit = r.duels.every(d => (d.want === 0 ? d.gain === 0 : d.gain > 0 && (d.f0 + d.want >= 1 ? d.gain >= 1 - d.f0 - 0.002 && d.gain <= d.cross + 0.01 : Math.abs(d.gain - d.want) <= 0.002)));
     const beast = r.beasts.length === 0 || r.beasts.every(b => b.gain > 0 || b.F + 30 <= 0);
     const weak = r.weak.every(([L, w40, w30, up20]) => w40 > 0 && w40 < 0.02 && w30 > 0 && up20 > 0.25 && up20 > w40 * 50);
     const ok = r.duels.length >= 3 && r.duels.some(d => d.gain > 0) && fit && beast && weak;
@@ -184,7 +188,7 @@ export default {
           else {
             if (pc.lv.pts) bad.push('points waiting ' + pc.lv.pts);
             if (pc.lv.put) bad.push('points placed');
-            const want = Math.max(LV.computed(pc), LV.floor(pc));
+            const want = LV.seedLevel(pc);   // (D-184 addendum: the player's seed, the computed level a ceiling)
             if (pc.lv.L !== Math.min(1000, want)) bad.push('level ' + pc.lv.L + ' not ' + want);
           }
         }
@@ -292,9 +296,10 @@ export default {
       `against men of 100: 98 to 99 in ${r.below} defeats, 99 to 100 in ${r.cross}, 100 to 101 in ${r.after}; against knights (265): 198 to 199 in ${r.knightBelow}, 199 to 200 in ${r.knightCross}; against the best (320) 299 to 300 in ${r.knight300}` };
   },
 
-  // the reward at the wall (orders 91 and 92, D-184): a swordsman reaching 100 is offered the blade's road first and takes
-  // it on the card; a man with no art of arms gets the boost card and its points; anyone else decides by his reasons, the
-  // same on a replay, without moving the main stream; the Sword Saint is shut while Cael Vardan lives
+  // the reward at the wall (orders 91, 92 and 95, D-184): every wall is a breakthrough (points for the body); a swordsman
+  // reaching 100 is offered the blade's road first and takes it on the card; a man with no art of arms gets the card that
+  // places his points; anyone else decides by his reasons (a class or none), the same on a replay, without moving the main
+  // stream; the Sword Saint is shut while Cael Vardan lives
   async lvClass(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     const r = await pg.evaluate(() => {
@@ -315,9 +320,10 @@ export default {
       // the player with no art of arms: the boost card
       T.enter({ seed: 9802, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 24 });
       pc = A.pc(); LV.seed(pc); setArms(pc, 8);
+      const gx0 = pc.lv.gx || 0;
       toWall(pc);
       const qb = A.S.queue.find(x => x.ev === 'lv_boost');
-      const gx0 = pc.lv.gx || 0, st0 = A.stat(pc, 'str') + A.stat(pc, 'sta');
+      const st0 = A.stat(pc, 'str') + A.stat(pc, 'sta');
       if (qb) { A.S.queue = [qb]; A.eventChoose(0); }
       out.boost = { card: !!qb, words: qb ? A.eventView(qb).text.split(/\s+/).length : 0, gx: (pc.lv.gx || 0) - gx0, cr: (pc.lv.cr || []).length, wp: pc.lv.wp || 0, put: JSON.stringify(pc.lv.put || {}), stUp: A.stat(pc, 'str') + A.stat(pc, 'sta') - st0 };
       // NPCs with the sword their best: their own reasons, twice over one seed
@@ -330,7 +336,7 @@ export default {
         return { res, moved: JSON.stringify(A.rngState) !== rng0 };
       };
       const a = npcRun(9803), b = npcRun(9803);
-      out.npc = { n: Object.keys(a.res).length, same: JSON.stringify(a.res) === JSON.stringify(b.res), moved: a.moved, cls: Object.values(a.res).filter(x => x[0]).length, blade: Object.values(a.res).filter(x => /^(swordsman|warrior)1$/.test(x[0])).length, boost: Object.values(a.res).filter(x => !x[0] && x[1] > 0).length, other: Object.values(a.res).filter(x => x[0] && !/^(swordsman|warrior)1$/.test(x[0])).map(x => x[0]) };
+      out.npc = { n: Object.keys(a.res).length, same: JSON.stringify(a.res) === JSON.stringify(b.res), moved: a.moved, cls: Object.values(a.res).filter(x => x[0]).length, blade: Object.values(a.res).filter(x => /^(swordsman|warrior)1$/.test(x[0])).length, boost: Object.values(a.res).filter(x => x[1] >= 6).length, other: Object.values(a.res).filter(x => x[0] && !/^(swordsman|warrior)1$/.test(x[0])).map(x => x[0]) };
       // the Sword Saint: shut to a Sword Master at the third wall until he bears the title, which is Cael's while he lives
       const p = Object.values(A.S.people).find(x => x.alive && x.st && x.id !== A.S.pc && A.age(x) > 25);
       LV.seed(p); setArms(p, c => (c === 'sword' ? 90 : 30)); p.lv.cr = [['swordsman', 1, 1], ['sword-master', 2, 1]];
@@ -344,10 +350,10 @@ export default {
     const ok = !!c && c.o[0] === 'swordsman' && c.o.length >= 2 && c.view.choices.length === c.o.length + 1 && c.view.choices.length <= 4 && c.view.text.split(/\s+/).length <= 80 &&
       r.took.length === 1 && /^swordsman:\d+:1$/.test(r.took[0]) && r.techs.includes('Rising Cut') && r.src.includes('class:swordsman') &&
       b.card && b.gx === 6 && b.cr === 0 && !b.wp && b.put !== '{}' && b.words <= 80 &&
-      n.n >= 30 && n.same && !n.moved && n.cls >= n.n / 2 && n.blade === n.cls && n.cls + n.boost === n.n &&
+      n.n >= 30 && n.same && !n.moved && n.cls >= n.n / 2 && n.blade === n.cls && n.boost === n.n &&
       !r.saint.open && r.saint.holder === 'sword-saint' && !r.saint.opts.includes('sword-saint') && r.saint.withTitle;
     return { ok, detail: `the swordsman's card offers ${c ? c.o.join(', ') : 'nothing'} (${c ? c.view.choices.map(x => x.t).join(' | ') : ''}); took ${r.techs && r.took.join(', ')}, techniques ${r.techs.join(', ')}, the adapter's ${r.src.join(', ')}; ` +
-      `no art of arms: the boost card ${b.card} (${b.words} words), ${b.gx} points, placed ${b.put}, strength and endurance up ${b.stUp.toFixed(1)}; ${n.n} NPCs with the sword at 100: the same on a replay ${n.same}, main stream moved ${n.moved}, ${n.cls} took a class (${n.blade} the blade's or a warrior's), ${n.boost} the boost${n.other.length ? ', other ' + n.other.join(' ') : ''}; ` +
+      `no art of arms: the boost card ${b.card} (${b.words} words), ${b.gx} points, placed ${b.put}, strength and endurance up ${b.stUp.toFixed(1)}; ${n.n} NPCs with the sword at 100: the same on a replay ${n.same}, main stream moved ${n.moved}, ${n.cls} took a class (${n.blade} the blade's or a warrior's), ${n.boost} with the breakthrough's points${n.other.length ? ', other ' + n.other.join(' ') : ''}; ` +
       `the Sword Saint open ${r.saint.open} (holder ${r.saint.holder}; the Sword Master's options ${r.saint.opts.join(', ')}), with the title ${r.saint.withTitle}` };
   },
 
@@ -364,8 +370,11 @@ export default {
       const V = A.SK2 && A.SK2.DATA && A.SK2.DATA.vocab ? A.SK2.DATA.vocab : (A.DATA['skills/vocab'] || {});
       const types = Object.keys(V.effects || {}), bad = [];
       for (const c of CL.LIST) {
-        if (!/^[A-Z][A-Za-z' -]{2,20}$/.test(c.name) || /marshal|levy/i.test(JSON.stringify(c))) bad.push('name ' + c.id);
-        for (const e of c.effects || []) { if (!types.includes(e.type)) bad.push(c.id + ' effect ' + e.type); if (e.type === 'stat' && e.v > 2) bad.push(c.id + ' stat ' + e.v); }
+        if (!/^[A-Z][A-Za-z' -]{2,26}$/.test(c.name) || /marshal|levy/i.test(JSON.stringify(c))) bad.push('name ' + c.id);
+        for (const e of c.effects || []) { if (!types.includes(e.type)) bad.push(c.id + ' effect ' + e.type); if (e.type === 'stat' && e.v > 3) bad.push(c.id + ' stat ' + e.v); }
+        if (!(CL.D.rarities || []).includes(c.rarity)) bad.push(c.id + ' rarity ' + c.rarity);
+        // order 95: a class's rarity never changes along its line (an advancement keeps it)
+        for (const f of c.from) if (f && CL.BY.get(f) && CL.BY.get(f).line === c.line && CL.BY.get(f).rarity !== c.rarity) bad.push(c.id + ' changes rarity on its line');
         for (const f of c.from) if (f !== null && !CL.BY.has(f)) bad.push(c.id + ' from ' + f);
         if (c.step > 1 && !c.from.every(f => f && CL.BY.get(f).step === c.step - 1)) bad.push(c.id + ' step');
         const parts = x => [x.tech && x.tech.id, x.passive && x.passive.name, x.act && x.act.key, x.buff && x.buff.key].filter(Boolean);
@@ -373,7 +382,11 @@ export default {
         if (!parts(c).length) bad.push(c.id + ' no part');
       }
       const leads = {}; for (const c of CL.LIST) for (const f of c.from) if (f) leads[f] = (leads[f] || 0) + 1;
-      out.data = { n: CL.LIST.length, bad, branching: Object.values(leads).filter(n => n >= 2).length, steps: [1, 2, 3].map(s => CL.LIST.filter(c => c.step === s).length) };
+      const names = new Set(CL.LIST.map(c => c.name)), uniq = CL.LIST.filter(c => c.rarity === 'unique');
+      if (names.size !== CL.LIST.length) bad.push('names repeat');
+      if (uniq.some(c => !c.unique && !c.title)) bad.push('a unique class with no single holder');
+      const rar = {}; for (const c of CL.LIST) rar[c.rarity] = (rar[c.rarity] || 0) + 1;
+      out.data = { n: CL.LIST.length, bad, branching: Object.values(leads).filter(n => n >= 2).length, steps: [1, 2, 3].map(s => CL.LIST.filter(c => c.step === s).length), rar, hidden: CL.LIST.filter(c => c.req).length };
       // a duel: the player a Berserker (Warrior before him): his techniques in the bar, the passive fires once when he bleeds
       T.enter({ seed: 9811, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 24 });
       const pc = A.pc(); LV.seed(pc); pc.lv.cr = [['warrior', A.S.year, 1], ['berserker', A.S.year, 1]];
@@ -409,18 +422,19 @@ export default {
     await pg.click('.lv-line .lv-cls .tt'); const open = await pg.evaluate(() => (UI.TT ? UI.TT.depth() : 0)); await pg.keyboard.press('Escape');
     await pg.setViewportSize({ width: 1366, height: 768 });
     const d = r.data, p = r.passive, bf = r.buff;
-    const ok = !d.bad.length && d.n >= 20 && d.branching >= 5 && d.steps.every(n => n >= 5) &&
+    const ok = !d.bad.length && d.n >= 100 && d.branching >= 15 && d.steps.every(n => n >= 5) && d.hidden >= 50 && ['common', 'uncommon', 'rare', 'epic', 'legendary', 'unique'].every(k => d.rar[k] > 0) &&
       r.duel.techs.includes('cl-heavy-blow') && r.duel.lvp.includes('Blood Rage') && p.e1 > 0 && p.fury > 0 && p.logs1 === 1 && p.logs2 === 1 && p.e2 === p.e1 && p.e3 === 0 &&
       r.acts.mine[0] && !r.acts.theirs[0] && /position/.test(r.acts.theirs[1]) && bf.ok && bf.s1 > bf.s0 && bf.s2 > bf.s0 && Math.abs(bf.s3 - bf.s0) < 1e-9 && !bf.left &&
       r.earn.ok && (r.earn.coin > 0 || r.earn.health < 0) && r.prof.cls === 'Guardian' && r.prof.note.length > 40 && !/\d\s?%/.test(r.prof.note) && r.prof.title === 0 && r.prof.width <= r.prof.vw + 0.5 && open > 0;
-    return { ok, detail: `data: ${d.n} classes (${d.steps.join('/')} by step), ${d.branching} leading to two or more, faults ${d.bad.length} ${d.bad.slice(0, 4).join('; ')}; duel: techniques ${r.duel.techs.join(', ')}, passives ${r.duel.lvp.join(', ')}; ` +
+    return { ok, detail: `data: ${d.n} classes (${d.steps.join('/')} by step; ${Object.entries(d.rar).map(([k, n]) => k + ' ' + n).join(', ')}; ${d.hidden} hidden branches), ${d.branching} leading to two or more, faults ${d.bad.length} ${d.bad.slice(0, 4).join('; ')}; duel: techniques ${r.duel.techs.join(', ')}, passives ${r.duel.lvp.join(', ')}; ` +
       `low on blood +${p.e1} (fury ${p.fury}, said ${p.logs1} then ${p.logs2} times), again +${p.e2}, whole +${p.e3}; activities: his ${r.acts.mine.join('|')}, another's ${r.acts.theirs.join('|')}; buff: strength ${bf.s0.toFixed(1)} -> ${bf.s1.toFixed(1)} -> ${bf.s2.toFixed(1)} -> ${bf.s3.toFixed(1)}; ` +
       `earning: ${r.earn.msg}; profile at 375: "${r.prof.cls}", a note of ${r.prof.note.length} characters, opened by a press ${open}, right edge ${Math.round(r.prof.width)} of ${r.prof.vw}` };
   },
 
-  // the legends grow too (order 92), incredibly slowly: a great being's level is its data's plus what it has gained; a
-  // hundred defeats of its equal give it less than a level, a thousand of soldiers nothing to speak of, and a fresh world
-  // reads every legend at the data's level (the powers' matchups untouched)
+  // the legends grow too (orders 92 and 95): a great being's level is its data's plus what it has gained; a hundred
+  // defeats of its equal give an archdemon one or two levels, a thousand of soldiers nothing to speak of; a fresh world
+  // reads every legend at the data's level; and the yearly refinement of their arts raises them all alike, so a matchup
+  // reads as before
   async lvLegends(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     const r = await pg.evaluate(() => {
@@ -432,10 +446,16 @@ export default {
       const g1 = A.S.pw.leg[id].lg.slice(), L1 = PW.being(id).level;
       for (let i = 0; i < 1000; i++) LV.legendDefeat(id, LV.D.foes.soldier, 'kill');
       const g2 = A.S.pw.leg[id].lg.slice();
-      return { id, fresh, L0, L1, n, g1, g2 };
+      // the yearly refinement (order 95): ten years for all alike; Sarnavoth against an archdemon reads as before
+      T.enter({ seed: 9822, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 24 });
+      const arch = ids.find(x => /ghazrul|morvane/.test(x)) || ids[1];
+      const p0 = PW.compare('sarnavoth', arch).p, w0 = PW.being('sarnavoth').power;
+      for (let y = 0; y < 10; y++) LV.legendYear();
+      const p1 = PW.compare('sarnavoth', arch).p, w1 = PW.being('sarnavoth').power, rf = ids.map(x => LV.legendRefine(x));
+      return { id, fresh, L0, L1, n, g1, g2, p0, p1, w0, w1, rf: [Math.min(...rf), Math.max(...rf)] };
     });
-    const ok = r.fresh && r.n < 1 && r.g1[1] > 0 && r.L1 === r.L0 + r.n && r.g2[0] === r.g1[0] && r.g2[1] - r.g1[1] < 0.001;
-    return { ok, detail: `a fresh world: every legend at its data's level ${r.fresh}; ${r.id} at ${r.L0}: a hundred defeats of its equal give ${r.n} levels and ${r.g1[1]} of the next; a thousand soldiers then add ${(r.g2[1] - r.g1[1]).toFixed(6)} of a level` };
+    const ok = r.fresh && r.n >= 1 && r.n <= 2 && r.L1 === r.L0 + r.n && r.g2[0] === r.g1[0] && r.g2[1] - r.g1[1] < 0.001 && r.w1 > r.w0 && Math.abs(r.p1 - r.p0) < 0.02 && r.rf[0] === r.rf[1] && r.rf[0] > 1;
+    return { ok, detail: `a fresh world: every legend at its data's level ${r.fresh}; ${r.id} at ${r.L0}: a hundred defeats of its equal give ${r.n} levels and ${r.g1[1]} of the next; a thousand soldiers then add ${(r.g2[1] - r.g1[1]).toFixed(6)} of a level; ten years of refinement: Sarnavoth's power ${Math.round(r.w0)} -> ${Math.round(r.w1)}, every legend x${r.rf[0].toFixed(3)}, against an archdemon ${r.p0.toFixed(3)} -> ${r.p1.toFixed(3)}` };
   },
   // the owner's anchors as the typical outcome of ordinary lives (orders 91-94, D-184; long tier): pooled bot lives, half
   // born peasants and half nobles, played 35 years. A life that never fought (three kills or fewer, at most one duel won)
@@ -462,5 +482,79 @@ export default {
     const ok = quiet.length >= 2 && quiet.every(l => l.L >= 20 && l.L <= 50) && (!fought.length || (med(fought) >= 80 && med(fought) <= 180 && fought.every(l => l.L <= 199))) &&
       piled.length <= Math.max(1, lives.length / 6) && !unsettled.length;
     return { ok, detail: `${lives.length} lives: ${lives.map(l => `${l.st} ${l.i}: level ${l.L}, ${l.kills} kills, ${l.duels} duels${l.cr ? ', ' + l.cr : ''}${l.gx ? ', +' + l.gx + ' points' : ''}`).join('; ')} | quiet ${quiet.length} (median ${med(quiet)}), fought ${fought.length} (median ${med(fought)}), at a wall ${piled.length}, unsettled ${unsettled.length}` };
+  },
+  // the seed respects the owner's anchors (orders 93, 95, 96; D-184 addenda): an untried commoner of sixteen stands with
+  // the average people (20-50), an untrained noble 50-99 by upbringing, royals on average no lower, wherever his fighting
+  // worth would read (readings, 2026-11-26: commoners 21-48, nobles 58-81, royals 68-96, their computed levels 10-131); a
+  // veteran is seeded in his rank's band (the band's low end a floor: his life); kills outside service count from the floor; a stored level stays; a named
+  // figure's level from data wins
+  async lvSeed(pg) {
+    if (!(await pg.evaluate(GATE))) return NO;
+    const r = await pg.evaluate(() => {
+      const LV = A.LV, out = { youths: [], comp: [] };
+      out.by = {};
+      for (const st of ['peasant', 'noble', 'royal', 'merchant']) for (let i = 0; i < 4; i++) {
+        A.newGame({ seed: 9831 + i * 7919 + st.length, race: 'human', realm: 'POL-01', status: st, sex: i % 2 ? 'F' : 'M', startAge: 16 });
+        const pc = A.pc(); LV.seed(pc); out.youths.push(pc.lv.L); out.comp.push(LV.computed(pc)); (out.by[st] = out.by[st] || []).push(pc.lv.L);
+      }
+      // a named figure's level from data (the figures registry's hook)
+      LV.fromData = q => (q.id === A.S.pc ? 444 : null); const pcF = A.pc(); delete pcF.lv; out.fig = LV.level(pcF); LV.fromData = null;
+      A.newGame({ seed: 9861, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
+      const pc = A.pc(), fl = LV.floor(pc), c30 = LV.computed(pc);
+      pc.veteran = { rank: 2, years: 8, battles: 10 }; const vet = LV.seedLevel(pc);
+      pc.veteran = { rank: 6, years: 25, battles: 60 }; const gen = LV.seedLevel(pc);
+      pc.veteran = null; pc.kills = 12; const brawl = LV.seedLevel(pc);
+      pc.kills = 0; pc.lv = { L: 333, f: 0.5, pts: 0 }; LV.seed(pc); const kept = pc.lv.L;
+      return Object.assign(out, { fl, c30, vet, gen, brawl, kept });
+    });
+    const mean = a => a.reduce((x, y) => x + y, 0) / a.length, B = r.by;
+    const ok = r.youths.length === 16 && B.peasant.concat(B.merchant).every(L => L >= 20 && L <= 50) && B.noble.concat(B.royal).every(L => L >= 50 && L <= 99) && mean(B.royal) >= mean(B.noble) - 3 && r.comp.some(c => c >= 80) && r.fig === 444 &&
+      r.vet <= 180 && r.vet >= 80 && r.gen >= Math.max(r.vet, 230) && r.gen <= 420 && r.gen >= r.vet && r.brawl > r.fl && r.brawl <= 50 && r.kept === 333;
+    return { ok, detail: `untried youths of sixteen: ${Object.entries(r.by).map(([k, v]) => `${k} ${v.join(' ')}`).join('; ')} (computed ${Math.min(...r.comp)}-${Math.max(...r.comp)}); a figure from data ${r.fig}; at thirty (floor ${r.fl}, computed ${r.c30}): a veteran sergeant ${r.vet}, a general of 25 years ${r.gen}, a man with 12 kills and no service ${r.brawl}; a stored level kept ${r.kept}` };
+  },
+  // the breakthrough at every hundredth level (order 95): the body's points come with it (six at the first wall), it is
+  // recorded, a skill jumps one rank only where its conditions allow (talent at the next rank's letter, the route's deeds,
+  // at most one concept missing): with every talent at F nothing jumps; and a replay of the same world gives the same
+  async lvBreak(pg) {
+    if (!(await pg.evaluate(GATE))) return NO;
+    const r = await pg.evaluate(() => {
+      const LV = A.LV, out = {};
+      const run = (seed, tal) => {
+        T.enter({ seed, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 24 });
+        const pc = A.pc(); LV.seed(pc);
+        if (tal) { pc.tal = {}; for (const k of A.SK.IDS) pc.tal[k] = tal; }
+        const before = {}; for (const k of A.SK.IDS) { const rr = A.SK2.rungFor(pc, k); before[k] = rr ? rr.rank : null; }
+        pc.lv.L = 99; pc.lv.f = 0.999; pc.lv.ct = 0; delete pc.lv.cr; A.S.queue = [];
+        const pts0 = pc.lv.pts, gx0 = pc.lv.gx || 0;
+        for (let i = 0; i < 400 && pc.lv.L < 100; i++) LV.defeat(pc, 130, 'kill');
+        const bt = pc.lv.bt && pc.lv.bt[pc.lv.bt.length - 1];
+        const jumped = []; for (const k of A.SK.IDS) { const rr = A.SK2.rungFor(pc, k); if (rr && before[k] && rr.rank !== before[k]) jumped.push(k + ' ' + before[k] + '>' + rr.rank + ' talent ' + A.SK.talentOf(pc, k)); }
+        return { L: pc.lv.L, gx: (pc.lv.gx || 0) - gx0, bt, jumped, card: A.S.queue.some(q => q.ev === 'lv_wall' || q.ev === 'lv_boost') };
+      };
+      out.free = [9871, 9872, 9873].map(s => run(s, null));
+      out.again = run(9871, null);
+      out.dull = [9871, 9872].map(s => run(s, 'F'));
+      return out;
+    });
+    const TO = ['F', 'E', 'D', 'C', 'B', 'A', 'S', 'SSS'];
+    const okJump = r.free.every(x => x.jumped.length <= 1 && x.jumped.every(j => { const m = j.match(/(\w)>(\w) talent (\w+)$/); return m && TO.indexOf(m[3]) >= TO.indexOf(m[2]); }));
+    const ok = r.free.every(x => x.L >= 100 && x.gx === 6 && x.bt && x.bt[2] === 6 && x.card) && okJump && JSON.stringify(r.again) === JSON.stringify(r.free[0]) && r.dull.every(x => !x.jumped.length && x.gx === 6);
+    return { ok, detail: `${r.free.map((x, i) => `world ${9871 + i}: level ${x.L}, ${x.gx} points, jumped ${x.jumped.join(', ') || 'none'}, a card ${x.card}`).join('; ')}; the same on a replay ${JSON.stringify(r.again) === JSON.stringify(r.free[0])}; every talent F: jumped ${r.dull.map(x => x.jumped.length).join(', ')}` };
+  },
+
+  // training comes as single +1s (order 95): the player's stat rises only by whole points, the fractions kept toward the
+  // next and never past the bound, the total what the fractions add to; anyone else still grows by the fraction
+  async trainOnes(pg) {
+    if (!(await pg.evaluate(GATE))) return NO;
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 9881, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 18 });
+      const pc = A.pc(), s0 = pc.st.str, steps = []; let sum = 0, last = s0;
+      for (let i = 0; i < 40; i++) { sum += A.train(pc, 'str', 0.6); const d = pc.st.str - last; if (d) steps.push(Math.round(d * 1000) / 1000); last = pc.st.str; }
+      const npc = Object.values(A.S.people).find(p => p.alive && p.st && p.id !== pc.id && A.age(p) >= 18 && A.age(p) < 30 && p.st.str < p.pot.str - 5);
+      const n0 = npc.st.str; A.train(npc, 'str', 0.6); const nd = npc.st.str - n0;
+      return { s0, s1: pc.st.str, steps, sum, left: (pc.trn || {}).str || 0, cap: pc.pot.str * 1.02, nd };
+    });
+    const ok = r.steps.length > 0 && r.steps.every(d => d === 1) && Math.abs(r.s1 - r.s0 + r.left - r.sum) < 0.01 + (r.s1 + 1 > r.cap ? 1 : 0) && r.s1 <= r.cap + 1e-9 && r.nd > 0 && r.nd < 1;
+    return { ok, detail: `strength ${r.s0} -> ${r.s1} in steps of ${[...new Set(r.steps)].join(', ')} (${r.steps.length} of them) from ${r.sum.toFixed(2)} of training, ${r.left} kept toward the next; an NPC's session +${r.nd.toFixed(3)}` };
   },
 };

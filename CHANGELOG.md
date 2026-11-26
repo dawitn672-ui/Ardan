@@ -5,6 +5,14 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Breakthroughs, and many more classes.** Every hundredth level is now a breakthrough: your body takes new points,
+  and a skill can jump a whole rank when you are ready for it (enough talent, the deeds it asks, most of what it
+  teaches already understood). Then the road divides: take a class or keep to your road. There are now over a hundred
+  and fifty classes, many hidden until your life opens them (Storm Blade, Shadow Bow, Holy Shield, Wolf Spear, Crown
+  Warrior, Wyrm Fighter and more), from common to legendary, and one unique. A class keeps its rarity as it advances.
+- **Where you start.** A youth who has never fought starts among ordinary people; a noble's upbringing puts him higher
+  (royals higher still), and years of service put a soldier among soldiers. Training now raises a stat a whole point at
+  a time. The legends refine their arts year by year, all alike, and can still win levels, slowly.
 - **Every win counts, and the hundreds are walls.** Beating anyone now teaches you something, even a man far weaker
   than you, though a weak foe teaches very little. Each level asks a little more than the last, and the step to level
   100, 200, 300 and on is a wall that asks many times more: hard to cross, never closed. At each wall the road divides
