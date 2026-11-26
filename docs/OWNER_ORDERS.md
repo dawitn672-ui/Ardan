@@ -536,6 +536,17 @@ order is replaced, strike it through and say by what.
     - **An archdemon who beats an equal a hundred times gains one or two levels;** there are just few who are his equal.
       The great mostly grow by refining their skills and techniques, their titles and their equipment.
     - **Training gives single points:** a stat can gain +1 at a time from training (the message's end, sent next).
+    - **Remove the dragon of the High Roost** (a follow-up): the Dragon Lord of the High Roost and the High Roost Dragon,
+      both new in D-185, leave the bestiary; the three ancient dragons are Ash, Frost and Storm.
+
+96. **Counts of the great; profiles of the powerful** · recorded 2026-11-26. Kept unchanged in
+    `docs/prompts/2026-11-26-figures-and-counts.md`.
+    - **33 ancient demons** stand below the three Primordial Archdemons; **few elder dragons**; **at most 100 dragons**
+      in the world in all.
+    - **Untrained nobles start higher on average,** from the quality of their education and surroundings.
+    - **Many full profiles of the strongest and most influential people of the continent:** kings, nobles, generals,
+      all the ancient dragons and demons and the like, in a **clear organization by category** (full profiles: skills,
+      levels, items, titles, personality and story, as order 87 asked of the legends).
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
