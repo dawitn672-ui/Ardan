@@ -31,6 +31,16 @@
       case 'growth': return 'quicker learning in ' + SKILL(e.tag);
       case 'blunder': return 'fewer blunders';
       case 'surge': return 'more moments of greatness';
+      // a share boost (D-192), in words: "a fifth more might in a fight", never a number
+      case 'boost': {
+        const sh = A.SK2 && A.SK2.E ? A.SK2.E().shareWord(Math.abs(+e.v || 0)) : 'some';
+        const on = e.tag && e.tag !== 'all' ? SKILL(e.tag) : '';
+        if (e.of === 'fight') return `${sh} more might in a fight${on ? ' with ' + on : ''}`;
+        if (e.of === 'check') return `${sh} more skill in ${on || 'everything you try'}`;
+        if (e.of === 'income') return `${sh} more pay for your work`;
+        if (e.of === 'growth') return `${sh} more from every lesson${on ? ' in ' + on : ''}`;
+        return '';
+      }
       default: return '';
     }
   };

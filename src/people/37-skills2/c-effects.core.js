@@ -14,6 +14,10 @@
 //            [threshold, name, text, fx], held while the read of their key reaches the threshold (the release's rule),
 //            so every sum is what it was (sk2Caps compares them with GD.PERKS over bot lives)
 // - A.CAPS(p) the capability profile (§3.6): every bonus a person's held skills give, capped
+// - boost    titles' share boosts (order 95, D-192), a pool of their own apart from the caps above: SK2.boostOf(p, of, k),
+//            at most the cap of the rarest title among the sources (E.CAP_BOOST: uncommon 0.02, rare 0.05, legendary 0.15,
+//            unique 0.25). fight: A.fighterFrom's f.ttb (a share of the fighter's own worth, added in A.CR); check:
+//            A.skillEff (a share of the read); growth: A.gainXp (a share more effort); income: a post's yearly pay
 //
 // Until the data review writes effects into the rungs, only perks are in the data: every other bonus is 0 and every
 // reader takes the fast path (no family carries an effect, nothing is looked up).
@@ -143,7 +147,7 @@
   // ---- fight: A.fighterFrom's hook --------------------------------------------------------------------------------------
   // the worth A.fightWorth gives this fighter (the same sum), before any skill's fight effect
   SK2.worthOfFighter = function (f) {
-    const v = A.CR(Object.assign({ fat: 0, burst: 0, fury: 0, hp: 100, maxHp: 100, adapt: 0, mounted: false }, f, { sk2: null, k2: null }), { round: 5 });
+    const v = A.CR(Object.assign({ fat: 0, burst: 0, fury: 0, hp: 100, maxHp: 100, adapt: 0, mounted: false }, f, { sk2: null, k2: null, ttb: 0 }), { round: 5 });
     return Math.max(0, v + (f.wdmg || 3) * 0.9 + (f.prot || 0) * 1.1 + (f.shield || 0) * 1.4);
   };
   SK2.fightOn = function (f, p) {
@@ -154,10 +158,23 @@
     if (w) f.woundRes = (f.woundRes || 0) + w * Eng.RESIST_STEP.wounds;
     if (fear) f.fearRes = fear;
     const k = f.skillK || 'unarmed', c = Eng.famOf(I, k), tags = [...new Set([k, c || k, 'all'])];
-    const parts = Eng.fightOn(I, P.G, tags, SK2.worthOfFighter(f));
+    const worth = SK2.worthOfFighter(f), parts = Eng.fightOn(I, P.G, tags, worth);
     if (parts.total || parts.burst) f.sk2 = { steady: parts.atk + parts.def + parts.adapt, burst: parts.burst, total: parts.total, cap: parts.cap };
+    // titles' share boost to fighting worth (D-192): a share of his own worth, apart from the skills' 15%
+    const b = Eng.boostOn(I, P.G, 'fight', tags);
+    if (b) f.ttb = b * worth;
     return f;
   };
+  // ---- boost: titles' share boosts (order 95, D-192) -----------------------------------------------------------------
+  // the share a person's titles add to `of` ('fight', 'check', 'income', 'growth') for key k's tags (none: 'all' only);
+  // 0 for anyone who holds no title with a boost (the fast path)
+  SK2.boostOf = function (p, of, k) {
+    if (off(p)) return 0;
+    const P = A.CAPS(p); if (P === EMPTY || !P.G || !P.G.src) return 0;
+    return E().boostOn(IX(), P.G, of, k ? SK2.tagsOf(k) : ['all']);
+  };
+  // what a check on k reads more for the share of its read v
+  SK2.boostCheck = function (p, k, v) { const b = SK2.boostOf(p, 'check', k); return b ? b * Math.max(0, +v || 0) : 0; };
 
   // ---- stat: what held skills' and titles' stat effects add to a stat (A.stat), at most +10 (the cap, §2.4, §11.5) -----
   SK2.statOf = function (p, s) {

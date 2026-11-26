@@ -828,8 +828,10 @@ A.skillEff = function (p, k) {
   let v = A.skill(p, k);
   for (const [j, m] of GD.SKILL_SYN[k] || []) v = Math.max(v, A.skill(p, j) * m);
   // the skills rebuild, step 6 (D-180): what held skills' edge effects add to a check on k, capped at +12 by the adapter
-  // (src/people/37-skills2/c-effects); 0 while no skill carries one
-  return Math.round(v + A.perkOf(p, k, "check") + (A.SK2 && A.SK2.edgeOf ? A.SK2.edgeOf(p, k) : 0));
+  // (src/people/37-skills2/c-effects); 0 while no skill carries one. Order 95 (D-192): a title's share boost to k's
+  // checks adds its share of the read, under the titles' own cap (A.SK2.boostCheck; 0 for anyone who holds none)
+  const tb = A.SK2 && A.SK2.boostCheck ? A.SK2.boostCheck(p, k, v) : 0;
+  return Math.round(v + tb + A.perkOf(p, k, "check") + (A.SK2 && A.SK2.edgeOf ? A.SK2.edgeOf(p, k) : 0));
 };
 
 // the skills rebuild, step 6 (D-180): the knacks are the rungs' perk effects (data/skills/ladders), served by

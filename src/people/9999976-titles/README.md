@@ -28,8 +28,19 @@
 - **Stacking without a snowball.** A title's `effects` are the skills' own vocabulary and join their pool as sources of
   rank = its weight (`37-skills2/c-effects`: `SK2.xHeld`, `SK2.addSource`), so the caps of §2.4 bind skills and titles
   together: +12 on a check, +15% of fighting worth, 3 aura steps, 2 blunder or surge steps, 3 steps of resisting. Stats:
-  at most +3 a title (validator), +10 together (`SK2.statOf`), never past the potential by more than 5 (`A.stat`). Honour
-  and renown are paid once, on earning. A title spends at most `perLevel(weight) x 5` (x1.25 unique, x1.5 legendary).
+  at most +2 a title for an uncommon one, +3 rare, +5 legendary, +6 one of a kind (validator, `vocab.json` statMax; order
+  95, D-192), +10 together (`SK2.statOf`), never past the potential by more than 5 (`A.stat`). Honour and renown are paid
+  once, on earning. A title spends at most `perLevel(weight) x 5` (x1.25 unique, x1.5 legendary).
+- **Game changers: share boosts** (order 95, D-192: "titles can be game changers. % boosts and stat boosts"). A title's
+  `boost` effect (`{ type: 'boost', of, tag?, v }`) raises by a share the holder's fighting worth (`fight`, all or a
+  weapon's family: `A.fighterFrom`'s `f.ttb`, added in `A.CR`, so every duel and the honest odds read it), a family's
+  checks (`check`: `A.skillEff`, a share of the read), his post's yearly pay (`income`) or the experience he gains
+  (`growth`: `A.gainXp`, a share more effort). Boosts are not priced in the budget and do not share the skills' caps: a
+  pool of their own, stacked 1, 1/2, 1/4, 1/8, at most the cap of the rarest title among the sources: **uncommon 0.02,
+  rare 0.05, legendary 0.15, one of a kind 0.25** (`vocab.json` boost.cap, under the engine's ceiling `E.CAP_BOOST`); a
+  title's own boosts of one kind at most its cap (validator). Measured (`ttGameChanger`, pairs at near-even odds): Blooded
+  moves a duel's odds about 5 points, the Undefeated about 21, Wyrm-Slayer about 45. Only titles boost: a skill's source
+  has no boost cap.
 - **The great beings.** The legends' and masters' titles moved here (`data/titles/legends.json`); their sheets name
   them by id and `A.POWER` reads each as the object it always was, with the same buffs: every level, power, profile and
   matchup is identical (`ttLegends`, and the powers tests unchanged). Some are born (`born`: a Primordial Archdemon is
@@ -75,7 +86,11 @@
   `A.addWoundNow` and the deed); `07-duels.js` `A.duelConsequences` (`TT.duel`, before `A.LV.duel`); `09`, `10`, `11`
   (`TT.battle`); `11-armies-...` the siege tick (`P.sgPk`, `TT.siegeLifted`); `18-event-view-a.js` `A.eventChoose`
   (`TT.chose`); `23-ui-e.js` `UI.personModal` (the chips).
-- `37-skills2/c-effects.core.js`: `SK2.addSource`, `SK2.xHeld` read by `SK2.held`, the fast path `off(p)`, `SK2.statOf`.
+- `37-skills2/c-effects.core.js`: `SK2.addSource`, `SK2.xHeld` read by `SK2.held`, the fast path `off(p)`, `SK2.statOf`;
+  since D-192 `SK2.boostOf`, `SK2.boostCheck` and `f.ttb` in `SK2.fightOn` (the engine's `E.boostOn`, `E.CAP_BOOST`).
+- D-192's readers of the share boosts: release `06-prison-travel-school-ai.js` `A.CR` (`f.ttb`), `03-engine-base.js`
+  `A.skillEff` (`SK2.boostCheck`), `04-realms-and-war-years-b.js` a post's yearly pay (`SK2.boostOf(pc, 'income')`),
+  `36-skills/a-model.core.js` `A.gainXp` (`SK2.boostOf(p, 'growth', k)`).
 - `9999970-powers/a-power.core.js`: titles by id resolved from `data/titles/` (`PW.titleRef`); a person's being names
   his titles and class. `c-meet.core.js`: `TT.beastSlain`.
 - `9999975-level/a-level.core.js` `LV.field`: `TT.field`; its `statMigrate` test reads a version-18 save's held level as held.
@@ -100,7 +115,10 @@ a foe who beats the player counts it), `ttDeterministic` (two worlds, each life 
 census; a world pass draws nothing), `ttUnique` (one Wyrm-Slayer of six slayers, the next on his death; First of the Age
 once an age and never to the old masters; the Saint's title Cael's while he lives; the Sword of a realm one in each
 realm; forty audited years, no key with two living holders), `ttCaps` (75 people with every title and a planted one past
-any budget: +12, 15%, +10 and potential + 5, 3, 3; every read back once gone), `ttNpc` (an NPC earns the Undefeated in a
+any budget: +12, 15% and the titles' boosts 25% more, +10 and potential + 5, 3, 3; every read back once gone),
+`ttGameChanger` (an uncommon title moves a near-even duel's odds a little, a one-of-a-kind one markedly, a rare one
+between; every boost at its cap with every title and a planted one, an uncommon one at 0.02; income and experience read
+theirs), `ttNpc` (an NPC earns the Undefeated in a
 real duel and loses it in one), `ttSave` (every sample save: no title, no ledger, an empty census, version 19; the first
 deed starts the ledger), `ttPhone` (375 x 667: chips and Bear buttons 44 points, a press opens, a hover does not, no
 condition, no percentage, nothing sideways), `ttLegends` (every sheet's titles from data; the three matchups),

@@ -241,6 +241,18 @@ export const CAP_HUMAN = { edge: 12, fightShare: 0.15, aura: 3, blunderSurge: 2,
   // fight at most 0.35 of his blood; a guard takes at most half of a blow; a stat raised by buffs at most +10 (the stat
   // cap, kept apart from it: a buff wears off); a foe held stunned or off balance at most 2 rounds
   strikeShare: 0.4, healShare: 0.35, guardShare: 0.5, raise: 10, status: 2 };
+// Titles' share boosts (order 95, D-192: "titles can be game changers. % boosts and stat boosts"): a title's `boost`
+// effect ({ type: 'boost', of: 'fight' | 'check' | 'income' | 'growth', tag?, v: a share }) raises the holder's fighting
+// worth, a family's checks, his income or the experience he gains by a share. Boosts stack in a pool of their own, apart
+// from the skills' caps (a fight's +15% of worth, a check's +12): sources weighed 1, 1/2, 1/4, 1/8, the whole at most the
+// cap of the rarest title among them. These are the ceilings: data/titles/vocab.json may tune a cap lower, never higher
+// (the title's source carries it as boostCap), and only a title gives a boost (any other source's cap is 0).
+export const CAP_BOOST = { uncommon: 0.02, rare: 0.05, legendary: 0.15, unique: 0.25 };
+export const boostTier = s => (s && s.kind === 'title' ? (s.unique ? 'unique' : s.rarity) : null);
+export function boostCapOf(s) {
+  const t = boostTier(s), c = (t && CAP_BOOST[t]) || 0;
+  return s && s.boostCap != null ? Math.min(c, Math.max(0, +s.boostCap || 0)) : c;
+}
 export function capOf(ix, what, topRank) {
   const C = (ix.V.caps || {})[what], hard = HUMAN.includes(topRank) || rankIx(topRank) < 0 ? CAP_HUMAN[what] : undefined;
   const v = !C ? Infinity : C[topRank] != null ? C[topRank] : C.S != null ? C.S : Infinity;
@@ -548,6 +560,7 @@ export function srcKey(e) {
     case 'stat': return 'stat|' + e.stat;
     case 'social': return 'social|' + e.group;
     case 'economy': return 'economy|' + e.of + '|' + (e.tag || 'all');
+    case 'boost': return 'boost|' + e.of + '|' + (e.tag || 'all');
     default: return null;
   }
 }
@@ -576,6 +589,14 @@ export function capped(ix, what, list) {
 }
 // the sources of several slots together (a check reads its key, its family, its focus, its group and 'all')
 const srcOf = (G, type, tags, part) => { const out = []; for (const t of tags) { const l = G.src[type + '|' + t + (part ? '|' + part : '')]; if (l) out.push(...l); } return out; };
+// titles' share boosts of one kind on these tags (D-192): the sources of every tag together, weighed 1, 1/2, 1/4, 1/8, at
+// most the cap of the rarest title among them (CAP_BOOST, or its vocab's lower boostCap); a malus counts in full, down to
+// minus that cap
+export function boostOn(ix, G, of, tags) {
+  const l = srcOf(G, 'boost|' + of, tags || ['all']); if (!l.length) return 0;
+  const cap = l.reduce((m, x) => Math.max(m, boostCapOf(ix.BY[x[2]])), 0);
+  return stack(l.map(x => x[0]), cap, weightsOf(ix));
+}
 // what a check on these tags gets from edges: at most the cap (+12 up to S, rising above it)
 export const edgeOn = (ix, G, tags) => capped(ix, 'edge', srcOf(G, 'edge', tags));
 // steps of blunder (positive: fewer blunders) or surge on these tags: at most 2 either way (up to S)
@@ -616,7 +637,7 @@ export function aurasOn(ix, G) {
 // the share of worth (that needs the fighter: fightOn); G keeps the sources, for a check's or a fight's own tags.
 export function profile(ix, held) {
   const G = gather(ix, held);
-  const P = { held: (held || []).map(h => ({ id: h.id, lv: h.lv })), edges: {}, fight: {}, blunder: {}, surge: {}, resist: {}, growth: {}, stat: {}, social: {}, economy: {}, auras: aurasOn(ix, G), unlocks: G.unlocks, actives: G.actives, triggers: G.triggers };
+  const P = { held: (held || []).map(h => ({ id: h.id, lv: h.lv })), edges: {}, fight: {}, blunder: {}, surge: {}, resist: {}, growth: {}, stat: {}, social: {}, economy: {}, boost: {}, auras: aurasOn(ix, G), unlocks: G.unlocks, actives: G.actives, triggers: G.triggers };
   const W = weightsOf(ix);
   for (const k of Object.keys(G.src).sort()) {
     const [type, a, b] = k.split('|'), l = G.src[k];
@@ -628,6 +649,7 @@ export function profile(ix, held) {
     else if (type === 'social') P.social[a] = stack(l.map(x => x[0]), Infinity, W);
     else if (type === 'economy') P.economy[a + (b && b !== 'all' ? ':' + b : '')] = stack(l.map(x => x[0]), Infinity, W);
     else if (type === 'fight') { const f = P.fight[a] = P.fight[a] || { atk: 0, def: 0, burst: 0, adapt: 0 }; f[b] = stack(l.map(x => x[0]), Infinity, W); }
+    else if (type === 'boost') P.boost[a + ':' + b] = boostOn(ix, { src: { [k]: l } }, a, [b]);
   }
   P.G = G;
   return P;

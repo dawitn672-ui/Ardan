@@ -1162,6 +1162,7 @@ var __ARDAN_V2_MAKE = (() => {
   __export(skills2_exports, {
     BANDS: () => BANDS,
     BASES: () => BASES,
+    CAP_BOOST: () => CAP_BOOST,
     CAP_HUMAN: () => CAP_HUMAN,
     COOL_UNITS: () => COOL_UNITS,
     CURVE_A: () => CURVE_A,
@@ -1197,6 +1198,9 @@ var __ARDAN_V2_MAKE = (() => {
     beingArts: () => beingArts,
     beingLevel: () => beingLevel,
     beingOk: () => beingOk,
+    boostCapOf: () => boostCapOf,
+    boostOn: () => boostOn,
+    boostTier: () => boostTier,
     budget: () => budget,
     budgetFaults: () => budgetFaults,
     canEvolve: () => canEvolve,
@@ -1542,6 +1546,12 @@ var __ARDAN_V2_MAKE = (() => {
     raise: 10,
     status: 2
   };
+  var CAP_BOOST = { uncommon: 0.02, rare: 0.05, legendary: 0.15, unique: 0.25 };
+  var boostTier = (s) => s && s.kind === "title" ? s.unique ? "unique" : s.rarity : null;
+  function boostCapOf(s) {
+    const t = boostTier(s), c = t && CAP_BOOST[t] || 0;
+    return s && s.boostCap != null ? Math.min(c, Math.max(0, +s.boostCap || 0)) : c;
+  }
   function capOf(ix, what, topRank2) {
     const C = (ix.V.caps || {})[what], hard = HUMAN.includes(topRank2) || rankIx(topRank2) < 0 ? CAP_HUMAN[what] : void 0;
     const v = !C ? Infinity : C[topRank2] != null ? C[topRank2] : C.S != null ? C.S : Infinity;
@@ -1909,6 +1919,8 @@ var __ARDAN_V2_MAKE = (() => {
         return "social|" + e.group;
       case "economy":
         return "economy|" + e.of + "|" + (e.tag || "all");
+      case "boost":
+        return "boost|" + e.of + "|" + (e.tag || "all");
       default:
         return null;
     }
@@ -1953,6 +1965,12 @@ var __ARDAN_V2_MAKE = (() => {
     }
     return out;
   };
+  function boostOn(ix, G, of, tags) {
+    const l = srcOf(G, "boost|" + of, tags || ["all"]);
+    if (!l.length) return 0;
+    const cap3 = l.reduce((m, x) => Math.max(m, boostCapOf(ix.BY[x[2]])), 0);
+    return stack(l.map((x) => x[0]), cap3, weightsOf(ix));
+  }
   var edgeOn = (ix, G, tags) => capped(ix, "edge", srcOf(G, "edge", tags));
   var stepsOn = (ix, G, what, tags) => capped(ix, "blunderSurge", srcOf(G, what, tags));
   var resistOn = (ix, G, of) => capped(ix, "resist", G.src["resist|" + of] || []);
@@ -1991,7 +2009,7 @@ var __ARDAN_V2_MAKE = (() => {
   }
   function profile(ix, held) {
     const G = gather(ix, held);
-    const P = { held: (held || []).map((h) => ({ id: h.id, lv: h.lv })), edges: {}, fight: {}, blunder: {}, surge: {}, resist: {}, growth: {}, stat: {}, social: {}, economy: {}, auras: aurasOn(ix, G), unlocks: G.unlocks, actives: G.actives, triggers: G.triggers };
+    const P = { held: (held || []).map((h) => ({ id: h.id, lv: h.lv })), edges: {}, fight: {}, blunder: {}, surge: {}, resist: {}, growth: {}, stat: {}, social: {}, economy: {}, boost: {}, auras: aurasOn(ix, G), unlocks: G.unlocks, actives: G.actives, triggers: G.triggers };
     const W = weightsOf(ix);
     for (const k of Object.keys(G.src).sort()) {
       const [type, a, b] = k.split("|"), l = G.src[k];
@@ -2005,7 +2023,7 @@ var __ARDAN_V2_MAKE = (() => {
       else if (type === "fight") {
         const f = P.fight[a] = P.fight[a] || { atk: 0, def: 0, burst: 0, adapt: 0 };
         f[b] = stack(l.map((x) => x[0]), Infinity, W);
-      }
+      } else if (type === "boost") P.boost[a + ":" + b] = boostOn(ix, { src: { [k]: l } }, a, [b]);
     }
     P.G = G;
     return P;

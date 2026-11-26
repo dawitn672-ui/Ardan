@@ -255,7 +255,9 @@ A.careerYear = function (pc) {
       (1 + (C.skill ? A.perkOf(pc, C.skill, "income") : 0)) *
       (0.85 + (j.rep != null ? j.rep : 30) / 250) *
       (j.own ? 0.35 : 1) *
-      (A.specPay ? A.specPay(pc) : 1) +
+      (A.specPay ? A.specPay(pc) : 1) *
+      // order 95 (D-192): a title's share boost to income (A.SK2.boostOf; 1 for anyone who holds none)
+      (A.SK2 && A.SK2.boostOf ? 1 + A.SK2.boostOf(pc, "income") : 1) +
     (j.office ? 300 : 0);
   if (pc.flags.unfree) pay *= 0.05;
   if (pc.prison) pay = 0;
