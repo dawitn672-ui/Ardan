@@ -1,5 +1,5 @@
 {
- "about": "The titles the great beings hold (src/people/9999976-titles, D-183; moved here from data/legends.json and data/power.json so every title is one kind of data). A legend or a master names its titles by id; A.POWER reads each as it always did: buffs (capabilities, level, power) and honour, so the legends balance (D-176, D-177) is exactly what it was. weight X stands above SSS: these titles carry no person effects, only the beings buffs, except the Sword Saint, who is both a title and a class a person may one day earn when the old Saint is gone. born: held from birth (a Primordial Archdemon is born one). unique: one living holder.",
+ "about": "The titles the great beings hold (src/people/9999976-titles, D-183; moved here from data/legends.json and data/power.json so every title is one kind of data). A legend or a master names its titles by id; A.POWER reads each as it always did: buffs (capabilities, level, power) and honour, so the legends balance (D-176, D-177) is exactly what it was; when orders 92 and 93 stretched the scale (every legend's level x 1000/800 on a new curve, D-185), each legend's signature title took the power that gives back the ratios between the legends that D-177 set, so every matchup is still what it was (docs/design/powers.md, the stretch). weight X stands above SSS: these titles carry no person effects, only the beings buffs, except the Sword Saint, who is both a title and a class a person may one day earn when the old Saint is gone. born: held from birth (a Primordial Archdemon is born one). unique: one living holder.",
  "titles": [
   {
    "id": "ash-crowned",
@@ -18,7 +18,7 @@
    "honour": 60,
    "buffs": {
     "magic": 1,
-    "power": 4.79
+    "power": 6.33
    },
    "req": "hidden"
   },
@@ -79,7 +79,7 @@
    "honour": 80,
    "buffs": {
     "regen": 1,
-    "power": 6.67
+    "power": 8.53
    },
    "req": "hidden"
   },
@@ -121,7 +121,7 @@
    "honour": 20,
    "buffs": {
     "cunning": 1,
-    "power": 4.81
+    "power": 5.25
    },
    "req": "hidden"
   },
@@ -183,7 +183,7 @@
    "buffs": {
     "magic": 1,
     "ward": 1,
-    "power": 1.8
+    "power": 2.24
    },
    "req": "hidden"
   },
@@ -224,7 +224,7 @@
    "honour": 30,
    "buffs": {
     "ward": 1,
-    "power": 5.88
+    "power": 7.25
    },
    "req": "hidden"
   },
@@ -246,7 +246,7 @@
    "buffs": {
     "spd": 1,
     "magic": 1,
-    "power": 0.16
+    "power": 0.29
    },
    "req": "hidden"
   },
@@ -268,7 +268,7 @@
    "buffs": {
     "str": 1,
     "hide": 1,
-    "power": 7.46
+    "power": 8.78
    },
    "req": "hidden"
   },
@@ -290,7 +290,7 @@
    "buffs": {
     "swarm": 1,
     "cunning": 1,
-    "power": 9.82
+    "power": 10.22
    },
    "req": "hidden"
   },
@@ -337,7 +337,7 @@
    "buffs": {
     "magic": 1,
     "cunning": 1,
-    "power": 2.67,
+    "power": 5.67,
     "fire": 1
    },
    "req": "hidden"
@@ -382,7 +382,7 @@
    "buffs": {
     "magic": 1,
     "spd": 1,
-    "power": 0.59
+    "power": 0.65
    },
    "req": "hidden"
   },
@@ -404,7 +404,7 @@
    "buffs": {
     "magic": 1,
     "ward": 1,
-    "power": 2.86
+    "power": 3.62
    },
    "req": "hidden"
   },
@@ -426,7 +426,7 @@
    "buffs": {
     "str": 1,
     "magic": 1,
-    "power": 1.25,
+    "power": 3.58,
     "fire": 3
    },
    "req": "hidden"
@@ -470,7 +470,7 @@
    "buffs": {
     "str": 1,
     "magic": 1,
-    "power": 2.21,
+    "power": 4.99,
     "fire": 1
    },
    "req": "hidden"
@@ -496,7 +496,7 @@
    "buffs": {
     "spd": 1,
     "cunning": 1,
-    "power": 1.5,
+    "power": 2.28,
     "duel": 2
    },
    "req": "hidden",
@@ -506,10 +506,10 @@
     { "type": "fight", "tag": "sword", "part": "atk", "v": 4 },
     { "type": "fight", "tag": "sword", "part": "def", "v": 4 },
     { "type": "edge", "tag": "sword", "v": 6 },
-    { "type": "stat", "stat": "spd", "v": 2 },
-    { "type": "resist", "of": "fear", "v": 3 }
+    { "type": "stat", "stat": "spd", "v": 4 },
+    { "type": "resist", "of": "fear", "v": 3 },
+    { "type": "boost", "of": "fight", "tag": "sword", "v": 0.25 }
    ],
-   "hint": "Old soldiers say the Saint will name no heir: the sword, they say, will know the next one when he is gone, and not before.",
    "earned": "The last of the old masters lays down his blade before yours, and by the next feast the whole country calls you what it called Cael Vardan.",
    "style": "{name}, the Sword Saint",
    "text": "A title and a class: the strongest art of one man against one foe the world has known. One living holder; for sixty years and more it was Cael Vardan's."
@@ -573,7 +573,7 @@
    "honour": 0,
    "buffs": {
     "magic": 1,
-    "power": 2.92,
+    "power": 5.93,
     "fire": 1
    },
    "req": "hidden"

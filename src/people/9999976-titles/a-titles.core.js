@@ -3,7 +3,8 @@
 // A title is a name the world gives a person (or a being) for what he has done or become: earned, never bought, never
 // trained, never rolled for. It stacks with the others, gives honour and renown once and, while held, buffs and stat
 // boosts through the skills adapter's own vocabulary and caps (37-skills2's c-effects: A.CAPS), so ten titles cannot
-// snowball. Its requirements are hidden: nothing a player reads names them (tools/lint-titles.mjs holds the UI to it).
+// snowball. Its requirements are hidden: nothing a player reads names them (tools/lint-titles.mjs holds the UI to it), and
+// nothing hints at one before it is earned (order 92: the tavern rumours of D-183 are gone, archive/titles-hints/).
 //
 // A.TT
 //   A.deedDone(p, kind, ctx)  the one door of the deed ledger (p.dl = { kind: [count, streak, lastYear, best, keys] }):
@@ -21,7 +22,7 @@
 //   TT.reasons(p, kind)       the reasons a title gives a decider (A.WHY: soldiers follow an Undefeated captain)
 // State (optional; old saves load): p.dl (the ledger), p.tt = { h: { id: { y, w, n?, k? } } (held: the year, the world's
 // sentence why, the name when it differs, the census key when it is per realm), x: { id: [y0, y1] } (lost), b (the title
-// borne beside the name), hd ([ids] of hints heard), dc (deed lines read), lw (the day of the last serious wound), gw
+// borne beside the name), hd ([ids] of the rumours heard before order 92; read by nothing now), dc (deed lines read), lw (the day of the last serious wound), gw
 // ({ id: year } a grant last refused) }; A.S.tt = { u: { key: holder id }, first: { id: [holder id, year] } }.
 (function () {
   const DD = A.DATA || {}, V = DD['titles/vocab'];
@@ -175,7 +176,7 @@
     const tt = p.tt || (p.tt = {}), gw = tt.gw || (tt.gw = {});
     if (gw[t.id] != null && A.S.year - gw[t.id] < 1) return false;
     if (!A.WHY || !A.WHY.decide) return true;
-    const op = A.opinion ? A.opinion(ru, p) : 0, n = TT.nameFor(t, { realm: r.short || r.name || '' });
+    const op = A.opinion ? A.opinion(ru, p) : 0;
     const name = [{ kind: 'merit', weight: 1.4, label: `the best in the realm by every measure the court can see`, source: { t: 'title', id: t.id }, pub: 1 }];
     if (op) name.push({ kind: op > 0 ? 'kin' : 'fear', weight: clamp(op / 40, -1.5, 1), label: op > 0 ? 'a man the crown thinks well of' : 'a man the crown does not trust', source: { t: 'op', id: p.id }, pub: 0 });
     const opts = [{ id: 'name', reasons: name },
@@ -183,7 +184,8 @@
     const rec = A.WHY.decide(ru, 'title', opts, { rand: stream(`${A.S.seed != null ? A.S.seed : 'ardan'}|tt|${p.id}|${t.id}|${A.S.year}`), at: t.id, r: r.id });
     if (rec && rec.chose === 'name') return true;
     gw[t.id] = A.S.year;
-    if (isPc(p) && A.log) A.log(`${A.fullName ? A.fullName(ru, false) : 'The crown'} does not name you ${n} this year.`, '');
+    // nothing is said to the player when the crown withholds it: a line here told him he had met the title's conditions,
+    // a hint before it was earned (order 92)
     return false;
   };
   // a title marked since is for what is reached in this age: whoever already met its conditions when titles came into the
@@ -367,9 +369,14 @@
   };
 
   // ---------------------------------------------------------------- the adapter's sources (A.CAPS) and what others read
-  // a title as a skill source: rank = its weight, held at level 1, its effects as written (37-skills2/c-effects)
+  // a title as a skill source: rank = its weight, held at level 1, its effects as written (37-skills2/c-effects); its
+  // rarity and uniqueness set the cap of its share boosts (order 95, D-192: E.CAP_BOOST, lowered by vocab.json's boost.cap)
   const XS = TT.XS = new Map();
-  for (const t of TT.PERSON) if (Array.isArray(t.effects) && t.effects.length) XS.set(t.id, { id: 'title:' + t.id, rank: t.weight, rarity: t.rarity, kind: 'title', levels: [{ at: 1, effects: t.effects }] });
+  const BC = (V.boost && V.boost.cap) || {};
+  for (const t of TT.PERSON) if (Array.isArray(t.effects) && t.effects.length) {
+    const tier = t.unique ? 'unique' : t.rarity;
+    XS.set(t.id, { id: 'title:' + t.id, rank: t.weight, rarity: t.rarity, unique: !!t.unique, kind: 'title', boostCap: BC[tier] != null ? BC[tier] : 0, levels: [{ at: 1, effects: t.effects }] });
+  }
   TT.xHeld = function (p) {
     if (!p || !p.tt || !p.tt.h) return null;
     let out = null;
@@ -402,22 +409,17 @@
     for (const t of TT.heldDefs(p)) { const r = t.reasons && t.reasons[kind]; if (r) out.push({ kind: r.kind || 'merit', weight: r.weight || 0.2, label: tok(r.label || 'called {title}', { title: TT.nameOf(p, t.id) }), source: { t: 'title', id: t.id }, pub: 1 }); }
     return out;
   };
-  // what a title gives, in words (no numbers): its effects' cost, from data/skills/vocab.json's prices
+  // what a title gives, in words (no numbers): its effects' cost, from data/skills/vocab.json's prices, and its share
+  // boosts at vocab.json's boost.words a whole share (D-192)
   TT.strength = function (t) {
     let c = 0;
-    try { const SK2 = A.SK2; if (SK2 && SK2.E) for (const e of t.effects || []) c += SK2.E().effectCost(SK2.IX(), e); } catch (e) {}
+    try { const SK2 = A.SK2; if (SK2 && SK2.E) for (const e of t.effects || []) c += e.type === 'boost' ? Math.abs(+e.v || 0) * ((V.boost && V.boost.words) || 0) : SK2.E().effectCost(SK2.IX(), e); } catch (e) {}
     for (const [at, w] of V.strength || []) if (c >= at) return w;
     return 'slight';
   };
 
-  // ---------------------------------------------------------------- hints: rumours of a title one has done a deed toward
-  // a title with a hint, not held, whose watched deeds he has done at least once, not yet heard of (at most once a life)
-  TT.hintable = function (p) {
-    if (!p || !p.dl) return [];
-    const heard = (p.tt && p.tt.hd) || [];
-    return TT.PERSON.filter(t => t.hint && !TT.holds(p, t.id) && !heard.includes(t.id) && (t.watch || []).some(k => k !== 'month' && TT.led(p, k)));
-  };
-  TT.heard = function (p, id) { const tt = p.tt && typeof p.tt === 'object' ? p.tt : (p.tt = {}); tt.hd = (tt.hd || []).filter(x => x !== id).concat([id]); };
+  // no hints (order 92: "no hints throughout the games on titles"): the rumours of D-183 (TT.hintable, TT.heard, the card
+  // tt_hint and Records' "Things you have heard") are in archive/titles-hints/; a save's p.tt.hd is left and read by nothing
 
   // ---------------------------------------------------------------- the save (version 19): the census; nothing else
   TT.migrate = function (S) {

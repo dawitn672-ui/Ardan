@@ -2963,6 +2963,130 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
   the number at the merge. Deferred: `ttRare` (200 bot lives, a balance-harness run), monsters' own ledgers, an
   opponent's title on a duel's or court's card.
 
+### D-184 · Experience from anyone, walls at each hundredth level, a chosen class or a stat boost, legends that grow (2026-11-26; orders 91, 92, 93, 94; replaces D-181's experience rule)
+- **Experience from anyone (order 91).** D-181's line (nothing from a foe 25 levels down, never lifted past it) is
+  withdrawn: every defeated foe gives experience. **It is now counted in defeats of a peer, from the level gap alone**
+  (a stronger foe `2^(gap/20)`, past four the root of the rest; a weaker one `2^(-gap/6)`), and a level asks `1.01^L`
+  peers. **Why the gap, not might:** order 93 moves the ladder (a rescale of `A.POWER`'s might-to-level curve and the
+  legends' and species' levels, owned by another builder); a rule in might would move every earned level with it. In
+  level gaps the earned bands hold whatever the curve, the walls stay at the hundreds, and the foes' levels are still
+  read through `A.POWER` (`LV.level`, `PW.level`). **Considered:** keeping D-181's might rule without its line (soldiers
+  past 150 by farming), a steeper weak power alone (no wall at the hundreds).
+- **Walls, thresholds not ceilings (orders 91, 94).** The step into each hundredth level asks 6, 10, 12, 12, then 15 times
+  the step before it. Lives thin out as the cost climbs (the experience a foe gives falls steeply once a man stands
+  above him, so a soldier fighting soldiers of 130 slows long before 200) and the able, who beat stronger foes, break
+  through. Calibrated on the owner's anchors of order 93 (a model of the rule, in the level README): soldiers from 30
+  reach 94, 128, 158 after 20, 80, 1,000 defeats of soldiers; knights 214, 238, 265, 281 against knights (no pile-up at
+  299); a knight who beats the best (320) breaks through 300; the elite cross 300 and 400. **Considered:** walls of 25 to
+  90 (order 91's first reading; they held soldiers at 99 and knights at 299 like ceilings, which order 94 forbids).
+- **The reward is a branch the person chooses (order 92).** At a wall: the classes open to him (those following the
+  class he holds, or a road's first classes if he holds none; his best skill of the class's families at C, B or A by its
+  step; the Sword Saint only for the bearer of the Sword Saint title, which is Cael Vardan's while he lives, so the title's
+  census makes the class unique) or a stat boost (6, 10, 15, 20 points by the wall, `LV.grant`). At most three classes,
+  best first by the reasons (his skill past the need, his way of life, his deeds). The player chooses on a card
+  (`lv_wall`; `lv_boost` with three ways to place the points when no class is open); anyone else through
+  `A.WHY.decide` (the same reasons, bent by temper) on a stream of his own (the main stream never moves).
+- **A tree of classes that add things to do (order 92).** 29 classes, three steps, eight roads (blade, spear, bow,
+  shield, mounted, brawler, hunter, any weapon; mages wait for v4), seventeen leading to two or more. Each gives some of:
+  a duel **technique** (an active skill: the release's technique fields, under the style id `class:<id>`, used by NPCs
+  too), a **passive** that fires under its condition in a duel (low on blood, a beast, the first exchange, on horseback,
+  behind a shield, against a guard, a long fight: edge, a fury or blood back once), a **buff** (an activity: a stat raised
+  for some months, or healing) and a **way to earn or fight** (an activity: teaching, purse fights, pits, bounties, roads,
+  raids, vows). Every class on his road keeps its parts; the one he holds gives its effects through the skills adapter
+  (`SK2.xClass`, sources of rank C to S), under the caps with his skills and titles. Every class adds a part its parents
+  lack (tested). Order 94's "more than an ordinary knight" past 300: **Oathsworn** and **Banner Rider** among the third
+  step. **Considered:** a linear ladder per weapon (order 92 forbids it); classes as numbers only (the same).
+- **Worn classes.** A person given his held level (the player at his first month or on load, an NPC at his first fight)
+  has the walls he already stands past settled with the road his skills would give: worn, with its parts, and no
+  effects, honour or points, because his worth (from which the level was read) already holds them; so nothing a check
+  reads moves on load. The save step `classes` (version 22, after the arts' 20 of D-186 and the skills line's 21 of D-192) does this for everyone with a held level. Someone never
+  recorded is shown the class his road would give (pure), with no parts.
+- **The legends grow (order 92).** By the same rule: a man a legend beats in a meeting, and the ridge between the King
+  and the Saint, pay it experience (`LV.legendDefeat`), kept as `A.S.pw.leg[id].lg`; `PW.being` reads the data's level
+  plus the gain (never the data's number written: the rescale owns it). At a legend's height a hundred defeats of its
+  equal give under a level. A fresh world reads every legend at the data's level, so the matchups are unchanged.
+- **Also:** `pupil_taught` has a source (the teaching activities), so the Silver Sage can be earned.
+- **Deferred:** the "new order in battle" kind of part (the war core is being rebuilt, §10); class parts for a career's
+  monthly work; a training screen for classes; magic classes (v4); NPC-against-NPC duels still record nothing.
+- **On D-185's curve (merged the same day).** The rule reads no might, so the rescale moved only the seeded levels and
+  the foes' levels: twelve bot lives (six peasants, six nobles, 35 years, the seeds of `lvAnchors`) ended: peasants who
+  never fought 29 and 29 (average people 20-50), one with seven kills 64, the three who killed 49 to 67 men 120, 129 and
+  136 (soldiers 80-180; one took the Spearman at the wall, two had been seeded past 100 at sixteen); nobles 117 to 170,
+  seeded at 115-170 at sixteen with worn classes (Swordsman, Rider) where their skills open one; nobody at 99, 199 or 299.
+  **For the rescale's owner:** on D-185's curve a sixteen-year-old's fighting worth reads 105-170 for half the lives
+  tried (a might of 1 is level 105), so the seeded level, not the earned one, decides where most nobles and some
+  peasants stand; the earned rule only moves them from there.
+- **Addendum, orders 95 and 96 (the same day; the newest wins over the points above where they differ).**
+  - **Seeding by life, the might level a ceiling** (`LV.band`, `LV.seedLevel`; data `level.json` seed). Until a person
+    earns a level, his level is the computed one held inside the band his life puts him in: a commoner who never served
+    [his floor, 50]; a noble born 50-99 by upbringing (order 96: the band's low end by birth, gentry 50, noble 58, royal 68,
+    a great house a few more); service by rank, the high end reached with years and battles (soldiers 80-180, captains
+    150-299, generals 230-420); posts by kind (a knightly order's master 300-700, a host's General 230-420, a division's
+    230-299); kills outside service climb from the floor. Below the band's knee (six tenths) the computed level stands as
+    it is; above it, bent softly toward the band's top, so nobody piles up under a wall. It applies to everyone not yet
+    seeded, so a person's shown level and his seed agree. The floor's grown level is now 30 (20-40) for order 93's
+    average people. **Why everyone, not only the player:** a noble player at 75 beside an NPC brother shown at 150 would
+    read as two scales. Readings: untried sixteen-year-olds, commoners 21-48, nobles 58-81, royals 68-96; per realm among
+    named people, at most one or two elites and one or two knights (the court's few; an army's thousands are numbers);
+    the world's strongest humans (masters of the knightly orders) stay 493-551; the median of commoners without post or
+    service 29-35. `pwLadder` now reads the average people's median among those commoners (the named are mostly nobles).
+    A named figure's level from data wins (`LV.fromData`, the hook for the figures registry to come).
+  - **The breakthrough at every hundredth level** (order 95, replacing the choice of a class or a stat boost): each wall
+    crossed gives the body its points (6, 10, 15, 20), lets one skill jump a rank where several conditions allow it (at
+    least Lv 5 of its rank, the next rung's route wanting no deed, age or renown he lacks, at most one of its concepts
+    still to grasp, and his talent at the next rank's letter; through the skills engine's `edgeVerdict` and `SK.set`, the
+    player only for now), and opens the class branch (the player's card: a class or "keep to the road you are on"; an
+    NPC's `A.WHY.decide`, a class or none). The old rare leap and evolution's replacement are another builder's.
+  - **Classes as in Overgeared** (155 now, toward hundreds): the 29 by hand plus a generator (`data/classes.json`
+    generator: eight templates on nine roads) making advanced and hidden branches with conditions (a skill's level, a
+    deed done often, a birth and house). Rarity common, uncommon, rare, epic, legendary, unique; a class's line keeps its
+    rarity when it advances (tested); rarer classes carry stronger effects and more honour. Every class still adds a part.
+  - **Legends.** Above level 400 each level is only 0.05% dearer than the last, so at an archdemon's 975 a hundred
+    defeats of an equal give him one or two levels (1.36 measured); below 400 nothing changed. Their main road is a slow
+    yearly refinement of their arts (`LV.legendRefine`, `A.S.pw.ref`): power x (1 + 0.004 a year, at most +25%), alike
+    for every legend and master, so a matchup reads as before (Sarnavoth against an archdemon 0.644 before and after ten
+    years). A fresh world reads them all as the data writes them.
+  - **One defeat's gain is at most sixteen peers** (`xp.most`): with youths now seeded low, a win over a foe two hundred
+    levels up would otherwise have lifted a man a hundred levels at once.
+  - **Training as single +1s** (order 95; the smallest version): the player's training gathers in `p.trn` and lands a
+    whole point at a time under the same bound; NPCs still grow by the fraction (nobody reads their halves, and a store
+    on thousands of people would grow every save). The total over a life is the same; the last fraction under the
+    ceiling may never land (at most a point).
+
+### D-185 · The scale stretched (orders 92, 93, 94): Sarnavoth at 1000, every anchor moved, the legends' balance kept; no hints about titles (2026-11-26)
+- **The legends x 1000/800 (order 92).** "Shift out the levelling system putting Sarnavoth at 1000 and increasing the
+  other legends accordingly": every legend's level is its D-177 level x 1.25, rounded (Sarnavoth 1000, Ghazrul 975,
+  Morvane 969, Vethrael 963, Cael 875, Vaskareth 865, Tessaly 863, Hrimgala 853, Ul-Mavren 850, Orrun 843, Serrath 840,
+  Kethra 830, Ommul 823, Saqqar 813, the Pale Shepherd 810, the Iron Warden 800).
+- **Every anchor stretched (order 93, replacing order 84's; order 94 on knights).** One curve still reads every level
+  from the might (`data/power.json` levelCurve), now `log10(might) = -0.637 + 0.005858 L + 0.0000015 L^2` above level 20,
+  fifteen levels a tenfold below. Nobody's might changed (a person's is still his fighting worth in conscripts, squared);
+  only the level read from it. Two points fix it (the median grown man at 35, a soldier's might 1-2 at 106-154); the square
+  term then lands a knight's might 9-25 at 255-321 (ordinary 230-299, and past 299 more than an ordinary knight: no cap),
+  an elite's 25-60 at 321-376 (300-420; 420 is might 122, a strong realm's elite), the best man of a world at 493-552
+  (500-700, very few) and the bestiary's grown dragons at 700 with no second knot. The masters of the races 615-700 (the
+  giant king brought from 760 to 700, the other three keep their might). The A.LV level (`src/people/9999975-level`) reads
+  this curve: its values change at every level (a person seeded at 27 is now seeded at 35; a stored level is not moved).
+- **The bestiary by kind.** The generator's t values (the even log scale) set for the new anchors: the lower demons
+  307-477, the great demons 611-675 (average 647), the grown dragons 688-713, the elder 750-762, the ancient 775-787 (plus
+  the Old Blood's ten), the abyss leviathan 787, so nothing below the legends reaches 800. A first 29 new kinds in eleven
+  new lines (titans, hydras, liches, hive-empresses, tempest rocs, caldera spirits, sea-girdling serpents, the High Roost
+  dragons, the Grey Hunt, gate-dukes, colossi), 585 to 787, fill the band around the dragons up to the legends; from 600 to
+  800 stand 74 kinds of 17 families with no hole wider than 13 levels. None spawns in the wild yet (spawns are t 12-45) and
+  the cards' draw centres far below them.
+- **The balance kept by the titles.** On the new curve the legends' mights moved by different amounts, so each legend's
+  signature title (its own title with the most power) takes (1 + power) x a factor that gives back D-177's power ratios
+  between the legends, the smallest factor 1 so no title loses power. Every matchup is D-177's to the rounding (Sarnavoth
+  against the three 0.415, Cael against each archdemon 0.53, 0.46, 0.47, over the Lord of the Sea 0.770). **Considered:**
+  flattening the curve above 800 (a level near the top worth less than one below, against "each level exponentially
+  harder"); a second knot at 500 (not needed); letting the matchups drift (the owner set them).
+- **No hints about titles (order 92).** D-183's tavern rumour (`tt_hint`), `TT.hintable`, `TT.heard`, Records' "Things you
+  have heard" and the hint lines go to `archive/titles-hints/`. Two more hints found and closed: the log line "The crown does
+  not name you ... this year" (it told the player he had met the hidden conditions) and the deed on another person's title
+  card (the earned sentence and the title's own line name the deed: "Twenty fights and never put down"); his card now shows
+  the name, rarity, gifts and honour. The earning and losing cards stay. `tools/lint-titles.mjs` fails a title carrying a
+  hint and any source line telling of titles not yet held.
+
 ### D-186 · The three kinds of skill: arts (active, passive, buff) in the data, the engine and the duel (2026-11-26; order 92; skills-v2 §3.5, §10 step 11, §15, §16; orders 82, 83, 87, 88)
 - **An art is marked, not inferred.** The owner's three kinds are `kind` `active`, `passive` or `buff` with `art: true`
   (`data/skills/kinds/`). The 148 rungs and merge results were already `passive` (always on, no moment); reading every
@@ -3023,3 +3147,119 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
   +1 below Lv 10 and +3 at Lv 10 (it was 1, 5 and 10). The texts hold (86.8 for 90; 43.6 for 50) and the beasts' odds
   fit better than before (flBeastOdds mean 1.6, worst bin 4.7). **Considered:** changing the tier texts (the release's
   measured claims; the arts were what moved them).
+
+
+### D-192 · Evolution replaces; a rank's jump at a breakthrough, not a rare leap; titles as game changers (2026-11-26; order 95; replaces skills-v2 §15 answer 2 and D-182's advance; D-163, D-183)
+- **An evolved skill becomes the next skill and is gone** (order 95, replacing order 82's answer 2). Of a family's
+  ladder only the top rung is held: `SK2.fromS1` writes no rung below it, so the month's sync (which rewrites a stale
+  family from S1's table) writes back only the top; the family reads through it (`SK2.reads`, the mirror, `SK2.label`);
+  the log, the record and the card say the old one became the new. **Nothing a check reads drops:** what the old rungs
+  gave passes on through the line (`E.heldOfRung` returns the top rung with `line`, the rungs it evolved from;
+  `E.lineEffects` gathers their effects at Lv 10, lowest first, then the top's own, a later rung's effect replacing an
+  earlier one's of the same slot, as a later band does within a skill). Perks are served by the read of their key, so
+  every perk sum is the release's (`sk6PerkSums`). The closed form is the same rule through `SK2.rungFor`. **Arts too**
+  (an art is a skill): `SK2.artGone` deletes an art when its evolution is learned (its place in hand passes on, its
+  cooldown is forgotten, the new art's `fr` keeps it from being learned again) and `E.npcArts` drops the source of an
+  evolution held. A merge's parts stay as D-182 left them (sealed, read through `pc.ke.m`); a rung a merge absorbed
+  gives no effect of its own (its merge does). **Considered:** keeping the old rungs in `pc.ks` and hiding them (two
+  truths of one ladder; the owner's "it's gone"); stacking the line's effects as separate sources (an evolution would
+  then give more than the skill it became: a same-slot effect counted twice).
+- **Save version 21** (step `skills2line`, `SK2.migrateLine`): a save of version 20 or older holds every rung below a
+  family's top at Lv 10 and maybe an art beside its evolution; both are retired on load, every read the same (sk2Evolve
+  plants it; sk2Migrate's 26 samples read the same). The level builder is at 21 on its branch: the integrator settles
+  the number at the merge.
+- **A rare leap is not an event: the advance is archived** (`archive/skills2-advance/`, last in the build at
+  `5e5dab5e`). In its place **`E.rankJump(ix, held, facts)`** (pure) and **`A.SK2.rankJump(p, k, o)`** (with
+  `jumpFacts`, `jumpVerdict`, `rankJumps`), which the level calls at every hundredth wall ("a breakthrough happens every
+  100 levels where your stats are boosted and skills can jump ranks if multiple conditions allow it"). It jumps a skill
+  to the next rank's Lv 1 when it stands at Lv 5 or more (`JUMP_FROM`), at least two (`JUMP_NEED`) of three conditions
+  are met in full — **concepts** (every concept its evolution's route asks), **deed** (the route's deed; for a route
+  that asks none, a `proved` deed of the target's rank), **talent** (the family's letter at least the target rank:
+  `JUMP_TALENT`) — and every other need of the route holds (the S rung's thirty years); never an absorbed skill. The
+  player's facts are his table's, anyone else's the closed form's (concepts by S1's hash for his years of work, his post
+  as his deed). The old rung is gone into the new (above). **Considered:** all three conditions (a jump would then be a
+  mere shortcut through an evolution already earned: the owner wants a breakthrough to matter); any one (every talented
+  man would jump at every wall).
+- **D-163's budget:** a jump neither reads nor spends it (the advance spent one of three). The budget now covers only the
+  body's stopgap breakthroughs (`A.breakthrough`, `VS.breakthrough`) until the level's walls replace them (A2, the level
+  builder's call); how often a jump can come is how often a life reaches a wall.
+- **Titles can be game changers: share boosts, with a cap of their own.** A title's `boost` effect (`{ type: 'boost',
+  of: fight | check | income | growth, tag?, v }`) raises by a share the holder's fighting worth (`f.ttb`, set in
+  `SK2.fightOn`, added in `A.CR`: every duel, the honest odds and `A.fightWorth` read it, as they already read a title's
+  fight effects since D-183), a family's checks (`A.skillEff`: a share of the read), a post's yearly pay, or the
+  experience he gains (`A.gainXp`: a share more effort). Boosts stack 1, 1/2, 1/4, 1/8 **in a pool of their own,
+  apart from the skills' caps** (+15% of worth, +12 a check), at most the cap of the rarest title among the sources:
+  **uncommon 0.02, rare 0.05, legendary 0.15, one of a kind 0.25** (`E.CAP_BOOST`, the ceiling; `data/titles/vocab.json`
+  `boost.cap` may only lower it); only a title boosts. Measured at near-even odds (ttGameChanger, 24 pairs): Blooded
+  moves a duel about 5 points, the Undefeated about 21, Wyrm-Slayer about 45. **Bigger stat boosts:** a title's most on
+  one stat by rarity, +2, +3, +5, +6 (was +3 for all); skills and titles together still at most +10 a stat, never past the
+  potential by more than 5. The sixteen titles re-budgeted (`lint-titles`: boosts named, positive, within their rarity's
+  cap; the vocab's caps within the engine's; stats within their rarity's most). **The legends' matchups hold:**
+  `PW.titleRef` reads only name, honour, buffs, born and req, none of which changed (the Sword Saint's person effects
+  gained a boost and +2 speed for whoever earns it after Cael); `pwPowerNotLevel` and `ttLegends` read the same
+  (Sarnavoth 0.41 against the three, the Saint 0.53/0.46/0.47 and 0.77 over the Lord of the Sea). **Considered:** raising
+  the skills' 15% for titles (one cap would then bind both and a title's game change would crowd out the skills');
+  priced boosts in the point budget (the budget is per weight, not rarity: a C-weight legendary could never change a
+  fight). Hints stay gone from what a player reads of a title (order 92): boosts are printed in words ("a quarter more
+  might in a fight"), never as numbers.
+- **Deferred:** the skills' own `growth` effect type still has no reader (titles' growth reads through `boost`); an
+  income boost reads a post's yearly pay only (not offices' pay or trade); the descriptions' pay factors do not list a
+  title's; `pupil_taught` and `king_made` still have no source.
+
+### D-191 · The bestiary's bands by nature: three ancient dragons, 33 ancient demons, at most 100 dragons; the High Roost removed (2026-11-26; orders 95 and 96, and the owner's follow-up to 95)
+- **The owner's worry (order 95): "explain the 74 types between 600-800, im worried some usually weak creatures were given
+  high levels to fit the gap."** He was right. D-185 stretched every older kind by about 1.55 and read the release's 25
+  beasts' levels from their duel rows, so apex animals stood among the dragons (the Avalanche Ape 624, the Boar-King and
+  the Striped Shade 649, the Ironbrow Rhino and the Tusk-Mother 675, the Mountain Father 688, the Queen of the Canopy 725,
+  the Thunder Mammoth 611), and trolls and ogres with them (the Stone Troll 637, the Troll Grandsire 725, the Ogre Hetman
+  649). Of the 74 kinds from 600 to 800, 34 left it.
+- **Levels by nature, not by stretching.** Every line in `tools/powers/gen-bestiary.mjs` is now written in the owner's
+  levels (`lv`; t, the even log scale, is read from them, `tOfLevel`), and every kind carries a nature, `tier`: animal,
+  great beast (the kings and monstrous apex forms of animals), monster, drake, giant, undead, spirit, fey, construct,
+  young / grown / elder / ancient dragon, lower / great / ancient demon, calamity. The bands: plain animals at most 200;
+  great beasts 110-340 (a band of soldiers or knights can face them); trolls, ogres and ettins 120-380 (soldier to
+  elite); drakes and wyrms 50-480; giants by kind (a fell giant 400, a mountain giant 540, the first giants 640, below the
+  King under Jotunhall's 700); titans 600-775; young dragons 300-480; grown dragons 690-710 (mean 699); elder dragons
+  745-765 (mean 755); lower demons 300-480; great demons 620-680 (mean 649); ancient demons 745-765 (mean 754); the
+  calamities 600-775. From 600 to 800 stand 45 kinds, every one a calamity by nature (dragons grown and older, great and
+  ancient demons, the first giants, titans, liches, the leviathans and the elder kraken, the great spirits, the colossi of
+  legend, the hydra-mother, the million-mother, the master of the Grey Hunt, the sky-tyrant, the sea-girdlers). Within a
+  line the lesser forms keep their nature (the Marsh and Nine-Headed Hydras are monsters; only the Hydra-Mother of the
+  Fens is a calamity). Every kind, its old and new level and its reason: `docs/design/bestiary-bands.md`.
+- **Three ancient dragons (order 95).** Ash, Frost and Storm (772, 776, 780; 782, 786, 790 with the Old Blood), each one
+  of a kind (`unique`, `world: 1`) on its own line, so no dragon of the wilds rises to one (an elder is the top a dragon
+  can grow to). The owner's follow-up, his own instruction: **"remove the dragon of high roost"**: the High Roost Dragon
+  and the Dragon Lord of the High Roost, both new in D-185, are removed and archived in `archive/bestiary-high-roost/`
+  (nothing else named them). The Red Widow, one of a kind, is an elder (760).
+- **Ancient demons rival elder dragons (order 95), and there are 33 (order 96).** Four new kinds, each its own line (no
+  demon of the wilds rises to one), born with a Hell-Born title (a ward): the Marquis of the Burning Court (745, 20 in the
+  world), the Pit-Mother (750, 6), the Ledger-Keeper (755, 3), the Pit Wyrm (765, 4); 33 in all, their mean 754 against the
+  elders' 755. The 33 are individuals; the figures registry (another builder, order 96) writes each one's profile.
+- **Few elder dragons; at most 100 dragons (order 96).** A counted kind carries `world` (how many live) and the dragons'
+  family a `cap` of 100; the generator fails a family whose counts pass its cap. The choice: 36 young (hatchlings 8, 7, 7, 7
+  and the ash dragonet 7), 36 grown (9 of each), **9 elder** (ash 3, frost 2, storm 2, brine 1, the Red Widow), 3 ancient:
+  **84 in all**, Sarnavoth apart. The wyrms and drakes are not dragons (the "Sand Dragon" is a 20-kilo lizard).
+- **The wilds keep the counts.** `A.POWER.room(st, sp)` (`src/world/9999970-powers/b-wilds.core.js`): a counted kind is
+  spawned, or a wild monster rises into it, only while the wilds track fewer of it than the world holds and fewer of its
+  family than the cap. It only counts (no draw), so no seed's world moves until a kind is full. The encounter cards
+  (`c-meet`) only meet kinds and add no individual.
+- **The release's beasts.** Their duel rows no longer set their level: the release's duel engine saturates near the top
+  of human worth, so it read a cave bear (400-600 kg) like a world's best man (504) and the Great Ash Dragon below every
+  other grown dragon (558). They take their level by nature (the Great Ash Dragon is the grown ash dragon, 700); what the
+  row measures stays as `duelT`, and `pwBestiary` still checks it against the live rows. A beast met in the wilds fights
+  with `A.POWER.fighter`, built from its level, so the odds read and the fight agree. **Conflict recorded:** the release's
+  own hunts of its 25 beasts (`A.fighterBeast('CRE-..')`) still fight with the release's rows, so a cave bear hunted
+  through a release card is stronger than one met in the wilds. Fixing the rows would rebalance the release's hunts and
+  duels; it is left for a step of its own (a follow-up, not done here).
+- **Kept.** The curve, the legends and their matchups (Sarnavoth 0.41 against the three Archdemons, Cael 0.53 / 0.46 /
+  0.47 against each, 0.77 over the Lord of the Sea), the masters (615-700), the low creatures already on the anchors.
+  `data/power.json`'s band words follow the new bands (no "great bear" among the champions). Legends that are beasts
+  (Saqqar the fire-lion, the Pale Shepherd) are one of a kind and stay legends.
+- **Tests.** `pwBands` (new): the animal families at most 350 (340 measured), plain animals at most 250 (200), great beasts
+  at most 350 (340), trolls and ogres at most 420 (380), young dragons below 500; exactly three ancient dragons, one each,
+  780-800 and above every elder; 7-12 elders in the world (9); every dragon counted and at most 100 (84); 3-6 ancient demon
+  kinds, 33 in all, each 740-770, their mean within 25 of the elders' (1.2 apart); great demons' mean 625-675 (649); and
+  the wilds filled with every counted dragon, spawned 300 times and run 40 years never pass a count or the cap.
+  `pwStretched`: 600-800 holds only calamity natures, 30 to 73 kinds (45), the High Roost gone, D-185's ten remaining new
+  lines reach the band at their apex, the widest hole at most 30 (25). `pwLadder`: the Great Ash Dragon among the grown,
+  the three ancient 780-800 above every elder. `pwBestiary`: the duel rows against `duelT`.

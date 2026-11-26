@@ -752,7 +752,8 @@ A.stat = function (p, s) {
   let v = A.statFloor ? Math.max(p.st[s] || 0, A.statFloor(p, s)) : p.st[s] || 0;
   // D-181: the stat points a level brought (src/people/9999975-level), held to the body's room at this age; age, traits,
   // wounds and weariness below lower what is read, never what is placed
-  if (p.lv && p.lv.put && A.LV) v = A.LV.withPut(p, s, v);
+  // (and a class's buff, a stat raised for a few months: D-184)
+  if (p.lv && (p.lv.put || p.lv.bf) && A.LV) v = A.LV.withPut(p, s, v);
   // D-183: what titles' (and skills') stat effects add (37-skills2's SK2.statOf: at most +10 a stat, the adapter's cap),
   // never past the potential by more than 5 (src/people/9999976-titles); 0 for anyone who holds none
   if (A.SK2 && A.SK2.statOf) {
@@ -812,6 +813,15 @@ A.train = function (p, s, amt) {
   if (age > R2.old) eff = 0.25;
   const room = Math.max(0, (p.pot[s] - p.st[s]) / Math.max(1, p.pot[s])),
     gain = amt * eff * (0.25 + room * 1.1);
+  // order 95 (D-184 addendum): the player's training comes as single +1s. The same gain gathers in p.trn[s] and lands a
+  // whole point at a time, held to the same bound; anyone else still grows by the fraction (nobody reads his halves)
+  if (A.S && p.id === A.S.pc && gain > 0) {
+    const T = p.trn && typeof p.trn === "object" ? p.trn : (p.trn = {});
+    T[s] = Math.round(((T[s] || 0) + gain) * 1000) / 1000;
+    while (T[s] >= 1 && p.st[s] + 1 <= p.pot[s] * 1.02) { p.st[s] += 1; T[s] = Math.round((T[s] - 1) * 1000) / 1000; }
+    if (p.st[s] + 1 > p.pot[s] * 1.02) T[s] = Math.min(T[s], 0.999);
+    return gain;
+  }
   p.st[s] = Math.min(p.pot[s] * 1.02, p.st[s] + gain);
   return gain;
 };
@@ -828,8 +838,10 @@ A.skillEff = function (p, k) {
   let v = A.skill(p, k);
   for (const [j, m] of GD.SKILL_SYN[k] || []) v = Math.max(v, A.skill(p, j) * m);
   // the skills rebuild, step 6 (D-180): what held skills' edge effects add to a check on k, capped at +12 by the adapter
-  // (src/people/37-skills2/c-effects); 0 while no skill carries one
-  return Math.round(v + A.perkOf(p, k, "check") + (A.SK2 && A.SK2.edgeOf ? A.SK2.edgeOf(p, k) : 0));
+  // (src/people/37-skills2/c-effects); 0 while no skill carries one. Order 95 (D-192): a title's share boost to k's
+  // checks adds its share of the read, under the titles' own cap (A.SK2.boostCheck; 0 for anyone who holds none)
+  const tb = A.SK2 && A.SK2.boostCheck ? A.SK2.boostCheck(p, k, v) : 0;
+  return Math.round(v + tb + A.perkOf(p, k, "check") + (A.SK2 && A.SK2.edgeOf ? A.SK2.edgeOf(p, k) : 0));
 };
 
 // the skills rebuild, step 6 (D-180): the knacks are the rungs' perk effects (data/skills/ladders), served by

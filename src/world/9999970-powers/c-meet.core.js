@@ -185,12 +185,14 @@
     const rec = A.WHY.decide(legMind(L), 'legend', PW.greatOptions(p, ctx, react), { logIf: r => r.chose === 'rage' || r.chose === 'bargain' });
     const ans = rec ? rec.chose : 'scorn', line = ((L.reacts || {})[react] || {}).a === ans ? ((L.reacts || {})[react] || {}).line : '';
     const b = PW.being(L.id), gap = b.t - PW.being(p).t;
+    // a man it beats is a defeat it counts, as anyone does (order 92, D-184): at its height, next to nothing
+    const beat = () => { if (A.LV && A.LV.legendDefeat) A.LV.legendDefeat(L.id, A.LV.level(p), 'defeat'); };
     if (ans === 'spare') { if (A.fame) A.fame(p, 2); return line || 'It lets you go. You will tell this for the rest of your days, and few will believe you.'; }
     if (ans === 'scorn') return line || 'It does not answer. When you look again, it is gone.';
     if (ans === 'bargain') { const c0 = Math.min(p.coin || 0, 20); p.coin -= c0; p.happy = clamp((p.happy || 50) + 4, 0, 100); return (line || 'It names terms, and keeps them to the letter.') + (c0 ? ` It costs you ${A.coin ? A.coin(c0) : c0}.` : ''); }
-    if (ans === 'demand') { const c0 = Math.min(p.coin || 0, Math.max(10, Math.round((p.coin || 0) / 2))); if (c0 > 0) { p.coin -= c0; return (line || 'It wants a tithe.') + ` You pay ${A.coin ? A.coin(c0) : c0}.`; } return hurt(p, 20, L.n, 0.1) ? '' : (line || 'It wants a tithe you cannot pay.') + ' It takes it in blood.'; }
-    if (ans === 'test') { if (A.chance(clamp(((A.stat ? A.stat(p, 'wil') : 40) + 10) / 120, 0.1, 0.8))) { if (A.fame) A.fame(p, 4); return (line || 'It tests you.') + ' You do not break. It lets you go, and you are not quite the same.'; } return hurt(p, 25, L.n, 0.15) ? '' : (line || 'It tests you.') + ' You fail. It leaves you bleeding in the dust.'; }
+    if (ans === 'demand') { const c0 = Math.min(p.coin || 0, Math.max(10, Math.round((p.coin || 0) / 2))); if (c0 > 0) { p.coin -= c0; return (line || 'It wants a tithe.') + ` You pay ${A.coin ? A.coin(c0) : c0}.`; } beat(); return hurt(p, 20, L.n, 0.1) ? '' : (line || 'It wants a tithe you cannot pay.') + ' It takes it in blood.'; }
+    if (ans === 'test') { if (A.chance(clamp(((A.stat ? A.stat(p, 'wil') : 40) + 10) / 120, 0.1, 0.8))) { if (A.fame) A.fame(p, 4); return (line || 'It tests you.') + ' You do not break. It lets you go, and you are not quite the same.'; } beat(); return hurt(p, 25, L.n, 0.15) ? '' : (line || 'It tests you.') + ' You fail. It leaves you bleeding in the dust.'; }
     // rage: far above any man
-    return hurt(p, 70 + gap * 2, L.n, clamp(0.3 + gap / 60, 0.3, 0.75)) ? '' : (line || 'It turns on you.') + ' Somehow you live. No one who saw it understands how.';
+    beat(); return hurt(p, 70 + gap * 2, L.n, clamp(0.3 + gap / 60, 0.3, 0.75)) ? '' : (line || 'It turns on you.') + ' Somehow you live. No one who saw it understands how.';
   };
 })();

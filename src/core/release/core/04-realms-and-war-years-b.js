@@ -255,7 +255,9 @@ A.careerYear = function (pc) {
       (1 + (C.skill ? A.perkOf(pc, C.skill, "income") : 0)) *
       (0.85 + (j.rep != null ? j.rep : 30) / 250) *
       (j.own ? 0.35 : 1) *
-      (A.specPay ? A.specPay(pc) : 1) +
+      (A.specPay ? A.specPay(pc) : 1) *
+      // order 95 (D-192): a title's share boost to income (A.SK2.boostOf; 1 for anyone who holds none)
+      (A.SK2 && A.SK2.boostOf ? 1 + A.SK2.boostOf(pc, "income") : 1) +
     (j.office ? 300 : 0);
   if (pc.flags.unfree) pay *= 0.05;
   if (pc.prison) pay = 0;
@@ -477,6 +479,8 @@ A.canAct = function (key) {
   const pc = A.pc(),
     D = GD.ACTIVITIES[key];
   if (!D || !pc || !pc.alive) return [false, "Not possible"];
+  // an activity a class gives (D-184): only for those who hold it ("Not in your position" hides it from the Life tab)
+  if (D.lvCls && !(A.LV && A.LV.hasAct && A.LV.hasAct(pc, key))) return [false, "Not in your position"];
   const age = A.age(pc),
     R2 = GD.RACES[pc.race],
     scale = R2.adult / 16;

@@ -5,7 +5,8 @@
 // - Who holds what. The player: pc.ka = { id: { lv, xp, y, via, n } }, learned at the month's turn by a route the data
 //   names (practice: his family's read reaches the need; teacher: a school or someone he learns from at the rank; deed:
 //   a deed counted in pc.kd; evolve: the art below at Lv 10), at most two a month, and grown by use (each use in a
-//   fight) and by half his month's experience in the family it trains. Anyone else: the closed form (E.npcArts), from his
+//   fight) and by half his month's experience in the family it trains. An art that evolves becomes its evolution and is
+//   gone (order 95, D-192: SK2.artGone; its place in hand passes to the new art, and it is never learned again). Anyone else: the closed form (E.npcArts), from his
 //   reads, nothing stored. A monster or a legend: what its kind is born with (E.beingArts), mana-based arts only for a
 //   being with magic, its mana pool ten a step of its magic (E.manaOf). A person has no mana until magic (§17).
 // - Slots (§3.5): the player readies his actives and buffs (pc.kr = [{ id, m }]); an art readied this month is ready to
@@ -129,8 +130,38 @@
     const how = { practice: 'by doing it', teacher: 'from someone who knew it', school: 'at your school', deed: 'by what you went through', evolve: 'out of what you had' }[via] || '';
     A.log(`You have a new skill ${how}: ${s.name} (${s.rank} · Lv 1), ${kind}.`, 'good');
     if (SK.notable) SK.notable(pc, { text: `${s.name}: learned` });
-    if (s.kind !== 'passive' && SK2.inFight(s) && SK2.readiedOf(pc).length < SK2.slotsOf(pc)) SK2.kr(pc).push({ id, m: SK2.absMonth() });
+    // an evolution: the art it came from is gone into it, its place in hand passing on (D-192)
+    const had = via === 'evolve' ? SK2.artGone(pc, id) : 0;
+    if (!had && s.kind !== 'passive' && SK2.inFight(s) && SK2.readiedOf(pc).length < SK2.slotsOf(pc)) SK2.kr(pc).push({ id, m: SK2.absMonth() });
     return true;
+  };
+  // the arts a held art evolved from (an evolve route's source at Lv 10, held): gone into it (order 95, D-192). The source's
+  // entry is deleted and named in the new one's `fr` (so it is never learned again), its place in hand passes to the new
+  // art (when it is used in a fight; else it is put away), its month's cooldown is forgotten. Returns the count retired.
+  SK2.artGone = function (pc, id, quiet) {
+    const K = pc && pc.ka, s = SK2.art(id), e = K && K[id];
+    if (!s || !e) return 0;
+    let n = 0;
+    for (const r of s.acquire || []) {
+      if (r.via !== 'evolve' || !r.from || r.from === id) continue;
+      const o = K[r.from]; if (!o || !(o.lv >= E().MAX_LV)) continue;
+      e.fr = [...new Set((e.fr || []).concat(o.fr || [], [r.from]))].sort();
+      delete K[r.from]; n++;
+      if (Array.isArray(pc.kr)) {
+        const i = pc.kr.findIndex(x => x && x.id === r.from);
+        if (i >= 0) { if (s.kind !== 'passive' && SK2.inFight(s) && !pc.kr.some(x => x && x.id === id)) pc.kr[i] = { id, m: pc.kr[i].m }; else pc.kr.splice(i, 1); }
+      }
+      if (pc.kcd && typeof pc.kcd === 'object') delete pc.kcd[r.from];
+      const fs = SK2.art(r.from);
+      if (!quiet && fs) A.log(`${fs.name} is gone into ${s.name}: what it was, ${s.name} is now.`, '');
+    }
+    return n;
+  };
+  // the arts gone into one the player holds (never learned again)
+  SK2.artsGone = function (pc) {
+    const out = new Set(), K = pc && pc.ka;
+    if (K && typeof K === 'object') for (const id in K) for (const g of (K[id] && K[id].fr) || []) out.add(g);
+    return out;
   };
   SK2.artsMonth = function (pc, v) {
     if (!isPC(pc) || !pc.alive || A.age(pc) < 6) return;
@@ -144,8 +175,8 @@
       if (x > 0) SK2.artXp(pc, id, x * SK2.ART_SHARE);
     }
     // learn: what a route opens now, at most two a month (rank first, then the library's order)
-    const facts = SK2.artFacts(pc), open = [];
-    for (const s of SK2.arts()) { if (K[s.id]) continue; const r = SK2.artRoute(pc, s, facts); if (r) open.push([s, r]); }
+    const facts = SK2.artFacts(pc), open = [], gone = SK2.artsGone(pc);
+    for (const s of SK2.arts()) { if (K[s.id] || gone.has(s.id)) continue; const r = SK2.artRoute(pc, s, facts); if (r) open.push([s, r]); }
     open.sort((a, b) => Eng.rankIx(a[0].rank) - Eng.rankIx(b[0].rank));
     for (const [s, r] of open.slice(0, SK2.ART_LEARN_MAX)) SK2.learnArt(pc, s.id, r.via);
     // a month's raise wears off; a month's cooldown long past is forgotten

@@ -241,6 +241,18 @@ export const CAP_HUMAN = { edge: 12, fightShare: 0.15, aura: 3, blunderSurge: 2,
   // fight at most 0.35 of his blood; a guard takes at most half of a blow; a stat raised by buffs at most +10 (the stat
   // cap, kept apart from it: a buff wears off); a foe held stunned or off balance at most 2 rounds
   strikeShare: 0.4, healShare: 0.35, guardShare: 0.5, raise: 10, status: 2 };
+// Titles' share boosts (order 95, D-192: "titles can be game changers. % boosts and stat boosts"): a title's `boost`
+// effect ({ type: 'boost', of: 'fight' | 'check' | 'income' | 'growth', tag?, v: a share }) raises the holder's fighting
+// worth, a family's checks, his income or the experience he gains by a share. Boosts stack in a pool of their own, apart
+// from the skills' caps (a fight's +15% of worth, a check's +12): sources weighed 1, 1/2, 1/4, 1/8, the whole at most the
+// cap of the rarest title among them. These are the ceilings: data/titles/vocab.json may tune a cap lower, never higher
+// (the title's source carries it as boostCap), and only a title gives a boost (any other source's cap is 0).
+export const CAP_BOOST = { uncommon: 0.02, rare: 0.05, legendary: 0.15, unique: 0.25 };
+export const boostTier = s => (s && s.kind === 'title' ? (s.unique ? 'unique' : s.rarity) : null);
+export function boostCapOf(s) {
+  const t = boostTier(s), c = (t && CAP_BOOST[t]) || 0;
+  return s && s.boostCap != null ? Math.min(c, Math.max(0, +s.boostCap || 0)) : c;
+}
 export function capOf(ix, what, topRank) {
   const C = (ix.V.caps || {})[what], hard = HUMAN.includes(topRank) || rankIx(topRank) < 0 ? CAP_HUMAN[what] : undefined;
   const v = !C ? Infinity : C[topRank] != null ? C[topRank] : C.S != null ? C.S : Infinity;
@@ -290,8 +302,8 @@ export function missing(needs, facts) {
   return out;
 }
 
-// ---- 7. evolution, merging, advancing (§3.3, §3.4; §15.2: an evolved skill stays beside its evolution, a merge absorbs
-// its parts) -------------------------------------------------------------------------------------------------------------
+// ---- 7. evolution, merging, a rank's jump (§3.3, §3.4; order 95, D-192: an evolved skill becomes its evolution and is
+// gone; a merge absorbs its parts) ---------------------------------------------------------------------------------------
 // held: { id, lv } of a skill the person holds; facts as above (facts.skills lists everything he holds)
 export function evolveRoutes(ix, from) {
   const s = ix.BY[from]; if (!s) return [];
@@ -312,11 +324,13 @@ export function canEvolve(ix, held, facts) {
     return { to, ok: !miss.length, missing: miss };
   });
 }
-// the table after an evolution: the old skill stays where it was, the new one is added at Lv 1 (§15.2)
+// the table after an evolution: the old skill becomes the new one at Lv 1 and is gone (order 95, D-192; it replaced
+// §15.2's "the old one stays beside it"). What the old one gave passes on through the line (heldOfRung, gather).
 export function evolve(table, from, to, at) {
   if (!table[from] || table[to]) return table;
   table[to] = { lv: 1, xp: 0, via: 'evolve', from };
   if (at != null) table[to].y = at;
+  delete table[from];
   return table;
 }
 export function canMerge(ix, recipe, facts) {
@@ -339,18 +353,42 @@ export function merge(ix, table, recipe, at) {
   if (at != null) table[recipe.result].y = at;
   return table;
 }
-// advancing (awakening): a skill at Lv 5 or more jumps to the next rank's Lv 1 at a named moment, once a life (§3.4)
-export const ADVANCE_FROM = 5, ADVANCES_A_LIFE = 1;
-export function canAdvance(ix, held, facts) {
-  const miss = [], s = ix.BY[held && held.id];
-  if (!s) return { ok: false, missing: ['skill'] };
+// a rank's jump (order 95, D-192): at a breakthrough (the level's every hundredth wall: src/people/9999975-level calls
+// it) a skill may jump to the next rank's Lv 1 without the rest of its levels, when several conditions allow it. It
+// replaced the advance, a hash chance at a named moment (archive/skills2-advance/). Pure: what the jump asks, and what
+// of it the facts meet. held: { id, lv } (a family's top rung, or any skill with an evolution of the next rank); facts:
+// as missing()'s, with concepts (fam:id grasped), deeds, talent ({ fam: letter }), age, fame, sealed (ids a merge took).
+// The three conditions, each met in full or not at all:
+//   concepts  every concept the evolution's route asks is grasped
+//   deed      the route's deed is done (a route that asks none: a 'proved' deed of the target's rank or above)
+//   talent    the family's talent letter is at least JUMP_TALENT[target rank]
+// It jumps when the skill stands at Lv JUMP_FROM or more, at least JUMP_NEED of the three are met, and every other need
+// of the route (an age, renown) is met; a skill a merge absorbed never jumps. Returns { ok, from, to, rank, met: [...],
+// missing: [...] } (missing names the conditions not met and anything else wanting).
+export const JUMP_FROM = 5, JUMP_NEED = 2;
+export const JUMP_CONDITIONS = ['concepts', 'deed', 'talent'];
+export const JUMP_TALENT = { C: 'C', B: 'B', A: 'A', S: 'S', SS: 'SSS', SSS: 'SSS', X: 'SSS' };
+export function rankJump(ix, held, facts) {
+  facts = facts || {};
+  const s = ix.BY[held && held.id];
+  if (!s) return { ok: false, from: null, to: null, rank: null, met: [], missing: ['skill'] };
   const to = (s.evolvesTo || []).map(t => ix.BY[t.id]).find(t => t && rankIx(t.rank) === rankIx(s.rank) + 1);
-  if (!to) miss.push('no-next');
-  if (!(held.lv >= ADVANCE_FROM)) miss.push('level');
-  if ((facts.advances || 0) >= ADVANCES_A_LIFE) miss.push('once');
-  if (!(ix.V.moments || []).includes(facts.moment)) miss.push('moment');
-  if (to && (facts.skills || {})[to.id]) miss.push('held');
-  return { ok: !miss.length, missing: miss, to: to ? to.id : null };
+  const out = { ok: false, from: s.id, to: to ? to.id : null, rank: to ? to.rank : null, met: [], missing: [] };
+  if (!to) { out.missing.push('no-next'); return out; }
+  const route = ((to.acquire || []).find(r => r.via === 'evolve' && r.from === s.id) || {}).needs || {};
+  if (!(held.lv >= JUMP_FROM)) out.missing.push('level');
+  if (Array.isArray(facts.sealed) && facts.sealed.includes(s.id)) out.missing.push('absorbed');
+  if ((facts.skills || {})[to.id]) out.missing.push('held');
+  const rest = Object.assign({}, route); delete rest.concept; delete rest.deed;
+  out.missing.push(...missing(rest, facts));
+  // the three conditions
+  if (!missing({ concept: route.concept || [] }, facts).length) out.met.push('concepts');
+  if (route.deed ? !missing({ deed: route.deed }, facts).length : deedCount(facts, 'proved', to.rank) >= 1) out.met.push('deed');
+  const fam = s.family || (s.reads || [])[0];
+  if (fam && TAL.indexOf((facts.talent || {})[fam] || 'C') >= TAL.indexOf(JUMP_TALENT[to.rank] || 'SSS')) out.met.push('talent');
+  if (out.met.length < JUMP_NEED) for (const c of JUMP_CONDITIONS) if (!out.met.includes(c)) out.missing.push('condition:' + c);
+  out.ok = !out.missing.length;
+  return out;
 }
 
 // ---- 7b. in play: an edge of a family's ladder, a merge's entry and its levels, the chances (steps 7 and 8; D-182) ------
@@ -379,8 +417,8 @@ export function edgeVerdict(ix, fam, w, facts) {
   if (e.kind === 'evolve' && facts && Array.isArray(facts.sealed) && facts.sealed.includes(e.from)) miss.push('absorbed');
   return Object.assign(e, { ok: !miss.length, missing: miss });
 }
-// the chances (§3.4), each read from a hash of its own key: no draw from any stream
-export const ADVANCE_CHANCE = 0.01;      // an advance: 1 in 100 a named moment
+// the chance of a found merge (§3.4), read from a hash of its own key: no draw from any stream (the advance's 1 in 100
+// went with it to archive/skills2-advance/, D-192)
 export const FOUND_CHANCE = 1 / 200;     // a found merge: 1 in 200 a named moment, at most once a life
 export function hashKey(str) { let h = 1779033703 ^ str.length; for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); } h = Math.imul(h ^ (h >>> 16), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); return (h ^ (h >>> 16)) >>> 0; }
 export const unitOf = str => (hashKey(String(str)) + 0.5) / 4294967296;
@@ -479,8 +517,9 @@ export function familyRead(ix, entries, fam) {
 }
 
 // ---- 10. effects in play: the capability profile and the caps (step 6, §2.3, §2.4, §3.6; D-180) ------------------------
-// held: [{ id, lv }], every skill a person holds (a family's rungs below his top one at Lv 10, the top one at its level,
-// §15.2). gather() lists every passive effect's sources by slot. Perks are not gathered: the adapter serves them from
+// held: [{ id, lv, line? }], every skill a person holds: of a family's ladder only his top rung, at its level (order 95,
+// D-192: an evolved rung became the next and is gone), with `line`, the rungs it evolved from, whose effects it carries
+// on (gather: lineEffects). gather() lists every passive effect's sources by slot. Perks are not gathered: the adapter serves them from
 // the read of their key, as the release did (perkRows). trigger and active effects are listed, not summed: they act in
 // their moment (steps 7 and 11).
 // One step of blunder or surge is half a deviation of judgment or will (7.5 points on attempt()'s scale of 100 and 15).
@@ -488,17 +527,28 @@ export const STEP_MIND = 7.5;
 // one step of resisting: a tenth off a wound's damage (the fighter's woundRes), a fifth off a foe's stare (fear), a tenth
 // off an illness's monthly toll; poison and mind wait for the systems that read them
 export const RESIST_STEP = { wounds: 0.1, fear: 0.2, illness: 0.1, poison: 0.1, mind: 0.1 };
-// the held list of a family's ladder at (rank, lv): every rung below at Lv 10, the top at its level
+// the held list of a family's ladder at (rank, lv): the top rung at its level, its line the rungs below it (gone into it)
 export function heldOfRung(ix, fam, rank, lv) {
-  const out = [];
+  const out = [], line = [];
   if (!(lv >= 1) || rankIx(rank) < 0) return out;
   for (const r of RANKS) {
     const id = rungOf(ix, fam, r);
-    if (rankIx(r) < rankIx(rank)) { if (id) out.push({ id, lv: MAX_LV }); continue; }
-    if (r === rank && id) out.push({ id, lv: Math.min(MAX_LV, lv) });
+    if (rankIx(r) < rankIx(rank)) { if (id) line.push(id); continue; }
+    if (r === rank && id) out.push(line.length ? { id, lv: Math.min(MAX_LV, lv), line } : { id, lv: Math.min(MAX_LV, lv) });
     break;
   }
   return out;
+}
+// what a held skill gives with its line: each rung it evolved from at Lv 10, lowest first, then its own level, a later
+// rung's effect replacing an earlier one's of the same slot (effectKey), as a later band replaces an earlier one within a
+// skill: an evolution carries on what the old skill gave, so nothing drops when the old one goes (D-192)
+export function lineEffects(ix, h) {
+  const s = ix.BY[h && h.id]; if (!s) return [];
+  if (!Array.isArray(h.line) || !h.line.length) return effectsAt(s, h.lv);
+  const held = new Map();
+  for (const id of h.line) { const x = ix.BY[id]; if (x) for (const e of effectsAt(x, MAX_LV)) held.set(effectKey(e), e); }
+  for (const e of effectsAt(s, h.lv)) held.set(effectKey(e), e);
+  return [...held.values()];
 }
 // the slot an effect's sources stack in, under one cap
 export function srcKey(e) {
@@ -510,6 +560,7 @@ export function srcKey(e) {
     case 'stat': return 'stat|' + e.stat;
     case 'social': return 'social|' + e.group;
     case 'economy': return 'economy|' + e.of + '|' + (e.tag || 'all');
+    case 'boost': return 'boost|' + e.of + '|' + (e.tag || 'all');
     default: return null;
   }
 }
@@ -517,7 +568,7 @@ export function gather(ix, held) {
   const src = {}, unlocks = [], actives = [], triggers = [];
   for (const h of held || []) {
     const s = ix.BY[h && h.id]; if (!s) continue;
-    for (const e of effectsAt(s, h.lv)) {
+    for (const e of lineEffects(ix, h)) {
       if (e.type === 'perk') continue;
       if (e.type === 'unlock') { if (!unlocks.includes(e.what)) unlocks.push(e.what); continue; }
       if (e.type === 'active') { actives.push({ id: s.id, name: e.name, limit: e.limit || null, do: e.do }); continue; }
@@ -538,6 +589,14 @@ export function capped(ix, what, list) {
 }
 // the sources of several slots together (a check reads its key, its family, its focus, its group and 'all')
 const srcOf = (G, type, tags, part) => { const out = []; for (const t of tags) { const l = G.src[type + '|' + t + (part ? '|' + part : '')]; if (l) out.push(...l); } return out; };
+// titles' share boosts of one kind on these tags (D-192): the sources of every tag together, weighed 1, 1/2, 1/4, 1/8, at
+// most the cap of the rarest title among them (CAP_BOOST, or its vocab's lower boostCap); a malus counts in full, down to
+// minus that cap
+export function boostOn(ix, G, of, tags) {
+  const l = srcOf(G, 'boost|' + of, tags || ['all']); if (!l.length) return 0;
+  const cap = l.reduce((m, x) => Math.max(m, boostCapOf(ix.BY[x[2]])), 0);
+  return stack(l.map(x => x[0]), cap, weightsOf(ix));
+}
 // what a check on these tags gets from edges: at most the cap (+12 up to S, rising above it)
 export const edgeOn = (ix, G, tags) => capped(ix, 'edge', srcOf(G, 'edge', tags));
 // steps of blunder (positive: fewer blunders) or surge on these tags: at most 2 either way (up to S)
@@ -578,7 +637,7 @@ export function aurasOn(ix, G) {
 // the share of worth (that needs the fighter: fightOn); G keeps the sources, for a check's or a fight's own tags.
 export function profile(ix, held) {
   const G = gather(ix, held);
-  const P = { held: (held || []).map(h => ({ id: h.id, lv: h.lv })), edges: {}, fight: {}, blunder: {}, surge: {}, resist: {}, growth: {}, stat: {}, social: {}, economy: {}, auras: aurasOn(ix, G), unlocks: G.unlocks, actives: G.actives, triggers: G.triggers };
+  const P = { held: (held || []).map(h => ({ id: h.id, lv: h.lv })), edges: {}, fight: {}, blunder: {}, surge: {}, resist: {}, growth: {}, stat: {}, social: {}, economy: {}, boost: {}, auras: aurasOn(ix, G), unlocks: G.unlocks, actives: G.actives, triggers: G.triggers };
   const W = weightsOf(ix);
   for (const k of Object.keys(G.src).sort()) {
     const [type, a, b] = k.split('|'), l = G.src[k];
@@ -590,6 +649,7 @@ export function profile(ix, held) {
     else if (type === 'social') P.social[a] = stack(l.map(x => x[0]), Infinity, W);
     else if (type === 'economy') P.economy[a + (b && b !== 'all' ? ':' + b : '')] = stack(l.map(x => x[0]), Infinity, W);
     else if (type === 'fight') { const f = P.fight[a] = P.fight[a] || { atk: 0, def: 0, burst: 0, adapt: 0 }; f[b] = stack(l.map(x => x[0]), Infinity, W); }
+    else if (type === 'boost') P.boost[a + ':' + b] = boostOn(ix, { src: { [k]: l } }, a, [b]);
   }
   P.G = G;
   return P;
@@ -823,7 +883,10 @@ export function npcArts(ix, reads, facts) {
     }
     if (lv > 0) held[s.id] = lv;
   }
-  for (const id of Object.keys(held).sort()) out.push({ id, lv: held[id] });
+  // an art that evolved is gone into its evolution (order 95, D-192): the source of a held evolution is not held
+  const gone = new Set();
+  for (const s of arts) if (held[s.id]) for (const r of s.acquire || []) if (r.via === 'evolve' && held[r.from] >= MAX_LV) gone.add(r.from);
+  for (const id of Object.keys(held).sort()) if (!gone.has(id)) out.push({ id, lv: held[id] });
   return out;
 }
 // the faults of an art of the three kinds (§2.7 check 11; D-186), [] when whole

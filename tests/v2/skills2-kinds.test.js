@@ -172,12 +172,14 @@ test('beings: a monster is born with its arts, mana-based only with magic; a per
   const reads = { sword: 42, melee: 20, unarmed: 13, athletics: 0 };
   const held = E.npcArts(IX, f => reads[f] || 0, { age: 30, stat: { str: 40, wil: 40 } });
   const ids = held.map(x => x.id);
-  assert.ok(ids.includes('quick_cut') && ids.includes('binding_parry') && ids.includes('first_blood') && ids.includes('headbutt'), ids.join());
+  assert.ok(ids.includes('binding_parry') && ids.includes('first_blood') && ids.includes('headbutt'), ids.join());
   assert.ok(!ids.includes('heart_seeker') && !ids.some(id => E.usesMana(by(D0, id))));
-  assert.equal(held.find(x => x.id === 'quick_cut').lv, 10);
   assert.equal(held.find(x => x.id === 'binding_parry').lv, 2);
-  // twin cut by its evolution: quick cut at Lv 10 and the sword at 35
-  assert.ok(ids.includes('twin_cut'));
+  // twin cut by its evolution: quick cut at Lv 10 and the sword at 35; quick cut is gone into it (order 95, D-192)
+  assert.ok(ids.includes('twin_cut') && !ids.includes('quick_cut'), ids.join());
+  // short of twin cut's need, quick cut stays (it has not evolved)
+  const low = E.npcArts(IX, f => ({ sword: 30, melee: 20 })[f] || 0, { age: 30, stat: { str: 40, wil: 40 } }).map(x => x.id);
+  assert.ok(low.includes('quick_cut') && !low.includes('twin_cut'), low.join());
 });
 
 test('words: a share, a cooldown, a cost and a duration said without a number', () => {

@@ -1,0 +1,2531 @@
+{
+ "about": "The classes a person may take at the walls of his level (each hundredth level: 100, 200, 300 ...), as in the manhwa Overgeared and the classes of Reincarnated as a Slime, with names of our own (orders 91 and 92, D-184; src/people/9999975-level/c-classes.core.js). A tree, not a ladder: a class leads to several at the next wall (from), and at each wall a person chooses among the classes his road and skills open (two to four options on a card for the player; A.WHY.decide for anyone else) or takes a stat boost instead. A class ADDS things to do: a technique for duels (tech: an active skill, read as a style's technique), a passive that fires under its condition in a duel (passive), a buff (a stat raised for some months, or blood recovered: an activity), a new way to earn or fight (act: an activity). Every class on a person's road keeps its parts; only the class he holds now gives its effects (the skills adapter's vocabulary, so the caps of skills-v2 §2.4 bind it with his skills and titles). Order 95: classes as in Overgeared, hundreds in the end: the base classes and their advancements here by hand, and the generator below adding advanced and hidden branches on every road; a class's rarity (common, uncommon, rare, epic, legendary, unique: one holder) never changes along its line (an advancement keeps it), while a hidden branch may be rarer, with stronger effects. A class read at seeding (on load, at the first month, at an NPC's first fight) is worn: its parts, no effects, no honour, no points (his worth, from which his level was read, already holds them).",
+ "fieldsNote": "A class: id, rarity (common, uncommon, rare, epic, legendary, unique), line (its advancements keep the line and the rarity), req (hidden conditions: skill [key, min], deed [kind, min], status [list], rung (a house's rank, at least)), name, step (1 the first class on a road, 2, 3), from (the classes it follows; null: a first class), fam (the skill families whose best level must reach need[step]; 'any' is any art of arms), ways (the ways of life it suits, level.json ways), deeds (deed-ledger kinds that speak for it), title (a title he must hold: the Sword Saint), unique (one living holder), rank (its weight as a source in the skills adapter), honour (paid once, on taking it), effects (the skills' vocabulary), tech (an active: a duel technique, the release's fields: base strike/feint/guard/press, weapon, uses, cost, fx, desc), passive (on: lowHp, beast, first, mounted, shieldGuard, foeGuard, late; edge, fury, heal; once a duel for fury and heal), act (an activity: key, name, desc, cat, s, s2, d, coin [lo, hi], hurt, deed) and buff (an activity: key, name, desc, stat, v, months, or heal), hook (a few words for the card at the wall), text (what the class is, in the world's words).",
+ "need": {
+  "1": 35,
+  "2": 55,
+  "3": 72
+ },
+ "arms": [
+  "sword",
+  "spear",
+  "shield",
+  "bow",
+  "melee",
+  "riding",
+  "unarmed"
+ ],
+ "keys": {
+  "sword": [
+   "sword",
+   "dagger",
+   "dualwield"
+  ],
+  "spear": [
+   "spear",
+   "axe"
+  ],
+  "bow": [
+   "bow",
+   "xbow",
+   "throwing"
+  ],
+  "riding": [
+   "riding",
+   "lance",
+   "mounted"
+  ]
+ },
+ "boost": {
+  "points": [
+   6,
+   10,
+   15,
+   20
+  ],
+  "about": "Points to place, by the wall (the first, the second ...; the last number for every wall after), when the person takes the boost or no class is open to him: through A.LV.grant, recorded on the level (lv.gx, lv.gw)."
+ },
+ "passiveWords": {
+  "lowHp": "when your blood runs low",
+  "beast": "against a beast",
+  "first": "in the first exchange",
+  "mounted": "on horseback",
+  "shieldGuard": "when you guard behind a shield",
+  "foeGuard": "when the foe hides behind his guard",
+  "late": "once a fight runs long"
+ },
+ "classes": [
+  {
+   "id": "swordsman",
+   "hook": "a rising cut, and an eye for the first exchange",
+   "name": "Swordsman",
+   "step": 1,
+   "from": [
+    null
+   ],
+   "fam": [
+    "sword"
+   ],
+   "ways": [
+    "soldier",
+    "captain",
+    "lord",
+    "ruler"
+   ],
+   "deeds": [
+    "duel_won"
+   ],
+   "rank": "C",
+   "honour": 2,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "sword",
+     "part": "atk",
+     "v": 1
+    },
+    {
+     "type": "stat",
+     "stat": "spd",
+     "v": 1
+    }
+   ],
+   "tech": {
+    "id": "cl-rising-cut",
+    "name": "Rising Cut",
+    "base": "strike",
+    "weapon": [
+     "sword",
+     "dagger",
+     "dualwield"
+    ],
+    "uses": 2,
+    "cost": 6,
+    "fx": {
+     "edge": 2,
+     "dmg": 1.15
+    },
+    "desc": "Up from the low guard, under his blade and into the arm."
+   },
+   "passive": {
+    "on": "first",
+    "name": "Measured Eye",
+    "edge": 1
+   },
+   "text": "A man the sword has chosen: a cut of his own in a duel, and an eye that measures a foe in the first exchange.",
+   "rarity": "common",
+   "line": "blade"
+  },
+  {
+   "id": "spearman",
+   "hook": "a long thrust that keeps men off",
+   "name": "Spearman",
+   "step": 1,
+   "from": [
+    null
+   ],
+   "fam": [
+    "spear"
+   ],
+   "ways": [
+    "soldier",
+    "captain",
+    "hunter"
+   ],
+   "deeds": [
+    "battle"
+   ],
+   "rank": "C",
+   "honour": 2,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "spear",
+     "part": "def",
+     "v": 1
+    },
+    {
+     "type": "stat",
+     "stat": "str",
+     "v": 1
+    }
+   ],
+   "tech": {
+    "id": "cl-long-thrust",
+    "name": "Long Thrust",
+    "base": "strike",
+    "weapon": [
+     "spear",
+     "axe",
+     "lance"
+    ],
+    "uses": 2,
+    "cost": 6,
+    "fx": {
+     "reach": 2,
+     "pierce": 2
+    },
+    "desc": "All the shaft's length in one step: he is hit before he is near."
+   },
+   "passive": {
+    "on": "foeGuard",
+    "name": "Set Point",
+    "edge": 1
+   },
+   "text": "A spear that keeps men off: a thrust from far out, and a point he cannot hide from behind his guard.",
+   "rarity": "common",
+   "line": "spear"
+  },
+  {
+   "id": "archer",
+   "hook": "a shot before the clash",
+   "name": "Archer",
+   "step": 1,
+   "from": [
+    null
+   ],
+   "fam": [
+    "bow"
+   ],
+   "ways": [
+    "soldier",
+    "hunter"
+   ],
+   "deeds": [
+    "beast_slain"
+   ],
+   "rank": "C",
+   "honour": 2,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "bow",
+     "part": "atk",
+     "v": 1
+    },
+    {
+     "type": "stat",
+     "stat": "ins",
+     "v": 1
+    }
+   ],
+   "tech": {
+    "id": "cl-aimed-shot",
+    "name": "Aimed Shot",
+    "base": "strike",
+    "weapon": [
+     "bow",
+     "xbow",
+     "throwing"
+    ],
+    "uses": 1,
+    "cost": 4,
+    "fx": {
+     "ranged": 1,
+     "edge": 2
+    },
+    "desc": "One breath held, one shaft loosed before he closes."
+   },
+   "passive": {
+    "on": "first",
+    "name": "Eagle Eye",
+    "edge": 2
+   },
+   "text": "The bow as a trade: a shot taken before the clash, and an eye at its sharpest in the first exchange.",
+   "rarity": "common",
+   "line": "bow"
+  },
+  {
+   "id": "shieldbearer",
+   "hook": "a shield that strikes back",
+   "name": "Shieldbearer",
+   "step": 1,
+   "from": [
+    null
+   ],
+   "fam": [
+    "shield"
+   ],
+   "ways": [
+    "soldier",
+    "captain"
+   ],
+   "deeds": [
+    "battle"
+   ],
+   "rank": "C",
+   "honour": 2,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "shield",
+     "part": "def",
+     "v": 1
+    },
+    {
+     "type": "stat",
+     "stat": "sta",
+     "v": 1
+    }
+   ],
+   "tech": {
+    "id": "cl-shield-bash",
+    "name": "Shield Bash",
+    "base": "guard",
+    "weapon": [
+     "shield"
+    ],
+    "uses": 2,
+    "cost": 5,
+    "fx": {
+     "counter": true,
+     "stun": 1
+    },
+    "desc": "Take the blow on the boss and drive the boss into his face."
+   },
+   "passive": {
+    "on": "shieldGuard",
+    "name": "Braced",
+    "edge": 2
+   },
+   "text": "A wall of one: a shield that strikes back, and a guard that holds when he braces behind it.",
+   "rarity": "common",
+   "line": "shield"
+  },
+  {
+   "id": "rider",
+   "hook": "a charge with the horse's weight",
+   "name": "Rider",
+   "step": 1,
+   "from": [
+    null
+   ],
+   "fam": [
+    "riding"
+   ],
+   "ways": [
+    "lord",
+    "captain",
+    "herd"
+   ],
+   "deeds": [
+    "battle"
+   ],
+   "rank": "C",
+   "honour": 2,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "riding",
+     "part": "atk",
+     "v": 1
+    },
+    {
+     "type": "stat",
+     "stat": "spd",
+     "v": 1
+    }
+   ],
+   "tech": {
+    "id": "cl-charge",
+    "name": "Charge",
+    "base": "strike",
+    "weapon": [
+     "mounted",
+     "lance"
+    ],
+    "uses": 1,
+    "cost": 10,
+    "fx": {
+     "mounted": true,
+     "dmg": 1.3
+    },
+    "desc": "The horse's weight behind the point, once, at the gallop."
+   },
+   "passive": {
+    "on": "mounted",
+    "name": "Saddle-Born",
+    "edge": 1
+   },
+   "text": "A fighter on horseback: a charge that carries the horse's weight, and a seat that steadies every blow.",
+   "rarity": "common",
+   "line": "rider"
+  },
+  {
+   "id": "brawler",
+   "hook": "a stunning headbutt, and a skull that holds",
+   "name": "Brawler",
+   "step": 1,
+   "from": [
+    null
+   ],
+   "fam": [
+    "unarmed"
+   ],
+   "ways": [
+    "labor",
+    "common",
+    "miner",
+    "sailor",
+    "pirate",
+    "thief"
+   ],
+   "deeds": [
+    "duel_won"
+   ],
+   "rank": "C",
+   "honour": 1,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "unarmed",
+     "part": "atk",
+     "v": 1
+    },
+    {
+     "type": "stat",
+     "stat": "str",
+     "v": 1
+    }
+   ],
+   "tech": {
+    "id": "cl-headbutt",
+    "name": "Headbutt",
+    "base": "strike",
+    "weapon": [
+     "unarmed"
+    ],
+    "uses": 2,
+    "cost": 5,
+    "fx": {
+     "stun": 1,
+     "nonlethal": true
+    },
+    "desc": "Forehead to the bridge of the nose, and the fight is half over."
+   },
+   "passive": {
+    "on": "lowHp",
+    "name": "Thick Skull",
+    "edge": 2
+   },
+   "text": "Fists and a hard head: a blow that stuns, and a body that fights hardest when it is losing.",
+   "rarity": "common",
+   "line": "fist"
+  },
+  {
+   "id": "hunter",
+   "hook": "a sense for beasts, and game to sell",
+   "name": "Hunter",
+   "step": 1,
+   "from": [
+    null
+   ],
+   "fam": [
+    "survival",
+    "tracking"
+   ],
+   "ways": [
+    "hunter",
+    "herd",
+    "farm"
+   ],
+   "deeds": [
+    "beast_slain"
+   ],
+   "rank": "C",
+   "honour": 1,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "all",
+     "part": "def",
+     "v": 1
+    },
+    {
+     "type": "stat",
+     "stat": "ins",
+     "v": 1
+    }
+   ],
+   "tech": {
+    "id": "cl-hamstring-cut",
+    "name": "Hamstring Cut",
+    "base": "feint",
+    "weapon": [
+     "any"
+    ],
+    "uses": 2,
+    "cost": 5,
+    "fx": {
+     "hamstring": 4
+    },
+    "desc": "Low and behind the knee, the way you take a stag that will not lie down."
+   },
+   "passive": {
+    "on": "beast",
+    "name": "Beast Sense",
+    "edge": 2
+   },
+   "act": {
+    "key": "lvc_market_hunt",
+    "name": "Hunt for the market",
+    "desc": "A week in the woods for meat and hides to sell. Your woodcraft against the season.",
+    "cat": "Wilds",
+    "s": "survival",
+    "s2": "tracking",
+    "d": 40,
+    "coin": [
+     6,
+     22
+    ],
+    "hurt": 4
+   },
+   "text": "The woods as a living: a cut that brings a beast down, a sense for the wild, and game to sell.",
+   "rarity": "common",
+   "line": "hunt"
+  },
+  {
+   "id": "warrior",
+   "hook": "one heavy blow, and a second wind",
+   "name": "Warrior",
+   "step": 1,
+   "from": [
+    null
+   ],
+   "fam": [
+    "any"
+   ],
+   "ways": [
+    "soldier",
+    "mercenary",
+    "captain",
+    "common"
+   ],
+   "deeds": [
+    "battle"
+   ],
+   "rank": "C",
+   "honour": 1,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "all",
+     "part": "atk",
+     "v": 1
+    },
+    {
+     "type": "stat",
+     "stat": "sta",
+     "v": 1
+    }
+   ],
+   "tech": {
+    "id": "cl-heavy-blow",
+    "name": "Heavy Blow",
+    "base": "strike",
+    "weapon": [
+     "any"
+    ],
+    "uses": 1,
+    "cost": 10,
+    "fx": {
+     "dmg": 1.25
+    },
+    "desc": "Everything you have in one blow, and the wind to pay for it."
+   },
+   "passive": {
+    "on": "lowHp",
+    "name": "Second Wind",
+    "heal": 10
+   },
+   "text": "Any weapon, any fight: one blow with all his weight, and breath that comes back when he is nearly down.",
+   "rarity": "common",
+   "line": "war"
+  },
+  {
+   "id": "sword-master",
+   "hook": "a flowing counter, and pupils who pay",
+   "name": "Sword Master",
+   "step": 2,
+   "from": [
+    "swordsman",
+    "warrior"
+   ],
+   "fam": [
+    "sword"
+   ],
+   "ways": [
+    "captain",
+    "lord",
+    "ruler",
+    "soldier"
+   ],
+   "deeds": [
+    "duel_won"
+   ],
+   "rank": "B",
+   "honour": 4,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "sword",
+     "part": "atk",
+     "v": 2
+    },
+    {
+     "type": "edge",
+     "tag": "sword",
+     "v": 2
+    },
+    {
+     "type": "stat",
+     "stat": "spd",
+     "v": 1
+    }
+   ],
+   "tech": {
+    "id": "cl-flowing-counter",
+    "name": "Flowing Counter",
+    "base": "guard",
+    "weapon": [
+     "sword",
+     "dagger",
+     "dualwield"
+    ],
+    "uses": 2,
+    "cost": 6,
+    "fx": {
+     "counter": true,
+     "adapt": 2
+    },
+    "desc": "His blade slides off yours and yours goes on into him."
+   },
+   "act": {
+    "key": "lvc_teach_sword",
+    "name": "Teach the sword for pay",
+    "desc": "Young men of good family pay to be shown the guards. Your sword against your patience.",
+    "cat": "Money",
+    "s": "sword",
+    "s2": "persuasion",
+    "d": 50,
+    "coin": [
+     15,
+     40
+    ],
+    "deed": "pupil_taught"
+   },
+   "text": "The sword as an art to teach: a counter that flows, and pupils who pay to learn it.",
+   "rarity": "common",
+   "line": "blade"
+  },
+  {
+   "id": "duelist",
+   "hook": "a feint that reads him, and fights for a purse",
+   "name": "Duelist",
+   "step": 2,
+   "from": [
+    "swordsman",
+    "brawler",
+    "warrior"
+   ],
+   "fam": [
+    "sword",
+    "melee"
+   ],
+   "ways": [
+    "mercenary",
+    "lord",
+    "captain"
+   ],
+   "deeds": [
+    "duel_won",
+    "champion_beaten"
+   ],
+   "rank": "B",
+   "honour": 3,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "all",
+     "part": "def",
+     "v": 2
+    },
+    {
+     "type": "stat",
+     "stat": "ins",
+     "v": 1
+    }
+   ],
+   "tech": {
+    "id": "cl-read-and-thrust",
+    "name": "Read and Thrust",
+    "base": "feint",
+    "weapon": [
+     "any"
+    ],
+    "uses": 2,
+    "cost": 5,
+    "fx": {
+     "read": true,
+     "edge": 2
+    },
+    "desc": "Show him an opening and watch what he does with it."
+   },
+   "act": {
+    "key": "lvc_purse_fight",
+    "name": "Fight for a purse",
+    "desc": "A wager on first blood behind an inn. The purse is good; so is the other man.",
+    "cat": "Glory",
+    "s": "melee",
+    "s2": "ins",
+    "d": 55,
+    "coin": [
+     20,
+     60
+    ],
+    "hurt": 9
+   },
+   "text": "One man against one: a feint that reads him, and fights for a purse wherever men wager.",
+   "rarity": "uncommon",
+   "line": "duel"
+  },
+  {
+   "id": "blade-dancer",
+   "hook": "cutting steps, and a body kept light",
+   "name": "Blade Dancer",
+   "step": 2,
+   "from": [
+    "swordsman"
+   ],
+   "fam": [
+    "sword"
+   ],
+   "ways": [
+    "minstrel",
+    "thief",
+    "lord",
+    "mercenary"
+   ],
+   "deeds": [
+    "duel_won"
+   ],
+   "rank": "B",
+   "honour": 3,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "sword",
+     "part": "adapt",
+     "v": 2
+    },
+    {
+     "type": "stat",
+     "stat": "spd",
+     "v": 2
+    }
+   ],
+   "tech": {
+    "id": "cl-whirling-steps",
+    "name": "Whirling Steps",
+    "base": "feint",
+    "weapon": [
+     "sword",
+     "dagger",
+     "dualwield"
+    ],
+    "uses": 2,
+    "cost": 4,
+    "fx": {
+     "bleed": 2,
+     "steady": 10
+    },
+    "desc": "Turn inside his blow and open him as you go past."
+   },
+   "buff": {
+    "key": "lvc_dancers_breath",
+    "name": "Dancer's breath",
+    "desc": "A month of the old forms at dawn. Your feet are lighter for a season.",
+    "cat": "Body & mind",
+    "stat": "spd",
+    "v": 3,
+    "months": 3
+   },
+   "text": "The sword as a dance: steps that cut as they turn, and a body kept light by the forms.",
+   "rarity": "uncommon",
+   "line": "dance"
+  },
+  {
+   "id": "spear-master",
+   "hook": "a thrust through mail, and lads to drill",
+   "name": "Spear Master",
+   "step": 2,
+   "from": [
+    "spearman",
+    "warrior"
+   ],
+   "fam": [
+    "spear"
+   ],
+   "ways": [
+    "soldier",
+    "captain"
+   ],
+   "deeds": [
+    "battle"
+   ],
+   "rank": "B",
+   "honour": 4,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "spear",
+     "part": "atk",
+     "v": 2
+    },
+    {
+     "type": "edge",
+     "tag": "spear",
+     "v": 2
+    },
+    {
+     "type": "stat",
+     "stat": "str",
+     "v": 1
+    }
+   ],
+   "tech": {
+    "id": "cl-piercing-line",
+    "name": "Piercing Line",
+    "base": "strike",
+    "weapon": [
+     "spear",
+     "axe",
+     "lance"
+    ],
+    "uses": 2,
+    "cost": 8,
+    "fx": {
+     "pierce": 3,
+     "reach": 2
+    },
+    "desc": "A thrust that goes through mail as if it were wool."
+   },
+   "act": {
+    "key": "lvc_drill_spears",
+    "name": "Drill the young spears",
+    "desc": "A village pays you to make its lads into a line that holds. Your spear and your voice.",
+    "cat": "Money",
+    "s": "spear",
+    "s2": "command",
+    "d": 50,
+    "coin": [
+     12,
+     35
+    ],
+    "deed": "pupil_taught"
+   },
+   "text": "The spear as a line of men: a thrust through mail, and lads drilled into a wall for pay.",
+   "rarity": "common",
+   "line": "spear"
+  },
+  {
+   "id": "lancer",
+   "hook": "a couched charge that unhorses",
+   "name": "Lancer",
+   "step": 2,
+   "from": [
+    "spearman",
+    "rider"
+   ],
+   "fam": [
+    "riding",
+    "spear"
+   ],
+   "ways": [
+    "lord",
+    "captain"
+   ],
+   "deeds": [
+    "battle",
+    "battle_won"
+   ],
+   "rank": "B",
+   "honour": 4,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "riding",
+     "part": "atk",
+     "v": 2
+    },
+    {
+     "type": "stat",
+     "stat": "str",
+     "v": 1
+    }
+   ],
+   "tech": {
+    "id": "cl-couched-lance",
+    "name": "Couched Lance",
+    "base": "strike",
+    "weapon": [
+     "mounted",
+     "lance"
+    ],
+    "uses": 1,
+    "cost": 12,
+    "fx": {
+     "mounted": true,
+     "dmg": 1.5,
+     "knockdown": true
+    },
+    "desc": "The lance under the arm, the horse at full stretch, and him on the ground."
+   },
+   "passive": {
+    "on": "first",
+    "name": "Momentum",
+    "edge": 2
+   },
+   "text": "Horse and lance as one weapon: a couched charge that unhorses, and a first pass that decides.",
+   "rarity": "uncommon",
+   "line": "lance"
+  },
+  {
+   "id": "marksman",
+   "hook": "a shot for the gap in the plates",
+   "name": "Marksman",
+   "step": 2,
+   "from": [
+    "archer"
+   ],
+   "fam": [
+    "bow"
+   ],
+   "ways": [
+    "soldier",
+    "hunter"
+   ],
+   "deeds": [
+    "beast_slain",
+    "battle"
+   ],
+   "rank": "B",
+   "honour": 3,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "bow",
+     "part": "atk",
+     "v": 2
+    },
+    {
+     "type": "edge",
+     "tag": "bow",
+     "v": 2
+    },
+    {
+     "type": "stat",
+     "stat": "ins",
+     "v": 1
+    }
+   ],
+   "tech": {
+    "id": "cl-heart-shot",
+    "name": "Heart Shot",
+    "base": "strike",
+    "weapon": [
+     "bow",
+     "xbow",
+     "throwing"
+    ],
+    "uses": 1,
+    "cost": 4,
+    "fx": {
+     "ranged": 1,
+     "pierce": 3,
+     "edge": 1
+    },
+    "desc": "The shaft that finds the gap between the plates."
+   },
+   "buff": {
+    "key": "lvc_steady_breath",
+    "name": "Steady breath",
+    "desc": "Long hours at the butts, breathing out on the loose. Your eye is keener for a season.",
+    "cat": "Body & mind",
+    "stat": "ins",
+    "v": 3,
+    "months": 3
+   },
+   "text": "The shot that does not miss: an arrow for the gap in the armour, and an eye kept keen by practice.",
+   "rarity": "common",
+   "line": "bow"
+  },
+  {
+   "id": "ranger",
+   "hook": "fights on bad ground, and roads to watch",
+   "name": "Ranger",
+   "step": 2,
+   "from": [
+    "archer",
+    "hunter"
+   ],
+   "fam": [
+    "bow",
+    "survival",
+    "tracking"
+   ],
+   "ways": [
+    "hunter",
+    "soldier"
+   ],
+   "deeds": [
+    "beast_slain"
+   ],
+   "rank": "B",
+   "honour": 3,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "all",
+     "part": "adapt",
+     "v": 2
+    },
+    {
+     "type": "stat",
+     "stat": "sta",
+     "v": 1
+    }
+   ],
+   "tech": {
+    "id": "cl-snare-shot",
+    "name": "Snare Shot",
+    "base": "feint",
+    "weapon": [
+     "any"
+    ],
+    "uses": 2,
+    "cost": 4,
+    "fx": {
+     "hamstring": 5,
+     "tire": 10
+    },
+    "desc": "Drive him where the ground is bad and take his legs there."
+   },
+   "act": {
+    "key": "lvc_range_roads",
+    "name": "Range the wild roads",
+    "desc": "A lord pays for the roads through his woods to be watched. Your eyes against what hides there.",
+    "cat": "Wilds",
+    "s": "tracking",
+    "s2": "bow",
+    "d": 50,
+    "coin": [
+     15,
+     40
+    ],
+    "hurt": 6
+   },
+   "text": "The wild roads as a beat: a fight on ground of his choosing, and lords who pay for their roads watched.",
+   "rarity": "uncommon",
+   "line": "ranger"
+  },
+  {
+   "id": "guardian",
+   "hook": "wounds bound, and carts to guard",
+   "name": "Guardian",
+   "step": 2,
+   "from": [
+    "shieldbearer",
+    "warrior"
+   ],
+   "fam": [
+    "shield"
+   ],
+   "ways": [
+    "soldier",
+    "captain",
+    "servant"
+   ],
+   "deeds": [
+    "battle",
+    "siege_held"
+   ],
+   "rank": "B",
+   "honour": 4,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "shield",
+     "part": "def",
+     "v": 2
+    },
+    {
+     "type": "resist",
+     "of": "wounds",
+     "v": 1
+    },
+    {
+     "type": "stat",
+     "stat": "sta",
+     "v": 1
+    }
+   ],
+   "buff": {
+    "key": "lvc_second_wind",
+    "name": "Bind your hurts",
+    "desc": "A day of rest, clean linen and the old soldier's salve. Blood comes back.",
+    "cat": "Health",
+    "heal": 18
+   },
+   "act": {
+    "key": "lvc_guard_road",
+    "name": "Guard a merchant's road",
+    "desc": "A trader's carts, a long road and men who would like what is in them. Your shield for his coin.",
+    "cat": "Money",
+    "s": "shield",
+    "s2": "ins",
+    "d": 50,
+    "coin": [
+     15,
+     45
+    ],
+    "hurt": 8
+   },
+   "text": "A shield hired out: wounds bound the old soldier's way, and carts kept safe on the roads for pay.",
+   "rarity": "common",
+   "line": "shield"
+  },
+  {
+   "id": "warden",
+   "hook": "a stand at the gate that outlasts",
+   "name": "Warden",
+   "step": 2,
+   "from": [
+    "shieldbearer",
+    "rider"
+   ],
+   "fam": [
+    "shield",
+    "riding"
+   ],
+   "ways": [
+    "lord",
+    "captain",
+    "soldier"
+   ],
+   "deeds": [
+    "siege_held",
+    "battle"
+   ],
+   "rank": "B",
+   "honour": 4,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "all",
+     "part": "def",
+     "v": 2
+    },
+    {
+     "type": "resist",
+     "of": "fear",
+     "v": 1
+    },
+    {
+     "type": "stat",
+     "stat": "wil",
+     "v": 1
+    }
+   ],
+   "tech": {
+    "id": "cl-shield-wall",
+    "name": "Hold the Gate",
+    "base": "guard",
+    "weapon": [
+     "any"
+    ],
+    "uses": 2,
+    "cost": 0,
+    "fx": {
+     "steady": 15,
+     "edge": 1
+    },
+    "desc": "Stand in the gap and let him tire himself on you."
+   },
+   "passive": {
+    "on": "late",
+    "name": "Hold Fast",
+    "edge": 2
+   },
+   "text": "The one who holds the gate: a stand that gets his breath back, and a guard that grows as the fight runs on.",
+   "rarity": "uncommon",
+   "line": "warden"
+  },
+  {
+   "id": "pit-fighter",
+   "hook": "a clinch that strips a weapon, and the pits",
+   "name": "Pit Fighter",
+   "step": 2,
+   "from": [
+    "brawler"
+   ],
+   "fam": [
+    "unarmed"
+   ],
+   "ways": [
+    "labor",
+    "common",
+    "thief",
+    "pirate",
+    "mercenary"
+   ],
+   "deeds": [
+    "duel_won"
+   ],
+   "rank": "B",
+   "honour": 2,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "unarmed",
+     "part": "atk",
+     "v": 2
+    },
+    {
+     "type": "resist",
+     "of": "wounds",
+     "v": 1
+    },
+    {
+     "type": "stat",
+     "stat": "str",
+     "v": 1
+    }
+   ],
+   "tech": {
+    "id": "cl-clinch",
+    "name": "Clinch",
+    "base": "feint",
+    "weapon": [
+     "any"
+    ],
+    "uses": 2,
+    "cost": 6,
+    "fx": {
+     "disarm": 8,
+     "tire": 12
+    },
+    "desc": "Get inside his arms, lean on him and wrench the weapon."
+   },
+   "act": {
+    "key": "lvc_pit_fights",
+    "name": "Fight in the pits",
+    "desc": "Bare fists in a ring of shouting men, and a cut of the wagers. You may come home with less teeth.",
+    "cat": "Glory",
+    "s": "unarmed",
+    "s2": "sta",
+    "d": 50,
+    "coin": [
+     10,
+     40
+    ],
+    "hurt": 10
+   },
+   "text": "Fighting as a living: a clinch that strips a weapon, and the pits where men pay to watch.",
+   "rarity": "common",
+   "line": "fist"
+  },
+  {
+   "id": "beastslayer",
+   "hook": "a bleeding stroke, and bounties on beasts",
+   "name": "Beastslayer",
+   "step": 2,
+   "from": [
+    "hunter",
+    "warrior"
+   ],
+   "fam": [
+    "survival",
+    "sword",
+    "spear",
+    "bow"
+   ],
+   "ways": [
+    "hunter",
+    "mercenary"
+   ],
+   "deeds": [
+    "beast_slain",
+    "beast_above"
+   ],
+   "rank": "B",
+   "honour": 4,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "all",
+     "part": "atk",
+     "v": 2
+    },
+    {
+     "type": "resist",
+     "of": "fear",
+     "v": 1
+    },
+    {
+     "type": "stat",
+     "stat": "str",
+     "v": 1
+    }
+   ],
+   "tech": {
+    "id": "cl-gutting-stroke",
+    "name": "Gutting Stroke",
+    "base": "strike",
+    "weapon": [
+     "any"
+    ],
+    "uses": 1,
+    "cost": 8,
+    "fx": {
+     "bleed": 3
+    },
+    "desc": "Open the belly and step back while it bleeds out."
+   },
+   "passive": {
+    "on": "beast",
+    "name": "Hunter's Patience",
+    "edge": 3
+   },
+   "act": {
+    "key": "lvc_beast_bounty",
+    "name": "Take a bounty on a beast",
+    "desc": "A village has lost sheep, then a child. They will pay for the thing's head.",
+    "cat": "Wilds",
+    "s": "survival",
+    "s2": "str",
+    "d": 55,
+    "coin": [
+     25,
+     70
+    ],
+    "hurt": 14
+   },
+   "text": "What preys on men, hunted: a stroke that bleeds a beast, patience against it, and bounties from frightened villages.",
+   "rarity": "uncommon",
+   "line": "beast"
+  },
+  {
+   "id": "berserker",
+   "hook": "a rage when you bleed",
+   "name": "Berserker",
+   "step": 2,
+   "from": [
+    "warrior",
+    "brawler"
+   ],
+   "fam": [
+    "any"
+   ],
+   "ways": [
+    "soldier",
+    "mercenary",
+    "pirate",
+    "common"
+   ],
+   "deeds": [
+    "battle",
+    "battle_wounded"
+   ],
+   "rank": "B",
+   "honour": 2,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "all",
+     "part": "burst",
+     "v": 2
+    },
+    {
+     "type": "stat",
+     "stat": "str",
+     "v": 2
+    }
+   ],
+   "passive": {
+    "on": "lowHp",
+    "name": "Blood Rage",
+    "edge": 2,
+    "fury": true
+   },
+   "buff": {
+    "key": "lvc_war_cry",
+    "name": "Work yourself to a fury",
+    "desc": "Days of hard labour and harder drink until the anger sits just under the skin. Stronger for a while.",
+    "cat": "Body & mind",
+    "stat": "str",
+    "v": 3,
+    "months": 2
+   },
+   "text": "Rage as a weapon: a fury that wakes when he bleeds, and strength he can call up for a season.",
+   "rarity": "uncommon",
+   "line": "rage"
+  },
+  {
+   "id": "sword-saint",
+   "hook": "the cut there is no guard for",
+   "name": "Sword Saint",
+   "step": 3,
+   "from": [
+    "sword-master",
+    "duelist",
+    "blade-dancer"
+   ],
+   "fam": [
+    "sword"
+   ],
+   "title": "sword-saint",
+   "unique": true,
+   "ways": [
+    "captain",
+    "lord",
+    "ruler",
+    "mercenary"
+   ],
+   "deeds": [
+    "duel_won",
+    "champion_beaten"
+   ],
+   "rank": "S",
+   "honour": 12,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "sword",
+     "part": "atk",
+     "v": 3
+    },
+    {
+     "type": "fight",
+     "tag": "sword",
+     "part": "def",
+     "v": 3
+    },
+    {
+     "type": "edge",
+     "tag": "sword",
+     "v": 4
+    },
+    {
+     "type": "stat",
+     "stat": "spd",
+     "v": 2
+    }
+   ],
+   "tech": {
+    "id": "cl-heavens-edge",
+    "name": "Heaven's Edge",
+    "base": "strike",
+    "weapon": [
+     "sword",
+     "dagger",
+     "dualwield"
+    ],
+    "uses": 1,
+    "cost": 10,
+    "fx": {
+     "edge": 4,
+     "dmg": 1.5,
+     "pierce": 3
+    },
+    "desc": "The cut there is no guard for, because it is already through."
+   },
+   "passive": {
+    "on": "foeGuard",
+    "name": "No Guard Holds",
+    "edge": 3
+   },
+   "text": "The strongest art of one man against one foe the world has known. One living holder, and he must bear the Saint's name.",
+   "rarity": "unique",
+   "line": "saint"
+  },
+  {
+   "id": "blade-master",
+   "hook": "a thousand small cuts, and a hall of your own",
+   "name": "Blade Master",
+   "step": 3,
+   "from": [
+    "sword-master",
+    "duelist",
+    "blade-dancer"
+   ],
+   "fam": [
+    "sword"
+   ],
+   "ways": [
+    "captain",
+    "lord",
+    "ruler",
+    "mercenary"
+   ],
+   "deeds": [
+    "duel_won"
+   ],
+   "rank": "A",
+   "honour": 8,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "sword",
+     "part": "atk",
+     "v": 3
+    },
+    {
+     "type": "edge",
+     "tag": "sword",
+     "v": 3
+    },
+    {
+     "type": "stat",
+     "stat": "spd",
+     "v": 2
+    }
+   ],
+   "tech": {
+    "id": "cl-thousand-cuts",
+    "name": "Thousand Cuts",
+    "base": "feint",
+    "weapon": [
+     "sword",
+     "dagger",
+     "dualwield"
+    ],
+    "uses": 1,
+    "cost": 8,
+    "fx": {
+     "bleed": 3,
+     "edge": 2
+    },
+    "desc": "Not one great blow: twenty small ones, each opening him a little more."
+   },
+   "act": {
+    "key": "lvc_fencing_hall",
+    "name": "Keep a fencing hall",
+    "desc": "Your own hall, your own pupils, and their fathers' silver. Your name has to fill it.",
+    "cat": "Money",
+    "s": "sword",
+    "s2": "persuasion",
+    "d": 62,
+    "coin": [
+     40,
+     110
+    ],
+    "deed": "pupil_taught"
+   },
+   "text": "A master of masters: cuts that open a man by inches, and a hall of his own full of paying pupils.",
+   "rarity": "common",
+   "line": "blade"
+  },
+  {
+   "id": "dragon-spear",
+   "hook": "a thrust no scale stops",
+   "name": "Dragon Spear",
+   "step": 3,
+   "from": [
+    "spear-master",
+    "lancer"
+   ],
+   "fam": [
+    "spear",
+    "riding"
+   ],
+   "ways": [
+    "captain",
+    "lord",
+    "soldier"
+   ],
+   "deeds": [
+    "battle_won",
+    "beast_above"
+   ],
+   "rank": "A",
+   "honour": 8,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "spear",
+     "part": "atk",
+     "v": 3
+    },
+    {
+     "type": "resist",
+     "of": "fear",
+     "v": 2
+    },
+    {
+     "type": "stat",
+     "stat": "str",
+     "v": 2
+    }
+   ],
+   "tech": {
+    "id": "cl-dragon-thrust",
+    "name": "Dragon Thrust",
+    "base": "strike",
+    "weapon": [
+     "spear",
+     "axe",
+     "lance",
+     "mounted"
+    ],
+    "uses": 1,
+    "cost": 12,
+    "fx": {
+     "pierce": 4,
+     "dmg": 1.4,
+     "reach": 2
+    },
+    "desc": "The thrust they say went through a wyrm's scale and out of its back."
+   },
+   "passive": {
+    "on": "late",
+    "name": "Unshaken",
+    "edge": 3
+   },
+   "text": "A spear fit for a dragon: a thrust no scale or plate stops, and a nerve that hardens as the fight runs on.",
+   "rarity": "rare",
+   "line": "dragon"
+  },
+  {
+   "id": "hawkeye",
+   "hook": "two arrows at once",
+   "name": "Hawkeye",
+   "step": 3,
+   "from": [
+    "marksman",
+    "ranger"
+   ],
+   "fam": [
+    "bow"
+   ],
+   "ways": [
+    "hunter",
+    "soldier"
+   ],
+   "deeds": [
+    "beast_slain",
+    "battle"
+   ],
+   "rank": "A",
+   "honour": 7,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "bow",
+     "part": "atk",
+     "v": 3
+    },
+    {
+     "type": "edge",
+     "tag": "bow",
+     "v": 3
+    },
+    {
+     "type": "stat",
+     "stat": "ins",
+     "v": 2
+    }
+   ],
+   "tech": {
+    "id": "cl-twin-arrows",
+    "name": "Twin Arrows",
+    "base": "strike",
+    "weapon": [
+     "bow",
+     "xbow",
+     "throwing"
+    ],
+    "uses": 1,
+    "cost": 6,
+    "fx": {
+     "ranged": 2,
+     "edge": 2
+    },
+    "desc": "Two shafts on the string, and both find him."
+   },
+   "passive": {
+    "on": "first",
+    "name": "Hawk's Patience",
+    "edge": 3
+   },
+   "text": "The bow at its height: two arrows at once, and a first shot that is almost never wasted.",
+   "rarity": "common",
+   "line": "bow"
+  },
+  {
+   "id": "bulwark",
+   "hook": "blood that comes back when you should fall",
+   "name": "Bulwark",
+   "step": 3,
+   "from": [
+    "guardian",
+    "warden"
+   ],
+   "fam": [
+    "shield"
+   ],
+   "ways": [
+    "captain",
+    "soldier",
+    "lord"
+   ],
+   "deeds": [
+    "siege_held",
+    "battle_wounded"
+   ],
+   "rank": "A",
+   "honour": 8,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "all",
+     "part": "def",
+     "v": 3
+    },
+    {
+     "type": "resist",
+     "of": "wounds",
+     "v": 2
+    },
+    {
+     "type": "stat",
+     "stat": "sta",
+     "v": 2
+    }
+   ],
+   "passive": {
+    "on": "lowHp",
+    "name": "Unbreakable",
+    "heal": 25
+   },
+   "buff": {
+    "key": "lvc_iron_body",
+    "name": "Harden the body",
+    "desc": "Cold water, heavy stones and the shield held out at arm's length until dark. Tougher for a season.",
+    "cat": "Body & mind",
+    "stat": "sta",
+    "v": 3,
+    "months": 4
+   },
+   "text": "The man who does not fall: blood that comes back when he should be down, and a body hardened like a wall.",
+   "rarity": "common",
+   "line": "shield"
+  },
+  {
+   "id": "warlord",
+   "hook": "a last stand, feasts, and lords who pay for your name",
+   "name": "Warlord",
+   "step": 3,
+   "from": [
+    "berserker",
+    "pit-fighter",
+    "beastslayer",
+    "lancer",
+    "warden",
+    "duelist",
+    "guardian"
+   ],
+   "fam": [
+    "any"
+   ],
+   "ways": [
+    "captain",
+    "mercenary",
+    "lord",
+    "ruler"
+   ],
+   "deeds": [
+    "battle_won",
+    "battle"
+   ],
+   "rank": "A",
+   "honour": 6,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "all",
+     "part": "atk",
+     "v": 3
+    },
+    {
+     "type": "social",
+     "group": "soldiers",
+     "v": 4
+    },
+    {
+     "type": "stat",
+     "stat": "wil",
+     "v": 2
+    }
+   ],
+   "passive": {
+    "on": "lowHp",
+    "name": "Last Stand",
+    "edge": 3,
+    "fury": true
+   },
+   "buff": {
+    "key": "lvc_rally",
+    "name": "Hold a war feast",
+    "desc": "Meat, drink and the old stories for every man who fought beside you. They will follow you further for it, and so will your nerve.",
+    "cat": "Body & mind",
+    "stat": "wil",
+    "v": 3,
+    "months": 3
+   },
+   "act": {
+    "key": "lvc_hire_out",
+    "name": "Hire out your sword and your name",
+    "desc": "A lord with a quarrel pays well for a man the soldiers will follow. The work is what you would expect.",
+    "cat": "Money",
+    "s": "command",
+    "s2": "melee",
+    "d": 62,
+    "coin": [
+     50,
+     140
+    ],
+    "hurt": 14
+   },
+   "text": "A man soldiers follow: a last stand that turns a fight, feasts that bind men to him, and lords who pay for his name.",
+   "rarity": "rare",
+   "line": "warlord"
+  },
+  {
+   "id": "oathsworn",
+   "hook": "an oath that holds when the fight runs long, and prayers that close wounds",
+   "name": "Oathsworn",
+   "step": 3,
+   "from": [
+    "warden",
+    "guardian",
+    "lancer",
+    "sword-master"
+   ],
+   "fam": [
+    "shield",
+    "riding",
+    "sword"
+   ],
+   "ways": [
+    "lord",
+    "captain",
+    "clergy",
+    "ruler"
+   ],
+   "deeds": [
+    "faith_kept",
+    "siege_held",
+    "battle"
+   ],
+   "rank": "A",
+   "honour": 10,
+   "effects": [
+    {
+     "type": "resist",
+     "of": "fear",
+     "v": 2
+    },
+    {
+     "type": "social",
+     "group": "faith",
+     "v": 4
+    },
+    {
+     "type": "stat",
+     "stat": "wil",
+     "v": 2
+    }
+   ],
+   "passive": {
+    "on": "late",
+    "name": "Oath Unbroken",
+    "edge": 3
+   },
+   "buff": {
+    "key": "lvc_pray_wounds",
+    "name": "Keep a vigil over your wounds",
+    "desc": "A night on your knees in the chapel, and the priest's hands on the cuts. You rise mended.",
+    "cat": "Faith",
+    "heal": 25
+   },
+   "act": {
+    "key": "lvc_vow_quest",
+    "name": "Ride a vow for a lord",
+    "desc": "A lord's oath to keep in his name: a wrong to right, far off. He pays the one who comes back.",
+    "cat": "Glory",
+    "s": "riding",
+    "s2": "wil",
+    "d": 62,
+    "coin": [
+     40,
+     120
+    ],
+    "hurt": 12
+   },
+   "text": "More than a knight: a sworn man whose oath holds when other men break, who prays his wounds shut, and rides a lord's vows.",
+   "rarity": "epic",
+   "line": "oath"
+  },
+  {
+   "id": "banner-rider",
+   "hook": "a charge that breaks the line, and riders who follow",
+   "name": "Banner Rider",
+   "step": 3,
+   "from": [
+    "lancer",
+    "warden",
+    "guardian",
+    "sword-master",
+    "spear-master"
+   ],
+   "fam": [
+    "riding",
+    "spear",
+    "sword",
+    "shield"
+   ],
+   "ways": [
+    "lord",
+    "captain",
+    "ruler",
+    "soldier"
+   ],
+   "deeds": [
+    "battle_won",
+    "battle"
+   ],
+   "rank": "A",
+   "honour": 9,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "riding",
+     "part": "atk",
+     "v": 3
+    },
+    {
+     "type": "social",
+     "group": "soldiers",
+     "v": 4
+    },
+    {
+     "type": "stat",
+     "stat": "str",
+     "v": 2
+    }
+   ],
+   "tech": {
+    "id": "cl-banner-charge",
+    "name": "Banner Charge",
+    "base": "strike",
+    "weapon": [
+     "any"
+    ],
+    "uses": 1,
+    "cost": 12,
+    "fx": {
+     "edge": 2,
+     "dmg": 1.3,
+     "knockdown": true
+    },
+    "desc": "The banner goes forward and you go with it, through him."
+   },
+   "passive": {
+    "on": "first",
+    "name": "Rally to Me",
+    "edge": 2
+   },
+   "act": {
+    "key": "lvc_lead_raid",
+    "name": "Lead a lord's riders on a raid",
+    "desc": "A lord lends you his riders and his quarrel. Bring them back with the cattle, and most of them alive.",
+    "cat": "Money",
+    "s": "command",
+    "s2": "riding",
+    "d": 62,
+    "coin": [
+     50,
+     140
+    ],
+    "hurt": 12
+   },
+   "text": "More than a knight: the man the riders follow, with a charge that breaks a line and raids led in a lord's name.",
+   "rarity": "rare",
+   "line": "banner"
+  },
+  {
+   "id": "wild-hunter",
+   "hook": "a hunter of monsters, for monstrous bounties",
+   "name": "Wild Hunter",
+   "step": 3,
+   "from": [
+    "beastslayer",
+    "ranger"
+   ],
+   "fam": [
+    "survival",
+    "tracking",
+    "bow"
+   ],
+   "ways": [
+    "hunter"
+   ],
+   "deeds": [
+    "beast_slain",
+    "beast_above",
+    "dragon_slain"
+   ],
+   "rank": "A",
+   "honour": 7,
+   "effects": [
+    {
+     "type": "fight",
+     "tag": "all",
+     "part": "atk",
+     "v": 2
+    },
+    {
+     "type": "resist",
+     "of": "fear",
+     "v": 2
+    },
+    {
+     "type": "stat",
+     "stat": "ins",
+     "v": 2
+    }
+   ],
+   "tech": {
+    "id": "cl-killing-snare",
+    "name": "Killing Snare",
+    "base": "feint",
+    "weapon": [
+     "any"
+    ],
+    "uses": 1,
+    "cost": 6,
+    "fx": {
+     "hamstring": 6,
+     "bleed": 2
+    },
+    "desc": "Lead it where the trap was laid three days ago."
+   },
+   "passive": {
+    "on": "beast",
+    "name": "Old Enemy",
+    "edge": 4
+   },
+   "act": {
+    "key": "lvc_great_hunt",
+    "name": "Hunt what others will not",
+    "desc": "Things in the high woods that eat bears. Lords pay a fortune for their heads, and bury the men who fail.",
+    "cat": "Wilds",
+    "s": "survival",
+    "s2": "bow",
+    "d": 65,
+    "coin": [
+     60,
+     160
+    ],
+    "hurt": 18
+   },
+   "text": "The hunter of monsters: a snare laid days ahead, an old enmity with every beast, and bounties no one else will take.",
+   "rarity": "uncommon",
+   "line": "beast"
+  }
+ ],
+ "rarities": [
+  "common",
+  "uncommon",
+  "rare",
+  "epic",
+  "legendary",
+  "unique"
+ ],
+ "generator": {
+  "about": "Advanced and hidden branches made on every road at load (c-classes.core.js CL.generate), each a class like the hand-made ones: an id, a name from the template's prefix and the road's noun, a rarity its line keeps, hidden conditions, and parts of its own (a technique named for the road, and the template's passive, buff or work). step 2 templates follow the road's base class and have an advancement at step 3 (the same line and rarity: '<name> Master', with a further part); step 3 templates follow any step-2 class off the road's base.",
+  "rarityStat": {
+   "common": 1,
+   "uncommon": 1,
+   "rare": 2,
+   "epic": 2,
+   "legendary": 3,
+   "unique": 3
+  },
+  "rarityFight": {
+   "common": 1,
+   "uncommon": 2,
+   "rare": 2,
+   "epic": 3,
+   "legendary": 3,
+   "unique": 4
+  },
+  "rarityHonour": {
+   "common": 2,
+   "uncommon": 3,
+   "rare": 5,
+   "epic": 8,
+   "legendary": 12,
+   "unique": 15
+  },
+  "roads": [
+   {
+    "fam": "sword",
+    "noun": "Blade",
+    "base": "swordsman",
+    "weapon": [
+     "sword",
+     "dagger",
+     "dualwield"
+    ],
+    "move": "Cut"
+   },
+   {
+    "fam": "spear",
+    "noun": "Spear",
+    "base": "spearman",
+    "weapon": [
+     "spear",
+     "axe",
+     "lance"
+    ],
+    "move": "Thrust"
+   },
+   {
+    "fam": "bow",
+    "noun": "Bow",
+    "base": "archer",
+    "weapon": [
+     "bow",
+     "xbow",
+     "throwing"
+    ],
+    "move": "Shot"
+   },
+   {
+    "fam": "shield",
+    "noun": "Shield",
+    "base": "shieldbearer",
+    "weapon": [
+     "shield"
+    ],
+    "move": "Bash"
+   },
+   {
+    "fam": "riding",
+    "noun": "Rider",
+    "base": "rider",
+    "weapon": [
+     "mounted",
+     "lance"
+    ],
+    "move": "Charge"
+   },
+   {
+    "fam": "unarmed",
+    "noun": "Fist",
+    "base": "brawler",
+    "weapon": [
+     "unarmed"
+    ],
+    "move": "Blow"
+   },
+   {
+    "fam": "survival",
+    "noun": "Stalker",
+    "base": "hunter",
+    "weapon": [
+     "any"
+    ],
+    "move": "Snare"
+   },
+   {
+    "fam": "any",
+    "noun": "Warrior",
+    "base": "warrior",
+    "weapon": [
+     "any"
+    ],
+    "move": "Stroke"
+   },
+   {
+    "fam": "melee",
+    "noun": "Fighter",
+    "base": "warrior",
+    "weapon": [
+     "any"
+    ],
+    "move": "Strike"
+   }
+  ],
+  "templates": [
+   {
+    "key": "storm",
+    "prefix": "Storm",
+    "rarity": "uncommon",
+    "step": 2,
+    "req": {
+     "skill": [
+      "athletics",
+      30
+     ]
+    },
+    "stat": "spd",
+    "part": "atk",
+    "tech": {
+     "base": "strike",
+     "uses": 2,
+     "cost": 6,
+     "fx": {
+      "edge": 2,
+      "steady": 8
+     },
+     "desc": "Fast as weather, and as hard to see coming."
+    },
+    "passive": {
+     "on": "first",
+     "name": "Storm Front",
+     "edge": 1
+    },
+    "master": {
+     "tech": {
+      "name": "Storm Break",
+      "base": "strike",
+      "uses": 1,
+      "cost": 10,
+      "fx": {
+       "edge": 3,
+       "knockdown": true
+      },
+      "desc": "Everything at once, like a squall off the sea."
+     },
+     "passive": {
+      "on": "late",
+      "name": "Eye of the Storm",
+      "edge": 2
+     }
+    },
+    "hook": "speed like weather, and a first exchange that is yours",
+    "text": "A {noun} as quick as a squall: an opening move that wins the first exchange."
+   },
+   {
+    "key": "iron",
+    "prefix": "Iron",
+    "rarity": "uncommon",
+    "step": 2,
+    "req": {
+     "deed": [
+      "wound_serious",
+      2
+     ]
+    },
+    "stat": "sta",
+    "part": "def",
+    "passive": {
+     "on": "lowHp",
+     "name": "Iron Will",
+     "heal": 12
+    },
+    "buff": {
+     "name": "Temper the body",
+     "desc": "Cold water, heavy work and old scars stretched each morning. Tougher for a season.",
+     "cat": "Body & mind",
+     "stat": "sta",
+     "v": 2,
+     "months": 3
+    },
+    "master": {
+     "tech": {
+      "name": "Iron Answer",
+      "base": "guard",
+      "uses": 2,
+      "cost": 4,
+      "fx": {
+       "counter": true,
+       "steady": 10
+      },
+      "desc": "Take it on the scar and give it back."
+     }
+    },
+    "hook": "blood that comes back, and a body tempered like iron",
+    "text": "A {noun} hardened by wounds: blood that returns when he is near the end, and a body he tempers."
+   },
+   {
+    "key": "shadow",
+    "prefix": "Shadow",
+    "rarity": "rare",
+    "step": 2,
+    "req": {
+     "skill": [
+      "stealth",
+      40
+     ]
+    },
+    "stat": "ins",
+    "part": "atk",
+    "tech": {
+     "base": "feint",
+     "uses": 2,
+     "cost": 5,
+     "fx": {
+      "read": true,
+      "edge": 2,
+      "bleed": 1
+     },
+     "desc": "From where he was not looking."
+    },
+    "act": {
+     "name": "Take a quiet contract",
+     "desc": "A purse, a name, and no questions. The work is quiet, and so are the men who fail at it.",
+     "cat": "Intrigue",
+     "s": "stealth",
+     "s2": "ins",
+     "d": 55,
+     "coin": [
+      20,
+      60
+     ],
+     "hurt": 9
+    },
+    "master": {
+     "tech": {
+      "name": "Unseen Strike",
+      "base": "feint",
+      "uses": 1,
+      "cost": 8,
+      "fx": {
+       "edge": 3,
+       "dmg": 1.2
+      },
+      "desc": "He never sees the blow that ends it."
+     },
+     "passive": {
+      "on": "first",
+      "name": "First From the Dark",
+      "edge": 2
+     }
+    },
+    "hook": "a blow from where he is not looking, and quiet contracts",
+    "text": "A {noun} of the dark: a feint from nowhere, and work done for a purse and no questions."
+   },
+   {
+    "key": "wolf",
+    "prefix": "Wolf",
+    "rarity": "uncommon",
+    "step": 2,
+    "req": {
+     "deed": [
+      "beast_slain",
+      3
+     ]
+    },
+    "stat": "ins",
+    "part": "atk",
+    "tech": {
+     "base": "strike",
+     "uses": 2,
+     "cost": 6,
+     "fx": {
+      "bleed": 2
+     },
+     "desc": "Low and tearing, the way the pack takes a deer."
+    },
+    "passive": {
+     "on": "beast",
+     "name": "Pack Sense",
+     "edge": 2
+    },
+    "master": {
+     "act": {
+      "name": "Clear a wolf-run for a village",
+      "desc": "Sheep gone, a shepherd's boy gone. The headman pays for a quiet hillside.",
+      "cat": "Wilds",
+      "s": "survival",
+      "s2": "ins",
+      "d": 55,
+      "coin": [
+       20,
+       55
+      ],
+      "hurt": 10
+     },
+     "passive": {
+      "on": "beast",
+      "name": "Leader of the Pack",
+      "edge": 3
+     }
+    },
+    "hook": "a tearing blow, and a sense for beasts",
+    "text": "A {noun} who hunts like the pack: a tearing blow and an old sense for what prowls."
+   },
+   {
+    "key": "holy",
+    "prefix": "Holy",
+    "rarity": "rare",
+    "step": 2,
+    "req": {
+     "skill": [
+      "faith",
+      45
+     ]
+    },
+    "stat": "wil",
+    "part": "def",
+    "buff": {
+     "name": "Pray over your wounds",
+     "desc": "A night on your knees and the old words over every cut. You rise mended.",
+     "cat": "Faith",
+     "heal": 15
+    },
+    "passive": {
+     "on": "late",
+     "name": "Faith Holds",
+     "edge": 2
+    },
+    "master": {
+     "tech": {
+      "name": "Judgement",
+      "base": "strike",
+      "uses": 1,
+      "cost": 10,
+      "fx": {
+       "edge": 2,
+       "dmg": 1.3
+      },
+      "desc": "Struck in the name of what he believes, and it lands like it."
+     }
+    },
+    "hook": "prayers that close wounds, and a faith that holds",
+    "text": "A {noun} of the faith: wounds closed by prayer, and a nerve that holds when the fight runs long."
+   },
+   {
+    "key": "blood",
+    "prefix": "Blood",
+    "rarity": "rare",
+    "step": 2,
+    "req": {
+     "deed": [
+      "battle_wounded",
+      2
+     ]
+    },
+    "stat": "str",
+    "part": "burst",
+    "tech": {
+     "base": "strike",
+     "uses": 1,
+     "cost": 14,
+     "fx": {
+      "dmg": 1.35
+     },
+     "desc": "Paid for in his own blood, and worth it."
+    },
+    "passive": {
+     "on": "lowHp",
+     "name": "Blood Fury",
+     "edge": 2,
+     "fury": true
+    },
+    "master": {
+     "buff": {
+      "name": "Feed the rage",
+      "desc": "Old grudges kept warm, and the body driven until the anger answers. Stronger for a while.",
+      "cat": "Body & mind",
+      "stat": "str",
+      "v": 3,
+      "months": 2
+     }
+    },
+    "hook": "a blow paid for in blood, and a fury when you bleed",
+    "text": "A {noun} who fights best bleeding: a costly blow, and a fury that wakes with the wound."
+   },
+   {
+    "key": "crown",
+    "prefix": "Crown",
+    "rarity": "epic",
+    "step": 3,
+    "req": {
+     "status": [
+      "royal",
+      "noble"
+     ],
+     "rung": 5
+    },
+    "stat": "wil",
+    "part": "def",
+    "tech": {
+     "base": "guard",
+     "uses": 2,
+     "cost": 4,
+     "fx": {
+      "counter": true,
+      "edge": 2
+     },
+     "desc": "Taught by masters a king pays for, and it shows."
+    },
+    "passive": {
+     "on": "foeGuard",
+     "name": "Born to Command",
+     "edge": 3
+    },
+    "act": {
+     "name": "Teach the young of a great house",
+     "desc": "A duke's sons, a royal ward. They pay in silver and in favour; they are not easy pupils.",
+     "cat": "Money",
+     "s": "persuasion",
+     "s2": "wil",
+     "d": 62,
+     "coin": [
+      40,
+      120
+     ],
+     "deed": "pupil_taught"
+    },
+    "hook": "a royal master's guard, and great houses' sons to teach",
+    "text": "A {noun} of a great house: arts no common master teaches, and the young of the great to teach in turn."
+   },
+   {
+    "key": "wyrm",
+    "prefix": "Wyrm",
+    "rarity": "legendary",
+    "step": 3,
+    "req": {
+     "deed": [
+      "beast_above",
+      5
+     ]
+    },
+    "stat": "str",
+    "part": "atk",
+    "tech": {
+     "base": "strike",
+     "uses": 1,
+     "cost": 12,
+     "fx": {
+      "pierce": 4,
+      "dmg": 1.4
+     },
+     "desc": "The blow they say went through dragon scale."
+    },
+    "passive": {
+     "on": "beast",
+     "name": "Wyrmsbane",
+     "edge": 5
+    },
+    "hook": "a blow through scale, and a bane to every beast",
+    "text": "A {noun} who has killed what should have killed him, many times: a blow through scale, and every beast his old enemy."
+   }
+  ]
+ }
+}

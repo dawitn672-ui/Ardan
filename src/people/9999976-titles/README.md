@@ -10,8 +10,9 @@
   stay posts (`999990-posts`, one holder a post).
 - **Hidden requirements.** `requires` and `watch` are read only by this folder and the validator; no screen prints a
   condition or a count (the validator fails any `src/ui/` or `*view*.core.js` file reading them; `ttHidden` and `ttPhone`
-  read the rendered pages). At most a **hint**, a rumour told once a title, a life (`tt_hint`), to someone who has done
-  one of its deeds, kept in Records under "Things you have heard".
+  read the rendered pages). **No hints anywhere** (order 92, D-185): no rumour, no card, no line in Records or the log
+  tells of a title before it is earned, and another person's title card shows its name, rarity, gifts and honour, never
+  the deed (D-183's tavern rumours are in `archive/titles-hints/`; `tools/lint-titles.mjs` fails a title carrying a hint).
 - **The deed ledger.** `A.deedDone(p, kind, ctx)` is the one door: `p.dl = { kind: [count, streak, lastYear, best, keys] }`
   (only the kinds `vocab.json` declares, at most eight keys a kind). It breaks the streaks the deed breaks, takes away
   the titles it loses, then checks only the titles watching that kind (an index built once). The sources call it beside
@@ -28,8 +29,19 @@
 - **Stacking without a snowball.** A title's `effects` are the skills' own vocabulary and join their pool as sources of
   rank = its weight (`37-skills2/c-effects`: `SK2.xHeld`, `SK2.addSource`), so the caps of §2.4 bind skills and titles
   together: +12 on a check, +15% of fighting worth, 3 aura steps, 2 blunder or surge steps, 3 steps of resisting. Stats:
-  at most +3 a title (validator), +10 together (`SK2.statOf`), never past the potential by more than 5 (`A.stat`). Honour
-  and renown are paid once, on earning. A title spends at most `perLevel(weight) x 5` (x1.25 unique, x1.5 legendary).
+  at most +2 a title for an uncommon one, +3 rare, +5 legendary, +6 one of a kind (validator, `vocab.json` statMax; order
+  95, D-192), +10 together (`SK2.statOf`), never past the potential by more than 5 (`A.stat`). Honour and renown are paid
+  once, on earning. A title spends at most `perLevel(weight) x 5` (x1.25 unique, x1.5 legendary).
+- **Game changers: share boosts** (order 95, D-192: "titles can be game changers. % boosts and stat boosts"). A title's
+  `boost` effect (`{ type: 'boost', of, tag?, v }`) raises by a share the holder's fighting worth (`fight`, all or a
+  weapon's family: `A.fighterFrom`'s `f.ttb`, added in `A.CR`, so every duel and the honest odds read it), a family's
+  checks (`check`: `A.skillEff`, a share of the read), his post's yearly pay (`income`) or the experience he gains
+  (`growth`: `A.gainXp`, a share more effort). Boosts are not priced in the budget and do not share the skills' caps: a
+  pool of their own, stacked 1, 1/2, 1/4, 1/8, at most the cap of the rarest title among the sources: **uncommon 0.02,
+  rare 0.05, legendary 0.15, one of a kind 0.25** (`vocab.json` boost.cap, under the engine's ceiling `E.CAP_BOOST`); a
+  title's own boosts of one kind at most its cap (validator). Measured (`ttGameChanger`, pairs at near-even odds): Blooded
+  moves a duel's odds about 5 points, the Undefeated about 21, Wyrm-Slayer about 45. Only titles boost: a skill's source
+  has no boost cap.
 - **The great beings.** The legends' and masters' titles moved here (`data/titles/legends.json`); their sheets name
   them by id and `A.POWER` reads each as the object it always was, with the same buffs: every level, power, profile and
   matchup is identical (`ttLegends`, and the powers tests unchanged). Some are born (`born`: a Primordial Archdemon is
@@ -39,8 +51,8 @@
   `reasons` give a decider reasons (`A.WHY.appointGeneral`: the soldiers follow an Undefeated captain).
 - **The player sees** the title borne under his name ("Aldric the Undefeated"), a strip of chips (a gem and a name; a
   press opens its card: rarity, when and why in the world's words, what it gives in words, its honour), Records'
-  "Titles" (held, with "Bear it"; lost; heard of), the same chips on other people's profiles, and a notable card when
-  one is earned (`tt_earned`) or lost (`tt_lost`).
+  "Titles" (held, with "Bear it"; and lost), the same chips on other people's profiles (without the deed), and a notable
+  card when one is earned (`tt_earned`) or lost (`tt_lost`): a title is announced when it comes, never before.
 
 ## Deed sources (guarded calls beside each system's own record)
 
@@ -62,9 +74,9 @@
 
 | File | What |
 | --- | --- |
-| `a-titles.core.js` | `A.TT`: the data (`A.DATA.titles`), the watch index, the census, the ledger (`A.deedDone`), the predicates (`TT.met`), check, grant, earn, lose, the month and the year, the sources, the adapter's sources, social and reasons, hints, the save step |
+| `a-titles.core.js` | `A.TT`: the data (`A.DATA.titles`), the watch index, the census, the ledger (`A.deedDone`), the predicates (`TT.met`), check, grant, earn, lose, the month and the year, the sources, the adapter's sources, social and reasons, the save step |
 | `b-view.core.js` | What a title gives in words, the card's text, the chips (`UI.TTV.chips`, `PF.cardTitles`), Records' section, `ttBear` |
-| `titles.events.js` | `tt_earned`, `tt_lost` (queued, notable), `tt_hint` (a rumour), `tt_faith` (the cell) |
+| `titles.events.js` | `tt_earned`, `tt_lost` (queued, notable), `tt_faith` (the cell) |
 | `data/titles/vocab.json` | rarities, weights, budget, kinds, beings, effect types, social groups, predicates, deed kinds and their sources, the choice table, the deed lines, serious wounds, the strength words |
 | `data/titles/people.json` | the sixteen titles a person may earn (§11.8's fifteen; the Sword Saint is in legends.json) |
 | `data/titles/legends.json` | the great beings' titles (30), moved from `data/legends.json` and `data/power.json` |
@@ -75,7 +87,11 @@
   `A.addWoundNow` and the deed); `07-duels.js` `A.duelConsequences` (`TT.duel`, before `A.LV.duel`); `09`, `10`, `11`
   (`TT.battle`); `11-armies-...` the siege tick (`P.sgPk`, `TT.siegeLifted`); `18-event-view-a.js` `A.eventChoose`
   (`TT.chose`); `23-ui-e.js` `UI.personModal` (the chips).
-- `37-skills2/c-effects.core.js`: `SK2.addSource`, `SK2.xHeld` read by `SK2.held`, the fast path `off(p)`, `SK2.statOf`.
+- `37-skills2/c-effects.core.js`: `SK2.addSource`, `SK2.xHeld` read by `SK2.held`, the fast path `off(p)`, `SK2.statOf`;
+  since D-192 `SK2.boostOf`, `SK2.boostCheck` and `f.ttb` in `SK2.fightOn` (the engine's `E.boostOn`, `E.CAP_BOOST`).
+- D-192's readers of the share boosts: release `06-prison-travel-school-ai.js` `A.CR` (`f.ttb`), `03-engine-base.js`
+  `A.skillEff` (`SK2.boostCheck`), `04-realms-and-war-years-b.js` a post's yearly pay (`SK2.boostOf(pc, 'income')`),
+  `36-skills/a-model.core.js` `A.gainXp` (`SK2.boostOf(p, 'growth', k)`).
 - `9999970-powers/a-power.core.js`: titles by id resolved from `data/titles/` (`PW.titleRef`); a person's being names
   his titles and class. `c-meet.core.js`: `TT.beastSlain`.
 - `9999975-level/a-level.core.js` `LV.field`: `TT.field`; its `statMigrate` test reads a version-18 save's held level as held.
@@ -100,11 +116,15 @@ a foe who beats the player counts it), `ttDeterministic` (two worlds, each life 
 census; a world pass draws nothing), `ttUnique` (one Wyrm-Slayer of six slayers, the next on his death; First of the Age
 once an age and never to the old masters; the Saint's title Cael's while he lives; the Sword of a realm one in each
 realm; forty audited years, no key with two living holders), `ttCaps` (75 people with every title and a planted one past
-any budget: +12, 15%, +10 and potential + 5, 3, 3; every read back once gone), `ttNpc` (an NPC earns the Undefeated in a
+any budget: +12, 15% and the titles' boosts 25% more, +10 and potential + 5, 3, 3; every read back once gone),
+`ttGameChanger` (an uncommon title moves a near-even duel's odds a little, a one-of-a-kind one markedly, a rare one
+between; every boost at its cap with every title and a planted one, an uncommon one at 0.02; income and experience read
+theirs), `ttNpc` (an NPC earns the Undefeated in a
 real duel and loses it in one), `ttSave` (every sample save: no title, no ledger, an empty census, version 19; the first
 deed starts the ledger), `ttPhone` (375 x 667: chips and Bear buttons 44 points, a press opens, a hover does not, no
 condition, no percentage, nothing sideways), `ttLegends` (every sheet's titles from data; the three matchups),
-`ttHidden` (hints only after a deed, once; thirty years' pages show no condition).
+`ttHidden` (no hints, order 92: no rumour card, no title carrying a hint, Records without "Things you have heard", another
+man's title card naming no deed, the crown's withholding silent, and thirty years' pages showing no deed kind or condition).
 
 Deferred: `ttRare` (pooled over 200 bot lives: a balance-harness run), the sources of `king_made` and `pupil_taught`,
 monsters' own ledgers (a dragon's *Calamity of the Fens*), titles in a duel's or court's card ("Sir Rauf, called ...").

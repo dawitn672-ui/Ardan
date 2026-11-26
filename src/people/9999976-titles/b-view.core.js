@@ -1,11 +1,13 @@
 // Titles, part 2: what the player reads (docs/design/skills-v2.md §11.6, D-183). Pure on render: reads A.TT and the person,
 // draws nothing, writes nothing but on a press (the title borne). No condition is ever printed: a title's card says its
 // name, its rarity, when and why it was earned in the world's words, what it gives in words (slight, fair, strong,
-// great) and its honour; nothing about titles not yet held but "Things you have heard". Descriptions open on a press
+// great) and its honour; nothing at all about titles not yet held (order 92: no hints), and on another person's card not
+// the deed either, only the name, the rarity, the gifts and the honour, so his title teaches nothing of how to earn it.
+// Descriptions open on a press
 // (data-tt / UI.note), never on hover; no percentages; 44-point controls; it fits 375 x 667.
 //   The profile's card (999996-profile-tab's PF.card -> PF.cardTitles): the title borne ("Aldric the Undefeated") and a
 //   strip of chips, each a rarity gem and a name, opening the title's card on a press.
-//   Records: the section "Titles" (held, with "Bear it"; lost; and "Things you have heard").
+//   Records: the section "Titles" (held, with "Bear it"; and lost).
 //   Other people's profiles (UI.personModal): the same chips (UI.TTV.chips).
 (function () {
   const TT = A.TT;
@@ -31,6 +33,16 @@
       case 'growth': return 'quicker learning in ' + SKILL(e.tag);
       case 'blunder': return 'fewer blunders';
       case 'surge': return 'more moments of greatness';
+      // a share boost (D-192), in words: "a fifth more might in a fight", never a number
+      case 'boost': {
+        const sh = A.SK2 && A.SK2.E ? A.SK2.E().shareWord(Math.abs(+e.v || 0)) : 'some';
+        const on = e.tag && e.tag !== 'all' ? SKILL(e.tag) : '';
+        if (e.of === 'fight') return `${sh} more might in a fight${on ? ' with ' + on : ''}`;
+        if (e.of === 'check') return `${sh} more skill in ${on || 'everything you try'}`;
+        if (e.of === 'income') return `${sh} more pay for your work`;
+        if (e.of === 'growth') return `${sh} more from every lesson${on ? ' in ' + on : ''}`;
+        return '';
+      }
       default: return '';
     }
   };
@@ -46,13 +58,15 @@
     const g = TT.givesWords(t);
     return g ? `It brings ${TT.strength(t)} gifts: ${g}.` : '';
   };
-  // the full card of a held title, as one description (it opens on a press)
+  // the full card of a held title, as one description (it opens on a press). The deed behind it (the sentence written when
+  // it was earned, and the title's own line, which names the deed) only on the player's own card: on another's it would
+  // tell the player how the title is earned before he has it (order 92)
   TT.cardText = function (p, id) {
     const t = TT.BY.get(id), h = p && p.tt && p.tt.h && p.tt.h[id]; if (!t) return '';
-    const n = TT.nameOf(p, id), g = TT.givesWords(t);
+    const n = TT.nameOf(p, id), g = TT.givesWords(t), pc = A.pc ? A.pc() : null, own = !!(pc && p && pc.id === p.id);
     let s = `${n}: ${TT.rarityWord(t)}.`;
-    if (h) s += ` Earned in ${h.y} AR. ${h.w || ''}`;
-    if (t.text) s += ` ${t.text}`;
+    if (h) s += ` Earned in ${h.y} AR.` + (own && h.w ? ` ${h.w}` : '');
+    if (own && t.text) s += ` ${t.text}`;
     if (g) s += ` It gives ${TT.strength(t)} gifts: ${g}.`;
     s += ` It brought ${TT.honourWord(t.honour || 0)}.`;
     if (t.class) s += ` It is also a class: ${t.class}.`;
@@ -75,13 +89,13 @@
     return (st ? `<div class="tt-borne">${esc(st)}</div>` : '') + V.chips(p);
   };
 
-  // ---------------------------------------------------------------- Records: the titles held, lost and heard of
+  // ---------------------------------------------------------------- Records: the titles held and lost
   const li = (kind, inner) => `<li class="pf-li"><span class="pf-k">${esc(kind)}</span><span class="pf-c">${inner}</span></li>`;
   if (PF && PF.addSection) PF.addSection({
     k: 'titles', title: 'Titles',
     sum: p => { const n = TT.held(p).length; return n ? (n === 1 ? TT.nameOf(p, TT.held(p)[0]) : `${TT.nameOf(p, TT.held(p)[0])} and more`) : 'None yet'; },
     body: p => {
-      const ids = TT.held(p), tt = p.tt || {}, lost = Object.keys(tt.x || {}).sort(), heard = (tt.hd || []).filter(id => TT.BY.get(id) && TT.BY.get(id).hint);
+      const ids = TT.held(p), tt = p.tt || {}, lost = Object.keys(tt.x || {}).sort();
       let s = '';
       if (ids.length) {
         s += '<ul class="pf-list tt-list">' + ids.map(id => {
@@ -91,7 +105,6 @@
         }).join('') + '</ul>';
       } else s += '<p class="pf-empty">No title is yours. They come from what you do, and from nothing else.</p>';
       if (lost.length) s += '<h4 class="pf-h2">Lost</h4><ul class="pf-list">' + lost.map(id => { const t = TT.BY.get(id) || {}, y = tt.x[id] || []; return li('Once', note(`Held from ${y[0]} to ${y[1]} AR. ${t.lost ? t.lost.replace('{title}', t.name) : 'A name you once had.'}`, esc(t.name || id), 'pf-w')); }).join('') + '</ul>';
-      if (heard.length) s += '<h4 class="pf-h2">Things you have heard</h4><ul class="pf-list">' + heard.map(id => li('A tale', `<span class="pf-w">${esc(TT.BY.get(id).hint)}</span>`)).join('') + '</ul>';
       return s;
     },
   }, 'renown');

@@ -3072,6 +3072,128 @@ lint-choices (`--feature=titles`: 0 obviously best), `version.mjs check`; cohere
 **Undo.** Revert the step's commits; a save made at version 19 would then be refused as newer. The legends' titles
 return inline with `git checkout <base> -- data/legends.json data/power.json`.
 
+### H-149 · 2026-11-26 · The scale stretched (orders 92, 93, 94) and no hints about titles (order 92; D-185)
+
+**What.** Commits `177c9970` (order 92: the legends x 1000/800, Sarnavoth at 1000, a first 29 calamities in eleven new
+bestiary lines, `pwStretched`), `b7832ae1` (no hints about titles), `a12a4c2d` (order 93: every anchor stretched, a new might
+curve, the bestiary's dragons and demons by kind, the 29 calamities moved to 585-787, the legends' signature titles retuned
+from D-177's), and the records. The owner, order 92: "no hints throughout the games on titles ... shift out the levelling
+system putting sarnavoth at 1000 and increasing the other legends accordingly ... to allow countless more monsters and
+creatures to fit in between"; order 93: "stretch average ppl to 20-50 soldiers to 80-180 knights 230-299 and kingdoms
+elites at 300-420 ... strongest ... 500-700 ... average grown dragon around lvl 700 and an average great demon at around 650
+and lower demons around 300-500"; order 94: knights do not stall at 299.
+
+**Files.** `data/power.json` (levelCurve, bands, the masters' levels), `data/legends.json` (levels, about),
+`data/titles/legends.json` (fifteen signature titles' power, the Sword Saint's hint gone), `data/titles/people.json` and
+`vocab.json` (hints gone), `tools/powers/gen-bestiary.mjs` and `data/bestiary.json` (eleven new lines, the dragons and
+demons retuned, 299 kinds; the 270 older kinds keep every field but `t`, `level`, `might`, `drops` and `evolve` where their
+t moved), `src/world/9999970-powers/test.mjs` (`pwLadder` on order 93's anchors, `pwPowerNotLevel` to 1000, `pwStretched`
+new), `src/people/9999976-titles/` (`a-titles`, `b-view`, `titles.events.js`, README, `ttHidden` rewritten),
+`tools/lint-titles.mjs`, `archive/titles-hints/`, `docs/design/powers.md`, `docs/MASTER_PROMPT.md` §17 and the titles line,
+`CHANGELOG.md`.
+
+**Archived.** `archive/titles-hints/`: `tt_hint`, `TT.hintable`, `TT.heard`, Records' "Things you have heard", the crown's
+"does not name you" log line, the deed on another person's title card, the thirteen hint lines. Last built at `177c9970`.
+
+**Proof.** On a private build (`/tmp/ardan/o92s/x.html`, `--workers=2`): the ten powers tests pass (`pwLadder`: the
+best man of worlds 7, 11, 23, 41 at 493, 550, 508, 552, medians 34-36, a soldier's might 106-154, a knight's 255-321, an
+elite's 321-376, masters 615-700, grown dragons 688-713, lower demons 307-477, great demons 611-675, legends 800-1000;
+`pwPowerNotLevel`: might per level 1.0138 < ... < 1.0206, Sarnavoth against the three 0.41, the Saint against each archdemon
+0.53, 0.46, 0.47, over the Lord of the Sea 0.77, the weakest legend 279 times the strongest beast or master; `pwStretched`:
+no legend off its level, all 29 new kinds in the band, 74 kinds of 17 families from 600 to 800, widest hole 13; and
+`pwBestiary`, `pwProfiles`, `pwEvolution`, `pwLegends`, `pwEncounter`, `pwSettledSafe`, `pwPureAndOldSave`); the nine titles
+tests pass (`ttLegends` 0.415 / 0.529, 0.464, 0.470 / 0.770; `ttHidden` rewritten: no card, no reader, no hinted title,
+nothing queued by deeds, no rumours in Records, no log line on a withheld grant, another man's card without the deed);
+`uiSmoke`, `renderRng`, `replayWithRender`, `v2svRoundTrip`, `statMigrate`, `w1NoMarshalLint` pass. **`lvFromDefeats`
+fails** on order 93's curve: its bar "twenty levels up gives more than half a level" reads 1.14, 0.73 and 0.47 at levels
+24, 100 and 175, because `A.LV.xpFor` reads the might ratio of the two levels and twenty levels are now a smaller ratio
+(1.34 at 175 against 1.62 on the old curve); it is the level builder's rule (`src/people/9999975-level`, not touched here),
+for the merge to settle. Engine tests 155 of 155; lint-stages (146, at its baseline), lint-reasons (41, at its baseline),
+lint-titles, lint-events and lint-choices (`--feature=titles`: no error, 0 obviously best), lint-docs-index,
+`version.mjs check`, `gen-bestiary.mjs --check`; coherency `--baseline=quick`: no contradiction, no check rose.
+
+**Undo.** Revert `a12a4c2d` for order 92's scale on the old curve; revert `177c9970` too for D-177's levels; revert
+`b7832ae1` to bring the rumours back (or move `archive/titles-hints/` back into the feature).
+
+### H-148 · 2026-11-26 · Experience from anyone, walls at each hundredth level, classes as chosen branches, legends that grow (orders 91-94, D-184)
+
+**What.** `src/people/9999975-level`: experience counted in defeats of a peer from the level gap alone (a stronger foe
+`2^(gap/20)`, past four the root; a weaker one `2^(-gap/6)`; a level `1.01^L` peers); D-181's line withdrawn, every foe
+gives something. The step into each hundredth level is a wall of 6, 10, 12, 12, then 15 times the step before it
+(thresholds, not ceilings: order 94). At a wall, a branch the person chooses: a class from `data/classes.json` (29 classes,
+three steps, eight roads; each adds a duel technique, a passive, a buff or a way to earn) or a stat boost (6, 10, 15, 20
+points); the player on the cards `lv_wall` and `lv_boost`, anyone else through `A.WHY.decide` on a seeded stream. The
+class he holds gives its effects through the skills adapter (`SK2.xClass`); its parts work in play: techniques in
+`A.techsOf` (style id `class:<id>`), passives in `A.techEdge`, activities held to the class in `A.canAct`, buffs in
+`A.stat`. Worn classes for anyone seeded past a wall (no effects, honour or points). Save version 22 (step `classes`; 20 is the arts' of D-186, 21 the skills line's of D-192).
+The class beside the level on the profile, its note on a press. The legends grow by the same rule (`LV.legendDefeat`,
+`PW.being` reads the data's level plus the gain; the ridge and a great being's meeting pay it). `pupil_taught` has a
+source (the teaching activities). Merged with the rescale (D-185) and calibrated on its curve. The owner's orders 91
+("you can get exp from anyone regardless of level ... at 100lv thresholds where you get a class upgrade or stat boost"),
+92 ("the rewards at the wall is like a branch ... a class change should add new components"; "the legends can get
+stronger"), 93 (the anchors) and 94 ("knights don't stall at 299").
+
+**Commits.** `de15cc96` (experience, walls, legends), `3df6e07e` (classes, cards, parts, save 20, tests), `f1938e4c`
+(`lvAnchors`), `32518e41` (records), `65b914ac` (the rescale merged), `f1516064` (tests on the new curve), and this entry.
+
+**Edits outside the folder (guarded, commented).** Release `07-duels.js` (`A.style`, `A.techsOf`, `A.styleFighter`,
+`A.techEdge`, `A.techSteal`), `04-...-b.js` (`A.canAct`), `03-engine-base.js` (`A.stat` reads a buff); `37-skills2/
+c-effects.core.js` (`xOf` reads `SK2.xClass`); `9999970-powers/a-power.core.js` (`PW.being`: a legend's gain, a person's
+class), `b-wilds.core.js` (`PW.ridge`), `c-meet.core.js` (`PW.greatAnswer`); `99998-v2-saves` (`SV.VER` 20);
+`data/titles/vocab.json`. No new `A.addStage`; lint-stages at its baseline.
+
+**Proof** (a private build of the merged branch, `--workers=2`; the machine shared with two other builders). Level:
+`lvFromDefeats` (a foe 40 down 0.0054, 0.0036, 0.0017 of a level at 60, 100, 175; 30 down something; duels paid to the
+rule), `lvNoFarm` (from 30, a thousand defeats of men at 10 reach 49, the second five hundred adding less; twenty soldiers
+reach 77), `lvWalls` (each wall 6.1, 10.1, 12.1, 12.1, 15.2 times the step before; 98-99 in 3 defeats of men of 100, 99-100
+in 16, 100-101 in 3; knights 198-199 in 2, 199-200 in 12; 299-300 against the best in 112), `lvClass` (the swordsman's card
+offers Swordsman and Warrior and he takes the Swordsman with Rising Cut and its source; no art of arms: the boost card,
+6 points placed; 40 NPCs, the same on a replay, the main stream unmoved, 40 took a blade or warrior class; the Sword
+Saint shut while Cael lives, open with the title), `lvClassParts` (29 classes, 17 leading to two or more, every class
+adding a part; Heavy Blow and Blood Rage in a duel, the passive said once; the berserker's buff 43 -> 46 for two months,
+then 43; another's activity hidden; the class and its note at 375), `lvLegends` (a fresh world at the data's levels; 100
+defeats of an equal give an archdemon 0.006 of a level), `statBounds`, `statMigrate` (25 saves: the same `A.stat` for
+everyone, walls settled worn), `statNpc`, `lvPhone` pass. Titles (`ttEarned`, `ttUnique`, `ttCaps`, `ttNpc`, `ttSave`,
+`ttPhone`, `ttLegends` (0.415; 0.529, 0.464, 0.470; 0.770), `ttHidden`, `ttDeterministic`), powers (`pwLadder`,
+`pwPowerNotLevel` (0.41), `pwStretched`, `pwBestiary`, `pwProfiles`, `pwEvolution`, `pwLegends`, `pwEncounter`,
+`pwSettledSafe`, `pwPureAndOldSave`), skills (`sk2Merge`, `sk2Advance`, `sk2Evolve`, `sk2Caps`, `sk6PerkSums`,
+`sk2Migrate`), `renderRng`, `replayWithRender`, `v2svRoundTrip`, `w1NoMarshalLint`, `w4NoLevyLint`, `pfNumbers`, `pfFits`
+pass; `uiSmoke` passes alone (it timed out twice beside other runs on the loaded machine, and passes on the base the
+same way). Engine tests 155 of 155; lint-stages, lint-reasons (41, its baseline), lint-skills, lint-titles, lint-kin,
+lint-docs-index, `version.mjs check`, `--check-tiers` (lvAnchors in the long tier); lint-events and lint-choices
+(`--feature=level`: 0 errors, 0 obviously best); coherency `--baseline=quick`: no contradiction, no check rose. Twelve bot
+lives with `lvAnchors`' seeds (D-184's last point): peasants who never fought 29, 29; fighters 120, 129, 136; nobles
+seeded 115-170. Not run: `tools/bench/balance.mjs` (the league of 70-year lives could not finish on the shared machine)
+and the long tier as a whole (`lives` and `x3HonestCards` timed out at their limits under the load).
+
+**After the merges** (the rescale, D-185, and main at alpha 19 with the arts, D-186; save version 21): on the merged
+build, 41 of 42 named tests passed with `--workers=2` (the level, titles, powers and skills sets, `uiSmoke`, `renderRng`,
+`replayWithRender`, `v2svRoundTrip`, `statMigrate` on 26 saves, `sk2Migrate`, the lints, `pfNumbers`, `pfFits`); `ttSave`
+failed on main's own build too (alpha 19's sample save, made at version 19, holds titles earned in play) and now reads a
+save made with titles as it was, as `statMigrate` does (H-147). `lvAnchors` passed (1,407 s) on the rescale's merge.
+Engine tests 164 of 164. The class parts use the release's duel techniques; mapping them onto D-186's arts
+(`SK2.learnArt`) is the natural next step.
+
+**Addendum: orders 95 and 96, and the integration** (`4bf26b39`; merges of main `b748817f`, the skills line D-192
+and the bestiary bands D-191). Seeding by the band of a person's life with the computed level as a ceiling, nobles
+50-99 by upbringing, a hook for data (`LV.fromData`); the breakthrough at every wall (points, the skills engine's rank
+jump `A.SK2.rankJumps` at most one, then the class branch); 155 classes from a generator with rarities that a line
+keeps; above 400 a level only 0.05% dearer (an archdemon: 1.36 levels from 100 equal defeats); the legends' yearly
+refinement, alike for all (a matchup 0.644 before and after ten years); at most sixteen peers from one defeat; the
+player's training in single +1s. Save version 22 (`classes`), after the skills line's 21 (`skills2line`). Test fixes:
+`pwLadder` reads the average folk's median among commoners without post or service (29-35); `lvFromDefeats` records the
+hero's level with a beast's kill (D-191's Evenwood Wolf at 110) and measures a crossing against the next level's need;
+`ttHidden`'s deed check no longer mistakes D-192's "a twentieth more might" for the deed's count. New tests: `lvSeed`,
+`lvBreak`, `trainOnes`. On the merged build with `--workers=2`: 51 of 51 named tests (the level, titles, powers and
+skills sets with `sk2Jump`, `pwBands`, `ttGameChanger`; `statMigrate` on every sample save; `sk2Migrate`; `uiSmoke`,
+`renderRng`, `replayWithRender`, `v2svRoundTrip`, `w1NoMarshalLint`, `w4NoLevyLint`, `pfNumbers`, `pfFits`) after the
+`ttHidden` fix; engine tests 166 of 166; the lints; coherency `--baseline=quick` no check rose. `lvAnchors` (order 95
+build, 967 s): peasants who never fought 33-36, fighters 114-130 with classes taken at the breakthrough (Spearman,
+Shieldbearer, Rider), nobles 95-96, nobody at a wall.
+
+**Undo.** Revert the step's commits; a save made at version 22 would then be refused as newer. `data/classes.json`
+and `c-classes.core.js` can go to `archive/` with a note if classes are retired alone (the level keeps its walls).
+
 ### H-150 · 2026-11-26 · The three kinds of skill: actives, passives and buffs (skills-v2 §10 step 11, §16; order 92; D-186)
 
 **What.** The owner's order 92: "active skills like combat oriented from melee and swordsmanship to mana based ... passive
@@ -3202,3 +3324,84 @@ over the bar of a quarter (3.5). Each was given up for a reason its arc names (t
 stop finishing.
 
 **Undo.** Revert this commit.
+
+### H-156 · 2026-11-26 · Order 95's skills and titles: evolution replaces, a rank's jump, titles as game changers (D-192)
+
+**What.** Three of order 95's points ("when a skill evolves it becomes the next skill so it's gone"; "a rare leap isn't
+an event ... a breakthrough happens every 100 levels where ... skills can jump ranks if multiple conditions allow it";
+"titles can be game changers. %boosts and stat boosts"). Commits `dc7df267` (evolution replaces; the advance archived
+and the rank's jump), `5b741e2e` (titles' share boosts and stat boosts), `acb52836` (the boosts' fast path), and this
+records commit.
+- **Evolution replaces.** `pc.ks` holds only each family's top rung (`SK2.fromS1`); the family reads through it; what
+  the old rungs gave passes on through the line (`E.heldOfRung`'s `line`, `E.lineEffects`). Arts likewise
+  (`SK2.artGone`, `E.npcArts`). Save version 21, step `skills2line` (`SK2.migrateLine`).
+- **The advance archived** (`archive/skills2-advance/`; last in the build at `5e5dab5e`): `E.canAdvance`,
+  `ADVANCE_CHANCE`, `SK2.advanceAt`, `SK2.advance`, the test `sk2Advance`. In its place `E.rankJump(ix, held, facts)` and
+  `A.SK2.jumpFacts`, `jumpVerdict`, `rankJump(p, k, o)`, `rankJumps(p, o)` (Lv 5 or more and two of concepts, deed,
+  talent; documented in `src/people/37-skills2/README.md`), for the level to call at each hundredth wall. D-163's budget
+  is neither read nor spent by a jump.
+- **Titles.** A `boost` effect (fight, check, income, growth) in a pool of its own, capped by the rarest title among the
+  sources (uncommon 0.02, rare 0.05, legendary 0.15, one of a kind 0.25; `E.CAP_BOOST`); stats a title by rarity (+2, +3,
+  +5, +6); the sixteen titles re-budgeted; `lint-titles` validates it. Readers: `A.CR` (`f.ttb`), `A.skillEff`, a post's
+  yearly pay (release 04-b), `A.gainXp`.
+
+**Files.** `src/people/engine/skills2.js` (and the bundle), `src/people/37-skills2/` (a-adapter, c-effects, d-evolve,
+e-merge, f-kinds, test.mjs, README), `src/core/99998-v2-saves/saves.core.js` (SV.VER 21), release `03-engine-base.js`,
+`04-realms-and-war-years-b.js`, `06-prison-travel-school-ai.js`, `07-duels.js` (comment and the moment's call),
+`src/people/36-skills/a-model.core.js`, `src/people/9999976-titles/` (a-titles, b-view, test.mjs, README),
+`data/titles/` (vocab, people, legends: the Sword Saint's person effects only), `tools/lint-titles.mjs`,
+`tests/v2/skills2.test.js`, `tests/v2/skills2-kinds.test.js`, `archive/skills2-advance/`, `archive/README.md`, docs.
+
+**Tests.** `node --test tests/v2/*.test.js` 166 pass. Browser (`--workers=2`, private builds): `sk2Evolve`, `sk2Jump`,
+`sk2Migrate` (26 saves, every read the same), `s1Migrate`, `statMigrate`, `v2svRoundTrip`, `uiSmoke`, `renderRng`,
+`replayWithRender`, `ttLegends` (Sarnavoth 0.415, the Saint 0.529/0.464/0.470 and 0.770), `pwPowerNotLevel` (the same
+numbers), `ttGameChanger` (24 pairs at near-even odds: Blooded +5.2 points on average, the Undefeated +20.1, Wyrm-Slayer
++43.9; every boost at its cap of 0.25 with every title and a planted one, an uncommon one at 0.02), `ttCaps`, `ttEarned`,
+`ttUnique`, `ttNpc`, `ttPhone`, `ttHidden`, `ttDeterministic`, `sk2Caps`, `sk6PerkSums`, `sk5Lives`, `sk2Merge`,
+`sk2Active`, `sk2KindCaps`, `sk2DuelReplay`, `sk2ArtsMonth`, `s1Cost` (0.744 ms) all pass. `ttSave` fails on
+`v2.1.0-alpha.19-noble-life.ardan` ("27 ledgers, 1 holding") on the base build `5e5dab5e` as well: not this step's (the
+sample was saved after titles came in, so it holds ledgers; the test expects none). Lints: lint-skills, lint-titles,
+lint-stages, lint-reasons (41, baseline 41), lint-events and lint-choices (skills2, titles: 0 obviously best),
+lint-docs-index, version.mjs check, seed-data --check, --check-tiers: all ok. Coherency `--baseline=quick`: no
+contradiction, no check rose. Not run: the whole suite, the balance harness, a playtester agent, a separate reviewer.
+
+**Undo.** Revert the four commits; a save made at version 21 would then be refused as newer. The advance is restorable
+from `archive/skills2-advance/`.
+
+### H-155 · 2026-11-26 · The bestiary's bands by nature: three ancient dragons, 33 ancient demons, at most 100 dragons (orders 95 and 96; D-191)
+
+**What.** The owner's order 95: "ancient demons rival elder dragons and make sure there are only 3 ancient dragons under
+the dragon king", "explain the 74 types between 600-800, im worried some usually weak creatures were given high levels
+to fit the gap", and his follow-up "remove the dragon of high roost"; order 96: 33 ancient demons, few elder dragons, at
+most 100 dragons. D-185 had stretched every older kind by about 1.55, which put apex animals, trolls and ogres among the
+dragons. Every level is now written by nature in the generator, each kind with a `tier`; the 600-800 band holds 45
+calamities (was 74); three ancient dragons (Ash, Frost, Storm), each one of a kind; four ancient demon kinds, 33 in the
+world, about the elder dragons; nine elder dragons and 84 dragons in all under a cap of 100, which the wilds keep
+(`A.POWER.room`). The High Roost's two dragons are removed. D-191 has the rules and the choices;
+`docs/design/bestiary-bands.md` lists every kind from 500 to 800 and every kind that moved, with its reason.
+
+**Files.** `tools/powers/gen-bestiary.mjs` (lines in levels, tiers, world counts and the cap, the ancient lines, `duelT`),
+`data/bestiary.json` (generated), `data/power.json` (band words), `src/world/9999970-powers/b-wilds.core.js`
+(`PW.room` and its two calls), `src/world/9999970-powers/test.mjs` (`pwBands` new; `pwLadder`, `pwStretched`, `pwBestiary`),
+`src/world/9999970-powers/README.md`, `docs/design/powers.md`, `docs/design/bestiary-bands.md` (new, in `docs/README.md`),
+`archive/bestiary-high-roost/` (new, in `archive/README.md`).
+
+**Proof.** On a private build (`/tmp/ardan/bb/x.html`, workers 2): the eleven powers tests pass (`pwBands`: animal
+families at most 340, ancient dragons 782/786/790, elders 745-765 mean 755 and 9 in the world, 84 dragons of a cap of 100,
+ancient demons 745-765 mean 753.8 and 33, great demons mean 649, the full wilds at most 80 dragons through 40 years;
+`pwStretched`: 45 kinds in 11 families from 600 to 790, the widest hole 25; `pwPowerNotLevel`: Sarnavoth 0.41 against the
+three, Cael 0.53/0.46/0.47, 0.77 over the Lord of the Sea); `ttEarned`, `ttDeterministic`, `ttUnique`, `ttCaps`, `ttNpc`,
+`ttPhone`, `ttLegends`, `ttHidden`, `uiSmoke`, `renderRng` and `v2svRoundTrip` pass. Two fail: `ttSave` fails the same way
+on a build of main (5e5dab5e..827c7789: the alpha 19 sample save carries 27 ledgers), not this step's; `lvFromDefeats`
+fails its beast clause: it kills the release's Evenwood Wolf, now level 110 (an animal), at a hero of 164-169, and the
+ladder rightly gives nothing for a foe 59 levels down, but the clause's escape reads `b.F + 30 <= 0` where it means the
+hero's level. That test is the level builder's (`src/people/9999975-level`, not this step's to edit): the fix is to
+record the hero's level with the kill and test `b.F + 30 <= L`. Engine tests 164 of 164; `lint-titles`, `lint-docs-index`,
+`version.mjs check`, `gen-bestiary --check`, `lint-reasons` (41, at its baseline), `lint-stages`. Not run: the whole suite,
+the long tier, the balance harness (wild encounters now draw bears and wolves at their new, lower levels), coherency, a
+playtester and a separate reviewer (the integrator's).
+
+**Archived.** `archive/bestiary-high-roost/`: the High Roost Dragon and the Dragon Lord of the High Roost (the generator's
+line and the two species rows); the last commit that built them is `1c8631b6`.
+
+**Undo.** Revert this step's commits; to keep the bands but bring back the High Roost, see its `NOTE.md`.

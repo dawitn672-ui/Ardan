@@ -41,6 +41,7 @@ left the tree on that day; git history holds them (the last commit with them is 
 | [design/households.md](design/households.md) | Households and kin |
 | [design/names-and-cultures.md](design/names-and-cultures.md) | Names and cultures |
 | [design/powers.md](design/powers.md) | Powers wave 1: one level scale for every being, the bestiary, the great beings, the wilds |
+| [design/bestiary-bands.md](design/bestiary-bands.md) | The bestiary's bands by nature (D-191): every kind from 500 to 800 and every kind that moved, old and new level, nature and reason; the counts of dragons and ancient demons |
 | [design/economy-and-items.md](design/economy-and-items.md) | Economy and items |
 | [design/pacing.md](design/pacing.md) | Pacing of a month and a year |
 | [design/r1-audit.md](design/r1-audit.md) | The reasons audit (A.WHY) |

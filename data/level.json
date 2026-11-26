@@ -1,27 +1,48 @@
 {
   "about": "A person's level and its stat points (docs/design/skills-v2.md §12.1-12.2 as the owner's order 88 changed it, D-178, D-181; src/people/9999975-level). The level IS the power ladder's level (data/power.json levelCurve): one scale. A person is seeded at the level the ladder computes from his fighting worth, and from then rises only by defeating people and beasts, read on the same ladder, plus a floor for growing up. Experience is kept as the share of the way to the next level (0 to 1).",
   "xp": {
-    "about": "Rising from level L to L+1 asks need(L) = e0 x growth^L x might(L) (might from the ladder, so each level asks more than the one before and the gap widens). One defeat of a foe of level F gives might(L) x rho for a stronger foe (rho = might(F) / might(L)), past upTo as upTo x (rho / upTo)^0.5, and might(L) x rho^weakPow for a weaker one; a foe gives nothing at all once you stand ceilAbove levels above it, and never lifts you past that line (no farming). Calibrated (the README): from 24, 20 defeats of soldiers (level 100) reach about 70, 80 reach about 110, and no number of them passes 125 (the owner's soldier, 75-125); from 100, 60 defeats of knights (175) reach about 165; from 225, 60 of a kingdom's best (340) about 295.",
+    "about": "Experience is counted in defeats of a man of one's own level (a peer), from the level gap alone, so a rescale of the ladder's might cannot move what a life earns (orders 91-93, D-184). Rising from level L to L+1 asks need(L) = e0 x growth^L peers (each level 1% more, so the gaps widen: orders 87, 89) (above slowFrom, 400, each level only slowGrowth dearer than the last: at a legend's height a hundred defeats of his equal give a level or two, order 95) x wall, where wall is 1 except on the step into a hundredth level (99 to 100, 199 to 200 ...): wall.mul[k-1] for the k-th wall, the last number for every wall after. One defeat of a foe of level F gives 2^((F - L) / upHalf) for a stronger foe (past upTo, upTo x the root of the rest; never more than most, sixteen peers, from one defeat: an upset is a leap of some levels, not of a hundred) and 2^((F - L) / downHalf) for a weaker one: every foe gives something, whatever his level, a weaker one far less (no line any more). Calibrated (the README; the owner's anchors of orders 93 and 94): from 30, soldiers (130) give about 94 after 20 defeats, 116 after 50, 128 after 80 and thin out far below 200 (158 after 1,000: against men of 130, a level at 160 asks some forty of them); knights from 200 against knights (265) about 214, 238, 265 after 20, 80, 300, and 281 after 1,000, while one who beats the best (320) breaks through 300 (329 after 1,000); the elite cross 300 and 400. The walls are thresholds, hard but crossable, never ceilings (order 94): each asks six to fifteen times the step before it, so a life thins out as the cost climbs and the able break through.",
     "e0": 1,
-    "growth": 1.006,
-    "upTo": 8,
-    "weakPow": 2.5,
-    "ceilAbove": 25,
+    "growth": 1.01,
+    "slowFrom": 400,
+    "slowGrowth": 1.0005,
+    "upHalf": 20,
+    "downHalf": 6,
+    "upTo": 4,
+    "most": 16,
+    "wall": { "every": 100, "mul": [6, 10, 12, 12, 15] },
     "how": { "kill": 1, "defeat": 0.7, "spar": 0.25 }
   },
   "foes": {
-    "about": "Foes with no sheet of their own: a man killed in a battle or on a mission (a regular soldier on the ladder's anchors) and anyone else killed (an average grown person).",
-    "soldier": 100,
-    "person": 25
+    "about": "Foes with no sheet of their own: a man killed in a battle or on a mission (a regular soldier on the owner's anchors of order 93, 80-180) and anyone else killed (an average grown person, 20-50).",
+    "soldier": 130,
+    "person": 35
+  },
+  "legends": {
+    "about": "Order 95: the great mostly grow by refining their skills and techniques (and titles and arms): every year each living legend and master refines a little, its power multiplied by 1 + perYear x the years refined, up to max. All refine alike, so their matchups hold; a fresh world reads them as the data writes them. Levels from defeats come besides (LV.legendDefeat), slowly.",
+    "perYear": 0.004,
+    "max": 0.25
   },
   "floor": {
-    "about": "Growing up: a person stands at least at floor(age) = grown x (age / the race's grown age)^pow, where grown = 24 + (mean potential - 42) / 3, held to 20..30 (the owner's average human 20-30). After the grown age only defeats raise the level.",
-    "base": 24,
+    "about": "Growing up: a person stands at least at floor(age) = grown x (age / the race's grown age)^pow, where grown = 30 + (mean potential - 42) / 3, held to 20..40 (the owner's average people 20-50, order 93; 24 and 20-30 before). After the grown age only defeats raise the level.",
+    "base": 30,
     "potMid": 42,
     "potPer": 3,
     "min": 20,
-    "max": 30,
+    "max": 40,
     "pow": 1.3
+  },
+  "seed": {
+    "about": "A person's level until he has earned one (D-184 addenda; orders 93 and 95): the level his fighting worth computes (the ladder's, A.POWER), held inside the band his life puts him in, so the might level is only a ceiling and the life a floor: as computed up to the knee (six tenths of the band), softly bent toward the band's top above it, so nobody piles up at its end. The band is the highest that applies: a commoner who never served [his floor, 50]; a noble born (noble, royal, gentry) [50, 99], wherever birth, talent and upbringing put him; service by rank (p.mil, or p.veteran after it; ranks [from, low, high]), the high end reached as years + battles / 3 come to full; posts by kind (a knightly order's master stands among the strongest, a host's General among the elite, a division's among the knights); kills outside service climb from the floor by the rule. Below the race's adult age the band shrinks with the floor's curve. A level already stored stays.",
+    "common": 50,
+    "noble": [50, 99],
+    "nobleStatus": ["noble", "royal", "gentry"],
+    "upbringing": { "about": "Order 96: an untrained noble's level comes from his upbringing (education, tutors, diet, a household's arms-masters): the low end of his band by birth, a great house (p.noble.rung at greatRung or above) a few levels more.", "gentry": 50, "noble": 58, "royal": 68, "greatRung": 6, "great": 8 },
+    "ranks": [[0, 80, 180], [3, 150, 299], [6, 230, 420]],
+    "posts": { "order": [300, 700], "army": [230, 420], "div": [230, 299], "bn": [150, 299], "coy": [120, 250], "free": [120, 250], "seat": [50, 299], "staff": [50, 180], "office": [50, 99], "title": [50, 99], "house": [50, 99] },
+    "full": 20,
+    "knee": 0.6,
+    "maxKills": 60
   },
   "points": {
     "about": "Each level brings points (a race may set its own with GD.RACES[r].points), and one more at every bonusEvery-th level. A stat's ceiling is the person's potential x capMul (as A.train's); the body's room at an age is the ceiling x (roomChild + (1 - roomChild) x age / grown) below the grown age, the whole ceiling after; old age, wounds and illness lower what is read, not what is placed. A point costs 1 below half the ceiling, 2 to three quarters, 3 above. Placed points never move.",

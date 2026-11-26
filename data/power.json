@@ -28,55 +28,55 @@
       "from": 20,
       "r": "F",
       "w": "common folk",
-      "d": "Most people: farmers, clerks, lords who never drilled (an average grown human stands at 20 to 30). A fox, a hedge cat."
+      "d": "Most people: farmers, clerks, lords who never drilled (an average person stands at 20 to 50). A fox, a hedge cat, an imp of the lanes."
     },
     {
-      "from": 75,
+      "from": 80,
       "r": "E",
       "w": "a soldier's match",
-      "d": "A regular soldier (75 to 125), a hill wolf, a wild boar. One against one, either can die."
+      "d": "A regular soldier (80 to 180), a wolf of the pack, a wild boar, a black bear. One against one, either can die."
     },
     {
-      "from": 150,
+      "from": 230,
       "r": "D",
       "w": "a knight's match",
-      "d": "A knight (150 to 200), a bear, a pack of wolves. A village loses men to it."
+      "d": "A knight (230 to 299 for an ordinary one; past 300 he is more than an ordinary knight), the kings of the beasts (an ironhide bear, a striped shade), a cave troll. A village loses men to it."
     },
     {
-      "from": 200,
+      "from": 300,
       "r": "C",
       "w": "an elite's match",
-      "d": "The elite of a realm (200 to 250), a great cat, a troll. A lord sends hunters with spears and dogs."
+      "d": "The elite of a realm (300 to 420, higher in a strong realm), the monstrous apex beasts (a boar-king, the mountain father: none past 350), a stone troll, an ogre hetman, a dragon's hatchling, the lower demons (300 to 500). A lord sends hunters with spears and dogs."
     },
     {
-      "from": 250,
+      "from": 420,
       "r": "B",
       "w": "a kingdom's champion",
-      "d": "The strongest of a kingdom (300 to 380 in most cases), an ordinary grown giant, a great bear, a young dragon. The heroes of the songs stand here."
+      "d": "The champions of the kingdoms, a frost-fell giant, a dragonet, the greater fiends, the amber elder. The heroes of the songs stand here."
     },
     {
-      "from": 380,
+      "from": 500,
       "r": "A",
-      "w": "elder might",
-      "d": "The masters of the elder and great races, the great beasts of the old lore, the smaller grown dragons. A kingdom's champion dies here alone."
+      "w": "the strongest of the peoples",
+      "d": "The strongest humans, elves, dwarves and the other peoples of the continent (500 to 700, and very few of them), the masters of the races, a mountain giant, the hydras and hive-empresses, the bone sovereigns of the restless dead. A kingdom's champion dies here alone."
     },
     {
-      "from": 450,
+      "from": 640,
       "r": "S",
       "w": "a grown dragon",
-      "d": "An average grown dragon (about 450), the giant kings, the great spirits. Only a host can stand against one."
+      "d": "The great demons (about 650), an average grown dragon (about 700), the giant kings, the titans, the great spirits, the leviathans. Only a host can stand against one."
     },
     {
-      "from": 525,
+      "from": 740,
       "r": "SS",
-      "w": "a strong dragon",
-      "d": "A strong dragon (about 525), the elder wyrms, the sea monsters that sink fleets. Kingdoms make their peace with them."
+      "w": "a calamity",
+      "d": "The elder dragons (few: nine in all the world), the thirty-three ancient demons under the three Archdemons, the three ancient dragons who serve the King, and the calamities up to the legends: the first titans, the deathless king, the serpents that girdle the sea, the colossus of the first forge. Kingdoms make their peace with them, or move out of their way."
     },
     {
-      "from": 600,
+      "from": 800,
       "r": "SSS",
       "w": "a legend",
-      "d": "The legends: each one of a kind, each with a title, the strongest beings on the continent, a threat to nations and, in the end, to the world. The Sword Saint, the strongest man alive, stands about 650; the three Primordial Archdemons 725 to 750; the Dragon King about 800, by far the strongest of all."
+      "d": "The legends: each one of a kind, each with a title, the strongest beings on the continent, a threat to nations and, in the end, to the world. They stand from 800 up: the Sword Saint, the strongest man alive, about 875; the three Primordial Archdemons 963 to 975; the Dragon King at 1000, by far the strongest of all."
     }
   ],
   "capabilities": [
@@ -173,7 +173,7 @@
       "id": "m-giant-king",
       "n": "The King under Jotunhall",
       "race": "giant",
-      "level": 500,
+      "level": 700,
       "int": "wise",
       "homeName": "Jotunhall",
       "prof": {
@@ -245,7 +245,7 @@
       "id": "m-dwarf-anvil",
       "n": "The Anvil-Warden of Irondeep",
       "race": "dwarf",
-      "level": 440,
+      "level": 670,
       "int": "wise",
       "homeName": "Irondeep",
       "prof": {
@@ -318,7 +318,7 @@
       "id": "m-elf-blade",
       "n": "The Eldest Blade of Evenglade",
       "race": "elf",
-      "level": 430,
+      "level": 655,
       "int": "wise",
       "homeName": "Evenglade",
       "prof": {
@@ -385,7 +385,7 @@
       "id": "m-orc-khan",
       "n": "The Skull-Khan of Urgol",
       "race": "orc",
-      "level": 400,
+      "level": 615,
       "int": "speaking",
       "homeName": "Urgol",
       "prof": {
@@ -447,10 +447,10 @@
   ],
   "myth": "The faiths speak of gods. No one has ever measured one, and the scale does not hold them: it stops at the legends.",
   "levelCurve": {
-    "about": "log10(might) = a + b x level + c x level^2 from level 20 up (c > 0: each level multiplies the might by more than the one before, so 650 is far beyond 600); below level 20, fifteen levels to a tenfold. Fitted to the owner's anchors (2026-11-25): an average human 20-30 (might about 0.36), a regular soldier 75-125, a knight 150-200, an elite 200-250, a kingdom's strongest 300-380 (today's best Masters, might 400-1,250), an average grown dragon about 450, a strong one about 525; the legends above 600 are written in data.",
-    "a": -0.695,
-    "b": 0.009746,
-    "c": 0.000002,
+    "about": "log10(might) = a + b x level + c x level^2 from level 20 up (c > 0: each level multiplies the might by more than the one before, 1.0138 a level at 25, 1.0171 at 500, 1.0206 at 1000); below level 20, fifteen levels to a tenfold. Fitted to the owner's anchors of order 93 (2026-11-26, D-185; they replace order 84's): an average person 20-50 (the median grown human, might about 0.37, reads 35), a soldier 80-180 (might 1-2 reads 106-154), an ordinary knight 230-299 and past it more than an ordinary knight (order 94; might 9-25 reads 254-321), a kingdom's elite 300-420 (might 25-60 reads 321-376, a strong realm's higher), the strongest of the continent's peoples 500-700 and very few (the best of a world, might 400-2,000, reads 500-585; the masters of the races 615-700), an average grown dragon about 700 (t 62), an average great demon about 650, the lower demons 300-500; the legends (800 to 1000, order 92: Sarnavoth at 1000) are written in data.",
+    "a": -0.637,
+    "b": 0.005858,
+    "c": 0.0000015,
     "low": {
       "from": 20,
       "perDecade": 15

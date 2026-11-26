@@ -302,7 +302,7 @@ balance harness (§10 step 12), in bot lives of 60 years:
 - A → S: about one life in a thousand (A1: Legend about 1 in 1,000), and it costs years and wounds; the census counts
   them (about five alive on the continent in all families of arms), and S summits are one living holder each.
 
-### 3.4 Merging and advancing
+### 3.4 Merging and advancing (the advance archived by order 95, D-192: see §15 answer 2)
 
 **Merging.** A recipe (`recipes.json`) names parts (`{ id, rank, lv }`, at least two), conditions and a result. When
 every part is held at its level and the conditions hold, the merge is offered. Parts are **absorbed**: the result
@@ -944,7 +944,9 @@ refused) call beside their existing text line. The skills' `deed` conditions (§
 - A title spends at most `perLevel(weight) × 5`: D 5, C 10, B 20, A 40, S 80 (×1.25 unique, ×1.5 legendary).
 - Its effects join the skills' pool: **the caps of §2.4 bind skills and titles together** (+12 on a check, +15% of
   fight worth, +3 aura steps, 2 blunder or surge steps, 3 resist steps, all with the diminishing weights).
-- **Stats:** titles may boost stats (the owner's order), at most +3 a title; skills' and titles' stat effects together
+- **Stats:** titles may boost stats (the owner's order), at most +3 a title (since order 95, D-192: +2 uncommon, +3 rare,
+  +5 legendary, +6 one of a kind; and a title's **share boosts** to fighting worth, a family's checks, income and
+  experience stack in a pool of their own, capped by the rarest title among them: 0.02, 0.05, 0.15, 0.25); skills' and titles' stat effects together
   at most +10 on any one stat, and never past the body's potential (`p.pot`) by more than 5.
 - Honour and renown are paid once, so ten titles do not pay ten times a year.
 
@@ -1015,6 +1017,12 @@ beings; (c) the profile line, chips and card, and the hint cards.
 "add stat allocation. per level stat points. skill training." The newest order wins: how stats grow changes here.
 
 ### 12.1 One level for a person, the power ladder's
+
+> **Orders 91-94 (2026-11-26, D-184; the newest wins over §12.1 and §15 here):** experience comes from any defeated foe,
+> whatever his level (D-181's line at 25 levels down is withdrawn; a weaker foe gives far less), counted in defeats of a
+> peer from the level gap, each level 1% dearer; the step into each hundredth level is a wall (6 to 15 times the step
+> before it, a threshold, never a ceiling), where a person takes a class from a branching tree (`data/classes.json`: each
+> class adds a duel technique, a passive, a buff or a way to earn) or a stat boost. See `src/people/9999975-level/README.md`.
 
 **Built (D-181, `src/people/9999975-level`):** the level and the points as §15's answers 4, 5 and 9 change this section:
 the level comes from defeats on the ladder (seeded from the computed level, a floor while growing up), not from every
@@ -1172,8 +1180,14 @@ their four templates; honours are titles and posts given for reasons, never auto
 
 1. **Ranks run D, C, B, A, S, SS, SSS;** a god's skills (and the like) stand above SSS. The power budget extends upward in the
    same doubling (SS 32, SSS 64 a level), with the stacking caps rising by rank.
-2. **An evolved skill does not vanish:** the old skill stays, the evolved one is added (its levels start low). **A merge
-   absorbs its parts.**
+2. ~~**An evolved skill does not vanish:** the old skill stays, the evolved one is added (its levels start low).~~
+   **Replaced by order 95 (2026-11-26, D-192): when a skill evolves it becomes the next skill, so the old one is gone.**
+   Of a family's ladder only the top rung is held; the family reads through it; what the old rung gave passes on to its
+   evolution through its line (an effect of the same slot replaced by the new rung's), so nothing a check reads drops; an
+   art that evolves is gone into its evolution likewise. An older save's old rungs and arts are retired on load (save
+   version 21). **A merge absorbs its parts.** And (order 95) **a rare leap is not an event:** the advance of §3.4 is
+   archived; a skill jumps a rank only at a breakthrough, every hundredth level, when several conditions allow
+   (`E.rankJump`: Lv 5 or more and two of its evolution's concepts, its deed and the family's talent).
 3. **Names:** "Master" may stand in a skill's name; titles carry honours such as **Sword Saint**; a being can be **born with a
    title** (a Primordial Demon is born "Primordial Demon"). "Unique" is kept only for what is one of a kind.
 4. **Stats are raised by levels** (the points a level brings); **skills and titles grow by actions and training.**

@@ -5,16 +5,69 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Breakthroughs, and many more classes.** Every hundredth level is now a breakthrough: your body takes new points,
+  and a skill can jump a whole rank when you are ready for it (enough talent, the deeds it asks, most of what it
+  teaches already understood). Then the road divides: take a class or keep to your road. There are now over a hundred
+  and fifty classes, many hidden until your life opens them (Storm Blade, Shadow Bow, Holy Shield, Wolf Spear, Crown
+  Warrior, Wyrm Fighter and more), from common to legendary, and one unique. A class keeps its rarity as it advances.
+- **Where you start.** A youth who has never fought starts among ordinary people; a noble's upbringing puts him higher
+  (royals higher still), and years of service put a soldier among soldiers. Training now raises a stat a whole point at
+  a time. The legends refine their arts year by year, all alike, and can still win levels, slowly.
+- **Every win counts, and the hundreds are walls.** Beating anyone now teaches you something, even a man far weaker
+  than you, though a weak foe teaches very little. Each level asks a little more than the last, and the step to level
+  100, 200, 300 and on is a wall that asks many times more: hard to cross, never closed. At each wall the road divides
+  and you choose: a class (Swordsman, Archer, Shieldbearer, Rider, Brawler, Hunter, Warrior and more, then Sword Master,
+  Duelist, Blade Dancer, Lancer, Ranger, Berserker and others, then Blade Master, Hawkeye, Bulwark, Oathsworn, Banner
+  Rider and the like), or points for the body instead. A class gives you new things to do: a technique in duels, a
+  knack that wakes when you need it (low on blood, against a beast, in the first exchange), a way to ready the body for a
+  season or bind your wounds, and new work (teaching the sword, pit fights, bounties on beasts, guarding roads, raids).
+  The class you hold shows beside your level; press it for what it gives. Only one living person may be the Sword
+  Saint, and while the old Saint lives, nobody else is. Other people take their classes for their own reasons. The
+  legends can grow stronger too, but for them a level is the work of ages. Saved games load as they were: anyone
+  already past a hundred carries the class his life gives him, with nothing paid for it.
+
+- **A much taller ladder.** Every level is stretched. An ordinary grown person now stands about 35 (most between 20 and
+  50), a soldier 80 to 180, a knight 230 to 299 and more than an ordinary knight past that, a kingdom's elite 300 to 420,
+  and only a handful of the continent's strongest between 500 and 700. A grown dragon is about 700, a great demon about
+  650, a lesser demon 300 to 500. The legends stand from 800 up, and Sarnavoth, King of Dragons, at 1000. The fights
+  between them are as they were: Sarnavoth still a little behind the three Primordial Archdemons together, the Sword Saint
+  (now about 875) still even with any one of them and well above the Lord of the Sea. Your own strength, and every beast's,
+  is unchanged: only the numbers that read it moved.
+- **Calamities.** Twenty-nine new kinds of monster stand between the dragons and the legends: titans, hydras, lich-kings,
+  hive-empresses that eat a province bare, tempest rocs, the fire under the mountain, the Grey Hunt, gate-dukes of the
+  demons, colossi of the first forge and the serpents that girdle the sea. No one meets them yet: they wait for the map.
+- **No more rumours about titles.** Nothing tells you about a title before you earn it: the tavern tales are gone, and so
+  is "Things you have heard" in Records. Another person's title shows its name and what it gives, never what he did for
+  it. A title is announced when it comes.
+- **An evolved skill becomes the new one.** When a skill evolves, the old one is gone into it: Basic Swordsmanship
+  becomes Measured Blade rather than staying beside it, and everything the old one gave you carries on in the new. The
+  same goes for arts: Quick Cut becomes Twin Cut, and its place in hand passes on. Saved games tidy away the old skills
+  on load; nothing you can do gets worse.
+- **No more rare leap.** A skill no longer leaps a rank by luck after a great fight or a brush with death. Instead, a
+  breakthrough will come at every hundredth level, where a skill can jump a rank if enough is already in place: what it
+  asks understood, its deed done, or the talent for it.
+- **Titles can change a fight.** The rarer titles now give more: a share more might in a fight, more skill in a
+  family's tasks, more pay or quicker learning, and bigger boosts to the body. An uncommon title tips a close duel a
+  little; one of a kind, like Wyrm-Slayer, turns an even fight into one you should win. Always said in words, never
+  numbers.
+- **Beasts where they belong.** A bear, a tiger or a mammoth is an animal again: a soldier's death, but a band's kill, and
+  even the kings of the beasts (the Boar-King, the Mountain Father, the Queen of the Canopy) are a fight for knights, not
+  a rival to dragons. Trolls and ogres stand from a soldier's match to an elite's. Between 600 and 800 there are now only
+  true calamities: grown and elder dragons, great and ancient demons, titans, liches, leviathans, the great spirits and
+  the colossi of legend. There are only three ancient dragons under the King (Ash, Frost and Storm), few elder dragons
+  and no more than a hundred dragons in the world; thirty-three ancient demons, as strong as the elder dragons, rule
+  under the three Archdemons. The dragons of the High Roost are gone.
+
 ## v2.1.0-alpha.19 (2026-11-26 10:12 ET) · Skills evolve at level 10, two can merge, a rare leap once a life; titles earned by hidden deeds, stacked under the same limits
 
 - **Titles.** The world now gives names for what you do: the Undefeated, the Unbought, Ironhide, the Hundred-Day Wall,
   the Peacemaker, Beast-Bane, Wyrm-Slayer, the Sword of your realm and more. A title is never bought or trained, and
-  what earns one is never shown: at most you hear a rumour of it in a tavern once you have done something on its road.
+  what earns one is never shown, nor hinted at.
   Titles stack: each brings honour and renown once, and while you hold it a gift in words (a steadier nerve, a harder
   guard, the regard of soldiers, a little more strength), never past the limits skills already have. Some are one of a
   kind, held by one living person at a time, and some can be lost (a single defeat ends the Undefeated). Your profile
-  shows the title you bear beside your name and a row of your titles (press one for its story); Records lists them,
-  the ones you lost and the rumours you have heard. Other people's profiles show theirs. The legends keep their titles
+  shows the title you bear beside your name and a row of your titles (press one for its story); Records lists them
+  and the ones you lost. Other people's profiles show theirs. The legends keep their titles
   and their strength exactly as before; the Sword Saint's is both a title and a class. Saved games load with no titles.
 - **Skills evolve.** When a skill reaches level 10 and you have what its next rank asks (the concepts and, from rank B,
   a deed; thirty years for the highest), it evolves: the new skill begins beside the old one, which you keep. The log

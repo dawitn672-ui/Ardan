@@ -1,11 +1,11 @@
 {
- "about": "The great beings of the world (powers wave 1, docs/design/powers.md): the legends, each one of a kind (one holder), each with a title, the strongest beings on the continent and national threats whose power could threaten the world; each a hand-written character sheet. level is before its titles' buffs (the owner's levels with them: Sarnavoth about 800, by far the strongest single being, yet at a slight disadvantage against the three Primordial Archdemons (770-780) together; the Sword Saint about 700, an even match for one of them through his class, titles, skills and sword; the Lord of the Sea about 690, below him; every other legend between, above 600). home.type: lair (a fixed place it guards), roam (moves through its ground), city (lives among people, unknown), realm (serves a crown), sea (sleeps in the deep, rises at a coast), sealed (bound in a place); home.terr and home.place (a named place) let the final map place it in one pass. A sleeper (sleeper: true) sleeps for ages and decides once a year, through A.WHY, whether what would wake it (wake) has come. temper: A.WHY's ten axes (-1..1). habits: what each season draws it to and why. loves and grudges point at a realm (POL-xx), a people (race) or another being, with a weight and the reason; desires and fears are tags the module reads. skills: rank D to S, level 1 to 10 at most (past 10 a skill only evolves or merges); fight skills make its art (data/power.json power). items: each with a quality and what it gives. class: a being's calling, where it has one. reacts: how it answers being sought, flattered, attacked (challenged) or ignored. A title marked born was had from birth. Title requirements (req) are never shown to the player.",
+ "about": "The great beings of the world (powers wave 1, docs/design/powers.md): the legends, each one of a kind (one holder), each with a title, the strongest beings on the continent and national threats whose power could threaten the world; each a hand-written character sheet. level is before its titles' buffs (the owner's levels, stretched by order 92 so that countless more monsters fit below them, every legend's level x 1000/800 (D-185): Sarnavoth at 1000, by far the strongest single being, yet at a slight disadvantage against the three Primordial Archdemons (963-975) together; the Sword Saint about 875, an even match for one of them through his class, titles, skills and sword; the Lord of the Sea about 863, below him; every other legend between, from 800 up). home.type: lair (a fixed place it guards), roam (moves through its ground), city (lives among people, unknown), realm (serves a crown), sea (sleeps in the deep, rises at a coast), sealed (bound in a place); home.terr and home.place (a named place) let the final map place it in one pass. A sleeper (sleeper: true) sleeps for ages and decides once a year, through A.WHY, whether what would wake it (wake) has come. temper: A.WHY's ten axes (-1..1). habits: what each season draws it to and why. loves and grudges point at a realm (POL-xx), a people (race) or another being, with a weight and the reason; desires and fears are tags the module reads. skills: rank D to S, level 1 to 10 at most (past 10 a skill only evolves or merges); fight skills make its art (data/power.json power). items: each with a quality and what it gives. class: a being's calling, where it has one. reacts: how it answers being sought, flattered, attacked (challenged) or ignored. A title marked born was had from birth. Title requirements (req) are never shown to the player.",
  "legends": [
   {
    "id": "vaskareth",
    "n": "Vaskareth",
    "fam": "dragons",
-   "level": 692,
+   "level": 865,
    "int": "wise",
    "age": "about two thousand four hundred years",
    "titles": [
@@ -179,7 +179,7 @@
    "id": "tessaly",
    "n": "Tessaly",
    "fam": "deep",
-   "level": 690,
+   "level": 863,
    "int": "wise",
    "age": "older than the coasts",
    "titles": [
@@ -335,7 +335,7 @@
    "id": "ommul",
    "n": "Ommul",
    "fam": "oozes",
-   "level": 658,
+   "level": 823,
    "int": "wise",
    "age": "nine centuries since it first thought",
    "titles": [
@@ -486,7 +486,7 @@
    "id": "serrath",
    "n": "Serrath",
    "fam": "fey",
-   "level": 672,
+   "level": 840,
    "int": "wise",
    "age": "older than the elves' coming west, some five thousand years",
    "titles": [
@@ -659,7 +659,7 @@
    "id": "ulmavren",
    "n": "Ul-Mavren",
    "fam": "undead",
-   "level": 680,
+   "level": 850,
    "int": "wise",
    "age": "dead two thousand years",
    "titles": [
@@ -839,7 +839,7 @@
    "id": "kethra",
    "n": "Kethra",
    "fam": "skyborne",
-   "level": 664,
+   "level": 830,
    "int": "speaking",
    "age": "about eleven centuries",
    "titles": [
@@ -990,7 +990,7 @@
    "id": "orrun",
    "n": "Orrun",
    "fam": "giants",
-   "level": 674,
+   "level": 843,
    "int": "wise",
    "age": "older than any throne of men: some four thousand years",
    "titles": [
@@ -1151,7 +1151,7 @@
    "id": "pale-shepherd",
    "n": "The Pale Shepherd",
    "fam": "hounds",
-   "level": 648,
+   "level": 810,
    "int": "wise",
    "age": "about fifteen centuries",
    "titles": [
@@ -1309,7 +1309,7 @@
    "id": "morvane",
    "n": "Morvane",
    "fam": "demons",
-   "level": 775,
+   "level": 969,
    "int": "wise",
    "age": "came through the gate some three thousand years ago",
    "titles": [
@@ -1485,7 +1485,7 @@
    "id": "iron-warden",
    "n": "The Iron Warden",
    "fam": "constructs",
-   "level": 640,
+   "level": 800,
    "int": "speaking",
    "age": "forged some eighteen centuries ago",
    "titles": [
@@ -1645,7 +1645,7 @@
    "id": "saqqar",
    "n": "Saqqar",
    "fam": "cats",
-   "level": 650,
+   "level": 813,
    "int": "speaking",
    "age": "about fourteen centuries",
    "titles": [
@@ -1796,7 +1796,7 @@
    "id": "hrimgala",
    "n": "Hrimgala",
    "fam": "spirits",
-   "level": 682,
+   "level": 853,
    "int": "wise",
    "age": "as old as the ice",
    "titles": [
@@ -1952,7 +1952,7 @@
    "id": "sarnavoth",
    "n": "Sarnavoth",
    "fam": "dragons",
-   "level": 800,
+   "level": 1000,
    "int": "wise",
    "age": "about four thousand years",
    "titles": [
@@ -2157,7 +2157,7 @@
    "id": "ghazrul",
    "n": "Ghazrul",
    "fam": "demons",
-   "level": 780,
+   "level": 975,
    "int": "wise",
    "age": "as old as the gates",
    "titles": [
@@ -2340,7 +2340,7 @@
    "id": "sword-saint",
    "n": "Cael Vardan",
    "fam": "human",
-   "level": 700,
+   "level": 875,
    "int": "wise",
    "age": "one hundred and nineteen years; his strength has kept him alive long past any man",
    "titles": [
@@ -2572,7 +2572,7 @@
    "id": "vethrael",
    "n": "Vethrael",
    "fam": "demons",
-   "level": 770,
+   "level": 963,
    "int": "wise",
    "age": "as old as the gates",
    "titles": [

@@ -15,7 +15,7 @@ const b64 = f => fs.readFileSync(f).toString('base64');
 const GATE = () => typeof A !== 'undefined' && !!A.TT && !!A.deedDone && !!A.DATA.titles && !!A.POWER;
 const NO = { ok: false, detail: 'A.TT not in this build' };
 
-export const limits = { ttSave: 2400, ttUnique: 1800, ttDeterministic: 1800 };
+export const limits = { ttGameChanger: 900, ttSave: 2400, ttUnique: 1800, ttDeterministic: 1800 };
 export default {
   // a title is earned when, and only when, its hidden conditions are met, through the real doors: nineteen duels won make
   // no title and the twentieth makes the Undefeated (a notable card, honour paid once); a loss takes it away and leaves
@@ -158,6 +158,79 @@ export default {
     return { ok, detail: `six slay a dragon in one pass: ${r.slayers.length} Wyrm-Slayer (the first in id order ${r.slayers[0] === r.first}); he dies, the next one's ${r.next}; First of the Age again after its holder died: ${r.faAgain}; the Saint's title held by ${r.saintHeld}, taken while he lives ${r.saintTaken}, free once he is slain ${r.saintFree === null}, then taken ${r.saintNow} (class ${r.saintClass}); the Sword of a realm, two men in each of two realms: ${JSON.stringify(r.perRealm)}; keys with two living holders now ${r.twoNow}, over ${r.lifeYears} audited years ${r.lifeTwos}; at the age's start ${r.preAge} old masters written down, First of the Age given ${r.faStart}` };
   },
 
+  // order 95 (D-192): titles can be game changers. A title's share boost to fighting worth sits in a pool of its own,
+  // capped by the rarest title among the sources (uncommon 0.02, rare 0.05, legendary 0.15, one of a kind 0.25), apart from
+  // the skills' 15%. Over pairs of grown men of the world whose honest duel odds stand near even (seed fallback, pooled
+  // over worlds 9891-9894), the same man is given an uncommon title (Blooded), a rare one (the Undefeated), and a title one
+  // of a kind (Wyrm-Slayer): the uncommon one moves his odds a little (more than nothing, under 8 points on average), the
+  // one of a kind markedly (20 points or more on average), the rare one between. The caps hold: every title at once and a
+  // planted boost far past any cap give at most a quarter of his worth to a fight and of his read to a check, and an
+  // uncommon title alone, planted far past its cap, its tier's 0.02. Income and experience read their boosts too. Nothing
+  // drawn; every read the same once the titles are gone.
+  async ttGameChanger(pg) {
+    if (!(await pg.evaluate(GATE))) return NO;
+    const r = await pg.evaluate(() => {
+      const TT = A.TT, SK2 = A.SK2, E = SK2.E(), out = { pairs: 0, d: { blooded: [], undefeated: [], 'wyrm-slayer': [] }, bad: [], worlds: [] };
+      const bad = s => { if (out.bad.length < 10) out.bad.push(s); };
+      const reset = () => { SK2.capsReset(); if (A.cacheResetAll) A.cacheResetAll(); };
+      const give = (p, ids) => { p.tt = { h: {} }; for (const id of ids) p.tt.h[id] = { y: A.S.year, w: '' }; reset(); };
+      const take = p => { delete p.tt; reset(); };
+      for (const seed of [9891, 9892, 9893, 9894]) {
+        if (out.pairs >= 24) break;
+        A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 26 }); A.S.queue = [];
+        out.worlds.push(seed);
+        const men = Object.values(A.S.people).filter(p => p && p.alive && p.st && !p.tt && A.age(p) >= 20 && A.age(p) <= 45 && A.fightWorth(p) > 30).sort((a, b) => (String(a.id) < String(b.id) ? -1 : 1)).slice(0, 80);
+        const rng0 = JSON.stringify(A.rngState);
+        for (let i = 0; i + 1 < men.length && out.pairs < 8 * out.worlds.length; i++) {
+          const a = men[i], b = men.find((q, j) => j > i && Math.abs(A.shownDuelOdds(a, q) - 50) <= 12);
+          if (!b) continue;
+          const o0 = A.shownDuelOdds(a, b), w0 = A.fightWorth(a);
+          for (const id of Object.keys(out.d)) {
+            give(a, [id]);
+            const o1 = A.shownDuelOdds(a, b), f = A.fighterFrom(a, {}), cap = E.CAP_BOOST[TT.BY.get(id).unique ? 'unique' : TT.BY.get(id).rarity];
+            out.d[id].push(o1 - o0);
+            if (!(f.ttb > 0) || f.ttb > cap * SK2.worthOfFighter(f) + 1e-6) bad(`${id}: boost ${f.ttb} of worth ${SK2.worthOfFighter(f)} (cap ${cap})`);
+            take(a);
+          }
+          if (A.shownDuelOdds(a, b) !== o0 || A.fightWorth(a) !== w0) bad(a.id + ': not as before once the titles are gone');
+          out.pairs++;
+        }
+        if (JSON.stringify(A.rngState) !== rng0) bad('a read drew from the stream');
+      }
+      const mean = l => (l.length ? l.reduce((s, x) => s + x, 0) / l.length : 0);
+      out.mean = Object.fromEntries(Object.entries(out.d).map(([k, l]) => [k, Math.round(mean(l) * 10) / 10]));
+      out.min = Object.fromEntries(Object.entries(out.d).map(([k, l]) => [k, Math.round(Math.min(...l) * 10) / 10]));
+      // the caps: every title at once, and a boost planted far past any cap
+      const p = Object.values(A.S.people).filter(q => q && q.alive && q.st && !q.tt && A.age(q) >= 20 && A.fightWorth(q) > 30).sort((x, y) => (String(x.id) < String(y.id) ? -1 : 1))[0];
+      const HUGE = { id: 'title:tt-test-boost', rank: 'S', rarity: 'legendary', unique: true, kind: 'title', boostCap: 1, levels: [{ at: 1, effects: [
+        { type: 'boost', of: 'fight', v: 5 }, { type: 'boost', of: 'check', v: 5 }, { type: 'boost', of: 'income', v: 5 }, { type: 'boost', of: 'growth', v: 5 }] }] };
+      const LOW = { id: 'title:tt-test-low', rank: 'D', rarity: 'uncommon', unique: false, kind: 'title', levels: [{ at: 1, effects: [{ type: 'boost', of: 'fight', v: 5 }, { type: 'boost', of: 'check', v: 5 }] }] };
+      SK2.addSource(HUGE); SK2.addSource(LOW); TT.XS.set('tt-test-boost', HUGE); TT.XS.set('tt-test-low', LOW);
+      try {
+        const r0 = A.skill(p, 'intrigue'), e0 = A.skillEff(p, 'intrigue');
+        give(p, TT.PERSON.map(t => t.id).concat(['tt-test-boost']));
+        const f = A.fighterFrom(p, {});
+        out.caps = { fight: Math.round(f.ttb / SK2.worthOfFighter(f) * 1000) / 1000, check: SK2.boostOf(p, 'check', 'intrigue'), income: SK2.boostOf(p, 'income'), growth: SK2.boostOf(p, 'growth', 'sword'), skillFight: f.sk2 ? Math.round(f.sk2.total / SK2.worthOfFighter(f) * 1000) / 1000 : 0 };
+        out.caps.checkPts = A.skillEff(p, 'intrigue') - e0; out.caps.read = r0;
+        for (const k of ['fight', 'check', 'income', 'growth']) if (Math.abs(out.caps[k] - E.CAP_BOOST.unique) > 1e-6) bad(`every title and a planted boost: ${k} ${out.caps[k]}, not the cap of ${E.CAP_BOOST.unique}`);
+        if (out.caps.skillFight > 0.15 + 1e-9) bad('the skills\' fight share past 15%: ' + out.caps.skillFight);
+        give(p, ['tt-test-low']);
+        const g = A.fighterFrom(p, {});
+        out.caps.low = [Math.round(g.ttb / SK2.worthOfFighter(g) * 1000) / 1000, SK2.boostOf(p, 'check', 'sword')];
+        if (Math.abs(out.caps.low[0] - E.CAP_BOOST.uncommon) > 1e-6 || Math.abs(out.caps.low[1] - E.CAP_BOOST.uncommon) > 1e-6) bad('an uncommon title past its cap: ' + out.caps.low);
+        // experience: a month's effort reads the growth boost (A.gainXp's door), by the share
+        give(p, ['first-of-the-age']);
+        out.caps.xp = [SK2.boostOf(p, 'growth', 'sword'), SK2.boostOf(p, 'check', 'persuasion')];
+        if (Math.abs(out.caps.xp[0] - 0.25) > 1e-6 || Math.abs(out.caps.xp[1] - 0.12) > 1e-6) bad('First of the Age: growth and checks ' + out.caps.xp);
+      } finally { take(p); TT.XS.delete('tt-test-boost'); TT.XS.delete('tt-test-low'); reset(); }
+      return out;
+    });
+    const m = r.mean || {};
+    const ok = !r.bad.length && r.pairs >= 12 && m.blooded > 0 && m.blooded < 8 && m['wyrm-slayer'] >= 20 && m.undefeated > m.blooded && m.undefeated < m['wyrm-slayer'] && r.min.blooded >= 0;
+    return { ok, detail: `${r.pairs} pairs near even odds (worlds ${r.worlds.join(', ')}): the odds moved on average by ${JSON.stringify(r.mean)} points (least ${JSON.stringify(r.min)}); ` +
+      `caps with every title and a planted boost ${JSON.stringify(r.caps)}; ${r.bad.length} faults${r.bad.length ? ': ' + r.bad.join('; ') : ''}` };
+  },
+
   // the caps bind titles and skills together: a man given every title a person may hold and, beside them, a planted title
   // far past any budget (+50 on every check, +50 to a fight, +30 to a stat, 6 aura steps, 9 steps of resisting) reads at
   // most +12 on any check, +15% of his fighting worth, +10 on a stat and never past his potential by more than 5, 3 aura
@@ -165,7 +238,7 @@ export default {
   async ttCaps(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     const r = await pg.evaluate(() => {
-      const TT = A.TT, SK2 = A.SK2, out = { n: 0, edge: 0, fight: 0, stat: 0, statPot: 0, aura: 0, resist: 0, back: 0 };
+      const TT = A.TT, SK2 = A.SK2, out = { n: 0, edge: 0, fight: 0, boost: 0, stat: 0, statPot: 0, aura: 0, resist: 0, back: 0 };
       const HUGE = { id: 'title:tt-test-huge', rank: 'S', kind: 'title', levels: [{ at: 1, effects: [
         { type: 'edge', tag: 'all', v: 50 }, { type: 'fight', tag: 'all', part: 'atk', v: 50 }, { type: 'fight', tag: 'all', part: 'def', v: 50 },
         { type: 'stat', stat: 'str', v: 30 }, { type: 'stat', stat: 'wil', v: 30 }, { type: 'aura', of: 'discipline', scale: 'army', v: 6 }, { type: 'resist', of: 'fear', v: 9 }, { type: 'resist', of: 'wounds', v: 9 }] }] };
@@ -188,6 +261,8 @@ export default {
           // the fight: the effects' share of the worth he has without them
           const f = A.fighterFrom ? A.fighterFrom(p) : null;
           if (f && f.sk2) out.fight = Math.max(out.fight, f.sk2.total / Math.max(1e-9, SK2.worthOfFighter(f)));
+          // and the titles' share boost, a pool of its own (D-192): at most the rarest title's cap, a quarter
+          if (f && f.ttb) out.boost = Math.max(out.boost, f.ttb / Math.max(1e-9, SK2.worthOfFighter(f)));
           // a stat: at most +10, and the body's value never lifted past its potential by more than 5 (age, traits and wounds
           // then move what is read, as before)
           GD.STATS.forEach((s, i) => { const d = A.stat(p, s) - before.s[i]; out.stat = Math.max(out.stat, d); const pot = (p.pot && p.pot[s]) || 0; if (d > Math.max(0, pot + 5 - body[i]) + 1) out.statPot++; });
@@ -207,8 +282,8 @@ export default {
       const r1 = JSON.stringify(A.rngState); A.skillEff(p, 'sword'); A.stat(p, 'str'); A.fightWorth(p); out.pure = JSON.stringify(A.rngState) === r1; delete p.tt; SK2.capsReset();
       return out;
     });
-    const ok = r.n >= 60 && r.edge <= 12 && r.edge >= 11 && r.fight <= 0.15 + 1e-9 && r.fight > 0.1 && r.stat <= 10 && r.stat >= 1 && r.statPot === 0 && r.aura <= 3 && r.resist <= 3 && r.back === 0 && r.pure;
-    return { ok, detail: `${r.n} people given every title and a planted one far past any budget: a check gains at most ${r.edge} (cap 12), a fight ${(r.fight * 100).toFixed(1)} in 100 of his worth (cap 15), a stat ${r.stat} (cap 10; past the potential by more than 5: ${r.statPot}), an aura ${r.aura} steps (cap 3), resisting ${r.resist} (cap 3); every read the same once they are gone: ${r.back === 0}; a read draws nothing: ${r.pure}` };
+    const ok = r.n >= 60 && r.edge <= 12 && r.edge >= 11 && r.fight <= 0.15 + 1e-9 && r.fight > 0.1 && r.boost <= 0.25 + 1e-9 && r.boost >= 0.24 && r.stat <= 10 && r.stat >= 1 && r.statPot === 0 && r.aura <= 3 && r.resist <= 3 && r.back === 0 && r.pure;
+    return { ok, detail: `${r.n} people given every title and a planted one far past any budget: a check gains at most ${r.edge} (cap 12), a fight ${(r.fight * 100).toFixed(1)} in 100 of his worth (cap 15) and from the titles' boosts ${(r.boost * 100).toFixed(1)} more (cap 25), a stat ${r.stat} (cap 10; past the potential by more than 5: ${r.statPot}), an aura ${r.aura} steps (cap 3), resisting ${r.resist} (cap 3); every read the same once they are gone: ${r.back === 0}; a read draws nothing: ${r.pure}` };
   },
 
   // an NPC earns a title by his own deeds and loses it the same way: a man with nineteen wins behind him beats the player
@@ -335,9 +410,11 @@ export default {
     return { ok, detail: `every sheet's titles resolve from data/titles/ ${r.resolved}; Sarnavoth against the three ${r.king.toFixed(3)}; the Saint against each archdemon ${r.one.map(x => x.toFixed(3)).join(', ')}; over the Lord of the Sea ${r.sea.toFixed(3)}; the Sword Saint a title and a class ${r.cls}, a person may earn it ${r.person}; archdemons born to their title ${r.born}; firepower in the Dragon King's and archdemons' titles ${r.fire}` };
   },
 
-  // hints and the hidden: a man who has done one of a title's deeds can hear of it (tt_hint becomes possible), at most once
-  // a title; a man who has done none cannot; the hint card's words name no condition; the rendered pages of a life of
-  // thirty years show no deed kind and no condition word
+  // no hints (order 92, "no hints throughout the games on titles"; D-185): no rumour card and no reader of one, no title
+  // carrying a hint, a man with deeds toward titles he does not hold hears nothing of them (Records has no "Things you
+  // have heard", even for an older save that heard some), the crown withholding a title says nothing to him, another man's
+  // title card names no deed (the player's own still tells what he did: a title is announced when it is earned), and the
+  // rendered pages of a life of thirty years show no deed kind and no condition word
   async ttHidden(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     const r = await pg.evaluate(() => {
@@ -345,23 +422,45 @@ export default {
       T.enter({ seed: 9891, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
       A.S.queue = [];
       const pc = A.pc();
-      out.none = TT.hintable(pc).length;
-      A.deedDone(pc, 'duel_won');
-      const l = TT.hintable(pc).map(t => t.id); out.some = l;
-      out.cond = !!A.EV.tt_hint.cond(pc, A.C);
-      A.S.queue = [{ type: 'event', ev: 'tt_hint', ctx: {} }];
-      const v = A.eventView(A.S.queue[0]); out.text = v && v.text; A.eventChoose(0); A.S.queue = [];
-      out.heard = (pc.tt.hd || []).slice();
-      out.after = TT.hintable(pc).map(t => t.id).filter(id => out.heard.includes(id)).length;
-      out.digits = /\d/.test(out.text || '');
+      out.card = !!(A.EV && A.EV.tt_hint);
+      out.reader = typeof TT.hintable === 'function' || typeof TT.heard === 'function';
+      out.hinted = [...TT.BY.values()].filter(t => 'hint' in t).map(t => t.id);
+      // deeds toward several titles, none earned: nothing tells of them
+      for (let i = 0; i < 5; i++) A.deedDone(pc, 'duel_won');
+      for (let i = 0; i < 2; i++) A.deedDone(pc, 'treaty_made', { key: 'w' + i });
+      A.deedDone(pc, 'bribe_refused');
+      out.queued = A.S.queue.map(q => q.ev).filter(Boolean);
+      A.S.queue = [];
+      pc.tt = Object.assign(pc.tt || {}, { hd: ['undefeated', 'peacemaker'] });   // an older save's rumours heard
+      UI.tab = 'profile'; UI.ov = null; UI.PF.view = 'records'; UI.PF.open.titles = true; UI.render();
+      out.heardShown = /Things you have heard|A tale/.test((document.getElementById('tabbody') || document.body).innerText);
+      // the crown withholds a title: no line in the log
+      const sw = TT.BY.get('sword-of-the-realm'), why = A.WHY.decide, log = A.log;
+      let lines = 0;
+      A.WHY.decide = () => ({ chose: 'withhold' }); A.log = function () { lines++; return log.apply(this, arguments); };
+      try { out.granted = TT.granted(pc, sw); } finally { A.WHY.decide = why; A.log = log; }
+      out.logLines = lines;
+      // another man's title card names no deed; the player's own tells what he did
+      const npc = Object.values(A.S.people).filter(p => p.alive && p.st && p.id !== pc.id && A.age(p) >= 20 && A.age(p) <= 40).sort((a, b) => (a.id < b.id ? -1 : 1))[0];
+      const U = TT.BY.get('undefeated');
+      for (let i = 0; i < 25 && !TT.holds(npc, 'undefeated'); i++) A.deedDone(npc, 'duel_won');
+      for (let i = 0; i < 25 && !TT.holds(pc, 'undefeated'); i++) A.deedDone(pc, 'duel_won');
+      A.S.queue = [];
+      const theirs = TT.cardText(npc, 'undefeated'), mine = TT.cardText(pc, 'undefeated'), hw = ((npc.tt && npc.tt.h && npc.tt.h.undefeated) || {}).w || '';
+      out.npcHeld = TT.holds(npc, 'undefeated'); out.pcHeld = TT.holds(pc, 'undefeated');
+      out.theirs = theirs; // (the deed's count in words, not D-192's share boost: "a twentieth more might" names no deed)
+      out.theirsDeed = !!(hw && theirs.includes(hw)) || theirs.includes(U.text) || /twenty (fights|times)|twentieth (fight|time)/i.test(theirs);
+      out.mineDeed = mine.includes(U.text);
+      UI.PF.view = 'profile'; UI.render();
       T.play(30);
       const kinds = Object.keys(TT.V.deeds).filter(k => k.includes('_'));   // the ledger's own words (battle alone is English)
       let shown = [];
-      for (const tab of T.tabs()) { UI.tab = tab; UI.ov = null; try { UI.render(); } catch (e) {} const txt = document.body.innerText + ' ' + [...document.querySelectorAll('[data-v]')].map(e => e.getAttribute('data-v')).join(' '); shown = shown.concat(kinds.filter(k => txt.includes(k))); if (/"requires"|"watch"/.test(txt)) shown.push(tab + ':condition'); }
+      for (const tab of T.tabs()) { UI.tab = tab; UI.ov = null; try { UI.render(); } catch (e) {} const txt = document.body.innerText + ' ' + [...document.querySelectorAll('[data-v]')].map(e => e.getAttribute('data-v')).join(' '); shown = shown.concat(kinds.filter(k => txt.includes(k))); if (/"requires"|"watch"/.test(txt)) shown.push(tab + ':condition'); if (/Things you have heard/.test(txt)) shown.push(tab + ':heard'); }
       out.shown = [...new Set(shown)];
       return out;
     });
-    const ok = r.none === 0 && r.some.length >= 1 && r.cond && !!r.text && r.heard.length === 1 && r.after === 0 && !r.digits && !r.shown.length;
-    return { ok, detail: `no deed: ${r.none} titles to hear of; one duel won: ${r.some.join(', ')} (the card can come ${r.cond}); heard ${r.heard.join()}, again ${r.after}; the card's words "${(r.text || '').slice(0, 120)}..." with digits ${r.digits}; thirty years' pages show ${r.shown.length ? r.shown.join(', ') : 'no condition'}` };
+    const ok = !r.card && !r.reader && !r.hinted.length && !r.queued.includes('tt_hint') && !r.heardShown && r.granted === false && r.logLines === 0 &&
+      r.npcHeld && r.pcHeld && !r.theirsDeed && r.mineDeed && !r.shown.length;
+    return { ok, detail: `rumour card ${r.card}, reader ${r.reader}, titles with a hint ${r.hinted.join(', ') || 'none'}; deeds toward four titles queued ${r.queued.join(', ') || 'nothing'}; Records shows rumours ${r.heardShown}; the crown withholding wrote ${r.logLines} line(s); another man's Undefeated: "${r.theirs}" (a deed in it ${r.theirsDeed}); the player's own names it ${r.mineDeed}; thirty years' pages show ${r.shown.length ? r.shown.join(', ') : 'no condition'}` };
   },
 };
