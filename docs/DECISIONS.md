@@ -2876,6 +2876,56 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
   same ceiling until then. Also deferred: the training screen and professions (§12.3-12.4); an event's murder pays as
   an average person's; NPC-against-NPC duels outside a battle record nothing.
 
+### D-182 · The skills rebuild, steps 7 and 8: evolution, merging and advancing (2026-11-26; skills-v2 §3.2-3.4, §10 rows 7-8, §15 answers 2, 5, 8; D-163)
+- **An edge's conditions are the rung's route, read by S1's engine.** A family's ladder still runs on S1's table under
+  the rungs (D-179), and S1's rank edges are where an evolution stands (C, B, A or S at Lv 10, the bar full). S1's engine
+  now asks the game at every edge (`p.gate`) and the answer is the target rung's `evolve` route from `data/skills`
+  (`E.edgeVerdict`): S1's concepts (the validator, check 5, holds the data's concepts at each edge equal to S1's, so the
+  insight engine still grasps them), the deed (S1's proof read as the deed `proved`), and whatever else the route asks
+  (today: thirty years for S). The S rung's `renowned_deed` is S1's proof done by someone of renown (fame 30 or more,
+  `SK2.RENOWN`). A rung absorbed by a merge never evolves (`absorbed`). The gates inside D and S at Lv 6 read the rung's
+  `gates`. **Considered:** porting S1's settle into the adapter (the whole month's arithmetic moved for no change a
+  player sees; the hook is a few lines in the engine, and S1's own conditions stay its fallback).
+- **Every evolution is recorded and brings something (§15.5).** `pc.ke.ev` (at most 24, with the reason: the concepts
+  seen, the deed's cause, the age), the skill's record, a log line, the year's digest. The player gets the card
+  `sk2_evolved` for an evolution into B or higher and for the first of his life (from age 12): a stat point through
+  `A.LV.grant` (recorded on his level, `lv.gx`, `lv.gw`), the new rung's first months (four months of drill), renown, or
+  rest; none is best on every count (`lint-choices`). Other evolutions, and a child's, bring the first months.
+  **Considered:** a card for every evolution (D to C comes in many families of a working life: too many cards).
+- **Anyone else evolves by the same route in the closed form** (S1's `npcGain`, the yearly pass and the month's few):
+  his concepts by S1's hash, his deed being his post's (S1 asked none of him; a man who works at it daily is tried by it)
+  or a stretch won, a renowned deed his post with renown, an office or a crown. From rank B up an evolution grants him one
+  point through `A.LV.grant` (seeding his level; placed at the year's turn by his post's reasons). Nothing is drawn.
+- **Merging (§3.4, §15.8): only level-10 skills of different families.** A part must be its family's top rung at Lv 10
+  (past Lv 10 a skill evolves or merges, not both). Recipes are data (`recipes.json`, eight: six known, two found; their
+  results in `data/skills/arts/merges.json`, rank B over C parts, each reading both families, small edges at Lv 5 and 10
+  inside the budget). `tools/lint-skills.mjs` (check 8) and `E.recipeFaults` hold every part at Lv 10, no family twice,
+  the result reading all its parts' families, never a ladder's rung, one recipe a result; the engine's graph keeps the
+  whole acyclic (check 7). A known recipe is offered on the card `sk2_merge_offer` when a school or one of the people a
+  life learns from (`A.teacherFor`'s relations) stands at the result's rank in one of its families, at most once in three
+  years a recipe; a found recipe comes at a named moment, 1 in 200 by the moment's hash, once a life. Taken: the result
+  is held in `pc.ks` (`via: 'merge'`, its parts, its families, the better part's read as its floor) and listed in
+  `pc.ke.m`; the parts are absorbed (shown nowhere, sealed, their families read through the result, the mirror the
+  better of the two); it levels from its families' monthly experience (their mean: one art worked from either side grows
+  as one ladder would) and stops at Lv 10. **The ladders' entries of the parts stay in `pc.ks`** as S1's working form:
+  absorption is read through `pc.ke.m`, not by deleting them (deleted, `SK2.sync` would write them back each month and the
+  family would read its D rung). **Considered:** §3.4's found merges from Lv 7 (answer 8 binds every merge to Lv 10).
+- **Advancing (§3.4): once a life, a breakthrough.** At a named moment (a fight won far above you, `deed_above`, weighed
+  before the body's breakthrough in `A.duelConsequences`; a near death, `near_death`, the month it comes) a top rung at
+  Lv 5 or more leaps to the next rank's Lv 1: 1 in 100 by the moment's hash (the world, the player, the moment's kind and
+  his count of moments), only while D-163's budget is open, and it spends one of its three. Its concepts are deemed
+  grasped (`SK.set`), the deed is the moment, and it costs a wound that stays (a scar; ten years' wear when every scar is
+  taken). The ladder shows the rungs below the new one at Lv 10 (its rule since D-179); the read is the new rung's.
+  **Why hashes:** a chance that is no one's choice is luck, not a decision (A.WHY is for choices), and a hash leaves the
+  world's stream where it was.
+- **Save version 19** (step `skills2evo`): the player's `pc.ke`; the rungs he holds above D on load are listed in
+  `pc.ke.pre` (evolved before their reasons were kept). A new life makes `pc.ke` at its first evolution.
+- **Deferred:** NPCs merge and advance nothing (one number a skill; the census of named skills is step 9); vocab.json's
+  other moments (`blessing`, `long_siege`, `crisis_stretch`, `campaign_end`) have no hook yet; a merge result evolves
+  nowhere (no `evolvesTo`); the edge state the cards read (`C.ready`, `C.stuck`) is still S1's, so a player held only by
+  the S rung's age reads neither; a level set outright (`SK.set`: a seat's minimum, a card) still moves an absorbed
+  family's ladder as before (its read is the better of the two); how often each happens is step 12's balance.
+
 ### D-183 · Titles: earned by hidden conditions, stacked under the skills' caps; the legends' titles moved into the same data (2026-11-26; skills-v2 §11 with §15; orders 79, 82, 83, 84, 89)
 - **One kind of data for every title.** `data/titles/` (`vocab.json`, `people.json`, `legends.json`; `A.DATA.titles`).
   The legends' and masters' inline titles moved there; their sheets name them by id and `A.POWER` resolves each to the

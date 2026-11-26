@@ -182,8 +182,12 @@ export function settle(p, k, age, why) {
     const c = cost(s.lv);
     if (s.xp < c) break;
     if (atEdge(s)) {
-      const w = wordOf(s.lv) + 1, missing = openConcepts(p, k);
-      const barred = missing.length || (w >= PROOF_FROM && !s.proved);
+      // The skills rebuild, step 7 (D-182): the game may read an edge's conditions from the rung's route (p.gate(k, w, s,
+      // age) -> { concepts: [S1's concepts not grasped], deed: true while a deed is wanting, other: [what else is wanting,
+      // in words] }); without it, S1's own: the word's concepts and, from the fourth band, the proof.
+      const w = wordOf(s.lv) + 1, g = p.gate ? p.gate(k, w, s, age) : null, missing = g ? g.concepts : openConcepts(p, k);
+      const deedWanting = g ? !!g.deed : w >= PROOF_FROM && !s.proved, other = (g && g.other) || [];
+      const barred = missing.length || deedWanting || other.length;
       if (barred) {
         const over = s.xp - c, room = storeRoom(s);
         const kept = Math.min(room, over * (missing.length ? STORE_RATE : 1));
@@ -192,14 +196,16 @@ export function settle(p, k, age, why) {
         if (s.stallAt == null) s.stallAt = age;
         if (!s.stallSaid && age - s.stallAt >= 1) {
           s.stallSaid = true;
-          rec(p, age, k, 'stall', missing.length ? `${SKILL[k].name} holds at ${levelName(s.lv, s.xp)}: has not grasped ${missing.map(x => x.name).join(' or ')}` : `${SKILL[k].name} holds at ${levelName(s.lv, s.xp)}: ready, and the deed not yet done`);
+          rec(p, age, k, 'stall', missing.length ? `${SKILL[k].name} holds at ${levelName(s.lv, s.xp)}: has not grasped ${missing.map(x => x.name).join(' or ')}` : deedWanting ? `${SKILL[k].name} holds at ${levelName(s.lv, s.xp)}: ready, and the deed not yet done` : `${SKILL[k].name} holds at ${levelName(s.lv, s.xp)}: ${other.join('; ')}`);
         }
         break;
       }
-      const by = w >= PROOF_FROM && s.proofWhy ? s.proofWhy : why;
+      const by = (g ? g.deedAsked : w >= PROOF_FROM) && s.proofWhy ? s.proofWhy : why;
+      const at = { w, by, deedBy: s.proved ? s.proofWhy || why : null, g };
       s.xp -= c; s.lv++; s.proved = false; s.proofWhy = null; s.stallAt = null; s.stallSaid = false;
       const leap = s.st; s.xp += s.st; s.st = 0;
       rec(p, age, k, 'word', `${SKILL[k].name} reaches ${edgeName(w)}: ${by}${leap >= cost(s.lv) ? ' (what was stored lands at once)' : ''}`);
+      Object.assign(p.rec[p.rec.length - 1], at);
     } else { s.xp -= c; s.lv++; }
     s.best = Math.max(s.best, s.lv);
   }
@@ -360,7 +366,8 @@ export function npcGain(p, k, lv, carry, x, effortYears, teacherHolds) {
     if (xp < c) break;
     if (lv > 0 && stepOf(lv) === STEPS) {
       const w = wordOf(lv) + 1;
-      const ok = conceptsOf(k, w).every(cn => graspedBy(p, k, cn, effortYears, teacherHolds));
+      // the concepts by the closed form; the rest of the rung's route by the game's p.gate(k, w), when it gives one (D-182)
+      const ok = conceptsOf(k, w).every(cn => graspedBy(p, k, cn, effortYears, teacherHolds)) && (!p.gate || p.gate(k, w));
       if (!ok) { xp = c; break; }
     }
     xp -= c; lv++;

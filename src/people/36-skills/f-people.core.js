@@ -35,6 +35,7 @@
       const r = Eng.npcGain(v, k, lv0, (p.skx && p.skx[k]) || 0, x, SK.effortYears(p, k), false);
       if (!p.skills) p.skills = {};
       if (r.lv > 0) p.skills[k] = VALUES[r.lv];
+      if (r.lv > lv0 && A.SK2 && A.SK2.npcEvolved) A.SK2.npcEvolved(p, k, lv0, r.lv);   // an evolution's gift (D-182)
       if (r.lv >= SK.MAX_LV || r.xp <= 0.05) { if (p.skx) delete p.skx[k]; } else { p.skx = p.skx || {}; p.skx[k] = Math.round(r.xp * 10) / 10; }
       n++;
     }

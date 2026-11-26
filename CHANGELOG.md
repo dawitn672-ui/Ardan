@@ -14,6 +14,15 @@ What changed for the player, in plain words, one section per version (newest fir
   shows the title you bear beside your name and a row of your titles (press one for its story); Records lists them,
   the ones you lost and the rumours you have heard. Other people's profiles show theirs. The legends keep their titles
   and their strength exactly as before; the Sword Saint's is both a title and a class. Saved games load with no titles.
+- **Skills evolve.** When a skill reaches level 10 and you have what its next rank asks (the concepts and, from rank B,
+  a deed; thirty years for the highest), it evolves: the new skill begins beside the old one, which you keep. The log
+  says why. From rank B, and for your first, a card asks what you make of it: a point for the body, the first months'
+  work, renown, or rest.
+- **Two skills can become one.** Some pairs at level 10 (sword and shield, command and tactics, trade and stewardship,
+  and others) can be joined into a stronger art when someone who knows it is near; a few come only in the worst of
+  moments. Joined, both read through the new art and neither grows alone again.
+- **A rare leap.** Once in a life, in a fight won far above you or at the edge of death, a skill may leap to the next
+  rank at once. It always leaves a mark.
 
 ## v2.1.0-alpha.18 (2026-11-26 06:13 ET) · Skills that do things (effects and their caps, step 6) and a person's level on the ladder, earned by defeating people and beasts, with stat points to place
 

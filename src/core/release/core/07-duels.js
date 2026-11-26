@@ -442,6 +442,10 @@ A.duelConsequences = function (D) {
   ) {
     // STOPGAP: replaced by A2 (D-163): a sparring bout is no breakthrough, and the life's budget may be spent
     if (gap > 8 && D.kind !== "spar") {
+      // the skills rebuild, step 8 (D-182): a fight won far above you is an advance's moment (1 in 100, once a life); an
+      // advance is a breakthrough and spends the same budget, so it is weighed before the body's (37-skills2's e-merge)
+      const adv = A.SK2 && A.SK2.moment ? A.SK2.moment(pc, "deed_above", { k: sk, why: "a fight won against " + b.short }) : null;
+      if (adv && adv.adv) out.push(adv.adv);
       const gains = A.breakthrough(pc, gap, D);
       if (gains)
         out.push(

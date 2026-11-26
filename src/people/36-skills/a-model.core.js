@@ -143,7 +143,10 @@
   // even level once past half its bar), or S1's step value while the rungs are off
   SK.valueOf = function (p, c) {
     const s = full(p) && p.sk[c]; if (!s || !(s.lv > 0)) return 0;
-    return on2() ? A.SK2.valueOfEntry(s) : VALUES[s.lv];
+    if (!on2()) return VALUES[s.lv];
+    // a family a merge absorbed reads through it (37-skills2's e-merge, D-182): the better of the two
+    const v = A.SK2.valueOfEntry(s), mv = A.SK2.mergedRead ? A.SK2.mergedRead(p, c) : 0;
+    return mv > v ? mv : v;
   };
   SK.mirror = function (p, c) {
     if (!p.skills) p.skills = {};
@@ -198,7 +201,9 @@
     const key = (A.S ? A.S.seed : '') + ':' + p.id;
     let m = memo.get(key); if (!m) { if (memo.size > 30) memo.clear(); m = new Map(); memo.set(key, m); }
     return { id: p.id, seed: String(A.S ? A.S.seed : 'ardan'), talent: p.tal || {}, memory: SK.memoryOf ? SK.memoryOf(p) : 1,
-      proud: SK.proudOf ? SK.proudOf(p) : false, proofSlack: SK.PROOF_SLACK, sk: p.sk, ledger: [], rec: [], rng: A.rand, needMemo: m };
+      proud: SK.proudOf ? SK.proudOf(p) : false, proofSlack: SK.PROOF_SLACK, sk: p.sk, ledger: [], rec: [], rng: A.rand, needMemo: m,
+      // the skills rebuild, step 7 (D-182): an edge's conditions are the rung's route (37-skills2's d-evolve)
+      gate: A.SK2 && A.SK2.on && A.SK2.gate ? A.SK2.gate(p) : undefined };
   };
   SK.need = (p, k, c) => SK.E().need(SK.view(p), k, c);
 
@@ -255,7 +260,8 @@
   };
 
   // ---- other people: one number, the closed form ----------------------------------------------------------------------
-  SK.npcView = p => ({ id: p.id, seed: String(A.S ? A.S.seed : 'ardan'), talent: p.tal || {} });
+  // the gate: the rest of the rung's route at an edge, the concepts being the closed form's (37-skills2's d-evolve, D-182)
+  SK.npcView = (p, a) => ({ id: p.id, seed: String(A.S ? A.S.seed : 'ardan'), talent: p.tal || {}, gate: A.SK2 && A.SK2.on && A.SK2.npcGate ? A.SK2.npcGate(p, a) : undefined });
   // years of work a person has put into a skill, for the closed form's grasp: from fourteen, a share by his post
   SK.effortYears = (p, c) => Math.max(0, (A.age(p) - 14)) * (p.job || p.mil || p.office ? 0.8 : 0.5);
   SK.npcGain = function (p, c, a) {
@@ -269,8 +275,9 @@
     if (SK.bodyStall(p, c, lv0)) x = 0;
     if (!(x > 0)) return 0;
     const carry = (p.skx && p.skx[c]) || 0;
-    const r = Eng.npcGain(SK.npcView(p), c, lv0, carry, x, SK.effortYears(p, c), false);
+    const r = Eng.npcGain(SK.npcView(p, a), c, lv0, carry, x, SK.effortYears(p, c), false);
     if (r.lv > 0) skills[c] = VALUES[r.lv]; else delete skills[c];
+    if (r.lv > lv0 && A.SK2 && A.SK2.npcEvolved) A.SK2.npcEvolved(p, c, lv0, r.lv);
     if (r.lv >= MAX_LV || r.xp <= 0.05) { if (p.skx) delete p.skx[c]; } else { p.skx = p.skx || {}; p.skx[c] = Math.round(r.xp * 10) / 10; }
     return x;
   };

@@ -11,7 +11,7 @@
 // Nothing here draws from A.rand: the lanes' upgrades are seeded from the game's seed, and the stream is put back.
 (function () {
   const SV = A.V2SAVE = A.V2SAVE || {};
-  SV.VER = 19;                      // 15: S1b, skills with levels (A.SK.migrate; D-072); 16: the skills rebuild's rungs (A.SK2.migrate; skills-v2 §7); 17: the rungs hold the level (the switch, skills-v2 §10 step 5); 18: the person's held level (9999975-level's step 'level', D-181); 19: the titles' census (9999976-titles' step 'titles', D-183)
+  SV.VER = 19;                      // 15: S1b, skills with levels (A.SK.migrate; D-072); 16: the skills rebuild's rungs (A.SK2.migrate; skills-v2 §7); 17: the rungs hold the level (the switch, skills-v2 §10 step 5); 18: the person's held level (9999975-level's step 'level', D-181); 19: the skills rebuild's evolutions, merges and advance (pc.ke, step 'skills2evo', D-182) and the titles' census (9999976-titles' step 'titles', D-183)
   SV.FMT = 3;
   SV.FROM = A.SAVE_VER;            // the release's version (13): a state at or below it is pre-v2
   A.SAVE_VER = SV.VER;
@@ -66,7 +66,10 @@
     //     A.SK2.migrate); what every check reads is unchanged on load (since the switch, version 17, the step also
     //     brings a version-16 save to the rungs that hold the level)
     ['skills2', S => { if (A.SK2 && A.SK2.migrate && !(S.sk2v >= 2)) A.SK2.migrate(S); }],
-    // 11. titles (src/people/9999976-titles, D-183): the census of unique titles, empty; nobody holds a title or a ledger
+    // 11. the skills rebuild, steps 7 and 8 (D-182): the player's store of evolutions, merges and an advance (pc.ke); the
+    //     rungs he already holds above D are noted as evolved before their reasons were kept (37-skills2's d-evolve)
+    ['skills2evo', S => { if (A.SK2 && A.SK2.migrateEvo) A.SK2.migrateEvo(S); }],
+    // 12. titles (src/people/9999976-titles, D-183): the census of unique titles, empty; nobody holds a title or a ledger
     //     on load (the ledger starts at the first deed after it), so nothing a check or a stat reads moves
     ['titles', S => { if (A.TT && A.TT.migrate) A.TT.migrate(S); }],
   ];

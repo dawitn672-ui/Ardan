@@ -206,6 +206,18 @@ export function validate(D, opt = {}) {
     for (const k of want) if (!have.has(k)) err(5, `key ${k} (S1) resolves to no family`);
     for (const k of have) if (!want.has(k)) err(5, `key ${k} is no S1 key`);
     if (want.size !== have.size) err(5, `${have.size} keys, S1 has ${want.size}`);
+    // the gates of a ladder are S1's (step 7, D-182): S1's table under the rungs grasps S1's concepts, so each edge of a
+    // family's ladder asks exactly S1's concepts of that word, and from rank B a deed (S1's proof)
+    for (const s of opt.s1.skills) {
+      if (!IX.FAM[s.id]) continue;
+      for (let w = 1; w <= 6; w++) {
+        const e = E.edgeNeeds(IX, s.id, w);
+        if (!e) { err(5, `family ${s.id}: no rung's condition at S1's edge ${w}`); continue; }
+        const want2 = s.concepts.filter(c => opt.s1.words.indexOf(c.word) === w).map(c => s.id + ':' + c.id).sort().join(), got = (e.needs.concept || []).slice().sort().join();
+        if (want2 !== got) err(5, `${e.to} at S1's edge ${w}: concepts ${got || 'none'}, S1 asks ${want2 || 'none'}`);
+        if (e.kind === 'evolve' && w >= 3 && !e.needs.deed) err(5, `${e.to}: no deed (S1 asks a proof from rank B)`);
+      }
+    }
   }
 
   // ---- 6. reachable -----------------------------------------------------------------------------------------------------
@@ -268,6 +280,10 @@ export function validate(D, opt = {}) {
     const top = Math.max(...parts.map(p => E.rankIx(p.rank))), ri = E.rankIx(res.rank);
     if (ri < top || ri > top + 1) err(8, `recipe ${r.id}: result ${res.rank} against parts up to ${E.RANKS[top]} (at least the highest, at most one above)`);
   }
+  // a merge joins level-10 skills of different families into one that reads them all (§3.4, §15.8; step 8, D-182)
+  for (const r of D.recipes) for (const f of E.recipeFaults(IX, r)) err(8, `recipe ${r && r.id}: ${f}`);
+  const results = new Map();
+  for (const r of D.recipes) { if (results.has(r.result)) err(8, `recipes ${results.get(r.result)} and ${r.id} make the same ${r.result}`); results.set(r.result, r.id); }
 
   // ---- 9. rank and rarity shares -------------------------------------------------------------------------------------------
   const n = D.skills.length;

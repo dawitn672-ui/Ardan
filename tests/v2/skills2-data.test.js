@@ -20,7 +20,8 @@ test('the data passes every check', () => {
   const D = fresh(), errs = validate(D, { s1: S1 });
   assert.deepEqual(errs, []);
   assert.equal(D.families.families.length, 28);
-  assert.equal(D.skills.length, 140, '28 families x (D, C, B, A and the common S rung)');
+  assert.equal(D.skills.length, 148, '28 families x (D, C, B, A and the common S rung), and the first eight merge results (step 8)');
+  assert.equal(D.recipes.length, 8);
   // every rung carries the full specification's fields (§15.6), without range (the owner, 2026-11-25)
   for (const s of D.skills) { assert.deepEqual(Object.keys(s.spec).sort(), ['conditions', 'cooldown', 'cost', 'duration', 'effect']); }
   // the release's 114 perk rows ride on the C, B and A rungs, once each
@@ -86,6 +87,19 @@ test('check 8, up never down: an evolution two ranks up, a merge result below it
   let D = fresh(); by(D, 'stick_and_lath').evolvesTo.push({ id: 'measured_blade' }); assert.ok(checks(D).includes(8));
   D = fresh(); D.recipes.push({ id: 'down', kind: 'known', parts: [{ id: 'measured_blade', lv: 7 }, { id: 'fleet_fighter', lv: 7 }], result: 'basic_archery' });
   assert.ok(checks(D).includes(8));
+});
+
+test('check 8, merges (step 8, D-182): only level-10 parts of different families, a result reading them all, one recipe a result', () => {
+  const plant = f => { const D = fresh(); f(D); return validate(D).filter(e => e.check === 8).map(e => e.msg); };
+  assert.ok(plant(D => { D.recipes[0].parts[0].lv = 7; }).some(m => /only a level-10 skill merges/.test(m)));
+  assert.ok(plant(D => { D.recipes[0].parts[1] = { id: 'stick_and_lath', lv: 10 }; }).some(m => /both read sword/.test(m)));
+  assert.ok(plant(D => { by(D, 'sword_and_buckler').reads = ['sword']; }).some(m => /does not read shield/.test(m)));
+  assert.ok(plant(D => { D.recipes.push(Object.assign({}, D.recipes[0], { id: 'again' })); }).some(m => /make the same/.test(m)));
+  assert.ok(plant(D => { D.recipes[0].result = 'measured_blade'; }).some(m => /ladder's rung|no merge route/.test(m)));
+  assert.ok(plant(D => { D.recipes[6].moment = 'a fair day'; }).some(m => /moment/.test(m)));
+  // a merge that feeds back into its own parts is a loop (check 7)
+  const D = fresh(); by(D, 'sword_and_buckler').evolvesTo = [{ id: 'basic_swordsmanship' }];
+  assert.ok(checks(D).includes(7));
 });
 
 test('check 9, shares: a library of 200 that is all D fails; a unique without a census fails', () => {

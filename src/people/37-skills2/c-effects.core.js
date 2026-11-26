@@ -64,7 +64,8 @@
     const x = xOf(p);
     if (act.none) { if (x) { regX(); out.push(...x); } return out; }
     const Eng = E(), I = IX();
-    for (const c of act.fams) { const r = SK2.rungFor(p, c); if (r) out.push(...Eng.heldOfRung(I, c, r.rank, r.lv)); }
+    const sealed = SK2.sealed ? SK2.sealed(p) : [];
+    for (const c of act.fams) { const r = SK2.rungFor(p, c); if (r) for (const h of Eng.heldOfRung(I, c, r.rank, r.lv)) if (!sealed.includes(h.id)) out.push(h); }
     if (act.named && p.ks && typeof p.ks === 'object') for (const id of Object.keys(p.ks).sort()) {
       const s = I.BY[id], e = p.ks[id];
       if (!s || !e || !(e.lv >= 1) || (s.family && Eng.rungOf(I, s.family, s.rank) === id)) continue;

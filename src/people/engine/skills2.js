@@ -340,6 +340,87 @@ export function canAdvance(ix, held, facts) {
   return { ok: !miss.length, missing: miss, to: to ? to.id : null };
 }
 
+// ---- 7b. in play: an edge of a family's ladder, a merge's entry and its levels, the chances (steps 7 and 8; D-182) ------
+// A family's ladder runs on S1's table (36-skills) under the rungs (D-179): S1's band edges w = 1 .. 6 are where the
+// rungs' conditions stand. w 2 to 5 open a rank: the evolution from the rung below, gated by the target's `evolve` route
+// (§3.2). w 1 and 6 are the gates inside D and S at Lv 6 (the rung's own `gates`).
+export const EDGE_RANK = { 2: 'C', 3: 'B', 4: 'A', 5: 'S' };
+export const EDGE_GATE = { 1: ['D', 6], 6: ['S', 6] };
+export function edgeNeeds(ix, fam, w) {
+  const rank = EDGE_RANK[w];
+  if (rank) {
+    const to = rungOf(ix, fam, rank), from = rungOf(ix, fam, prevRank(rank)); if (!to || !from) return null;
+    const r = evolveRoutes(ix, from).find(x => x.to === to);
+    return r ? { kind: 'evolve', from, to, rank, needs: r.route.needs || {} } : null;
+  }
+  const g = EDGE_GATE[w]; if (!g) return null;
+  const id = rungOf(ix, fam, g[0]), s = id && ix.BY[id]; if (!s) return null;
+  const gate = (s.gates || []).find(x => x.at === g[1]);
+  return { kind: 'gate', from: id, to: id, rank: g[0], at: g[1], needs: (gate && gate.needs) || {} };
+}
+// the verdict at an edge for these facts: the route's needs, what is missing, and a rung absorbed by a merge (facts.sealed,
+// a list of rung ids) never evolves (§15.8: past Lv 10 a skill evolves or merges, not both)
+export function edgeVerdict(ix, fam, w, facts) {
+  const e = edgeNeeds(ix, fam, w); if (!e) return null;
+  const miss = missing(e.needs, facts || {});
+  if (e.kind === 'evolve' && facts && Array.isArray(facts.sealed) && facts.sealed.includes(e.from)) miss.push('absorbed');
+  return Object.assign(e, { ok: !miss.length, missing: miss });
+}
+// the chances (§3.4), each read from a hash of its own key: no draw from any stream
+export const ADVANCE_CHANCE = 0.01;      // an advance: 1 in 100 a named moment
+export const FOUND_CHANCE = 1 / 200;     // a found merge: 1 in 200 a named moment, at most once a life
+export function hashKey(str) { let h = 1779033703 ^ str.length; for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); } h = Math.imul(h ^ (h >>> 16), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); return (h ^ (h >>> 16)) >>> 0; }
+export const unitOf = str => (hashKey(String(str)) + 0.5) / 4294967296;
+// a merge's new entry: Lv 1, its parts named, the best part's read kept as a floor (§3.4), the parts' families listed
+export function mergeEntry(ix, recipe, held, at) {
+  let floor = 0; const fams = new Set();
+  for (const p of recipe.parts || []) {
+    const s = ix.BY[p.id], h = held && held[p.id];
+    if (s && h) floor = Math.max(floor, value(s.rank, h.lv));
+    for (const f of (s && s.reads) || []) fams.add(f);
+  }
+  const res = ix.BY[recipe.result];
+  for (const f of (res && res.reads) || []) fams.add(f);
+  const e = { lv: 1, xp: 0, via: 'merge', rc: recipe.id, of: (recipe.parts || []).map(p => p.id), fams: [...fams].sort(), floor: Math.round(floor * 100) / 100 };
+  if (at != null) e.y = at;
+  return e;
+}
+// what a held (merged or named) skill reads for its families: its own level's read, never below its floor
+export const entryRead = (ix, id, e) => { const s = ix.BY[id]; return s && e && e.lv >= 1 ? Math.max(value(s.rank, Math.min(MAX_LV, e.lv)), e.floor || 0) : 0; };
+// experience into a held skill's own bar: levels by its rank's costs; at Lv 10 the bar fills and stops (§15.8: no Lv 11)
+export function addXp(rank, e, x) {
+  let n = 0;
+  e.xp = (e.xp || 0) + Math.max(0, +x || 0);
+  while (e.lv < MAX_LV) { const c = cost(rank, e.lv); if (!(e.xp >= c)) break; e.xp -= c; e.lv++; n++; }
+  if (e.lv >= MAX_LV) e.xp = Math.min(e.xp, cost(rank, MAX_LV));
+  e.xp = Math.round(e.xp * 100) / 100;
+  return n;
+}
+// the recipes open to these facts (canMerge), in the data's order
+export const openRecipes = (ix, facts) => ix.recipes.filter(r => canMerge(ix, r, facts).ok);
+// what a recipe must be (§3.4, §15.8): two or more parts, each a different skill reading different families, each asked
+// at Lv 10 (only a level-10 skill merges), the result reading every family its parts read, never a family's ladder rung;
+// a found recipe's moment one the vocabulary names; once an age only for a result counted once an age
+export function recipeFaults(ix, r) {
+  const out = [], res = ix.BY[r && r.result];
+  if (!r || !Array.isArray(r.parts)) return ['no parts'];
+  const ids = r.parts.map(p => p && p.id), fams = new Map();
+  if (new Set(ids).size !== ids.length) out.push('a part twice');
+  for (const p of r.parts) {
+    const s = ix.BY[p && p.id]; if (!s) continue;
+    if (p.lv !== MAX_LV) out.push(`part ${p.id} at Lv ${p.lv}: only a level-${MAX_LV} skill merges`);
+    for (const f of s.reads || []) { if (fams.has(f)) out.push(`parts ${fams.get(f)} and ${p.id} both read ${f}: one ladder, not two skills`); fams.set(f, p.id); }
+  }
+  if (res) {
+    for (const f of fams.keys()) if (!(res.reads || []).includes(f)) out.push(`result ${res.id} does not read ${f}`);
+    if (res.family && HUMAN.includes(res.rank) && rungOf(ix, res.family, res.rank) === res.id) out.push(`result ${res.id} is a ladder's rung`);
+    if (!(res.acquire || []).some(a => a.via === 'merge' && a.recipe === r.id)) out.push(`result ${res.id} has no merge route naming ${r.id}`);
+    if (r.kind === 'age' && res.census !== 'age') out.push(`once an age, but ${res.id} is not counted once an age`);
+  }
+  if (r.kind === 'found' && r.moment != null && !(ix.V.moments || []).includes(r.moment)) out.push(`moment ${r.moment}`);
+  return out;
+}
+
 // ---- 8. the graph of evolution and merging (§2.7 checks 7, 8) ------------------------------------------------------------
 export function graph(ix) {
   const G = new Map(), add = (a, b) => { if (!G.has(a)) G.set(a, new Set()); G.get(a).add(b); };

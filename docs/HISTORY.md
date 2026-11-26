@@ -2996,6 +2996,51 @@ pass on the merged build; engine tests 151 of 151; the lints at their baselines.
 
 **Undo.** Revert this commit.
 
+### H-146 · 2026-11-26 · The skills rebuild, steps 7 and 8: evolution at Lv 10, merging and advancing (D-182)
+
+`docs/design/skills-v2.md` §10 rows 7 and 8 with §3.2-3.4 and §15 (answers 2, 5 and 8). Commits `74a4fb62` (step 7) and
+the step 8 commit after it, on a worktree branch of `main` at `8c332adf`.
+- **Step 7, evolution.** Engine (`src/people/engine/skills2.js` §7b): `EDGE_RANK`, `EDGE_GATE`, `edgeNeeds`,
+  `edgeVerdict`; S1's engine (`skills.js`): `settle` reads an edge through `p.gate` when given (its record of the
+  crossing carries the edge, the cause, the deed's cause and the verdict), `npcGain` through `p.gate(k, w)`. Rebundled.
+  Adapter `src/people/37-skills2/d-evolve.core.js` (new): `SK2.gate`, `SK2.npcGate`, `SK2.factsAt`, `SK2.evolved` (the
+  record, the log, the digest, the gift), `SK2.evoGift`, `SK2.cardFx` (the card key `skTurn`), `SK2.npcEvolved`,
+  `SK2.migrateEvo`; `skills2.events.js` (new): `sk2_evolved`. Hooks: `SK.view`, `SK.npcView`, `SK.npcGain`,
+  `SK.npcGrowOne`, `SK.drain`, 36-skills' applyFx stage (no new stage); `A.LV.grant` (9999975-level); the save step
+  `skills2evo`, `SV.VER` 19. The validator (check 5) holds each ladder edge's concepts equal to S1's, and a deed from B.
+- **Step 8, merging and advancing.** Engine: `mergeEntry`, `entryRead`, `addXp`, `openRecipes`, `recipeFaults`,
+  `unitOf`, `ADVANCE_CHANCE`, `FOUND_CHANCE`. Data: `recipes.json` (eight recipes), `data/skills/arts/merges.json` (eight
+  B results). Validator (check 8): parts at Lv 10, families apart, the result reading them, one recipe a result. Adapter
+  `e-merge.core.js` (new): `SK2.mergedRead`, `mergedOf`, `absorbed`, `tops`, `knows`, `mergeOpen`, `doMerge`,
+  `afterMonth` (a merged skill's month, an offer, the near death), `offer`, `moment`, `foundAt`, `advanceAt`, `advance`;
+  the card `sk2_merge_offer`. Reads: `SK2.reads` and `SK.valueOf` take a merge's read (the better), `SK2.label` and
+  `nextLabel` print the art, `SK2.held` leaves out absorbed rungs; `SK.month` calls `SK2.afterMonth`; release
+  `07-duels.js` names the duel's moment before the body's breakthrough.
+- **Tests fixed on the way.** `s1Mirror` read the player's mirror as an S1 step: an even rung of C, B or A (D-179) failed
+  it whenever a life ended on one, and this branch's world did (the player's diplomacy, 60.1); it now reads
+  `SK.valueOf`. `statMigrate` asked a version-18 save that already held its level (alpha 18's sample) for the computed
+  one, failing on the base too; it now asks that a held level loads unchanged.
+- **Evidence.** Engine and data tests 155 of 155 (new: the edges against S1's, the gate in S1's settle and closed form,
+  merges and their chances, the recipe faults planted). `sk2Evolve`: planted at C · Lv 10, two years of practice with no
+  deed stay at C (wanting the measure and the deed); the concepts and a deed give Measured Blade at once (B · Lv 3, the
+  stored half landing) with the reason in the record and the log; the card (55 words, four choices) gives a point; S at
+  twenty waits for thirty; the closed form's gate at B [no post, a stretch won, a post] false, true, true; two bot lives:
+  five evolutions (C 3, B 2), four cards, each with its concepts grasped and from B its deed named, no rung held without
+  an evolution or a level set. `sk2Merge` (world 9821, the first of the fallback run): Steady Command and Field Tactics
+  offered and joined, both families 53 to 55, a part given every concept and a deed stays at C · Lv 10, thirty months of
+  drill take the art to Lv 6 and it stops at 10, never offered again; a found merge after 423 moments, once; no die
+  drawn. `sk2Advance` (world 9841): C · Lv 6 to B · Lv 1 after 173 moments, a scar, the budget spent, the concepts
+  deemed; 3,000 more moments bring no second; a spent budget none; hash rates 0.0099 and 0.0047. On the step 8 build 25
+  of 25 pass: those three, `uiSmoke`, `renderRng`, `replayWithRender`, `sk2Migrate` (25 saves, 1,075,248 reads the
+  same), `s1Migrate`, `statMigrate`, `sk2Caps`, `sk6PerkSums`, `sk5Lives`, `v2svRoundTrip`, `w1NoMarshalLint`,
+  `w4NoLevyLint`, `s1Checks`, `s1Ledger`, `s1Reasons`, `s1Mirror`, `s1Cost`, `s1TwoLives`, `s1NotLinear`, `s1Census`,
+  `statNpc`, `lvFromDefeats`. The press gate fails in this container on the base build as on this one (a slower machine
+  than CI's; quiet months 188 to 262 ms against 216 to 244 ms, within its noise): CI's gate decides. Coherency
+  `--baseline=quick`: no check rose, on both builds. Lints: skills ok (148 skills, 8 recipes), stages 146 at the
+  baseline, reasons 41 at the baseline, events and choices for `skills2` clean (2 events, none obviously best), kin,
+  docs index, versions, seed data.
+- **Undo.** Revert both commits; a version-19 save would then be refused as newer.
+
 ### H-147 · 2026-11-26 · Titles (skills-v2 §11, D-183)
 
 **What.** A new system, `src/people/9999976-titles` (`A.TT`), with its data in `data/titles/` and a validator

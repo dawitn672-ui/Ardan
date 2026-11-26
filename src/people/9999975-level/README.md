@@ -53,7 +53,7 @@ D-181) · **Kind:** system, two readable core files, one data file (`data/level.
 
 | File | What |
 | --- | --- |
-| `a-level.core.js` | `A.LV`: the level, seeding, the floor, experience and defeats, points, room, cost, placing by reasons, the month and the year, the save step |
+| `a-level.core.js` | `A.LV`: the level, seeding, the floor, experience and defeats, points, room, cost, placing by reasons, the month and the year, the save step; `LV.grant(p, n, why)`, an evolution's gift of points (37-skills2, D-182), recorded on the level (`lv.gx`, `lv.gw`) |
 | `b-sheet.core.js` | The profile's line (`UI.PF.sheetTop`: "Level 24", ten marks toward the next, the button) and the allocation sheet (`UI.ov = { type: 'lvSheet' }`: six rows, a bar with the ceiling and the age's room, the stat's word, the next point's cost in marks, - and +, Keep) |
 | `data/level.json` | every number above |
 
