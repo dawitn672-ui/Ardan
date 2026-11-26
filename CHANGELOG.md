@@ -5,6 +5,13 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Your level is earned.** You now carry a level on the same scale as every beast and legend (an ordinary grown
+  person about 25, a soldier about 100). It grows while you grow up; after that only by beating people and beasts in a
+  fight, more for a stronger foe and almost nothing for a far weaker one. Each level brings a point to place in strength,
+  speed, endurance, reflexes, wits or will: the Profile shows your level and, from age 12, a button to place them
+  (points placed stay placed). As a child your household's way of life places them for you; other people place theirs
+  by their trade and temper. Saved games load with every stat as it was.
+
 ## v2.1.0-alpha.17 (2026-11-26 01:13 ET) · The world grows: the level ladder for every being, 270 species and 16 legends (Sarnavoth, the Primordial Archdemons, the Sword Saint), encounters in the wilds, skills read in rank and level
 
 - **Skills have ranks and levels, not words.** A skill now reads like "Basic Swordsmanship · C · Lv 3": a rank from D

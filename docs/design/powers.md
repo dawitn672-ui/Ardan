@@ -23,6 +23,8 @@ Code: `src/world/9999970-powers/` (README there). Data: `data/power.json`, `data
   release (the 25 rows of `A.BEASTS`) gets its might from its own duel row through the human fit
   `ln(conscripts) = -2.244 + 0.0519 x worth` (656 humans, seed 7) times the root of its blood over a man's, squared; the
   test checks the data against the live rows. Every other being's level is written in data and its might read from it.
+- **A person's level** is his own since D-181 (`src/people/9999975-level`): seeded at the level read from his might, then
+  raised by defeats; his might (and so the odds) stays his fighting worth.
 - **Level** (1 to 1000) is read from the might: `log10(might) = -0.695 + 0.009746 L + 0.000002 L^2` above level 20,
   fifteen levels to a tenfold below. Because the square term is positive, each level multiplies the might by more than the
   one before (1.023 a level at 25, 1.030 at 800), so 650 is about four times 600. Fitted to the owner's anchors:

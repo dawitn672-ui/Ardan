@@ -11,3 +11,7 @@ functions (`cond`, `setup`, sometimes `text` and `fx`), so it cannot be plain JS
 `skills/` (the skills rebuild, `docs/design/skills-v2.md`): `vocab.json` (ranks D to SSS and G, costs, caps, the words a
 skill is written in), `families.json` (the 28 families, from S1's `skills.json`), `ladders/*.json` (the rungs, a file a
 group; seeded by `tools/skills2/seed-data.mjs`), `recipes.json` (merges). Validated by `tools/lint-skills.mjs`.
+
+`level.json` (a person's level and its stat points, `src/people/9999975-level`, D-181): the experience curve on the
+power ladder, the foes with no sheet, the floor of growing up, points, ceilings, room and costs, and the ways of life a
+placement leans to.

@@ -996,6 +996,10 @@ beings; (c) the profile line, chips and card, and the hint cards.
 
 ### 12.1 One level for a person, the power ladder's
 
+**Built (D-181, `src/people/9999975-level`):** the level and the points as §15's answers 4, 5 and 9 change this section:
+the level comes from defeats on the ladder (seeded from the computed level, a floor while growing up), not from every
+walk; `A.train` still raises stats until a balance pass (deferred). The tables below are the old defaults.
+
 - A person has a **level**, and it is **the power ladder's level** (order 77): one number for every being, person,
   beast or legend. This note does not make a second scale; where the ladder's numbers land differently from the
   defaults below, these tables scale with them.

@@ -2904,3 +2904,29 @@ power sets its place: neighbours within 3 times, six near-even pairs, the Lord o
 `74d5efa8` (the switch's builder): the Skills section's one-line summary names the rank only ("Farming and herding, rank D"),
 so it shows no number without a description; the Profile's rows use a compact label ("C·Lv 3", `A.SK2.label(..., { compact:
 true })`), Records the full one. The noble's page zone at 1366 reads 93 words of 100. 18 of 18 profile and number tests pass.
+
+### H-143 · 2026-11-26 · A person's level and its stat points (skills-v2 §12.1-12.2, D-181)
+- New feature `src/people/9999975-level` (`A.LV`, `data/level.json`): a person's level is the power ladder's, held in
+  `p.lv` once seeded (the ladder's computed level and the floor of his years, nothing waiting, so no stat changes), then
+  raised only by defeats, with experience scaled by the foe's level on the ladder (no farming past 25 levels above a foe)
+  and a floor while growing up. Each level brings a stat point; the player places his from 12 on the profile's sheet, a
+  child's household and the NPCs through `A.WHY.decide` on a seeded stream; placed points never move and add to what
+  `A.stat` reads, held to the age's room and the potential.
+- Edits outside the folder, each one guarded line: `A.stat` (03-engine-base), `A.duelConsequences` (07-duels),
+  `A.fightEnd` (11-armies-a), `PW.being` and `PW.resolve` (9999970-powers), `PF.sheet` (999996-profile-tab), `SV.VER` 18
+  (99998-v2-saves, save step `level`). No `A.addStage`; one `UI.ovModal` wrapper (a name already defined more than once).
+- Deferred (D-181): `A.train` and the yearly growth keep raising stats; the training screen and professions.
+- Checks on a private build: the feature's six tests (lvFromDefeats: three duels won pay the rule's experience to the
+  rounding, a release beast killed +5.1 levels, a foe 40 down under a ten-thousandth of a level, 25 down nothing;
+  lvNoFarm: 1,000 defeats of men 20 below stop at the line in three worlds while 20 soldiers lift a man 24-48 levels;
+  statBounds: 180 people with 400 points, nothing past the room or the ceiling, a limp and 45 years lower the read and
+  keep the points; statMigrate: 24 sample saves, every person's A.stat the same, the player held with nothing waiting;
+  statNpc: the same placements on a replay, 829 of 1,026 points to the post's own two stats, the main stream unmoved;
+  lvPhone at 375 x 667), the core suites with the powers and profile tests (53 of 53), uiSmoke, renderRng,
+  replayWithRender, pfNumbers and pfFits; `node --test tests/v2/*.test.js` 147 of 147; lint-stages (346 names defined
+  more than once, 146 stages, as the baseline), lint-reasons 41 (the baseline), lint-skills, lint-docs-index and
+  `version.mjs check` ok; coherency `--baseline=quick`: no contradiction, no check rose. Balance, a 4-lives league (the
+  full 12-lives league did not fit the shared machine's time): 27 of 28 numbers in band; royal notableSharePct 50 (band
+  60-100), and the baseline build reads the same 50 on the same seeds (`--paths=royal --lives-per=4`), so it is the small
+  league's noise, not this step. CI's long tier runs the full league.
+- Undo: revert the step's commits; a save made at version 18 would then be refused as newer.
