@@ -232,7 +232,7 @@ avoids it). Only a history rewrite would shrink it; that is the owner's decision
   merges the work into the trunk, `main` (kept level with `v2-integration` until the owner deletes it), and pushes only
   the trunk and `release/<version>` branches. The repo keeps only what reference needs: no plans, reports or scratch.
 - Take decision and history numbers (`D-`, `H-`) only from the range your brief reserves; with none given, write
-  `D-179`, `H-138` and the integrator numbers them at the merge (parallel branches clashed on D-142, H-083, H-085).
+  `D-NEW-1`, `H-NEW` and the integrator numbers them at the merge (parallel branches clashed on D-142, H-083, H-085).
 - Build to `--out=` a private scratch path such as `/tmp/ardan/<name>/`, never to `index.html`.
 - Unpack only to a private `--unpack=` folder. The shared `.build/` is the fix layer, for reading.
 - Don't edit another feature, `src/core/release/`, `tools/`, `tests/`, `tools/bench/` or `vendor/` unless that is your

@@ -2891,3 +2891,11 @@ The coordinator's rework of orders 87-90: a few great beings fighting together a
 past the first; hosts keep Lanchester), so Sarnavoth is 3.4 times an archdemon and wins 0.42 against the three together. The
 legends below the top four hold two S-rank skills, art doubles every 5 points, levels 640-692, and each signature title's
 power sets its place: neighbours within 3 times, six near-even pairs, the Lord of the Sea at 0.55 of the Saint (he wins 0.77).
+
+### H-140 · 2026-11-26 · CI on 4df64284: four failures, three fixed here or by their builder
+- `x3OneUnit`: a legend's power said "for a mile" (the game counts in kilometres and days); now "as far as the eye can see".
+- `w5TwoCenturies` (long): its rule that more wars end in a surrender than a defeat is now pooled over its four worlds
+  (H-082): after the power scale two worlds read 39 to 39 and 40 to 45, the pool 186 to 168.
+- `pfNumbers` and `pfFits`: the switch's rank-and-level labels on the Profile lack descriptions and run one word over the
+  page budget; passed to the switch's builder. CLAUDE.md's parallel-safety line again reads D-NEW-1 and H-NEW (a renumbering
+  had caught it).
