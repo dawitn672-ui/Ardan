@@ -79,7 +79,8 @@ A.eventView = function (q) {
       }
       if (!ok) return;
       const label = A.T(typeof c.t == "function" ? c.t(pc, q.ctx) : c.t, ctx),
-        odds = c.check ? A.checkOdds(pc, c.check) : c.group && A.groupOdds ? A.groupOdds(pc, c.group, q.ctx) : null;
+        // powers wave 1: a choice may carry its own odds (c.odds(pc, ctx), 4-96), for a fight the power scale settles
+        odds = c.check ? A.checkOdds(pc, c.check) : c.group && A.groupOdds ? A.groupOdds(pc, c.group, q.ctx) : typeof c.odds == "function" ? A.clamp(Math.round(c.odds(pc, q.ctx) || 0), 4, 96) : null;
       choices.push({
         t: label,
         i,

@@ -2707,7 +2707,6 @@ coin and skill); creatures may act purely by their specified nature (bloodthirst
 legendary beings mostly very old; the ladder covers every level of existence. Recorded in `docs/design/skills-v2.md` §15
 and the master prompt (9, 17, 18); passed to the power-scale builder.
 
-<<<<<<< HEAD
 ### D-172 · Legends hold the summit, not gods; the Sword Saint; no crown baseline (2026-11-25; order 83)
 No gods as beings (faint myth and faith only); the summit is legends (a King of Dragons, the Primordial Archdemons, a
 legendary human Sword Saint of ages ago, the world's best-known figure). Skills have no range. The harness measures crowns
@@ -2724,7 +2723,6 @@ test, and the later the lock the more is placed twice). **Why:** the owner's ord
 **D-173 addendum (order 85).** Might grows faster with every level (the gap between levels widens); power is level's might
 times titles, skill mastery and quality, and capabilities, so the Sword Saint (650) outranks the Sea Lord (680-700), which a
 test holds. The Dragon Mountains are the dragons' home; there is no demon kingdom.
-=======
 ### D-174 · The skills rebuild, steps 1 to 4: where the design's text and the code disagreed (2026-11-25)
 - **An S1 level lands on the odd level of its step, not the even one** (`docs/design/skills-v2.md` §7 said "at half or
   more, the even level"). An even level in C, B and A reads half way to the next S1 step (C Lv 4 reads 41, where S1's
@@ -2749,7 +2747,6 @@ test holds. The Dragon Mountains are the dragons' home; there is no demon kingdo
 - **The store while S1 owns the levels:** the player's rungs (`pc.ks`, `pc.kc`) are written by the save step and kept in
   step with S1's table once a month; a read never writes (a stale family is read as the sync would write it). The data
   sits under `A.DATA['skills/...']` (the build's naming), assembled as `A.SK2.DATA`, not `A.DATA.skills2`.
->>>>>>> worktree-agent-ae273c4866bddc5a1
 **D-173 addendum (order 86).** The redesign's effort goes into a detailed gazetteer in data (every range, river, coast,
 realm, seat, road and wild with its reason, sizes and travel times), not into renders; plain renders only to check layout.
 
@@ -2760,3 +2757,12 @@ monsters (the ladder, bestiary and legends, the locked map, skills in levels); v
 canon, professions); v5 = the phone release. Written in `docs/VERSIONS.md` and `CLAUDE.md`. **Considered:** keeping v3 as
 `docs/V3_SPEC.md`'s living world (economy, armoury, growth): those now belong to professions (v4) and the skills rebuild
 (v3); the newest instruction wins. **Why:** the owner asked me to own the basis.
+### D-176 · 2026-11-25 · Powers: might is conscripts squared; level on the owner's anchors; power reads titles and mastery
+**Choice:** one number for every being, its might (a person's fighting worth in conscripts squared, Lanchester; the
+release's beasts by their duel rows), read as a level 1-1000 on a convex curve fitted to the owner's anchors (an average
+human 25, a soldier 100, a kingdom's best 300-380, a grown dragon 450, a strong one 525, legends 600-800); rank words G to
+SSS over it; and fighting power = the level's might x titles' power x mastery, which the odds and the ranking read with
+the capability profile. **Why:** the owner's orders of 2026-11-25 in turn (levels, a huge spread, each level worth more
+than the last, level is not everything, the Saint above the Lord of the Sea); conscripts are what the sheet already
+shows, so no person changed. The world's own draws use a seeded stream of their own so the main stream moves only when
+the player is involved. No gods; no demon realm.
