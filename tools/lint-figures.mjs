@@ -15,7 +15,7 @@
 //     past -1..1; a trait the game's people do not have; a goal of a kind A.WHY does not bend; a grudge at no one
 //   - a link that drifts: the masters' overlay naming a master power.json lacks (or missing one), a class road that is
 //     not a chain of the tree, arts that are not the master's own actives; a legend in no group or in two
-//   - a retired word (Marshal, levy), an S1 level word or a percentage in a figure's words; a story line over 60 words
+//   - a word the naming pass retired (w1, w4), an S1 level word or a percentage in a figure's words; a story line over 60 words
 //   node tools/lint-figures.mjs [--json]
 import fs from 'node:fs';
 import path from 'node:path';

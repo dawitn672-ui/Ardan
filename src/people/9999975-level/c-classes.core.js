@@ -292,9 +292,13 @@
   };
   // activities: a buff and a way to earn, held to those who have the class (A.canAct reads LV.hasAct)
   const ACTS = new Map();
+  const ICON_OF = { Wilds: 'hunt', Money: 'merc', Glory: 'tournament', 'Body & mind': 'train_yard', Health: 'heal', Faith: 'pray' };
   for (const c of CL.LIST) for (const a of [c.act, c.buff]) if (a && a.key) {
     ACTS.set(a.key, c.id);
     GD.ACTIVITIES[a.key] = { name: a.name, cost: 1, minAge: 16, cat: a.cat || 'Glory', desc: a.desc, lvCls: c.id };
+    // its tile's icon is its kind's (95-icons): a class's way to earn or its buff shares the icon of the activity it is
+    // like, so the icon sheet stays small however many classes there are (H-160)
+    if (UI && UI.ICONS_ACT && !UI.ICONS_ACT[a.key]) UI.ICONS_ACT[a.key] = UI.ICONS_ACT[ICON_OF[a.cat || 'Glory']] || UI.ICONS_ACT.duel;
   }
   LV.hasAct = (p, key) => { const id = ACTS.get(key); return !!id && CL.road(p).some(x => x[0] === id); };
   const earn = (a, c) => function (pc, arg, dim) {

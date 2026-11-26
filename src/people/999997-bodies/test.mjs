@@ -92,7 +92,8 @@ export default {
       const before = pos('sword'); A.trainSkill(pc, 'sword', 5); SK.month(pc); out.stall = pos('sword') - before;
       pc.st.ins = 42 * 0.78 * 1.05; out.capStrong = A.skill(pc, 'sword');
       // a plain skill below its cap still rises, and trains its first stat a little
-      SK.set(pc, 'trade', SK.lvOfValue(20), 'test'); const t0 = pos('trade'), i0 = pc.st.int; A.trainSkill(pc, 'trade', 5); SK.month(pc); out.tradeUp = pos('trade') - t0; out.intUp = pc.st.int - i0;
+      SK.set(pc, 'trade', SK.lvOfValue(20), 'test'); const intAll = () => pc.st.int + ((pc.trn && pc.trn.int) || 0);   // order 95: the player's training gathers in pc.trn and lands as +1s (H-160)
+      const t0 = pos('trade'), i0 = intAll(); A.trainSkill(pc, 'trade', 5); SK.month(pc); out.tradeUp = pos('trade') - t0; out.intUp = intAll() - i0;
       // the player is never lifted by a floor
       out.pcFloor = A.statFloor(pc, 'ins');
       return out;

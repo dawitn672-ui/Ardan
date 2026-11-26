@@ -318,7 +318,7 @@
   {
    "id": "harrak",
    "name": "Harrak",
-   "style": "of the Burnt Mile",
+   "style": "of the Burnt Reach",
    "kind": "marquis-of-the-burning-court",
    "level": 749,
    "class": null,
@@ -340,7 +340,7 @@
      "lvl": 7,
      "kind": "active",
      "fight": true,
-     "does": "He walks, and the ground he walks over burns behind him for a mile."
+     "does": "He walks, and the ground he walks over burns behind him for a long way."
     }
    ],
    "arts": [
@@ -402,13 +402,13 @@
     }
    ],
    "home": {
-    "name": "the Burnt Mile",
+    "name": "the Burnt Reach",
     "domain": "the Scorched March",
     "known": true
    },
    "fame": "known",
    "story": [
-    "A Marquis of the Burning Court who camps on the Burnt Mile, the disputed ground all three Archdemons claim. He has fought Morvane's and Vethrael's servants there for three hundred years."
+    "A Marquis of the Burning Court who camps on the Burnt Reach, the disputed ground all three Archdemons claim. He has fought Morvane's and Vethrael's servants there for three hundred years."
    ],
    "secret": {
     "story": [

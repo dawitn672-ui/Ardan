@@ -46,6 +46,10 @@ export const TARGETS = {
     },
     merchant: {
       start: { race: 'human', realm: 'POL-04', status: 'merchant', startAge: 18 },
+      // 24 lives, as the artisan and the noble (H-096): long 156 on 37bc448a read median peak coin 49,121 from 12 lives,
+      // under the floor by 2%, in a batch that touched no trade (levels, classes, the bestiary, titles); a median of 12
+      // lands in whichever hump holds the 7th life (H-160)
+      lives: 24,
       bands: { medianDeathAge: [30, 85], medianPeakCoin: [50000, 900000], medianPeakFame: [20, 100], notableSharePct: [40, 100] },
     },
     noble: {

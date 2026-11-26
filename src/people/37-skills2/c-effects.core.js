@@ -35,9 +35,10 @@
   function active() {
     if (ACT) return ACT;
     const I = IX(), Eng = E(), fams = new Set(), ids = [];
+    let stat = false;   // does any skill of the index carry a stat effect (H-160: A.stat asks this for everyone, every read)
     for (const s of I.skills) {
       let any = false;
-      for (const b of s.levels || []) for (const e of b.effects || []) if (e && e.type !== 'perk') any = true;
+      for (const b of s.levels || []) for (const e of b.effects || []) { if (e && e.type !== 'perk') any = true; if (e && e.type === 'stat') stat = true; }
       if (!any) continue;
       const rung = s.family && Eng.HUMAN.includes(s.rank) && Eng.rungOf(I, s.family, s.rank) === s.id;
       if (rung) fams.add(s.family); else ids.push(s.id);
@@ -45,7 +46,7 @@
     // the named skills that carry effects, sorted: SK2.held looks only these up in p.ks (H-153: walking every held rung
     // on each check made the month's pass half as slow again once step 8's merged arts carried edges)
     ids.sort();
-    return (ACT = { fams: [...fams].sort(), named: ids.length > 0, ids, none: !fams.size && !ids.length });
+    return (ACT = { fams: [...fams].sort(), named: ids.length > 0, ids, stat, none: !fams.size && !ids.length });
   }
   const freeze = o => { if (o && typeof o === 'object' && !Object.isFrozen(o)) { Object.freeze(o); for (const k in o) freeze(o[k]); } return o; };
   // after the data changed under the page (a test plants effects): forget what was worked out from it
@@ -182,6 +183,8 @@
   // ---- stat: what held skills' and titles' stat effects add to a stat (A.stat), at most +10 (the cap, §2.4, §11.5) -----
   SK2.statOf = function (p, s) {
     if (off(p)) return 0;
+    // no skill carries a stat effect, so only a title's or a class's can: with none held there is nothing to add (H-160)
+    if (!active().stat) { const x = xOf(p); if (!x || !x.length) return 0; }
     const P = A.CAPS(p); return P === EMPTY ? 0 : P.stat[s] || 0;
   };
 

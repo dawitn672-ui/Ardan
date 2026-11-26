@@ -3459,3 +3459,19 @@ coherency and the balance harness (nothing here moves a world: no draw, no write
 
 **Undo.** Revert the step's commits; the build without `src/world/9999977-figures` hides the codex's button, and
 `PW.being` reads no `PW.FIG`.
+
+### H-160 · 2026-11-26 · CI on 37bc448a (orders 91-96 with the figures): six failures fixed
+
+- `s1Cost` (1.389 ms on CI against a budget of 1): `A.stat` asked `A.CAPS` of everyone on every read once the arts and the
+  merges carried effects (2,508 calls in 50 months). `SK2.statOf` now returns 0 at once when no skill in the index carries
+  a stat effect and the person holds no title or class: 0.625 ms here (1.037 before).
+- `iconThings`: the 155 classes' activities had no icons. A class's way to earn or its buff now shares the icon of its
+  kind (Wilds: hunt, Money: mercenary work, Glory: tournament, Body: drill, Health: healing, Faith: prayer); the test holds
+  every other activity to its own icon and counts a shared icon's bytes once.
+- `bodiesBaseline`: since order 95 the player's training lands as +1s through `pc.trn`; the test reads the gathered part.
+- `x3OneUnit`: "mile" in four figures' and one title's words (the Burnt Mile is now the Burnt Reach).
+- `w4NoLevyLint`: a comment in `tools/lint-figures.mjs` named the retired word.
+- balance: the merchant's median peak coin read 49,121 from 12 lives against a floor of 50,000 in a batch that touched no
+  trade; the merchant now plays 24 lives, as the artisan and the noble do (H-096).
+
+**Undo.** Revert this commit.

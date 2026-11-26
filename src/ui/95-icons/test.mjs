@@ -163,16 +163,17 @@ export default {
       };
       for (const k of acts) check(k, UI.ICONS_ACT[k]);
       for (const k of goods) check(k, UI.ICONS_GOOD[k]);
-      const distinct = new Set([...acts.map(k => UI.ICONS_ACT[k]), ...goods.map(k => UI.ICONS_GOOD[k])]).size;
+      // a class's activities (GD.ACTIVITIES[k].lvCls, 9999975-level) share their kind's icon; every other one is its own (H-160)
+      const base = acts.filter(k => !GD.ACTIVITIES[k].lvCls), distinct = new Set([...base.map(k => UI.ICONS_ACT[k]), ...goods.map(k => UI.ICONS_GOOD[k])]).size, nOwn = base.length;
       T.enter({ seed: 951, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 });
       const tiles = [...document.querySelectorAll('#tabbody .lk-acts > .act[data-v]')], own = tiles.filter(t => t.querySelector('.lk-gi[data-own]')).length;
       UI.A.group('holdings'); UI.render();
       const rows = document.querySelectorAll('#tabbody .ic-good').length, buys = document.querySelectorAll('#tabbody button[data-a="mktBuy"]').length;
       UI.A.group('life');
-      const bytes = Object.values(UI.ICONS_ACT).join('').length + Object.values(UI.ICONS_GOOD).join('').length;
-      return { acts: acts.length, goods: goods.length, miss, bad, distinct, tiles: tiles.length, own, rows, buys, bytes };
+      const bytes = [...new Set(Object.values(UI.ICONS_ACT))].join('').length + Object.values(UI.ICONS_GOOD).join('').length;   // a shared icon is sent once
+      return { acts: acts.length, nOwn, goods: goods.length, miss, bad, distinct, tiles: tiles.length, own, rows, buys, bytes };
     });
-    const ok = !r.miss.length && !r.bad.length && r.distinct === r.acts + r.goods && r.tiles > 0 && r.own === r.tiles && (r.buys === 0 || r.rows > 0) && r.bytes <= 20 * 1024;
+    const ok = !r.miss.length && !r.bad.length && r.distinct === r.nOwn + r.goods && r.tiles > 0 && r.own === r.tiles && (r.buys === 0 || r.rows > 0) && r.bytes <= 20 * 1024;
     return { ok, detail: `${r.acts} actions and ${r.goods} goods, ${r.distinct} distinct icons (${(r.bytes / 1024).toFixed(1)} KB)${r.miss.length ? '; MISSING ' + r.miss.join(',') : ''}${r.bad.length ? '; BAD ' + r.bad.join(',') : ''}; tiles with their own icon ${r.own} of ${r.tiles}; market rows with a good's icon ${r.rows} (buy buttons ${r.buys})` };
   },
 };
