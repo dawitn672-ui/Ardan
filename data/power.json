@@ -490,7 +490,7 @@
     "about": "Races have baseline bodies (GD.RACES and the v2 body: a giant grown is about B, a human about F) that lineage, a title had from birth and an innate gift change a great deal; the masters below are what the best of each people reach. A playable lineage system is a later wave."
   },
   "power": {
-    "about": "A being's fighting power is its level's might times its titles' power (buffs.power), its items' power (gives.power) and its art: 2^(art / artPerDouble), where art is the sum over its fight skills of the rank's weight (D 1, C 2, B 4, A 8, S 16, the skills' power budget of master prompt 9) times level / 10. Skills stop at level 10: past it they only evolve or merge, so strength comes from rank, titles and items, never from levels past 10. A person's skills are already inside his fighting worth, so they count once. A group fights as (sum of the square roots of their powers) squared, Lanchester's law. The comparison and the ranking read the power and the profile, never the level alone.",
+    "about": "A being's fighting power is its level's might times its titles' power (buffs.power), its items' power (gives.power) and its art: 2^(art / 5), where art is the sum over its fight skills of the rank's weight (D 1, C 2, B 4, A 8, S 16, the skills' power budget of master prompt 9) times level / 10. Skills stop at level 10: past it they only evolve or merge, so strength comes from rank, titles and items, never from levels past 10. A person's skills are already inside his fighting worth, so they count once. A few great beings fighting together add up nearly in a line: the sum of their powers, times 1.05 for each one past the first (they get in each other's way as much as they help); a host of many men keeps Lanchester's law (the hostOf rule: N^1.35 x a soldier). The comparison and the ranking read the power and the profile, never the level alone.",
     "rankW": {
       "D": 1,
       "C": 2,
@@ -498,7 +498,8 @@
       "A": 8,
       "S": 16
     },
-    "artPerDouble": 10,
-    "maxSkillLevel": 10
+    "artPerDouble": 5,
+    "maxSkillLevel": 10,
+    "groupSynergy": 0.05
   }
 }

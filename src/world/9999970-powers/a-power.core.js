@@ -138,14 +138,15 @@
     return null;
   };
   PW.level = x => { const b = PW.being(x); return b ? b.level : 0; };
-  // several beings fighting as one: Lanchester's law, (the sum of the square roots of their powers) squared; the profile
-  // takes each one's best, and numbers grow
+  // a few great beings fighting as one add up nearly in a line: the sum of their powers, times (1 + groupSynergy) for each
+  // one past the first. Lanchester's square law (three equals as nine) is for hosts of many men, where every spear can reach
+  // the foe at once (PW.hostOf: N^1.35 x a soldier); a few giants mostly get in each other's way. The profile takes each
+  // one's best (a handful is not a swarm)
   PW.group = function (xs) {
     const bs = (xs || []).map(PW.being).filter(Boolean);
     if (!bs.length) return null;
-    const pw = Math.pow(bs.reduce((a, b) => a + Math.sqrt(b.power || b.might), 0), 2), prof = {};
+    const pw = bs.reduce((a, b) => a + (b.power || b.might), 0) * Math.pow(1 + (D.power.groupSynergy || 0), bs.length - 1), prof = {};
     for (const k of CAPS) prof[k] = Math.max(...bs.map(b => b.prof[k] || 0));
-    prof.swarm = clamp(prof.swarm + 2 * (bs.length - 1), 0, 12);
     return { kind: 'group', id: 'group:' + bs.map(b => b.id).join('+'), n: bs.map(b => b.n).join(', '), level: Math.max(...bs.map(b => b.level)), t: PW.tOf(pw), might: pw, power: pw, prof, int: 'wise', titles: [], ranged: bs.some(b => b.ranged), hardy: Math.max(...bs.map(b => b.hardy || 0)) };
   };
   PW.might = x => { const b = PW.being(x); return b ? b.might : 0; };

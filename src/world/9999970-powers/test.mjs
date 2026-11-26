@@ -58,16 +58,20 @@ export default {
       const king = PW.compare('sarnavoth', PW.group(ARCH));
       const one = ARCH.map(id => [id, PW.level(id), PW.compare('sword-saint', id).p]);
       const sea = PW.compare('sword-saint', 'tessaly');
-      const rank = PW.great().map(x => x.id), single = ARCH.concat(['sword-saint']).map(id => PW.power(id));
+      const rank = PW.great().map(x => x.id), single = ARCH.concat(['sword-saint']).map(id => PW.power(id)), archAvg = ARCH.reduce((a, id) => a + PW.power(id), 0) / 3;
+      // the coordinator's rework (2026-11-26): a compressed top, neighbours within a few times, several near-even pairs
+      const legs = PW.LD.legends.map(l => l.id).sort((a, b) => PW.power(b) - PW.power(a));
+      const gaps = legs.slice(1).map((id, i) => PW.power(legs[i]) / PW.power(id)), even = legs.slice(1).filter((id, i) => { const q = PW.compare(legs[i], id).p; return q >= 0.4 && q <= 0.6; }).length;
+      const beast = PW.BD.species.reduce((m, sp) => Math.max(m, PW.power(sp.id)), 0), master = Math.max(...PW.D.masters.map(m => PW.power(m.id))), weakest = Math.min(...legs.map(id => PW.power(id)));
       const sheets = PW.LD.legends.concat(PW.D.masters);
       const over10 = sheets.flatMap(l => (l.skills || []).filter(k => !(k.lvl >= 1 && k.lvl <= 10) || !PW.D.power.rankW[k.rank]).map(k => l.id + ' ' + k.n));
       const complete = sheets.filter(l => !(l.skills && l.skills.length && Array.isArray(l.items) && l.titles && l.titles.length && l.d)).map(l => l.id);
       return { steps, convex, far: PW.mightOf(650) / PW.mightOf(600), king: king.p, kingEdges: king.edges.map(e => e.t), one, sea: sea.p, saintL: PW.level('sword-saint'), seaL: PW.level('tessaly'),
-        seaPow: PW.power('sword-saint') / PW.power('tessaly'), top: rank[0], topGap: PW.power('sarnavoth') / Math.max(...single), over10, complete, saintClass: PW.LEG.get('sword-saint').class };
+        seaPow: PW.power('sword-saint') / PW.power('tessaly'), top: rank[0], topGap: PW.power('sarnavoth') / Math.max(...single), kingArch: PW.power('sarnavoth') / archAvg, maxStep: Math.max(...gaps), even, farAbove: weakest / Math.max(beast, master), over10, complete, saintClass: PW.LEG.get('sword-saint').class };
     });
     const ok = r.convex && r.far > 3 && r.king >= 0.38 && r.king <= 0.47 && r.one.every(x => x[2] >= 0.4 && x[2] <= 0.6 && x[1] > r.saintL) &&
-      r.sea > 0.5 && r.seaPow > 1 && r.seaL < r.saintL && r.top === 'sarnavoth' && r.topGap > 5 && !r.over10.length && !r.complete.length && r.saintClass === 'Sword Saint';
-    return { ok, detail: `might per level ${r.steps.map(x => x.toFixed(4)).join(' < ')}; 650 is ${r.far.toFixed(1)} times 600. Sarnavoth against the three archdemons together: p ${r.king.toFixed(2)} (${r.kingEdges.join('; ')}); the Sword Saint (level ${r.saintL}) against one: ${r.one.map(x => `${x[0]} (${x[1]}) ${x[2].toFixed(2)}`).join(', ')}; against the Lord of the Sea (${r.seaL}): ${r.sea.toFixed(2)}, ${r.seaPow.toFixed(0)} times her power; Sarnavoth ${r.topGap.toFixed(1)} times the next single being; skills over level 10: ${r.over10.length}; incomplete sheets: ${r.complete.join(', ') || 'none'}` };
+      r.sea >= 0.65 && r.sea <= 0.8 && r.seaL < r.saintL && r.top === 'sarnavoth' && r.topGap > 1.5 && r.kingArch >= 3.2 && r.kingArch <= 3.6 && r.maxStep <= 4 && r.even >= 3 && r.farAbove > 20 && !r.over10.length && !r.complete.length && r.saintClass === 'Sword Saint';
+    return { ok, detail: `might per level ${r.steps.map(x => x.toFixed(4)).join(' < ')}; 650 is ${r.far.toFixed(1)} times 600. Sarnavoth against the three archdemons together: p ${r.king.toFixed(2)} (${r.kingEdges.join('; ')}); the Sword Saint (level ${r.saintL}) against one: ${r.one.map(x => `${x[0]} (${x[1]}) ${x[2].toFixed(2)}`).join(', ')}; against the Lord of the Sea (${r.seaL}): ${r.sea.toFixed(2)}, ${r.seaPow.toFixed(0)} times her power; Sarnavoth ${r.topGap.toFixed(1)} times the next single being and ${r.kingArch.toFixed(2)} times an archdemon on average; neighbours at most ${r.maxStep.toFixed(2)} times apart, ${r.even} neighbour pairs near even; the weakest legend ${r.farAbove.toFixed(0)} times the strongest beast or master; skills over level 10: ${r.over10.length}; incomplete sheets: ${r.complete.join(', ') || 'none'}` };
   },
 
   // the bestiary: countless kinds in families and evolution lines; the release's beasts placed by their own duel rows

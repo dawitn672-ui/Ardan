@@ -2885,3 +2885,9 @@ exist as measures; levels only). Decisions: D-179.
   own scale: no S1 word to move. Its hunt's one new `A.trainSkill` call broke the skills lint's baseline (330 > 329):
   now `A.gainXp(pc, "survival", 3 * A.SK.SHIM)`, the same experience (`07-duels.js`).
 - Undo: revert the step's commits; a save of version 17 would then be refused as newer. The archive holds the words.
+
+### H-139 · 2026-11-26 · Powers: a near-linear sum for a few great beings, a compressed top
+The coordinator's rework of orders 87-90: a few great beings fighting together add up nearly in a line (sum x 1.05 each
+past the first; hosts keep Lanchester), so Sarnavoth is 3.4 times an archdemon and wins 0.42 against the three together. The
+legends below the top four hold two S-rank skills, art doubles every 5 points, levels 640-692, and each signature title's
+power sets its place: neighbours within 3 times, six near-even pairs, the Lord of the Sea at 0.55 of the Saint (he wins 0.77).
