@@ -369,9 +369,14 @@
   };
 
   // ---------------------------------------------------------------- the adapter's sources (A.CAPS) and what others read
-  // a title as a skill source: rank = its weight, held at level 1, its effects as written (37-skills2/c-effects)
+  // a title as a skill source: rank = its weight, held at level 1, its effects as written (37-skills2/c-effects); its
+  // rarity and uniqueness set the cap of its share boosts (order 95, D-192: E.CAP_BOOST, lowered by vocab.json's boost.cap)
   const XS = TT.XS = new Map();
-  for (const t of TT.PERSON) if (Array.isArray(t.effects) && t.effects.length) XS.set(t.id, { id: 'title:' + t.id, rank: t.weight, rarity: t.rarity, kind: 'title', levels: [{ at: 1, effects: t.effects }] });
+  const BC = (V.boost && V.boost.cap) || {};
+  for (const t of TT.PERSON) if (Array.isArray(t.effects) && t.effects.length) {
+    const tier = t.unique ? 'unique' : t.rarity;
+    XS.set(t.id, { id: 'title:' + t.id, rank: t.weight, rarity: t.rarity, unique: !!t.unique, kind: 'title', boostCap: BC[tier] != null ? BC[tier] : 0, levels: [{ at: 1, effects: t.effects }] });
+  }
   TT.xHeld = function (p) {
     if (!p || !p.tt || !p.tt.h) return null;
     let out = null;
@@ -404,10 +409,11 @@
     for (const t of TT.heldDefs(p)) { const r = t.reasons && t.reasons[kind]; if (r) out.push({ kind: r.kind || 'merit', weight: r.weight || 0.2, label: tok(r.label || 'called {title}', { title: TT.nameOf(p, t.id) }), source: { t: 'title', id: t.id }, pub: 1 }); }
     return out;
   };
-  // what a title gives, in words (no numbers): its effects' cost, from data/skills/vocab.json's prices
+  // what a title gives, in words (no numbers): its effects' cost, from data/skills/vocab.json's prices, and its share
+  // boosts at vocab.json's boost.words a whole share (D-192)
   TT.strength = function (t) {
     let c = 0;
-    try { const SK2 = A.SK2; if (SK2 && SK2.E) for (const e of t.effects || []) c += SK2.E().effectCost(SK2.IX(), e); } catch (e) {}
+    try { const SK2 = A.SK2; if (SK2 && SK2.E) for (const e of t.effects || []) c += e.type === 'boost' ? Math.abs(+e.v || 0) * ((V.boost && V.boost.words) || 0) : SK2.E().effectCost(SK2.IX(), e); } catch (e) {}
     for (const [at, w] of V.strength || []) if (c >= at) return w;
     return 'slight';
   };

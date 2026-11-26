@@ -1160,13 +1160,11 @@ var __ARDAN_V2_MAKE = (() => {
   // src/people/engine/skills2.js
   var skills2_exports = {};
   __export(skills2_exports, {
-    ADVANCES_A_LIFE: () => ADVANCES_A_LIFE,
-    ADVANCE_CHANCE: () => ADVANCE_CHANCE,
-    ADVANCE_FROM: () => ADVANCE_FROM,
     BANDS: () => BANDS,
     BASES: () => BASES,
     BEING_LV_FROM: () => BEING_LV_FROM,
     BEING_LV_TOP: () => BEING_LV_TOP,
+    CAP_BOOST: () => CAP_BOOST,
     CAP_HUMAN: () => CAP_HUMAN,
     COOL_UNITS: () => COOL_UNITS,
     CURVE_A: () => CURVE_A,
@@ -1178,6 +1176,10 @@ var __ARDAN_V2_MAKE = (() => {
     HEAL_OF: () => HEAL_OF,
     HUMAN: () => HUMAN,
     IX: () => IX,
+    JUMP_CONDITIONS: () => JUMP_CONDITIONS,
+    JUMP_FROM: () => JUMP_FROM,
+    JUMP_NEED: () => JUMP_NEED,
+    JUMP_TALENT: () => JUMP_TALENT,
     KINDS3: () => KINDS3,
     MAX_LV: () => MAX_LV,
     MONTHS_OF: () => MONTHS_OF,
@@ -1198,9 +1200,11 @@ var __ARDAN_V2_MAKE = (() => {
     beingArts: () => beingArts,
     beingLevel: () => beingLevel,
     beingOk: () => beingOk,
+    boostCapOf: () => boostCapOf,
+    boostOn: () => boostOn,
+    boostTier: () => boostTier,
     budget: () => budget,
     budgetFaults: () => budgetFaults,
-    canAdvance: () => canAdvance,
     canEvolve: () => canEvolve,
     canMerge: () => canMerge,
     capOf: () => capOf,
@@ -1241,6 +1245,7 @@ var __ARDAN_V2_MAKE = (() => {
     kindFaults: () => kindFaults,
     label: () => label,
     landed: () => landed,
+    lineEffects: () => lineEffects,
     manaOf: () => manaOf,
     merge: () => merge,
     mergeEntry: () => mergeEntry,
@@ -1255,6 +1260,7 @@ var __ARDAN_V2_MAKE = (() => {
     prevRank: () => prevRank,
     profile: () => profile,
     rankIx: () => rankIx,
+    rankJump: () => rankJump,
     ready: () => ready,
     recipeFaults: () => recipeFaults,
     resistOn: () => resistOn,
@@ -1542,6 +1548,12 @@ var __ARDAN_V2_MAKE = (() => {
     raise: 10,
     status: 2
   };
+  var CAP_BOOST = { uncommon: 0.02, rare: 0.05, legendary: 0.15, unique: 0.25 };
+  var boostTier = (s) => s && s.kind === "title" ? s.unique ? "unique" : s.rarity : null;
+  function boostCapOf(s) {
+    const t = boostTier(s), c = t && CAP_BOOST[t] || 0;
+    return s && s.boostCap != null ? Math.min(c, Math.max(0, +s.boostCap || 0)) : c;
+  }
   function capOf(ix, what, topRank2) {
     const C = (ix.V.caps || {})[what], hard = HUMAN.includes(topRank2) || rankIx(topRank2) < 0 ? CAP_HUMAN[what] : void 0;
     const v = !C ? Infinity : C[topRank2] != null ? C[topRank2] : C.S != null ? C.S : Infinity;
@@ -1657,6 +1669,7 @@ var __ARDAN_V2_MAKE = (() => {
     if (!table[from] || table[to]) return table;
     table[to] = { lv: 1, xp: 0, via: "evolve", from };
     if (at != null) table[to].y = at;
+    delete table[from];
     return table;
   }
   function canMerge(ix, recipe, facts) {
@@ -1684,18 +1697,37 @@ var __ARDAN_V2_MAKE = (() => {
     if (at != null) table[recipe.result].y = at;
     return table;
   }
-  var ADVANCE_FROM = 5;
-  var ADVANCES_A_LIFE = 1;
-  function canAdvance(ix, held, facts) {
-    const miss = [], s = ix.BY[held && held.id];
-    if (!s) return { ok: false, missing: ["skill"] };
+  var JUMP_FROM = 5;
+  var JUMP_NEED = 2;
+  var JUMP_CONDITIONS = ["concepts", "deed", "talent"];
+  var JUMP_TALENT = { C: "C", B: "B", A: "A", S: "S", SS: "SSS", SSS: "SSS", X: "SSS" };
+  function rankJump(ix, held, facts) {
+    facts = facts || {};
+    const s = ix.BY[held && held.id];
+    if (!s) return { ok: false, from: null, to: null, rank: null, met: [], missing: ["skill"] };
     const to = (s.evolvesTo || []).map((t) => ix.BY[t.id]).find((t) => t && rankIx(t.rank) === rankIx(s.rank) + 1);
-    if (!to) miss.push("no-next");
-    if (!(held.lv >= ADVANCE_FROM)) miss.push("level");
-    if ((facts.advances || 0) >= ADVANCES_A_LIFE) miss.push("once");
-    if (!(ix.V.moments || []).includes(facts.moment)) miss.push("moment");
-    if (to && (facts.skills || {})[to.id]) miss.push("held");
-    return { ok: !miss.length, missing: miss, to: to ? to.id : null };
+    const out = { ok: false, from: s.id, to: to ? to.id : null, rank: to ? to.rank : null, met: [], missing: [] };
+    if (!to) {
+      out.missing.push("no-next");
+      return out;
+    }
+    const route = ((to.acquire || []).find((r) => r.via === "evolve" && r.from === s.id) || {}).needs || {};
+    if (!(held.lv >= JUMP_FROM)) out.missing.push("level");
+    if (Array.isArray(facts.sealed) && facts.sealed.includes(s.id)) out.missing.push("absorbed");
+    if ((facts.skills || {})[to.id]) out.missing.push("held");
+    const rest = Object.assign({}, route);
+    delete rest.concept;
+    delete rest.deed;
+    out.missing.push(...missing(rest, facts));
+    if (!missing({ concept: route.concept || [] }, facts).length) out.met.push("concepts");
+    if (route.deed ? !missing({ deed: route.deed }, facts).length : deedCount(facts, "proved", to.rank) >= 1) out.met.push("deed");
+    const fam = s.family || (s.reads || [])[0];
+    if (fam && TAL.indexOf((facts.talent || {})[fam] || "C") >= TAL.indexOf(JUMP_TALENT[to.rank] || "SSS")) out.met.push("talent");
+    if (out.met.length < JUMP_NEED) {
+      for (const c of JUMP_CONDITIONS) if (!out.met.includes(c)) out.missing.push("condition:" + c);
+    }
+    out.ok = !out.missing.length;
+    return out;
   }
   var EDGE_RANK = { 2: "C", 3: "B", 4: "A", 5: "S" };
   var EDGE_GATE = { 1: ["D", 6], 6: ["S", 6] };
@@ -1721,7 +1753,6 @@ var __ARDAN_V2_MAKE = (() => {
     if (e.kind === "evolve" && facts && Array.isArray(facts.sealed) && facts.sealed.includes(e.from)) miss.push("absorbed");
     return Object.assign(e, { ok: !miss.length, missing: miss });
   }
-  var ADVANCE_CHANCE = 0.01;
   var FOUND_CHANCE = 1 / 200;
   function hashKey(str) {
     let h = 1779033703 ^ str.length;
@@ -1846,18 +1877,30 @@ var __ARDAN_V2_MAKE = (() => {
   var STEP_MIND = 7.5;
   var RESIST_STEP = { wounds: 0.1, fear: 0.2, illness: 0.1, poison: 0.1, mind: 0.1 };
   function heldOfRung(ix, fam, rank, lv) {
-    const out = [];
+    const out = [], line = [];
     if (!(lv >= 1) || rankIx(rank) < 0) return out;
     for (const r of RANKS) {
       const id = rungOf(ix, fam, r);
       if (rankIx(r) < rankIx(rank)) {
-        if (id) out.push({ id, lv: MAX_LV });
+        if (id) line.push(id);
         continue;
       }
-      if (r === rank && id) out.push({ id, lv: Math.min(MAX_LV, lv) });
+      if (r === rank && id) out.push(line.length ? { id, lv: Math.min(MAX_LV, lv), line } : { id, lv: Math.min(MAX_LV, lv) });
       break;
     }
     return out;
+  }
+  function lineEffects(ix, h) {
+    const s = ix.BY[h && h.id];
+    if (!s) return [];
+    if (!Array.isArray(h.line) || !h.line.length) return effectsAt(s, h.lv);
+    const held = /* @__PURE__ */ new Map();
+    for (const id of h.line) {
+      const x = ix.BY[id];
+      if (x) for (const e of effectsAt(x, MAX_LV)) held.set(effectKey(e), e);
+    }
+    for (const e of effectsAt(s, h.lv)) held.set(effectKey(e), e);
+    return [...held.values()];
   }
   function srcKey(e) {
     switch (e && e.type) {
@@ -1878,6 +1921,8 @@ var __ARDAN_V2_MAKE = (() => {
         return "social|" + e.group;
       case "economy":
         return "economy|" + e.of + "|" + (e.tag || "all");
+      case "boost":
+        return "boost|" + e.of + "|" + (e.tag || "all");
       default:
         return null;
     }
@@ -1887,7 +1932,7 @@ var __ARDAN_V2_MAKE = (() => {
     for (const h of held || []) {
       const s = ix.BY[h && h.id];
       if (!s) continue;
-      for (const e of effectsAt(s, h.lv)) {
+      for (const e of lineEffects(ix, h)) {
         if (e.type === "perk") continue;
         if (e.type === "unlock") {
           if (!unlocks.includes(e.what)) unlocks.push(e.what);
@@ -1922,6 +1967,12 @@ var __ARDAN_V2_MAKE = (() => {
     }
     return out;
   };
+  function boostOn(ix, G, of, tags) {
+    const l = srcOf(G, "boost|" + of, tags || ["all"]);
+    if (!l.length) return 0;
+    const cap3 = l.reduce((m, x) => Math.max(m, boostCapOf(ix.BY[x[2]])), 0);
+    return stack(l.map((x) => x[0]), cap3, weightsOf(ix));
+  }
   var edgeOn = (ix, G, tags) => capped(ix, "edge", srcOf(G, "edge", tags));
   var stepsOn = (ix, G, what, tags) => capped(ix, "blunderSurge", srcOf(G, what, tags));
   var resistOn = (ix, G, of) => capped(ix, "resist", G.src["resist|" + of] || []);
@@ -1960,7 +2011,7 @@ var __ARDAN_V2_MAKE = (() => {
   }
   function profile(ix, held) {
     const G = gather(ix, held);
-    const P = { held: (held || []).map((h) => ({ id: h.id, lv: h.lv })), edges: {}, fight: {}, blunder: {}, surge: {}, resist: {}, growth: {}, stat: {}, social: {}, economy: {}, auras: aurasOn(ix, G), unlocks: G.unlocks, actives: G.actives, triggers: G.triggers };
+    const P = { held: (held || []).map((h) => ({ id: h.id, lv: h.lv })), edges: {}, fight: {}, blunder: {}, surge: {}, resist: {}, growth: {}, stat: {}, social: {}, economy: {}, boost: {}, auras: aurasOn(ix, G), unlocks: G.unlocks, actives: G.actives, triggers: G.triggers };
     const W = weightsOf(ix);
     for (const k of Object.keys(G.src).sort()) {
       const [type, a, b] = k.split("|"), l = G.src[k];
@@ -1974,7 +2025,7 @@ var __ARDAN_V2_MAKE = (() => {
       else if (type === "fight") {
         const f = P.fight[a] = P.fight[a] || { atk: 0, def: 0, burst: 0, adapt: 0 };
         f[b] = stack(l.map((x) => x[0]), Infinity, W);
-      }
+      } else if (type === "boost") P.boost[a + ":" + b] = boostOn(ix, { src: { [k]: l } }, a, [b]);
     }
     P.G = G;
     return P;
@@ -2223,7 +2274,11 @@ var __ARDAN_V2_MAKE = (() => {
       }
       if (lv > 0) held[s.id] = lv;
     }
-    for (const id of Object.keys(held).sort()) out.push({ id, lv: held[id] });
+    const gone2 = /* @__PURE__ */ new Set();
+    for (const s of arts) if (held[s.id]) {
+      for (const r of s.acquire || []) if (r.via === "evolve" && held[r.from] >= MAX_LV) gone2.add(r.from);
+    }
+    for (const id of Object.keys(held).sort()) if (!gone2.has(id)) out.push({ id, lv: held[id] });
     return out;
   }
   var an = (w) => (/^[aeiou]/.test(String(w)) ? "an " : "a ") + w;

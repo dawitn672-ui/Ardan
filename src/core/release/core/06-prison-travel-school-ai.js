@@ -1862,6 +1862,9 @@ A.CR = function (f, D) {
   // step 11 (D-186): this exchange's fight points from the arts of the three kinds (passives firing, buffs in force), set
   // by A.SK2.duelRound under the same cap, shared with the effects above
   if (f.k2) v += f.k2.fight || 0;
+  // order 95 (D-192): titles' share boost to fighting worth, a share of the fighter's own worth set by A.SK2.fightOn in
+  // A.fighterFrom (f.ttb), under the titles' own cap (the rarest title's: at most a quarter), apart from the 15% above
+  if (f.ttb) v += f.ttb;
   return v;
 };
 

@@ -174,13 +174,13 @@ export default {
         for (const id in before) { n++; if (after[id] !== before[id]) { diff++; if (diff <= 3) bad.push(id + ' ' + before[id] + ' -> ' + after[id]); } }
         const pc = A.pc();
         // a save made since the level (version 18 and on) keeps the level it held, earned in play: only an older one is seeded
-        // (save version 21, D-184): everyone with a held level has his walls settled, the classes worn, nothing paid
+        // (save version 22, D-184): everyone with a held level has his walls settled, the classes worn, nothing paid
         for (const id in A.S.people) {
           const q = A.S.people[id]; if (!q || !q.lv || q.lv.L == null || !q.st) continue;
-          if (q.lv.ct !== Math.floor(q.lv.L / 100) && ver0 < 21) { bad.push(id + ' walls ' + q.lv.ct + ' at ' + q.lv.L); break; }
-          if (ver0 < 21 && ((q.lv.cr || []).some(x => x[2]) || q.lv.wp)) { bad.push(id + ' a class paid on load'); break; }
+          if (q.lv.ct !== Math.floor(q.lv.L / 100) && ver0 < 22) { bad.push(id + ' walls ' + q.lv.ct + ' at ' + q.lv.L); break; }
+          if (ver0 < 22 && ((q.lv.cr || []).some(x => x[2]) || q.lv.wp)) { bad.push(id + ' a class paid on load'); break; }
         }
-        if (ver0 < 21 && !steps.includes('classes')) bad.push('no classes step (' + steps.join(',') + ')');
+        if (ver0 < 22 && !steps.includes('classes')) bad.push('no classes step (' + steps.join(',') + ')');
         if (pc && pc.alive && ver0 >= 18) { if (!pc.lv || !(pc.lv.L >= 1)) bad.push('no held level'); }
         else if (pc && pc.alive) {
           if (!pc.lv || !(pc.lv.L >= 1)) bad.push('no held level');
@@ -513,8 +513,8 @@ export default {
     return { ok, detail: `untried youths of sixteen: ${Object.entries(r.by).map(([k, v]) => `${k} ${v.join(' ')}`).join('; ')} (computed ${Math.min(...r.comp)}-${Math.max(...r.comp)}); a figure from data ${r.fig}; at thirty (floor ${r.fl}, computed ${r.c30}): a veteran sergeant ${r.vet}, a general of 25 years ${r.gen}, a man with 12 kills and no service ${r.brawl}; a stored level kept ${r.kept}` };
   },
   // the breakthrough at every hundredth level (order 95): the body's points come with it (six at the first wall), it is
-  // recorded, a skill jumps one rank only where its conditions allow (talent at the next rank's letter, the route's deeds,
-  // at most one concept missing): with every talent at F nothing jumps; and a replay of the same world gives the same
+  // recorded, a skill jumps one rank only where the skills engine's verdict allows it (D-192: Lv 5 and two of concepts,
+  // deed and talent), one at most and one whenever any is allowed, talent or none; and a replay gives the same
   async lvBreak(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     const r = await pg.evaluate(() => {
@@ -524,22 +524,24 @@ export default {
         const pc = A.pc(); LV.seed(pc);
         if (tal) { pc.tal = {}; for (const k of A.SK.IDS) pc.tal[k] = tal; }
         const before = {}; for (const k of A.SK.IDS) { const rr = A.SK2.rungFor(pc, k); before[k] = rr ? rr.rank : null; }
+        const open = A.SK.IDS.filter(k => { const v = A.SK2.jumpVerdict(pc, k); return v && v.ok; });
         pc.lv.L = 99; pc.lv.f = 0.999; pc.lv.ct = 0; delete pc.lv.cr; A.S.queue = [];
         const pts0 = pc.lv.pts, gx0 = pc.lv.gx || 0;
         for (let i = 0; i < 400 && pc.lv.L < 100; i++) LV.defeat(pc, 130, 'kill');
         const bt = pc.lv.bt && pc.lv.bt[pc.lv.bt.length - 1];
         const jumped = []; for (const k of A.SK.IDS) { const rr = A.SK2.rungFor(pc, k); if (rr && before[k] && rr.rank !== before[k]) jumped.push(k + ' ' + before[k] + '>' + rr.rank + ' talent ' + A.SK.talentOf(pc, k)); }
-        return { L: pc.lv.L, gx: (pc.lv.gx || 0) - gx0, bt, jumped, card: A.S.queue.some(q => q.ev === 'lv_wall' || q.ev === 'lv_boost') };
+        return { L: pc.lv.L, gx: (pc.lv.gx || 0) - gx0, bt, jumped, open, card: A.S.queue.some(q => q.ev === 'lv_wall' || q.ev === 'lv_boost') };
       };
       out.free = [9871, 9872, 9873].map(s => run(s, null));
       out.again = run(9871, null);
       out.dull = [9871, 9872].map(s => run(s, 'F'));
       return out;
     });
-    const TO = ['F', 'E', 'D', 'C', 'B', 'A', 'S', 'SSS'];
-    const okJump = r.free.every(x => x.jumped.length <= 1 && x.jumped.every(j => { const m = j.match(/(\w)>(\w) talent (\w+)$/); return m && TO.indexOf(m[3]) >= TO.indexOf(m[2]); }));
-    const ok = r.free.every(x => x.L >= 100 && x.gx === 6 && x.bt && x.bt[2] === 6 && x.card) && okJump && JSON.stringify(r.again) === JSON.stringify(r.free[0]) && r.dull.every(x => !x.jumped.length && x.gx === 6);
-    return { ok, detail: `${r.free.map((x, i) => `world ${9871 + i}: level ${x.L}, ${x.gx} points, jumped ${x.jumped.join(', ') || 'none'}, a card ${x.card}`).join('; ')}; the same on a replay ${JSON.stringify(r.again) === JSON.stringify(r.free[0])}; every talent F: jumped ${r.dull.map(x => x.jumped.length).join(', ')}` };
+    // the engine decides (D-192's rank jump): a family jumps only when its verdict allowed it before the wall, one at most,
+    // and one whenever any was allowed
+    const okJump = r.free.concat(r.dull).every(x => x.jumped.length <= 1 && x.jumped.every(j => x.open.includes(j.split(' ')[0])) && (x.open.length ? x.jumped.length === 1 : !x.jumped.length));
+    const ok = r.free.every(x => x.L >= 100 && x.gx === 6 && x.bt && x.bt[2] === 6 && x.card) && okJump && JSON.stringify(r.again) === JSON.stringify(r.free[0]) && r.dull.every(x => x.gx === 6);
+    return { ok, detail: `${r.free.map((x, i) => `world ${9871 + i}: level ${x.L}, ${x.gx} points, jumped ${x.jumped.join(', ') || 'none'}, a card ${x.card}`).join('; ')}; the same on a replay ${JSON.stringify(r.again) === JSON.stringify(r.free[0])}; every talent F: jumped ${r.dull.map(x => x.jumped.length + ' of ' + x.open.length + ' allowed').join(', ')}` };
   },
 
   // training comes as single +1s (order 95): the player's stat rises only by whole points, the fractions kept toward the

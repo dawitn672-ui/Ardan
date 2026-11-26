@@ -19,7 +19,7 @@
 // A.canAct holds to those who have the class: LV.hasAct). Every class on his road keeps its parts; the class he holds now
 // gives its effects in the skills adapter (SK2.xClass), so the caps bind it with his skills and titles. A class read at
 // seeding (worn: on load, at the first month, at an NPC's first fight) has its parts and no effects, honour or points.
-// State (optional, old saves load; the save step 'classes', version 21): p.lv.ct (the walls settled), p.lv.cr ([[class,
+// State (optional, old saves load; the save step 'classes', version 22): p.lv.ct (the walls settled), p.lv.cr ([[class,
 // year, earned 1 or worn 0]], his road), p.lv.wp (the player's walls waiting for an answer), p.lv.bf ([stat, v, months]:
 // a buff running). Nothing here draws on render.
 (function () {
@@ -151,7 +151,7 @@
     lv.bt = (lv.bt || []).concat([[A.S.year, t, n, jump ? jump.to : '']]).slice(-5);
     if (isPc(p)) {
       lv.wp = (lv.wp || 0) + 1;
-      if (A.log) A.log(`You break through at level ${t * WALL}: ${CL.pointWords(n).toLowerCase()} for the body${jump ? `, and ${jump.text}` : ''}.`, 'big');
+      if (A.log) A.log(`You break through at level ${t * WALL}: ${CL.pointWords(n).toLowerCase()} for the body.`, 'big');
       CL.queue(p);
     } else CL.npcWall(p);
   };
@@ -166,37 +166,16 @@
   };
   CL.boost = function (p, t) { return LV.grant(p, CL.pointsAt(t), `the breakthrough at level ${t * WALL}`); };
 
-  // a skill's jump at the breakthrough (order 95; the skills engine, 37-skills2): one family, the best read that holds at
-  // least Lv 5 of its rank and has a next rank, when several conditions allow it: the next rung's route wants no deed,
-  // age or renown he lacks, at most one of its concepts is still to be grasped, and his talent in it reaches the next
-  // rank's letter. The jump sets the next rank's first level (its concepts deemed grasped, SK.set's rule). The player
-  // only: anyone else's skills are one number each (deferred with the census of named skills)
-  CL.TALENT_FOR = { C: 'C', B: 'B', A: 'A', S: 'S' };
+  // a skill's jump at the breakthrough (order 95): the skills engine's rank jump (37-skills2, D-192: `A.SK2.rankJumps`; Lv 5
+  // or more and two of its three conditions, the concepts, the deed and the talent; no die), at most one a wall, the
+  // best read first; the player and anyone else (an NPC by his number). The engine logs and records it
   CL.jump = function (p, t) {
-    const SK = A.SK, SK2 = A.SK2;
-    if (!isPc(p) || !SK || !SK2 || !SK2.tops || !SK2.E || !(p.sk && typeof p.sk === 'object')) return null;
-    const Eng = SK2.E(), ix = SK2.IX(), tops = SK2.tops(p), W_ = { C: 2, B: 3, A: 4, S: 5 }, cand = [];
-    for (const id in tops) {
-      const h = tops[id]; if (!h.c || h.merged) continue;
-      const s0 = ix.BY[id]; if (!s0 || !(h.lv >= Eng.ADVANCE_FROM)) continue;
-      const to = (s0.evolvesTo || []).map(x => ix.BY[x.id]).find(x => x && Eng.HUMAN.includes(x.rank) && Eng.HUMAN.indexOf(x.rank) === Eng.HUMAN.indexOf(s0.rank) + 1);
-      if (!to || tops[to.id]) continue;
-      const v = Eng.edgeVerdict(ix, h.c, W_[to.rank], SK2.factsAt(p, h.c, p.sk[h.c], null, to.rank));
-      if (!v) continue;
-      const concepts = v.missing.filter(m => m.startsWith('concept:')).length, other = v.missing.filter(m => !m.startsWith('concept:'));
-      const tal = SK.talentOf ? SK.talentOf(p, h.c) : 'C', TO = SK.TALENT_ORDER || ['F', 'E', 'D', 'C', 'B', 'A', 'S', 'SSS'];
-      if (other.length || concepts > 1 || TO.indexOf(tal) < TO.indexOf(CL.TALENT_FOR[to.rank] || 'S')) continue;
-      cand.push({ id, c: h.c, lv: h.lv, to: to.id, rank: to.rank, name: to.name, from: s0.name, read: Eng.value(s0.rank, h.lv) });
-    }
-    cand.sort((a, b) => b.read - a.read || (a.c < b.c ? -1 : 1));
-    const pick = cand[0]; if (!pick) return null;
-    SK.set(p, pick.c, Eng.s1OfRung(pick.rank, 1), `the breakthrough at level ${t * WALL}`);
-    if (p.sk[pick.c]) p.sk[pick.c].xp = 0;
-    if (SK2.syncFam) SK2.syncFam(p, pick.c);
-    const text = `${pick.from} breaks through to ${pick.name}, ${pick.rank} · Lv 1`;
-    if (SK2.evNote) SK2.evNote(p, { how: 'breakthrough', k: pick.c, from: pick.id, to: pick.to, why: `the breakthrough at level ${t * WALL}`, ok: 1, at: pick.lv });
-    if (SK.record) SK.record(p, pick.c, 'breakthrough', `${text}: the breakthrough at level ${t * WALL}`);
-    return { c: pick.c, to: pick.to, text };
+    const SK2 = A.SK2;
+    if (!SK2 || !SK2.rankJumps) return null;
+    const done = SK2.rankJumps(p, { why: `the breakthrough at level ${t * WALL}`, max: 1 });
+    const v = done && done[0]; if (!v) return null;
+    const to = SK2.IX ? SK2.IX().BY[v.to] : null;
+    return { c: v.k, to: v.to, text: `${to ? to.name : v.to} jumps a rank` };
   };
 
   // anyone but the player: the class branch by his reasons (A.WHY.decide), on a stream of his own; or none yet
@@ -233,7 +212,7 @@
     const t = (lv.ct || 1) - lv.wp + 1, opts = CL.options(pc), bt = (lv.bt || []).find(x => x[1] === t);
     const ctx = { lvl: String(t * WALL), t: String(t), pts: CL.pointWords(bt ? bt[2] : CL.pointsAt(t)) };
     const sk = bt && bt[3] && A.SK2 && A.SK2.IX ? (A.SK2.IX().BY[bt[3]] || {}).name : '';
-    ctx.jump = sk ? `${sk} breaks through with you.` : '';
+    ctx.jump = sk ? `${sk} jumps a rank with you.` : '';
     if (opts.length) {
       opts.forEach(({ c }, i) => { ctx['o' + (i + 1)] = c.id; ctx['n' + (i + 1)] = c.name; });
       ctx.roads = opts.map(({ c }) => `A ${c.name}: ${c.hook}.`).join(' ');
@@ -358,7 +337,7 @@
     if (Array.isArray(lv.bf)) { lv.bf[2]--; if (!(lv.bf[2] > 0)) { delete lv.bf; if (A.cacheResetAll) try { A.cacheResetAll(); } catch (e) {} } }
   };
   A.onMonth.push(pc => { try { CL.month(pc); } catch (e) { console.error('[level] classes month', e); } });
-  // save version 21: everyone with a held level has his walls settled (worn classes: nothing paid, no effects)
+  // save version 22: everyone with a held level has his walls settled (worn classes: nothing paid, no effects)
   CL.migrate = function (S) {
     S = S || A.S; let n = 0;
     for (const id in (S && S.people) || {}) { const p = S.people[id]; if (p && p.lv && p.lv.L != null && p.lv.ct == null) { LV.settleSeeded(p); n++; } }

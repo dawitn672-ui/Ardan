@@ -229,6 +229,9 @@
   A.gainXp = function (p, k, eu, cause) {
     if (!p || !(eu > 0 || eu < 0) || !A.S) return 0;
     const [c, spc] = SK.canon(k); if (!c) return 0;
+    // order 95 (D-192): a title's share boost to experience gained: a share more effort (37-skills2's SK2.boostOf; 0 for
+    // anyone who holds none)
+    if (eu > 0 && A.SK2 && A.SK2.boostOf) { const g = A.SK2.boostOf(p, 'growth', c); if (g > 0) eu *= 1 + g; }
     if (typeof cause === 'string') cause = { why: cause };
     const base = SK.whyNow();
     const a = Object.assign({ q: base.q || 'practice', why: base.why }, cause || {}, { skill: c, eu: Math.abs(eu) });

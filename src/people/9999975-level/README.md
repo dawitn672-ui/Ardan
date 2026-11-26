@@ -109,7 +109,7 @@ two cards (`level.events.js`), tests.
 - `src/world/9999970-powers/a-power.core.js` `PW.being`: a person's level is `A.LV.level` (his might, and so the odds, unchanged).
 - `src/world/9999970-powers/c-meet.core.js` `PW.resolve`: a beast killed outright pays its level.
 - `src/ui/999996-profile-tab/profile.b-view.core.js` `PF.sheet`: reads `PF.sheetTop`.
-- `src/core/99998-v2-saves/saves.core.js`: `SV.VER` 18, then 21 (the step `classes`, D-184).
+- `src/core/99998-v2-saves/saves.core.js`: `SV.VER` 18, then 22 (the step `classes`, D-184).
 - D-184: release `07-duels.js` `A.style` (a class's style id), `A.techsOf` (a class's techniques), `A.styleFighter` (its
   passives), `A.techEdge` (a passive under its condition), `A.techSteal` (never a class's); `04-...-b.js` `A.canAct` (an
   activity held to its class); `03-engine-base.js` `A.stat` (a buff); `37-skills2/c-effects.core.js` `xOf` (`SK2.xClass`);
@@ -123,7 +123,7 @@ No `A.addStage`. One wrapper of `UI.ovModal` (as 99998-click-open's sheet does),
 `p.lv = { L, f, pts, put, why (the last three placements), k0, kc, gx, gw, ct (the walls settled), cr ([[class, year,
 earned 1 or worn 0]]), wp (the player's walls waiting for an answer), bf ([stat, v, months]: a buff) }` on the player and on
 the people who have fought since; `A.S.lvq` (NPCs with points waiting, at most 400); `A.S.pw.leg[id].lg` (a legend's gain).
-Old saves: the step `level` seeds the player; the step `classes` (version 21) settles everyone's walls, worn.
+Old saves: the step `level` seeds the player; the step `classes` (version 22) settles everyone's walls, worn.
 
 ## Tests (`test.mjs`)
 

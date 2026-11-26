@@ -1,0 +1,14 @@
+// advancing (awakening): a skill at Lv 5 or more jumps to the next rank's Lv 1 at a named moment, once a life (§3.4)
+export const ADVANCE_FROM = 5, ADVANCES_A_LIFE = 1;
+export function canAdvance(ix, held, facts) {
+  const miss = [], s = ix.BY[held && held.id];
+  if (!s) return { ok: false, missing: ['skill'] };
+  const to = (s.evolvesTo || []).map(t => ix.BY[t.id]).find(t => t && rankIx(t.rank) === rankIx(s.rank) + 1);
+  if (!to) miss.push('no-next');
+  if (!(held.lv >= ADVANCE_FROM)) miss.push('level');
+  if ((facts.advances || 0) >= ADVANCES_A_LIFE) miss.push('once');
+  if (!(ix.V.moments || []).includes(facts.moment)) miss.push('moment');
+  if (to && (facts.skills || {})[to.id]) miss.push('held');
+  return { ok: !miss.length, missing: miss, to: to ? to.id : null };
+}
+

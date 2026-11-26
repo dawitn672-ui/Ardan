@@ -3,8 +3,11 @@
 //   - a title without an id, a name, a known rarity, weight, kind or being, or two titles with one id
 //   - a predicate or a deed kind not declared in vocab.json; a skill family or rank that does not exist; a watched kind
 //     that is not a deed or 'month'; a person's title that watches nothing, or whose ledger conditions nothing wakes
-//   - person effects over the weight's budget (perLevel x 5, x1.25 unique, x1.5 legendary), a stat over +3 a title, an
-//     effect type, tag, group or slot the vocabularies do not have
+//   - person effects over the weight's budget (perLevel x 5, x1.25 unique, x1.5 legendary), a stat over its rarity's most
+//     a title (vocab.json statMax), an effect type, tag, group or slot the vocabularies do not have
+//   - a share boost (order 95, D-192) of a kind vocab.json does not name, not a share above 0, or a title's boosts of one
+//     kind over its rarity's cap (boost.cap; unique: the unique figure); a boost cap above the engine's ceiling
+//     (E.CAP_BOOST), and any of these on something no person holds
 //   - a title that cannot be met by any start (a predicate walk: an all() asking a count both above and below one number)
 //   - a legend's or a master's sheet naming a title not in data/titles/, or a title whose holders disagree with the sheets
 //   - a card choice table naming a deed kind not declared
@@ -16,6 +19,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { CAP_BOOST } from '../src/people/engine/skills2.js';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const J = f => JSON.parse(fs.readFileSync(path.join(root, f), 'utf8'));
@@ -44,6 +48,7 @@ function cost(e) {
     case 'resist': return ((C.resistHardOf || []).includes(e.of) ? C.resistHard : C.resist) * a;
     case 'social': return C.socialPer5 * a / 5;
     case 'growth': return C.growthPer10 * a / 10;
+    case 'boost': return 0;   // a pool of its own, bounded by its rarity's cap, not by the budget (D-192)
     default: return Infinity;
   }
 }
@@ -85,6 +90,15 @@ function contradiction(q) {
   return null;
 }
 
+// ---- the share boosts' caps: named for every rarity and for unique, never above the engine's ceiling
+const BV = V.boost || {}, BCAP = BV.cap || {};
+for (const k of V.rarities.concat(['unique'])) {
+  if (!(BCAP[k] >= 0)) bad.push(`vocab.json boost.cap: no cap for ${k}`);
+  else if (BCAP[k] > (CAP_BOOST[k] ?? 0) + 1e-9) bad.push(`vocab.json boost.cap.${k} ${BCAP[k]} above the engine's ceiling ${CAP_BOOST[k]}`);
+}
+const statMaxOf = t => (typeof V.statMax === 'object' ? V.statMax[t.unique ? 'unique' : t.rarity] : V.statMax);
+for (const k of V.rarities.concat(['unique'])) if (typeof V.statMax === 'object' && !(V.statMax[k] >= 0)) bad.push(`vocab.json statMax: no figure for ${k}`);
+
 const ids = new Set();
 for (const t of LIST) {
   if (!t.id || !/^[a-z0-9-]+$/.test(t.id)) fail(t, 'an id of lowercase words and hyphens');
@@ -109,7 +123,7 @@ for (const t of LIST) {
     for (const l of t.lose || []) if (!l.deed || !DEEDS[l.deed]) fail(t, `lose: deed ${l && l.deed} is not declared`);
     if (t.weight === 'X') fail(t, 'weight X has no person budget');
     let spend = 0;
-    const stat = {};
+    const stat = {}, boost = {};
     for (const e of t.effects || []) {
       if (!V.effectTypes.includes(e.type)) { fail(t, `effect type ${e.type}`); continue; }
       const c2 = cost(e); if (!Number.isFinite(c2)) fail(t, `effect ${JSON.stringify(e)} has no price`); spend += c2;
@@ -119,8 +133,18 @@ for (const t of LIST) {
       if (e.type === 'resist' && !SV.effects.resist.of.includes(e.of)) fail(t, `resist ${e.of}`);
       if (e.type === 'aura' && !(SV.effects.aura.of.includes(e.of) && SV.effects.aura.scales.includes(e.scale))) fail(t, `aura ${e.of} ${e.scale}`);
       if (e.type === 'social' && !V.social.includes(e.group)) fail(t, `social group ${e.group}`);
+      if (e.type === 'boost') {
+        if (!(BV.of || []).includes(e.of)) fail(t, `boost of ${e.of}: not one of ${(BV.of || []).join(', ')}`);
+        if (!(+e.v > 0)) fail(t, `boost ${e.of}: a share above 0`);
+        if (e.tag != null && !okTag(e.tag)) fail(t, `boost tag ${e.tag}`);
+        if (e.of === 'income' && e.tag != null && e.tag !== 'all') fail(t, 'an income boost carries no tag');
+        boost[e.of] = (boost[e.of] || 0) + (+e.v || 0);
+      }
     }
-    for (const s in stat) if (stat[s] > V.statMax) fail(t, `+${stat[s]} ${s}: at most +${V.statMax} a stat a title`);
+    const sm = statMaxOf(t);
+    for (const s in stat) if (stat[s] > sm) fail(t, `+${stat[s]} ${s}: at most +${sm} a stat a title of its rarity`);
+    const bc = BCAP[t.unique ? 'unique' : t.rarity] || 0;
+    for (const k in boost) if (boost[k] > bc + 1e-9) fail(t, `boosts ${k} by ${boost[k]}, over its rarity's cap of ${bc}`);
     if (spend > budget(t) + 1e-9) fail(t, `spends ${spend}, over its budget of ${budget(t)} (${t.weight}${t.unique ? ', unique' : ''}${t.rarity === 'legendary' ? ', legendary' : ''})`);
   } else if (t.effects && t.effects.length) fail(t, 'person effects on a title no person may hold');
   if (t.buffs && typeof t.buffs !== 'object') fail(t, 'buffs is an object');

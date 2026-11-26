@@ -111,7 +111,7 @@ test('needs: each kind is read; not inverts', () => {
   assert.deepEqual(E.missing({ wings: 1 }, f), ['unknown:wings']);
 });
 
-test('evolution: only at Lv 10 with its route\'s conditions; the old skill stays beside the new one (§15.2)', () => {
+test('evolution: only at Lv 10 with its route\'s conditions; the old skill becomes the new one and is gone (order 95, D-192)', () => {
   const facts = { skills: { basic_swordsmanship: { lv: 10 } }, concepts: ['sword:the-measure', 'sword:the-bind'], deeds: [{ kind: 'proved', rank: 'B' }] };
   const [r] = E.canEvolve(IX, { id: 'basic_swordsmanship', lv: 10 }, facts);
   assert.deepEqual(r, { to: 'measured_blade', ok: true, missing: [] });
@@ -120,15 +120,15 @@ test('evolution: only at Lv 10 with its route\'s conditions; the old skill stays
   assert.ok(E.canEvolve(IX, { id: 'basic_swordsmanship', lv: 10 }, Object.assign({}, facts, { concepts: [] }))[0].missing.includes('concept:sword:the-measure'));
   const t = { basic_swordsmanship: { lv: 10, xp: 0 } };
   E.evolve(t, 'basic_swordsmanship', 'measured_blade', 40);
-  assert.deepEqual(Object.keys(t).sort(), ['basic_swordsmanship', 'measured_blade']);
-  assert.equal(t.basic_swordsmanship.lv, 10); assert.equal(t.measured_blade.lv, 1);
+  assert.deepEqual(Object.keys(t).sort(), ['measured_blade'], 'the old rung is gone into it');
+  assert.deepEqual(t.measured_blade, { lv: 1, xp: 0, via: 'evolve', from: 'basic_swordsmanship', y: 40 });
   // the family reads the best of what it holds: the new rung, from its first level
   assert.equal(E.familyRead(IX, Object.entries(t).map(([id, e]) => Object.assign({ id }, e)), 'sword'), 55);
   assert.equal(E.familyRead(IX, [{ id: 'measured_blade', lv: 1, rust: 3 }], 'sword'), 52);
   assert.equal(E.familyRead(IX, [{ id: 'measured_blade', lv: 1 }], 'bow'), 0);
 });
 
-test('merging absorbs its parts and keeps their read as a floor; advancing is once a life at a named moment', () => {
+test('merging absorbs its parts and keeps their read as a floor', () => {
   const ix = E.index(Object.assign({}, D, { skills: D.skills.concat([{ id: 'riverwind_form', name: 'Riverwind Form', rank: 'A', rarity: 'rare', kind: 'active', category: 'arms.sword', family: null, reads: ['sword', 'melee'], levels: [{ at: 1, effects: [] }], acquire: [{ via: 'merge', recipe: 'riverwind' }], transfer: { teach: 'culture' } }]),
     recipes: [{ id: 'riverwind', kind: 'known', parts: [{ id: 'measured_blade', lv: 7 }, { id: 'fleet_fighter', lv: 7 }], result: 'riverwind_form' }] }));
   const R = ix.RECIPE.riverwind;
@@ -143,11 +143,37 @@ test('merging absorbs its parts and keeps their read as a floor; advancing is on
   const read = E.familyRead(ix, Object.entries(t).map(([id, e]) => Object.assign({ id }, e)), 'melee');
   assert.equal(read, E.value('A', 1), 'an A result reads its own level, above its parts');
   assert.equal(E.familyRead(ix, [{ id: 'riverwind_form', lv: 1, floor: 90 }], 'sword'), 90, 'nobody\'s odds fall when they merge: the floor holds');
-  // advancing
-  const a = E.canAdvance(IX, { id: 'footwork', lv: 5 }, { skills: { footwork: { lv: 5 } }, moment: 'near_death', advances: 0 });
-  assert.deepEqual(a, { ok: true, missing: [], to: 'fleet_fighter' });
-  assert.deepEqual(E.canAdvance(IX, { id: 'footwork', lv: 5 }, { moment: 'near_death', advances: 1 }).missing, ['once']);
-  assert.deepEqual(E.canAdvance(IX, { id: 'footwork', lv: 4 }, { moment: 'a fair day', advances: 0 }).missing, ['level', 'moment']);
+  assert.equal(E.canAdvance, undefined, 'the advance is archived (D-192)');
+});
+
+test('a rank\'s jump (order 95, D-192): Lv 5 or more and two of three conditions (concepts, deed, talent), the rest of the route met', () => {
+  const B = ['sword:the-measure', 'sword:the-bind'], deed = [{ kind: 'proved', rank: 'B' }];
+  // all three: it jumps to the next rank's rung
+  let v = E.rankJump(IX, { id: 'basic_swordsmanship', lv: 5 }, { concepts: B, deeds: deed, talent: { sword: 'B' } });
+  assert.deepEqual([v.ok, v.from, v.to, v.rank, v.met, v.missing], [true, 'basic_swordsmanship', 'measured_blade', 'B', ['concepts', 'deed', 'talent'], []]);
+  // two of three, any two
+  assert.equal(E.rankJump(IX, { id: 'basic_swordsmanship', lv: 5 }, { concepts: B, deeds: deed }).ok, true, 'concepts and the deed');
+  assert.equal(E.rankJump(IX, { id: 'basic_swordsmanship', lv: 5 }, { concepts: B, talent: { sword: 'A' } }).ok, true, 'concepts and talent');
+  assert.equal(E.rankJump(IX, { id: 'basic_swordsmanship', lv: 9 }, { deeds: deed, talent: { sword: 'S' } }).ok, true, 'the deed and talent');
+  // one of three: no
+  v = E.rankJump(IX, { id: 'basic_swordsmanship', lv: 9 }, { concepts: B, talent: { sword: 'C' } });
+  assert.deepEqual([v.ok, v.met, v.missing], [false, ['concepts'], ['condition:deed', 'condition:talent']]);
+  assert.deepEqual(E.rankJump(IX, { id: 'basic_swordsmanship', lv: 5 }, { concepts: [B[0]], deeds: deed, talent: { sword: 'C' } }).met, ['deed'], 'half the concepts is none');
+  // under Lv 5: no, whatever is met
+  assert.deepEqual(E.rankJump(IX, { id: 'basic_swordsmanship', lv: 4 }, { concepts: B, deeds: deed, talent: { sword: 'SSS' } }).missing, ['level']);
+  // the D rung's evolution asks no deed: a proved deed of rank C stands for it; talent C reaches rank C
+  v = E.rankJump(IX, { id: 'stick_and_lath', lv: 6 }, { concepts: ['sword:the-line'], talent: {} });
+  assert.deepEqual([v.ok, v.to, v.met], [true, 'basic_swordsmanship', ['concepts', 'talent']]);
+  // the S rung's thirty years are a hard need, not one of the three; a renowned deed is its deed
+  const S = ['sword:the-single-time', 'sword:the-stillness'], ren = [{ kind: 'renowned_deed', rank: 'S' }];
+  assert.deepEqual(E.rankJump(IX, { id: 'long_edge_master', lv: 7 }, { concepts: S, deeds: ren, talent: { sword: 'S' }, age: 24 }).missing, ['age']);
+  assert.equal(E.rankJump(IX, { id: 'long_edge_master', lv: 7 }, { concepts: S, deeds: ren, age: 31 }).ok, true);
+  assert.equal(E.rankJump(IX, { id: 'long_edge_master', lv: 7 }, { concepts: S, deeds: [{ kind: 'proved', rank: 'S' }], talent: { sword: 'A' }, age: 31 }).ok, false, 'a plain deed is not renown, talent A short of S');
+  // absorbed by a merge, at the top, or already held: never
+  assert.ok(E.rankJump(IX, { id: 'basic_swordsmanship', lv: 5 }, { concepts: B, deeds: deed, sealed: ['basic_swordsmanship'] }).missing.includes('absorbed'));
+  assert.deepEqual(E.rankJump(IX, { id: 'edge_beyond_teaching', lv: 10 }, {}).missing, ['no-next']);
+  assert.ok(E.rankJump(IX, { id: 'basic_swordsmanship', lv: 5 }, { concepts: B, deeds: deed, skills: { measured_blade: { lv: 1 } } }).missing.includes('held'));
+  assert.deepEqual(E.rankJump(IX, { id: 'nothing', lv: 5 }, {}).missing, ['skill']);
 });
 
 test('the data\'s graph of evolution and merging is acyclic; a planted loop is found', () => {
@@ -194,6 +220,8 @@ test('the switch (step 5): an S1 entry lands on the rung that holds it, the even
 });
 
 // ---- step 6 (D-180): the effects in play and their caps -------------------------------------------------------------
+// three skills held apart (not one line: each a source of its own), to test the stacking of several sources
+const apart = [{ id: 'stick_and_lath', lv: 10 }, { id: 'basic_swordsmanship', lv: 10 }, { id: 'measured_blade', lv: 1 }];
 // a copy of the data with planted effects on the sword family's rungs of these ranks, at Lv 1
 const planted = (effects, ranks = ['D', 'C', 'B'], vocab) => {
   const D2 = JSON.parse(JSON.stringify(D)); if (vocab) Object.assign(D2.vocab, vocab);
@@ -201,8 +229,8 @@ const planted = (effects, ranks = ['D', 'C', 'B'], vocab) => {
   return E.index(D2);
 };
 
-test('step 6: what a person holds and what it gathers (rungs below at Lv 10, perks served apart, actives and triggers listed)', () => {
-  assert.deepEqual(E.heldOfRung(IX, 'sword', 'B', 4), [{ id: 'stick_and_lath', lv: 10 }, { id: 'basic_swordsmanship', lv: 10 }, { id: 'measured_blade', lv: 4 }]);
+test('step 6: what a person holds and what it gathers (the top rung and its line, perks served apart, actives and triggers listed)', () => {
+  assert.deepEqual(E.heldOfRung(IX, 'sword', 'B', 4), [{ id: 'measured_blade', lv: 4, line: ['stick_and_lath', 'basic_swordsmanship'] }]);
   assert.deepEqual(E.heldOfRung(IX, 'sword', 'D', 12), [{ id: 'stick_and_lath', lv: 10 }]);
   assert.deepEqual(E.heldOfRung(IX, 'sword', 'D', 0), []);
   // today's data: only perks, so every profile is empty
@@ -210,33 +238,43 @@ test('step 6: what a person holds and what it gathers (rungs below at Lv 10, per
   assert.deepEqual([P0.edges, P0.fight, P0.resist, P0.unlocks], [{}, {}, {}, []]);
   const ix = planted([{ type: 'edge', tag: 'sword', v: 3 }, { type: 'unlock', what: 'activity:drill' }, { type: 'active', name: 'the single time', limit: '1/duel', do: { type: 'fight', tag: 'sword', part: 'burst', v: 2 } },
     { type: 'trigger', on: 'parried', do: { type: 'fight', tag: 'sword', part: 'atk', v: 1 } }]);
+  // the line: the evolved rungs are gone into the top one, whose effects replace theirs slot by slot (one source a slot)
   const G = E.gather(ix, E.heldOfRung(ix, 'sword', 'B', 4));
-  assert.equal(G.src['edge|sword'].length, 3);
-  assert.deepEqual(G.unlocks, ['activity:drill']); assert.equal(G.actives.length, 3); assert.equal(G.triggers.length, 3);
+  assert.deepEqual(G.src['edge|sword'], [[3, 'B', 'measured_blade']]);
+  assert.deepEqual(G.unlocks, ['activity:drill']); assert.equal(G.actives.length, 1); assert.equal(G.triggers.length, 1);
+  // three skills held apart (not one line) are three sources
+  assert.equal(E.gather(ix, apart).src['edge|sword'].length, 3);
   assert.ok(!Object.keys(G.src).some(k => k.startsWith('perk') || k.startsWith('fight')), 'perks, actives and triggers are not summed');
   // a later band replaces an earlier one slot by slot, and a band above the level is not held
   const D3 = JSON.parse(JSON.stringify(D)), mb = D3.skills.find(s => s.id === 'measured_blade');
   mb.levels = [{ at: 1, effects: [{ type: 'edge', tag: 'sword', v: 2 }] }, { at: 5, effects: [{ type: 'edge', tag: 'sword', v: 4 }] }, { at: 9, effects: [{ type: 'resist', of: 'fear', v: 1 }] }];
   const ix3 = E.index(D3);
   assert.deepEqual(E.gather(ix3, [{ id: 'measured_blade', lv: 6 }]).src, { 'edge|sword': [[4, 'B', 'measured_blade']] });
+  // what an evolved rung gave passes on: an edge on the D rung and a resist on the C rung, the B rung carrying neither,
+  // are both held by a holder of B (nothing drops when the old rungs go, D-192); the B rung's own slot replaces a lower one's
+  const D6 = JSON.parse(JSON.stringify(D)), lv = (id, effects) => { D6.skills.find(s => s.id === id).levels = [{ at: 1, effects }]; };
+  lv('stick_and_lath', [{ type: 'edge', tag: 'sword', v: 1 }]); lv('basic_swordsmanship', [{ type: 'resist', of: 'fear', v: 1 }, { type: 'edge', tag: 'dagger', v: 2 }]);
+  lv('measured_blade', [{ type: 'edge', tag: 'dagger', v: 3 }]);
+  const ix6 = E.index(D6), G6 = E.gather(ix6, E.heldOfRung(ix6, 'sword', 'B', 1));
+  assert.deepEqual(G6.src, { 'edge|sword': [[1, 'B', 'measured_blade']], 'resist|fear': [[1, 'B', 'measured_blade']], 'edge|dagger': [[3, 'B', 'measured_blade']] });
 });
 
 test('step 6: an edge on one check is at most +12, the sources weighed 1, 1/2, 1/4, 1/8, across every tag the check reads', () => {
   const ix = planted([{ type: 'edge', tag: 'sword', v: 4 }]);
-  const G = E.gather(ix, E.heldOfRung(ix, 'sword', 'B', 1));
+  const G = E.gather(ix, apart);
   assert.equal(E.edgeOn(ix, G, ['dagger', 'sword', 'all']), 4 + 2 + 1);
   assert.equal(E.edgeOn(ix, G, ['persuasion', 'all']), 0, 'another family reads none of it');
   const big = planted([{ type: 'edge', tag: 'sword', v: 1000 }, { type: 'edge', tag: 'arms', v: 4 }, { type: 'edge', tag: 'all', v: 9 }]);
-  const Gb = E.gather(big, E.heldOfRung(big, 'sword', 'B', 1));
+  const Gb = E.gather(big, apart);
   assert.equal(E.edgeOn(big, Gb, ['sword', 'arms', 'all']), 12);
-  const Pb = E.profile(big, E.heldOfRung(big, 'sword', 'B', 1));
+  const Pb = E.profile(big, apart);
   assert.deepEqual([Pb.edges.arms, Pb.edges.all, Pb.edges.sword], [4 + 2 + 1, 12, 12], 'the profile: each tag on its own, capped');
   // a malus counts in full, down to minus the cap
   const neg = planted([{ type: 'edge', tag: 'sword', v: -9 }]);
-  assert.equal(E.edgeOn(neg, E.gather(neg, E.heldOfRung(neg, 'sword', 'B', 1)), ['sword']), -12);
+  assert.equal(E.edgeOn(neg, E.gather(neg, apart), ['sword']), -12);
   // no data can lift a human rank's cap: vocab.json tuned to 100 still gives 12
   const lifted = planted([{ type: 'edge', tag: 'sword', v: 1000 }], ['D', 'C', 'B'], { caps: Object.assign({}, D.vocab.caps, { edge: Object.fromEntries(E.RANKS.map(r => [r, 100])) }) });
-  assert.equal(E.edgeOn(lifted, E.gather(lifted, E.heldOfRung(lifted, 'sword', 'B', 1)), ['sword']), 12);
+  assert.equal(E.edgeOn(lifted, E.gather(lifted, apart), ['sword']), 12);
   for (const [k, v] of Object.entries(E.CAP_HUMAN)) assert.ok(E.capOf(lifted, k, 'S') <= v, k);
   // above S the cap rises by rank (§15.1): an SS source lifts it to the data's 18
   const D4 = JSON.parse(JSON.stringify(D));
@@ -247,7 +285,7 @@ test('step 6: an edge on one check is at most +12, the sources weighed 1, 1/2, 1
 
 test('step 6: fight at most +15% of the fighter\'s worth, the parts scaled together; blunder and surge 2 steps; resist 3', () => {
   const ix = planted([{ type: 'fight', tag: 'sword', part: 'atk', v: 6 }, { type: 'fight', tag: 'all', part: 'def', v: 4 }, { type: 'fight', tag: 'sword', part: 'burst', v: 2 }]);
-  const G = E.gather(ix, E.heldOfRung(ix, 'sword', 'B', 1));
+  const G = E.gather(ix, apart);
   // under the cap: each part weighed (6 + 3 + 1.5, 4 + 2 + 1, 2 + 1 + 0.5)
   const f = E.fightOn(ix, G, ['sword', 'all'], 1000);
   assert.deepEqual([f.atk, f.def, f.burst, f.total], [10.5, 7, 3.5, 21]);
@@ -259,16 +297,16 @@ test('step 6: fight at most +15% of the fighter\'s worth, the parts scaled toget
   assert.deepEqual([b.atk, b.def], [0, 7]);
   assert.equal(E.fightOn(IX, E.gather(IX, E.heldOfRung(IX, 'sword', 'A', 5)), ['sword', 'all'], 100).total, 0, 'today\'s data: nothing');
   const m = planted([{ type: 'blunder', tag: 'sword', v: 5 }, { type: 'surge', tag: 'all', v: 1 }, { type: 'resist', of: 'fear', v: 4 }, { type: 'resist', of: 'wounds', v: 1 }]);
-  const Gm = E.gather(m, E.heldOfRung(m, 'sword', 'B', 1));
+  const Gm = E.gather(m, apart);
   assert.equal(E.stepsOn(m, Gm, 'blunder', ['sword', 'all']), 2); assert.equal(E.stepsOn(m, Gm, 'blunder', ['bow', 'all']), 0);
   assert.equal(E.stepsOn(m, Gm, 'surge', ['bow', 'all']), 1.75);
   assert.equal(E.resistOn(m, Gm, 'fear'), 3); assert.equal(E.resistOn(m, Gm, 'wounds'), 1.75); assert.equal(E.resistOn(m, Gm, 'poison'), 0);
-  const P = E.profile(m, E.heldOfRung(m, 'sword', 'B', 1));
+  const P = E.profile(m, apart);
   assert.deepEqual([P.blunder.sword, P.surge.all, P.resist.fear], [2, 1.75, 3]);
   // auras: the best of each `of` and scale (two rungs at the squad, one at the army); at most 3 steps of one `of`
   const D5 = JSON.parse(JSON.stringify(D)), au = (id, scale, v) => { D5.skills.find(s => s.id === id).levels = [{ at: 1, effects: [{ type: 'aura', of: 'morale', scale, v }] }]; };
   au('stick_and_lath', 'squad', 1); au('basic_swordsmanship', 'squad', 2); au('measured_blade', 'army', 2);
-  const a = E.index(D5), Pa = E.profile(a, E.heldOfRung(a, 'sword', 'B', 1));
+  const a = E.index(D5), Pa = E.profile(a, apart);
   assert.deepEqual(Pa.auras.morale, { army: 2, squad: 2, total: 3 });
 });
 
@@ -329,10 +367,11 @@ test('step 8: a merge\'s entry, its read and its levels; the recipes are sound; 
   const F = IX.RECIPE.medicine_with_faith, ff = { skills: { leechcraft: { lv: 10 }, devout: { lv: 10 } } };
   assert.deepEqual(E.canMerge(IX, F, Object.assign({ moment: 'deed_above' }, ff)).missing, ['moment']);
   assert.equal(E.canMerge(IX, F, Object.assign({ moment: 'near_death' }, ff)).ok, true);
-  // the chances: a hash of the moment's key, near 1 in 100 and 1 in 200 over many keys, the same key the same answer
-  let a = 0, b = 0;
-  for (let i = 0; i < 100000; i++) { if (E.unitOf('k|' + i + '|adv') < E.ADVANCE_CHANCE) a++; if (E.unitOf('k|' + i + '|found') < E.FOUND_CHANCE) b++; }
-  assert.ok(a > 900 && a < 1100, 'advance ' + a); assert.ok(b > 420 && b < 580, 'found ' + b);
+  // the found merge's chance: a hash of the moment's key, near 1 in 200 over many keys, the same key the same answer (the
+  // advance's 1 in 100 is archived, D-192)
+  let b = 0;
+  for (let i = 0; i < 100000; i++) if (E.unitOf('k|' + i + '|found') < E.FOUND_CHANCE) b++;
+  assert.ok(b > 420 && b < 580, 'found ' + b); assert.equal(E.ADVANCE_CHANCE, undefined);
   assert.equal(E.unitOf('same'), E.unitOf('same'));
   // a planted fault is named
   assert.ok(E.recipeFaults(IX, Object.assign({}, R, { parts: [{ id: 'basic_swordsmanship', lv: 10 }, { id: 'measured_blade', lv: 10 }] })).some(m => /both read sword/.test(m)));
@@ -360,4 +399,22 @@ test('step 7: S1\'s engine reads an edge through the game\'s gate when it gives 
   const n = { id: 'n1', seed: 's', talent: {}, gate: () => false };
   assert.equal(S1.npcGain(n, 'sword', 15, S1.cost(15) - 1, 1e6, 80, true).lv, 15);
   assert.ok(S1.npcGain(Object.assign({}, n, { gate: () => true }), 'sword', 15, S1.cost(15) - 1, 1e6, 80, true).lv > 15);
+});
+
+test('titles\' share boosts (order 95, D-192): a pool of their own, capped by the rarest title among the sources', () => {
+  const D7 = JSON.parse(JSON.stringify(D)), t = (id, rarity, unique, effects, boostCap) => Object.assign({ id, name: id, rank: 'S', rarity, unique, kind: 'title', reads: [], levels: [{ at: 1, effects }] }, boostCap != null ? { boostCap } : {});
+  D7.skills.push(t('t_unc', 'uncommon', false, [{ type: 'boost', of: 'fight', v: 1 }]), t('t_rare', 'rare', false, [{ type: 'boost', of: 'fight', v: 0.04 }, { type: 'boost', of: 'check', tag: 'sword', v: 0.05 }]),
+    t('t_one', 'legendary', true, [{ type: 'boost', of: 'fight', v: 0.2 }]), t('t_low', 'legendary', false, [{ type: 'boost', of: 'fight', v: 1 }], 0.1),
+    { id: 'not_a_title', name: 'x', rank: 'S', rarity: 'rare', kind: 'passive', reads: [], levels: [{ at: 1, effects: [{ type: 'boost', of: 'fight', v: 1 }] }] });
+  const ix = E.index(D7), on = (held, of, tags) => E.boostOn(ix, E.gather(ix, held.map(id => ({ id, lv: 1 }))), of, tags);
+  assert.equal(on(['t_unc'], 'fight'), E.CAP_BOOST.uncommon, 'an uncommon title far past its cap: its cap');
+  assert.equal(on(['t_rare'], 'fight'), 0.04, 'under the cap: as written');
+  assert.equal(on(['t_unc', 't_rare'], 'fight'), E.CAP_BOOST.rare, 'the rarest among them sets the cap');
+  assert.ok(Math.abs(on(['t_one', 't_rare'], 'fight') - (0.2 + 0.02)) < 1e-9, 'weighed 1, 1/2 under the one of a kind\'s cap');
+  assert.equal(on(['t_low'], 'fight'), 0.1, 'the vocabulary may lower a cap (boostCap), never lift it');
+  assert.equal(on(['not_a_title'], 'fight'), 0, 'only a title boosts');
+  assert.equal(on(['t_rare'], 'check', ['sword', 'all']), 0.05); assert.equal(on(['t_rare'], 'check', ['bow', 'all']), 0, 'a family\'s checks only');
+  assert.deepEqual(E.profile(ix, [{ id: 't_rare', lv: 1 }]).boost, { 'fight:all': 0.04, 'check:sword': 0.05 });
+  assert.ok(E.CAP_BOOST.uncommon < E.CAP_BOOST.rare && E.CAP_BOOST.rare < E.CAP_BOOST.legendary && E.CAP_BOOST.legendary < E.CAP_BOOST.unique);
+  assert.ok(E.CAP_BOOST.unique > E.CAP_HUMAN.fightShare, 'a title one of a kind may change a fight more than every skill together');
 });

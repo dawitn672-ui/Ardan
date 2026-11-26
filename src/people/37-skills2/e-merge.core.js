@@ -1,5 +1,5 @@
-// Skills rebuild, step 8 (docs/design/skills-v2.md §3.4, §10; the owner's answers §15.2, §15.8; D-182): merging and
-// advancing, for the player.
+// Skills rebuild, step 8 (docs/design/skills-v2.md §3.4, §10; the owner's answers §15.2, §15.8; D-182): merging, for the
+// player; and since order 95 (D-192) a rank's jump at a breakthrough, for anyone.
 //
 // Merging. A recipe (data/skills/recipes.json) joins two level-10 skills of different families into one. Only a family's
 // top rung at Lv 10 is a part (past Lv 10 a skill evolves or merges, not both); a known recipe is offered on a card
@@ -10,13 +10,11 @@
 // the better part's read (its floor). The ladders' entries stay in pc.ks as S1's working form under the rungs. The result
 // levels by its rank's costs from what its families earn each month (the ledger's experience), and stops at Lv 10.
 //
-// Advancing (awakening). At a named moment (a fight won far above you: deed_above; a near death: near_death) a skill held
-// at Lv 5 or more may jump to the next rank's Lv 1 without the rest of its levels: 1 in 100 a moment, by a hash of the
-// moment, at most once a life, and only while D-163's breakthrough budget is open (an advance is a breakthrough and
-// spends it). Its concepts are deemed grasped (SK.set's rule), its deed is the moment, and it always costs something
-// named: a wound that stays. Recorded with its reason in pc.ke.ev, the skill's record, the log and the year's digest.
+// A rank's jump (order 95, D-192). The advance (awakening: a 1 in 100 hash at a named moment, once a life, a scar its
+// price) is gone to archive/skills2-advance/: a rare leap is not an event. In its place SK2.rankJump, which the level
+// calls at every hundredth wall: a skill jumps a rank when several conditions allow (below).
 //
-// Anyone else holds one number a skill and merges and advances nothing (deferred: the census of named skills, step 9).
+// Anyone else holds one number a skill and merges nothing (deferred: the census of named skills, step 9); he may jump.
 (function () {
   const SK = A.SK, SK2 = A.SK2; if (!SK || !SK.DATA || !SK2 || !SK2.E || !SK2.ke) return;
   const E = () => SK2.E(), IX = () => SK2.IX();
@@ -138,7 +136,7 @@
     A.queue({ type: 'event', ev: 'sk2_merge_offer', forced: true, ctx: { rc: r.id, an: names[0], bn: names[1], rn: ix.BY[r.result].name, how: how === 'found' ? 'In the worst of it something comes clear.' : 'Someone who has seen it done tells you plainly.', kind: how } });
   };
 
-  // ---- a named moment: a found merge, an advance -----------------------------------------------------------------------
+  // ---- a named moment: a found merge (the advance it also weighed is gone: a rare leap is not an event, D-192) ----------
   // the moment's own key: the world, the player, the moment's kind and how many moments his life has had
   SK2.moment = function (pc, kind, o) {
     if (!isPC(pc) || !pc.alive || !(pc.sk && typeof pc.sk === 'object')) return null;
@@ -146,7 +144,6 @@
     K.n = (K.n || 0) + 1;
     const key = `${A.S.seed}|${pc.id}|${kind}|${K.n}`, out = {};
     out.found = SK2.foundAt(pc, kind, key);
-    out.adv = SK2.advanceAt(pc, kind, o || {}, key);
     return out;
   };
   SK2.foundAt = function (pc, kind, key) {
@@ -159,44 +156,75 @@
     SK2.offer(pc, open[0], 'found');
     return open[0].id;
   };
-  // the family an advance takes: the moment's own (a duel's weapon) when it qualifies, else the highest held at Lv 5 or
-  // more that has a next rank (by read, then by name)
-  SK2.advanceAt = function (pc, kind, o, key) {
-    const K = SK2.ke(pc), ix = IX(), Eng = E();
-    if ((K.adv || 0) >= Eng.ADVANCES_A_LIFE) return null;
-    if (A.breakthroughOpen && !A.breakthroughOpen(pc)) return null;
-    if (!(Eng.unitOf(key + '|adv') < Eng.ADVANCE_CHANCE)) return null;
-    const tops = SK2.tops(pc), facts = { skills: tops, moment: kind, advances: K.adv || 0 };
-    const cand = [];
-    for (const id in tops) {
-      const t = tops[id]; if (!t.c) continue;
-      const v = Eng.canAdvance(ix, { id, lv: t.lv }, facts);
-      if (v.ok && Eng.HUMAN.includes(ix.BY[v.to].rank)) cand.push({ id, c: t.c, lv: t.lv, to: v.to, read: Eng.value(ix.BY[id].rank, t.lv) });
+  // ---- a rank's jump at a breakthrough (order 95, D-192) ----------------------------------------------------------------
+  // "A breakthrough happens every 100 levels where your stats are boosted and skills can jump ranks if multiple
+  // conditions allow it." The level (src/people/9999975-level) calls SK2.rankJump at each hundredth wall; nothing here
+  // draws a die or waits on a moment (the advance, a 1 in 100 hash at a fight won far above you or a near death, went to
+  // archive/skills2-advance/). The conditions are E.rankJump's: the skill at Lv 5 or more of its rank and two of three
+  // met in full (the evolution's concepts grasped, its deed done, the family's talent at the target rank), and every
+  // other need of the route (the S rung's thirty years) met. A jump takes the next rank's Lv 1, its concepts deemed
+  // grasped (SK.set's rule), and the old rung is gone into it (D-192). It spends nothing of D-163's budget: the wall is the
+  // breakthrough, and the level decides how often walls come.
+  //
+  //   SK2.jumpFacts(p, c)        the facts of a person's family c for E.rankJump: the player's table (concepts grasped,
+  //                              his deed as S1's proof), anyone else's closed form (concepts by S1's hash, his deed his
+  //                              post's or renown's), talent letters, age, fame, the rungs a merge sealed. Pure.
+  //   SK2.jumpVerdict(p, k)      E.rankJump's verdict for key k's family at his top rung: { ok, from, to, rank, met,
+  //                              missing }, or null when he holds no rung there. Pure.
+  //   SK2.rankJump(p, k, o)      jumps family k a rank when the verdict allows; o = { why (the breakthrough's words, for
+  //                              the record and the log), dry (only the verdict) }. Returns the verdict, with done: true
+  //                              when it jumped. The player's jump is recorded in pc.ke.ev (how: 'jump'), the skill's
+  //                              record, the log and the year's digest; anyone else's is his number set to the rank's
+  //                              first level.
+  //   SK2.rankJumps(p, o)        every family that may jump, best read first, at most o.max (default 1) jump; returns the
+  //                              verdicts of those that did.
+  SK2.jumpFacts = function (p, c) {
+    const Eng = E(), ix = IX();
+    const r = SK2.rungFor(p, c); if (!r) return null;
+    const to = Eng.nextRank(r.rank), tal = {};
+    if (p.tal && typeof p.tal === 'object') for (const f in p.tal) tal[f] = p.tal[f];
+    if (p.sk && typeof p.sk === 'object' && p.sk[c]) {
+      const f = SK2.factsAt(p, c, p.sk[c], SK.ageF(p), to);
+      return Object.assign(f, { talent: tal, skills: SK2.tops(p) });
     }
-    const own = o.k && SK.canon(o.k)[0];
-    cand.sort((a, b) => (b.c === own) - (a.c === own) || b.read - a.read || (a.c < b.c ? -1 : 1));
-    const pick = cand[0]; if (!pick) return null;
-    return SK2.advance(pc, pick, kind, o.why || kind.replace(/_/g, ' '));
+    // the closed form: a concept is grasped as S1's hash grasps it for the years he has worked; his deed is his post's
+    const v = SK.npcView(p, null), yrs = SK.effortYears(p, c), concepts = [];
+    for (let w = 1; w <= 6; w++) for (const cn of SK.E().conceptsOf(c, w)) if (SK.E().graspedBy(v, c, cn, yrs, false)) concepts.push(c + ':' + cn.id);
+    const post = !!(p.job || p.mil || p.office || p.ruler), deeds = [];
+    if (post) { deeds.push({ kind: 'proved', rank: to }); if ((+p.fame || 0) >= SK2.RENOWN || p.office || p.ruler) deeds.push({ kind: 'renowned_deed', rank: to }); }
+    return { concepts, deeds, talent: tal, age: Math.floor(A.age(p)), fame: +p.fame || 0, sealed: [], skills: {} };
   };
-  SK2.ADVANCE_COST = { deed_above: ['scar_arm', 'scar_face', 'scar_chest'], near_death: ['scar_chest', 'scar_face', 'scar_arm'] };
-  SK2.advance = function (pc, pick, kind, why) {
-    const ix = IX(), Eng = E(), K = SK2.ke(pc), to = ix.BY[pick.to], from = ix.BY[pick.id];
-    // the next rank's first level, on S1's table under the rungs: its concepts deemed grasped (SK.set's rule)
-    SK.set(pc, pick.c, Eng.s1OfRung(to.rank, 1), 'an advance: ' + why);
-    if (pc.sk[pick.c]) pc.sk[pick.c].xp = 0;
-    SK2.syncFam(pc, pick.c);
-    // a breakthrough: it spends D-163's budget
-    pc.btN = (pc.btN || 0) + 1; pc.btY = A.S.year;
-    K.adv = (K.adv || 0) + 1;
-    // the price, named: a wound that stays
-    let cost = null;
-    for (const w of SK2.ADVANCE_COST[kind] || SK2.ADVANCE_COST.near_death) { cost = A.addWound(pc, w); if (cost) break; }
-    if (!cost) { pc.health = Math.max(5, (pc.health || 50) - 10); cost = 'ten years\' wear in a season'; }
-    const w = `${why}; it cost you: ${String(cost).toLowerCase()}`;
-    SK2.evNote(pc, { how: 'advance', k: pick.c, from: pick.id, to: pick.to, why: w.slice(0, 140), ok: 1, at: pick.lv });
-    SK.record(pc, pick.c, 'advance', `${from.name} leaps to ${to.name}: ${w}`);
-    A.log(`In ${why}, something gives way: ${from.name} leaps past its last levels to ${to.name}, ${to.rank} · Lv 1. It cost you: ${String(cost).toLowerCase()}.`, 'big');
-    if (SK.notable) SK.notable(pc, { text: `${to.name}: an advance (${why})` });
-    return `${to.name}: an advance. It cost you: ${String(cost).toLowerCase()}.`;
+  SK2.jumpVerdict = function (p, k) {
+    const c = SK.canon(k)[0]; if (!c || !p) return null;
+    const r = SK2.rungFor(p, c); if (!r) return null;
+    const id = E().rungOf(IX(), c, r.rank); if (!id) return null;
+    return E().rankJump(IX(), { id, lv: r.lv }, SK2.jumpFacts(p, c));
+  };
+  SK2.rankJump = function (p, k, o) {
+    o = o || {};
+    const c = SK.canon(k)[0], v = SK2.jumpVerdict(p, k);
+    if (!v || !v.ok || o.dry || !E().HUMAN.includes(v.rank)) return v;
+    const ix = IX(), Eng = E(), from = ix.BY[v.from], to = ix.BY[v.to], why = String(o.why || 'a breakthrough');
+    SK.set(p, c, Eng.s1OfRung(v.rank, 1), 'a rank\'s jump: ' + why);
+    if (p.sk && p.sk[c]) { p.sk[c].xp = 0; SK.mirror(p, c); SK2.syncFam(p, c); }
+    v.done = true;
+    if (isPC(p)) {
+      const w = `${why}; ${v.met.join(', ')}`;
+      SK2.evNote(p, { how: 'jump', k: c, from: v.from, to: v.to, why: w.slice(0, 140), ok: 1, met: v.met.slice() });
+      SK.record(p, c, 'jump', `${from.name} jumps a rank and becomes ${to.name} (${why})`);
+      A.log(`In ${why}, ${from.name} jumps a rank and becomes ${to.name}, ${to.rank} · Lv 1.`, 'big');
+      if (SK.notable) SK.notable(p, { text: `${to.name}: a rank's jump (${why})` });
+      if (A.cacheResetAll) try { A.cacheResetAll(); } catch (err) {}
+    }
+    return v;
+  };
+  SK2.rankJumps = function (p, o) {
+    o = o || {};
+    const max = o.max != null ? o.max : 1, out = [], cand = [];
+    if (!p || !(max > 0)) return out;
+    for (const c of SK.IDS) { const v = SK2.jumpVerdict(p, c); if (v && v.ok && E().HUMAN.includes(v.rank)) cand.push({ c, v, read: A.skill(p, c) }); }
+    cand.sort((a, b) => b.read - a.read || (a.c < b.c ? -1 : 1));
+    for (const x of cand) { if (out.length >= max) break; const v = SK2.rankJump(p, x.c, o); if (v && v.done) out.push(Object.assign({ k: x.c }, v)); }
+    return out;
   };
 })();

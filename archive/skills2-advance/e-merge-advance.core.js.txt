@@ -1,0 +1,43 @@
+    return open[0].id;
+  };
+  // the family an advance takes: the moment's own (a duel's weapon) when it qualifies, else the highest held at Lv 5 or
+  // more that has a next rank (by read, then by name)
+  SK2.advanceAt = function (pc, kind, o, key) {
+    const K = SK2.ke(pc), ix = IX(), Eng = E();
+    if ((K.adv || 0) >= Eng.ADVANCES_A_LIFE) return null;
+    if (A.breakthroughOpen && !A.breakthroughOpen(pc)) return null;
+    if (!(Eng.unitOf(key + '|adv') < Eng.ADVANCE_CHANCE)) return null;
+    const tops = SK2.tops(pc), facts = { skills: tops, moment: kind, advances: K.adv || 0 };
+    const cand = [];
+    for (const id in tops) {
+      const t = tops[id]; if (!t.c) continue;
+      const v = Eng.canAdvance(ix, { id, lv: t.lv }, facts);
+      if (v.ok && Eng.HUMAN.includes(ix.BY[v.to].rank)) cand.push({ id, c: t.c, lv: t.lv, to: v.to, read: Eng.value(ix.BY[id].rank, t.lv) });
+    }
+    const own = o.k && SK.canon(o.k)[0];
+    cand.sort((a, b) => (b.c === own) - (a.c === own) || b.read - a.read || (a.c < b.c ? -1 : 1));
+    const pick = cand[0]; if (!pick) return null;
+    return SK2.advance(pc, pick, kind, o.why || kind.replace(/_/g, ' '));
+  };
+  SK2.ADVANCE_COST = { deed_above: ['scar_arm', 'scar_face', 'scar_chest'], near_death: ['scar_chest', 'scar_face', 'scar_arm'] };
+  SK2.advance = function (pc, pick, kind, why) {
+    const ix = IX(), Eng = E(), K = SK2.ke(pc), to = ix.BY[pick.to], from = ix.BY[pick.id];
+    // the next rank's first level, on S1's table under the rungs: its concepts deemed grasped (SK.set's rule)
+    SK.set(pc, pick.c, Eng.s1OfRung(to.rank, 1), 'an advance: ' + why);
+    if (pc.sk[pick.c]) pc.sk[pick.c].xp = 0;
+    SK2.syncFam(pc, pick.c);
+    // a breakthrough: it spends D-163's budget
+    pc.btN = (pc.btN || 0) + 1; pc.btY = A.S.year;
+    K.adv = (K.adv || 0) + 1;
+    // the price, named: a wound that stays
+    let cost = null;
+    for (const w of SK2.ADVANCE_COST[kind] || SK2.ADVANCE_COST.near_death) { cost = A.addWound(pc, w); if (cost) break; }
+    if (!cost) { pc.health = Math.max(5, (pc.health || 50) - 10); cost = 'ten years\' wear in a season'; }
+    const w = `${why}; it cost you: ${String(cost).toLowerCase()}`;
+    SK2.evNote(pc, { how: 'advance', k: pick.c, from: pick.id, to: pick.to, why: w.slice(0, 140), ok: 1, at: pick.lv });
+    SK.record(pc, pick.c, 'advance', `${from.name} leaps to ${to.name}: ${w}`);
+    A.log(`In ${why}, something gives way: ${from.name} leaps past its last levels to ${to.name}, ${to.rank} · Lv 1. It cost you: ${String(cost).toLowerCase()}.`, 'big');
+    if (SK.notable) SK.notable(pc, { text: `${to.name}: an advance (${why})` });
+    return `${to.name}: an advance. It cost you: ${String(cost).toLowerCase()}.`;
+  };
+})();

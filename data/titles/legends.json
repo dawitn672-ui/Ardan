@@ -506,8 +506,9 @@
     { "type": "fight", "tag": "sword", "part": "atk", "v": 4 },
     { "type": "fight", "tag": "sword", "part": "def", "v": 4 },
     { "type": "edge", "tag": "sword", "v": 6 },
-    { "type": "stat", "stat": "spd", "v": 2 },
-    { "type": "resist", "of": "fear", "v": 3 }
+    { "type": "stat", "stat": "spd", "v": 4 },
+    { "type": "resist", "of": "fear", "v": 3 },
+    { "type": "boost", "of": "fight", "tag": "sword", "v": 0.25 }
    ],
    "earned": "The last of the old masters lays down his blade before yours, and by the next feast the whole country calls you what it called Cael Vardan.",
    "style": "{name}, the Sword Saint",

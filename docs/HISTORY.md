@@ -3125,7 +3125,7 @@ three steps, eight roads; each adds a duel technique, a passive, a buff or a way
 points); the player on the cards `lv_wall` and `lv_boost`, anyone else through `A.WHY.decide` on a seeded stream. The
 class he holds gives its effects through the skills adapter (`SK2.xClass`); its parts work in play: techniques in
 `A.techsOf` (style id `class:<id>`), passives in `A.techEdge`, activities held to the class in `A.canAct`, buffs in
-`A.stat`. Worn classes for anyone seeded past a wall (no effects, honour or points). Save version 21 (step `classes`; 20 is the arts' of D-186, merged from main).
+`A.stat`. Worn classes for anyone seeded past a wall (no effects, honour or points). Save version 22 (step `classes`; 20 is the arts' of D-186, 21 the skills line's of D-192).
 The class beside the level on the profile, its note on a press. The legends grow by the same rule (`LV.legendDefeat`,
 `PW.being` reads the data's level plus the gain; the ridge and a great being's meeting pay it). `pupil_taught` has a
 source (the teaching activities). Merged with the rescale (D-185) and calibrated on its curve. The owner's orders 91
@@ -3174,7 +3174,7 @@ save made with titles as it was, as `statMigrate` does (H-147). `lvAnchors` pass
 Engine tests 164 of 164. The class parts use the release's duel techniques; mapping them onto D-186's arts
 (`SK2.learnArt`) is the natural next step.
 
-**Undo.** Revert the step's commits; a save made at version 21 would then be refused as newer. `data/classes.json`
+**Undo.** Revert the step's commits; a save made at version 22 would then be refused as newer. `data/classes.json`
 and `c-classes.core.js` can go to `archive/` with a note if classes are retired alone (the level keeps its walls).
 
 ### H-150 · 2026-11-26 · The three kinds of skill: actives, passives and buffs (skills-v2 §10 step 11, §16; order 92; D-186)
@@ -3307,3 +3307,46 @@ over the bar of a quarter (3.5). Each was given up for a reason its arc names (t
 stop finishing.
 
 **Undo.** Revert this commit.
+
+### H-156 · 2026-11-26 · Order 95's skills and titles: evolution replaces, a rank's jump, titles as game changers (D-192)
+
+**What.** Three of order 95's points ("when a skill evolves it becomes the next skill so it's gone"; "a rare leap isn't
+an event ... a breakthrough happens every 100 levels where ... skills can jump ranks if multiple conditions allow it";
+"titles can be game changers. %boosts and stat boosts"). Commits `dc7df267` (evolution replaces; the advance archived
+and the rank's jump), `5b741e2e` (titles' share boosts and stat boosts), `acb52836` (the boosts' fast path), and this
+records commit.
+- **Evolution replaces.** `pc.ks` holds only each family's top rung (`SK2.fromS1`); the family reads through it; what
+  the old rungs gave passes on through the line (`E.heldOfRung`'s `line`, `E.lineEffects`). Arts likewise
+  (`SK2.artGone`, `E.npcArts`). Save version 21, step `skills2line` (`SK2.migrateLine`).
+- **The advance archived** (`archive/skills2-advance/`; last in the build at `5e5dab5e`): `E.canAdvance`,
+  `ADVANCE_CHANCE`, `SK2.advanceAt`, `SK2.advance`, the test `sk2Advance`. In its place `E.rankJump(ix, held, facts)` and
+  `A.SK2.jumpFacts`, `jumpVerdict`, `rankJump(p, k, o)`, `rankJumps(p, o)` (Lv 5 or more and two of concepts, deed,
+  talent; documented in `src/people/37-skills2/README.md`), for the level to call at each hundredth wall. D-163's budget
+  is neither read nor spent by a jump.
+- **Titles.** A `boost` effect (fight, check, income, growth) in a pool of its own, capped by the rarest title among the
+  sources (uncommon 0.02, rare 0.05, legendary 0.15, one of a kind 0.25; `E.CAP_BOOST`); stats a title by rarity (+2, +3,
+  +5, +6); the sixteen titles re-budgeted; `lint-titles` validates it. Readers: `A.CR` (`f.ttb`), `A.skillEff`, a post's
+  yearly pay (release 04-b), `A.gainXp`.
+
+**Files.** `src/people/engine/skills2.js` (and the bundle), `src/people/37-skills2/` (a-adapter, c-effects, d-evolve,
+e-merge, f-kinds, test.mjs, README), `src/core/99998-v2-saves/saves.core.js` (SV.VER 21), release `03-engine-base.js`,
+`04-realms-and-war-years-b.js`, `06-prison-travel-school-ai.js`, `07-duels.js` (comment and the moment's call),
+`src/people/36-skills/a-model.core.js`, `src/people/9999976-titles/` (a-titles, b-view, test.mjs, README),
+`data/titles/` (vocab, people, legends: the Sword Saint's person effects only), `tools/lint-titles.mjs`,
+`tests/v2/skills2.test.js`, `tests/v2/skills2-kinds.test.js`, `archive/skills2-advance/`, `archive/README.md`, docs.
+
+**Tests.** `node --test tests/v2/*.test.js` 166 pass. Browser (`--workers=2`, private builds): `sk2Evolve`, `sk2Jump`,
+`sk2Migrate` (26 saves, every read the same), `s1Migrate`, `statMigrate`, `v2svRoundTrip`, `uiSmoke`, `renderRng`,
+`replayWithRender`, `ttLegends` (Sarnavoth 0.415, the Saint 0.529/0.464/0.470 and 0.770), `pwPowerNotLevel` (the same
+numbers), `ttGameChanger` (24 pairs at near-even odds: Blooded +5.2 points on average, the Undefeated +20.1, Wyrm-Slayer
++43.9; every boost at its cap of 0.25 with every title and a planted one, an uncommon one at 0.02), `ttCaps`, `ttEarned`,
+`ttUnique`, `ttNpc`, `ttPhone`, `ttHidden`, `ttDeterministic`, `sk2Caps`, `sk6PerkSums`, `sk5Lives`, `sk2Merge`,
+`sk2Active`, `sk2KindCaps`, `sk2DuelReplay`, `sk2ArtsMonth`, `s1Cost` (0.744 ms) all pass. `ttSave` fails on
+`v2.1.0-alpha.19-noble-life.ardan` ("27 ledgers, 1 holding") on the base build `5e5dab5e` as well: not this step's (the
+sample was saved after titles came in, so it holds ledgers; the test expects none). Lints: lint-skills, lint-titles,
+lint-stages, lint-reasons (41, baseline 41), lint-events and lint-choices (skills2, titles: 0 obviously best),
+lint-docs-index, version.mjs check, seed-data --check, --check-tiers: all ok. Coherency `--baseline=quick`: no
+contradiction, no check rose. Not run: the whole suite, the balance harness, a playtester agent, a separate reviewer.
+
+**Undo.** Revert the four commits; a save made at version 21 would then be refused as newer. The advance is restorable
+from `archive/skills2-advance/`.
