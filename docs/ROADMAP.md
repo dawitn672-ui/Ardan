@@ -24,7 +24,7 @@ The order of work, by importance (master prompt 13.1, order 78), and where each 
 | 2 | Bugs from the owner's lives, the exploits | **Done** (alpha 16): Emilio E1 to E10, breakthroughs, the throne plot, duel foes on demand |
 | 3 | **The power scale and bestiary** (section 17's first wave; orders 77, 78, 81 to 85) | A helper building: the level ladder (a commoner 20-30 to the Dragon King about 800), capability profiles, behaviour per species, 150+ species with evolution, legends with character sheets and titles, encounters |
 | 3b | **The map redesigned and locked** (section 7; orders 84, 86) | A helper building from M1: a detailed gazetteer, the Dragon Mountains, the sea lord's waters, the Sword Saint's places; plain renders for the owner, then the lock |
-| 4 | **The skills rebuild** with titles, a person's level, stat points and training (section 9; orders 76, 79, 80, 82, 83) | Design done (`docs/design/skills-v2.md`); steps 1 to 4 merged (data, engine, adapter off, save version 16); steps 5 on next |
+| 4 | **The skills rebuild** with titles, a person's level, stat points and training (section 9; orders 76, 79, 80, 82, 83) | Design done (`docs/design/skills-v2.md`); steps 1 to 5 merged (data, engine, adapter, save version 17, the switch: rungs hold the level); step 6 built (effects on through the adapter with the caps, `A.CAPS`, the knacks served from the rungs; nothing a player sees changes until the data review writes effects, D-180); the person's level (§12) and step 7 (evolution) next |
 | 5 | Professions and pathways (section 18; order 80) | After the skills |
 | 6 | Magic, new races, the canon rewrite (section 17) | After professions |
 | 7 | Difficulty (the throne for an outsider, A2) and war | Later; stopgaps in place |

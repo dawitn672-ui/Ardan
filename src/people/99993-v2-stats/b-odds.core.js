@@ -42,15 +42,22 @@ VS.capOf = pct => Math.exp(logit(clamp(pct / 100, 0.004, 0.996)) / VS.K);
 VS.oddsOf = pct => OD.oddsWords(VS.capOf(pct), 1);
 
 // the person's part in it: judgment and will from the v2 mind, fatigue from health and weariness, mood from happiness
-VS.minds = function (p) {
+// The skills rebuild, step 6 (D-180): held skills' blunder and surge effects for this check (its skills' tags, or only
+// skills tagged 'all' with no check), at most 2 steps either way (src/people/37-skills2/c-effects), move judgment and
+// will by half a deviation a step, past the 2.7 deviations' bound by at most the cap. The shown odds (A.checkOdds below)
+// and the roll (VS.roll, VS.attemptRaw) read the same minds, so the odds stay honest.
+VS.minds = function (p, check) {
   const s = p && p.st ? VS.stats(p) : null;
-  return {
+  const m = {
     // within 2.7 standard deviations: the old willpower grows without bound through adversity (180 and more), and
     // attempt()'s surge odds grow as e^(0.7 z)
     judgment: s ? clamp(s.judgment, 60, 140) : 100, will: s ? clamp(s.will, 60, 140) : 100,
     fatigue: p ? clamp((p.flags && p.flags.weary ? 0.3 : 0) + (p.health != null ? Math.max(0, 60 - p.health) / 60 : 0), 0, 1) : 0,
     mood: p && p.happy != null ? clamp((p.happy - 50) / 50, -1, 1) : 0,
   };
+  const st = p && A.SK2 && A.SK2.mindSteps ? A.SK2.mindSteps(p, check) : null;
+  if (st) { m.judgment += st.blunder * st.step; m.will += st.surge * st.step; }
+  return m;
 };
 // how much rides on it: a fight or a deadly loss most, a choice whose loss costs little least
 // (playtest 2, new 1 and 2: a loss written as code, A.punish for treason or a queued gallows, and a hurt that would kill
@@ -71,7 +78,7 @@ VS.statOfCheck = function (check) {
 };
 // roll a chance (0..1) for p through attempt(); returns the attempt's result (success, tier, reasons, ...)
 VS.attemptRaw = function (p, chance, opts = {}) {
-  const m = VS.minds(p), q = clamp(+chance || 0, 0.004, 0.996), D = VS.dice(q);
+  const m = VS.minds(p, opts.check), q = clamp(+chance || 0, 0.004, 0.996), D = VS.dice(q);
   const r = OD.attempt(D.rng, Object.assign({ capability: VS.capOf(q * 100), difficulty: 1, stakes: opts.stakes != null ? opts.stakes : 0.5, label: opts.label || '' }, m));
   // a test that replaces A.chance to force an outcome gets exactly that outcome
   if (A.chance !== VS.realChance) Object.assign(r, { success: D.won, blundered: false, surged: false, breakthrough: 0, reasons: [] });
@@ -139,7 +146,7 @@ A.checkOdds = function (pc, check) {
   const pct = checkOdds0.apply(this, arguments);
   if (!VS.HONEST || !pc || typeof pct !== 'number' || !isFinite(pct)) return pct;
   try {
-    const t = VS.trueChance(pct / 100, VS.minds(pc), VS.stakesOf(check, VS.choiceOf(check), pc));
+    const t = VS.trueChance(pct / 100, VS.minds(pc, check), VS.stakesOf(check, VS.choiceOf(check), pc));
     return clamp(Math.round(t * 100), 1, 99);
   } catch (e) { return pct; }
 };
@@ -190,9 +197,9 @@ for (const [name, at] of [['checkParts', 1], ['fightParts', 3]]) {
 VS.roll = function (pc, check, ch) {
   // the stakes the card's odds were read with (the choice the check belongs to)
   const pct = A.checkOdds(pc, check), stakes = VS.stakesOf(check, VS.choiceOf(check) || ch, pc);
-  const opts = { stakes, stat: VS.statOfCheck(check), label: check && check.s };
+  const opts = { stakes, stat: VS.statOfCheck(check), label: check && check.s, check };
   if (!VS.HONEST) { const r0 = VS.attempt(pc, pct / 100, opts); r0.pct = pct; return r0.success; }
-  const won = A.chance(clamp(pct / 100, 0, 1)), q = VS.baseFor(pct / 100, VS.minds(pc), stakes);
+  const won = A.chance(clamp(pct / 100, 0, 1)), q = VS.baseFor(pct / 100, VS.minds(pc, check), stakes);
   let r = null;
   for (let k = 0; k < 40 && !r; k++) { const t = VS.attemptRaw(pc, q, opts); if (t.success === won) r = t; }
   if (!r) r = { success: won, tier: won ? 'success' : 'failure', blundered: false, surged: false, breakthrough: 0, reasons: [won ? 'the better hand won' : 'outmatched'], label: opts.label };

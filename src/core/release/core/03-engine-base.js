@@ -816,11 +816,18 @@ A.trainSkill = function (p, k, amt, cause) {
 A.skillEff = function (p, k) {
   let v = A.skill(p, k);
   for (const [j, m] of GD.SKILL_SYN[k] || []) v = Math.max(v, A.skill(p, j) * m);
-  return Math.round(v + A.perkOf(p, k, "check"));
+  // the skills rebuild, step 6 (D-180): what held skills' edge effects add to a check on k, capped at +12 by the adapter
+  // (src/people/37-skills2/c-effects); 0 while no skill carries one
+  return Math.round(v + A.perkOf(p, k, "check") + (A.SK2 && A.SK2.edgeOf ? A.SK2.edgeOf(p, k) : 0));
 };
 
+// the skills rebuild, step 6 (D-180): the knacks are the rungs' perk effects (data/skills/ladders), served by
+// A.SK2.perkRows as rows [threshold, name, text, fx]; held, as before, while the read of their key reaches the threshold.
+// GD.PERKS is the release's table they were seeded from (tools/skills2/seed-data.mjs), read only without the adapter.
+A.perkRows = k => (A.SK2 && A.SK2.perkRows ? A.SK2.perkRows(k) : GD.PERKS[k]);
+
 A.perksOf = function (p, k) {
-  const L = GD.PERKS[k];
+  const L = A.perkRows(k);
   if (!L) return [];
   const v = A.skill(p, k);
   return L.filter(x => v >= x[0]);
@@ -836,7 +843,7 @@ A.perkSum = function (p, key) {
   let t = 0;
   if (!p || !p.skills) return 0;
   // knacks come from the crossing into Advanced (35; was 40)
-  for (const k in p.skills) if (!(p.skills[k] < 35 || !GD.PERKS[k])) t += A.perkOf(p, k, key);
+  for (const k in p.skills) if (!(p.skills[k] < 35 || !A.perkRows(k))) t += A.perkOf(p, k, key);
   return t;
 };
 

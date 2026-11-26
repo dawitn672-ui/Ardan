@@ -339,6 +339,13 @@ capabilities from what he holds, with the caps of §2.4:
   edges: { tag: v },  actives: [readied],  unlocks: Set,  growth: { family: v } }
 ```
 
+*As built (step 6, D-180):* `A.CAPS(p)` returns `{ held, edges, fight: { tag: { atk, def, burst, adapt } }, blunder,
+surge, resist, auras, growth, stat, social, economy, unlocks, actives, triggers }`, every bonus capped by its own tag
+(a check and a fight add their tags' sources together under one cap: `SK2.edgeOf`, `SK2.fightOn`), frozen, and kept for
+the month keyed by the skills and levels it reads. `mounted`, `ranged`, `defence` and `command` are read from `fight` and
+`auras` by whoever needs them. A person's power (`A.POWER`) reads his fight effects once, inside his fighting worth; the
+legends' art is their data's and is untouched.
+
 The power ladder reads `CAPS` to set a person's place inside his level (two level-6 swordsmen: one with a parry
 reaction and fear resisted, one with a burst and a mounted art), and the fight and war cores read it to fight. A skill
 never moves a being up a power level by itself: a level is the body and kind. An S-rank human skill is the human summit,
@@ -811,20 +818,20 @@ S (16, 18); rarities common to legendary; two evolution lines (1-2-3, 4-5-6, and
 Each step is one commit, on the trunk through the integrator, with its tests; steps 1 to 4 change nothing a player
 sees.
 
-| # | Step | Tests |
-|---|---|---|
-| 1 | `data/skills/` with `families.json` (from S1's data), `vocab.json` and the 112 rungs; the validator (§2.7) in `tools/lint-skills.mjs` | `tests/v2/skills2-data.test.js`: the ten checks on the data, and each fails on a planted fault |
-| 2 | The engine module `src/people/engine/skills2.js` (pure): bands, costs, levels, the budget, the caps, evolution, merge and advance checks; bundled by `build-v2.mjs` | unit tests: band values equal S1's `VALUES`; costs equal S1's; caps and diminishing weights; an acyclic recipe graph |
-| 3 | The adapter (§5) behind `A.SK2.on = false`, computing beside S1 | browser test `sk2Shadow`: over three bot lives, `read(p, k)` equals S1's `A.skill(p, k)` for every person, key and month |
-| 4 | Migration step `skills2`, `SV.VER` 16 | `sk2Migrate` (§7) on every sample save; `version.mjs check` |
-| 5 | The switch: rungs hold the level, `A.gainXp` lands in rungs, `SK2.label` prints levels; S1's words, level names and proofs go to `archive/s1-skill-words/` | `tools/release/identity-probe.mjs` before and after (same event classes; fixed-seed lives the same); S1's `test.mjs` ported to rungs; `s1Reasons` (the ledger closes) |
-| 6 | Effects on: edges, fight, resist, blunder and surge, perks served from `perk` effects, `A.CAPS`; caps | `sk2Caps` (no check above +12, no fight above +15%); `A.perkSum` identical; balance bands hold |
-| 7 | Evolution at Lv 10 with concepts and deeds; the evolution card | `sk2Evolve`: a bot life evolves D → C with the reason in the log; none evolves without its conditions |
-| 8 | Merging and advancing; D-163's budget shared | `sk2Merge`, `sk2Advance`: one each in a bot life (seed fallback), each named; at most one advance a life |
-| 9 | The rest of the 200 (named, faith, houses, offices, trauma, flaws), the census, `C.has/C.rank`, `gain/lose/focus` fx; `data/skills.json` to `archive/` | `sk2OneHolder` (no unique or summit with two living holders over a 100-year life, the one-holder audit); house secrets deterministic from the seed |
-| 10 | The skills screen and card (§8); every player-facing word of §6.1 replaced | `sk2Phone` (375 × 667, no horizontal scroll, 44-point targets), click-open lint, no-percent lint, no level word lint; the `ardan-ui-review` pass |
-| 11 | Actives and slots in duels and battles; auras into the war core | `sk2Active` (a readied active used once a duel at most); war unit tests read auras |
-| 12 | Balance: the harness measures A and S shares per path | `balance.mjs`: B → A under 1 in 100 lives, A → S near 1 in 1,000, no life at S before 30; bands written in `targets.mjs` |
+| # | Step | Tests | Status |
+|---|---|---|---|
+| 1 | `data/skills/` with `families.json` (from S1's data), `vocab.json` and the 112 rungs; the validator (§2.7) in `tools/lint-skills.mjs` | `tests/v2/skills2-data.test.js`: the ten checks on the data, and each fails on a planted fault | Done (H-131) |
+| 2 | The engine module `src/people/engine/skills2.js` (pure): bands, costs, levels, the budget, the caps, evolution, merge and advance checks; bundled by `build-v2.mjs` | unit tests: band values equal S1's `VALUES`; costs equal S1's; caps and diminishing weights; an acyclic recipe graph | Done (H-131) |
+| 3 | The adapter (§5) behind `A.SK2.on = false`, computing beside S1 | browser test `sk2Shadow`: over three bot lives, `read(p, k)` equals S1's `A.skill(p, k)` for every person, key and month | Done (H-131) |
+| 4 | Migration step `skills2`, `SV.VER` 16 | `sk2Migrate` (§7) on every sample save; `version.mjs check` | Done (H-131) |
+| 5 | The switch: rungs hold the level, `A.gainXp` lands in rungs, `SK2.label` prints levels; S1's words, level names and proofs go to `archive/s1-skill-words/` | `tools/release/identity-probe.mjs` before and after (same event classes; fixed-seed lives the same); S1's `test.mjs` ported to rungs; `s1Reasons` (the ledger closes) | Done (H-138, D-179) |
+| 6 | Effects on: edges, fight, resist, blunder and surge, perks served from `perk` effects, `A.CAPS`; caps | `sk2Caps` (no check above +12, no fight above +15%); `A.perkSum` identical; balance bands hold | Done (H-142, D-180): the readers and the caps on; the rungs carry only perks until the data review writes effects |
+| 7 | Evolution at Lv 10 with concepts and deeds; the evolution card | `sk2Evolve`: a bot life evolves D → C with the reason in the log; none evolves without its conditions | Next |
+| 8 | Merging and advancing; D-163's budget shared | `sk2Merge`, `sk2Advance`: one each in a bot life (seed fallback), each named; at most one advance a life |  |
+| 9 | The rest of the 200 (named, faith, houses, offices, trauma, flaws), the census, `C.has/C.rank`, `gain/lose/focus` fx; `data/skills.json` to `archive/` | `sk2OneHolder` (no unique or summit with two living holders over a 100-year life, the one-holder audit); house secrets deterministic from the seed |  |
+| 10 | The skills screen and card (§8); every player-facing word of §6.1 replaced | `sk2Phone` (375 × 667, no horizontal scroll, 44-point targets), click-open lint, no-percent lint, no level word lint; the `ardan-ui-review` pass |  |
+| 11 | Actives and slots in duels and battles; auras into the war core | `sk2Active` (a readied active used once a duel at most); war unit tests read auras |  |
+| 12 | Balance: the harness measures A and S shares per path | `balance.mjs`: B → A under 1 in 100 lives, A → S near 1 in 1,000, no life at S before 30; bands written in `targets.mjs` |  |
 
 Titles (§11.9, three commits) come after step 9; the person's level, stat points, training and professions
 (§12.6, three commits) after step 6 and before step 10's screens, which then draw the allocation sheet and the training

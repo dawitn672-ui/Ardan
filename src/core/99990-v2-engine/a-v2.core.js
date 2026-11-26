@@ -1163,26 +1163,33 @@ var __ARDAN_V2_MAKE = (() => {
     ADVANCES_A_LIFE: () => ADVANCES_A_LIFE,
     ADVANCE_FROM: () => ADVANCE_FROM,
     BANDS: () => BANDS,
+    CAP_HUMAN: () => CAP_HUMAN,
     CURVE_A: () => CURVE_A,
     CURVE_S: () => CURVE_S,
+    FIGHT_PARTS: () => FIGHT_PARTS,
     HUMAN: () => HUMAN,
     IX: () => IX,
     MAX_LV: () => MAX_LV,
     RANKS: () => RANKS,
     REACH: () => REACH,
+    RESIST_STEP: () => RESIST_STEP,
     S1_MAX: () => S1_MAX,
     S1_VALUES: () => S1_VALUES,
+    STEP_MIND: () => STEP_MIND,
     XP_K: () => XP_K,
     XP_UNIT: () => XP_UNIT,
+    aurasOn: () => aurasOn,
     budget: () => budget,
     budgetFaults: () => budgetFaults,
     canAdvance: () => canAdvance,
     canEvolve: () => canEvolve,
     canMerge: () => canMerge,
     capOf: () => capOf,
+    capped: () => capped,
     cost: () => cost,
     deedCount: () => deedCount,
     descendants: () => descendants,
+    edgeOn: () => edgeOn,
     effectCost: () => effectCost,
     effectKey: () => effectKey,
     effectsAt: () => effectsAt,
@@ -1190,10 +1197,13 @@ var __ARDAN_V2_MAKE = (() => {
     evolveRoutes: () => evolveRoutes,
     famOf: () => famOf,
     familyRead: () => familyRead,
+    fightOn: () => fightOn,
     findCycle: () => findCycle,
     fromS1: () => fromS1,
     gateLabel: () => gateLabel,
+    gather: () => gather,
     graph: () => graph,
+    heldOfRung: () => heldOfRung,
     index: () => index,
     label: () => label,
     landed: () => landed,
@@ -1201,8 +1211,11 @@ var __ARDAN_V2_MAKE = (() => {
     missing: () => missing,
     nextRank: () => nextRank,
     pastReach: () => pastReach,
+    perkRows: () => perkRows,
     prevRank: () => prevRank,
+    profile: () => profile,
     rankIx: () => rankIx,
+    resistOn: () => resistOn,
     rungOf: () => rungOf,
     rungOfS1: () => rungOfS1,
     rungOfValue: () => rungOfValue,
@@ -1213,7 +1226,9 @@ var __ARDAN_V2_MAKE = (() => {
     setData: () => setData,
     shifted: () => shifted,
     spendAt: () => spendAt,
+    srcKey: () => srcKey,
     stack: () => stack,
+    stepsOn: () => stepsOn,
     topRank: () => topRank,
     totalTo: () => totalTo,
     value: () => value,
@@ -1450,10 +1465,11 @@ var __ARDAN_V2_MAKE = (() => {
     const n3 = neg.reduce((s, v) => s + v, 0);
     return Math.max(-cap3, t + n3);
   }
+  var CAP_HUMAN = { edge: 12, fightShare: 0.15, aura: 3, blunderSurge: 2, resist: 3, growth: 50, stat: 10 };
   function capOf(ix, what, topRank2) {
-    const C = ix.V.caps[what];
-    if (!C) return Infinity;
-    return C[topRank2] != null ? C[topRank2] : C.S;
+    const C = (ix.V.caps || {})[what], hard = HUMAN.includes(topRank2) || rankIx(topRank2) < 0 ? CAP_HUMAN[what] : void 0;
+    const v = !C ? Infinity : C[topRank2] != null ? C[topRank2] : C.S != null ? C.S : Infinity;
+    return hard != null ? Math.min(v, hard) : v;
   }
   var topRank = (ranks) => ranks.reduce((t, r) => rankIx(r) > rankIx(t) ? r : t, "D");
   var TAL = ["F", "E", "D", "C", "B", "A", "S", "SSS"];
@@ -1657,6 +1673,151 @@ var __ARDAN_V2_MAKE = (() => {
       if (v > best) best = v;
     }
     return best;
+  }
+  var STEP_MIND = 7.5;
+  var RESIST_STEP = { wounds: 0.1, fear: 0.2, illness: 0.1, poison: 0.1, mind: 0.1 };
+  function heldOfRung(ix, fam, rank, lv) {
+    const out = [];
+    if (!(lv >= 1) || rankIx(rank) < 0) return out;
+    for (const r of RANKS) {
+      const id = rungOf(ix, fam, r);
+      if (rankIx(r) < rankIx(rank)) {
+        if (id) out.push({ id, lv: MAX_LV });
+        continue;
+      }
+      if (r === rank && id) out.push({ id, lv: Math.min(MAX_LV, lv) });
+      break;
+    }
+    return out;
+  }
+  function srcKey(e) {
+    switch (e && e.type) {
+      case "edge":
+      case "blunder":
+      case "surge":
+      case "growth":
+        return e.type + "|" + e.tag;
+      case "fight":
+        return "fight|" + e.tag + "|" + (e.part || "atk");
+      case "resist":
+        return "resist|" + e.of;
+      case "aura":
+        return "aura|" + e.of + "|" + e.scale;
+      case "stat":
+        return "stat|" + e.stat;
+      case "social":
+        return "social|" + e.group;
+      case "economy":
+        return "economy|" + e.of + "|" + (e.tag || "all");
+      default:
+        return null;
+    }
+  }
+  function gather(ix, held) {
+    const src = {}, unlocks = [], actives = [], triggers = [];
+    for (const h of held || []) {
+      const s = ix.BY[h && h.id];
+      if (!s) continue;
+      for (const e of effectsAt(s, h.lv)) {
+        if (e.type === "perk") continue;
+        if (e.type === "unlock") {
+          if (!unlocks.includes(e.what)) unlocks.push(e.what);
+          continue;
+        }
+        if (e.type === "active") {
+          actives.push({ id: s.id, name: e.name, limit: e.limit || null, do: e.do });
+          continue;
+        }
+        if (e.type === "trigger") {
+          triggers.push({ id: s.id, on: e.on, limit: e.limit || null, do: e.do });
+          continue;
+        }
+        const k = srcKey(e);
+        if (!k) continue;
+        (src[k] = src[k] || []).push([+e.v || 0, s.rank, s.id]);
+      }
+    }
+    return { src, unlocks, actives, triggers };
+  }
+  var weightsOf = (ix) => ix.V.caps && ix.V.caps.weights || void 0;
+  function capped(ix, what, list) {
+    if (!list || !list.length) return 0;
+    const cap3 = capOf(ix, what, topRank(list.map((x) => x[1])));
+    return stack(list.map((x) => x[0]), cap3, weightsOf(ix));
+  }
+  var srcOf = (G, type, tags, part3) => {
+    const out = [];
+    for (const t of tags) {
+      const l = G.src[type + "|" + t + (part3 ? "|" + part3 : "")];
+      if (l) out.push(...l);
+    }
+    return out;
+  };
+  var edgeOn = (ix, G, tags) => capped(ix, "edge", srcOf(G, "edge", tags));
+  var stepsOn = (ix, G, what, tags) => capped(ix, "blunderSurge", srcOf(G, what, tags));
+  var resistOn = (ix, G, of) => capped(ix, "resist", G.src["resist|" + of] || []);
+  var FIGHT_PARTS = ["atk", "def", "burst", "adapt"];
+  function fightOn(ix, G, tags, worth) {
+    const out = { atk: 0, def: 0, burst: 0, adapt: 0, total: 0, cap: 0 };
+    let all = [];
+    for (const part3 of FIGHT_PARTS) {
+      const l = srcOf(G, "fight", tags, part3);
+      if (!l.length) continue;
+      all = all.concat(l);
+      out[part3] = stack(l.map((x) => x[0]), Infinity, weightsOf(ix));
+    }
+    if (!all.length) return out;
+    const cap3 = Math.max(0, +worth || 0) * capOf(ix, "fightShare", topRank(all.map((x) => x[1])));
+    const t = FIGHT_PARTS.reduce((s, p) => s + out[p], 0);
+    const k = t > cap3 ? cap3 / t : t < -cap3 ? -cap3 / t : 1;
+    if (k !== 1) for (const p of FIGHT_PARTS) out[p] *= k;
+    out.total = FIGHT_PARTS.reduce((s, p) => s + out[p], 0);
+    out.cap = cap3;
+    return out;
+  }
+  function aurasOn(ix, G) {
+    const by = {}, lists2 = {};
+    for (const k of Object.keys(G.src).sort()) {
+      if (!k.startsWith("aura|")) continue;
+      const [, of, scale] = k.split("|"), l = G.src[k], best = l.reduce((b, x) => x[0] > b[0] ? x : b, l[0]);
+      (lists2[of] = lists2[of] || []).push(best);
+      (by[of] = by[of] || {})[scale] = best[0];
+    }
+    for (const of in by) {
+      const l = lists2[of];
+      by[of].total = Math.min(capOf(ix, "aura", topRank(l.map((x) => x[1]))), l.reduce((s, x) => s + x[0], 0));
+    }
+    return by;
+  }
+  function profile(ix, held) {
+    const G = gather(ix, held);
+    const P = { held: (held || []).map((h) => ({ id: h.id, lv: h.lv })), edges: {}, fight: {}, blunder: {}, surge: {}, resist: {}, growth: {}, stat: {}, social: {}, economy: {}, auras: aurasOn(ix, G), unlocks: G.unlocks, actives: G.actives, triggers: G.triggers };
+    const W = weightsOf(ix);
+    for (const k of Object.keys(G.src).sort()) {
+      const [type, a, b] = k.split("|"), l = G.src[k];
+      if (type === "edge") P.edges[a] = capped(ix, "edge", l);
+      else if (type === "blunder" || type === "surge") P[type][a] = capped(ix, "blunderSurge", l);
+      else if (type === "resist") P.resist[a] = capped(ix, "resist", l);
+      else if (type === "growth") P.growth[a] = capped(ix, "growth", l);
+      else if (type === "stat") P.stat[a] = capped(ix, "stat", l);
+      else if (type === "social") P.social[a] = stack(l.map((x) => x[0]), Infinity, W);
+      else if (type === "economy") P.economy[a + (b && b !== "all" ? ":" + b : "")] = stack(l.map((x) => x[0]), Infinity, W);
+      else if (type === "fight") {
+        const f = P.fight[a] = P.fight[a] || { atk: 0, def: 0, burst: 0, adapt: 0 };
+        f[b] = stack(l.map((x) => x[0]), Infinity, W);
+      }
+    }
+    P.G = G;
+    return P;
+  }
+  function perkRows(ix) {
+    const out = {};
+    for (const s of ix.skills) {
+      if (!s.family || !HUMAN.includes(s.rank)) continue;
+      for (const b of s.levels || []) for (const e of b.effects || []) if (e.type === "perk" && e.key) (out[e.key] = out[e.key] || []).push([value(s.rank, b.at), e.name || "", e.text || "", e.fx || {}]);
+    }
+    for (const k in out) out[k].sort((a, b) => a[0] - b[0]);
+    return out;
   }
 
   // src/people/engine/skills.js

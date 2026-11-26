@@ -2904,3 +2904,39 @@ power sets its place: neighbours within 3 times, six near-even pairs, the Lord o
 `74d5efa8` (the switch's builder): the Skills section's one-line summary names the rank only ("Farming and herding, rank D"),
 so it shows no number without a description; the Profile's rows use a compact label ("C·Lv 3", `A.SK2.label(..., { compact:
 true })`), Records the full one. The noble's page zone at 1366 reads 93 words of 100. 18 of 18 profile and number tests pass.
+
+### H-142 · 2026-11-26 · The skills rebuild, step 6: effects on, with the caps (nothing a player sees changes yet)
+`docs/design/skills-v2.md` §10 step 6 with §2.3, §2.4, §3.6, §5.2 and §15 (ranks D to SSS and X; the budget doubling;
+level 10 the cap). Decisions: D-180.
+- **Engine** (`src/people/engine/skills2.js`, section 10): `heldOfRung` (a family's rungs below the top at Lv 10, §15.2),
+  `gather` (every passive effect's sources by slot; perks apart; actives and triggers listed), `capped`, `edgeOn`,
+  `stepsOn`, `resistOn`, `fightOn` (parts weighed, the whole at most a share of the fighter's worth, scaled together),
+  `aurasOn`, `profile` (the §3.6 capability profile), `perkRows` (the knacks as the release's rows), `STEP_MIND`,
+  `RESIST_STEP`, and `CAP_HUMAN`: the design's caps for D to S are a ceiling vocab.json cannot lift (above S its rising
+  caps hold). Rebundled.
+- **Adapter** (`src/people/37-skills2/c-effects.core.js`, new): `A.CAPS(p)` (= `SK2.caps`: frozen, kept for the month,
+  keyed by the skills and levels it reads), `SK2.held`, `SK2.tagsOf`, `SK2.edgeOf`, `SK2.mindSteps`, `SK2.resistSteps`,
+  `SK2.resistShare`, `SK2.fightOn`, `SK2.worthOfFighter`, `SK2.perkRows`, `SK2.capsReset`. Only families whose rungs
+  carry an effect are looked up: today none (perks only), so every reader returns at once.
+- **Readers:** `A.skillEff` adds the edge (release `03-engine-base.js`); `A.perkRows(k)` is the knacks' one door
+  (`A.perksOf`, `A.perkSum`; 36-skills' knack log); `A.fighterFrom` calls `SK2.fightOn` and `A.CR` adds `f.sk2` (release
+  `06-prison-travel-school-ai.js`), a duel's opening stare reads `fearRes` there too; `VS.minds(p, check)` moves judgment
+  and will by the blunder and surge steps, read by the shown odds and the roll alike (`99993-v2-stats/b-odds`);
+  49-body-mind's illness month takes the illness resistance off its toll; the odds popover says "with perks and what your
+  skills add" when an edge is in it. The seed (`tools/skills2/seed-data.mjs`) writes each perk's text into the rungs
+  (11 ladder files: one field added to 114 perk effects).
+- **Evidence.** `tools/release/identity-probe.mjs`, base `8d4c73d2` against this build: 5,032 events, 0 audience classes
+  differ; all nine fixed-seed lives of 10 years SAME (fingerprint, state hash, random stream, journal). `sk6PerkSums`
+  (new): 114 rows equal GD.PERKS's; 154 months over three lives, 78,744 perk sums (8,355 not zero), 0 differ, nor any
+  `A.perkOf` or `A.perksOf`. `sk2Caps` (new): planted effects on the sword rungs, 120 holders: every sword check +12
+  exactly, fighting worth up for all 120 by at most 14.6%, judgment and will 2 steps, resisting 3 steps, all as before
+  once taken away, no die drawn and the state untouched. Engine tests 151 of 151 (four new). Lints: skills ok (329
+  `A.trainSkill` calls, baseline 329), stages 146 (baseline 146, no new stage), reasons 41 (baseline 41), docs index ok,
+  versions ok, seed data up to date. Browser tests on the build: 55 of 57 pass, among them uiSmoke, renderRng,
+  replayWithRender, sk5Lives, s1Checks, s1Mirror, s1NotLinear, ttSums2, ttPure, ttPure2, ttWorthSums and the v2 stats
+  and body-mind suites. `s1Migrate` and `sk2Migrate` fail on the new sample save `v2.1.0-alpha.17-noble-life.ardan`
+  exactly as on the base build (a version-17 save without `S.sk2v`: not this step's; passed to the switch's owner).
+  `traitsInLives` timed out twice at 1,800 s on the shared machine (load 10 to 25 on four cores) and passed alone with a
+  longer limit (2,154 s; 971 s on CI). `tools/bench/balance.mjs` did not finish here: stopped at the 90-minute limit under
+  the same load. The bands cannot have moved: the fixed-seed lives above are identical; CI's long tier runs it.
+- Undo: revert the commit; no save field was added.

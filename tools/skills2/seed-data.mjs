@@ -84,7 +84,7 @@ for (const s of S1.skills) {
   const rungs = RANKS.map((rank, i) => {
     const effects = [];
     if (PERK_AT[rank]) for (const key of [s.id, ...(s.legacy || [])]) for (const row of PERKS[key] || []) if (row[0] === PERK_AT[rank]) {
-      effects.push({ type: 'perk', key, name: row[1], fx: row[3], legacy: `perk:${key}:${row[0]}` });
+      effects.push({ type: 'perk', key, name: row[1], text: row[2], fx: row[3], legacy: `perk:${key}:${row[0]}` });
     }
     const r = {
       id: ids[i], name: names[i], rank, rarity: RARITY[rank], kind: 'passive', category: `${group}.${s.id}`,

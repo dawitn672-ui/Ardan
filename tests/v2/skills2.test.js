@@ -192,3 +192,90 @@ test('the switch (step 5): an S1 entry lands on the rung that holds it, the even
   const W = /\b(Beginner|Intermediate|Advanced|Expert|Master|Grandmaster|Legend)\b|\b[IV]+$/;
   for (let lv = 0; lv <= 35; lv++) assert.ok(!W.test(S1.levelName(lv)), S1.levelName(lv));
 });
+
+// ---- step 6 (D-180): the effects in play and their caps -------------------------------------------------------------
+// a copy of the data with planted effects on the sword family's rungs of these ranks, at Lv 1
+const planted = (effects, ranks = ['D', 'C', 'B'], vocab) => {
+  const D2 = JSON.parse(JSON.stringify(D)); if (vocab) Object.assign(D2.vocab, vocab);
+  for (const s of D2.skills) if (s.family === 'sword' && ranks.includes(s.rank)) s.levels = [{ at: 1, effects: s.levels[0].effects.concat(JSON.parse(JSON.stringify(effects))) }, { at: 5, effects: [] }];
+  return E.index(D2);
+};
+
+test('step 6: what a person holds and what it gathers (rungs below at Lv 10, perks served apart, actives and triggers listed)', () => {
+  assert.deepEqual(E.heldOfRung(IX, 'sword', 'B', 4), [{ id: 'stick_and_lath', lv: 10 }, { id: 'basic_swordsmanship', lv: 10 }, { id: 'measured_blade', lv: 4 }]);
+  assert.deepEqual(E.heldOfRung(IX, 'sword', 'D', 12), [{ id: 'stick_and_lath', lv: 10 }]);
+  assert.deepEqual(E.heldOfRung(IX, 'sword', 'D', 0), []);
+  // today's data: only perks, so every profile is empty
+  const P0 = E.profile(IX, E.heldOfRung(IX, 'sword', 'A', 10));
+  assert.deepEqual([P0.edges, P0.fight, P0.resist, P0.unlocks], [{}, {}, {}, []]);
+  const ix = planted([{ type: 'edge', tag: 'sword', v: 3 }, { type: 'unlock', what: 'activity:drill' }, { type: 'active', name: 'the single time', limit: '1/duel', do: { type: 'fight', tag: 'sword', part: 'burst', v: 2 } },
+    { type: 'trigger', on: 'parried', do: { type: 'fight', tag: 'sword', part: 'atk', v: 1 } }]);
+  const G = E.gather(ix, E.heldOfRung(ix, 'sword', 'B', 4));
+  assert.equal(G.src['edge|sword'].length, 3);
+  assert.deepEqual(G.unlocks, ['activity:drill']); assert.equal(G.actives.length, 3); assert.equal(G.triggers.length, 3);
+  assert.ok(!Object.keys(G.src).some(k => k.startsWith('perk') || k.startsWith('fight')), 'perks, actives and triggers are not summed');
+  // a later band replaces an earlier one slot by slot, and a band above the level is not held
+  const D3 = JSON.parse(JSON.stringify(D)), mb = D3.skills.find(s => s.id === 'measured_blade');
+  mb.levels = [{ at: 1, effects: [{ type: 'edge', tag: 'sword', v: 2 }] }, { at: 5, effects: [{ type: 'edge', tag: 'sword', v: 4 }] }, { at: 9, effects: [{ type: 'resist', of: 'fear', v: 1 }] }];
+  const ix3 = E.index(D3);
+  assert.deepEqual(E.gather(ix3, [{ id: 'measured_blade', lv: 6 }]).src, { 'edge|sword': [[4, 'B', 'measured_blade']] });
+});
+
+test('step 6: an edge on one check is at most +12, the sources weighed 1, 1/2, 1/4, 1/8, across every tag the check reads', () => {
+  const ix = planted([{ type: 'edge', tag: 'sword', v: 4 }]);
+  const G = E.gather(ix, E.heldOfRung(ix, 'sword', 'B', 1));
+  assert.equal(E.edgeOn(ix, G, ['dagger', 'sword', 'all']), 4 + 2 + 1);
+  assert.equal(E.edgeOn(ix, G, ['persuasion', 'all']), 0, 'another family reads none of it');
+  const big = planted([{ type: 'edge', tag: 'sword', v: 1000 }, { type: 'edge', tag: 'arms', v: 4 }, { type: 'edge', tag: 'all', v: 9 }]);
+  const Gb = E.gather(big, E.heldOfRung(big, 'sword', 'B', 1));
+  assert.equal(E.edgeOn(big, Gb, ['sword', 'arms', 'all']), 12);
+  const Pb = E.profile(big, E.heldOfRung(big, 'sword', 'B', 1));
+  assert.deepEqual([Pb.edges.arms, Pb.edges.all, Pb.edges.sword], [4 + 2 + 1, 12, 12], 'the profile: each tag on its own, capped');
+  // a malus counts in full, down to minus the cap
+  const neg = planted([{ type: 'edge', tag: 'sword', v: -9 }]);
+  assert.equal(E.edgeOn(neg, E.gather(neg, E.heldOfRung(neg, 'sword', 'B', 1)), ['sword']), -12);
+  // no data can lift a human rank's cap: vocab.json tuned to 100 still gives 12
+  const lifted = planted([{ type: 'edge', tag: 'sword', v: 1000 }], ['D', 'C', 'B'], { caps: Object.assign({}, D.vocab.caps, { edge: Object.fromEntries(E.RANKS.map(r => [r, 100])) }) });
+  assert.equal(E.edgeOn(lifted, E.gather(lifted, E.heldOfRung(lifted, 'sword', 'B', 1)), ['sword']), 12);
+  for (const [k, v] of Object.entries(E.CAP_HUMAN)) assert.ok(E.capOf(lifted, k, 'S') <= v, k);
+  // above S the cap rises by rank (§15.1): an SS source lifts it to the data's 18
+  const D4 = JSON.parse(JSON.stringify(D));
+  D4.skills.push({ id: 'planted_ss', name: 'Planted', rank: 'SS', rarity: 'rare', kind: 'passive', category: 'arms.sword', family: null, reads: [], levels: [{ at: 1, effects: [{ type: 'edge', tag: 'sword', v: 1000 }] }] });
+  const ix4 = E.index(D4);
+  assert.equal(E.edgeOn(ix4, E.gather(ix4, [{ id: 'planted_ss', lv: 1 }]), ['sword']), 18);
+});
+
+test('step 6: fight at most +15% of the fighter\'s worth, the parts scaled together; blunder and surge 2 steps; resist 3', () => {
+  const ix = planted([{ type: 'fight', tag: 'sword', part: 'atk', v: 6 }, { type: 'fight', tag: 'all', part: 'def', v: 4 }, { type: 'fight', tag: 'sword', part: 'burst', v: 2 }]);
+  const G = E.gather(ix, E.heldOfRung(ix, 'sword', 'B', 1));
+  // under the cap: each part weighed (6 + 3 + 1.5, 4 + 2 + 1, 2 + 1 + 0.5)
+  const f = E.fightOn(ix, G, ['sword', 'all'], 1000);
+  assert.deepEqual([f.atk, f.def, f.burst, f.total], [10.5, 7, 3.5, 21]);
+  // over it: scaled to 15% of the worth, in the same proportions
+  const g = E.fightOn(ix, G, ['sword', 'all'], 100);
+  assert.ok(Math.abs(g.total - 15) < 1e-9 && Math.abs(g.atk / g.def - 1.5) < 1e-9, JSON.stringify(g));
+  // a bow reads only what is tagged 'all'
+  const b = E.fightOn(ix, G, ['bow', 'all'], 1000);
+  assert.deepEqual([b.atk, b.def], [0, 7]);
+  assert.equal(E.fightOn(IX, E.gather(IX, E.heldOfRung(IX, 'sword', 'A', 5)), ['sword', 'all'], 100).total, 0, 'today\'s data: nothing');
+  const m = planted([{ type: 'blunder', tag: 'sword', v: 5 }, { type: 'surge', tag: 'all', v: 1 }, { type: 'resist', of: 'fear', v: 4 }, { type: 'resist', of: 'wounds', v: 1 }]);
+  const Gm = E.gather(m, E.heldOfRung(m, 'sword', 'B', 1));
+  assert.equal(E.stepsOn(m, Gm, 'blunder', ['sword', 'all']), 2); assert.equal(E.stepsOn(m, Gm, 'blunder', ['bow', 'all']), 0);
+  assert.equal(E.stepsOn(m, Gm, 'surge', ['bow', 'all']), 1.75);
+  assert.equal(E.resistOn(m, Gm, 'fear'), 3); assert.equal(E.resistOn(m, Gm, 'wounds'), 1.75); assert.equal(E.resistOn(m, Gm, 'poison'), 0);
+  const P = E.profile(m, E.heldOfRung(m, 'sword', 'B', 1));
+  assert.deepEqual([P.blunder.sword, P.surge.all, P.resist.fear], [2, 1.75, 3]);
+  // auras: the best of each `of` and scale (two rungs at the squad, one at the army); at most 3 steps of one `of`
+  const D5 = JSON.parse(JSON.stringify(D)), au = (id, scale, v) => { D5.skills.find(s => s.id === id).levels = [{ at: 1, effects: [{ type: 'aura', of: 'morale', scale, v }] }]; };
+  au('stick_and_lath', 'squad', 1); au('basic_swordsmanship', 'squad', 2); au('measured_blade', 'army', 2);
+  const a = E.index(D5), Pa = E.profile(a, E.heldOfRung(a, 'sword', 'B', 1));
+  assert.deepEqual(Pa.auras.morale, { army: 2, squad: 2, total: 3 });
+});
+
+test('step 6: the perks the rungs carry are the release\'s knacks, at S1\'s crossings, in order', () => {
+  const R = E.perkRows(IX);
+  assert.equal(Object.keys(R).length, 38);
+  for (const k in R) { assert.deepEqual(R[k].map(x => x[0]), [35, 55, 72], k); for (const x of R[k]) assert.ok(x[1] && x[2] && typeof x[3] === 'object', `${k} ${x[1]}: a name, a text and its effects`); }
+  assert.deepEqual(R.sword[0], [35, 'Riposte', 'Guarding turns into counter-cuts', { skill: 3 }]);
+  assert.equal(R.dagger[0][1], 'Inside the guard'); assert.equal(R.dagger[1][1], 'Gap-finder');
+});

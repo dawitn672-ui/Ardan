@@ -2805,3 +2805,40 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
 - **The fight tiers (Untrained to Legend, `GD.TIERS`) and the style ranks stay** until the power ladder and wave 2 own
   them (§6.1); `tools/lint-skills.mjs` forbids S1's level words with a Roman step, the seven as a list and their readers.
 - **`C.lvl`'s word form is removed** (two of S1's own cards used `"advanced"`: now 35).
+
+### D-180 · The skills rebuild, step 6 (effects on): where each effect is read, and the caps (2026-11-26)
+- **The caps live in the adapter and the engine, not in the data.** `src/people/37-skills2/c-effects.core.js` decides
+  what a person holds and where each effect is read; `A.V2.skills2` (section 10) gathers and caps. vocab.json's caps may
+  tune a human rank's cap lower, never higher: the design's numbers (§2.4: edge 12, fight 15%, blunder and surge 2,
+  resist 3, aura 3, growth 50, stat 10) are a ceiling in the engine (`CAP_HUMAN`); above S the data's rising caps hold
+  (§15.1). **Considered:** reading the caps from vocab.json alone (one edit there would lift every cap).
+- **Where each is read.** `edge` in `A.skillEff` (so `A.checkVal` and every check, NPCs' too): a key's tags are the key,
+  its family, its focus (a legacy key's), its group, its family's check tags and `all`, all of them under one cap, so a
+  check (60% of `s`, 40% of `s2`) gains at most 12. Narrow check tags that are not keys (`bargain`, `night`) apply when a
+  check names them, which no card does yet. `fight` in `A.fighterFrom` (`SK2.fightOn`) as fight-worth points added to
+  `A.CR` (atk, def and adapt every round, a burst in the first three), at most 15% of the worth the fighter has without
+  them, the parts scaled down together; so `A.fightWorth` (round 5) rises by at most 15%. `blunder` and `surge` in
+  `VS.minds(p, check)`: a step is half a deviation of judgment (fewer blunders) or will (more surges); the shown odds
+  (`A.checkOdds`, `VS.trueChance`) and the roll (`VS.roll`, `VS.attemptRaw`) read the same minds, so the odds stay
+  honest. `resist`: wounds a tenth off a blow's damage a step (the fighter's `woundRes`), fear a fifth off a foe's stare at
+  a duel's start (`fearRes`), illness a tenth off its monthly toll (49-body-mind); poison and mind wait for the systems
+  that read them. **Considered:** edges inside `A.skill` (§5.1's sketch): they would have reached the fight, the power
+  scale and every number read off a skill, not only checks; the design's §5.2 puts them in the check.
+- **The knacks are served from the rungs' `perk` effects, read as the release read them**: a perk row is held while the
+  read of its key reaches its threshold (the rung's rank at the band's level: 35, 55, 72), not while the rung is held. A
+  legacy key's read (a focus elsewhere in the family is a step down) or a wound can put the read under the rung, and the
+  release then withheld the knack; holding to the read keeps every sum. `A.perkRows(k)` is the one door (`A.perksOf`,
+  `A.perkSum`, 36-skills' knack log); the rows carry the release's text (the seed writes it). Measured: 114 rows equal
+  GD.PERKS's; `sk6PerkSums` 0 of 78,744 sums differ over three lives; `identity-probe` nine fixed-seed lives identical.
+  The legacy perks still cost nothing in the budget: priced as effects, a C rung's three knacks at Lv 1 (riding's +4 on a
+  check alone is 8 points) are far over its 2; the data review retunes them with the balance harness (step 12).
+- **`A.CAPS(p)` is kept for the month, keyed by what it reads** (the skills held and their levels), not by person and
+  month: a level gained mid-month is read at once, and a page that renders first can never leave the engine a stale
+  profile (a per-person cache filled by a render would differ from one filled by the engine: replays would drift). Only
+  the families whose rungs carry an effect are looked up; with today's data (perks only) none is, and every reader returns
+  at once.
+- **The power scale is untouched.** A person's power reads his fighting worth, which now carries his fight effects (the
+  data's rule: a person's skills count once, inside his worth); the legends' and masters' art is their own data's skills,
+  so their balance (D-177) does not move.
+- **An aura's slot stays `of`** (a company's morale replaces a squad's, the design's example 9); the profile then takes the
+  best of each scale held across skills, at most 3 steps of one `of`.
