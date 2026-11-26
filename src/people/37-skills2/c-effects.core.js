@@ -169,7 +169,9 @@
   // the share a person's titles add to `of` ('fight', 'check', 'income', 'growth') for key k's tags (none: 'all' only);
   // 0 for anyone who holds no title with a boost (the fast path)
   SK2.boostOf = function (p, of, k) {
-    if (off(p)) return 0;
+    // only a title boosts: anyone who holds none takes the fast path before any profile is worked out (every check and
+    // every effort of the month asks)
+    if (!p || !xOf(p)) return 0;
     const P = A.CAPS(p); if (P === EMPTY || !P.G || !P.G.src) return 0;
     return E().boostOn(IX(), P.G, of, k ? SK2.tagsOf(k) : ['all']);
   };
