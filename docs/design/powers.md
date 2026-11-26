@@ -36,16 +36,16 @@ Code: `src/world/9999970-powers/` (README there). Data: `data/power.json`, `data
 | The masters of the races (Skull-Khan, Eldest Blade, Anvil-Warden, King under Jotunhall) | above them | 400, 430, 440, 510 |
 | An average grown dragon / a strong one | 450 / 525 | 442-459 / 519-536 |
 | The legends | above 600 | 605 to 800 |
-| The Lord of the Sea | about 690, below the Saint | 690; the Saint has 65 times her power and wins 0.96 |
+| The Lord of the Sea | about 690, below the Saint but in reach | 690; 0.55 of the Saint's power; the Saint wins 0.77 |
 | Cael Vardan, the Sword Saint, alive, old | about 700, even with one archdemon | 700; against Ghazrul 0.53, Morvane 0.47, Vethrael 0.48 |
 | The three Primordial Archdemons | 770-780 | 770, 775, 780 |
-| Sarnavoth, King of Dragons | about 800, by far the strongest single being, slightly behind the three together | 800; 16 times the next single being; against the three together 0.42 |
+| Sarnavoth, King of Dragons | about 800, by far the strongest single being, slightly behind the three together | 800; 2.9 times Ghazrul, 3.4 times an archdemon on average; against the three together 0.42 |
 
 - **Fighting power** is the level's might times its titles' power (`buffs.power`), its items' power (`gives.power`)
-  and its **art**: `2^(art / 10)`, where art is the sum over its fight skills of the rank's weight (D 1, C 2, B 4, A 8,
+  and its **art**: `2^(art / 5)`, where art is the sum over its fight skills of the rank's weight (D 1, C 2, B 4, A 8,
   S 16: master prompt 9's power budget) times level / 10. Skills stop at level 10; past it they only evolve or merge, so a
   great being's strength is in the rank of its skills, its titles and its arms. A person's skills are already in his
-  fighting worth, so they count once. A group fights as (sum of the roots of their powers) squared, Lanchester's law.
+  fighting worth, so they count once. A few great beings fighting together add up nearly in a line (the sum of their powers, times 1.05 for each past the first); a host of many men keeps Lanchester's law (`PW.hostOf`: N^1.35 x a soldier), since every spear of a host reaches the foe at once and a handful of giants mostly get in each other's way.
   Titles split the kinds of strength: the Dragon King's and the Archdemons' titles carry raw **firepower** (area, breath,
   ruin), the Sword Saint's class and title carry **single combat**; the profile carries both, and the matchup reads them
   (firepower breaks numbers; a duellist's art finds the gap one to one). Test `pwPowerNotLevel` holds the three matchups.
@@ -54,6 +54,16 @@ Code: `src/world/9999970-powers/` (README there). Data: `data/power.json`, `data
   The faiths' gods are not on the scale (`myth`).
 - **Odds:** `p(A beats B) = 1 / (1 + (powerB / powerA)^0.55)`, then the profile's matchup. k = 0.55 because one of the
   release's fighter tiers (about 14 worth, one e-fold of conscripts) wins three fights in four. The player sees only words.
+
+**The legends' ranking** (power relative to the Saint; level): Sarnavoth 4.25 (800); Ghazrul 1.45 (780); Morvane 1.30
+(775); the Saint 1 (700); Vethrael 1.00 (770); Tessaly 0.55 (690); Vaskareth 0.40 (692); Ul-Mavren 0.37 (680); Hrimgala 0.20
+(682); Serrath 0.12 (672); Orrun 0.115 (674); the Pale Shepherd 0.07 (648); Ommul 0.05 (658); Kethra 0.036 (664); Saqqar
+0.033 (650); the Iron Warden 0.022 (640). Neighbours stand within 3 times of each other, and six neighbour pairs are near
+coin-flips (Ghazrul and Morvane 0.45, Morvane and the Saint 0.54, the Saint and Vethrael 0.47, Tessaly and Vaskareth 0.57,
+Hrimgala and Serrath 0.44, Kethra and Saqqar 0.51). Two pairs go against the ranking because of their profiles (Ul-Mavren's
+barrow-host beats Vaskareth 0.69; the Pale Shepherd's packs beat Orrun 0.71). The weakest legend has over a thousand times
+the power of the strongest beast or race master. Each legend's signature title carries the power that sets its place
+(tools: the place targets are in the commit that set them); the legends below the top four hold two S-rank skills each.
 
 ## 2. The profile and titles
 

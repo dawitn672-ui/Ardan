@@ -2830,3 +2830,9 @@ items x art (skills of rank D-S, level at most 10); the capability profile gains
 Lanchester. Sarnavoth 800 against the three Primordial Archdemons (770-780) together 0.42; the Sword Saint (700) against
 each 0.53, 0.47, 0.48; against the Lord of the Sea (690) 0.96. Every legend and race master has skills, items and titles,
 shown in the codex as far as the player knows them. uiSmoke's click timeout did not reproduce (1 of 13 runs, random lives).
+
+### H-NEW · 2026-11-26 · Powers: a near-linear sum for a few great beings, a compressed top
+The coordinator's rework of orders 87-90: a few great beings fighting together add up nearly in a line (sum x 1.05 each
+past the first; hosts keep Lanchester), so Sarnavoth is 3.4 times an archdemon and wins 0.42 against the three together. The
+legends below the top four hold two S-rank skills, art doubles every 5 points, levels 640-692, and each signature title's
+power sets its place: neighbours within 3 times, six near-even pairs, the Lord of the Sea at 0.55 of the Saint (he wins 0.77).

@@ -5,7 +5,7 @@
    "id": "vaskareth",
    "n": "Vaskareth",
    "fam": "dragons",
-   "level": 685,
+   "level": 692,
    "int": "wise",
    "age": "about two thousand four hundred years",
    "titles": [
@@ -14,7 +14,7 @@
      "honour": 60,
      "buffs": {
       "magic": 1,
-      "power": 0.2
+      "power": 4.79
      },
      "req": "hidden"
     },
@@ -146,7 +146,7 @@
    "skills": [
     {
      "n": "Ash Breath",
-     "rank": "A",
+     "rank": "S",
      "lvl": 10,
      "kind": "active",
      "fight": true,
@@ -165,7 +165,7 @@
     },
     {
      "n": "Wing-Storm",
-     "rank": "B",
+     "rank": "S",
      "lvl": 10,
      "kind": "active",
      "fight": true,
@@ -173,7 +173,7 @@
     },
     {
      "n": "Tithe-Fear",
-     "rank": "C",
+     "rank": "A",
      "lvl": 10,
      "kind": "aura",
      "fight": true,
@@ -212,7 +212,7 @@
      "honour": 80,
      "buffs": {
       "regen": 1,
-      "power": 0.3
+      "power": 6.67
      },
      "req": "hidden"
     },
@@ -330,11 +330,11 @@
      "line": "She lets the small pass. The sea is wide."
     }
    },
-   "d": "The Lord of the Sea, whom fishermen call the Tide-Mother: they say the southern sea is her back. She sleeps for decades. When she wakes, harbours drown and the shoals come home. Vast, old and slow, she has never needed skill.",
+   "d": "The Lord of the Sea, whom fishermen call the Tide-Mother: they say the southern sea is her back. She sleeps for decades. When she wakes, harbours drown and the shoals come home. Vast, old and slow; what she has of art is the sea's own.",
    "skills": [
     {
      "n": "The Tide",
-     "rank": "B",
+     "rank": "S",
      "lvl": 10,
      "kind": "active",
      "fight": true,
@@ -345,7 +345,7 @@
     },
     {
      "n": "Deep Body",
-     "rank": "B",
+     "rank": "S",
      "lvl": 10,
      "kind": "passive",
      "fight": true,
@@ -353,7 +353,7 @@
     },
     {
      "n": "Call of the Shoals",
-     "rank": "C",
+     "rank": "A",
      "lvl": 10,
      "kind": "aura",
      "fight": true,
@@ -374,7 +374,7 @@
    "id": "ommul",
    "n": "Ommul",
    "fam": "oozes",
-   "level": 628,
+   "level": 658,
    "int": "wise",
    "age": "nine centuries since it first thought",
    "titles": [
@@ -383,7 +383,7 @@
      "honour": 20,
      "buffs": {
       "cunning": 1,
-      "power": 0.1
+      "power": 4.81
      },
      "req": "hidden"
     },
@@ -510,7 +510,7 @@
    "skills": [
     {
      "n": "Engulf",
-     "rank": "B",
+     "rank": "S",
      "lvl": 10,
      "kind": "active",
      "fight": true,
@@ -527,7 +527,7 @@
     },
     {
      "n": "Acid Body",
-     "rank": "C",
+     "rank": "S",
      "lvl": 10,
      "kind": "passive",
      "fight": true,
@@ -540,7 +540,7 @@
    "id": "serrath",
    "n": "Serrath",
    "fam": "fey",
-   "level": 655,
+   "level": 672,
    "int": "wise",
    "age": "older than the elves' coming west, some five thousand years",
    "titles": [
@@ -559,7 +559,7 @@
      "buffs": {
       "magic": 1,
       "ward": 1,
-      "power": 0.2
+      "power": 1.8
      },
      "req": "hidden"
     },
@@ -692,7 +692,7 @@
    "skills": [
     {
      "n": "Glamour",
-     "rank": "A",
+     "rank": "S",
      "lvl": 10,
      "kind": "active",
      "fight": true,
@@ -703,7 +703,7 @@
     },
     {
      "n": "The Wild Hunt",
-     "rank": "B",
+     "rank": "S",
      "lvl": 10,
      "kind": "aura",
      "fight": true,
@@ -714,7 +714,7 @@
     },
     {
      "n": "Binding Word",
-     "rank": "B",
+     "rank": "A",
      "lvl": 10,
      "kind": "active",
      "fight": true,
@@ -737,7 +737,7 @@
    "id": "ulmavren",
    "n": "Ul-Mavren",
    "fam": "undead",
-   "level": 668,
+   "level": 680,
    "int": "wise",
    "age": "dead two thousand years",
    "titles": [
@@ -746,7 +746,7 @@
      "honour": 30,
      "buffs": {
       "ward": 1,
-      "power": 0.2
+      "power": 5.88
      },
      "req": "hidden"
     }
@@ -871,7 +871,7 @@
    "skills": [
     {
      "n": "The Barrow-Host",
-     "rank": "A",
+     "rank": "S",
      "lvl": 10,
      "kind": "aura",
      "fight": true,
@@ -882,7 +882,7 @@
     },
     {
      "n": "Khan's Sabre",
-     "rank": "B",
+     "rank": "S",
      "lvl": 10,
      "kind": "active",
      "fight": true,
@@ -893,7 +893,7 @@
     },
     {
      "n": "Grave-Cold",
-     "rank": "C",
+     "rank": "A",
      "lvl": 10,
      "kind": "passive",
      "fight": true,
@@ -925,7 +925,7 @@
    "id": "kethra",
    "n": "Kethra",
    "fam": "skyborne",
-   "level": 640,
+   "level": 664,
    "int": "speaking",
    "age": "about eleven centuries",
    "titles": [
@@ -935,7 +935,7 @@
      "buffs": {
       "spd": 1,
       "magic": 1,
-      "power": 0.1
+      "power": 0.16
      },
      "req": "hidden"
     }
@@ -1053,7 +1053,7 @@
    "skills": [
     {
      "n": "Thunderwing",
-     "rank": "A",
+     "rank": "S",
      "lvl": 10,
      "kind": "active",
      "fight": true,
@@ -1064,7 +1064,7 @@
     },
     {
      "n": "Storm-Rider",
-     "rank": "B",
+     "rank": "S",
      "lvl": 10,
      "kind": "passive",
      "fight": true,
@@ -1072,7 +1072,7 @@
     },
     {
      "n": "Dive",
-     "rank": "C",
+     "rank": "A",
      "lvl": 10,
      "kind": "active",
      "fight": true,
@@ -1085,7 +1085,7 @@
    "id": "orrun",
    "n": "Orrun",
    "fam": "giants",
-   "level": 664,
+   "level": 674,
    "int": "wise",
    "age": "older than any throne of men: some four thousand years",
    "titles": [
@@ -1095,7 +1095,7 @@
      "buffs": {
       "str": 1,
       "hide": 1,
-      "power": 0.2
+      "power": 7.46
      },
      "req": "hidden"
     }
@@ -1218,7 +1218,7 @@
    "skills": [
     {
      "n": "Mountain's Weight",
-     "rank": "A",
+     "rank": "S",
      "lvl": 10,
      "kind": "passive",
      "fight": true,
@@ -1226,7 +1226,7 @@
     },
     {
      "n": "Promise-Keeper",
-     "rank": "B",
+     "rank": "S",
      "lvl": 10,
      "kind": "passive",
      "fight": true,
@@ -1255,7 +1255,7 @@
    "id": "pale-shepherd",
    "n": "The Pale Shepherd",
    "fam": "hounds",
-   "level": 612,
+   "level": 648,
    "int": "wise",
    "age": "about fifteen centuries",
    "titles": [
@@ -1265,7 +1265,7 @@
      "buffs": {
       "swarm": 1,
       "cunning": 1,
-      "power": 0.1
+      "power": 9.82
      },
      "req": "hidden"
     }
@@ -1390,7 +1390,7 @@
    "skills": [
     {
      "n": "Mother of Wolves",
-     "rank": "A",
+     "rank": "S",
      "lvl": 10,
      "kind": "aura",
      "fight": true,
@@ -1401,7 +1401,7 @@
     },
     {
      "n": "Frost Fang",
-     "rank": "B",
+     "rank": "S",
      "lvl": 10,
      "kind": "active",
      "fight": true,
@@ -1444,7 +1444,7 @@
      "buffs": {
       "magic": 1,
       "cunning": 1,
-      "power": 0.2,
+      "power": 2.67,
       "fire": 1
      },
      "req": "hidden"
@@ -1619,7 +1619,7 @@
    "id": "iron-warden",
    "n": "The Iron Warden",
    "fam": "constructs",
-   "level": 605,
+   "level": 640,
    "int": "speaking",
    "age": "forged some eighteen centuries ago",
    "titles": [
@@ -1629,7 +1629,7 @@
      "buffs": {
       "hide": 1,
       "ward": 1,
-      "power": 0.1
+      "power": 0.41
      },
      "req": "hidden"
     }
@@ -1739,7 +1739,7 @@
    "skills": [
     {
      "n": "Oath-Bound",
-     "rank": "A",
+     "rank": "S",
      "lvl": 10,
      "kind": "passive",
      "fight": true,
@@ -1750,7 +1750,7 @@
     },
     {
      "n": "Gate Stance",
-     "rank": "B",
+     "rank": "S",
      "lvl": 10,
      "kind": "passive",
      "fight": true,
@@ -1758,7 +1758,7 @@
     },
     {
      "n": "Rune Fist",
-     "rank": "C",
+     "rank": "A",
      "lvl": 10,
      "kind": "active",
      "fight": true,
@@ -1788,7 +1788,7 @@
    "id": "saqqar",
    "n": "Saqqar",
    "fam": "cats",
-   "level": 618,
+   "level": 650,
    "int": "speaking",
    "age": "about fourteen centuries",
    "titles": [
@@ -1798,7 +1798,7 @@
      "buffs": {
       "magic": 1,
       "spd": 1,
-      "power": 0.1
+      "power": 0.59
      },
      "req": "hidden"
     }
@@ -1916,7 +1916,7 @@
    "skills": [
     {
      "n": "Sun-Mane",
-     "rank": "A",
+     "rank": "S",
      "lvl": 10,
      "kind": "aura",
      "fight": true,
@@ -1927,7 +1927,7 @@
     },
     {
      "n": "Pride of the Dunes",
-     "rank": "B",
+     "rank": "S",
      "lvl": 10,
      "kind": "passive",
      "fight": true,
@@ -1935,7 +1935,7 @@
     },
     {
      "n": "Pounce",
-     "rank": "C",
+     "rank": "A",
      "lvl": 10,
      "kind": "active",
      "fight": true,
@@ -1948,7 +1948,7 @@
    "id": "hrimgala",
    "n": "Hrimgala",
    "fam": "spirits",
-   "level": 676,
+   "level": 682,
    "int": "wise",
    "age": "as old as the ice",
    "titles": [
@@ -1958,7 +1958,7 @@
      "buffs": {
       "magic": 1,
       "ward": 1,
-      "power": 0.2
+      "power": 2.86
      },
      "req": "hidden"
     }
@@ -2081,7 +2081,7 @@
    "skills": [
     {
      "n": "White Winter",
-     "rank": "A",
+     "rank": "S",
      "lvl": 10,
      "kind": "aura",
      "fight": true,
@@ -2092,7 +2092,7 @@
     },
     {
      "n": "Snow Body",
-     "rank": "B",
+     "rank": "S",
      "lvl": 10,
      "kind": "passive",
      "fight": true,
@@ -2100,7 +2100,7 @@
     },
     {
      "n": "Wolf-Call",
-     "rank": "C",
+     "rank": "A",
      "lvl": 10,
      "kind": "aura",
      "fight": true,
@@ -2123,7 +2123,7 @@
      "buffs": {
       "str": 1,
       "magic": 1,
-      "power": 7,
+      "power": 1.25,
       "fire": 3
      },
      "req": "hidden"
@@ -2359,7 +2359,7 @@
      "buffs": {
       "str": 1,
       "magic": 1,
-      "power": 0.2,
+      "power": 2.21,
       "fire": 1
      },
      "req": "hidden"
@@ -2820,7 +2820,7 @@
      "honour": 0,
      "buffs": {
       "magic": 1,
-      "power": 0.2,
+      "power": 2.92,
       "fire": 1
      },
      "req": "hidden"
