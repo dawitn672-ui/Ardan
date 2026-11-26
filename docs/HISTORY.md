@@ -2899,3 +2899,8 @@ power sets its place: neighbours within 3 times, six near-even pairs, the Lord o
 - `pfNumbers` and `pfFits`: the switch's rank-and-level labels on the Profile lack descriptions and run one word over the
   page budget; passed to the switch's builder. CLAUDE.md's parallel-safety line again reads D-NEW-1 and H-NEW (a renumbering
   had caught it).
+
+### H-141 · 2026-11-26 · The profile's level labels fixed (pfNumbers, pfFits)
+`74d5efa8` (the switch's builder): the Skills section's one-line summary names the rank only ("Farming and herding, rank D"),
+so it shows no number without a description; the Profile's rows use a compact label ("C·Lv 3", `A.SK2.label(..., { compact:
+true })`), Records the full one. The noble's page zone at 1366 reads 93 words of 100. 18 of 18 profile and number tests pass.
