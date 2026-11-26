@@ -5,6 +5,18 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Every win counts, and the hundreds are walls.** Beating anyone now teaches you something, even a man far weaker
+  than you, though a weak foe teaches very little. Each level asks a little more than the last, and the step to level
+  100, 200, 300 and on is a wall that asks many times more: hard to cross, never closed. At each wall the road divides
+  and you choose: a class (Swordsman, Archer, Shieldbearer, Rider, Brawler, Hunter, Warrior and more, then Sword Master,
+  Duelist, Blade Dancer, Lancer, Ranger, Berserker and others, then Blade Master, Hawkeye, Bulwark, Oathsworn, Banner
+  Rider and the like), or points for the body instead. A class gives you new things to do: a technique in duels, a
+  knack that wakes when you need it (low on blood, against a beast, in the first exchange), a way to ready the body for a
+  season or bind your wounds, and new work (teaching the sword, pit fights, bounties on beasts, guarding roads, raids).
+  The class you hold shows beside your level; press it for what it gives. Only one living person may be the Sword
+  Saint, and while the old Saint lives, nobody else is. Other people take their classes for their own reasons. The
+  legends can grow stronger too, but for them a level is the work of ages. Saved games load as they were: anyone
+  already past a hundred carries the class his life gives him, with nothing paid for it.
 - **Titles.** The world now gives names for what you do: the Undefeated, the Unbought, Ironhide, the Hundred-Day Wall,
   the Peacemaker, Beast-Bane, Wyrm-Slayer, the Sword of your realm and more. A title is never bought or trained, and
   what earns one is never shown: at most you hear a rumour of it in a tavern once you have done something on its road.

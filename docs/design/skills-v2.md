@@ -1016,6 +1016,12 @@ beings; (c) the profile line, chips and card, and the hint cards.
 
 ### 12.1 One level for a person, the power ladder's
 
+> **Orders 91-94 (2026-11-26, D-184; the newest wins over §12.1 and §15 here):** experience comes from any defeated foe,
+> whatever his level (D-181's line at 25 levels down is withdrawn; a weaker foe gives far less), counted in defeats of a
+> peer from the level gap, each level 1% dearer; the step into each hundredth level is a wall (6 to 15 times the step
+> before it, a threshold, never a ceiling), where a person takes a class from a branching tree (`data/classes.json`: each
+> class adds a duel technique, a passive, a buff or a way to earn) or a stat boost. See `src/people/9999975-level/README.md`.
+
 **Built (D-181, `src/people/9999975-level`):** the level and the points as §15's answers 4, 5 and 9 change this section:
 the level comes from defeats on the ladder (seeded from the computed level, a floor while growing up), not from every
 walk; `A.train` still raises stats until a balance pass (deferred). The tables below are the old defaults.

@@ -2962,3 +2962,49 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
 - Save version 19 (the step `titles`: the census, empty). Another builder may also bump `SV.VER`; the integrator settles
   the number at the merge. Deferred: `ttRare` (200 bot lives, a balance-harness run), monsters' own ledgers, an
   opponent's title on a duel's or court's card.
+
+### D-184 · Experience from anyone, walls at each hundredth level, a chosen class or a stat boost, legends that grow (2026-11-26; orders 91, 92, 93, 94; replaces D-181's experience rule)
+- **Experience from anyone (order 91).** D-181's line (nothing from a foe 25 levels down, never lifted past it) is
+  withdrawn: every defeated foe gives experience. **It is now counted in defeats of a peer, from the level gap alone**
+  (a stronger foe `2^(gap/20)`, past four the root of the rest; a weaker one `2^(-gap/6)`), and a level asks `1.01^L`
+  peers. **Why the gap, not might:** order 93 moves the ladder (a rescale of `A.POWER`'s might-to-level curve and the
+  legends' and species' levels, owned by another builder); a rule in might would move every earned level with it. In
+  level gaps the earned bands hold whatever the curve, the walls stay at the hundreds, and the foes' levels are still
+  read through `A.POWER` (`LV.level`, `PW.level`). **Considered:** keeping D-181's might rule without its line (soldiers
+  past 150 by farming), a steeper weak power alone (no wall at the hundreds).
+- **Walls, thresholds not ceilings (orders 91, 94).** The step into each hundredth level asks 6, 10, 12, 12, then 15 times
+  the step before it. Lives thin out as the cost climbs (the experience a foe gives falls steeply once a man stands
+  above him, so a soldier fighting soldiers of 130 slows long before 200) and the able, who beat stronger foes, break
+  through. Calibrated on the owner's anchors of order 93 (a model of the rule, in the level README): soldiers from 30
+  reach 94, 128, 158 after 20, 80, 1,000 defeats of soldiers; knights 214, 238, 265, 281 against knights (no pile-up at
+  299); a knight who beats the best (320) breaks through 300; the elite cross 300 and 400. **Considered:** walls of 25 to
+  90 (order 91's first reading; they held soldiers at 99 and knights at 299 like ceilings, which order 94 forbids).
+- **The reward is a branch the person chooses (order 92).** At a wall: the classes open to him (those following the
+  class he holds, or a road's first classes if he holds none; his best skill of the class's families at C, B or A by its
+  step; the Sword Saint only for the bearer of the Sword Saint title, which is Cael Vardan's while he lives, so the title's
+  census makes the class unique) or a stat boost (6, 10, 15, 20 points by the wall, `LV.grant`). At most three classes,
+  best first by the reasons (his skill past the need, his way of life, his deeds). The player chooses on a card
+  (`lv_wall`; `lv_boost` with three ways to place the points when no class is open); anyone else through
+  `A.WHY.decide` (the same reasons, bent by temper) on a stream of his own (the main stream never moves).
+- **A tree of classes that add things to do (order 92).** 29 classes, three steps, eight roads (blade, spear, bow,
+  shield, mounted, brawler, hunter, any weapon; mages wait for v4), seventeen leading to two or more. Each gives some of:
+  a duel **technique** (an active skill: the release's technique fields, under the style id `class:<id>`, used by NPCs
+  too), a **passive** that fires under its condition in a duel (low on blood, a beast, the first exchange, on horseback,
+  behind a shield, against a guard, a long fight: edge, a fury or blood back once), a **buff** (an activity: a stat raised
+  for some months, or healing) and a **way to earn or fight** (an activity: teaching, purse fights, pits, bounties, roads,
+  raids, vows). Every class on his road keeps its parts; the one he holds gives its effects through the skills adapter
+  (`SK2.xClass`, sources of rank C to S), under the caps with his skills and titles. Every class adds a part its parents
+  lack (tested). Order 94's "more than an ordinary knight" past 300: **Oathsworn** and **Banner Rider** among the third
+  step. **Considered:** a linear ladder per weapon (order 92 forbids it); classes as numbers only (the same).
+- **Worn classes.** A person given his held level (the player at his first month or on load, an NPC at his first fight)
+  has the walls he already stands past settled with the road his skills would give: worn, with its parts, and no
+  effects, honour or points, because his worth (from which the level was read) already holds them; so nothing a check
+  reads moves on load. The save step `classes` (version 20) does this for everyone with a held level. Someone never
+  recorded is shown the class his road would give (pure), with no parts.
+- **The legends grow (order 92).** By the same rule: a man a legend beats in a meeting, and the ridge between the King
+  and the Saint, pay it experience (`LV.legendDefeat`), kept as `A.S.pw.leg[id].lg`; `PW.being` reads the data's level
+  plus the gain (never the data's number written: the rescale owns it). At a legend's height a hundred defeats of its
+  equal give under a level. A fresh world reads every legend at the data's level, so the matchups are unchanged.
+- **Also:** `pupil_taught` has a source (the teaching activities), so the Silver Sage can be earned.
+- **Deferred:** the "new order in battle" kind of part (the war core is being rebuilt, §10); class parts for a career's
+  monthly work; a training screen for classes; magic classes (v4); NPC-against-NPC duels still record nothing.
