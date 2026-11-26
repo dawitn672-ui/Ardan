@@ -71,7 +71,7 @@ export default {
   },
 
   // farming is slow, never nothing (order 91, D-184): a thousand defeats of men twenty levels below him lift a grown man
-  // some way, slower and slower (the rule: from about 25, some fifteen levels, the second five hundred adding less than the
+  // some way, slower and slower (the rule: from 30, some fifteen levels, the second five hundred adding less than the
   // first; the bar twenty-five), each of them gives something, and twenty defeats of soldiers take a man of the same level
   // further than the thousand
   async lvNoFarm(pg) {
@@ -80,7 +80,8 @@ export default {
       const LV = A.LV, out = [];
       for (const seed of [9761, 9762, 9763]) {
         A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 });
-        const pc = A.pc(); LV.seed(pc);
+        // (from a grown man's 30, not the seeded level: on D-185's curve a seeded man may stand at the wall of 100 already)
+        const pc = A.pc(); LV.seed(pc); pc.lv.L = 30; pc.lv.f = 0; pc.lv.ct = 0;
         const L0 = pc.lv.L, weak = Math.max(1, L0 - 20);
         const one = LV.xpFor(weak, L0);
         for (let i = 0; i < 500; i++) LV.defeat(pc, weak, 'kill');
@@ -439,8 +440,9 @@ export default {
   // the owner's anchors as the typical outcome of ordinary lives (orders 91-94, D-184; long tier): pooled bot lives, half
   // born peasants and half nobles, played 35 years. A life that never fought (three kills or fewer, at most one duel won)
   // ends among average people (20-50); one that killed thirty or more ends among soldiers (80-180); nobody stands piled at
-  // a wall (99, 199, 299: thresholds, not ceilings); everyone past a hundred by experience has his walls settled (a class
-  // or the boost, or a card waiting). Readings (2026-11-26, the walls 6/10/12/12/15): see the HISTORY entry H-148.
+  // a wall (99, 199, 299: thresholds, not ceilings); everyone past a hundred has his walls settled (a class, the boost or a
+  // card waiting when crossed by experience; worn when he was seeded past it, which may leave none if no class fits).
+  // Readings (2026-11-26, the walls 6/10/12/12/15, on the rescaled curve of D-185): see the HISTORY entry H-148.
   async lvAnchors(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     await pg.evaluate(BOT);
@@ -456,7 +458,7 @@ export default {
     const quiet = lives.filter(l => l.kills <= 3 && l.duels <= 1 && l.st === 'peasant'), fought = lives.filter(l => l.kills >= 30);
     const med = a => { const s = a.map(l => l.L).sort((x, y) => x - y); return s.length ? s[s.length >> 1] : null; };
     const piled = lives.filter(l => [99, 199, 299].includes(l.L));
-    const unsettled = lives.filter(l => l.L >= 100 && !(l.ct === Math.floor(l.L / 100) && (l.cr || l.gx || l.wp)));
+    const unsettled = lives.filter(l => l.L >= 100 && l.ct !== Math.floor(l.L / 100));
     const ok = quiet.length >= 2 && quiet.every(l => l.L >= 20 && l.L <= 50) && (!fought.length || (med(fought) >= 80 && med(fought) <= 180 && fought.every(l => l.L <= 199))) &&
       piled.length <= Math.max(1, lives.length / 6) && !unsettled.length;
     return { ok, detail: `${lives.length} lives: ${lives.map(l => `${l.st} ${l.i}: level ${l.L}, ${l.kills} kills, ${l.duels} duels${l.cr ? ', ' + l.cr : ''}${l.gx ? ', +' + l.gx + ' points' : ''}`).join('; ')} | quiet ${quiet.length} (median ${med(quiet)}), fought ${fought.length} (median ${med(fought)}), at a wall ${piled.length}, unsettled ${unsettled.length}` };
