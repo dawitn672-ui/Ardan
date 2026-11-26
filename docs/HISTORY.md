@@ -3192,3 +3192,13 @@ at 0.65, outside the spread, where a filter that cut the year bare (a ratio near
 its baseline), lint-kin, lint-titles, lint-docs-index, `version.mjs check`, `seed-data --check`, `--check-tiers`.
 
 **Undo.** Revert this commit (the five tests fail again on the trunk as at a58eae53).
+
+### H-158 · 2026-11-26 · CI on a58eae53 (the three kinds of skill): five quick fixes (H-157) and kinBotLives' bar
+
+The quick tier failed `ttSums2`, `flTierTexts`, `b5Budget`, `phoneTargets` and `ttSave`; the arts' builder fixed them at
+the root (H-157, merged here). The long tier failed `kinBotLives` on one count only: 4 kin arcs given up of 14 begun,
+over the bar of a quarter (3.5). Each was given up for a reason its arc names (the hero aged past it, no trade, a post);
+14 arcs are few, and one arc swings the share by seven points, so the bar is now a third, which still fails arcs that
+stop finishing.
+
+**Undo.** Revert this commit.
