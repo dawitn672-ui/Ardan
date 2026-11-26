@@ -749,7 +749,11 @@ A.stat = function (p, s) {
   if (!p || !p.st) return 0;
   // C9 (D-040): a trained skill has trained the body or mind it uses (src/people/999997-bodies, A.statFloor), so a
   // master swordsman is never feeble and a master trader never dull. A floor under the base, before age and wounds.
-  let v = (A.statFloor ? Math.max(p.st[s] || 0, A.statFloor(p, s)) : p.st[s] || 0) * A.ageFactor(p, s);
+  let v = A.statFloor ? Math.max(p.st[s] || 0, A.statFloor(p, s)) : p.st[s] || 0;
+  // D-181: the stat points a level brought (src/people/9999975-level), held to the body's room at this age; age, traits,
+  // wounds and weariness below lower what is read, never what is placed
+  if (p.lv && p.lv.put && A.LV) v = A.LV.withPut(p, s, v);
+  v *= A.ageFactor(p, s);
   for (const t of p.traits) {
     const T = GD.TRAITS[t];
     if (T && T.fx && T.fx[s]) v += T.fx[s];

@@ -110,7 +110,9 @@
     if (x.kind && x.prof && x.level != null) return x;
     if (typeof x === 'object' && x.st) {
       const m = PW.personMight(x), prof = PW.personProf(x);
-      return { kind: 'person', id: x.id, n: A.fullName ? A.fullName(x, false) : 'a person', level: PW.levelOf(m), t: PW.tOf(m), might: m, power: m, mastery: null, prof, int: 'wise', titles: [],
+      // the level is the person's own (src/people/9999975-level: held once he has one, earned by defeats); his might stays
+      // his fighting worth, so the odds read what he can do now
+      return { kind: 'person', id: x.id, n: A.fullName ? A.fullName(x, false) : 'a person', level: A.LV ? A.LV.level(x, m) : PW.levelOf(m), t: PW.tOf(m), might: m, power: m, mastery: null, prof, int: 'wise', titles: [],
         ranged: !!(x.gear && x.gear.ranged), hardy: clamp(((A.stat ? A.stat(x, 'sta') : 50) || 50) / 10, 0, 10) };
     }
     if (typeof x === 'object' && x.sp) {   // a wild individual: its species, its temper, its own name and titles

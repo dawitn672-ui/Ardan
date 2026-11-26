@@ -429,6 +429,8 @@ A.duelConsequences = function (D) {
   A.train(pc, "ins", D.kind === "spar" ? 0.5 : 1);
   A.train(pc, "sta", 0.4);
   const won = D.result === "win" || D.result === "beastfled";
+  // D-181: the person's level rises by defeats (src/people/9999975-level): the winner's experience, read on the ladder
+  if (A.LV && A.LV.duel) A.LV.duel(pc, D);
   if (A.techSteal && !b.beast) for (const l of A.techSteal(D, pc)) out.push(l);
   if (
     (A.styleDuelXp && A.styleDuelXp(pc, D),

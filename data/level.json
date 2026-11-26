@@ -1,0 +1,49 @@
+{
+  "about": "A person's level and its stat points (docs/design/skills-v2.md §12.1-12.2 as the owner's order 88 changed it, D-178, D-181; src/people/9999975-level). The level IS the power ladder's level (data/power.json levelCurve): one scale. A person is seeded at the level the ladder computes from his fighting worth, and from then rises only by defeating people and beasts, read on the same ladder, plus a floor for growing up. Experience is kept as the share of the way to the next level (0 to 1).",
+  "xp": {
+    "about": "Rising from level L to L+1 asks need(L) = e0 x growth^L x might(L) (might from the ladder, so each level asks more than the one before and the gap widens). One defeat of a foe of level F gives might(L) x rho for a stronger foe (rho = might(F) / might(L)), past upTo as upTo x (rho / upTo)^0.5, and might(L) x rho^weakPow for a weaker one; a foe gives nothing at all once you stand ceilAbove levels above it, and never lifts you past that line (no farming). Calibrated (the README): from 24, 20 defeats of soldiers (level 100) reach about 70, 80 reach about 110, and no number of them passes 125 (the owner's soldier, 75-125); from 100, 60 defeats of knights (175) reach about 165; from 225, 60 of a kingdom's best (340) about 295.",
+    "e0": 1,
+    "growth": 1.006,
+    "upTo": 8,
+    "weakPow": 2.5,
+    "ceilAbove": 25,
+    "how": { "kill": 1, "defeat": 0.7, "spar": 0.25 }
+  },
+  "foes": {
+    "about": "Foes with no sheet of their own: a man killed in a battle or on a mission (a regular soldier on the ladder's anchors) and anyone else killed (an average grown person).",
+    "soldier": 100,
+    "person": 25
+  },
+  "floor": {
+    "about": "Growing up: a person stands at least at floor(age) = grown x (age / the race's grown age)^pow, where grown = 24 + (mean potential - 42) / 3, held to 20..30 (the owner's average human 20-30). After the grown age only defeats raise the level.",
+    "base": 24,
+    "potMid": 42,
+    "potPer": 3,
+    "min": 20,
+    "max": 30,
+    "pow": 1.3
+  },
+  "points": {
+    "about": "Each level brings points (a race may set its own with GD.RACES[r].points), and one more at every bonusEvery-th level. A stat's ceiling is the person's potential x capMul (as A.train's); the body's room at an age is the ceiling x (roomChild + (1 - roomChild) x age / grown) below the grown age, the whole ceiling after; old age, wounds and illness lower what is read, not what is placed. A point costs 1 below half the ceiling, 2 to three quarters, 3 above. Placed points never move.",
+    "perLevel": 1,
+    "bonusEvery": 50,
+    "capMul": 1.02,
+    "roomChild": 0.25,
+    "cost": [[0.5, 1], [0.75, 2], [9, 3]],
+    "playerFrom": 12
+  },
+  "words": {
+    "progress": [[0.9, "nearly there"], [0.65, "most of the way"], [0.4, "about half way"], [0.15, "a little of the way"], [0, "only begun"]]
+  },
+  "ways": {
+    "about": "The ways of life a household's or a post's placement leans to: two stats and who lives so. A career key of GD.CAREERS, or a post read from the person's offices, rank and occupation.",
+    "farm": ["str", "sta", "a farmer"], "herd": ["sta", "spd", "a herdsman"], "fish": ["sta", "spd", "a fisherman"], "labor": ["str", "sta", "a labourer"],
+    "servant": ["sta", "ins", "a servant"], "smith": ["str", "sta", "a smith"], "mason": ["str", "sta", "a mason"], "weaver": ["int", "sta", "a weaver"],
+    "bowyer": ["ins", "str", "a bowyer"], "carpenter": ["str", "int", "a carpenter"], "brewer": ["sta", "int", "a brewer"], "merchant": ["int", "ins", "a merchant"],
+    "scribe": ["int", "wil", "a scribe"], "healer": ["int", "wil", "a healer"], "clergy": ["wil", "int", "a priest"], "sailor": ["sta", "spd", "a sailor"],
+    "pirate": ["spd", "str", "a pirate"], "thief": ["spd", "ins", "a thief"], "hunter": ["spd", "ins", "a hunter"], "minstrel": ["spd", "int", "a minstrel"],
+    "miner": ["str", "sta", "a miner"], "courtier": ["int", "wil", "a courtier"], "mercenary": ["str", "ins", "a sellsword"],
+    "soldier": ["str", "sta", "a soldier"], "captain": ["wil", "str", "a captain"], "lord": ["wil", "int", "a lord"], "ruler": ["wil", "int", "a ruler"],
+    "common": ["sta", "str", "common folk"]
+  }
+}
