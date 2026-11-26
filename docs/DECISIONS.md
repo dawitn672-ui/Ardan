@@ -2707,7 +2707,6 @@ coin and skill); creatures may act purely by their specified nature (bloodthirst
 legendary beings mostly very old; the ladder covers every level of existence. Recorded in `docs/design/skills-v2.md` §15
 and the master prompt (9, 17, 18); passed to the power-scale builder.
 
-<<<<<<< HEAD
 ### D-172 · Legends hold the summit, not gods; the Sword Saint; no crown baseline (2026-11-25; order 83)
 No gods as beings (faint myth and faith only); the summit is legends (a King of Dragons, the Primordial Archdemons, a
 legendary human Sword Saint of ages ago, the world's best-known figure). Skills have no range. The harness measures crowns
@@ -2724,7 +2723,6 @@ test, and the later the lock the more is placed twice). **Why:** the owner's ord
 **D-173 addendum (order 85).** Might grows faster with every level (the gap between levels widens); power is level's might
 times titles, skill mastery and quality, and capabilities, so the Sword Saint (650) outranks the Sea Lord (680-700), which a
 test holds. The Dragon Mountains are the dragons' home; there is no demon kingdom.
-=======
 ### D-174 · The skills rebuild, steps 1 to 4: where the design's text and the code disagreed (2026-11-25)
 - **An S1 level lands on the odd level of its step, not the even one** (`docs/design/skills-v2.md` §7 said "at half or
   more, the even level"). An even level in C, B and A reads half way to the next S1 step (C Lv 4 reads 41, where S1's
@@ -2749,7 +2747,6 @@ test holds. The Dragon Mountains are the dragons' home; there is no demon kingdo
 - **The store while S1 owns the levels:** the player's rungs (`pc.ks`, `pc.kc`) are written by the save step and kept in
   step with S1's table once a month; a read never writes (a stale family is read as the sync would write it). The data
   sits under `A.DATA['skills/...']` (the build's naming), assembled as `A.SK2.DATA`, not `A.DATA.skills2`.
->>>>>>> worktree-agent-ae273c4866bddc5a1
 **D-173 addendum (order 86).** The redesign's effort goes into a detailed gazetteer in data (every range, river, coast,
 realm, seat, road and wild with its reason, sizes and travel times), not into renders; plain renders only to check layout.
 
@@ -2760,3 +2757,26 @@ monsters (the ladder, bestiary and legends, the locked map, skills in levels); v
 canon, professions); v5 = the phone release. Written in `docs/VERSIONS.md` and `CLAUDE.md`. **Considered:** keeping v3 as
 `docs/V3_SPEC.md`'s living world (economy, armoury, growth): those now belong to professions (v4) and the skills rebuild
 (v3); the newest instruction wins. **Why:** the owner asked me to own the basis.
+
+### D-NEW-1 · The skills rebuild, step 5 (the switch): where the design and the code met (2026-11-26)
+- **The rungs hold the level; S1's table stays the experience engine under them.** `A.SK2.on = true`: every check reads
+  through the rungs (`A.SK.reads` → `SK2.reads`), the mirror `p.skills[k]` is the rung's value, `pc.ks` is written at
+  the end of every month's pass (and by `SK.set`), and only `A.SK2.label` and its kin print a level. S1's month (the
+  life's factors, insight, breakthroughs, the gates of concepts and the deed) still runs on `pc.sk` in S1's steps: an
+  S1 step and its experience are exactly a rung and its experience (§3.1: each rank's levels sit on S1's values and
+  costs), so porting that arithmetic field by field waits for evolution (step 7), where it changes. **Considered:**
+  making `pc.ks` the only store now (a port of S1's month, view, cards and 150 readers in one step; no gain a player sees).
+- **"The same odds on the day of the switch" is the load, not the life after.** In C, B and A an S1 step is two levels,
+  so a person past half a step's bar now reads the even level (C Lv 4 reads 41 where S1 read 39). A saved game's
+  experience past an odd level's bar is held back on load (`pc.sk[c].hold`, save version 17, `S.sk2v` 2) and lands at
+  the first month's pass: every read on load equals S1's (`sk2Migrate`, 23 saves, one of version 16). Over a life the
+  player's checks read a little higher half the time while in C to A; nobody else's change (`sk5Lives`).
+- **Other people stay on S1's steps.** An NPC's number is read as the odd rung of its S1 step, as S1 read it (an NPC
+  rolled at 41 still reads 39), and the closed form grows in S1 steps, so every NPC read is identical. A level set
+  outright (`SK.set`, an adopted number) reads its step's odd rung too.
+- **The deed keeps S1's proof underneath.** The words "proof" and "prove" leave the page ("And a deed: a fight won
+  against one of that rank"); the engine's `proved`, `PROOF_FROM` and the card key `proof` keep their names (only code
+  reads them; `deed` is already the release's key). The archive note says so.
+- **The fight tiers (Untrained to Legend, `GD.TIERS`) and the style ranks stay** until the power ladder and wave 2 own
+  them (§6.1); `tools/lint-skills.mjs` forbids S1's level words with a Roman step, the seven as a list and their readers.
+- **`C.lvl`'s word form is removed** (two of S1's own cards used `"advanced"`: now 35).

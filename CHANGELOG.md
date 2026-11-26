@@ -5,6 +5,19 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Skills have ranks and levels, not words.** A skill now reads like "Basic Swordsmanship · C · Lv 3": a rank from D
+  up to S, and a level from 1 to 10 within it. Beginner, Intermediate, Advanced, Expert, Master, Grandmaster and Legend
+  are gone from every skill row, the skill sheet, the training plan, the "Work at a skill" picker, the choice that asks
+  for a skill ("at C · Lv 7, you are D · Lv 6"), the treatise's requirement (now "a skill at rank B") and the log.
+- **Each rank's levels are finer.** In ranks C, B and A a level is half of an old step, so your skill shows progress
+  sooner and a check reads it as soon as you are half way up. The odds of every check are the same as before on the day
+  you load: a saved game opens with every skill reading exactly what it read, and the half step you had already earned
+  lands at the end of the first month.
+- **A new rank asks a deed, not a proof.** To rise to rank B and above you still need the concepts and one deed of that
+  rank (a fight won against one of that rank, a work judged by masters, a battle won, a case carried); the skill sheet
+  says "To reach rank B" and what is still wanted.
+- Saved games from earlier versions load and carry on.
+
 ## v2.1.0-alpha.16 (2026-11-25 17:06 ET) · Phase 1: the Emilio fixes, the exploit stopgaps (breakthroughs, the throne plot), outlaws hunted, one time button
 
 - **Escaping the gallows really frees you.** Breaking free at the gallows or bribing the hangman used to leave you
