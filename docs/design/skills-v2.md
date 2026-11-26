@@ -980,6 +980,11 @@ Records.
 
 ### 11.9 Titles: build and tests
 
+**Built (D-183, H-147):** `src/people/9999976-titles`, `data/titles/`, `tools/lint-titles.mjs`. Where the build differs
+from this section: "unique" is a flag beside the rarity, not a rarity (order 82); the legends' titles moved into the same
+data; the deed ledger reads its sources directly, before step 9's census (`A.S.tt` is the titles' own); First of the Age
+is marked `since` (the old masters at rank S when titles began are not its first); `ttRare` waits for a balance run.
+
 Titles are built after step 9 (they need the census and the deed ledger) and before step 10's screens, as three
 commits: (a) `data/titles/`, `A.deedDone` and the ledger, the validator; (b) the checks, earning and losing, NPCs and
 beings; (c) the profile line, chips and card, and the hint cards.

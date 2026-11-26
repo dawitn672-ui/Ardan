@@ -2995,3 +2995,34 @@ pass on the merged build; engine tests 151 of 151; the lints at their baselines.
 - The long tier on e6c4a348 (balance included) was green on seven of eight shards when this was pushed.
 
 **Undo.** Revert this commit.
+
+### H-147 · 2026-11-26 · Titles (skills-v2 §11, D-183)
+
+**What.** A new system, `src/people/9999976-titles` (`A.TT`), with its data in `data/titles/` and a validator
+(`tools/lint-titles.mjs`, run by `tools/check.mjs`). Sixteen titles a person may earn (§11.8's fifteen and the Sword
+Saint), and the great beings' thirty titles moved from `data/legends.json` and `data/power.json` (the sheets name them by
+id; `A.POWER` reads the same objects). The deed ledger (`A.deedDone`, `p.dl`) fed by duels, beasts, wounds, battles, field
+battles, sieges, wars ended by terms, nine cards' choices and the release's "Champion of" line; hidden conditions checked
+on a deed, monthly for the player and yearly for those who matter; the census of unique titles; earning and losing with
+notable cards; hints (`tt_hint`) and a cell where faith is tested (`tt_faith`); effects through the skills adapter under
+its caps (`SK2.addSource`, `SK2.xHeld`, `SK2.statOf`), stats in `A.stat`, social effects in `A.opinion`, reasons in
+`A.WHY.appointGeneral`; the profile's borne title and chips, Records' "Titles", the chips on other people's profiles.
+Save version 19. The owner's orders 79 and 82 ("titles can stack ... requirements that need to be met that can't be
+seen"; "unique" only for the one of a kind; born with a title), 83 and 89 (the Sword Saint a title and a class; the Dragon
+King's and archdemons' titles carry firepower).
+
+**Also.** `statMigrate` (9999975-level) failed on the base too: alpha 18's sample save, made at version 18, holds a level
+earned in play, and the test asked it to be the computed one. It now checks seeding only for saves older than 18.
+
+**Proof.** On a private build: the nine titles tests pass (`ttEarned`, `ttDeterministic` (long tier: 173 s alone),
+`ttUnique`, `ttCaps`, `ttNpc`, `ttSave` (25 saves, versions 13 to 18), `ttPhone`, `ttLegends`, `ttHidden`); the powers
+tests unchanged and passing (`pwLadder`, `pwPowerNotLevel` 0.41 / 0.53, 0.46, 0.47 / 0.77, and the rest); a dump of every
+legend's and master's level, power, profile and titles, every pairwise matchup and 400 species' power identical to the
+base build; `uiSmoke`, `renderRng`, `replayWithRender`, `v2svRoundTrip`, `statMigrate`, `sk2Migrate`, `sk2Caps`,
+`sk6PerkSums`, `lvFromDefeats`, `lvNoFarm`, `statBounds`, `statNpc`, `lvPhone`, `pfNumbers`, `pfFits`, `pfClicks`,
+`pfRecords`, `pfPhone`, `pfPure`, `pfOldSave`, `w1NoMarshalLint` pass; engine tests 151 of 151; lint-stages (146, at its
+baseline), lint-reasons (41, at its baseline), lint-skills, lint-kin, lint-docs-index, lint-titles, lint-events and
+lint-choices (`--feature=titles`: 0 obviously best), `version.mjs check`; coherency `--baseline=quick`: no check rose.
+
+**Undo.** Revert the step's commits; a save made at version 19 would then be refused as newer. The legends' titles
+return inline with `git checkout <base> -- data/legends.json data/power.json`.
