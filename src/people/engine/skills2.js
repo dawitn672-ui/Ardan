@@ -118,6 +118,26 @@ export function fromS1(s1lv, xp) {
   if (held > 0) out.held = held;
   return out;
 }
+// The switch (step 5, D-179): an S1 entry as the rung that holds its level, the even level counted. In C, B and A an S1
+// step is two levels; experience past the odd level's bar is the even level (fromS1 keeps it as `held`, for the shadow
+// and the save step, so nothing moved on the day of the step). D and S are one for one.
+export function landed(s1lv, xp) {
+  const r = fromS1(s1lv, xp); if (!r) return null;
+  if (r.held > 0 && (r.rank === 'C' || r.rank === 'B' || r.rank === 'A') && r.lv % 2 === 1) {
+    const c = cost(r.rank, r.lv + 1);
+    return { rank: r.rank, lv: r.lv + 1, xp: Math.floor(Math.min(r.held, Math.max(0, c - 0.01)) * 100) / 100 };
+  }
+  return { rank: r.rank, lv: r.lv, xp: r.xp };
+}
+// how a level is printed (§6.1: levels only, never a word): "C · Lv 3"; nothing held is "untried"
+export const label = (rank, lv) => (rank && lv >= 1 ? `${rank} · Lv ${lv}` : 'untried');
+// an S1 entry's level, printed as its rung
+export const s1Label = (s1lv, xp) => { const r = landed(s1lv, xp || 0); return r ? label(r.rank, r.lv) : 'untried'; };
+// the rung at which S1's gate w opens (1: D Lv 6, 2: rank C, 3: rank B, 4: rank A, 5: rank S, 6: S Lv 6), printed
+export function gateLabel(w) {
+  const r = rungOfS1(w * STEPS + 1); if (!r) return 'the first level';
+  return r.lv === 1 ? `rank ${r.rank}` : label(r.rank, r.lv);
+}
 
 // ---- 3. the data, indexed -------------------------------------------------------------------------------------------
 // D = { vocab, families: { families: [...] } | [...], skills: [...], recipes: [...] }

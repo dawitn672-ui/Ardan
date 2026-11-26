@@ -2833,3 +2833,55 @@ items x art (skills of rank D-S, level at most 10); the capability profile gains
 Lanchester. Sarnavoth 800 against the three Primordial Archdemons (770-780) together 0.42; the Sword Saint (700) against
 each 0.53, 0.47, 0.48; against the Lord of the Sea (690) 0.96. Every legend and race master has skills, items and titles,
 shown in the codex as far as the player knows them. uiSmoke's click timeout did not reproduce (1 of 13 runs, random lives).
+### H-138 · 2026-11-26 · The skills rebuild, step 5: the switch (the rungs hold the level; levels, never words)
+`docs/design/skills-v2.md` §10 step 5 with §5, §6 and §15; the owner's orders 78 and 83 ("Master" and "Legend" do not
+exist as measures; levels only). Decisions: D-179.
+- **Engine** (`src/people/engine/skills2.js`): `landed` (an S1 step and its experience as the rung that holds it: in C, B
+  and A past the odd level's bar, the even level), `label` ("C · Lv 3"), `s1Label`, `gateLabel`; `skills.js` prints a step
+  as its rung (`levelName(lv, xp)`, `edgeName`) and its `WORDS`/`ROMAN` are gone (`BANDS` = 7); `growth.js` keeps the band
+  edges without names. Rebundled; `tests/v2/skills2.test.js` gains the switch's test.
+- **The switch** (`src/people/37-skills2`): `A.SK2.on = true`. `A.SK.reads` reads through `SK2.reads` (S1's read kept as
+  `SK.s1reads` for the proof); the player's mirror is the rung's value (`SK.valueOf`); `pc.ks` is written at the end of
+  every month's pass and year's pass (`SK2.sync`) and by `SK.set` (`SK2.syncFam`); a level set outright or adopted reads
+  its step's odd rung. Save version 17: the step `skills2` brings a version 15 or 16 save to `S.sk2v` 2, holding back the
+  experience past an odd level's bar (`pc.sk[c].hold`) so every read on load is S1's; the first month lands it
+  (`SK2.land`). Other people stay on S1's steps (an NPC's number reads its step's odd rung, as S1 read it).
+- **What the player reads** (§6.1): `SK2.label` and kin (`labelS1`, `labelValue`, `labelAtLeast`, `nextLabel`,
+  `gateLabel`, `rungName`) on the skill rows and the rail, the skill sheet ("Basic Swordsmanship · C-rank · Lv 3", "The way
+  to the next level", "To reach rank B" with its concepts, "And a deed: ..."), the training plan, the "Work at a skill"
+  picker and its message, the choice chip (`9998-choice-stakes`: "at C · Lv 7 (you are D · Lv 6)"), the treatise's
+  requirement ("A skill at rank B"), the v2 sheet's tier (`VS.tierOf`), the paths' "where you stand" and trial note, the
+  season's line ("rose a level", "reached rank C", counted on the rungs), the stall and crossing records ("holds at C · Lv
+  10", "reaches rank B"), the glossary's "Rank and level", and `sk_deed_offered`'s `{word}` ("B-rank"). `C.lvl`'s word form
+  removed (two cards of 36-skills now pass 35).
+- **Archived** (`archive/s1-skill-words/`, with `NOTE.md`): S1's seven words, Roman steps, `SK.levelName`, `SK.wordName`,
+  `SK.levelOfWord`, `SK.minValue`, the engine's `WORDS`/`ROMAN`/`levelName`, `C.lvl`'s word form, the word views and the
+  proof's words. **The last commit that had them: `d99799c2`.** `tools/lint-skills.mjs` now fails any S1 level-word reader,
+  any word with a Roman step in code or data, and the seven as a list.
+- **Tests ported:** S1's `s1Reasons` (crossings read "reaches rank B" / "D · Lv 6"), `s1TwoLives`, `s1Migrate` labels;
+  `sk2Shadow` became `sk5Lives` (long tier); `sk2Migrate` (version 17, S1's reads with the rungs off, the held half steps
+  landed); `v2sNumbers`, `v2sNoBareNumbers`, `s1NoProficiency` (a level, "C · Lv 3", is the one number a player reads;
+  S1's words would fail), `v2svRoundTrip` (version 17), `ttCoverage`'s skill-word samples, `paTrial`/`paSpec`
+  (`SK.firstOf`), `9998-choice-stakes`' chip pattern. New sample save `tests/saves/skills-v16-before-the-switch.ardan` (made by the
+  build of `d99799c2`).
+- **The odds on the day of the switch:** `sk2Migrate`, 23 saves (one of version 16), 990,128 reads: every one the same on
+  load as S1 read it; 22 families held back and landed on their even level. `sk5Lives` (merged build), three bot lives of six
+  years, 223 months, 9,156,860 reads: 0 differ from S1's read of the same state beyond the player's even levels (58 of
+  8,474 of the player's reads stand on an even level, half way up the same S1 step); everyone else identical; rungs never stale.
+  `s1Checks`: 200 sampled checks a save, none higher. `identity-probe.mjs` (base `d99799c2` against the switch): 5,030
+  events, 0 audience classes differ; of the nine fixed-seed lives of 10 years, five keep the random stream's position and
+  the journal's length (seed 7 artisan, 11 peasant, 11 artisan, 2024 peasant, 2024 artisan: they differ only in the
+  rungs' fields and the mirror), four move (the three nobles and seed 7's peasant: from the month a check first read an even level).
+- Results on the merged build: engine tests 147 of 147; lint-skills ok (329 `A.trainSkill` calls, baseline 329),
+  lint-stages 146 registrations (baseline 146, no new stage), lint-reasons 41 (baseline 41), docs index ok, version.mjs
+  check ok; `lint-events` and `lint-choices` on 36-skills: 0 errors, 0 obviously best. Browser tests, 31 of 31: paOldSaves,
+  sk2Migrate, s1Migrate, s1Mirror, sk5Lives, uiSmoke, v2sNumbers, clickNoHover, v2sNoBareNumbers, s1NoProficiency,
+  s1Checks, s1Reasons, s1TwoLives, s1Phone, s1Ledger, v2svRoundTrip, paTrial, paSpec, stChips, stInLives, ttCoverage,
+  pfTreatiseAsksMastery and the nine pw* tests (before the merge also s1Cost, s1SpreadPage, paData, paView, stWhiteRetry,
+  stLockedWhy, ttCov2Hold, v2sSheet, v2sPlaytest1). Not run to the end here: s1NotLinear and the quick tier's shards (the
+  shared machine's browsers were killed under them twice); CI's run is the check.
+- **Merged `origin/main`** (the power scale and bestiary, `8f28cb67`) before the last tests. The power module reads skills
+  only as numbers (`A.skill` through `A.fightWorth`, survival and persuasion in encounters) and its legends' mastery is its
+  own scale: no S1 word to move. Its hunt's one new `A.trainSkill` call broke the skills lint's baseline (330 > 329):
+  now `A.gainXp(pc, "survival", 3 * A.SK.SHIM)`, the same experience (`07-duels.js`).
+- Undo: revert the step's commits; a save of version 17 would then be refused as newer. The archive holds the words.

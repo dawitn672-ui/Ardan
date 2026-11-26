@@ -1,4 +1,10 @@
-// Skills rebuild, step 3 (docs/design/skills-v2.md §5, §10): the adapter, behind A.SK2.on = false, computing beside S1.
+// Skills rebuild, step 3 (docs/design/skills-v2.md §5, §10): the adapter; step 5, the switch (A.SK2.on = true, D-179).
+//
+// Since the switch the rungs hold the level: what a check reads (A.skill -> A.SK.reads -> SK2.reads), the mirror
+// p.skills[k], and how a level is printed (SK2.label, "Basic Swordsmanship · C · Lv 3": never a word). S1's table
+// (pc.sk) stays the experience engine's working form under them: A.gainXp queues the month's efforts, the month's pass
+// runs S1's arithmetic (factors, insight, breakthroughs, the gates of concepts and deeds) and the experience lands in the
+// rungs (SK2.sync at the end of the pass): in C, B and A a step is two levels, so past half its bar the even level holds.
 //
 // - A.SK2.DATA is data/skills/ as one object (vocab, families, every rung and skill, recipes); the engine is A.V2.skills2
 //   (src/people/engine/skills2.js), indexed on first use.
@@ -8,13 +14,13 @@
 //   Anyone else's rung is a function of his number (rank by band, level by value, §7), held nowhere.
 // - SK2.reads(p, k) is what a check reads for key k through the rungs (§5.1): the family's best rung, a focus's shift,
 //   rust; SK2.read(p, k) adds what A.skill adds after (the body's hold, wounds, the clamp). While SK2.on is false nothing
-//   reads them but the tests (sk2Shadow: they equal A.skill for every person, key and month). The switch is step 5.
+//   read them but the tests (sk2Shadow); since the switch every check reads them.
 // - Nothing here draws from A.rand. SK2.reads is pure: a family whose stored rungs are behind S1's table (a card set a
 //   level since the month's sync) is read from the table as the sync would write it, without storing.
 (function () {
   const SK = A.SK; if (!SK || !SK.DATA) return;
   const SK2 = A.SK2 = A.SK2 || {};
-  SK2.on = false;
+  SK2.on = true;   // the switch (step 5): the rungs hold the level
 
   // ---- the data, one object ---------------------------------------------------------------------------------------------
   const DD = A.DATA || {};
@@ -31,7 +37,7 @@
   SK2.fromS1 = function (c, s, born) {
     const Eng = SK2.E(), ix = IX, out = {};
     if (!s || !(s.lv > 0)) return out;
-    const r = Eng.fromS1(s.lv, s.xp);
+    const r = SK2.on ? Eng.landed(s.lv, s.xp) : Eng.fromS1(s.lv, s.xp);
     for (const rank of Eng.HUMAN) {
       const id = Eng.rungOf(ix, c, rank); if (!id) continue;
       if (Eng.rankIx(rank) < Eng.rankIx(r.rank)) { out[id] = { lv: 10 }; continue; }
@@ -61,7 +67,9 @@
   SK2.fresh = function (p, c) {
     const s = p.sk && p.sk[c], top = SK2.topOf(p.ks, c);
     if (!s || !(s.lv > 0)) return !top;
-    return !!top && SK2.E().s1OfRung(top.rank, top.e.lv) === s.lv && (top.e.rust || 0) === (s.rust > 0 ? s.rust : 0) && sameList(top.e.focus, s.sp);
+    if (!top) return false;
+    const lvOk = SK2.on ? (r => !!r && r.rank === top.rank && r.lv === top.e.lv)(SK2.rungNow(s)) : SK2.E().s1OfRung(top.rank, top.e.lv) === s.lv;
+    return lvOk && (top.e.rust || 0) === (s.rust > 0 ? s.rust : 0) && sameList(top.e.focus, s.sp);
   };
   // the top rung a family reads for someone with a table: stored if fresh, else as the sync would write it
   function tableTop(p, c) {
@@ -144,5 +152,83 @@
   };
   // the families whose stored rungs disagree with S1's table (the coherency of the shadow)
   SK2.stale = pc => (pc && pc.sk ? SK.IDS.filter(c => !SK2.fresh(pc, c)) : []);
+
+  // ---- the switch (step 5) ---------------------------------------------------------------------------------------------
+  // the rung an S1 entry stands on now (its step and the experience on the step's bar; pure)
+  SK2.rungNow = s => (s && s.lv > 0 ? SK2.E().landed(s.lv, s.xp) : null);
+  // the mirror's number for an S1 entry: the value of the rung that holds it
+  SK2.valueOfEntry = s => { const r = SK2.rungNow(s); return r ? SK2.E().value(r.rank, r.lv) : 0; };
+  // the experience an S1 step holds before its even level (a level set outright reads the odd rung)
+  SK2.oddBar = s1lv => { const r = SK2.E().fromS1(s1lv, 1e9); return r ? r.xp : 0; };
+  // a number on the rungs' ladder (the 50 levels of D to S)
+  SK2.isRungValue = v => { const r = SK2.E().rungOfValue(+v || 0); return !!r && Math.abs(SK2.E().value(r.rank, r.lv) - v) <= 1e-9; };
+  // one family's rungs written again from the table (after SK.set): the rungs hold the level at once
+  SK2.syncFam = function (pc, c) {
+    if (!pc || !(pc.sk && typeof pc.sk === 'object') || !pc.ks || SK2.fresh(pc, c)) return;
+    const Eng = SK2.E();
+    for (const rank of Eng.HUMAN) { const id = Eng.rungOf(IX, c, rank); if (id) delete pc.ks[id]; }
+    Object.assign(pc.ks, SK2.fromS1(c, pc.sk[c]));
+  };
+  // the save's day of the switch (SK2.migrate): experience past an odd level's bar is held back (s.hold), so every check
+  // reads on load what it read before; the month's pass lands it (SK2.land), and the even level holds from then
+  SK2.holdBack = function (pc) {
+    let n = 0;
+    if (!pc || !(pc.sk && typeof pc.sk === 'object')) return 0;
+    for (const c of SK.IDS) {
+      const s = pc.sk[c]; if (!s || !(s.lv > 0)) continue;
+      const r = SK2.E().fromS1(s.lv, s.xp);
+      if (r && r.held > 0 && (r.rank === 'C' || r.rank === 'B' || r.rank === 'A')) { s.hold = (s.hold || 0) + (s.xp - r.xp); s.xp = r.xp; n++; }
+      // the mirror reads the odd rung again (an old save's numbers became this table's steps under the rungs, 36's build)
+      if (r && s.hold > 0 && pc.skills && pc.skills[c] === SK2.E().value(r.rank, r.lv + 1)) SK.mirror(pc, c);
+    }
+    return n;
+  };
+  SK2.land = function (pc) {
+    if (!pc || !(pc.sk && typeof pc.sk === 'object')) return 0;
+    let n = 0;
+    for (const c in pc.sk) { const s = pc.sk[c]; if (s && s.hold > 0) { s.xp += s.hold; n++; } if (s && s.hold != null) delete s.hold; }
+    return n;
+  };
+  // ---- the level, printed (§6.1: levels only; SK2.label is the only way a skill's level reaches the page) -------------
+  // the rung a person holds in key k's family (no focus, no rust): the player's from his rungs, anyone's from his number
+  SK2.rungFor = function (p, k) {
+    const c = famOf(k); if (!c || !p) return null;
+    if (p.sk && typeof p.sk === 'object' && p.sk[c]) { const t = tableTop(p, c); return t ? { rank: t.rank, lv: t.e.lv, c } : null; }
+    const sk = p.skills || {};
+    let r = rungOfNum(sk[c] || 0);
+    if (c !== k && sk[k]) { const r2 = rungOfNum(sk[k]); if (r2 && (!r || SK2.E().value(r2.rank, r2.lv) > SK2.E().value(r.rank, r.lv))) r = r2; }
+    return r ? { rank: r.rank, lv: r.lv, c } : null;
+  };
+  // a rung's own name ("Measured Blade"): family c's skill of that rank
+  SK2.rungName = function (c, rank) { const id = SK2.E().rungOf(IX, famOf(c) || c, rank), s = id && IX.BY[id]; return s ? s.name : SK.name(c); };
+  // "C · Lv 3"; with { name: true } "Basic Swordsmanship · C · Lv 3"; rusty: "Rusty · C · Lv 3"
+  SK2.label = function (p, k, o) {
+    o = o || {};
+    const r = SK2.rungFor(p, k); if (!r) return 'untried';
+    let t = SK2.E().label(r.rank, r.lv);
+    if (o.name) t = SK2.rungName(r.c, r.rank) + ' · ' + t;
+    const s = p.sk && p.sk[r.c];
+    if (!o.bare && s && s.rust > 0) t = 'Rusty · ' + t;
+    return t;
+  };
+  // an S1 step (and the experience on its bar), a number a check reads, a rung: printed as a level
+  SK2.labelS1 = (lv, xp) => SK2.E().s1Label(lv, xp || 0);
+  SK2.labelValue = v => { const r = SK2.E().rungOfValue(+v || 0); return r ? SK2.E().label(r.rank, r.lv) : 'untried'; };
+  SK2.labelRung = (rank, lv) => SK2.E().label(rank, lv);
+  // the lowest level whose read is at or above v (what a card asks: "at C · Lv 7")
+  SK2.labelAtLeast = function (v) {
+    const Eng = SK2.E();
+    for (const r of Eng.HUMAN) for (let lv = 1; lv <= Eng.MAX_LV; lv++) if (Eng.value(r, lv) >= v - 1e-9) return Eng.label(r, lv);
+    return Eng.label('S', Eng.MAX_LV);
+  };
+  // the level after a person's own in a family ("C · Lv 4"; at the top of a rank, the next rank's first)
+  SK2.nextLabel = function (p, k) {
+    const r = SK2.rungFor(p, k); if (!r) return SK2.E().label('D', 1);
+    if (r.lv < SK2.E().MAX_LV) return SK2.E().label(r.rank, r.lv + 1);
+    const nr = SK2.E().nextRank(r.rank);
+    return nr && SK2.E().HUMAN.includes(nr) ? 'rank ' + nr : '';
+  };
+  // S1's gate w printed as the rung it opens ("rank B", "D · Lv 6")
+  SK2.gateLabel = w => SK2.E().gateLabel(w);
   A.onMonth.push(pc => { try { if (pc && pc.alive !== false) SK2.sync(pc); } catch (e) { console.error('skills2: month', e); } });
 })();

@@ -4,10 +4,13 @@
 (`A.V2.skills`, a port of `docs/design/skills/model.mjs`), `src/people/engine/growth.js` · **Data:** `data/skills.json`
 (`A.DATA.skills`)
 
-The proficiencies (38 numbers from 0 to 100 that grew by a daily drip) are retired. A skill now has a **level** (seven
-words of five steps, Beginner I to Legend V) and **experience** toward the next step. A new word is not bought with
+The proficiencies (38 numbers from 0 to 100 that grew by a daily drip) are retired. A skill now has a **level** and
+**experience** toward the next. Since the skills rebuild's switch (`docs/design/skills-v2.md` §10 step 5) the level is
+held and printed by the rungs of `src/people/37-skills2` ("Basic Swordsmanship · C · Lv 3"); this table is the
+experience engine's working form under them, in S1's seven bands of five steps (their old words, Beginner I to Legend V,
+are in `archive/s1-skill-words/`). A new rank (a band's edge) is not bought with
 experience: its named **concepts** must be grasped (a chance each month of real work, set per person by a hash, some at
-once, some never) and, from Expert up, the word must be **proved**. **Breakthroughs** come at named moments.
+once, some never) and, from rank B up, a **deed** done (the engine's `proved`). **Breakthroughs** come at named moments.
 
 ## Files
 

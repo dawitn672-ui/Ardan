@@ -168,3 +168,27 @@ test('the index: every family has its ladder, the ten legacy keys read their fam
   assert.equal(Object.keys(IX.LEG).length, 10);
   assert.equal(E.rungOf(IX, 'sword', 'B'), 'measured_blade');
 });
+
+test('the switch (step 5): an S1 entry lands on the rung that holds it, the even level counted, and prints as a level', () => {
+  for (let lv = 1; lv <= 35; lv++) {
+    const c1 = S1.cost(lv);
+    // nothing past the odd level's bar: the odd rung, reading S1's value (the day of the switch)
+    const a = E.landed(lv, 0); assert.equal(E.value(a.rank, a.lv), S1.VALUES[lv], `S1 ${lv} at the start of its bar`);
+    if (!isFinite(c1)) continue;
+    const b = E.landed(lv, c1 * 0.75), r = E.rungOfS1(lv);
+    if (r.rank === 'C' || r.rank === 'B' || r.rank === 'A') {
+      // three quarters of an S1 step's bar is past the odd level's (the first half is cheaper: the curve rises)
+      assert.equal(b.lv, r.lv + 1, `S1 ${lv}: the even level`); assert.ok(b.xp >= 0 && b.xp < E.cost(b.rank, b.lv), `S1 ${lv}: xp on the even bar`);
+      assert.ok(E.value(b.rank, b.lv) > S1.VALUES[lv] && E.value(b.rank, b.lv) < S1.VALUES[lv + 1]);
+      // the two levels' prices are the S1 step's, give or take the rounding of each
+      assert.ok(Math.abs(E.cost(r.rank, r.lv) + E.cost(r.rank, r.lv + 1) - c1) <= 2, `S1 ${lv}: the price kept`);
+    } else assert.equal(b.lv, r.lv, `S1 ${lv}: D and S one for one`);
+    assert.equal(E.s1OfRung(b.rank, b.lv), lv, `S1 ${lv}: the rung stands in its step`);
+  }
+  assert.equal(E.label('C', 3), 'C · Lv 3'); assert.equal(E.label(null, 0), 'untried');
+  assert.equal(E.s1Label(12, 0), 'C · Lv 3'); assert.equal(E.s1Label(0, 0), 'untried');
+  assert.deepEqual([1, 2, 3, 4, 5, 6].map(E.gateLabel), ['D · Lv 6', 'rank C', 'rank B', 'rank A', 'rank S', 'S · Lv 6']);
+  // no word of S1's in what the engines print
+  const W = /\b(Beginner|Intermediate|Advanced|Expert|Master|Grandmaster|Legend)\b|\b[IV]+$/;
+  for (let lv = 0; lv <= 35; lv++) assert.ok(!W.test(S1.levelName(lv)), S1.levelName(lv));
+});

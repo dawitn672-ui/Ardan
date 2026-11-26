@@ -3,9 +3,9 @@
 // an effort, the teacher, the learner's age by kind, the month's sessions, and disuse. Plain module: no DOM, no A, no
 // dice. src/people/engine/skills.js imports it; tests/v2/skills.test.js runs both.
 
-// the eight words on the 0-100 scale checks read (growth.md §2.2)
-export const WORDS = [[1, 'Beginner'], [15, 'Intermediate'], [35, 'Advanced'], [55, 'Expert'], [72, 'Master'], [88, 'Grandmaster'], [96, 'Legend']];
-export const wordIndex = L => { let i = -1; WORDS.forEach(([t], j) => { if (L >= t) i = j; }); return i; };
+// the seven bands' edges on the scale (S1's; their names left everything a player reads at the skills rebuild's switch)
+export const BAND_EDGES = [1, 15, 35, 55, 72, 88, 96];
+export const wordIndex = L => { let i = -1; BAND_EDGES.forEach((t, j) => { if (L >= t) i = j; }); return i; };
 
 // 1. the curve of practice: one unit of effort at level L is worth R(L) = 1.8 e^(-L/21.6) points
 export const CURVE = { A: 1.8, S: 21.6 };

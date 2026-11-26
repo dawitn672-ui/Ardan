@@ -218,7 +218,7 @@ export default {
     const fails = [];
     if (!L.some(t => /Hire the whole boat.*Needs 400 suns \(you have 12 suns\)/.test(t))) fails.push('coin');
     // S1b (D-072): a skill wanted is a level in words
-    if (!L.some(t => /Read the sign.*Needs reading and writing, or Stewardship and supply at Expert III \(you are (untried|[A-Z][a-z]+ [IV]+)\)/.test(t))) fails.push('letters or a skill');
+    if (!L.some(t => /Read the sign.*Needs reading and writing, or Stewardship and supply at [DCBAS] · Lv \d+ \(you are (untried|[DCBAS] · Lv \d+)\)/.test(t))) fails.push('letters or a skill');
     if (L.some(t => /secret way/.test(t)) || r.R0.rows.some(x => /secret way/.test(x.label))) fails.push('a story gate showed');
     if (r.R1.locked.length || !r.R1.rows.some(x => x.label === 'Hire the whole boat') || !r.R1.rows.some(x => x.label === 'Read the sign')) fails.push('not open once you have it');
     if (r.read.includes(false)) fails.push('reader missed a threshold ' + r.read);

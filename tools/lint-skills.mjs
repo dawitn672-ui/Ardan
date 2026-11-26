@@ -46,6 +46,20 @@ for (const [re, what] of [[/\bGD\.profTier\b/g, 'GD.profTier'], [/\bGD\.PROF_TIE
   if (c.n) errors.push(`${what}: ${c.n} uses (${Object.keys(c.where).slice(0, 4).join(', ')})`);
 }
 
+// 2b. the skills rebuild's switch (docs/design/skills-v2.md §6.1; the owner's orders 78 and 83): a level is printed only
+// by A.SK2.label and its kin ("C · Lv 3"). S1's level-word readers are gone (archive/s1-skill-words/), and no string in
+// code or data prints one of the seven words with a Roman step ("Expert II") or lists the seven words; a skill's NAME
+// may still hold "Master" (data/skills/vocab.json keeps the list for the validator's own name check).
+{
+  const c = count(/\bSK\.(levelName|wordName|levelOfWord|minValue|WORDS)\b|\bSK\(\)\.WORDS\b|\bROMAN_WORD\b/g, codeFiles, /^src\/ui\/94-woodblock-skies\//);
+  if (c.n) errors.push(`S1's level words read: ${c.n} uses (${Object.keys(c.where).slice(0, 4).join(', ')})`);
+  const STEPW = /\b(Beginner|Intermediate|Advanced|Expert|Master|Grandmaster|Legend) (I|II|III|IV|V)\b/, LIST = /['"]Beginner['"]\s*,\s*['"]Intermediate['"]/;
+  for (const f of codeFiles) uncomment(fs.readFileSync(f, 'utf8')).split('\n').forEach((l, i) => { if (STEPW.test(l) || LIST.test(l)) errors.push(`${rel(f)}:${i + 1}: an S1 level word in code a player can read`); });
+  for (const f of walk(path.join(root, 'data')).filter(f => f.endsWith('.json') && !/skills\/vocab\.json$/.test(f))) {
+    const t = fs.readFileSync(f, 'utf8'); if (STEPW.test(t) || LIST.test(t)) errors.push(`${rel(f)}: an S1 level word in data`);
+  }
+}
+
 // 3. older code, counted against the baseline
 const OWN = /^(src\/people\/36-skills\/|src\/core\/release\/core\/03-engine-base\.js$)/;
 const measured = {

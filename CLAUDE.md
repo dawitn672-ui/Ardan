@@ -232,7 +232,7 @@ avoids it). Only a history rewrite would shrink it; that is the owner's decision
   merges the work into the trunk, `main` (kept level with `v2-integration` until the owner deletes it), and pushes only
   the trunk and `release/<version>` branches. The repo keeps only what reference needs: no plans, reports or scratch.
 - Take decision and history numbers (`D-`, `H-`) only from the range your brief reserves; with none given, write
-  `D-NEW-1`, `H-NEW` and the integrator numbers them at the merge (parallel branches clashed on D-142, H-083, H-085).
+  `D-179`, `H-138` and the integrator numbers them at the merge (parallel branches clashed on D-142, H-083, H-085).
 - Build to `--out=` a private scratch path such as `/tmp/ardan/<name>/`, never to `index.html`.
 - Unpack only to a private `--unpack=` folder. The shared `.build/` is the fix layer, for reading.
 - Don't edit another feature, `src/core/release/`, `tools/`, `tests/`, `tools/bench/` or `vendor/` unless that is your
@@ -313,13 +313,16 @@ Using these helpers matters, because `A.CX_RX` classifies events by matching the
 
 - `fx` may be a function `(p, ctx) => "extra result text"`.
 - `skill: { persuasion: 2 }` is **experience** (S1, D-072, D-077): n × `A.SK.SHIM` (0.5) of a month's effort, a stretch when
-  the choice had a check or stakes, else practice (so 2 is about eight experience: half a Beginner's step, a fiftieth of a
-  Master's). It never buys a word: a word also asks its concepts and, from Expert, a proof.
-- `proof: "sword"` (or `"ctx"` for `ctx.sk`) is a proving moment for the next word; `grasp: { k, sure }` a breakthrough's
+  the choice had a check or stakes, else practice (so 2 is about eight experience: half of D Lv 1's bar, a fiftieth of an
+  A-rank level's). It never buys a rank: a new rank also asks its concepts and, from rank B, a deed.
+- **A level is printed only by `A.SK2.label`** and its kin (`labelValue`, `labelAtLeast`, `nextLabel`): "Basic
+  Swordsmanship · C · Lv 3". The rungs (`src/people/37-skills2`) hold the level since the skills rebuild's switch; S1's
+  seven words and Roman steps are gone from everything a player reads (orders 78 and 83; `tools/lint-skills.mjs`).
+- `proof: "sword"` (or `"ctx"` for `ctx.sk`) is a deed for the next rank (the key's name is S1's); `grasp: { k, sure }` a breakthrough's
   moment (the engine's chance, or sure); `talent: { sword: "B" }` raises a talent letter (the old `apt` is read as a
   letter); `specialism: { sword: "the-knife" }` takes one. `deed` stays the release's record of a deed.
-- Skills: `C.lvl(p, k, min)` (min a number, as a check reads it, or a word: `"expert"`; k `"any"` is the best skill),
-  `C.talent(p, k, letter)`, `C.ready(p, k?)` (at an edge, wanting a proof), `C.stuck(p, k?)` (at an edge, behind a
+- Skills: `C.lvl(p, k, min)` (min a number, as a check reads it; k `"any"` is the best skill),
+  `C.talent(p, k, letter)`, `C.ready(p, k?)` (at an edge, wanting a deed), `C.stuck(p, k?)` (at an edge, behind a
   concept). `C.prof` and `C.apt` are gone. Experience moves only through `A.gainXp(p, k, effort, cause)` (`A.trainSkill`
   is a shim for older code); a level only through `A.SK.set`. Never write `p.skills[k]`: it is the level's mirror.
 - `flag: "x"` sets `p.flags.x = year`.
@@ -328,7 +331,7 @@ Using these helpers matters, because `A.CX_RX` classifies events by matching the
 - `need: { rest, company, purpose, comfort }` meets the four needs of 35-moods.
 - A feature that adds an effect key declares it in its core code: `(A.FX_EXTRA = A.FX_EXTRA || []).push('key')`. The linter reads that declaration.
 
-**Checks.** `check: { s, s2, d }` takes a skill or stat (`GD.SKILLS` keys: the 28 skills and the 10 legacy keys, which read their skill with that specialism; or str spd ins sta int wil). `d` is a level's value: even odds for someone whose skill reads `d` (45 is Advanced III, 55 Expert I), and each point is worth 1.6% of odds. A check trains its skill as a stretch against `d`, and one at the next word's value or above, succeeded, proves a person standing at that edge.
+**Checks.** `check: { s, s2, d }` takes a skill or stat (`GD.SKILLS` keys: the 28 skills and the 10 legacy keys, which read their skill with that specialism; or str spd ins sta int wil). `d` is a level's value: even odds for someone whose skill reads `d` (45 is C Lv 6, 55 is B Lv 1), and each point is worth 1.6% of odds. A check trains its skill as a stretch against `d`, and one at the next rank's value or above, succeeded, is the deed for a person standing at that edge.
 
 **Memory.**
 
