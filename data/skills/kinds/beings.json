@@ -1,0 +1,1283 @@
+{
+  "about": "The first library of the three kinds (order 92, D-186): what monsters and legends are born with. Mana-based arts belong only to beings with mana (the bestiary's magic); a person holds none until magic (docs/MASTER_PROMPT.md §17).",
+  "skills": [
+    {
+      "id": "cornered_fury",
+      "name": "Cornered Fury",
+      "rank": "D",
+      "rarity": "common",
+      "kind": "passive",
+      "art": true,
+      "category": "monster.beast",
+      "family": null,
+      "reads": [],
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "outnumbered",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "atk",
+                  "v": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "outnumbered",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "atk",
+                  "v": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "outnumbered",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "atk",
+                  "v": 10
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "birth",
+          "needs": {
+            "being": {
+              "fam": [
+                "bears",
+                "cats",
+                "hooved",
+                "hounds",
+                "ogres",
+                "giants"
+              ]
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "none",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": false,
+      "census": "count",
+      "spec": {
+        "cooldown": null,
+        "cost": [],
+        "effect": {
+          "amount": 1,
+          "unit": "points"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "being": {
+              "fam": [
+                "bears",
+                "cats",
+                "hooved",
+                "hounds",
+                "ogres",
+                "giants"
+              ]
+            }
+          }
+        ]
+      },
+      "text": "Ringed by spears and dogs, a beast stops looking for a way out and starts looking for the nearest throat."
+    },
+    {
+      "id": "venom_bite",
+      "name": "Venom Bite",
+      "rank": "C",
+      "rarity": "common",
+      "kind": "active",
+      "art": true,
+      "category": "monster.beast",
+      "family": null,
+      "reads": [],
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Venom Bite",
+              "base": "strike",
+              "do": [
+                {
+                  "type": "status",
+                  "of": "bleed",
+                  "v": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Venom Bite",
+              "base": "strike",
+              "do": [
+                {
+                  "type": "status",
+                  "of": "bleed",
+                  "v": 4
+                },
+                {
+                  "type": "strike",
+                  "share": 0.1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Venom Bite",
+              "base": "strike",
+              "do": [
+                {
+                  "type": "status",
+                  "of": "bleed",
+                  "v": 8
+                },
+                {
+                  "type": "strike",
+                  "share": 0.2
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "birth",
+          "needs": {
+            "being": {
+              "fam": [
+                "serpents",
+                "crawlers",
+                "vermin"
+              ]
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "none",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 4,
+          "per": "round"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 6
+          }
+        ],
+        "effect": {
+          "amount": 1,
+          "unit": "points"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "being": {
+              "fam": [
+                "serpents",
+                "crawlers",
+                "vermin"
+              ]
+            }
+          }
+        ]
+      },
+      "text": "A small bite, and then the burning starts and spreads, and keeps spreading after the creature has let go."
+    },
+    {
+      "id": "crushing_coil",
+      "name": "Crushing Coil",
+      "rank": "C",
+      "rarity": "common",
+      "kind": "active",
+      "art": true,
+      "category": "monster.beast",
+      "family": null,
+      "reads": [],
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Crushing Coil",
+              "base": "grapple",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.05
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Crushing Coil",
+              "base": "grapple",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.15
+                },
+                {
+                  "type": "status",
+                  "of": "tire",
+                  "v": 12
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Crushing Coil",
+              "base": "grapple",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.3
+                },
+                {
+                  "type": "status",
+                  "of": "tire",
+                  "v": 20
+                },
+                {
+                  "type": "status",
+                  "of": "slow",
+                  "v": 6
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "birth",
+          "needs": {
+            "being": {
+              "fam": [
+                "serpents",
+                "wyrms",
+                "deep"
+              ]
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "none",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 10
+          }
+        ],
+        "effect": {
+          "share": 0.05,
+          "unit": "share"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "being": {
+              "fam": [
+                "serpents",
+                "wyrms",
+                "deep"
+              ]
+            }
+          }
+        ]
+      },
+      "text": "Loops of muscle find your chest and close a little with every breath you let out."
+    },
+    {
+      "id": "ember_breath",
+      "name": "Ember Breath",
+      "rank": "C",
+      "rarity": "common",
+      "kind": "active",
+      "art": true,
+      "category": "magic.fire",
+      "family": null,
+      "reads": [],
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Ember Breath",
+              "base": "strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.03
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Ember Breath",
+              "base": "strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.15
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Ember Breath",
+              "base": "strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.3
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "birth",
+          "needs": {
+            "being": {
+              "fam": [
+                "spirits",
+                "dragons",
+                "wyrms",
+                "demons"
+              ],
+              "magic": 4
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "none",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 3,
+          "per": "round"
+        },
+        "cost": [
+          {
+            "res": "mana",
+            "v": 8
+          }
+        ],
+        "effect": {
+          "share": 0.03,
+          "unit": "share"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "being": {
+              "fam": [
+                "spirits",
+                "dragons",
+                "wyrms",
+                "demons"
+              ],
+              "magic": 4
+            }
+          }
+        ]
+      },
+      "text": "Heat gathers behind its teeth and comes out as a cough of sparks that sets cloth smouldering. It draws on what burns inside it."
+    },
+    {
+      "id": "frost_veil",
+      "name": "Frost Veil",
+      "rank": "B",
+      "rarity": "common",
+      "kind": "buff",
+      "art": true,
+      "category": "magic.ward",
+      "family": null,
+      "reads": [],
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Frost Veil",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "guard",
+                  "share": 0.12
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Frost Veil",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "guard",
+                  "share": 0.4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Frost Veil",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "guard",
+                  "share": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "birth",
+          "needs": {
+            "being": {
+              "fam": [
+                "spirits",
+                "dragons",
+                "wyrms",
+                "demons",
+                "fey",
+                "deep",
+                "undead",
+                "skyborne"
+              ],
+              "magic": 5
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "none",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "mana",
+            "v": 12
+          }
+        ],
+        "effect": {
+          "share": 0.12,
+          "unit": "share"
+        },
+        "duration": {
+          "v": 3,
+          "unit": "round"
+        },
+        "conditions": [
+          {
+            "being": {
+              "fam": [
+                "spirits",
+                "dragons",
+                "wyrms",
+                "demons",
+                "fey",
+                "deep",
+                "undead",
+                "skyborne"
+              ],
+              "magic": 5
+            }
+          }
+        ]
+      },
+      "text": "Rime spreads over its hide in a breath. Steel skids off it for three exchanges, and then it melts."
+    },
+    {
+      "id": "dread_gaze",
+      "name": "Dread Gaze",
+      "rank": "B",
+      "rarity": "common",
+      "kind": "active",
+      "art": true,
+      "category": "magic.mind",
+      "family": null,
+      "reads": [],
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Dread Gaze",
+              "base": "feint",
+              "do": [
+                {
+                  "type": "status",
+                  "of": "stun",
+                  "v": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Dread Gaze",
+              "base": "feint",
+              "do": [
+                {
+                  "type": "status",
+                  "of": "stun",
+                  "v": 2
+                },
+                {
+                  "type": "status",
+                  "of": "tire",
+                  "v": 10
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Dread Gaze",
+              "base": "feint",
+              "do": [
+                {
+                  "type": "status",
+                  "of": "stun",
+                  "v": 2
+                },
+                {
+                  "type": "status",
+                  "of": "disarm",
+                  "v": 10
+                },
+                {
+                  "type": "status",
+                  "of": "tire",
+                  "v": 20
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "birth",
+          "needs": {
+            "being": {
+              "fam": [
+                "spirits",
+                "dragons",
+                "wyrms",
+                "demons",
+                "fey",
+                "deep",
+                "undead",
+                "skyborne"
+              ],
+              "magic": 6
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "none",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "mana",
+            "v": 10
+          }
+        ],
+        "effect": {
+          "amount": 1,
+          "unit": "rounds"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "being": {
+              "fam": [
+                "spirits",
+                "dragons",
+                "wyrms",
+                "demons",
+                "fey",
+                "deep",
+                "undead",
+                "skyborne"
+              ],
+              "magic": 6
+            }
+          }
+        ]
+      },
+      "text": "It looks at you, and for a moment your arms forget what they were doing. Old men say not to meet its eyes."
+    },
+    {
+      "id": "mana_drain",
+      "name": "Mana Drain",
+      "rank": "A",
+      "rarity": "common",
+      "kind": "active",
+      "art": true,
+      "category": "magic.drain",
+      "family": null,
+      "reads": [],
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Mana Drain",
+              "base": "grapple",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.1
+                },
+                {
+                  "type": "heal",
+                  "of": "hp",
+                  "share": 0.1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Mana Drain",
+              "base": "grapple",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.4
+                },
+                {
+                  "type": "heal",
+                  "of": "hp",
+                  "share": 0.3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Mana Drain",
+              "base": "grapple",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.4
+                },
+                {
+                  "type": "heal",
+                  "of": "hp",
+                  "share": 0.35
+                },
+                {
+                  "type": "status",
+                  "of": "bleed",
+                  "v": 6
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "birth",
+          "needs": {
+            "being": {
+              "fam": [
+                "spirits",
+                "undead",
+                "demons",
+                "fey"
+              ],
+              "magic": 7
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "none",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "mana",
+            "v": 5
+          }
+        ],
+        "effect": {
+          "share": 0.1,
+          "unit": "share"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "being": {
+              "fam": [
+                "spirits",
+                "undead",
+                "demons",
+                "fey"
+              ],
+              "magic": 7
+            }
+          }
+        ]
+      },
+      "text": "Where it holds you, you go cold and grey, and it grows warm and full. What it takes from you, it keeps."
+    },
+    {
+      "id": "regrowth",
+      "name": "Regrowth",
+      "rank": "B",
+      "rarity": "common",
+      "kind": "passive",
+      "art": true,
+      "category": "magic.flesh",
+      "family": null,
+      "reads": [],
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "wounded",
+              "do": [
+                {
+                  "type": "heal",
+                  "of": "hp",
+                  "share": 0.1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "wounded",
+              "do": [
+                {
+                  "type": "heal",
+                  "of": "hp",
+                  "share": 0.25
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "wounded",
+              "do": [
+                {
+                  "type": "heal",
+                  "of": "hp",
+                  "share": 0.35
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "birth",
+          "needs": {
+            "being": {
+              "fam": [
+                "oozes",
+                "spirits",
+                "fey",
+                "deep",
+                "undead",
+                "wyrms"
+              ],
+              "magic": 3
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "none",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": false,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "mana",
+            "v": 6
+          }
+        ],
+        "effect": {
+          "share": 0.1,
+          "unit": "share"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "being": {
+              "fam": [
+                "oozes",
+                "spirits",
+                "fey",
+                "deep",
+                "undead",
+                "wyrms"
+              ],
+              "magic": 3
+            }
+          }
+        ]
+      },
+      "text": "Cut it badly and the flesh crawls shut while you watch. Once a fight it can do this. Once is often enough."
+    },
+    {
+      "id": "wyrmfire",
+      "name": "Wyrmfire",
+      "rank": "S",
+      "rarity": "rare",
+      "kind": "active",
+      "art": true,
+      "category": "magic.fire",
+      "family": null,
+      "reads": [],
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Wyrmfire",
+              "base": "press",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.3
+                },
+                {
+                  "type": "status",
+                  "of": "bleed",
+                  "v": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Wyrmfire",
+              "base": "press",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.4
+                },
+                {
+                  "type": "status",
+                  "of": "bleed",
+                  "v": 10
+                },
+                {
+                  "type": "status",
+                  "of": "knock",
+                  "v": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Wyrmfire",
+              "base": "press",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.4
+                },
+                {
+                  "type": "status",
+                  "of": "bleed",
+                  "v": 16
+                },
+                {
+                  "type": "status",
+                  "of": "stun",
+                  "v": 2
+                },
+                {
+                  "type": "status",
+                  "of": "tire",
+                  "v": 20
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "birth",
+          "needs": {
+            "being": {
+              "fam": [
+                "dragons",
+                "wyrms"
+              ],
+              "magic": 8
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "none",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "mana",
+            "v": 30
+          }
+        ],
+        "effect": {
+          "share": 0.3,
+          "unit": "share"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "being": {
+              "fam": [
+                "dragons",
+                "wyrms"
+              ],
+              "magic": 8
+            }
+          }
+        ]
+      },
+      "text": "Not a breath but a river of it. Stone cracks, mail runs, and what is left standing smokes. Songs keep the names of the few who walked out."
+    },
+    {
+      "id": "ancient_hide",
+      "name": "Ancient Hide",
+      "rank": "SS",
+      "rarity": "rare",
+      "kind": "passive",
+      "art": true,
+      "category": "monster.hide",
+      "family": null,
+      "reads": [],
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "duel_start",
+              "do": [
+                {
+                  "type": "guard",
+                  "share": 0.3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "duel_start",
+              "do": [
+                {
+                  "type": "guard",
+                  "share": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "duel_start",
+              "do": [
+                {
+                  "type": "guard",
+                  "share": 0.6
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "birth",
+          "needs": {
+            "being": {
+              "fam": [
+                "dragons"
+              ],
+              "magic": 8
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "none",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": false,
+      "census": "count",
+      "spec": {
+        "cooldown": null,
+        "cost": [],
+        "effect": {
+          "share": 0.3,
+          "unit": "share"
+        },
+        "duration": {
+          "v": 1,
+          "unit": "duel"
+        },
+        "conditions": [
+          {
+            "being": {
+              "fam": [
+                "dragons"
+              ],
+              "magic": 8
+            }
+          }
+        ]
+      },
+      "text": "Scales laid down over a thousand years, each the size of a shield and harder. Most blows find nothing to bite."
+    }
+  ]
+}

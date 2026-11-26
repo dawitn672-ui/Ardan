@@ -1,0 +1,3235 @@
+{
+  "about": "The first library of the three kinds (order 92, D-186; docs/design/skills-v2.md §16): actives and passives of the sword, spear and axe, bow, shield, brawling, the saddle and any steel. Each fully specified (§15.6); written by hand, not by tools/skills2/seed-data.mjs.",
+  "skills": [
+    {
+      "id": "quick_cut",
+      "name": "Quick Cut",
+      "rank": "D",
+      "rarity": "common",
+      "kind": "active",
+      "art": true,
+      "category": "arms.sword",
+      "family": null,
+      "reads": [],
+      "trains": "sword",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Quick Cut",
+              "base": "strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.025,
+                  "tag": "sword"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Quick Cut",
+              "base": "strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.12,
+                  "tag": "sword"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Quick Cut",
+              "base": "strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.25,
+                  "tag": "sword"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "sword": 12
+            }
+          }
+        }
+      ],
+      "evolvesTo": [
+        {
+          "id": "twin_cut"
+        }
+      ],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": true,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 6
+          }
+        ],
+        "effect": {
+          "share": 0.025,
+          "unit": "share"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "weapon": [
+              "sword"
+            ]
+          }
+        ]
+      },
+      "text": "A cut thrown before the other man has settled his feet. It does not win a fight. It starts one in your favour."
+    },
+    {
+      "id": "twin_cut",
+      "name": "Twin Cut",
+      "rank": "C",
+      "rarity": "common",
+      "kind": "active",
+      "art": true,
+      "category": "arms.sword",
+      "family": null,
+      "reads": [],
+      "trains": "sword",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Twin Cut",
+              "base": "strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.025,
+                  "tag": "sword"
+                },
+                {
+                  "type": "status",
+                  "of": "bleed",
+                  "v": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Twin Cut",
+              "base": "strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.15,
+                  "tag": "sword"
+                },
+                {
+                  "type": "status",
+                  "of": "bleed",
+                  "v": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Twin Cut",
+              "base": "strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.3,
+                  "tag": "sword"
+                },
+                {
+                  "type": "status",
+                  "of": "bleed",
+                  "v": 6
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "evolve",
+          "from": "quick_cut",
+          "needs": {
+            "family": {
+              "sword": 35
+            }
+          }
+        },
+        {
+          "via": "teacher",
+          "needs": {
+            "family": {
+              "sword": 32
+            },
+            "teacher": {
+              "reads": "sword",
+              "rank": "C"
+            }
+          }
+        }
+      ],
+      "evolvesTo": [
+        {
+          "id": "heart_seeker"
+        }
+      ],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": true,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 10
+          }
+        ],
+        "effect": {
+          "share": 0.025,
+          "unit": "share"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "weapon": [
+              "sword"
+            ]
+          }
+        ]
+      },
+      "text": "Down and back up on the same line, the second cut riding the first. The first is parried. The second leaves him bleeding."
+    },
+    {
+      "id": "heart_seeker",
+      "name": "Heart-Seeker",
+      "rank": "B",
+      "rarity": "common",
+      "kind": "active",
+      "art": true,
+      "category": "arms.sword",
+      "family": null,
+      "reads": [],
+      "trains": "sword",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Heart-Seeker",
+              "base": "feint",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.075,
+                  "tag": "sword",
+                  "pierce": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Heart-Seeker",
+              "base": "feint",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.35,
+                  "tag": "sword",
+                  "pierce": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Heart-Seeker",
+              "base": "feint",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.4,
+                  "tag": "sword",
+                  "pierce": 6
+                },
+                {
+                  "type": "status",
+                  "of": "bleed",
+                  "v": 4
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "evolve",
+          "from": "twin_cut",
+          "needs": {
+            "family": {
+              "sword": 55
+            },
+            "deed": {
+              "kind": "won_vs",
+              "n": 1
+            }
+          }
+        },
+        {
+          "via": "teacher",
+          "needs": {
+            "family": {
+              "sword": 55
+            },
+            "teacher": {
+              "reads": "sword",
+              "rank": "B"
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 14
+          }
+        ],
+        "effect": {
+          "share": 0.075,
+          "unit": "share"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "weapon": [
+              "sword"
+            ]
+          }
+        ]
+      },
+      "text": "You show him the high line and go in under it, point first, for the gap between the plates.",
+      "never": "You cut at armour and wonder why he stays up."
+    },
+    {
+      "id": "binding_parry",
+      "name": "Binding Parry",
+      "rank": "C",
+      "rarity": "common",
+      "kind": "passive",
+      "art": true,
+      "category": "arms.sword",
+      "family": null,
+      "reads": [],
+      "trains": "sword",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "parried",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "sword",
+                  "part": "def",
+                  "v": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "parried",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "sword",
+                  "part": "def",
+                  "v": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "parried",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "sword",
+                  "part": "def",
+                  "v": 8
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "sword": 38
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": false,
+      "census": "count",
+      "spec": {
+        "cooldown": null,
+        "cost": [],
+        "effect": {
+          "amount": 2,
+          "unit": "points"
+        },
+        "duration": {
+          "v": 1,
+          "unit": "round"
+        },
+        "conditions": [
+          {
+            "weapon": [
+              "sword"
+            ]
+          }
+        ]
+      },
+      "text": "When your guard takes his blade you do not let it go. For the next exchange his steel is half yours."
+    },
+    {
+      "id": "long_thrust",
+      "name": "Long Thrust",
+      "rank": "D",
+      "rarity": "common",
+      "kind": "active",
+      "art": true,
+      "category": "arms.spear",
+      "family": null,
+      "reads": [],
+      "trains": "spear",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Long Thrust",
+              "base": "strike",
+              "on": "first_strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.025,
+                  "tag": "spear"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Long Thrust",
+              "base": "strike",
+              "on": "first_strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.12,
+                  "tag": "spear"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Long Thrust",
+              "base": "strike",
+              "on": "first_strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.25,
+                  "tag": "spear"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "spear": 12
+            }
+          }
+        }
+      ],
+      "evolvesTo": [
+        {
+          "id": "haft_sweep"
+        }
+      ],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": true,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 5
+          }
+        ],
+        "effect": {
+          "share": 0.025,
+          "unit": "share"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "weapon": [
+              "spear"
+            ]
+          }
+        ]
+      },
+      "text": "The point goes out at the full length of the shaft before he is near enough to answer. Only in the first exchange."
+    },
+    {
+      "id": "haft_sweep",
+      "name": "Haft Sweep",
+      "rank": "C",
+      "rarity": "common",
+      "kind": "active",
+      "art": true,
+      "category": "arms.spear",
+      "family": null,
+      "reads": [],
+      "trains": "spear",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Haft Sweep",
+              "base": "feint",
+              "do": [
+                {
+                  "type": "status",
+                  "of": "knock",
+                  "v": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Haft Sweep",
+              "base": "feint",
+              "do": [
+                {
+                  "type": "status",
+                  "of": "knock",
+                  "v": 1
+                },
+                {
+                  "type": "strike",
+                  "share": 0.15,
+                  "tag": "spear"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Haft Sweep",
+              "base": "feint",
+              "do": [
+                {
+                  "type": "status",
+                  "of": "knock",
+                  "v": 2
+                },
+                {
+                  "type": "strike",
+                  "share": 0.25,
+                  "tag": "spear"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "evolve",
+          "from": "long_thrust",
+          "needs": {
+            "family": {
+              "spear": 35
+            }
+          }
+        },
+        {
+          "via": "teacher",
+          "needs": {
+            "family": {
+              "spear": 32
+            },
+            "teacher": {
+              "reads": "spear",
+              "rank": "C"
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 5,
+          "per": "round"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 8
+          }
+        ],
+        "effect": {
+          "amount": 1,
+          "unit": "rounds"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "weapon": [
+              "spear"
+            ]
+          }
+        ]
+      },
+      "text": "The butt end comes round low and takes his feet. A man on his back thinks only of getting up."
+    },
+    {
+      "id": "brace_the_point",
+      "name": "Brace the Point",
+      "rank": "C",
+      "rarity": "common",
+      "kind": "passive",
+      "art": true,
+      "category": "arms.spear",
+      "family": null,
+      "reads": [],
+      "trains": "spear",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "attacked_first",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "spear",
+                  "part": "def",
+                  "v": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "attacked_first",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "spear",
+                  "part": "def",
+                  "v": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "attacked_first",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "spear",
+                  "part": "def",
+                  "v": 10
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "spear": 38
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": false,
+      "census": "count",
+      "spec": {
+        "cooldown": null,
+        "cost": [],
+        "effect": {
+          "amount": 2,
+          "unit": "points"
+        },
+        "duration": {
+          "v": 1,
+          "unit": "round"
+        },
+        "conditions": [
+          {
+            "weapon": [
+              "spear"
+            ]
+          }
+        ]
+      },
+      "text": "If he comes at you first, he comes onto the point. You set the butt and let him do the work."
+    },
+    {
+      "id": "splitting_blow",
+      "name": "Splitting Blow",
+      "rank": "B",
+      "rarity": "common",
+      "kind": "active",
+      "art": true,
+      "category": "arms.spear",
+      "family": null,
+      "reads": [],
+      "trains": "spear",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Splitting Blow",
+              "base": "press",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.1,
+                  "tag": "axe"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Splitting Blow",
+              "base": "press",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.35,
+                  "tag": "axe"
+                },
+                {
+                  "type": "status",
+                  "of": "tire",
+                  "v": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Splitting Blow",
+              "base": "press",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.4,
+                  "tag": "axe"
+                },
+                {
+                  "type": "status",
+                  "of": "tire",
+                  "v": 12
+                },
+                {
+                  "type": "status",
+                  "of": "knock",
+                  "v": 1
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "spear": 55
+            },
+            "stat": {
+              "str": 50
+            }
+          }
+        },
+        {
+          "via": "teacher",
+          "needs": {
+            "family": {
+              "spear": 52
+            },
+            "teacher": {
+              "reads": "spear",
+              "rank": "B"
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 16
+          }
+        ],
+        "effect": {
+          "share": 0.1,
+          "unit": "share"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "weapon": [
+              "axe"
+            ]
+          }
+        ]
+      },
+      "text": "Both hands, the whole back, the edge brought down like a woodsman on a stump. It costs you, and it costs him more."
+    },
+    {
+      "id": "snap_shot",
+      "name": "Snap Shot",
+      "rank": "D",
+      "rarity": "common",
+      "kind": "active",
+      "art": true,
+      "category": "arms.bow",
+      "family": null,
+      "reads": [],
+      "trains": "bow",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Snap Shot",
+              "base": "strike",
+              "on": "first_strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.025,
+                  "tag": "bow"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Snap Shot",
+              "base": "strike",
+              "on": "first_strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.12,
+                  "tag": "bow"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Snap Shot",
+              "base": "strike",
+              "on": "first_strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.25,
+                  "tag": "bow"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "bow": 12
+            }
+          }
+        }
+      ],
+      "evolvesTo": [
+        {
+          "id": "pinning_shot"
+        }
+      ],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": true,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 4
+          }
+        ],
+        "effect": {
+          "share": 0.025,
+          "unit": "share"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "weapon": [
+              "ranged"
+            ]
+          }
+        ]
+      },
+      "text": "Nock, draw and loose in one breath while he is still closing. One shaft, before the steel comes out."
+    },
+    {
+      "id": "pinning_shot",
+      "name": "Pinning Shot",
+      "rank": "C",
+      "rarity": "common",
+      "kind": "active",
+      "art": true,
+      "category": "arms.bow",
+      "family": null,
+      "reads": [],
+      "trains": "bow",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Pinning Shot",
+              "base": "strike",
+              "on": "first_strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.025,
+                  "tag": "bow"
+                },
+                {
+                  "type": "status",
+                  "of": "slow",
+                  "v": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Pinning Shot",
+              "base": "strike",
+              "on": "first_strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.15,
+                  "tag": "bow"
+                },
+                {
+                  "type": "status",
+                  "of": "slow",
+                  "v": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Pinning Shot",
+              "base": "strike",
+              "on": "first_strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.3,
+                  "tag": "bow"
+                },
+                {
+                  "type": "status",
+                  "of": "slow",
+                  "v": 12
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "evolve",
+          "from": "snap_shot",
+          "needs": {
+            "family": {
+              "bow": 35
+            }
+          }
+        },
+        {
+          "via": "teacher",
+          "needs": {
+            "family": {
+              "bow": 32
+            },
+            "teacher": {
+              "reads": "bow",
+              "rank": "C"
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 6
+          }
+        ],
+        "effect": {
+          "share": 0.025,
+          "unit": "share"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "weapon": [
+              "ranged"
+            ]
+          }
+        ]
+      },
+      "text": "Low, for the thigh. He still reaches you, but he limps the whole way and keeps limping."
+    },
+    {
+      "id": "still_breath",
+      "name": "Still Breath",
+      "rank": "C",
+      "rarity": "common",
+      "kind": "passive",
+      "art": true,
+      "category": "arms.bow",
+      "family": null,
+      "reads": [],
+      "trains": "bow",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "first_strike",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "bow",
+                  "part": "burst",
+                  "v": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "first_strike",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "bow",
+                  "part": "burst",
+                  "v": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "first_strike",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "bow",
+                  "part": "burst",
+                  "v": 10
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "bow": 38
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": false,
+      "census": "count",
+      "spec": {
+        "cooldown": null,
+        "cost": [],
+        "effect": {
+          "amount": 2,
+          "unit": "points"
+        },
+        "duration": {
+          "v": 1,
+          "unit": "round"
+        },
+        "conditions": [
+          {
+            "weapon": [
+              "ranged"
+            ]
+          }
+        ]
+      },
+      "text": "Before the first exchange the world goes quiet and slow. Your hand does not shake. His does."
+    },
+    {
+      "id": "shield_bash",
+      "name": "Shield Bash",
+      "rank": "D",
+      "rarity": "common",
+      "kind": "active",
+      "art": true,
+      "category": "arms.shield",
+      "family": null,
+      "reads": [],
+      "trains": "shield",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Shield Bash",
+              "base": "press",
+              "do": [
+                {
+                  "type": "status",
+                  "of": "tire",
+                  "v": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Shield Bash",
+              "base": "press",
+              "do": [
+                {
+                  "type": "status",
+                  "of": "knock",
+                  "v": 1
+                },
+                {
+                  "type": "status",
+                  "of": "tire",
+                  "v": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Shield Bash",
+              "base": "press",
+              "do": [
+                {
+                  "type": "status",
+                  "of": "stun",
+                  "v": 1
+                },
+                {
+                  "type": "status",
+                  "of": "knock",
+                  "v": 1
+                },
+                {
+                  "type": "status",
+                  "of": "tire",
+                  "v": 12
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "shield": 12
+            }
+          }
+        }
+      ],
+      "evolvesTo": [
+        {
+          "id": "shell_of_oak"
+        }
+      ],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": true,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 5,
+          "per": "round"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 6
+          }
+        ],
+        "effect": {
+          "amount": 4,
+          "unit": "points"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "weapon": [
+              "shield"
+            ]
+          }
+        ]
+      },
+      "text": "The rim, then the boss, into his chest. It drives the wind out of him; later it drives him off his feet."
+    },
+    {
+      "id": "shell_of_oak",
+      "name": "Shell of Oak",
+      "rank": "C",
+      "rarity": "common",
+      "kind": "buff",
+      "art": true,
+      "category": "arms.shield",
+      "family": null,
+      "reads": [],
+      "trains": "shield",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Shell of Oak",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "guard",
+                  "share": 0.06
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Shell of Oak",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "guard",
+                  "share": 0.3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Shell of Oak",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "guard",
+                  "share": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "evolve",
+          "from": "shield_bash",
+          "needs": {
+            "family": {
+              "shield": 35
+            }
+          }
+        },
+        {
+          "via": "teacher",
+          "needs": {
+            "family": {
+              "shield": 32
+            },
+            "teacher": {
+              "reads": "shield",
+              "rank": "C"
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 8
+          }
+        ],
+        "effect": {
+          "share": 0.06,
+          "unit": "share"
+        },
+        "duration": {
+          "v": 3,
+          "unit": "round"
+        },
+        "conditions": [
+          {
+            "weapon": [
+              "shield"
+            ]
+          }
+        ]
+      },
+      "text": "You go small behind the boards for three exchanges and let him spend himself on the wood."
+    },
+    {
+      "id": "hold_the_gap",
+      "name": "Hold the Gap",
+      "rank": "B",
+      "rarity": "common",
+      "kind": "passive",
+      "art": true,
+      "category": "arms.shield",
+      "family": null,
+      "reads": [],
+      "trains": "shield",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "wounded",
+              "do": [
+                {
+                  "type": "guard",
+                  "share": 0.25
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "wounded",
+              "do": [
+                {
+                  "type": "guard",
+                  "share": 0.4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "wounded",
+              "do": [
+                {
+                  "type": "guard",
+                  "share": 0.5
+                },
+                {
+                  "type": "fight",
+                  "tag": "shield",
+                  "part": "def",
+                  "v": 6
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "shield": 55
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": false,
+      "census": "count",
+      "spec": {
+        "cooldown": null,
+        "cost": [],
+        "effect": {
+          "share": 0.25,
+          "unit": "share"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "weapon": [
+              "shield"
+            ]
+          }
+        ]
+      },
+      "text": "Once you are bleeding you stop trading blows. The shield comes up, the chin goes down, and you make him come through it."
+    },
+    {
+      "id": "headbutt",
+      "name": "Headbutt",
+      "rank": "D",
+      "rarity": "common",
+      "kind": "active",
+      "art": true,
+      "category": "body.brawling",
+      "family": null,
+      "reads": [],
+      "trains": "unarmed",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Headbutt",
+              "base": "grapple",
+              "do": [
+                {
+                  "type": "status",
+                  "of": "tire",
+                  "v": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Headbutt",
+              "base": "grapple",
+              "do": [
+                {
+                  "type": "status",
+                  "of": "stun",
+                  "v": 1
+                },
+                {
+                  "type": "status",
+                  "of": "tire",
+                  "v": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Headbutt",
+              "base": "grapple",
+              "do": [
+                {
+                  "type": "status",
+                  "of": "stun",
+                  "v": 1
+                },
+                {
+                  "type": "strike",
+                  "share": 0.1
+                },
+                {
+                  "type": "status",
+                  "of": "tire",
+                  "v": 12
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "unarmed": 12
+            }
+          }
+        }
+      ],
+      "evolvesTo": [
+        {
+          "id": "wrist_lock"
+        }
+      ],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": true,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 6
+          }
+        ],
+        "effect": {
+          "amount": 4,
+          "unit": "points"
+        },
+        "duration": null,
+        "conditions": []
+      },
+      "text": "Inside his reach, the brow into the bridge of his nose. Taverns teach it. So do yards and ditches."
+    },
+    {
+      "id": "wrist_lock",
+      "name": "Wrist Lock",
+      "rank": "C",
+      "rarity": "common",
+      "kind": "active",
+      "art": true,
+      "category": "body.brawling",
+      "family": null,
+      "reads": [],
+      "trains": "unarmed",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Wrist Lock",
+              "base": "grapple",
+              "do": [
+                {
+                  "type": "status",
+                  "of": "disarm",
+                  "v": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Wrist Lock",
+              "base": "grapple",
+              "do": [
+                {
+                  "type": "status",
+                  "of": "disarm",
+                  "v": 8
+                },
+                {
+                  "type": "status",
+                  "of": "tire",
+                  "v": 12
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Wrist Lock",
+              "base": "grapple",
+              "do": [
+                {
+                  "type": "status",
+                  "of": "disarm",
+                  "v": 12
+                },
+                {
+                  "type": "status",
+                  "of": "tire",
+                  "v": 20
+                },
+                {
+                  "type": "status",
+                  "of": "stun",
+                  "v": 1
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "evolve",
+          "from": "headbutt",
+          "needs": {
+            "family": {
+              "unarmed": 35
+            }
+          }
+        },
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "unarmed": 40
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 10
+          }
+        ],
+        "effect": {
+          "amount": 4,
+          "unit": "points"
+        },
+        "duration": null,
+        "conditions": []
+      },
+      "text": "You take his weapon wrist and do not give it back. Whatever he holds, he holds it badly after."
+    },
+    {
+      "id": "hip_throw",
+      "name": "Hip Throw",
+      "rank": "C",
+      "rarity": "common",
+      "kind": "active",
+      "art": true,
+      "category": "body.brawling",
+      "family": null,
+      "reads": [],
+      "trains": "unarmed",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Hip Throw",
+              "base": "grapple",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.05,
+                  "tag": "unarmed"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Hip Throw",
+              "base": "grapple",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.15,
+                  "tag": "unarmed"
+                },
+                {
+                  "type": "status",
+                  "of": "knock",
+                  "v": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Hip Throw",
+              "base": "grapple",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.3,
+                  "tag": "unarmed"
+                },
+                {
+                  "type": "status",
+                  "of": "knock",
+                  "v": 2
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "unarmed": 38
+            }
+          }
+        },
+        {
+          "via": "teacher",
+          "needs": {
+            "family": {
+              "unarmed": 35
+            },
+            "teacher": {
+              "reads": "unarmed",
+              "rank": "C"
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 10
+          }
+        ],
+        "effect": {
+          "share": 0.05,
+          "unit": "share"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "weapon": [
+              "unarmed"
+            ]
+          }
+        ]
+      },
+      "text": "Hip in, arm over, and the ground does the rest. Wrestlers at fairs win sheep with it."
+    },
+    {
+      "id": "pit_grit",
+      "name": "Pit Grit",
+      "rank": "B",
+      "rarity": "common",
+      "kind": "passive",
+      "art": true,
+      "category": "body.brawling",
+      "family": null,
+      "reads": [],
+      "trains": "unarmed",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "wounded",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "atk",
+                  "v": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "wounded",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "atk",
+                  "v": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "wounded",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "atk",
+                  "v": 10
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "unarmed": 55
+            }
+          }
+        },
+        {
+          "via": "deed",
+          "needs": {
+            "deed": {
+              "kind": "near_death",
+              "n": 1
+            },
+            "family": {
+              "unarmed": 45
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": false,
+      "census": "count",
+      "spec": {
+        "cooldown": null,
+        "cost": [],
+        "effect": {
+          "amount": 2,
+          "unit": "points"
+        },
+        "duration": null,
+        "conditions": []
+      },
+      "text": "Blood in your mouth makes you angrier, not slower. Men who fight for coin in pits learn this or stop fighting."
+    },
+    {
+      "id": "lance_charge",
+      "name": "Lance Charge",
+      "rank": "C",
+      "rarity": "common",
+      "kind": "active",
+      "art": true,
+      "category": "arms.mounted",
+      "family": null,
+      "reads": [],
+      "trains": "riding",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Lance Charge",
+              "base": "press",
+              "on": "first_strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.05,
+                  "tag": "lance"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Lance Charge",
+              "base": "press",
+              "on": "first_strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.25,
+                  "tag": "lance"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Lance Charge",
+              "base": "press",
+              "on": "first_strike",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.4,
+                  "tag": "lance"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "riding": 35
+            }
+          }
+        }
+      ],
+      "evolvesTo": [
+        {
+          "id": "ride_them_down"
+        }
+      ],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 10
+          }
+        ],
+        "effect": {
+          "share": 0.05,
+          "unit": "share"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "weapon": [
+              "mounted"
+            ]
+          }
+        ]
+      },
+      "text": "Couched, levelled, the horse at the gallop: the weight of both of you on one point. Once, at the start."
+    },
+    {
+      "id": "wheel_and_strike",
+      "name": "Wheel and Strike",
+      "rank": "C",
+      "rarity": "common",
+      "kind": "passive",
+      "art": true,
+      "category": "arms.mounted",
+      "family": null,
+      "reads": [],
+      "trains": "riding",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "win",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "riding",
+                  "part": "atk",
+                  "v": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "win",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "riding",
+                  "part": "atk",
+                  "v": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "win",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "riding",
+                  "part": "atk",
+                  "v": 10
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "riding": 40
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": false,
+      "census": "count",
+      "spec": {
+        "cooldown": null,
+        "cost": [],
+        "effect": {
+          "amount": 2,
+          "unit": "points"
+        },
+        "duration": {
+          "v": 1,
+          "unit": "round"
+        },
+        "conditions": [
+          {
+            "weapon": [
+              "mounted"
+            ]
+          }
+        ]
+      },
+      "text": "After a blow that lands you do not ride on. You turn the horse inside his reach and come again."
+    },
+    {
+      "id": "ride_them_down",
+      "name": "Ride Them Down",
+      "rank": "B",
+      "rarity": "common",
+      "kind": "active",
+      "art": true,
+      "category": "arms.mounted",
+      "family": null,
+      "reads": [],
+      "trains": "riding",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Ride Them Down",
+              "base": "press",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.075,
+                  "tag": "riding"
+                },
+                {
+                  "type": "status",
+                  "of": "tire",
+                  "v": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Ride Them Down",
+              "base": "press",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.3,
+                  "tag": "riding"
+                },
+                {
+                  "type": "status",
+                  "of": "knock",
+                  "v": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Ride Them Down",
+              "base": "press",
+              "do": [
+                {
+                  "type": "strike",
+                  "share": 0.4,
+                  "tag": "riding"
+                },
+                {
+                  "type": "status",
+                  "of": "knock",
+                  "v": 2
+                },
+                {
+                  "type": "status",
+                  "of": "tire",
+                  "v": 16
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "evolve",
+          "from": "lance_charge",
+          "needs": {
+            "family": {
+              "riding": 55
+            }
+          }
+        },
+        {
+          "via": "teacher",
+          "needs": {
+            "family": {
+              "riding": 55
+            },
+            "teacher": {
+              "reads": "riding",
+              "rank": "B"
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 14
+          }
+        ],
+        "effect": {
+          "share": 0.075,
+          "unit": "share"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "weapon": [
+              "mounted"
+            ]
+          }
+        ]
+      },
+      "text": "You put the horse through him. A man on foot is a hundredweight; a destrier is ten."
+    },
+    {
+      "id": "first_blood",
+      "name": "First Blood",
+      "rank": "D",
+      "rarity": "common",
+      "kind": "passive",
+      "art": true,
+      "category": "arms.melee",
+      "family": null,
+      "reads": [],
+      "trains": "melee",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "first_strike",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "atk",
+                  "v": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "first_strike",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "atk",
+                  "v": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "first_strike",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "atk",
+                  "v": 5
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "melee": 12
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": false,
+      "census": "count",
+      "spec": {
+        "cooldown": null,
+        "cost": [],
+        "effect": {
+          "amount": 0.5,
+          "unit": "points"
+        },
+        "duration": {
+          "v": 1,
+          "unit": "round"
+        },
+        "conditions": [
+          {
+            "weapon": [
+              "melee"
+            ]
+          }
+        ]
+      },
+      "text": "You are quickest when the fight is newest. The first exchange is yours more often than not."
+    },
+    {
+      "id": "grey_hour",
+      "name": "Grey Hour",
+      "rank": "C",
+      "rarity": "common",
+      "kind": "passive",
+      "art": true,
+      "category": "arms.melee",
+      "family": null,
+      "reads": [],
+      "trains": "melee",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "dawn",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "atk",
+                  "v": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "dawn",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "atk",
+                  "v": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "dawn",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "atk",
+                  "v": 10
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "melee": 36
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": false,
+      "census": "count",
+      "spec": {
+        "cooldown": null,
+        "cost": [],
+        "effect": {
+          "amount": 2,
+          "unit": "points"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "weapon": [
+              "melee"
+            ]
+          }
+        ]
+      },
+      "text": "At first light and last light, when other men squint, you see well enough. Raiders choose those hours for a reason."
+    },
+    {
+      "id": "last_stand",
+      "name": "Last Stand",
+      "rank": "B",
+      "rarity": "common",
+      "kind": "passive",
+      "art": true,
+      "category": "arms.melee",
+      "family": null,
+      "reads": [],
+      "trains": "melee",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "near_death",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "atk",
+                  "v": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "near_death",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "atk",
+                  "v": 10
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "near_death",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "def",
+                  "v": 12
+                },
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "atk",
+                  "v": 6
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "melee": 58
+            }
+          }
+        },
+        {
+          "via": "deed",
+          "needs": {
+            "deed": {
+              "kind": "near_death",
+              "n": 1
+            },
+            "family": {
+              "melee": 45
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": false,
+      "census": "count",
+      "spec": {
+        "cooldown": null,
+        "cost": [],
+        "effect": {
+          "amount": 4,
+          "unit": "points"
+        },
+        "duration": null,
+        "conditions": []
+      },
+      "text": "At the very edge something hard and cold takes over. You fight best when you have least left to lose."
+    },
+    {
+      "id": "lamp_fighter",
+      "name": "Lamp-Fighter",
+      "rank": "B",
+      "rarity": "common",
+      "kind": "passive",
+      "art": true,
+      "category": "arms.melee",
+      "family": null,
+      "reads": [],
+      "trains": "melee",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "night",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "atk",
+                  "v": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "night",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "atk",
+                  "v": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "night",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "atk",
+                  "v": 12
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "melee": 55
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": false,
+      "census": "count",
+      "spec": {
+        "cooldown": null,
+        "cost": [],
+        "effect": {
+          "amount": 2,
+          "unit": "points"
+        },
+        "duration": null,
+        "conditions": [
+          {
+            "weapon": [
+              "melee"
+            ]
+          }
+        ]
+      },
+      "text": "Alleys, cellars, torchlit yards. You have fought in the dark so often that the dark is on your side."
+    },
+    {
+      "id": "giant_bane",
+      "name": "Giant-Bane",
+      "rank": "A",
+      "rarity": "common",
+      "kind": "passive",
+      "art": true,
+      "category": "arms.melee",
+      "family": null,
+      "reads": [],
+      "trains": "melee",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "foe_stronger",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "adapt",
+                  "v": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "foe_stronger",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "adapt",
+                  "v": 10
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "foe_stronger",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "adapt",
+                  "v": 12
+                },
+                {
+                  "type": "guard",
+                  "share": 0.2
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "deed",
+          "needs": {
+            "deed": {
+              "kind": "won_vs",
+              "n": 3
+            },
+            "family": {
+              "melee": 65
+            }
+          }
+        },
+        {
+          "via": "teacher",
+          "needs": {
+            "family": {
+              "melee": 72
+            },
+            "teacher": {
+              "reads": "melee",
+              "rank": "A"
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": false,
+      "census": "count",
+      "spec": {
+        "cooldown": null,
+        "cost": [],
+        "effect": {
+          "amount": 4,
+          "unit": "points"
+        },
+        "duration": null,
+        "conditions": []
+      },
+      "text": "A bigger man is a slower man, a prouder man, a man who has never had to think. You make him think.",
+      "never": "You fight the strong as if they were your size."
+    },
+    {
+      "id": "bitter_lesson",
+      "name": "Bitter Lesson",
+      "rank": "C",
+      "rarity": "common",
+      "kind": "passive",
+      "art": true,
+      "category": "arms.melee",
+      "family": null,
+      "reads": [],
+      "trains": "melee",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "lose",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "adapt",
+                  "v": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "lose",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "adapt",
+                  "v": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "trigger",
+              "on": "lose",
+              "do": [
+                {
+                  "type": "fight",
+                  "tag": "all",
+                  "part": "adapt",
+                  "v": 8
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "melee": 35
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": false,
+      "census": "count",
+      "spec": {
+        "cooldown": null,
+        "cost": [],
+        "effect": {
+          "amount": 1,
+          "unit": "points"
+        },
+        "duration": {
+          "v": 1,
+          "unit": "round"
+        },
+        "conditions": []
+      },
+      "text": "A blow that lands on you teaches you where the next one comes from. You pay for the lesson, and you learn it."
+    }
+  ]
+}

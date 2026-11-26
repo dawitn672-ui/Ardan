@@ -20,7 +20,7 @@ test('the data passes every check', () => {
   const D = fresh(), errs = validate(D, { s1: S1 });
   assert.deepEqual(errs, []);
   assert.equal(D.families.families.length, 28);
-  assert.equal(D.skills.length, 148, '28 families x (D, C, B, A and the common S rung), and the first eight merge results (step 8)');
+  assert.equal(D.skills.length, 194, '28 families x (D, C, B, A and the common S rung), the first eight merge results (step 8) and the first 46 arts of the three kinds (step 11, D-186)');
   assert.equal(D.recipes.length, 8);
   // every rung carries the full specification's fields (§15.6), without range (the owner, 2026-11-25)
   for (const s of D.skills) { assert.deepEqual(Object.keys(s.spec).sort(), ['conditions', 'cooldown', 'cost', 'duration', 'effect']); }

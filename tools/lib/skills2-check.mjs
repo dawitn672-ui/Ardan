@@ -2,7 +2,7 @@
 // tests/v2/skills2-data.test.js plants a fault for each check and sees it caught. The engine's own arithmetic (the
 // budget, the costs, the graph) is src/people/engine/skills2.js, read here, so the data and the game agree.
 //   loadSkills2(root)  -> D = { vocab, families, skills, recipes, files }
-//   validate(D, { s1 }) -> [{ check: 1..10, msg }]
+//   validate(D, { s1 }) -> [{ check: 1..11, msg }] (11: the three kinds of order 92, D-186)
 import fs from 'node:fs';
 import path from 'node:path';
 import * as E from '../../src/people/engine/skills2.js';
@@ -82,7 +82,10 @@ export function validate(D, opt = {}) {
     if (T.scales && !T.scales.includes(e.scale)) err(2, `${at}: aura scale ${e.scale}`);
     if (e.limit !== undefined && !limits.has(e.limit)) err(2, `${at}: limit ${e.limit}`);
     if (e.spec !== undefined) specSchema(e.spec, at, false);
-    if (e.type === 'trigger' || e.type === 'active') { if (depth > 1) err(1, `${at}: effects nested too deep`); if (isObj(e.do)) effectSchema(e.do, at, depth + 1); }
+    // (an art's moment may do several things at once: `do` a list, D-186)
+    if (e.type === 'trigger' || e.type === 'active') { if (depth > 1) err(1, `${at}: effects nested too deep`); for (const d of Array.isArray(e.do) ? e.do : [e.do]) if (isObj(d)) effectSchema(d, at, depth + 1); else err(1, `${at}: ${e.type} does nothing`); }
+    if (e.type === 'raise' && !V.stats.includes(e.stat)) err(2, `${at}: raise ${e.stat}`);
+    if (e.type === 'strike' && e.tag !== undefined && e.tag !== 'all' && !IX.weapons.has(e.tag)) err(2, `${at}: strike tag ${e.tag} is no weapon family`);
     if (e.type === 'trigger' && !trig.has(e.on)) err(2, `${at}: trigger on ${e.on}`);
     if (e.type === 'active' && e.cost !== undefined && !V.spec.resources.includes(e.cost)) err(2, `${at}: active cost ${e.cost}`);
     if (e.type === 'stat' && !V.stats.includes(e.stat)) err(2, `${at}: stat ${e.stat}`);
@@ -137,6 +140,12 @@ export function validate(D, opt = {}) {
     if (n.teacher) { if (n.teacher.reads && !E.famOf(IX, n.teacher.reads)) err(2, `${at}: teacher reads ${n.teacher.reads}`); if (n.teacher.rank && !R.has(n.teacher.rank)) err(2, `${at}: teacher rank`); if (n.teacher.has && !sk(n.teacher.has)) err(2, `${at}: teacher has ${n.teacher.has}`); }
     if (n.devotion && !faithRx.test(n.devotion.faith)) err(2, `${at}: devotion faith ${n.devotion.faith}`);
     if (n.moment && !list(n.moment).every(m => (V.moments || []).includes(m))) err(2, `${at}: moment ${n.moment}`);
+    // the three kinds' conditions (D-186): the weapon in hand, the being that can hold it
+    for (const w of list(n.weapon)) if (!(V.artWeapons || []).includes(w) && !IX.weapons.has(w)) err(2, `${at}: weapon ${w}`);
+    if (n.being !== undefined) {
+      if (!isObj(n.being)) err(2, `${at}: being is not an object`);
+      else { for (const f of list(n.being.fam)) if (!(V.beingFams || []).includes(f)) err(2, `${at}: being family ${f}`); if (n.being.magic !== undefined && typeof n.being.magic !== 'number') err(2, `${at}: being magic`); }
+    }
     if (n.not) needsRefs(n.not, at + ' not');
   }
   function effectRefs(e, at) {
@@ -148,7 +157,7 @@ export function validate(D, opt = {}) {
     if (e.type === 'unlock') { const [k, x] = String(e.what).split(':'); if (!V.effects.unlock.kinds.includes(k) || !x) err(2, `${at}: unlock ${e.what}`); if (k === 'teach' && !E.famOf(IX, x)) err(2, `${at}: unlock teach ${x}`); }
     if (e.type === 'perk' && !E.famOf(IX, e.key)) err(2, `${at}: perk key ${e.key}`);
     if (e.spec && Array.isArray(e.spec.conditions)) e.spec.conditions.forEach(c => needsRefs(c, at));
-    if (e.do) effectRefs(e.do, at);
+    for (const d of Array.isArray(e.do) ? e.do : e.do ? [e.do] : []) effectRefs(d, at);
   }
   for (const s of D.skills) {
     const at = `skill ${s.id}`;
@@ -303,5 +312,13 @@ export function validate(D, opt = {}) {
     for (const d of V.denyNames) if (s.name.toLowerCase().includes(d.toLowerCase())) err(10, `skill ${s.id}: "${s.name}" holds the denied name "${d}"`);
     if (asLevel.test(s.name)) err(10, `skill ${s.id}: "${s.name}" uses a level word as a level`);
   }
+
+  // ---- 11. the three kinds (order 92, step 11, D-186): an active, a passive or a buff whole ---------------------------------
+  // its moment (an active riding on a duel move, or a passive's triggers), what it does in a vocabulary its kind may use,
+  // its specification whole (cooldown, cost, effect as the Lv-1 band's, duration for what lasts, conditions), mana only
+  // for beings with mana, and the family whose work grows it (E.kindFaults)
+  for (const s of D.skills) if (E.isArt(s)) for (const f of E.kindFaults(IX, s)) err(11, `art ${s.id}: ${f}`);
+  for (const s of D.skills) if (E.isArt(s) && s.family) err(11, `art ${s.id}: an art is no family's rung (family null; it trains one)`);
+  for (const s of D.skills) if (s && (s.kind === 'buff' || s.kind === 'active' || s.art !== undefined) && !E.isArt(s)) err(11, `skill ${s.id}: a ${s.kind} is an art (art: true, kind active, passive or buff)`);
   return out;
 }

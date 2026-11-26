@@ -1,0 +1,1064 @@
+{
+  "about": "The first library of the three kinds (order 92, D-186): buffs, the healing and the raising kind, for a fight or a month.",
+  "skills": [
+    {
+      "id": "battle_breath",
+      "name": "Battle Breath",
+      "rank": "D",
+      "rarity": "common",
+      "kind": "buff",
+      "art": true,
+      "category": "body.vigour",
+      "family": null,
+      "reads": [],
+      "trains": "athletics",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Battle Breath",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "heal",
+                  "of": "wind",
+                  "share": 0.025
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Battle Breath",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "heal",
+                  "of": "wind",
+                  "share": 0.12
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Battle Breath",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "heal",
+                  "of": "wind",
+                  "share": 0.25
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "athletics": 12
+            }
+          }
+        }
+      ],
+      "evolvesTo": [
+        {
+          "id": "second_wind"
+        }
+      ],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 2
+          }
+        ],
+        "effect": {
+          "share": 0.025,
+          "unit": "share"
+        },
+        "duration": null,
+        "conditions": []
+      },
+      "text": "You step back behind your guard and breathe from the belly, slow, while he waits for you to tire."
+    },
+    {
+      "id": "second_wind",
+      "name": "Second Wind",
+      "rank": "C",
+      "rarity": "common",
+      "kind": "buff",
+      "art": true,
+      "category": "body.vigour",
+      "family": null,
+      "reads": [],
+      "trains": "athletics",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Second Wind",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "heal",
+                  "of": "hp",
+                  "share": 0.05
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Second Wind",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "heal",
+                  "of": "hp",
+                  "share": 0.15
+                },
+                {
+                  "type": "heal",
+                  "of": "wind",
+                  "share": 0.1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Second Wind",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "heal",
+                  "of": "hp",
+                  "share": 0.3
+                },
+                {
+                  "type": "heal",
+                  "of": "wind",
+                  "share": 0.2
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "evolve",
+          "from": "battle_breath",
+          "needs": {
+            "family": {
+              "athletics": 35
+            }
+          }
+        },
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "athletics": 40
+            }
+          }
+        }
+      ],
+      "evolvesTo": [
+        {
+          "id": "iron_body"
+        }
+      ],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 8
+          }
+        ],
+        "effect": {
+          "share": 0.05,
+          "unit": "share"
+        },
+        "duration": null,
+        "conditions": []
+      },
+      "text": "Half beaten, you find a floor under you that was not there before. The legs come back. So does the anger."
+    },
+    {
+      "id": "bind_the_wound",
+      "name": "Bind the Wound",
+      "rank": "C",
+      "rarity": "common",
+      "kind": "buff",
+      "art": true,
+      "category": "body.healing",
+      "family": null,
+      "reads": [],
+      "trains": "medicine",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Bind the Wound",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "heal",
+                  "of": "hp",
+                  "share": 0.05
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Bind the Wound",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "heal",
+                  "of": "hp",
+                  "share": 0.25
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Bind the Wound",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "heal",
+                  "of": "hp",
+                  "share": 0.35
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "medicine": 35
+            }
+          }
+        },
+        {
+          "via": "teacher",
+          "needs": {
+            "family": {
+              "medicine": 30
+            },
+            "teacher": {
+              "reads": "medicine",
+              "rank": "C"
+            }
+          }
+        }
+      ],
+      "evolvesTo": [
+        {
+          "id": "fever_lore"
+        }
+      ],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 10
+          }
+        ],
+        "effect": {
+          "share": 0.05,
+          "unit": "share"
+        },
+        "duration": null,
+        "conditions": []
+      },
+      "text": "A strip of shirt, a knot pulled tight with the teeth, between one exchange and the next. It stops the worst of it."
+    },
+    {
+      "id": "field_dressing",
+      "name": "Field Dressing",
+      "rank": "C",
+      "rarity": "common",
+      "kind": "buff",
+      "art": true,
+      "category": "body.healing",
+      "family": null,
+      "reads": [],
+      "trains": "medicine",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Field Dressing",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "heal",
+                  "of": "wounds",
+                  "v": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Field Dressing",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "heal",
+                  "of": "wounds",
+                  "v": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Field Dressing",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "heal",
+                  "of": "wounds",
+                  "v": 3
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "medicine": 30
+            }
+          }
+        },
+        {
+          "via": "teacher",
+          "needs": {
+            "family": {
+              "medicine": 25
+            },
+            "teacher": {
+              "reads": "medicine",
+              "rank": "C"
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "month"
+        },
+        "cost": [
+          {
+            "res": "time",
+            "v": 2
+          }
+        ],
+        "effect": {
+          "amount": 1,
+          "unit": "wounds"
+        },
+        "duration": null,
+        "conditions": []
+      },
+      "text": "Boiled linen, a clean needle, wine on the cut. A wound you dress yourself closes in days, not seasons. Once a month."
+    },
+    {
+      "id": "fever_lore",
+      "name": "Fever Lore",
+      "rank": "B",
+      "rarity": "common",
+      "kind": "buff",
+      "art": true,
+      "category": "body.healing",
+      "family": null,
+      "reads": [],
+      "trains": "medicine",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Fever Lore",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "heal",
+                  "of": "illness",
+                  "share": 0.2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Fever Lore",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "heal",
+                  "of": "illness",
+                  "share": 0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Fever Lore",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "heal",
+                  "of": "illness",
+                  "share": 0.8
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "evolve",
+          "from": "bind_the_wound",
+          "needs": {
+            "family": {
+              "medicine": 55
+            }
+          }
+        },
+        {
+          "via": "teacher",
+          "needs": {
+            "family": {
+              "medicine": 55
+            },
+            "teacher": {
+              "reads": "medicine",
+              "rank": "B"
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "month"
+        },
+        "cost": [
+          {
+            "res": "time",
+            "v": 2
+          }
+        ],
+        "effect": {
+          "share": 0.2,
+          "unit": "share"
+        },
+        "duration": null,
+        "conditions": []
+      },
+      "text": "Willow bark, broth, cold cloths, and knowing which night is the bad one. A sickness you nurse yourself takes less of you."
+    },
+    {
+      "id": "war_cry",
+      "name": "War Cry",
+      "rank": "C",
+      "rarity": "common",
+      "kind": "buff",
+      "art": true,
+      "category": "body.vigour",
+      "family": null,
+      "reads": [],
+      "trains": "intimidation",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "War Cry",
+              "base": "press",
+              "do": [
+                {
+                  "type": "raise",
+                  "stat": "str",
+                  "v": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "War Cry",
+              "base": "press",
+              "do": [
+                {
+                  "type": "raise",
+                  "stat": "str",
+                  "v": 3
+                },
+                {
+                  "type": "raise",
+                  "stat": "wil",
+                  "v": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "War Cry",
+              "base": "press",
+              "do": [
+                {
+                  "type": "raise",
+                  "stat": "str",
+                  "v": 6
+                },
+                {
+                  "type": "raise",
+                  "stat": "wil",
+                  "v": 4
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "intimidation": 35
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 8
+          }
+        ],
+        "effect": {
+          "amount": 1,
+          "unit": "points"
+        },
+        "duration": {
+          "v": 3,
+          "unit": "round"
+        },
+        "conditions": []
+      },
+      "text": "You roar as you come in. It is not for him. It is for your own arms, which believe it for three exchanges."
+    },
+    {
+      "id": "steel_nerve",
+      "name": "Steel Nerve",
+      "rank": "B",
+      "rarity": "common",
+      "kind": "buff",
+      "art": true,
+      "category": "body.vigour",
+      "family": null,
+      "reads": [],
+      "trains": "melee",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Steel Nerve",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "raise",
+                  "stat": "wil",
+                  "v": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Steel Nerve",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "raise",
+                  "stat": "wil",
+                  "v": 6
+                },
+                {
+                  "type": "raise",
+                  "stat": "ins",
+                  "v": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Steel Nerve",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "raise",
+                  "stat": "wil",
+                  "v": 10
+                },
+                {
+                  "type": "raise",
+                  "stat": "ins",
+                  "v": 8
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "melee": 55
+            },
+            "stat": {
+              "wil": 50
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 6
+          }
+        ],
+        "effect": {
+          "amount": 2,
+          "unit": "points"
+        },
+        "duration": {
+          "v": 1,
+          "unit": "duel"
+        },
+        "conditions": []
+      },
+      "text": "You decide, once, that you are not afraid, and the deciding holds until the fight is done."
+    },
+    {
+      "id": "iron_body",
+      "name": "Iron Body",
+      "rank": "B",
+      "rarity": "common",
+      "kind": "buff",
+      "art": true,
+      "category": "body.vigour",
+      "family": null,
+      "reads": [],
+      "trains": "athletics",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Iron Body",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "guard",
+                  "share": 0.12
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Iron Body",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "guard",
+                  "share": 0.4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Iron Body",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "guard",
+                  "share": 0.5
+                },
+                {
+                  "type": "raise",
+                  "stat": "sta",
+                  "v": 8
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "evolve",
+          "from": "second_wind",
+          "needs": {
+            "family": {
+              "athletics": 55
+            }
+          }
+        },
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "athletics": 58
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 1,
+          "per": "duel"
+        },
+        "cost": [
+          {
+            "res": "stamina",
+            "v": 14
+          }
+        ],
+        "effect": {
+          "share": 0.12,
+          "unit": "share"
+        },
+        "duration": {
+          "v": 4,
+          "unit": "round"
+        },
+        "conditions": []
+      },
+      "text": "Every muscle set hard as a door for four exchanges. Blows land and go nowhere. Afterwards you ache for a week."
+    },
+    {
+      "id": "hunters_season",
+      "name": "Hunter's Season",
+      "rank": "D",
+      "rarity": "common",
+      "kind": "buff",
+      "art": true,
+      "category": "body.vigour",
+      "family": null,
+      "reads": [],
+      "trains": "tracking",
+      "levels": [
+        {
+          "at": 1,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Hunter's Season",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "raise",
+                  "stat": "ins",
+                  "v": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 5,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Hunter's Season",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "raise",
+                  "stat": "ins",
+                  "v": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "at": 10,
+          "effects": [
+            {
+              "type": "active",
+              "name": "Hunter's Season",
+              "base": "guard",
+              "do": [
+                {
+                  "type": "raise",
+                  "stat": "ins",
+                  "v": 10
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gates": [],
+      "acquire": [
+        {
+          "via": "practice",
+          "needs": {
+            "family": {
+              "tracking": 15
+            }
+          }
+        }
+      ],
+      "evolvesTo": [],
+      "transfer": {
+        "teach": "any",
+        "inherit": false,
+        "steal": false,
+        "sell": false,
+        "lose": []
+      },
+      "slot": true,
+      "census": "count",
+      "spec": {
+        "cooldown": {
+          "v": 3,
+          "per": "month"
+        },
+        "cost": [
+          {
+            "res": "time",
+            "v": 3
+          }
+        ],
+        "effect": {
+          "amount": 2,
+          "unit": "points"
+        },
+        "duration": {
+          "v": 1,
+          "unit": "month"
+        },
+        "conditions": []
+      },
+      "text": "A month of early mornings, cold water and watching the treeline. Your eyes and ears sharpen for as long as you keep it up."
+    }
+  ]
+}
