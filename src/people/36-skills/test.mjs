@@ -354,8 +354,9 @@ export default {
           if (!SK.BY[k]) { if (SK.LEG[k]) bad.push(id + ' legacy ' + k); continue; }
           nums++;
           const lv = SK.lvOf(p, k);
-          // a person born or posted since the year's pass may hold an older code's number until then
-          if (p.skills[k] !== SK.VALUES[lv]) bad.push(id + ' ' + k + ' ' + p.skills[k]);
+          // a person born or posted since the year's pass may hold an older code's number until then; the player's mirror
+          // is his rung's value (an even level of C, B or A since the switch, D-179), which SK.valueOf gives (H-146)
+          if (p.skills[k] !== (id === A.S.pc && p.sk ? SK.valueOf(p, k) : SK.VALUES[lv])) bad.push(id + ' ' + k + ' ' + p.skills[k]);
         }
       }
       if (pc.alive) bad.push(...SK.checkPC(pc).filter(b => !/^mirror/.test(b) || !SK.pendingAdopt(pc, b.split(' ')[1])));

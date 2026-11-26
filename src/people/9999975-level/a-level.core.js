@@ -172,6 +172,18 @@
     if (A.cacheResetAll && isPc(p)) try { A.cacheResetAll(); } catch (e) {}
     return true;
   };
+  // an evolution's gift (skills-v2 §15.5; 37-skills2, D-182): a point beside the level's own, small, and recorded on the
+  // level (lv.gx, how many; lv.gw, the last three with their year and what evolved)
+  LV.grant = function (p, n, why) {
+    if (!(n > 0) || !A.S) return 0;
+    const lv = LV.seed(p);
+    if (!lv) return 0;
+    lv.pts = (lv.pts || 0) + n;
+    lv.gx = (lv.gx || 0) + n;
+    lv.gw = (lv.gw || []).concat([[A.S.year, n, String(why || '').replace(/[<>"]/g, '').slice(0, 60)]]).slice(-3);
+    if (!isPc(p)) LV.queue(p);
+    return n;
+  };
   LV.placed = p => (p && p.lv && p.lv.put ? Object.values(p.lv.put).reduce((a, b) => a + b, 0) : 0);
 
   // ---------------------------------------------------------------- placing by reasons (NPCs; a child's household)

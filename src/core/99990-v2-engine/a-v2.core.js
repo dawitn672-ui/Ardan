@@ -1161,12 +1161,16 @@ var __ARDAN_V2_MAKE = (() => {
   var skills2_exports = {};
   __export(skills2_exports, {
     ADVANCES_A_LIFE: () => ADVANCES_A_LIFE,
+    ADVANCE_CHANCE: () => ADVANCE_CHANCE,
     ADVANCE_FROM: () => ADVANCE_FROM,
     BANDS: () => BANDS,
     CAP_HUMAN: () => CAP_HUMAN,
     CURVE_A: () => CURVE_A,
     CURVE_S: () => CURVE_S,
+    EDGE_GATE: () => EDGE_GATE,
+    EDGE_RANK: () => EDGE_RANK,
     FIGHT_PARTS: () => FIGHT_PARTS,
+    FOUND_CHANCE: () => FOUND_CHANCE,
     HUMAN: () => HUMAN,
     IX: () => IX,
     MAX_LV: () => MAX_LV,
@@ -1178,6 +1182,7 @@ var __ARDAN_V2_MAKE = (() => {
     STEP_MIND: () => STEP_MIND,
     XP_K: () => XP_K,
     XP_UNIT: () => XP_UNIT,
+    addXp: () => addXp,
     aurasOn: () => aurasOn,
     budget: () => budget,
     budgetFaults: () => budgetFaults,
@@ -1189,10 +1194,13 @@ var __ARDAN_V2_MAKE = (() => {
     cost: () => cost,
     deedCount: () => deedCount,
     descendants: () => descendants,
+    edgeNeeds: () => edgeNeeds,
     edgeOn: () => edgeOn,
+    edgeVerdict: () => edgeVerdict,
     effectCost: () => effectCost,
     effectKey: () => effectKey,
     effectsAt: () => effectsAt,
+    entryRead: () => entryRead,
     evolve: () => evolve,
     evolveRoutes: () => evolveRoutes,
     famOf: () => famOf,
@@ -1203,18 +1211,22 @@ var __ARDAN_V2_MAKE = (() => {
     gateLabel: () => gateLabel,
     gather: () => gather,
     graph: () => graph,
+    hashKey: () => hashKey,
     heldOfRung: () => heldOfRung,
     index: () => index,
     label: () => label,
     landed: () => landed,
     merge: () => merge,
+    mergeEntry: () => mergeEntry,
     missing: () => missing,
     nextRank: () => nextRank,
+    openRecipes: () => openRecipes,
     pastReach: () => pastReach,
     perkRows: () => perkRows,
     prevRank: () => prevRank,
     profile: () => profile,
     rankIx: () => rankIx,
+    recipeFaults: () => recipeFaults,
     resistOn: () => resistOn,
     rungOf: () => rungOf,
     rungOfS1: () => rungOfS1,
@@ -1231,6 +1243,7 @@ var __ARDAN_V2_MAKE = (() => {
     stepsOn: () => stepsOn,
     topRank: () => topRank,
     totalTo: () => totalTo,
+    unitOf: () => unitOf,
     value: () => value,
     valueAt: () => valueAt
   });
@@ -1620,6 +1633,99 @@ var __ARDAN_V2_MAKE = (() => {
     if (!(ix.V.moments || []).includes(facts.moment)) miss.push("moment");
     if (to && (facts.skills || {})[to.id]) miss.push("held");
     return { ok: !miss.length, missing: miss, to: to ? to.id : null };
+  }
+  var EDGE_RANK = { 2: "C", 3: "B", 4: "A", 5: "S" };
+  var EDGE_GATE = { 1: ["D", 6], 6: ["S", 6] };
+  function edgeNeeds(ix, fam, w) {
+    const rank = EDGE_RANK[w];
+    if (rank) {
+      const to = rungOf(ix, fam, rank), from = rungOf(ix, fam, prevRank(rank));
+      if (!to || !from) return null;
+      const r = evolveRoutes(ix, from).find((x) => x.to === to);
+      return r ? { kind: "evolve", from, to, rank, needs: r.route.needs || {} } : null;
+    }
+    const g2 = EDGE_GATE[w];
+    if (!g2) return null;
+    const id = rungOf(ix, fam, g2[0]), s = id && ix.BY[id];
+    if (!s) return null;
+    const gate = (s.gates || []).find((x) => x.at === g2[1]);
+    return { kind: "gate", from: id, to: id, rank: g2[0], at: g2[1], needs: gate && gate.needs || {} };
+  }
+  function edgeVerdict(ix, fam, w, facts) {
+    const e = edgeNeeds(ix, fam, w);
+    if (!e) return null;
+    const miss = missing(e.needs, facts || {});
+    if (e.kind === "evolve" && facts && Array.isArray(facts.sealed) && facts.sealed.includes(e.from)) miss.push("absorbed");
+    return Object.assign(e, { ok: !miss.length, missing: miss });
+  }
+  var ADVANCE_CHANCE = 0.01;
+  var FOUND_CHANCE = 1 / 200;
+  function hashKey(str) {
+    let h = 1779033703 ^ str.length;
+    for (let i = 0; i < str.length; i++) {
+      h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+      h = h << 13 | h >>> 19;
+    }
+    h = Math.imul(h ^ h >>> 16, 2246822507);
+    h = Math.imul(h ^ h >>> 13, 3266489909);
+    return (h ^ h >>> 16) >>> 0;
+  }
+  var unitOf = (str) => (hashKey(String(str)) + 0.5) / 4294967296;
+  function mergeEntry(ix, recipe, held, at) {
+    let floor = 0;
+    const fams = /* @__PURE__ */ new Set();
+    for (const p of recipe.parts || []) {
+      const s = ix.BY[p.id], h = held && held[p.id];
+      if (s && h) floor = Math.max(floor, value(s.rank, h.lv));
+      for (const f of s && s.reads || []) fams.add(f);
+    }
+    const res = ix.BY[recipe.result];
+    for (const f of res && res.reads || []) fams.add(f);
+    const e = { lv: 1, xp: 0, via: "merge", rc: recipe.id, of: (recipe.parts || []).map((p) => p.id), fams: [...fams].sort(), floor: Math.round(floor * 100) / 100 };
+    if (at != null) e.y = at;
+    return e;
+  }
+  var entryRead = (ix, id, e) => {
+    const s = ix.BY[id];
+    return s && e && e.lv >= 1 ? Math.max(value(s.rank, Math.min(MAX_LV, e.lv)), e.floor || 0) : 0;
+  };
+  function addXp(rank, e, x) {
+    let n3 = 0;
+    e.xp = (e.xp || 0) + Math.max(0, +x || 0);
+    while (e.lv < MAX_LV) {
+      const c = cost(rank, e.lv);
+      if (!(e.xp >= c)) break;
+      e.xp -= c;
+      e.lv++;
+      n3++;
+    }
+    if (e.lv >= MAX_LV) e.xp = Math.min(e.xp, cost(rank, MAX_LV));
+    e.xp = Math.round(e.xp * 100) / 100;
+    return n3;
+  }
+  var openRecipes = (ix, facts) => ix.recipes.filter((r) => canMerge(ix, r, facts).ok);
+  function recipeFaults(ix, r) {
+    const out = [], res = ix.BY[r && r.result];
+    if (!r || !Array.isArray(r.parts)) return ["no parts"];
+    const ids = r.parts.map((p) => p && p.id), fams = /* @__PURE__ */ new Map();
+    if (new Set(ids).size !== ids.length) out.push("a part twice");
+    for (const p of r.parts) {
+      const s = ix.BY[p && p.id];
+      if (!s) continue;
+      if (p.lv !== MAX_LV) out.push(`part ${p.id} at Lv ${p.lv}: only a level-${MAX_LV} skill merges`);
+      for (const f of s.reads || []) {
+        if (fams.has(f)) out.push(`parts ${fams.get(f)} and ${p.id} both read ${f}: one ladder, not two skills`);
+        fams.set(f, p.id);
+      }
+    }
+    if (res) {
+      for (const f of fams.keys()) if (!(res.reads || []).includes(f)) out.push(`result ${res.id} does not read ${f}`);
+      if (res.family && HUMAN.includes(res.rank) && rungOf(ix, res.family, res.rank) === res.id) out.push(`result ${res.id} is a ladder's rung`);
+      if (!(res.acquire || []).some((a) => a.via === "merge" && a.recipe === r.id)) out.push(`result ${res.id} has no merge route naming ${r.id}`);
+      if (r.kind === "age" && res.census !== "age") out.push(`once an age, but ${res.id} is not counted once an age`);
+    }
+    if (r.kind === "found" && r.moment != null && !(ix.V.moments || []).includes(r.moment)) out.push(`moment ${r.moment}`);
+    return out;
   }
   function graph(ix) {
     const G = /* @__PURE__ */ new Map(), add2 = (a, b) => {
@@ -2018,8 +2124,9 @@ var __ARDAN_V2_MAKE = (() => {
       const c = cost2(s.lv);
       if (s.xp < c) break;
       if (atEdge(s)) {
-        const w = wordOf(s.lv) + 1, missing2 = openConcepts(p, k);
-        const barred = missing2.length || w >= PROOF_FROM && !s.proved;
+        const w = wordOf(s.lv) + 1, g2 = p.gate ? p.gate(k, w, s, age) : null, missing2 = g2 ? g2.concepts : openConcepts(p, k);
+        const deedWanting = g2 ? !!g2.deed : w >= PROOF_FROM && !s.proved, other = g2 && g2.other || [];
+        const barred = missing2.length || deedWanting || other.length;
         if (barred) {
           const over = s.xp - c, room = storeRoom(s);
           const kept = Math.min(room, over * (missing2.length ? STORE_RATE : 1));
@@ -2029,11 +2136,12 @@ var __ARDAN_V2_MAKE = (() => {
           if (s.stallAt == null) s.stallAt = age;
           if (!s.stallSaid && age - s.stallAt >= 1) {
             s.stallSaid = true;
-            rec(p, age, k, "stall", missing2.length ? `${SKILL[k].name} holds at ${levelName(s.lv, s.xp)}: has not grasped ${missing2.map((x) => x.name).join(" or ")}` : `${SKILL[k].name} holds at ${levelName(s.lv, s.xp)}: ready, and the deed not yet done`);
+            rec(p, age, k, "stall", missing2.length ? `${SKILL[k].name} holds at ${levelName(s.lv, s.xp)}: has not grasped ${missing2.map((x) => x.name).join(" or ")}` : deedWanting ? `${SKILL[k].name} holds at ${levelName(s.lv, s.xp)}: ready, and the deed not yet done` : `${SKILL[k].name} holds at ${levelName(s.lv, s.xp)}: ${other.join("; ")}`);
           }
           break;
         }
-        const by = w >= PROOF_FROM && s.proofWhy ? s.proofWhy : why;
+        const by = (g2 ? g2.deedAsked : w >= PROOF_FROM) && s.proofWhy ? s.proofWhy : why;
+        const at = { w, by, deedBy: s.proved ? s.proofWhy || why : null, g: g2 };
         s.xp -= c;
         s.lv++;
         s.proved = false;
@@ -2044,6 +2152,7 @@ var __ARDAN_V2_MAKE = (() => {
         s.xp += s.st;
         s.st = 0;
         rec(p, age, k, "word", `${SKILL[k].name} reaches ${edgeName(w)}: ${by}${leap >= cost2(s.lv) ? " (what was stored lands at once)" : ""}`);
+        Object.assign(p.rec[p.rec.length - 1], at);
       } else {
         s.xp -= c;
         s.lv++;
@@ -2315,7 +2424,7 @@ var __ARDAN_V2_MAKE = (() => {
       if (xp < c) break;
       if (lv > 0 && stepOf(lv) === STEPS2) {
         const w = wordOf(lv) + 1;
-        const ok = conceptsOf(k, w).every((cn) => graspedBy(p, k, cn, effortYears, teacherHolds));
+        const ok = conceptsOf(k, w).every((cn) => graspedBy(p, k, cn, effortYears, teacherHolds)) && (!p.gate || p.gate(k, w));
         if (!ok) {
           xp = c;
           break;

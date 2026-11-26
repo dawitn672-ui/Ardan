@@ -279,3 +279,54 @@ test('step 6: the perks the rungs carry are the release\'s knacks, at S1\'s cros
   assert.deepEqual(R.sword[0], [35, 'Riposte', 'Guarding turns into counter-cuts', { skill: 3 }]);
   assert.equal(R.dagger[0][1], 'Inside the guard'); assert.equal(R.dagger[1][1], 'Gap-finder');
 });
+
+test('step 7: an edge of a family\'s ladder is its rung\'s route: S1\'s concepts, a deed from B, thirty years for S', () => {
+  // S1's six edges: 1 and 6 are the gates at D and S Lv 6, 2 to 5 the evolutions into C, B, A and S
+  for (const f of D.families.families) for (let w = 1; w <= 6; w++) {
+    const e = E.edgeNeeds(IX, f.id, w);
+    assert.ok(e, `${f.id} ${w}`);
+    assert.equal(e.kind, w === 1 || w === 6 ? 'gate' : 'evolve');
+    const want = S1.conceptsOf(f.id, w).map(c => f.id + ':' + c.id).sort();
+    assert.deepEqual((e.needs.concept || []).slice().sort(), want, `${f.id} at edge ${w}: S1's concepts`);
+    if (e.kind === 'evolve') { assert.equal(E.rankIx(e.rank), E.rankIx(IX.BY[e.from].rank) + 1); assert.equal(!!e.needs.deed, w >= 3, `${f.id} ${w}: a deed from B`); }
+  }
+  const base = { concepts: ['sword:the-measure', 'sword:the-bind'], deeds: [{ kind: 'proved', rank: 'B' }], age: 22 };
+  const v = E.edgeVerdict(IX, 'sword', 3, base);
+  assert.deepEqual([v.kind, v.from, v.to, v.ok, v.missing], ['evolve', 'basic_swordsmanship', 'measured_blade', true, []]);
+  assert.deepEqual(E.edgeVerdict(IX, 'sword', 3, Object.assign({}, base, { deeds: [] })).missing, ['deed:proved']);
+  assert.deepEqual(E.edgeVerdict(IX, 'sword', 3, Object.assign({}, base, { concepts: ['sword:the-bind'] })).missing, ['concept:sword:the-measure']);
+  // a rung a merge sealed never evolves, whatever else holds
+  assert.deepEqual(E.edgeVerdict(IX, 'sword', 3, Object.assign({}, base, { sealed: ['basic_swordsmanship'] })).missing, ['absorbed']);
+  // S: two concepts, a renowned deed and thirty years
+  const S = { concepts: ['sword:the-single-time', 'sword:the-stillness'], deeds: [{ kind: 'renowned_deed', rank: 'S' }], age: 29 };
+  assert.deepEqual(E.edgeVerdict(IX, 'sword', 5, S).missing, ['age']);
+  assert.equal(E.edgeVerdict(IX, 'sword', 5, Object.assign({}, S, { age: 30 })).ok, true);
+  assert.deepEqual(E.edgeVerdict(IX, 'sword', 5, Object.assign({}, S, { age: 30, deeds: [{ kind: 'proved', rank: 'S' }] })).missing, ['deed:renowned_deed']);
+  // the gates inside D and S ask only their concept
+  assert.deepEqual(E.edgeVerdict(IX, 'sword', 1, { concepts: [] }).missing, ['concept:sword:the-guard']);
+  assert.equal(E.edgeNeeds(IX, 'no_such_family', 3), null);
+});
+
+test('step 7: S1\'s engine reads an edge through the game\'s gate when it gives one, its own conditions when not', () => {
+  const p = S1.person({ id: 'g1', talent: { sword: 'C' } });
+  const s = S1.sk(p, 'sword'); s.lv = 15; s.xp = S1.cost(15) + 50; for (const c of S1.conceptsOf('sword', 3)) s.got[c.id] = 20; s.proved = true;
+  const copy = () => { const q = Object.assign({}, p, { sk: JSON.parse(JSON.stringify(p.sk)), rec: [], ledger: [] }); return q; };
+  // S1's own conditions hold: it crosses
+  const q = copy(); S1.settle(q, 'sword', 20, 'work'); assert.equal(q.sk.sword.lv, 16);
+  // a gate that wants something more holds it at the edge, and says why once it has held a year
+  const r = copy(); let asked = 0;
+  r.gate = () => { asked++; return { concepts: [], deed: false, deedAsked: true, other: ['not before the age of 30'] }; };
+  S1.settle(r, 'sword', 20, 'work'); assert.equal(r.sk.sword.lv, 15); assert.ok(asked >= 1);
+  r.sk.sword.stallAt = 18; r.sk.sword.stallSaid = false; S1.settle(r, 'sword', 20, 'work');
+  assert.ok(r.rec.some(x => x.kind === 'stall' && /age of 30/.test(x.text)));
+  // a gate that is met: the record of the crossing carries the edge, the cause, the deed's cause and the gate's verdict
+  const t = copy(); t.sk.sword.proofWhy = 'a bout';
+  t.gate = () => ({ concepts: [], deed: false, deedAsked: true, other: [], v: { ok: true } });
+  S1.settle(t, 'sword', 20, 'work');
+  const w = t.rec.find(x => x.kind === 'word');
+  assert.equal(t.sk.sword.lv, 16); assert.deepEqual([w.w, w.by, w.deedBy, w.g.v.ok], [3, 'a bout', 'a bout', true]);
+  // the closed form: the gate's no holds anyone else at the edge, its yes lets him cross
+  const n = { id: 'n1', seed: 's', talent: {}, gate: () => false };
+  assert.equal(S1.npcGain(n, 'sword', 15, S1.cost(15) - 1, 1e6, 80, true).lv, 15);
+  assert.ok(S1.npcGain(Object.assign({}, n, { gate: () => true }), 'sword', 15, S1.cost(15) - 1, 1e6, 80, true).lv > 15);
+});

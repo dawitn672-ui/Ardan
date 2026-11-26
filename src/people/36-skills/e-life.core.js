@@ -97,6 +97,8 @@
       if (fx && typeof fx === 'object' && pc && pc.sk) {
         const why = (SK.cur && SK.cur.why) || SK.whyNow().why;
         if (fx.proof) SK.proof(pc, fx.proof === 'ctx' ? ctx && ctx.sk : fx.proof, why);
+        // the skills rebuild's card keys (37-skills2: an evolution's gift, a merge taken; D-182)
+        if (fx.skTurn && A.SK2 && A.SK2.cardFx) A.SK2.cardFx(pc, fx.skTurn, ctx);
         if (fx.grasp) { const g = typeof fx.grasp === 'object' ? fx.grasp : { k: fx.grasp }; SK.graspMoment(pc, g.k === 'ctx' ? ctx && ctx.sk : g.k, why, !!g.sure); }
         if (fx.talent) for (const k in fx.talent) SK.raiseTalent(pc, k === 'ctx' ? ctx && ctx.sk : k, fx.talent[k]);
         const cv = v => (typeof v === 'string' && v.startsWith('ctx.') ? ctx && ctx[v.slice(4)] : v === 'ctx' ? ctx && ctx.spid : v);

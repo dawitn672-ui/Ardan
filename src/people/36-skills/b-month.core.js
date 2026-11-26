@@ -45,6 +45,8 @@
     }
     if (SK.audit) for (const e of v.ledger) { const A2 = SK.audit[e.k] || (SK.audit[e.k] = { led: 0, lost: 0, moved: 0 }); A2.led += e.xp || 0; A2.lost += e.lost || 0; }
     for (const r of v.rec) {
+      // a rank's edge crossed is an evolution (37-skills2's d-evolve, D-182): its own record, log, digest line and gift
+      if (r.kind === 'word' && A.SK2 && A.SK2.evolved && A.SK2.evolved(pc, r)) continue;
       SK.record(pc, r.k, r.kind, r.text);
       const big = r.kind === 'breakthrough' || (r.kind === 'word' && SK.wordOf(pc.sk[r.k].lv) >= 3);
       const cls = r.kind === 'word' || r.kind === 'breakthrough' ? 'big' : r.kind === 'grasp' ? 'good' : r.kind === 'stall' || r.kind === 'rust' ? 'warn' : r.kind === 'slip' ? 'muted' : null;

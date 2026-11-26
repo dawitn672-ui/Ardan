@@ -153,6 +153,8 @@ export default {
         try { const d0 = await SAVES.decode(bytes); if (!UI.enterSaveSafe(d0)) return { f: name, bad: ['did not load without the step'] }; before = read(); }
         finally { SV.STEPS = keep; }
         const d = await SAVES.decode(bytes), ver0 = d.S.ver;
+        // a save made at version 18 or later may already hold the player's level (earned in its life): it loads as it was (H-146)
+        const pc0 = d.S.people && d.S.people[d.S.pc], held0 = pc0 && pc0.lv && pc0.lv.L != null ? JSON.stringify(pc0.lv) : null;
         if (!UI.enterSaveSafe(d)) return { f: name, bad: ['did not load'] };
         if (A.S.ver !== SV.VER || SV.VER < 18) bad.push('version ' + A.S.ver);
         const steps = (SV.last && SV.last.steps) || [];
@@ -162,6 +164,7 @@ export default {
         const pc = A.pc();
         if (pc && pc.alive) {
           if (!pc.lv || !(pc.lv.L >= 1)) bad.push('no held level');
+          else if (held0) { if (JSON.stringify(pc.lv) !== held0) bad.push('the held level changed on load'); }
           else {
             if (pc.lv.pts) bad.push('points waiting ' + pc.lv.pts);
             if (pc.lv.put) bad.push('points placed');
