@@ -2,8 +2,9 @@
 // may know them (v2 diplomacy's A.V2DIP.seen: exact for the realm's own ruler, an estimate for its nobles and officers and
 // any ruler abroad, hearsay for the rest). Pure: reads only.
 //   A.MIL.round(n)       a round figure: 216,000; 40,000; 3,000; 600; 40
-//   A.MIL.words(r)       "about 216,000 men under arms, some 3,000 knights" (or "said to keep ..." by hearsay)
-//   A.MIL.eliteNote(r)   the realm's best ten as a click-to-open note: name, what he is, level and its band's words
+//   A.MIL.words(r)       "about 216,000 soldiers, some 3,000 knights" (or "said to keep ..." by hearsay; order 97: soldiers,
+//                        never "men under arms")
+//   A.MIL.eliteNote(r)   its soldiers by kind and its few best as a click-to-open note: name, what he is, level, band
 //   A.MIL.cardHtml(r)    the realm card's line (the release's UI.realmCard calls it)
 (function () {
   const MIL = A.MIL; if (!MIL) return;
@@ -22,8 +23,8 @@
     how = how || seen(r);
     const men = r.army || 0, kn = MIL.kn(r), k = kn ? kn.t : MIL.knights(r);
     const kw = k === 1 ? 'knight' : 'knights';
-    if (how === 'hearsay') return `said to keep some ${fmt(coarse(men))} men under arms and ${k >= 1000 ? 'a few thousand' : k >= 200 ? 'some hundreds of' : 'a few score'} ${kw}`;
-    return `${how === 'exact' ? '' : 'about '}${fmt(MIL.round(men))} men under arms, some ${fmt(MIL.round(k))} ${kw}`;
+    if (how === 'hearsay') return `said to keep some ${fmt(coarse(men))} soldiers and ${k >= 1000 ? 'a few thousand' : k >= 200 ? 'some hundreds of' : 'a few score'} ${kw}`;
+    return `${how === 'exact' ? '' : 'about '}${fmt(MIL.round(men))} soldiers, some ${fmt(MIL.round(k))} ${kw}`;
   };
   const band = L => (A.POWER && A.POWER.band ? A.POWER.band(L).w : '');
   MIL.eliteNote = function (r) {
@@ -31,7 +32,8 @@
     const E = MIL.elite(r), lv = MIL.levels(r);
     if (!E.length) return '';
     const how = seen(r);
-    const head = `The best of ${r.short || r.name}: about ${E.length} fighters the realm knows by name. Its soldiers stand near level ${lv.soldier} (${band(lv.soldier)}), its knights near ${lv.knight} (${band(lv.knight)}), a few of them more than ordinary knights.`;
+    const sp = MIL.split(r), kinds = [['infantry', sp.infantry], ['archers', sp.archers], ['cavalry', sp.cavalry]].filter(x => x[1] >= 50).map(x => `${how === 'hearsay' ? '' : 'about '}${fmt(how === 'hearsay' ? coarse(x[1]) : MIL.round(x[1]))} ${x[0]}`);
+    const head = `${kinds.length ? 'Its soldiers: ' + kinds.join(', ') + '. ' : ''}The best of ${r.short || r.name}: ${E.length} fighters the realm knows by name, the strongest it has. Its soldiers stand near level ${lv.soldier} (${band(lv.soldier)}), its knights near ${lv.knight} (${band(lv.knight)}), a few of them more than ordinary knights.`;
     // by hearsay only the names that travel (the best three)
     const list = (how === 'hearsay' ? E.slice(0, 3) : E).map(x => `${x.name}${x.role ? ', ' + x.role : ''}: level ${x.level}, ${band(x.level)}`);
     return head + ' ' + list.join('. ') + '.' + (how === 'hearsay' ? ' The rest are only names in the songs.' : '');

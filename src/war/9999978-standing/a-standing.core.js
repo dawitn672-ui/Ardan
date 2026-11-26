@@ -15,7 +15,8 @@
 //   A.MIL.levels(r)      the levels its soldiers, knights and elite stand at, inside order 93's bands by its quality
 //   A.MIL.divFactor(d)   what a division's knights add to its blows and its stand: Lanchester's host rule (A.POWER's N^1.35)
 //                        on the men counted at their worth, a knight at his band's worth against a soldier's
-//   A.MIL.elite(r)       the realm's best ten: its own people who stand at the elite's level, filled by named champions
+//   A.MIL.elite(r)       the realm's few best (order 97: not a fixed ten; ten to twenty in a great empire): its own
+//                        people who stand at the elite's level, filled to the realm's count by named champions
 //                        kept as seeds (name and level from the realm and the seed; nothing stored)
 //   A.MIL.year(r)        the year's reading kept on the realm (r.kn: the knights by command), at the year's turn, the
 //                        world's birth and a save's load, so a battle reads it the same way whether a page is drawn or not
@@ -176,6 +177,19 @@
     return clamp(Math.pow((d.men - k + k * ratio) / d.men, 1.35), 1, 1.6);
   };
 
+  // the soldiers by kind (order 97: infantry, archers, cavalry; mages when there are any), from the war map's battalions
+  MIL.split = function (r) {
+    r = RX(r); const out = { infantry: 0, archers: 0, cavalry: 0 };
+    for (const d of (r && r.forces && r.forces.divs) || []) {
+      const s = A.divS ? A.divS(d) : null; if (!s || !s.n) { out.infantry += d.men || 0; continue; }
+      const c = s.cats || {};
+      out.cavalry += (d.men || 0) * (c.horse || 0) / s.n; out.archers += (d.men || 0) * (c.missile || 0) / s.n;
+      out.infantry += (d.men || 0) * ((c.foot || 0) + (c.beast || 0)) / s.n;
+    }
+    for (const k in out) out[k] = Math.round(out[k]);
+    return out;
+  };
+
   // ---------------------------------------------------------------- the crown's choice: raise, keep or cut
   const T = D.decide;
   MIL.want = function (r) {
@@ -207,9 +221,10 @@
     return c === 'raise' ? normal : c === 'cut' ? Math.min(normal * (over ? 1 : T.cutTo), now / 1.5) : now;
   };
 
-  // ---------------------------------------------------------------- the elite: the realm's best ten
+  // ---------------------------------------------------------------- the elite: the realm's few best
   const ELC = new Map();
-  MIL.eliteCount = r => (MIL.pop(r) < D.elite.smallPop ? D.elite.smallCount : D.elite.count);
+  // order 97: not a fixed ten; a few in a small realm, ten to twenty in a great empire
+  MIL.eliteCount = r => Math.round(clamp(D.elite.perRoot * Math.sqrt(MIL.pop(r) / 1e5), D.elite.least, D.elite.most));
   const seedName = (r, i) => {
     const N = A.NAMES, key = `${A.S.seed}|${r.id}|elite|${i}`, h = hash(key);
     const female = h % 7 === 0;
@@ -235,12 +250,12 @@
       if (L >= lo) out.push({ pid: p.id, name: A.fullName ? A.fullName(p, false) : p.given, level: L });
     }
     out.sort((a, b) => b.level - a.level || (a.pid < b.pid ? -1 : 1));
-    out.length = Math.min(out.length, n);
+    out.length = Math.min(out.length, D.elite.most);
     // the rest are champions the realm knows by name: their level spread down from the realm's best
     for (let i = 0; out.length < n; i++) {
       const s = seedName(r, i), j = hash(`${A.S.seed}|${r.id}|elv|${i}`) % 9;
-      const L = clamp(Math.round(hi - (hi - lo) * (0.08 + 0.85 * i / Math.max(1, n - 1)) + j - 4), lo, hi);
-      out.push({ seed: i, name: s.name, level: L, role: D.roles[i % D.roles.length] });
+      const L = clamp(Math.round(hi - (hi - lo) * (0.08 + 0.85 * (out.length) / Math.max(1, n - 1)) + j - 4), lo, hi);
+      out.push({ seed: i, name: s.name, level: L, role: D.roles[i] || 'a knight of great name' });
     }
     out.sort((a, b) => b.level - a.level);
     if (ELC.size > 80) ELC.clear();

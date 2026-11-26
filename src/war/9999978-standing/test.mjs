@@ -37,7 +37,11 @@ export default {
           if (E.some(x => !x.name || /undefined|null/.test(x.name))) bad.push(`${seed} ${r.id}: an elite with no name`);
           big = Math.max(big, r.army); if (pop >= M.D.floorPop && r.race === 'human') small = Math.min(small, r.army);
         }
-        out.push({ seed, big, small });
+        // order 97: the elite are not a fixed ten: a few in a small kingdom, ten to twenty in a great empire
+        const ec = Object.values(A.S.realms).filter(r => r.alive && !r.isRebel).map(r => [A.MIL.pop(r), A.MIL.eliteCount(r)]).sort((a, b) => b[0] - a[0]);
+        if (ec[0][1] < 10 || ec[0][1] > 20) bad.push(`${seed}: the greatest realm's elite ${ec[0][1]}`);
+        if (ec[ec.length - 1][1] > 6) bad.push(`${seed}: the smallest realm's elite ${ec[ec.length - 1][1]}`);
+        out.push({ seed, big, small, elite: [ec[0][1], ec[ec.length - 1][1]] });
         if (big < 150000 || big > 400000) bad.push(`${seed}: the greatest host ${big}`);
       }
       return { out, bad };
@@ -111,7 +115,10 @@ export default {
       const M = A.MIL, bad = [], R = A.realm('POL-20');
       const ex = M.words(R, 'exact'), es = M.words(R, 'estimate'), hs = M.words(R, 'hearsay'), note = M.eliteNote(R);
       for (const s of [ex, es, hs, note]) if (/%|percent/.test(s)) bad.push('a percentage: ' + s);
-      if (!/^\d{1,3}(,000)+ men under arms, some [\d,]+ knights$/.test(ex)) bad.push('exact: ' + ex);
+      // order 97: soldiers, never "men under arms" or "men-at-arms"
+      if (!/^\d{1,3}(,000)+ soldiers, some [\d,]+ knights$/.test(ex)) bad.push('exact: ' + ex);
+      for (const t of [ex, es, hs, note]) if (/under arms|men-at-arms|men at arms/i.test(t)) bad.push('the old words: ' + t);
+      if (!/Its soldiers: (about )?[\d,]+ infantry/.test(note)) bad.push('no soldiers by kind: ' + note.slice(0, 80));
       if (!/^about /.test(es)) bad.push('estimate: ' + es);
       if (!/^said to keep /.test(hs)) bad.push('hearsay: ' + hs);
       const html = UI.realmCard('POL-20');
