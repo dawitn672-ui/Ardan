@@ -1,11 +1,11 @@
 {
- "about": "The great beings of the world (powers wave 1, docs/design/powers.md): the legends, each one of a kind (one holder), each with a title, the strongest beings on the continent and national threats whose power could threaten the world; each a hand-written character sheet. level is before its titles' buffs (the owner's levels with them: the Dragon King about 800, the three Primordial Archdemons 725-750, the Sword Saint, alive in his old age, about 650; every other legend between, above 600). home.type: lair (a fixed place it guards), roam (moves through its ground), city (lives among people, unknown), realm (serves a crown), sea (sleeps in the deep, rises at a coast), sealed (bound in a place); home.terr and home.place (a named place) let the final map place it in one pass. A sleeper (sleeper: true) sleeps for ages and decides once a year, through A.WHY, whether what would wake it (wake) has come. temper: A.WHY's ten axes (-1..1). habits: what each season draws it to and why. loves and grudges point at a realm (POL-xx), a people (race) or another being, with a weight and the reason; desires and fears are tags the module reads. mastery: the mastery and quality of its skills (0-12; data/power.json power). reacts: how it answers being sought, flattered, attacked (challenged) or ignored. A title marked born was had from birth. Title requirements (req) are never shown to the player.",
+ "about": "The great beings of the world (powers wave 1, docs/design/powers.md): the legends, each one of a kind (one holder), each with a title, the strongest beings on the continent and national threats whose power could threaten the world; each a hand-written character sheet. level is before its titles' buffs (the owner's levels with them: Sarnavoth about 800, by far the strongest single being, yet at a slight disadvantage against the three Primordial Archdemons (770-780) together; the Sword Saint about 700, an even match for one of them through his class, titles, skills and sword; the Lord of the Sea about 690, below him; every other legend between, above 600). home.type: lair (a fixed place it guards), roam (moves through its ground), city (lives among people, unknown), realm (serves a crown), sea (sleeps in the deep, rises at a coast), sealed (bound in a place); home.terr and home.place (a named place) let the final map place it in one pass. A sleeper (sleeper: true) sleeps for ages and decides once a year, through A.WHY, whether what would wake it (wake) has come. temper: A.WHY's ten axes (-1..1). habits: what each season draws it to and why. loves and grudges point at a realm (POL-xx), a people (race) or another being, with a weight and the reason; desires and fears are tags the module reads. skills: rank D to S, level 1 to 10 at most (past 10 a skill only evolves or merges); fight skills make its art (data/power.json power). items: each with a quality and what it gives. class: a being's calling, where it has one. reacts: how it answers being sought, flattered, attacked (challenged) or ignored. A title marked born was had from birth. Title requirements (req) are never shown to the player.",
  "legends": [
   {
    "id": "vaskareth",
    "n": "Vaskareth",
    "fam": "dragons",
-   "level": 680,
+   "level": 685,
    "int": "wise",
    "age": "about two thousand four hundred years",
    "titles": [
@@ -14,7 +14,6 @@
      "honour": 60,
      "buffs": {
       "magic": 1,
-      "level": 10,
       "power": 0.2
      },
      "req": "hidden"
@@ -38,7 +37,9 @@
     "ward": 9,
     "swarm": 0,
     "cunning": 8,
-    "magic": 10
+    "magic": 10,
+    "fire": 6,
+    "duel": 5
    },
    "home": {
     "type": "lair",
@@ -142,13 +143,58 @@
     }
    },
    "d": "The oldest dragon of the Dragon Mountains, grey-gold and long as a church. Nine towns are ash because their lords thought a tithe could be skipped.",
-   "mastery": 8
+   "skills": [
+    {
+     "n": "Ash Breath",
+     "rank": "A",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "A breath that burns a town in a pass.",
+     "cap": {
+      "fire": 2
+     }
+    },
+    {
+     "n": "The Hoard's Memory",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": false,
+     "does": "She knows every cup in her hoard and the town it came from; a thief is never safe."
+    },
+    {
+     "n": "Wing-Storm",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "A downbeat that flattens a camp."
+    },
+    {
+     "n": "Tithe-Fear",
+     "rank": "C",
+     "lvl": 10,
+     "kind": "aura",
+     "fight": true,
+     "does": "Lords pay rather than fight."
+    }
+   ],
+   "items": [
+    {
+     "n": "The melted hoard",
+     "kind": "hoard",
+     "quality": "legendary",
+     "does": "Nine towns' gold, fused into one floor. Gives nothing in a fight; everything in pride.",
+     "gives": {}
+    }
+   ]
   },
   {
    "id": "tessaly",
    "n": "Tessaly",
    "fam": "deep",
-   "level": 680,
+   "level": 690,
    "int": "wise",
    "age": "older than the coasts",
    "titles": [
@@ -166,7 +212,6 @@
      "honour": 80,
      "buffs": {
       "regen": 1,
-      "level": 10,
       "power": 0.3
      },
      "req": "hidden"
@@ -175,7 +220,8 @@
      "n": "Lord of the Sea",
      "honour": 50,
      "buffs": {
-      "swarm": 1
+      "swarm": 1,
+      "power": 0.1
      },
      "req": "hidden"
     }
@@ -190,7 +236,9 @@
     "ward": 10,
     "swarm": 4,
     "cunning": 7,
-    "magic": 9
+    "magic": 9,
+    "fire": 5,
+    "duel": 3
    },
    "home": {
     "type": "sea",
@@ -283,13 +331,50 @@
     }
    },
    "d": "The Lord of the Sea, whom fishermen call the Tide-Mother: they say the southern sea is her back. She sleeps for decades. When she wakes, harbours drown and the shoals come home. Vast, old and slow, she has never needed skill.",
-   "mastery": 4
+   "skills": [
+    {
+     "n": "The Tide",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "The sea rises where she wills: harbours drown.",
+     "cap": {
+      "fire": 2
+     }
+    },
+    {
+     "n": "Deep Body",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": true,
+     "does": "A body the size of an island; most blows are lost in it."
+    },
+    {
+     "n": "Call of the Shoals",
+     "rank": "C",
+     "lvl": 10,
+     "kind": "aura",
+     "fight": true,
+     "does": "Every fish and sea-beast near comes to her."
+    },
+    {
+     "n": "Slow Waking",
+     "rank": "D",
+     "lvl": 10,
+     "kind": "flaw",
+     "fight": false,
+     "does": "She is slow to rouse and slow to strike."
+    }
+   ],
+   "items": []
   },
   {
    "id": "ommul",
    "n": "Ommul",
    "fam": "oozes",
-   "level": 618,
+   "level": 628,
    "int": "wise",
    "age": "nine centuries since it first thought",
    "titles": [
@@ -298,7 +383,6 @@
      "honour": 20,
      "buffs": {
       "cunning": 1,
-      "level": 10,
       "power": 0.1
      },
      "req": "hidden"
@@ -322,7 +406,9 @@
     "ward": 8,
     "swarm": 3,
     "cunning": 9,
-    "magic": 6
+    "magic": 6,
+    "fire": 4,
+    "duel": 3
    },
    "home": {
     "type": "lair",
@@ -421,7 +507,34 @@
     }
    },
    "d": "It began as a puddle in a drowned abbey and ate the library with the monks. It still reads what it eats. It bargains for books.",
-   "mastery": 5
+   "skills": [
+    {
+     "n": "Engulf",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "It flows over a man and he is gone."
+    },
+    {
+     "n": "The Swallowed Library",
+     "rank": "A",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": false,
+     "does": "It knows what it ate: spells, histories, the weak points of men.",
+     "from": "evolved from Mindless Hunger, through every form of its line"
+    },
+    {
+     "n": "Acid Body",
+     "rank": "C",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": true,
+     "does": "Steel that strikes it is eaten."
+    }
+   ],
+   "items": []
   },
   {
    "id": "serrath",
@@ -469,7 +582,9 @@
     "ward": 10,
     "swarm": 5,
     "cunning": 10,
-    "magic": 10
+    "magic": 10,
+    "fire": 6,
+    "duel": 6
    },
    "home": {
     "type": "lair",
@@ -574,13 +689,55 @@
     }
    },
    "d": "Her court dances under a hill whose door is only there at dusk. Every bargain she makes she keeps to the letter, and so must you.",
-   "mastery": 9
+   "skills": [
+    {
+     "n": "Glamour",
+     "rank": "A",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "What you see is what she wants: your blade strikes air.",
+     "cap": {
+      "cunning": 1
+     }
+    },
+    {
+     "n": "The Wild Hunt",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "aura",
+     "fight": true,
+     "does": "Her court rides with her.",
+     "cap": {
+      "swarm": 2
+     }
+    },
+    {
+     "n": "Binding Word",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "A promise made to her binds the body."
+    }
+   ],
+   "items": [
+    {
+     "n": "The silver bridle",
+     "kind": "relic",
+     "quality": "legendary",
+     "does": "Whatever wears it serves her for a year and a day.",
+     "gives": {
+      "power": 0.1
+     }
+    }
+   ]
   },
   {
    "id": "ulmavren",
    "n": "Ul-Mavren",
    "fam": "undead",
-   "level": 658,
+   "level": 668,
    "int": "wise",
    "age": "dead two thousand years",
    "titles": [
@@ -589,7 +746,6 @@
      "honour": 30,
      "buffs": {
       "ward": 1,
-      "level": 10,
       "power": 0.2
      },
      "req": "hidden"
@@ -605,7 +761,9 @@
     "ward": 10,
     "swarm": 9,
     "cunning": 8,
-    "magic": 9
+    "magic": 9,
+    "fire": 5,
+    "duel": 4
    },
    "home": {
     "type": "roam",
@@ -710,7 +868,58 @@
     }
    },
    "d": "A king of the old steppe who would not lie down. Each winter his barrow-host walks, and each autumn there are more of them.",
-   "mastery": 8
+   "skills": [
+    {
+     "n": "The Barrow-Host",
+     "rank": "A",
+     "lvl": 10,
+     "kind": "aura",
+     "fight": true,
+     "does": "Every man he kills rises behind him.",
+     "cap": {
+      "swarm": 2
+     }
+    },
+    {
+     "n": "Khan's Sabre",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "The old steppe cut, from the saddle.",
+     "cap": {
+      "duel": 1
+     }
+    },
+    {
+     "n": "Grave-Cold",
+     "rank": "C",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": true,
+     "does": "His touch numbs the living."
+    }
+   ],
+   "items": [
+    {
+     "n": "The khan's white felt",
+     "kind": "relic",
+     "quality": "legendary",
+     "does": "The felt he was buried on; while he sits on it, he is king.",
+     "gives": {
+      "power": 0.1
+     }
+    },
+    {
+     "n": "A sabre of the old steppe",
+     "kind": "sabre",
+     "quality": "masterwork",
+     "does": "Bronze-hilted, never dull.",
+     "gives": {
+      "duel": 1
+     }
+    }
+   ]
   },
   {
    "id": "kethra",
@@ -741,7 +950,9 @@
     "ward": 6,
     "swarm": 0,
     "cunning": 6,
-    "magic": 9
+    "magic": 9,
+    "fire": 5,
+    "duel": 5
    },
    "home": {
     "type": "roam",
@@ -839,13 +1050,42 @@
     }
    },
    "d": "A bird the size of a barn whose wings bring the thunder. Herdsmen of the steppe pay her in horses, and she remembers who did not.",
-   "mastery": 6
+   "skills": [
+    {
+     "n": "Thunderwing",
+     "rank": "A",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "Lightning from every wingbeat.",
+     "cap": {
+      "fire": 2
+     }
+    },
+    {
+     "n": "Storm-Rider",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": true,
+     "does": "She flies in weather no bird lives through."
+    },
+    {
+     "n": "Dive",
+     "rank": "C",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "A stoop that breaks a horse's back."
+    }
+   ],
+   "items": []
   },
   {
    "id": "orrun",
    "n": "Orrun",
    "fam": "giants",
-   "level": 654,
+   "level": 664,
    "int": "wise",
    "age": "older than any throne of men: some four thousand years",
    "titles": [
@@ -855,7 +1095,6 @@
      "buffs": {
       "str": 1,
       "hide": 1,
-      "level": 10,
       "power": 0.2
      },
      "req": "hidden"
@@ -871,7 +1110,9 @@
     "ward": 7,
     "swarm": 0,
     "cunning": 6,
-    "magic": 3
+    "magic": 3,
+    "fire": 2,
+    "duel": 3
    },
    "home": {
     "type": "roam",
@@ -974,7 +1215,41 @@
     }
    },
    "d": "The eldest giant, older than any throne of men. He walks the ridges and keeps old promises. Breaking one has ended three dynasties.",
-   "mastery": 6
+   "skills": [
+    {
+     "n": "Mountain's Weight",
+     "rank": "A",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": true,
+     "does": "He hits like a rockfall."
+    },
+    {
+     "n": "Promise-Keeper",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": true,
+     "does": "A broken promise to him makes him twice as strong against the breaker."
+    },
+    {
+     "n": "Stone Sleep",
+     "rank": "C",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": false,
+     "does": "He sleeps standing, taken for a crag."
+    }
+   ],
+   "items": [
+    {
+     "n": "A club of a whole pine",
+     "kind": "club",
+     "quality": "plain",
+     "does": "A tree, roots and all.",
+     "gives": {}
+    }
+   ]
   },
   {
    "id": "pale-shepherd",
@@ -1005,7 +1280,9 @@
     "ward": 8,
     "swarm": 10,
     "cunning": 9,
-    "magic": 6
+    "magic": 6,
+    "fire": 4,
+    "duel": 5
    },
    "home": {
     "type": "roam",
@@ -1110,13 +1387,42 @@
     }
    },
    "d": "A white wolf that walks among the packs like a queen. Kill her children in a cruel winter and she comes for your village with all of them.",
-   "mastery": 7
+   "skills": [
+    {
+     "n": "Mother of Wolves",
+     "rank": "A",
+     "lvl": 10,
+     "kind": "aura",
+     "fight": true,
+     "does": "Every wolf of the north answers her.",
+     "cap": {
+      "swarm": 2
+     }
+    },
+    {
+     "n": "Frost Fang",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "A bite that freezes the blood."
+    },
+    {
+     "n": "Snow Tracking",
+     "rank": "C",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": false,
+     "does": "She finds anything that walks."
+    }
+   ],
+   "items": []
   },
   {
    "id": "morvane",
    "n": "Morvane",
    "fam": "demons",
-   "level": 708,
+   "level": 775,
    "int": "wise",
    "age": "came through the gate some three thousand years ago",
    "titles": [
@@ -1127,8 +1433,8 @@
      "buffs": {
       "ward": 1,
       "regen": 1,
-      "level": 20,
-      "power": 0.3
+      "power": 1,
+      "fire": 2
      },
      "req": "born"
     },
@@ -1138,8 +1444,8 @@
      "buffs": {
       "magic": 1,
       "cunning": 1,
-      "level": 10,
-      "power": 0.1
+      "power": 0.2,
+      "fire": 1
      },
      "req": "hidden"
     }
@@ -1154,7 +1460,9 @@
     "ward": 10,
     "swarm": 6,
     "cunning": 10,
-    "magic": 10
+    "magic": 10,
+    "fire": 6,
+    "duel": 4
    },
    "home": {
     "type": "city",
@@ -1252,7 +1560,60 @@
     }
    },
    "d": "He wears a merchant's face in some great town and lends at honest rates. His debtors do not die. They change.",
-   "mastery": 9
+   "skills": [
+    {
+     "n": "Ledger of Souls",
+     "rank": "S",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": true,
+     "does": "Every debtor owes him a share of their strength; he draws on all of them in a fight.",
+     "cap": {
+      "swarm": 2
+     }
+    },
+    {
+     "n": "A Thousand Faces",
+     "rank": "A",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "He wears any face he has taken; no one sees him coming.",
+     "cap": {
+      "cunning": 1
+     }
+    },
+    {
+     "n": "Gate Fire",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "Black fire from the seventh gate, enough to empty a street.",
+     "cap": {
+      "fire": 2
+     }
+    },
+    {
+     "n": "Honeyed Terms",
+     "rank": "C",
+     "lvl": 10,
+     "kind": "active",
+     "fight": false,
+     "does": "A bargain offered so well it is hard to refuse."
+    }
+   ],
+   "items": [
+    {
+     "n": "The Ledger",
+     "kind": "relic",
+     "quality": "unique",
+     "does": "A merchant's book in which every debt he is owed is written in the debtor's blood.",
+     "gives": {
+      "power": 0.2
+     }
+    }
+   ]
   },
   {
    "id": "iron-warden",
@@ -1283,7 +1644,9 @@
     "ward": 10,
     "swarm": 0,
     "cunning": 4,
-    "magic": 4
+    "magic": 4,
+    "fire": 2,
+    "duel": 2
    },
    "home": {
     "type": "realm",
@@ -1373,7 +1736,53 @@
     }
    },
    "d": "Rune-iron the height of three men, made by dwarf smiths for a crown that paid them. It serves that realm's ruler, whoever holds the crown.",
-   "mastery": 5
+   "skills": [
+    {
+     "n": "Oath-Bound",
+     "rank": "A",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": true,
+     "does": "While its oath is read each year, it does not tire or break.",
+     "cap": {
+      "hide": 1
+     }
+    },
+    {
+     "n": "Gate Stance",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": true,
+     "does": "At its gate nothing passes."
+    },
+    {
+     "n": "Rune Fist",
+     "rank": "C",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "A blow that cracks walls."
+    }
+   ],
+   "items": [
+    {
+     "n": "The rune-iron frame",
+     "kind": "body",
+     "quality": "unique",
+     "does": "Dwarf rune-iron, unbroken in eighteen centuries.",
+     "gives": {
+      "hide": 1
+     }
+    },
+    {
+     "n": "The oath-scroll",
+     "kind": "relic",
+     "quality": "masterwork",
+     "does": "Its oath, read aloud each midwinter.",
+     "gives": {}
+    }
+   ]
   },
   {
    "id": "saqqar",
@@ -1404,7 +1813,9 @@
     "ward": 7,
     "swarm": 0,
     "cunning": 8,
-    "magic": 8
+    "magic": 8,
+    "fire": 5,
+    "duel": 5
    },
    "home": {
     "type": "roam",
@@ -1502,7 +1913,36 @@
     }
    },
    "d": "A lion of fire that the caravans pray to. He lets the faithful cross and hunts the rest. In the summer heat he sleeps in the dunes.",
-   "mastery": 7
+   "skills": [
+    {
+     "n": "Sun-Mane",
+     "rank": "A",
+     "lvl": 10,
+     "kind": "aura",
+     "fight": true,
+     "does": "He burns like noon: the sand under you catches.",
+     "cap": {
+      "fire": 2
+     }
+    },
+    {
+     "n": "Pride of the Dunes",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": true,
+     "does": "A lion's courage; he never yields."
+    },
+    {
+     "n": "Pounce",
+     "rank": "C",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "Across a dune in one leap."
+    }
+   ],
+   "items": []
   },
   {
    "id": "hrimgala",
@@ -1533,7 +1973,9 @@
     "ward": 10,
     "swarm": 2,
     "cunning": 7,
-    "magic": 10
+    "magic": 10,
+    "fire": 6,
+    "duel": 4
    },
    "home": {
     "type": "lair",
@@ -1636,13 +2078,42 @@
     }
    },
    "d": "The winter given a will. When she walks out of the high ice, harvests fail three valleys away and the wolves come down.",
-   "mastery": 6
+   "skills": [
+    {
+     "n": "White Winter",
+     "rank": "A",
+     "lvl": 10,
+     "kind": "aura",
+     "fight": true,
+     "does": "The cold itself: rivers freeze, armies starve.",
+     "cap": {
+      "fire": 2
+     }
+    },
+    {
+     "n": "Snow Body",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": true,
+     "does": "She is snow; a blade passes through."
+    },
+    {
+     "n": "Wolf-Call",
+     "rank": "C",
+     "lvl": 10,
+     "kind": "aura",
+     "fight": true,
+     "does": "The wolves come down with her."
+    }
+   ],
+   "items": []
   },
   {
    "id": "sarnavoth",
    "n": "Sarnavoth",
    "fam": "dragons",
-   "level": 770,
+   "level": 800,
    "int": "wise",
    "age": "about four thousand years",
    "titles": [
@@ -1652,8 +2123,8 @@
      "buffs": {
       "str": 1,
       "magic": 1,
-      "level": 20,
-      "power": 0.6
+      "power": 7,
+      "fire": 3
      },
      "req": "hidden"
     },
@@ -1663,7 +2134,7 @@
      "honour": 40,
      "buffs": {
       "hide": 1,
-      "level": 10
+      "power": 0.3
      },
      "req": "born"
     }
@@ -1678,7 +2149,9 @@
     "ward": 11,
     "swarm": 0,
     "cunning": 9,
-    "magic": 12
+    "magic": 12,
+    "fire": 7,
+    "duel": 4
    },
    "home": {
     "type": "lair",
@@ -1787,13 +2260,84 @@
     }
    },
    "d": "The King of Dragons, by far the strongest being in the world, who ruled the north sky for two thousand years until the Sword Saint threw him under the Dragon Mountains sixty years ago. He sleeps there, healing. Every dragon alive is his subject.",
-   "mastery": 10
+   "skills": [
+    {
+     "n": "Sovereign Breath",
+     "rank": "S",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "The breath of the first dragon: a mountainside melted, a host gone. Raw firepower beyond any other being.",
+     "cap": {
+      "fire": 3
+     }
+    },
+    {
+     "n": "Wings of the North",
+     "rank": "A",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": true,
+     "does": "He is the sky over the north; nothing outflies him."
+    },
+    {
+     "n": "Scale of the First Clutch",
+     "rank": "A",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": true,
+     "does": "Scales that turned every blade of every age but one.",
+     "cap": {
+      "hide": 1
+     }
+    },
+    {
+     "n": "Royal Will",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "aura",
+     "fight": true,
+     "does": "Every dragon in sight obeys him.",
+     "cap": {
+      "swarm": 2
+     }
+    },
+    {
+     "n": "Dragon's Reckoning",
+     "rank": "C",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": true,
+     "does": "Two thousand years of war: he knows every trick."
+    }
+   ],
+   "items": [
+    {
+     "n": "The Crown of the First Clutch",
+     "kind": "relic (crown)",
+     "quality": "unique",
+     "does": "A ring of fused gold and dragon-bone set on his brow at his crowning.",
+     "gives": {
+      "power": 0.3,
+      "ward": 1
+     }
+    },
+    {
+     "n": "The scar of Morrowglass",
+     "kind": "wound",
+     "quality": "unique",
+     "does": "The one cut that ever reached him, across the throat-scales. Not healed in sixty years.",
+     "gives": {
+      "power": -0.1
+     }
+    }
+   ]
   },
   {
    "id": "ghazrul",
    "n": "Ghazrul",
    "fam": "demons",
-   "level": 730,
+   "level": 780,
    "int": "wise",
    "age": "as old as the gates",
    "titles": [
@@ -1804,8 +2348,8 @@
      "buffs": {
       "ward": 1,
       "regen": 1,
-      "level": 20,
-      "power": 0.3
+      "power": 1,
+      "fire": 2
      },
      "req": "born"
     },
@@ -1815,7 +2359,8 @@
      "buffs": {
       "str": 1,
       "magic": 1,
-      "power": 0.1
+      "power": 0.2,
+      "fire": 1
      },
      "req": "hidden"
     }
@@ -1830,7 +2375,9 @@
     "ward": 12,
     "swarm": 8,
     "cunning": 8,
-    "magic": 12
+    "magic": 12,
+    "fire": 7,
+    "duel": 4
    },
    "home": {
     "type": "sealed",
@@ -1937,13 +2484,64 @@
     }
    },
    "d": "The second Primordial Archdemon, bound under the Burning Waste by the Sword Saint eighty years ago. The sand over the seal is still warm.",
-   "mastery": 7
+   "skills": [
+    {
+     "n": "Unmaking",
+     "rank": "S",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "A breath of white fire that leaves glass where a country was. Raw firepower without equal among the demons.",
+     "cap": {
+      "fire": 3
+     }
+    },
+    {
+     "n": "Primordial Flesh",
+     "rank": "A",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": true,
+     "does": "Wounds close as they open; she has never lost a limb for long.",
+     "cap": {
+      "regen": 1
+     }
+    },
+    {
+     "n": "Brimstone Breath",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "A cone of burning sand.",
+     "cap": {
+      "fire": 1
+     }
+    },
+    {
+     "n": "Dread of the Gate",
+     "rank": "C",
+     "lvl": 10,
+     "kind": "aura",
+     "fight": true,
+     "does": "Lesser beings flee or kneel."
+    }
+   ],
+   "items": [
+    {
+     "n": "The broken glass seal",
+     "kind": "relic (binding)",
+     "quality": "unique",
+     "does": "The seal that binds her; while it holds, she does not leave the sand.",
+     "gives": {}
+    }
+   ]
   },
   {
    "id": "sword-saint",
    "n": "Cael Vardan",
    "fam": "human",
-   "level": 630,
+   "level": 700,
    "int": "wise",
    "age": "one hundred and nineteen years; his strength has kept him alive long past any man",
    "titles": [
@@ -1953,8 +2551,8 @@
      "buffs": {
       "spd": 1,
       "cunning": 1,
-      "level": 20,
-      "power": 0.5
+      "power": 1.5,
+      "duel": 2
      },
      "req": "hidden"
     },
@@ -1987,7 +2585,9 @@
     "ward": 11,
     "swarm": 0,
     "cunning": 12,
-    "magic": 7
+    "magic": 7,
+    "fire": 1,
+    "duel": 10
    },
    "home": {
     "type": "lair",
@@ -2010,7 +2610,7 @@
     "social": 0.2,
     "ambition": -0.8
    },
-   "history": "A shepherd's son of the western hills, born in a year of famine, who learned the sword from a deserter for a sack of oats. By thirty no one alive could stand against him. At thirty-nine he bound the Archdemon Ghazrul under the Burning Waste and cut the first face from Morvane. At fifty-nine he climbed the ridge to meet Sarnavoth, King of Dragons, alone, as he had promised; three days later the King was under the mountain. That was sixty years ago. He has lived on the ridge since, keeping goats and keeping watch, refusing every crown that has been offered. He is very old now, and still the strongest man alive.",
+   "history": "A shepherd's son of the western hills, born in a year of famine, who learned the sword from a deserter for a sack of oats. By thirty no one alive could stand against him. At thirty-nine he bound the Archdemon Ghazrul under the Burning Waste and cut the first face from Morvane. At fifty-nine he climbed the ridge to meet Sarnavoth, King of Dragons, alone, as he had promised; three days later the King was under the mountain. That was sixty years ago. He has lived on the ridge since, keeping goats and keeping watch, refusing every crown that has been offered. He is very old now, and still the strongest man alive: his class, Sword Saint, is the strongest one-to-one art there is, and no single being has outlasted him blade to blade.",
    "traits": [
     "humble",
     "patient",
@@ -2127,14 +2727,79 @@
      "line": "He nods to you as you pass, as he nods to everyone."
     }
    },
-   "d": "Cael Vardan, the Sword Saint: a shepherd's son who became the greatest swordsman of any age, bound an Archdemon and threw the King of Dragons under the mountain. He is a hundred and nineteen, lives on the ridge where he fought, and is still the strongest man alive. Every child knows his story.",
-   "mastery": 12
+   "d": "Cael Vardan, the Sword Saint: a shepherd's son who became the greatest swordsman of any age, bound an Archdemon and threw the King of Dragons under the mountain. He is a hundred and nineteen, lives on the ridge where he fought, and is still the strongest man alive. His class is Sword Saint, the strongest one-to-one combat art there is. Every child knows his story.",
+   "skills": [
+    {
+     "n": "Sword Saint",
+     "rank": "S",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": true,
+     "does": "The class itself, the strongest one-to-one art there is: every cut is the one the foe did not guard, and no single being has outlasted him blade to blade.",
+     "cap": {
+      "duel": 3
+     }
+    },
+    {
+     "n": "Morrowglass Form",
+     "rank": "S",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "A cut that parts what should not part: scale, ward, seal and spell alike. Once a fight; nothing it touches mends that day.",
+     "from": "merged from Hill-Shepherd's Sword and the Glass Cut, both at level 10",
+     "cap": {
+      "magic": 2
+     }
+    },
+    {
+     "n": "The Unhurried Mind",
+     "rank": "A",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": true,
+     "does": "He is never rushed: no feint, fear or fury moves him before he means to move.",
+     "from": "evolved from Patience (B) at level 10",
+     "cap": {
+      "cunning": 1,
+      "ward": 1
+     }
+    },
+    {
+     "n": "Stone Patience",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": true,
+     "does": "He tires slower than stone erodes. A long fight is his ground."
+    }
+   ],
+   "items": [
+    {
+     "n": "Morrowglass",
+     "kind": "sword",
+     "quality": "unique",
+     "does": "A plain grey blade that cut the seal into the sand and the dragon-king's scales.",
+     "gives": {
+      "power": 1,
+      "duel": 1
+     }
+    },
+    {
+     "n": "A shepherd's grey cloak",
+     "kind": "cloak",
+     "quality": "plain",
+     "does": "Sixty years on the ridge. It gives nothing but warmth.",
+     "gives": {}
+    }
+   ],
+   "class": "Sword Saint"
   },
   {
    "id": "vethrael",
    "n": "Vethrael",
    "fam": "demons",
-   "level": 695,
+   "level": 770,
    "int": "wise",
    "age": "as old as the gates",
    "titles": [
@@ -2145,8 +2810,8 @@
      "buffs": {
       "ward": 1,
       "regen": 1,
-      "level": 20,
-      "power": 0.3
+      "power": 1,
+      "fire": 2
      },
      "req": "born"
     },
@@ -2155,8 +2820,8 @@
      "honour": 0,
      "buffs": {
       "magic": 1,
-      "level": 10,
-      "power": 0.1
+      "power": 0.2,
+      "fire": 1
      },
      "req": "hidden"
     }
@@ -2169,9 +2834,11 @@
     "flight": 5,
     "regen": 11,
     "ward": 12,
-    "swarm": 10,
+    "swarm": 7,
     "cunning": 11,
-    "magic": 12
+    "magic": 12,
+    "fire": 7,
+    "duel": 4
    },
    "home": {
     "type": "roam",
@@ -2276,7 +2943,55 @@
     }
    },
    "d": "The third Primordial Archdemon, who walks the pilgrim roads as a hooded singer and takes the voices of the dead. A hundred thousand souls sing inside it.",
-   "mastery": 8
+   "skills": [
+    {
+     "n": "The Hollow Choir",
+     "rank": "S",
+     "lvl": 10,
+     "kind": "aura",
+     "fight": true,
+     "does": "A hundred thousand voices sing at once: the ground shakes, glass and minds break for a mile.",
+     "cap": {
+      "fire": 3,
+      "swarm": 2
+     }
+    },
+    {
+     "n": "Song of Unmaking",
+     "rank": "A",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "One note that silences a heart."
+    },
+    {
+     "n": "Grief Voice",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "Speaks in the voices of your dead; the will fails."
+    },
+    {
+     "n": "Pilgrim's Mask",
+     "rank": "C",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": false,
+     "does": "Seen as a hooded singer, harmless."
+    }
+   ],
+   "items": [
+    {
+     "n": "A pilgrim's staff of black wood",
+     "kind": "staff",
+     "quality": "fine",
+     "does": "Hollow, and humming.",
+     "gives": {
+      "magic": 1
+     }
+    }
+   ]
   }
  ]
 }

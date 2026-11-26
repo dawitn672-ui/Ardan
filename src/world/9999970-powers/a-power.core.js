@@ -38,8 +38,17 @@
   };
   PW.mightOf = L => Math.pow(10, L >= CV.low.from ? gOf(L) : X20 + (L - CV.low.from) / CV.low.perDecade);
   // fighting power: the level's might x the titles' power x the mastery and quality of its skills (data/power.json power)
-  PW.masteryMult = ms => (ms == null ? 1 : Math.pow(2, (ms - D.power.masteryBase) / D.power.masteryPerDouble));
+  // art: the sum over the fight skills of the rank's weight x level / 10 (skills stop at level 10; past it they evolve or merge)
+  PW.artOf = skills => (skills || []).reduce((a, k) => a + (k.fight === false ? 0 : (D.power.rankW[k.rank] || 0) * Math.min(D.power.maxSkillLevel, k.lvl || 0) / 10), 0);
+  PW.artMult = skills => Math.pow(2, PW.artOf(skills) / D.power.artPerDouble);
   PW.titleMult = titles => (titles || []).reduce((m, t) => m * (1 + ((t.buffs && t.buffs.power) || 0)), 1);
+  PW.itemMult = items => (items || []).reduce((m, t) => m * Math.max(0.1, 1 + ((t.gives && t.gives.power) || 0)), 1);
+  // what skills and items add to the profile (titles add theirs in withTitles)
+  PW.addCaps = function (prof, list, key) {
+    const out = Object.assign({}, prof);
+    for (const x of list || []) for (const k in (x && x[key]) || {}) if (k !== 'power' && k in out) out[k] = clamp(out[k] + x[key][k], 0, 12);
+    return out;
+  };
   // t: the even log scale the odds, gaps and draws use inside the code (t = 10 x log10(might / 0.01); ten t is ten times the might)
   PW.tOf = m => Math.round(100 * LV.perTen * Math.log10(Math.max(1e-12, m) / LV.base)) / 100;
   PW.mightOfT = t => LV.base * Math.pow(10, t / LV.perTen);
@@ -63,7 +72,8 @@
     return {
       str: clamp(st('str') / 10, 0, 10), spd: clamp(st('spd') / 10, 0, 10), hide: clamp((arm.prot || 0) * 0.8, 0, 10),
       venom: 0, flight: 0, regen: 0, ward: clamp(st('wil') / 12, 0, 10), swarm: 0,
-      cunning: clamp((st('ins') + st('int')) / 20, 0, 10), magic: 0,
+      cunning: clamp((st('ins') + st('int')) / 20, 0, 10), magic: 0, fire: 0,
+      duel: clamp(((A.weaponSkillOf && A.skill ? A.skill(p, A.weaponSkillOf(p)) : 30) || 0) / 10, 0, 10),
     };
   };
 
@@ -119,13 +129,25 @@
     if (BYCRE.has(id)) return PW.being(BYCRE.get(id).id);
     const L = LEG.get(id) || MAS.get(id);
     if (L) {
-      const w = PW.withTitles(L.prof, L.level, L.titles), m = PW.mightOf(w.level), pw = m * PW.titleMult(L.titles) * PW.masteryMult(L.mastery);
-      return { kind: LEG.has(id) ? 'legend' : 'master', id, n: L.n, level: clamp(w.level, 1, LV.max), t: PW.tOf(pw), might: m, power: pw, mastery: L.mastery, prof: w.prof, int: L.int,
+      // the level's might x titles x items x art (its skills' ranks and levels); the profile with what each of them adds
+      const w = PW.withTitles(PW.addCaps(PW.addCaps(L.prof, L.skills, 'cap'), L.items, 'gives'), L.level, L.titles), m = PW.mightOf(w.level);
+      const pw = m * PW.titleMult(L.titles) * PW.itemMult(L.items) * PW.artMult(L.skills);
+      return { kind: LEG.has(id) ? 'legend' : 'master', id, n: L.n, level: clamp(w.level, 1, LV.max), t: PW.tOf(pw), might: m, power: pw, art: PW.artOf(L.skills), prof: w.prof, int: L.int, cls: L.class || null,
         titles: L.titles || [], base: L.level, ranged: true, hardy: w.prof.regen };
     }
     return null;
   };
   PW.level = x => { const b = PW.being(x); return b ? b.level : 0; };
+  // several beings fighting as one: Lanchester's law, (the sum of the square roots of their powers) squared; the profile
+  // takes each one's best, and numbers grow
+  PW.group = function (xs) {
+    const bs = (xs || []).map(PW.being).filter(Boolean);
+    if (!bs.length) return null;
+    const pw = Math.pow(bs.reduce((a, b) => a + Math.sqrt(b.power || b.might), 0), 2), prof = {};
+    for (const k of CAPS) prof[k] = Math.max(...bs.map(b => b.prof[k] || 0));
+    prof.swarm = clamp(prof.swarm + 2 * (bs.length - 1), 0, 12);
+    return { kind: 'group', id: 'group:' + bs.map(b => b.id).join('+'), n: bs.map(b => b.n).join(', '), level: Math.max(...bs.map(b => b.level)), t: PW.tOf(pw), might: pw, power: pw, prof, int: 'wise', titles: [], ranged: bs.some(b => b.ranged), hardy: Math.max(...bs.map(b => b.hardy || 0)) };
+  };
   PW.might = x => { const b = PW.being(x); return b ? b.might : 0; };
   PW.power = x => { const b = PW.being(x); return b ? b.power : 0; };
 
@@ -141,6 +163,10 @@
     const d3 = B_.swarm - A_.swarm; if (d3 >= 3) add(-0.12 * d3, sign > 0 ? 'they are many, and you are one' : 'you are many');
     const d4 = B_.magic - A_.ward; if (d4 >= 3) add(-0.1 * d4, sign > 0 ? 'its fire or frost reaches past any guard' : 'your magic finds no ward');
     const d5 = B_.cunning - A_.cunning; if (d5 >= 3) add(-0.08 * d5, sign > 0 ? 'it is cleverer than you' : 'you outthink it');
+    // single combat against firepower (the owner, 2026-11-26): a duellist's art finds the gap one to one; raw firepower
+    // falls on many at once and breaks numbers
+    const d6 = (B_.duel || 0) - (A_.duel || 0); if (d6 >= 3) add(-0.12 * d6, sign > 0 ? 'it is a master of single combat' : 'one to one, your art finds every gap');
+    if ((B_.fire || 0) >= 6 && A_.swarm >= 5) add(-0.06 * B_.fire, sign > 0 ? 'its fire falls on all of you at once' : 'your fire falls on all of them at once');
   };
   PW.compare = function (a0, b0) {
     const a = PW.being(a0), b = PW.being(b0);

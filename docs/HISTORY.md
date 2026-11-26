@@ -2820,3 +2820,13 @@ The helper's branch (`worktree-agent-adf78e25f8e849d95`: `src/world/9999970-powe
 `data/bestiary.json` 270 species, `data/legends.json` 16 legends, `tools/powers/`, `docs/design/powers.md`; H-134, D-176)
 merged on the trunk. Tessaly, Lord of the Sea, set to level 680 (about 690 with her title) for the owner's 680-700 (order
 84); the Sword Saint at 650 still has more than twice her power (order 85).
+
+### H-NEW · 2026-11-26 · Powers: CI fixes on 8f28cb67 and the owner's orders 87-90
+The hunt's experience goes through A.gainXp (lint-skills back to 329). wcObservesOnly: 999994-generations' deaths read the
+record's famines (A.MORT.hardYear) and named one death from them, so the test holds that read back like 64's and the
+atlas's. ordersAnotherGeneral: H-082 seed fallback (seed 86's world moved; 87 has the letter; letters are counted as
+queued, nothing crowded them). The codex's numbers open notes (ttCov2Realm 100% on the power page). Power = might x titles x
+items x art (skills of rank D-S, level at most 10); the capability profile gains firepower and single combat; groups fight by
+Lanchester. Sarnavoth 800 against the three Primordial Archdemons (770-780) together 0.42; the Sword Saint (700) against
+each 0.53, 0.47, 0.48; against the Lord of the Sea (690) 0.96. Every legend and race master has skills, items and titles,
+shown in the codex as far as the player knows them. uiSmoke's click timeout did not reproduce (1 of 13 runs, random lives).

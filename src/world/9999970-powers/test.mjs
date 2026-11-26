@@ -8,7 +8,7 @@ const NO = { ok: false, detail: 'A.POWER not in this build' };
 export default {
   // the owner's anchors (2026-11-25): an average human 20-30, a kingdom's strongest 300-380 in most cases, the masters of
   // the races above them, an average grown dragon about 450 and a strong one about 525, every legend above 600 with the
-  // Sword Saint about 650, three Primordial Archdemons 725-750 and the Dragon King about 800, by far the strongest
+  // Sword Saint about 700, three Primordial Archdemons 770-780 and the Dragon King about 800, by far the strongest single being
   async pwLadder(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     const r = await pg.evaluate(() => {
@@ -37,27 +37,37 @@ export default {
     const ok = r.bands.join() === 'G,F,E,D,C,B,A,S,SS,SSS' && !r.godBand && r.allTitled &&
       min >= 290 && max <= 400 && r.meds.every(m => m >= 18 && m <= 32) &&
       r.masters.every(x => x > max && x < 520) && r.dragons.every(x => x >= 420 && x <= 480) && r.strong.every(x => x >= 495 && x <= 560) &&
-      L.every(x => x[1] > 600) && L[0][0] === 'sarnavoth' && Math.abs(L[0][1] - 800) <= 10 && L[0][1] - L[1][1] >= 40 &&
-      r.arch.length === 3 && r.arch.every(x => x >= 720 && x <= 755) && Math.abs(r.saint - 650) <= 10 && r.saintHuman && !r.pcts;
+      L.every(x => x[1] > 600) && L[0][0] === 'sarnavoth' && Math.abs(L[0][1] - 800) <= 10 &&
+      r.arch.length === 3 && r.arch.every(x => x >= 765 && x <= 785) && Math.abs(r.saint - 700) <= 10 && r.saintHuman && !r.pcts;
     return { ok, detail: `strongest human by world ${r.tops.join(', ')}, median ${r.meds.join(', ')}; masters ${r.masters.join(', ')}; grown dragons ${r.dragons.join(', ')}, strong ${r.strong.join(', ')}; legends ${L.map(x => x[0] + ' ' + x[1]).join(', ')}; the best man against a giant king, a grown dragon, the Saint, the Dragon King: ${r.words.join(' / ')}` };
   },
 
-  // the level is not everything (the owner, 2026-11-25): each level multiplies the might by more than the one before, and
-  // fighting power is the level's might times titles and mastery: the Sword Saint at 650 beats the Lord of the Sea at about 690
+  // the level is not everything (the owner, 2026-11-25 and 26): each level multiplies the might by more than the one before,
+  // and fighting power is the level's might times titles, items and art (skills of rank D-S, level at most 10). The three
+  // matchups he named: Sarnavoth (about 800) at a slight disadvantage against the three Primordial Archdemons together
+  // (wins 40-45%); the Sword Saint (about 700) even with ONE archdemon (770-780) through his class, titles, skills and
+  // sword; the Lord of the Sea (about 690) below the Saint
   async pwPowerNotLevel(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     const r = await pg.evaluate(() => {
-      const PW = A.POWER;
+      const PW = A.POWER, ARCH = ['ghazrul', 'morvane', 'vethrael'];
       A.newGame({ seed: 7, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
       const ratio = L => PW.mightOf(L + 1) / PW.mightOf(L);
       const steps = [25, 100, 300, 600, 800].map(ratio);
       const convex = steps.every((x, i) => i === 0 || x > steps[i - 1]);
-      const s = PW.being('sword-saint'), t = PW.being('tessaly'), c = PW.compare('sword-saint', 'tessaly');
-      const rank = PW.great().map(x => x.id);
-      return { steps, convex, far: PW.mightOf(650) / PW.mightOf(600), saint: [s.level, s.power], sea: [t.level, t.power], p: c.p, rankSaint: rank.indexOf('sword-saint'), rankSea: rank.indexOf('tessaly'), top: rank[0], topGap: PW.power(rank[0]) / PW.power(rank[1]), edges: c.edges.map(e => e.t) };
+      const king = PW.compare('sarnavoth', PW.group(ARCH));
+      const one = ARCH.map(id => [id, PW.level(id), PW.compare('sword-saint', id).p]);
+      const sea = PW.compare('sword-saint', 'tessaly');
+      const rank = PW.great().map(x => x.id), single = ARCH.concat(['sword-saint']).map(id => PW.power(id));
+      const sheets = PW.LD.legends.concat(PW.D.masters);
+      const over10 = sheets.flatMap(l => (l.skills || []).filter(k => !(k.lvl >= 1 && k.lvl <= 10) || !PW.D.power.rankW[k.rank]).map(k => l.id + ' ' + k.n));
+      const complete = sheets.filter(l => !(l.skills && l.skills.length && Array.isArray(l.items) && l.titles && l.titles.length && l.d)).map(l => l.id);
+      return { steps, convex, far: PW.mightOf(650) / PW.mightOf(600), king: king.p, kingEdges: king.edges.map(e => e.t), one, sea: sea.p, saintL: PW.level('sword-saint'), seaL: PW.level('tessaly'),
+        seaPow: PW.power('sword-saint') / PW.power('tessaly'), top: rank[0], topGap: PW.power('sarnavoth') / Math.max(...single), over10, complete, saintClass: PW.LEG.get('sword-saint').class };
     });
-    const ok = r.convex && r.far > 3 && r.saint[0] < r.sea[0] && r.saint[1] > r.sea[1] && r.p > 0.5 && r.rankSaint < r.rankSea && r.top === 'sarnavoth' && r.topGap > 3;
-    return { ok, detail: `might per level ${r.steps.map(x => x.toFixed(4)).join(' < ')}; 650 is ${r.far.toFixed(1)} times 600; the Saint (level ${r.saint[0]}) against the Lord of the Sea (level ${r.sea[0]}): power ${(r.saint[1] / r.sea[1]).toFixed(2)} times hers, wins with p ${r.p.toFixed(2)} (${r.edges.join('; ')}); ranked ${r.rankSaint + 1} and ${r.rankSea + 1}; the Dragon King first, ${r.topGap.toFixed(1)} times the next` };
+    const ok = r.convex && r.far > 3 && r.king >= 0.38 && r.king <= 0.47 && r.one.every(x => x[2] >= 0.4 && x[2] <= 0.6 && x[1] > r.saintL) &&
+      r.sea > 0.5 && r.seaPow > 1 && r.seaL < r.saintL && r.top === 'sarnavoth' && r.topGap > 5 && !r.over10.length && !r.complete.length && r.saintClass === 'Sword Saint';
+    return { ok, detail: `might per level ${r.steps.map(x => x.toFixed(4)).join(' < ')}; 650 is ${r.far.toFixed(1)} times 600. Sarnavoth against the three archdemons together: p ${r.king.toFixed(2)} (${r.kingEdges.join('; ')}); the Sword Saint (level ${r.saintL}) against one: ${r.one.map(x => `${x[0]} (${x[1]}) ${x[2].toFixed(2)}`).join(', ')}; against the Lord of the Sea (${r.seaL}): ${r.sea.toFixed(2)}, ${r.seaPow.toFixed(0)} times her power; Sarnavoth ${r.topGap.toFixed(1)} times the next single being; skills over level 10: ${r.over10.length}; incomplete sheets: ${r.complete.join(', ') || 'none'}` };
   },
 
   // the bestiary: countless kinds in families and evolution lines; the release's beasts placed by their own duel rows

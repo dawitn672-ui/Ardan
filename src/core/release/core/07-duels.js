@@ -941,7 +941,7 @@ A.startHunt = function (pc, famous) {
     terr = here ? here.terr : "plains",
     near = A.beastsNear(pc);
   // powers wave 1 (src/world/9999970-powers): the hunt may draw its quarry from the bestiary, by place and the hunter's level
-  if (A.POWER && A.POWER.hunt && A.POWER.hunt(pc, famous)) return void A.trainSkill(pc, "survival", 3);
+  if (A.POWER && A.POWER.hunt && A.POWER.hunt(pc, famous)) return void (A.gainXp && A.gainXp(pc, "survival", 0.6, "the hunt"));
   if ((A.trainSkill(pc, "survival", 3), !famous)) {
     const skill = A.skill(pc, "survival") + A.skill(pc, "bow") * 0.6 + A.stat(pc, "ins") * 0.3;
     if (near.length && A.chance(0.12)) {

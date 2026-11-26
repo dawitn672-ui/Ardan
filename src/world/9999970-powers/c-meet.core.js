@@ -179,6 +179,7 @@
     const L = PW.LEG.get(ctx.lg);
     if (!L) return '';
     PW.know(L.id);
+    { const st = PW.state(); st.metLeg = st.metLeg || {}; st.metLeg[L.id] = A.S.year; }   // met: its skills and arms are known now
     const rec = A.WHY.decide(legMind(L), 'legend', PW.greatOptions(p, ctx, react), { logIf: r => r.chose === 'rage' || r.chose === 'bargain' });
     const ans = rec ? rec.chose : 'scorn', line = ((L.reacts || {})[react] || {}).a === ans ? ((L.reacts || {})[react] || {}).line : '';
     const b = PW.being(L.id), gap = b.t - PW.being(p).t;
