@@ -257,15 +257,17 @@
   // on the page a skill is one control (the whole row opens its description); Records keeps the tier as its own
   const skillRow = r => trig(['skill', r.k], `<span class="pf-l">${esc(r.name)}${r.apt === 'apt' ? ' <span class="pf-apt" aria-label="quick to learn">★</span>' : r.apt === 'slow' ? ' <span class="pf-apt" aria-label="slow to learn">▽</span>' : ''}</span><span class="pf-tier">${esc(r.short)}</span><span class="pf-prog" aria-hidden="true"><i style="transform:scaleX(${Math.round(r.frac * 1000) / 1000})"></i></span>`, 'pf-sk', 'li');
   PF.addPanel({ k: 'skills', label: 'Skills', body: p => {
-    const arts = PF.styles(p).filter(x => x.rank > 0).slice(0, 2), rows = PF.skills(p, false).slice(0, 4);   // (S1b CI 137: four, a level is two words where a tier was one; the page's word budget, D-077)
+    // the arts of the three kinds (37-skills2's g-view, D-186): what is in hand, as one button to the Skills sheet where they
+    // are changed; it takes the fourth skill row's place, so the page's count of controls stays (B5's budget, H-157)
+    let held = [];
+    try { const K2 = A.SK2; held = K2 && K2.artsHeld && A.S && p.id === A.S.pc ? K2.artsHeld(p) : []; } catch (e) { held = []; }
+    const arts = PF.styles(p).filter(x => x.rank > 0).slice(0, 2), rows = PF.skills(p, false).slice(0, held.length ? 3 : 4);   // (S1b CI 137: four, a level is two words where a tier was one; the page's word budget, D-077)
     let s = '';
     if (arts.length) s += '<ul class="pf-list">' + arts.map(x => li(x.main ? 'Main style' : 'Style', `${note('A way of fighting taught by a school or a house. Each rank unlocks techniques you can use in a duel.', esc(x.name), 'pf-w')} <span class="pf-m2">${esc(x.rankWord)}</span>`)).join('') + '</ul>';
     s += rows.length ? '<ul class="pf-skills">' + rows.map(skillRow).join('') + '</ul>' : empty(UI.scope && !UI.scope(p).sees('skills') ? 'A babe has learned nothing yet.' : 'Nothing learned yet. Try your hand at something.');
-    // the arts of the three kinds (37-skills2's g-view, D-186): what is in hand, and the way to change it (the Skills sheet)
-    try {
-      const K2 = A.SK2, held = K2 && K2.artsHeld && A.S && p.id === A.S.pc ? K2.artsHeld(p) : [];
-      if (held.length) { const R = K2.readiedOf(p).map(x => (K2.art(x.id) || {}).name).filter(Boolean);
-        s += `<div class="pf-arts">${esc(R.length ? 'In hand: ' + R.join(', ') : 'Nothing in hand')} <button class="small" data-a="ov" data-v="profs">Arts</button></div>`; }
+    if (held.length) try {
+      const K2 = A.SK2, R = K2.readiedOf(p).map(x => (K2.art(x.id) || {}).name).filter(Boolean);
+      s += `<button class="small pf-arts" data-a="ov" data-v="profs">${esc(R.length ? 'Arts in hand: ' + R.join(', ') : 'Arts: none in hand')}</button>`;
     } catch (e) {}
     return s;
   } });

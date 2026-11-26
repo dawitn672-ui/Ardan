@@ -773,8 +773,17 @@ export function plan(uses, st, ctx) {
   return best ? best.id : null;
 }
 // a monster's or a legend's arts (mana-based ones only if it has mana): every art a newborn of its kind is born with
-// (a `birth` route whose need is `being`), at a level from its own (1 at level 1, 4 at 10, 7 at 100, 10 at 1,000)
-export const beingLevel = L => Math.max(1, Math.min(MAX_LV, Math.round(1 + 3 * Math.log10(Math.max(1, +L || 1)))));
+// (a `birth` route whose need is `being`), at a level read from its own on the ladder (H-157): Lv 1 up to a soldier's level
+// (BEING_LV_FROM, 100), then a level for each step of the logarithm, Lv 10 at the top of the scale (BEING_LV_TOP, 1,000).
+// An ordinary beast fights with its arts at Lv 1 to 4, a great one at 5 or 6, the oldest dragons near 10; a re-banded
+// bestiary carries over, since only the level is read. (It was 1 + 3 log10(level): a wolf of level 225 at Lv 8, which broke
+// the release's tier texts for a hunting party: flTierTexts.)
+export const BEING_LV_FROM = 100, BEING_LV_TOP = 1000;
+export function beingLevel(L) {
+  const l = Math.max(1, +L || 1);
+  if (l <= BEING_LV_FROM) return 1;
+  return Math.max(1, Math.min(MAX_LV, Math.round(1 + (MAX_LV - 1) * Math.log10(l / BEING_LV_FROM) / Math.log10(BEING_LV_TOP / BEING_LV_FROM))));
+}
 export function beingArts(ix, b) {
   const out = [];
   if (!b) return out;

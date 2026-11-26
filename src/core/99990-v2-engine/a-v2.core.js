@@ -1165,6 +1165,8 @@ var __ARDAN_V2_MAKE = (() => {
     ADVANCE_FROM: () => ADVANCE_FROM,
     BANDS: () => BANDS,
     BASES: () => BASES,
+    BEING_LV_FROM: () => BEING_LV_FROM,
+    BEING_LV_TOP: () => BEING_LV_TOP,
     CAP_HUMAN: () => CAP_HUMAN,
     COOL_UNITS: () => COOL_UNITS,
     CURVE_A: () => CURVE_A,
@@ -2176,7 +2178,13 @@ var __ARDAN_V2_MAKE = (() => {
     }
     return best ? best.id : null;
   }
-  var beingLevel = (L) => Math.max(1, Math.min(MAX_LV, Math.round(1 + 3 * Math.log10(Math.max(1, +L || 1)))));
+  var BEING_LV_FROM = 100;
+  var BEING_LV_TOP = 1e3;
+  function beingLevel(L) {
+    const l = Math.max(1, +L || 1);
+    if (l <= BEING_LV_FROM) return 1;
+    return Math.max(1, Math.min(MAX_LV, Math.round(1 + (MAX_LV - 1) * Math.log10(l / BEING_LV_FROM) / Math.log10(BEING_LV_TOP / BEING_LV_FROM))));
+  }
   function beingArts(ix, b) {
     const out = [];
     if (!b) return out;
