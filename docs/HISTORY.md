@@ -3087,7 +3087,7 @@ The same skills are found in the same order.
 
 ### H-154 · 2026-11-26 · lfRepeats' bar from its measured spread (CI long 142 on 030200c4)
 
-`lfRepeats` (src/war/38-orders) failed on one count only: with the repeat filter on, 9.7 prompts a year against 14 with
+`lfRepeats` (src/events/97-first-life-fixes) failed on one count only: with the repeat filter on, 9.7 prompts a year against 14 with
 it off, a ratio of 0.693 under the bar of 0.7. Its other counts held (seen before 14.6% on against 50.6% off). The
 readings so far are 0.77, 0.748 and now 0.693, after the titles' and evolutions' cards joined both arms; the bar is set
 at 0.65, outside the spread, where a filter that cut the year bare (a ratio near 0.5 or below) still fails.
