@@ -21,6 +21,8 @@ A.duelScale = function (wa, wb) {
 };
 A.shownDuelOdds = function (a, b) {
   if (!a || !b) return 50;
-  const wa = A.fightWorth(a), wb = A.fightWorth(b);
+  // (and their arts of the three kinds, D-186: 37-skills2's SK2.artsWorthOf, 0 for anyone who holds none)
+  const aw = p => (A.SK2 && A.SK2.artsWorthOf ? A.SK2.artsWorthOf(p) : 0);
+  const wa = A.fightWorth(a) + aw(a), wb = A.fightWorth(b) + aw(b);
   return 100 / (1 + Math.exp(-((wa - wb) / A.duelScale(wa, wb) + A.DUEL_ODDS.seat)));
 };

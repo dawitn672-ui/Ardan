@@ -128,6 +128,8 @@
     }
     // a near death is a moment (36-skills' life marks the month it came: sk_neardeath)
     if (pc.flags && pc.flags.sk_neardeath === A.S.year && !(K && K.nd === A.S.year)) { SK2.ke(pc).nd = A.S.year; SK2.moment(pc, 'near_death', { why: 'a near death' }); }
+    // the arts of the three kinds (step 11, D-186; f-kinds): grown from the month's work, learned by their routes
+    if (SK2.artsMonth) SK2.artsMonth(pc, v);
   };
   SK2.offer = function (pc, r, how) {
     const ix = IX(), K = SK2.ke(pc), names = r.parts.map(p => ix.BY[p.id].name.toLowerCase());

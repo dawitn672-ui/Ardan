@@ -10,7 +10,7 @@
 // - data/skills.json: unique ids; nine concepts a skill in the 1-1-2-2-2-1 shape; every kin, legacy and shared key
 //   resolves; every concept has a description and a "never grasped" line of at most 14 words; every skill has a reader
 //   (a card's check, a post, a plan or a hook names it).
-// - data/skills/ (the skills rebuild, docs/design/skills-v2.md §2.7): the ten checks of tools/lib/skills2-check.mjs
+// - data/skills/ (the skills rebuild, docs/design/skills-v2.md §2.7): the eleven checks of tools/lib/skills2-check.mjs
 //   (schema, references, budget, stats apart, ladders whole, reachable, no loops, up not down, shares, names).
 import fs from 'node:fs';
 import path from 'node:path';

@@ -72,6 +72,13 @@ A.duelAct = function (act) {
     if ((tt && tt.fx && tt.fx.ranged && D.round >= 2) || ((tech = A.techUse(a, t0.id)), !tech)) return D;
     act = tech.base;
   }
+  // the skills rebuild, step 11 (D-186): a readied art of the three kinds, "k:<id>", rides on its move (an active's blow,
+  // a buff's guard); when it is not ready nothing happens
+  let art = null;
+  if (typeof act == "string" && act.startsWith("k:")) {
+    if (!A.SK2 || !A.SK2.duelPick || !(art = A.SK2.duelPick(D, a, act.slice(2)))) return D;
+    act = art.base;
+  }
   if ((D.round++, act === "yield")) {
     A.duelFinish(D, a.isPC ? "yield" : "win", `You lower your ${a.weapon.toLowerCase()} and ask for quarter.`);
     return D;
@@ -127,6 +134,10 @@ A.duelAct = function (act) {
         `${f.isPC ? "The blood fury" : "Blood fury"} takes ${f.isPC ? "you" : f.short}: no fear, only speed and weight.`,
       );
     }
+  // the arts (D-186): the foe's, chosen by the pure A.V2.skills2.plan on the move he announced (none with a technique),
+  // then each side's round: costs spent, buffs begun, heals, passives weighed, every bonus inside its cap
+  const bArt = !bTech && A.SK2 && A.SK2.duelPlanFor ? A.SK2.duelPlanFor(D, b, a, bAct) : null;
+  if (A.SK2 && A.SK2.duelRound) A.SK2.duelRound(D, a, b, art, act, bArt, bAct);
   const crA = A.CR(a, D),
     crB = A.CR(b, D),
     sitA = A.situEdges(a, b, D, act),
@@ -204,9 +215,12 @@ A.duelAct = function (act) {
             (A.applyHit(D, a, b, 0.6, act), A.applyHit(D, b, a, 0.6, bAct))),
     tech && A.techAfter(D, a, b, tech, margin > 0, margin),
     bTech && A.techAfter(D, b, a, bTech, margin < 0, -margin),
+    // the arts (D-186): a blow and a foe's state land on an exchange won; then what lasts for rounds runs down
+    A.SK2 && A.SK2.duelAfter && A.SK2.duelAfter(D, a, b, art, act, bArt, bAct, margin),
     (a.tmod = null),
     (b.tmod = null),
     A.techTick && (A.techTick(D, a), A.techTick(D, b)),
+    A.SK2 && A.SK2.duelTick && (A.SK2.duelTick(D, a), A.SK2.duelTick(D, b)),
     D.nonlethalEnd && !D.over)
   ) {
     const r = D.nonlethalEnd;
@@ -298,6 +312,8 @@ A.applyHit = function (D, att, def, margin, act) {
     (dmg = Math.max(2, dmg - prot * 1.6)),
     def.hide && (dmg *= 1 - def.hide),
     def.woundRes && att.wkind !== "dagger" && (dmg *= 1 - def.woundRes * 0.4),
+    // step 11 (D-186): a guard in force (a buff's, a passive's) takes its share off every blow, at most half
+    def.k2 && def.k2.guard > 0 && (dmg *= 1 - def.k2.guard),
     def.fragile && ["mace", "club", "hammer", "beast", "fists", "staff"].includes(att.wkind) && (dmg *= def.fragile),
     big && (dmg *= 1.5),
     (dmg = Math.round(dmg * A.rf(0.85, 1.15))),
@@ -393,6 +409,13 @@ A.duelFinish = function (D, result, text) {
   D.over = true;
   D.result = result;
   D.log.push(text);
+  // step 11 (D-186): the player's arts grow by their uses; a month's cooldown kept; the deeds a route may ask
+  if (A.SK2 && A.SK2.duelEnd)
+    try {
+      A.SK2.duelEnd(D);
+    } catch (e) {
+      console.error("skills2: the end of a fight", e);
+    }
   D.summary = A.duelConsequences(D);
 };
 
@@ -636,6 +659,11 @@ A.duelAuto = function (D) {
     ) {
       const o = A.aiTech(D.a, act, D);
       if (o && o.t.base === act) act = "t:" + o.x.id;
+      // else a readied art on the move chosen, by the same pure choice everyone's is made by (D-186)
+      else if (A.SK2 && A.SK2.duelPlanFor) {
+        const k = A.SK2.duelPlanFor(D, D.a, D.b, act, true);
+        if (k) act = "k:" + k;
+      }
     }
     A.duelAct(act);
   }

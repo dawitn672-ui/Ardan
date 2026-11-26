@@ -500,6 +500,25 @@ order is replaced, strike it through and say by what.
       monsters and creatures fit in between for the players (my reading: the legends scale by 1000/800; the human and
       dragon anchors of order 84 stay; D-185).
 
+93. **The map larger, with a Hell; only the known on it; new anchors for every kind** · recorded 2026-11-26. Kept
+    unchanged in `docs/prompts/2026-11-26-map-hell-anchors.md`. The map lock is not approved yet:
+    - **The Dragon Mountains are one place;** no clutter of red dots (lairs) across the map.
+    - **Where the Sword Saint lives** is settled, or left unknown.
+    - **The map much larger,** to fit **a Hell where the three Primordial Archdemons preside and dispute one another,
+      ruling the lower demons** (replaces order 84's "no demon kingdom").
+    - **Far more kingdoms and places.**
+    - **Only what is known is on the map;** the unknown is written elsewhere. A legend's kingdom, title or known home
+      shows; otherwise only what a player should know.
+    - **The anchors stretched:** average people 20-50; soldiers 80-180; knights 230-299; a kingdom's elite 300-420
+      (by the kingdom); the strongest humans, elves and other playable races on the continent 500-700, very few; an
+      average grown dragon about 700; an average great demon about 650; lower demons 300-500 (replaces order 84's
+      anchors; Sarnavoth at 1000 stands from order 92).
+    - **The levelling reviewed and refined** as I judge best, adjusted as needed.
+
+94. **Knights do not stall at 299** · recorded 2026-11-26. Kept unchanged in `docs/prompts/2026-11-26-knights-past-300.md`.
+    230-299 is the ordinary knight; a knight can pass 300, and one who does is more than an ordinary knight (the wall at
+    300 is a threshold to cross, with its class branch, not a ceiling; refines order 93).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,

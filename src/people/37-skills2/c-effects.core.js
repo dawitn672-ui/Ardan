@@ -30,16 +30,18 @@
   const TAGS = new Map(), MEMO = new Map();
   function active() {
     if (ACT) return ACT;
-    const I = IX(), Eng = E(), fams = new Set();
-    let named = false;
+    const I = IX(), Eng = E(), fams = new Set(), ids = [];
     for (const s of I.skills) {
       let any = false;
       for (const b of s.levels || []) for (const e of b.effects || []) if (e && e.type !== 'perk') any = true;
       if (!any) continue;
       const rung = s.family && Eng.HUMAN.includes(s.rank) && Eng.rungOf(I, s.family, s.rank) === s.id;
-      if (rung) fams.add(s.family); else named = true;
+      if (rung) fams.add(s.family); else ids.push(s.id);
     }
-    return (ACT = { fams: [...fams].sort(), named, none: !fams.size && !named });
+    // the named skills that carry effects, sorted: SK2.held looks only these up in p.ks (H-153: walking every held rung
+    // on each check made the month's pass half as slow again once step 8's merged arts carried edges)
+    ids.sort();
+    return (ACT = { fams: [...fams].sort(), named: ids.length > 0, ids, none: !fams.size && !ids.length });
   }
   const freeze = o => { if (o && typeof o === 'object' && !Object.isFrozen(o)) { Object.freeze(o); for (const k in o) freeze(o[k]); } return o; };
   // after the data changed under the page (a test plants effects): forget what was worked out from it
@@ -67,9 +69,9 @@
     const Eng = E(), I = IX();
     const sealed = SK2.sealed ? SK2.sealed(p) : [];
     for (const c of act.fams) { const r = SK2.rungFor(p, c); if (r) for (const h of Eng.heldOfRung(I, c, r.rank, r.lv)) if (!sealed.includes(h.id)) out.push(h); }
-    if (act.named && p.ks && typeof p.ks === 'object') for (const id of Object.keys(p.ks).sort()) {
-      const s = I.BY[id], e = p.ks[id];
-      if (!s || !e || !(e.lv >= 1) || (s.family && Eng.rungOf(I, s.family, s.rank) === id)) continue;
+    if (act.named && p.ks && typeof p.ks === 'object') for (const id of act.ids) {
+      const e = p.ks[id];
+      if (!e || !(e.lv >= 1) || !I.BY[id]) continue;
       out.push({ id, lv: Math.min(Eng.MAX_LV, e.lv) });
     }
     if (x) { regX(); out.push(...x); }
@@ -140,7 +142,7 @@
   // ---- fight: A.fighterFrom's hook --------------------------------------------------------------------------------------
   // the worth A.fightWorth gives this fighter (the same sum), before any skill's fight effect
   SK2.worthOfFighter = function (f) {
-    const v = A.CR(Object.assign({ fat: 0, burst: 0, fury: 0, hp: 100, maxHp: 100, adapt: 0, mounted: false }, f, { sk2: null }), { round: 5 });
+    const v = A.CR(Object.assign({ fat: 0, burst: 0, fury: 0, hp: 100, maxHp: 100, adapt: 0, mounted: false }, f, { sk2: null, k2: null }), { round: 5 });
     return Math.max(0, v + (f.wdmg || 3) * 0.9 + (f.prot || 0) * 1.1 + (f.shield || 0) * 1.4);
   };
   SK2.fightOn = function (f, p) {

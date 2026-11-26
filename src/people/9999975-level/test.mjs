@@ -170,13 +170,13 @@ export default {
         for (const id in before) { n++; if (after[id] !== before[id]) { diff++; if (diff <= 3) bad.push(id + ' ' + before[id] + ' -> ' + after[id]); } }
         const pc = A.pc();
         // a save made since the level (version 18 and on) keeps the level it held, earned in play: only an older one is seeded
-        // (save version 20, D-184): everyone with a held level has his walls settled, the classes worn, nothing paid
+        // (save version 21, D-184): everyone with a held level has his walls settled, the classes worn, nothing paid
         for (const id in A.S.people) {
           const q = A.S.people[id]; if (!q || !q.lv || q.lv.L == null || !q.st) continue;
-          if (q.lv.ct !== Math.floor(q.lv.L / 100) && ver0 < 20) { bad.push(id + ' walls ' + q.lv.ct + ' at ' + q.lv.L); break; }
-          if (ver0 < 20 && ((q.lv.cr || []).some(x => x[2]) || q.lv.wp)) { bad.push(id + ' a class paid on load'); break; }
+          if (q.lv.ct !== Math.floor(q.lv.L / 100) && ver0 < 21) { bad.push(id + ' walls ' + q.lv.ct + ' at ' + q.lv.L); break; }
+          if (ver0 < 21 && ((q.lv.cr || []).some(x => x[2]) || q.lv.wp)) { bad.push(id + ' a class paid on load'); break; }
         }
-        if (ver0 < 20 && !steps.includes('classes')) bad.push('no classes step (' + steps.join(',') + ')');
+        if (ver0 < 21 && !steps.includes('classes')) bad.push('no classes step (' + steps.join(',') + ')');
         if (pc && pc.alive && ver0 >= 18) { if (!pc.lv || !(pc.lv.L >= 1)) bad.push('no held level'); }
         else if (pc && pc.alive) {
           if (!pc.lv || !(pc.lv.L >= 1)) bad.push('no held level');

@@ -1859,6 +1859,9 @@ A.CR = function (f, D) {
   // the skills rebuild, step 6 (D-180): held skills' fight effects in fight-worth points, at most +15% of the fighter's
   // worth (A.SK2.fightOn sets f.sk2 in A.fighterFrom); a burst counts in the first three rounds
   if (f.sk2) v += f.sk2.steady + (D.round <= 3 ? f.sk2.burst : 0);
+  // step 11 (D-186): this exchange's fight points from the arts of the three kinds (passives firing, buffs in force), set
+  // by A.SK2.duelRound under the same cap, shared with the effects above
+  if (f.k2) v += f.k2.fight || 0;
   return v;
 };
 
@@ -2090,6 +2093,8 @@ const startDuelNow = function (pc, foe, opts) {
           mounted: opts.mounted,
         })),
     opts.foeMods && Object.assign(D.b, opts.foeMods),
+    // step 11 (D-186): each side's arts of the three kinds, readied and held (f.k2; A.SK2.duelStart draws no dice)
+    A.SK2 && A.SK2.duelStart && A.SK2.duelStart(D, pc, foe),
     !["spar", "tourney", "brawl"].includes(D.kind) && D.ground !== "passage" && D.ground !== "deck")
   )
     for (const [f, o] of [

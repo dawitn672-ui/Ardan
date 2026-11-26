@@ -328,7 +328,9 @@ if (typeof armFor === 'function') A.armFor = function (p) {
 // you may be hurt. The number on a profile now reads the worth they fight with and the health you both have.
 if (typeof A.shownDuelOdds === 'function') A.shownDuelOdds = function (a, b) {
   if (!a || !b) return 50;
-  const wa = FL.worthWith(a, FL.armsFor(a, {})), wb = FL.worthWith(b, FL.armsFor(b, {}));
+  // (and what their arts of the three kinds are worth: 37-skills2's SK2.artsWorthOf, D-186; 0 for anyone who holds none)
+  const aw = p => (A.SK2 && A.SK2.artsWorthOf ? A.SK2.artsWorthOf(p) : 0);
+  const wa = FL.worthWith(a, FL.armsFor(a, {})) + aw(a), wb = FL.worthWith(b, FL.armsFor(b, {})) + aw(b);
   const drew = (FL.draws(b, 'lethal') ? 1 : 0) - (FL.draws(a, 'lethal') ? 1 : 0);
   return 100 / (1 + Math.exp(-((wa - wb) / FL.scaleAt(wa, wb) + DO.seat + FL.HEALTH * (healthF(a) - healthF(b)) + FL.DREW * drew)));
 };
@@ -341,15 +343,18 @@ FL.duelMeasure = function (D) {
   const m = { wA: Math.round(FL.fWorth(a)) };
   m.tA = A.tierOf(m.wA).n;
   let p;
+  // the arts both sides hold in this fight count in its chance (37-skills2's SK2.artsWorth, D-186): the tiers stay the worth's
+  const aA = A.SK2 && A.SK2.artsWorth ? A.SK2.artsWorth(D, a) : 0, aB = A.SK2 && A.SK2.artsWorth ? A.SK2.artsWorth(D, b) : 0;
+  if (aA || aB) m.arts = [Math.round(aA * 10) / 10, Math.round(aB * 10) / 10];
   if (b.beast) {
     const row = FL.duelRow(b.beast), party = !!D.party, w50 = party ? row[2] : row[0], s = party ? row[3] : row[1];
-    p = w50 == null ? 0 : logistic((m.wA - w50) / s + FL.BEAST_HEALTH * (hfA - 1));
+    p = w50 == null ? 0 : logistic((m.wA + aA - w50 - aB) / s + FL.BEAST_HEALTH * (hfA - 1));
     m.beast = b.beast; m.party = party; m.btier = A.beastTier(b.beast); m.w50 = w50;
   } else {
     const hfB = b.maxHp ? A.clamp(b.hp / b.maxHp, 0.3, 1) : 1;
     m.wB = Math.round(FL.fWorth(b)); m.tB = A.tierOf(m.wB).n; m.weaponB = b.weapon;
     m.rule = FL.ruleOf(D); m.drew = !!D._flDrew;
-    p = FL.duelP(m.wA - m.wB, hfA, hfB, m.rule, m.drew ? 1 : 0);
+    p = FL.duelP(m.wA + aA - m.wB - aB, hfA, hfB, m.rule, m.drew ? 1 : 0);
   }
   m.p = A.clamp(p, FL.CLAMP[0], FL.CLAMP[1]); m.pct = Math.round(m.p * 100);
   return m;

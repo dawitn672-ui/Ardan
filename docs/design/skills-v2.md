@@ -838,7 +838,7 @@ sees.
 | 8 | Merging and advancing; D-163's budget shared | `sk2Merge`, `sk2Advance`: one each in a bot life (seed fallback), each named; at most one advance a life | Done (H-146, D-182): eight recipes (level-10 parts only), the parts absorbed; an advance 1 in 100 a named moment by its hash, once a life, a breakthrough of the budget; the tests plant the parts (seed fallback for a teacher) |
 | 9 | The rest of the 200 (named, faith, houses, offices, trauma, flaws), the census, `C.has/C.rank`, `gain/lose/focus` fx; `data/skills.json` to `archive/` | `sk2OneHolder` (no unique or summit with two living holders over a 100-year life, the one-holder audit); house secrets deterministic from the seed |  |
 | 10 | The skills screen and card (§8); every player-facing word of §6.1 replaced | `sk2Phone` (375 × 667, no horizontal scroll, 44-point targets), click-open lint, no-percent lint, no level word lint; the `ardan-ui-review` pass |  |
-| 11 | Actives and slots in duels and battles; auras into the war core | `sk2Active` (a readied active used once a duel at most); war unit tests read auras |  |
+| 11 | Actives and slots in duels and battles; auras into the war core | `sk2Active` (a readied active used once a duel at most); war unit tests read auras | Partly done (H-150, D-186): the owner's three kinds (order 92) in the data, the validator (check 11) and the engine; 46 arts; slots, readying and use in duels (both sides, pure choices), buffs for a fight or a month, mana only for monsters and legends; the view (§16). Battles, auras into the war core and actives at work wait (§16.6) |
 | 12 | Balance: the harness measures A and S shares per path | `balance.mjs`: B → A under 1 in 100 lives, A → S near 1 in 1,000, no life at S before 30; bands written in `targets.mjs` |  |
 
 Titles (§11.9, three commits) come after step 9; the person's level, stat points, training and professions
@@ -1192,3 +1192,86 @@ their four templates; honours are titles and posts given for reasons, never auto
 7. **No range** (order 83): skills are used in combat or training; a rare skill may note a special reach where it truly matters.
 8. **Level 10 is the cap** (order 87): past it a skill only evolves or merges with a compatible level-10 skill; no level 11.
 9. **Where experience comes from** (order 88): a skill's experience comes from using it (each related move, movement or use of the ability, in a fight or in training or at work); a person's level, and so his stat points, from experience for killing or defeating people and monsters, more for a stronger foe (read on the power ladder). §12's "level from every walk of life" is replaced: the roads beyond combat raise their skills, and their titles and standing, not the level.
+
+## 16. The three kinds of skill (the owner's order 92, 2026-11-26; step 11 as built, D-186)
+
+"There are active skills like combat oriented from melee and swordsmanship to mana based. There are also passive skills
+that activate under certain conditions, give large effects or boosts, and then there are buff skills like healing and
+temporary stat increasing skill." (order 92, `docs/prompts/2026-11-26-classes-and-scale.md`)
+
+### 16.1 An art
+
+An **art** is a skill of one of the three kinds, marked `art: true` in its data (`data/skills/kinds/`): `kind` is
+`active`, `passive` or `buff`. A ladder's rung and a merge's result stay what they were: passives of the older sense,
+always at work, with no moment (§4's table keeps its other kinds for later waves). An art acts only in its **moment**:
+
+| Kind | Its moment | What it may do | Slot |
+|---|---|---|---|
+| active | one `active` effect riding on a duel move (`base`: strike, feint, guard, press, grapple), optionally only when its own trigger holds (`on`: the first exchange for a lance, a shot) | a blow (`strike`: a share of the user's fighting worth, on an exchange won; `pierce` optional), a foe's state (`status`: stun, knock, bleed, slow, disarm, tire), a fight edge, a heal | yes |
+| passive | one or more `trigger` effects (`on`: wounded, near_death, first_strike, attacked_first, parried, win, lose, dawn, night, outnumbered, foe_stronger, foe_wounded, duel_start) | a fight edge, a guard, a heal (once a fight when it has a cooldown); with a duration it lasts that long | no |
+| buff | one `active` effect | a heal (`heal` of hp or wind in a fight; of wounds or illness in a month), a raise (`raise`: a stat for its rounds, the fight or a month), a guard, a fight edge for its duration | in a fight only |
+
+Every art is **fully specified** (§15.6): `spec.cooldown` (`{ v, per }`: round, duel, battle, day, month, season,
+year), `spec.cost` (`[{ res, v }]`: stamina, mana or time), `spec.effect` (the Lv-1 band's first amount or share: the
+bands raise it at Lv 5 and 10), `spec.duration` (what lasts) and `spec.conditions` (the weapon in hand: a family or a
+legacy key, `melee`, `shield`, `mounted`, `ranged`; or the being that can hold it: `{ being: { fam, magic } }`). No
+range (order 83). A person's art names the family whose work grows it (`trains`); a being's art is born (`via: birth`).
+
+### 16.2 Costs, budget and caps
+
+The budget is §2.4's: a share is worth 40 points a whole for a blow or a heal (a C rung's first level, 2, buys a
+twentieth), 30 for a guard; a raise 2 a point for a fight, 3 for a month; a stun 3 a round, a knock 2, a bleed 1 a
+point, a slow or a disarm half, a tire a quarter; a wound healed 4. An active or a buff multiplies by its cooldown
+(`E.coolFactor`: once a fight 1, every v exchanges 4.5 / v up to 1.5, once a month 0.5, a season 0.4, a year 0.25); a
+passive by the trigger's factor (½, ¼ for a rare one). The new caps (in the engine's `CAP_HUMAN` up to S, rising above
+it in `vocab.json`): **one blow at most 0.4 of the worth; one fight's heals at most 0.35 of the blood; a guard at most
+half a blow; a stat raised by buffs at most +10; a foe held at most two exchanges.** The fight points of the arts in an
+exchange share §2.4's 15% with the rungs' own fight effects. Data cannot lift a cap.
+
+### 16.3 Slots and readying
+
+§3.5 as written: one place at 12, two at 16, +1 for intellect and will both 50 or more, from 30 +1 for any skill at B and
++1 more for A, at most five. The player readies his actives and his fighting buffs on the Skills sheet; one readied this
+month is in hand from the next (changing what is readied takes a month, never in a fight). A month's buff and a passive
+need no place. Anyone else readies by `E.chooseReady` (pure: the best by worth at its level that his weapon allows, a buff
+among two places or more); a beast readies all it has, up to five.
+
+### 16.4 In a fight
+
+The release's duel (`A.duelAct`) asks the adapter at four points: the round's start (`SK2.duelRound`: the arts used, their
+costs and cooldowns, the buffs begun, the heals, the passives weighed, every bonus capped), `A.CR` (the arts' fight points,
+`f.k2.fight`), `A.applyHit` (the guard, `f.k2.guard`) and after the exchange (`SK2.duelAfter`: a blow and a state land on
+an exchange won; `SK2.duelTick`: what lasts runs down, a raise gives its points back). The player presses an art's button
+(`k:<id>`; nothing happens when it is not ready); the foe, and the player when he lets the fight run, choose by the pure
+`E.plan` on the move they make (a heal under half the blood, a buff in the first three exchanges or when behind, an active
+whenever it is ready). Nothing draws from the dice. A use brings the art experience (§15.9: by use), a month's cooldown is
+kept in `pc.kcd`, and a fight won above you or a beast survived is counted for routes that ask a deed (`pc.kd`).
+
+**The odds count the arts** (D-186): the duel screen's chance and a profile's (`A.shownDuelOdds`) read each side's worth
+plus what its arts are worth (`SK2.artsWorth`, `SK2.artsWorthOf`): a passive that holds for the whole fight gives its fight
+points flat, the rest k x the root of their value by use (k 0.41 a person, 0.8 a beast), fitted on the duel engine;
+`A.fightWorth`, the tiers and the power ladder are untouched.
+
+### 16.5 Who holds what; mana
+
+The player learns an art at the month's turn by a route the data names (practice: his family's read; teacher: a school or
+someone he learns from at the rank; deed: counted in `pc.kd`; evolve: the art below at Lv 10), at most two a month, and it
+grows by use and by half his month's experience in its family. Anyone else holds arts in the closed form (`E.npcArts`):
+every art whose practice, teacher or school route his reads meet, a level each three points past the need. **Mana**
+belongs only to beings whose data has magic: a monster's or a legend's pool is ten a step of its bestiary magic
+(`E.manaOf`), and its arts are those its kind is born with (`E.beingArts`, a level from its own: 1 at level 1, 10 at
+1,000). A mana-based art is refused by the validator unless every route and its conditions ask a being with magic; a
+person has none until magic (`docs/MASTER_PROMPT.md` §17).
+
+### 16.6 What waits, and how it will plug in
+
+- **Battles.** `A.lineBattle`'s personal fight (09-missions-and-line-battles) and the companies' engagements call
+  `SK2.fighterArts` for the player's fighter as the duel does, with `per: 'battle'` cooldowns counted once a battle; the
+  passives' battle triggers (`battle_start`, `rout`, `siege`, `outnumbered` by the field's numbers, `ambushed`) are read
+  by `E.fires` from the battle's state. Auras (§2.3) go into the war core's morale and discipline through `A.CAPS(p).auras`.
+- **Actives at work.** An active whose `do` is an `edge` on a check tag, readied, is offered on a card's check that names
+  its tag: the odds shown read it while it is ready (pure), and the roll spends it (`pc.kcd`).
+- **Anyone else's month.** NPCs use no month's buffs; their arts are not stored. Legends hold their arts (`E.beingArts`)
+  for when they fight through the duel engine; today their fights are the powers' comparisons (D-176, D-177).
+- **The library.** 46 arts now (20 active, 15 passive, 11 buff); the rest of step 9's library brings the D and C arts that
+  keep check 9's shares once it passes 200.

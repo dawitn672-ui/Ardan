@@ -19,7 +19,7 @@
 // A.canAct holds to those who have the class: LV.hasAct). Every class on his road keeps its parts; the class he holds now
 // gives its effects in the skills adapter (SK2.xClass), so the caps bind it with his skills and titles. A class read at
 // seeding (worn: on load, at the first month, at an NPC's first fight) has its parts and no effects, honour or points.
-// State (optional, old saves load; the save step 'classes', version 20): p.lv.ct (the walls settled), p.lv.cr ([[class,
+// State (optional, old saves load; the save step 'classes', version 21): p.lv.ct (the walls settled), p.lv.cr ([[class,
 // year, earned 1 or worn 0]], his road), p.lv.wp (the player's walls waiting for an answer), p.lv.bf ([stat, v, months]:
 // a buff running). Nothing here draws on render.
 (function () {
@@ -261,7 +261,7 @@
     if (Array.isArray(lv.bf)) { lv.bf[2]--; if (!(lv.bf[2] > 0)) { delete lv.bf; if (A.cacheResetAll) try { A.cacheResetAll(); } catch (e) {} } }
   };
   A.onMonth.push(pc => { try { CL.month(pc); } catch (e) { console.error('[level] classes month', e); } });
-  // save version 20: everyone with a held level has his walls settled (worn classes: nothing paid, no effects)
+  // save version 21: everyone with a held level has his walls settled (worn classes: nothing paid, no effects)
   CL.migrate = function (S) {
     S = S || A.S; let n = 0;
     for (const id in (S && S.people) || {}) { const p = S.people[id]; if (p && p.lv && p.lv.L != null && p.lv.ct == null) { LV.settleSeeded(p); n++; } }

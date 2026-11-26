@@ -37,4 +37,5 @@ To see one as it was in its own version, `node tools/version.mjs get <version>` 
 | `skills-v16-before-the-switch.ardan` | (save version 16) | a noble of 23, saved by the build before the skills rebuild's switch (`d99799c2`): S1's table with its rungs beside it; `sk2Migrate` loads it through the switch (every read the same on load, the held half steps landed by the first month) | Load it; the Profile's skills read "C · Lv 3" and the like |
 | `v2.1.0-alpha.17-noble-life.ardan` | v2.1.0-alpha.17 | a noble's first three years: any version's world, loaded and played on | Load it from the Menu (Load save file); the Life tab |
 | `v2.1.0-alpha.18-noble-life.ardan` | v2.1.0-alpha.18 | a noble's first three years: any version's world, loaded and played on | Load it from the Menu (Load save file); the Life tab |
+| `v2.1.0-alpha.19-noble-life.ardan` | v2.1.0-alpha.19 | a noble's first three years: any version's world, loaded and played on | Load it from the Menu (Load save file); the Life tab |
 <!-- saves:end -->
