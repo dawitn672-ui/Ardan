@@ -3014,3 +3014,60 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
 - **Deferred** (skills-v2 §16.6): battles (the line battle's personal fight and the companies), auras into the war core,
   actives at work (an edge on a card's check), NPCs' month buffs, legends' arts in their own fights, and the rest of the
   library (check 9's shares bind at 200 skills; the library is 194).
+
+### D-192 · Evolution replaces; a rank's jump at a breakthrough, not a rare leap; titles as game changers (2026-11-26; order 95; replaces skills-v2 §15 answer 2 and D-182's advance; D-163, D-183)
+- **An evolved skill becomes the next skill and is gone** (order 95, replacing order 82's answer 2). Of a family's
+  ladder only the top rung is held: `SK2.fromS1` writes no rung below it, so the month's sync (which rewrites a stale
+  family from S1's table) writes back only the top; the family reads through it (`SK2.reads`, the mirror, `SK2.label`);
+  the log, the record and the card say the old one became the new. **Nothing a check reads drops:** what the old rungs
+  gave passes on through the line (`E.heldOfRung` returns the top rung with `line`, the rungs it evolved from;
+  `E.lineEffects` gathers their effects at Lv 10, lowest first, then the top's own, a later rung's effect replacing an
+  earlier one's of the same slot, as a later band does within a skill). Perks are served by the read of their key, so
+  every perk sum is the release's (`sk6PerkSums`). The closed form is the same rule through `SK2.rungFor`. **Arts too**
+  (an art is a skill): `SK2.artGone` deletes an art when its evolution is learned (its place in hand passes on, its
+  cooldown is forgotten, the new art's `fr` keeps it from being learned again) and `E.npcArts` drops the source of an
+  evolution held. A merge's parts stay as D-182 left them (sealed, read through `pc.ke.m`); a rung a merge absorbed
+  gives no effect of its own (its merge does). **Considered:** keeping the old rungs in `pc.ks` and hiding them (two
+  truths of one ladder; the owner's "it's gone"); stacking the line's effects as separate sources (an evolution would
+  then give more than the skill it became: a same-slot effect counted twice).
+- **Save version 21** (step `skills2line`, `SK2.migrateLine`): a save of version 20 or older holds every rung below a
+  family's top at Lv 10 and maybe an art beside its evolution; both are retired on load, every read the same (sk2Evolve
+  plants it; sk2Migrate's 26 samples read the same). The level builder is at 21 on its branch: the integrator settles
+  the number at the merge.
+- **A rare leap is not an event: the advance is archived** (`archive/skills2-advance/`, last in the build at
+  `5e5dab5e`). In its place **`E.rankJump(ix, held, facts)`** (pure) and **`A.SK2.rankJump(p, k, o)`** (with
+  `jumpFacts`, `jumpVerdict`, `rankJumps`), which the level calls at every hundredth wall ("a breakthrough happens every
+  100 levels where your stats are boosted and skills can jump ranks if multiple conditions allow it"). It jumps a skill
+  to the next rank's Lv 1 when it stands at Lv 5 or more (`JUMP_FROM`), at least two (`JUMP_NEED`) of three conditions
+  are met in full — **concepts** (every concept its evolution's route asks), **deed** (the route's deed; for a route
+  that asks none, a `proved` deed of the target's rank), **talent** (the family's letter at least the target rank:
+  `JUMP_TALENT`) — and every other need of the route holds (the S rung's thirty years); never an absorbed skill. The
+  player's facts are his table's, anyone else's the closed form's (concepts by S1's hash for his years of work, his post
+  as his deed). The old rung is gone into the new (above). **Considered:** all three conditions (a jump would then be a
+  mere shortcut through an evolution already earned: the owner wants a breakthrough to matter); any one (every talented
+  man would jump at every wall).
+- **D-163's budget:** a jump neither reads nor spends it (the advance spent one of three). The budget now covers only the
+  body's stopgap breakthroughs (`A.breakthrough`, `VS.breakthrough`) until the level's walls replace them (A2, the level
+  builder's call); how often a jump can come is how often a life reaches a wall.
+- **Titles can be game changers: share boosts, with a cap of their own.** A title's `boost` effect (`{ type: 'boost',
+  of: fight | check | income | growth, tag?, v }`) raises by a share the holder's fighting worth (`f.ttb`, set in
+  `SK2.fightOn`, added in `A.CR`: every duel, the honest odds and `A.fightWorth` read it, as they already read a title's
+  fight effects since D-183), a family's checks (`A.skillEff`: a share of the read), a post's yearly pay, or the
+  experience he gains (`A.gainXp`: a share more effort). Boosts stack 1, 1/2, 1/4, 1/8 **in a pool of their own,
+  apart from the skills' caps** (+15% of worth, +12 a check), at most the cap of the rarest title among the sources:
+  **uncommon 0.02, rare 0.05, legendary 0.15, one of a kind 0.25** (`E.CAP_BOOST`, the ceiling; `data/titles/vocab.json`
+  `boost.cap` may only lower it); only a title boosts. Measured at near-even odds (ttGameChanger, 24 pairs): Blooded
+  moves a duel about 5 points, the Undefeated about 21, Wyrm-Slayer about 45. **Bigger stat boosts:** a title's most on
+  one stat by rarity, +2, +3, +5, +6 (was +3 for all); skills and titles together still at most +10 a stat, never past the
+  potential by more than 5. The sixteen titles re-budgeted (`lint-titles`: boosts named, positive, within their rarity's
+  cap; the vocab's caps within the engine's; stats within their rarity's most). **The legends' matchups hold:**
+  `PW.titleRef` reads only name, honour, buffs, born and req, none of which changed (the Sword Saint's person effects
+  gained a boost and +2 speed for whoever earns it after Cael); `pwPowerNotLevel` and `ttLegends` read the same
+  (Sarnavoth 0.41 against the three, the Saint 0.53/0.46/0.47 and 0.77 over the Lord of the Sea). **Considered:** raising
+  the skills' 15% for titles (one cap would then bind both and a title's game change would crowd out the skills');
+  priced boosts in the point budget (the budget is per weight, not rarity: a C-weight legendary could never change a
+  fight). Hints stay gone from what a player reads of a title (order 92): boosts are printed in words ("a quarter more
+  might in a fight"), never as numbers.
+- **Deferred:** the skills' own `growth` effect type still has no reader (titles' growth reads through `boost`); an
+  income boost reads a post's yearly pay only (not offices' pay or trade); the descriptions' pay factors do not list a
+  title's; `pupil_taught` and `king_made` still have no source.

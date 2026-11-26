@@ -5,6 +5,18 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **An evolved skill becomes the new one.** When a skill evolves, the old one is gone into it: Basic Swordsmanship
+  becomes Measured Blade rather than staying beside it, and everything the old one gave you carries on in the new. The
+  same goes for arts: Quick Cut becomes Twin Cut, and its place in hand passes on. Saved games tidy away the old skills
+  on load; nothing you can do gets worse.
+- **No more rare leap.** A skill no longer leaps a rank by luck after a great fight or a brush with death. Instead, a
+  breakthrough will come at every hundredth level, where a skill can jump a rank if enough is already in place: what it
+  asks understood, its deed done, or the talent for it.
+- **Titles can change a fight.** The rarer titles now give more: a share more might in a fight, more skill in a
+  family's tasks, more pay or quicker learning, and bigger boosts to the body. An uncommon title tips a close duel a
+  little; one of a kind, like Wyrm-Slayer, turns an even fight into one you should win. Always said in words, never
+  numbers.
+
 ## v2.1.0-alpha.19 (2026-11-26 10:12 ET) · Skills evolve at level 10, two can merge, a rare leap once a life; titles earned by hidden deeds, stacked under the same limits
 
 - **Titles.** The world now gives names for what you do: the Undefeated, the Unbought, Ironhide, the Hundred-Day Wall,
