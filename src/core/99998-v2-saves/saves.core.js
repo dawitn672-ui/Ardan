@@ -11,7 +11,7 @@
 // Nothing here draws from A.rand: the lanes' upgrades are seeded from the game's seed, and the stream is put back.
 (function () {
   const SV = A.V2SAVE = A.V2SAVE || {};
-  SV.VER = 17;                      // 15: S1b, skills with levels (A.SK.migrate; D-072); 16: the skills rebuild's rungs (A.SK2.migrate; skills-v2 §7); 17: the rungs hold the level (the switch, skills-v2 §10 step 5)
+  SV.VER = 18;                      // 15: S1b, skills with levels (A.SK.migrate; D-072); 16: the skills rebuild's rungs (A.SK2.migrate; skills-v2 §7); 17: the rungs hold the level (the switch, skills-v2 §10 step 5); 18: the person's held level (9999975-level's step 'level', D-181)
   SV.FMT = 3;
   SV.FROM = A.SAVE_VER;            // the release's version (13): a state at or below it is pre-v2
   A.SAVE_VER = SV.VER;

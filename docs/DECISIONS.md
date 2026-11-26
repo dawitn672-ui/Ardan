@@ -2805,3 +2805,36 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
 - **The fight tiers (Untrained to Legend, `GD.TIERS`) and the style ranks stay** until the power ladder and wave 2 own
   them (§6.1); `tools/lint-skills.mjs` forbids S1's level words with a Roman step, the seven as a list and their readers.
 - **`C.lvl`'s word form is removed** (two of S1's own cards used `"advanced"`: now 35).
+
+### D-181 · A person's level is the ladder's, earned by defeats; stat points a level (2026-11-26; skills-v2 §12.1-12.2, orders 82, 87-89, 88)
+- **One scale.** A person's level is the power ladder's level (`A.POWER`): `PW.being(person).level` reads `A.LV.level`.
+  His **might** stays his fighting worth (conscripts squared), so every odds, matchup, hunt and encounter reads what he
+  can do now and the legends' balance (D-176, D-177) is untouched: two men of one level differ by their skills and arms.
+- **Seeded, then earned.** Until a person holds a level (`p.lv`), it is the one the ladder computes from his fighting
+  worth, never below the floor of his years. He is seeded at that level with nothing waiting: the player at his first
+  month or on loading (save step `level`, `SV.VER` 18), anyone else at his first recorded defeat, so no stat changes on
+  load. Then it moves only by defeats (duels, a hunt's or the wilds' beasts, men killed in battle, on missions or in a
+  brawl through `pc.kills`, the winning commanders of a field battle, the man who beats the player) and, until the grown
+  age, a floor: `grown x (age / grown age)^1.3`, `grown` 24 moved by the mean potential (20-30). **Why the floor:** the
+  owner's average human (20-30) must hold for a peasant who never fights; the floor is the body growing up, ends at the
+  grown age, and lifts nobody past the ordinary band, so the level still comes from defeats (order 88) for everyone
+  above it. **Considered:** no floor (a newborn player would stay at level 1 for life unless he fought; NPCs, read from
+  their worth, would stand far above him); the computed level as a live floor for life (the level would then come from
+  training, which order 88 forbids).
+- **NPCs are seeded lazily.** Seeding the whole world on load would store a level on thousands of people who will never
+  fight in the record; an unseeded NPC's level is the computed one, which stands for the years he lived off the page.
+- **Experience** in the ladder's might: from L to L+1 needs `1.006^L x might(L)` (exponential, each gap wider: orders
+  87, 89); one defeat gives `might(L) x rho` for a stronger foe (`rho` its might over his; past 8, the root of the rest),
+  `might(L) x rho^2.5` for a weaker one, and nothing once he stands 25 levels above the foe, which it never lifts him
+  past (no farming). A kill counts 1, a yield or a beast put to flight 0.7, a spar 0.25. Calibrated so that soldiers
+  alone take a man to 70-110 and never past 125 (the soldier band), knights to 136-173, a kingdom's best to 261-305.
+- **Points.** One a level (a race's own `points`), one more each 50th; placed points never move (answer 5) and add to
+  what `A.stat` reads, held to the room of the body's age (below the grown age, a share of the ceiling) and the ceiling
+  (the potential x 1.02, as `A.train`'s); old age, wounds and weariness lower the read, never the placement; a point
+  costs 1, 2 or 3 near the ceiling. The player places his from 12 on a sheet from the profile; a child's are placed by
+  his household's way of life, an NPC's once a year by post, skills and temper, both through `A.WHY.decide` on a seeded
+  stream of their own (the main stream never moves).
+- **Deferred:** `A.train` and the yearly growth still raise stats (§12.2's "allocation becomes the main road"): turning
+  them off changes every stat in the world over a life and needs its own balance pass; points are an addition held to the
+  same ceiling until then. Also deferred: the training screen and professions (§12.3-12.4); an event's murder pays as
+  an average person's; NPC-against-NPC duels outside a battle record nothing.

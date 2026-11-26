@@ -76,6 +76,8 @@
   };
   PF.sheet = function (p) {
     let s = '<section class="pf-sheet" aria-label="Body and mind">';
+    // the person's level and points waiting (src/people/9999975-level, D-181), when that feature is built
+    if (PF.sheetTop) { try { s += PF.sheetTop(p) || ''; } catch (e) { console.error('profile level line', e); } }
     const groups = [];
     for (const row of PF.STATS) { let g = groups.find(x => x[0] === row.group); if (!g) groups.push(g = [row.group, []]); g[1].push(row); }
     groups.forEach(([name, rows], i) => {

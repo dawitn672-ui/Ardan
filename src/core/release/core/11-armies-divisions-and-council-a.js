@@ -1533,6 +1533,8 @@ A.fightEnd = function (pid, winner) {
       d.org = Math.min(A.divMaxOrg(d), d.org + 4);
     } else d.losses = (d.losses || 0) + 1;
   }
+  // D-181: the commanders of the winning divisions rise by the battle (src/people/9999975-level)
+  if (A.LV && A.LV.field) A.LV.field(F, atkW);
   if ((w && (w.nb = (w.nb || 0) + 1), w && big >= 3e3 && F.days >= 1)) {
     const side = A.warSide(w, W);
     // W1-5 (D-091): no battle score; a great battle is a fact in the war's record, and its loser re-reads his will to
