@@ -1688,7 +1688,7 @@ UI.realmCard = function (rid) {
   // knowledge.core.js): the World > Realms table, the realm card and the diplomacy card say it as an estimate or as
   // hearsay unless you rule that realm.
   return `<div class="card" style="margin-top:8px"><h3 style="margin:0">${UI.esc(r.name)}</h3><div class="small muted">${UI.esc(r.gov || r.type || "")} · capital ${UI.esc(r.capital)} · ${UI.esc(A.V2DIP ? A.V2DIP.popText(r) : A.fmt(r.pop) + " people")} · army ${UI.esc(A.V2DIP ? A.V2DIP.armyText(r) : A.fmt(r.army))} · ${UI.esc(A.V2DIP ? A.V2DIP.stabText(r) : "stability " + Math.round(r.stability))}</div>
-    ${ru ? `<div class="small" style="margin-top:4px"><b>${UI.esc(A.rulerStyle(ru, r))}</b>, ${A.age(ru)}${r.heir && A.P(r.heir) ? ` · heir: ${UI.esc(A.fullName(A.P(r.heir), false))}` : ""}</div>` : ""}
+    ${ru ? `<div class="small" style="margin-top:4px"><b>${UI.esc(A.rulerStyle(ru, r))}</b>, ${A.age(ru)}${r.heir && A.P(r.heir) ? ` · heir: ${UI.esc(A.fullName(A.P(r.heir), false))}` : ""}</div>` : ""}${A.MIL && A.MIL.cardHtml ? A.MIL.cardHtml(r) : "" /* D-194: its might in round figures */}
     <div class="lore-text" style="margin-top:4px">${UI.esc(pr.intro || "")}</div>${pr["people and land"] ? `<div class="small" style="margin-top:4px">${UI.esc(pr["people and land"])}</div>` : ""}${pr.strength ? `<div class="small">${UI.esc(pr.strength)}</div>` : ""}${pr.ties ? `<div class="small muted">${UI.esc(pr.ties)}</div>` : ""}
     <div class="small" style="margin-top:4px">Allies: ${
       r.allies
