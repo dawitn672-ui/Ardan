@@ -3071,3 +3071,16 @@ lint-choices (`--feature=titles`: 0 obviously best), `version.mjs check`; cohere
 
 **Undo.** Revert the step's commits; a save made at version 19 would then be refused as newer. The legends' titles
 return inline with `git checkout <base> -- data/legends.json data/power.json`.
+
+### H-153 · 2026-11-26 · The month's skill pass fast again (s1Cost on d02e03f0)
+
+**What.** CI's quick tier on d02e03f0 (steps 7-8 with titles) failed `s1Cost`: 1.086 ms of CPU a month for a full sheet
+against a budget of 1 (alpha 18 read about 0.44 here, the batch 0.58 to 0.75). A CPU profile put `SK2.held` first: once
+step 8's merged arts carried edges, every check walked and sorted all of the player's held rungs to find named skills.
+
+**Fix.** `active()` lists the named skills that carry effects (sorted, once); `SK2.held` looks only those up in `p.ks`.
+The same skills are found in the same order.
+
+**Proof.** `s1Cost` 0.413 ms (below alpha 18's); `sk2Caps`, `sk6PerkSums`, `sk2Merge`, `sk2Evolve`, `ttCaps`, `ttEarned` pass.
+
+**Undo.** Revert this commit (`src/people/37-skills2/c-effects.core.js`).
