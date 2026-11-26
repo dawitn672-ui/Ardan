@@ -459,6 +459,12 @@ order is replaced, strike it through and say by what.
     Do not spend effort on the map's visual appeal; be ultra specific and detailed in the locations, layout and form of the
     continent; the owner will make it look good later. Passed to the map builder (D-173 addendum).
 
+87. **Legends rescaled; skills stop at level 10; full profiles** · recorded 2026-11-26. Kept unchanged in
+    `docs/prompts/2026-11-26-legend-scaling.md`. Sarnavoth is an even match for the three Primordial Archdemons together, not
+    nine times the next; Cael Vardan, the Sword Saint, is as strong as one archdemon despite his lower level. Skills max out
+    at level 10; past it a skill can only evolve or merge with a compatible level-10 skill. Every established character has
+    a full profile: skills and their levels, items, titles, personality and story (D-177, H-136).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,

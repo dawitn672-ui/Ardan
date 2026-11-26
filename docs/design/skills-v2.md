@@ -1160,3 +1160,4 @@ their four templates; honours are titles and posts given for reasons, never auto
    them in words and pips; the numbers live in the data and the tests.
 
 7. **No range** (order 83): skills are used in combat or training; a rare skill may note a special reach where it truly matters.
+8. **Level 10 is the cap** (order 87): past it a skill only evolves or merges with a compatible level-10 skill; no level 11.

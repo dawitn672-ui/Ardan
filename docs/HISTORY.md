@@ -2820,3 +2820,7 @@ The helper's branch (`worktree-agent-adf78e25f8e849d95`: `src/world/9999970-powe
 `data/bestiary.json` 270 species, `data/legends.json` 16 legends, `tools/powers/`, `docs/design/powers.md`; H-134, D-176)
 merged on the trunk. Tessaly, Lord of the Sea, set to level 680 (about 690 with her title) for the owner's 680-700 (order
 84); the Sword Saint at 650 still has more than twice her power (order 85).
+
+### H-136 · 2026-11-26 · Order 87 recorded (the legends' balance, skills capped at 10, full profiles)
+Master prompt 9 and 17; skills-v2 §15.8; D-177. With the powers merge's CI fixes (lint-skills, wcObservesOnly, ttCov2Realm,
+ordersAnotherGeneral, two click timeouts), passed to the power-scale helper.

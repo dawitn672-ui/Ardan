@@ -2766,3 +2766,9 @@ the capability profile. **Why:** the owner's orders of 2026-11-25 in turn (level
 than the last, level is not everything, the Saint above the Lord of the Sea); conscripts are what the sheet already
 shows, so no person changed. The world's own draws use a seeded stream of their own so the main stream moves only when
 the player is involved. No gods; no demon realm.
+
+### D-177 · The legends' balance; skills capped at 10; full profiles (2026-11-26; order 87)
+Sarnavoth about even against the three Primordial Archdemons together (not 9.2 times the next); the Sword Saint about even
+with one archdemon; the Lord of the Sea below the Saint; tests hold these. Skills stop at level 10 (then evolve or merge).
+Every legend and race master gets skills (rank, level), items (quality, effects), titles, personality and story in data,
+revealed to the player as learned. Passed to the power-scale helper with its CI fixes.
