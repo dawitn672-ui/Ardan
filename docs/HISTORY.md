@@ -3538,8 +3538,11 @@ engine and the audit); `mdSpread` (an offer with no reason: fixed in the muster)
 `coRoutineOnce`, `siegeInARealWar`, `coOrdersByRank`, `bfYouAndSides`, `v2wNoSpectate` (rumours counted as they come: the
 news's 220 places filled with the larger war's battle news), `paRoadsDiffer`, `unDrillMonth`, `peFactionLab`,
 `riRulerHearsCouncil` (its press is A.WHY's since W1-6), `poElectionDeterministic` (the rule is the promise's weight),
-and `cmSummonsRange`'s bar at half or more. Not run: the long tier (twelve war, diplomacy and nobility long tests, about
-two hours of CI), the balance harness, a playtester and a separate reviewer (the machine was shared and loaded).
+and `cmSummonsRange`'s bar at half or more. Of the long tier: `v2nOneHolder`, `v2DipAlive`, `twoScalesOtherLives`,
+`w1NoMarshalWorld` pass; `rankMovesTheFight` (875 s on CI) ran out of the runner's 1,800 s on a machine at load 12 (not
+read); not run: `temperMovesTheWar`, `w5TwoCenturies`, `aiPersonalityLongSim`, `csWorlds`, `lives`, `twoScalesMovesFront`,
+`x3HonestCards`, the balance harness, a playtester and a separate reviewer (the machine was shared and loaded): the
+`[full ci]` run should read them.
 
 **Archived.** Nothing.
 
