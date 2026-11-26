@@ -1161,3 +1161,4 @@ their four templates; honours are titles and posts given for reasons, never auto
 
 7. **No range** (order 83): skills are used in combat or training; a rare skill may note a special reach where it truly matters.
 8. **Level 10 is the cap** (order 87): past it a skill only evolves or merges with a compatible level-10 skill; no level 11.
+9. **Where experience comes from** (order 88): a skill's experience comes from using it (each related move, movement or use of the ability, in a fight or in training or at work); a person's level, and so his stat points, from experience for killing or defeating people and monsters, more for a stronger foe (read on the power ladder). §12's "level from every walk of life" is replaced: the roads beyond combat raise their skills, and their titles and standing, not the level.

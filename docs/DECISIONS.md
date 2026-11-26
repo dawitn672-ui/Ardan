@@ -2772,3 +2772,9 @@ Sarnavoth about even against the three Primordial Archdemons together (not 9.2 t
 with one archdemon; the Lord of the Sea below the Saint; tests hold these. Skills stop at level 10 (then evolve or merge).
 Every legend and race master gets skills (rank, level), items (quality, effects), titles, personality and story in data,
 revealed to the player as learned. Passed to the power-scale helper with its CI fixes.
+
+### D-178 · Skill experience from use; a person's level from defeating foes (2026-11-26; order 88)
+A skill gains experience each time a related move, movement or the ability itself is used; a person's level (and the stat
+points it brings) comes from experience for killing or defeating people and monsters, more for a stronger foe on the power
+ladder. Replaces my reading of order 80; skills-v2 §15.9; master prompt 9. To be built with the person's level and stat
+points (skills-v2 §12, after step 6).

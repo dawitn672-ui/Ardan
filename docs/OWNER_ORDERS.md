@@ -465,6 +465,12 @@ order is replaced, strike it through and say by what.
     at level 10; past it a skill can only evolve or merge with a compatible level-10 skill. Every established character has
     a full profile: skills and their levels, items, titles, personality and story (D-177, H-136).
 
+88. **Where experience comes from** · recorded 2026-11-26. Kept unchanged in `docs/prompts/2026-11-26-xp-sources.md`. A
+    skill's experience comes from each use: a related move or movement, or using the ability itself. A person's level (and
+    so his stat points) comes from experience for killing or defeating people and monsters. This replaces my reading of
+    order 80 ("a level gained in every walk of life"): crafts, trade and the other roads raise their skills by use, not the
+    person's level (D-178).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
