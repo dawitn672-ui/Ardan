@@ -18,6 +18,13 @@ What changed for the player, in plain words, one section per version (newest fir
 - **No more rumours about titles.** Nothing tells you about a title before you earn it: the tavern tales are gone, and so
   is "Things you have heard" in Records. Another person's title shows its name and what it gives, never what he did for
   it. A title is announced when it comes.
+- **Beasts where they belong.** A bear, a tiger or a mammoth is an animal again: a soldier's death, but a band's kill, and
+  even the kings of the beasts (the Boar-King, the Mountain Father, the Queen of the Canopy) are a fight for knights, not
+  a rival to dragons. Trolls and ogres stand from a soldier's match to an elite's. Between 600 and 800 there are now only
+  true calamities: grown and elder dragons, great and ancient demons, titans, liches, leviathans, the great spirits and
+  the colossi of legend. There are only three ancient dragons under the King (Ash, Frost and Storm), few elder dragons
+  and no more than a hundred dragons in the world; thirty-three ancient demons, as strong as the elder dragons, rule
+  under the three Archdemons. The dragons of the High Roost are gone.
 
 ## v2.1.0-alpha.19 (2026-11-26 10:12 ET) · Skills evolve at level 10, two can merge, a rare leap once a life; titles earned by hidden deeds, stacked under the same limits
 
