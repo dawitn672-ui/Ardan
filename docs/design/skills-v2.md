@@ -573,7 +573,7 @@ The ladders' rungs, D → C → B → A (names are first drafts for the data rev
 | riding | Saddle-Sore | Horsemanship | Knight's Seat | Born in the Saddle |
 | unarmed | Scrapper | Wrestler | Iron Grip | Bone-Breaker |
 | athletics | Hardy Legs | Athlete | Tireless | Untiring Stride |
-| command | Corporal's Voice | Steady Command | Captain's Eye | Marshal's Grasp |
+| command | Corporal's Voice | Steady Command | Captain's Eye | General's Grasp |
 | tactics | Lay of the Land | Field Tactics | Siege and Sally | Strategist |
 | survival | Forager | Woodcraft | Hunter's Patience | Master of the Hard Country |
 | tracking | Sharp Eyes | Tracker | Pathfinder | The Unlost |

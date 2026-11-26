@@ -181,8 +181,8 @@
     if (p.ruler) return 'ruler';
     if (A.POSTS && A.POSTS.held && A.POSTS.cls) { try { if (A.POSTS.held(p.id).some(k => A.POSTS.cls(k) === 'FIELD')) return 'captain'; } catch (e) {} }
     if (p.mil) return (p.mil.rank || 0) >= 5 ? 'captain' : 'soldier';
-    if (/captain|marshal|general|commander|knight|sergeant/i.test(p.occ || '')) return 'captain';
-    if (/soldier|guard|man-at-arms|spearman|archer|levy/i.test(p.occ || '')) return 'soldier';
+    if (/captain|general|commander|knight|sergeant/i.test(p.occ || '')) return 'captain';
+    if (/soldier|guard|man-at-arms|spearman|archer/i.test(p.occ || '')) return 'soldier';
     if (['noble', 'royal'].includes(p.status)) return 'lord';
     const c = p.job && p.job.c;
     return c && WAYS[c] ? c : 'common';

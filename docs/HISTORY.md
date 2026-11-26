@@ -2984,3 +2984,14 @@ even level of the same S1 step.
 pass on the merged build; engine tests 151 of 151; the lints at their baselines.
 
 **Undo.** Revert this commit (the two test files, `b-migrate.core.js`, `saves.core.js`).
+
+### H-145 · 2026-11-26 · CI on e6c4a348: three quick failures fixed (v2svRoundTrip, w1NoMarshalLint, w4NoLevyLint)
+
+- `v2svRoundTrip` held the save version at 17; it now reads `A.V2SAVE.VER` (18 since D-181).
+- `w1NoMarshalLint`: step 6's `tools/skills2/seed-data.mjs` regenerated the ladders from its own list, which still said
+  "Marshal's Grasp" (H-139 renamed it in the data only). The tool now names it "General's Grasp" and keeps the rung's id
+  `marshals_grasp`, so saves that hold it still find it.
+- `w4NoLevyLint`: the level's way-of-life regex no longer names the retired word (nor "marshal").
+- The long tier on e6c4a348 (balance included) was green on seven of eight shards when this was pushed.
+
+**Undo.** Revert this commit.

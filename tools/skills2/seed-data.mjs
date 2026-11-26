@@ -29,7 +29,7 @@ const LADDER = {
   riding: ['Saddle-Sore', 'Horsemanship', "Knight's Seat", 'Born in the Saddle', 'Horse and Rider One'],
   unarmed: ['Scrapper', 'Wrestler', 'Iron Grip', 'Bone-Breaker', 'Hands of Iron'],
   athletics: ['Hardy Legs', 'Athlete', 'Tireless', 'Untiring Stride', 'Body Unwearied'],
-  command: ["Corporal's Voice", 'Steady Command', "Captain's Eye", "Marshal's Grasp", 'Commander of Hosts'],
+  command: ["Corporal's Voice", 'Steady Command', "Captain's Eye", "General's Grasp", 'Commander of Hosts'],
   tactics: ['Lay of the Land', 'Field Tactics', 'Siege and Sally', 'Strategist', 'The Field Seen Whole'],
   survival: ['Forager', 'Woodcraft', "Hunter's Patience", 'Master of the Hard Country', 'Child of the Wilds'],
   tracking: ['Sharp Eyes', 'Tracker', 'Pathfinder', 'The Unlost', 'Reader of All Ground'],
@@ -51,7 +51,8 @@ const LADDER = {
   intrigue: ['Gossip', 'Intrigue', 'Plotter', 'Web-Spinner', 'The Hidden Hand'],
 };
 // ids the design already wrote (§9.2) keep their spelling; the rest are the name in snake case
-const ID = { 'Master of the Long Edge': 'long_edge_master' };
+// (a rung renamed after saves held it keeps its old id: "General's Grasp" was "Marshal's Grasp", w1 retired the word)
+const ID = { 'Master of the Long Edge': 'long_edge_master', "General's Grasp": 'marshals_grasp' };
 const idOf = n => ID[n] || n.toLowerCase().replace(/'/g, '').replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
 const RANKS = ['D', 'C', 'B', 'A', 'S'];
 const RARITY = { D: 'common', C: 'common', B: 'uncommon', A: 'rare', S: 'rare' };
