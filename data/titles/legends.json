@@ -1,5 +1,5 @@
 {
- "about": "The titles the great beings hold (src/people/9999976-titles, D-183; moved here from data/legends.json and data/power.json so every title is one kind of data). A legend or a master names its titles by id; A.POWER reads each as it always did: buffs (capabilities, level, power) and honour, so the legends balance (D-176, D-177) is exactly what it was; when order 92 stretched the scale (every legend's level x 1000/800, D-185), each legend's signature title took the power that keeps its power the same multiple of Sarnavoth's, so every matchup is still what it was. weight X stands above SSS: these titles carry no person effects, only the beings buffs, except the Sword Saint, who is both a title and a class a person may one day earn when the old Saint is gone. born: held from birth (a Primordial Archdemon is born one). unique: one living holder.",
+ "about": "The titles the great beings hold (src/people/9999976-titles, D-183; moved here from data/legends.json and data/power.json so every title is one kind of data). A legend or a master names its titles by id; A.POWER reads each as it always did: buffs (capabilities, level, power) and honour, so the legends balance (D-176, D-177) is exactly what it was; when orders 92 and 93 stretched the scale (every legend's level x 1000/800 on a new curve, D-185), each legend's signature title took the power that gives back the ratios between the legends that D-177 set, so every matchup is still what it was (docs/design/powers.md, the stretch). weight X stands above SSS: these titles carry no person effects, only the beings buffs, except the Sword Saint, who is both a title and a class a person may one day earn when the old Saint is gone. born: held from birth (a Primordial Archdemon is born one). unique: one living holder.",
  "titles": [
   {
    "id": "ash-crowned",
@@ -18,7 +18,7 @@
    "honour": 60,
    "buffs": {
     "magic": 1,
-    "power": 15.11
+    "power": 6.33
    },
    "req": "hidden"
   },
@@ -79,7 +79,7 @@
    "honour": 80,
    "buffs": {
     "regen": 1,
-    "power": 20.41
+    "power": 8.53
    },
    "req": "hidden"
   },
@@ -121,7 +121,7 @@
    "honour": 20,
    "buffs": {
     "cunning": 1,
-    "power": 20.7
+    "power": 5.25
    },
    "req": "hidden"
   },
@@ -183,7 +183,7 @@
    "buffs": {
     "magic": 1,
     "ward": 1,
-    "power": 8.35
+    "power": 2.24
    },
    "req": "hidden"
   },
@@ -224,7 +224,7 @@
    "honour": 30,
    "buffs": {
     "ward": 1,
-    "power": 20.37
+    "power": 7.25
    },
    "req": "hidden"
   },
@@ -246,7 +246,7 @@
    "buffs": {
     "spd": 1,
     "magic": 1,
-    "power": 3.17
+    "power": 0.29
    },
    "req": "hidden"
   },
@@ -268,7 +268,7 @@
    "buffs": {
     "str": 1,
     "hide": 1,
-    "power": 26.34
+    "power": 8.78
    },
    "req": "hidden"
   },
@@ -290,7 +290,7 @@
    "buffs": {
     "swarm": 1,
     "cunning": 1,
-    "power": 43.89
+    "power": 10.22
    },
    "req": "hidden"
   },
@@ -337,7 +337,7 @@
    "buffs": {
     "magic": 1,
     "cunning": 1,
-    "power": 3.64,
+    "power": 5.67,
     "fire": 1
    },
    "req": "hidden"
@@ -360,7 +360,7 @@
    "buffs": {
     "hide": 1,
     "ward": 1,
-    "power": 5.28
+    "power": 0.41
    },
    "req": "hidden"
   },
@@ -382,7 +382,7 @@
    "buffs": {
     "magic": 1,
     "spd": 1,
-    "power": 5.38
+    "power": 0.65
    },
    "req": "hidden"
   },
@@ -404,7 +404,7 @@
    "buffs": {
     "magic": 1,
     "ward": 1,
-    "power": 10.59
+    "power": 3.62
    },
    "req": "hidden"
   },
@@ -426,7 +426,7 @@
    "buffs": {
     "str": 1,
     "magic": 1,
-    "power": 1.25,
+    "power": 3.58,
     "fire": 3
    },
    "req": "hidden"
@@ -470,7 +470,7 @@
    "buffs": {
     "str": 1,
     "magic": 1,
-    "power": 2.9,
+    "power": 4.99,
     "fire": 1
    },
    "req": "hidden"
@@ -496,7 +496,7 @@
    "buffs": {
     "spd": 1,
     "cunning": 1,
-    "power": 5.46,
+    "power": 2.28,
     "duel": 2
    },
    "req": "hidden",
@@ -572,7 +572,7 @@
    "honour": 0,
    "buffs": {
     "magic": 1,
-    "power": 4.16,
+    "power": 5.93,
     "fire": 1
    },
    "req": "hidden"
