@@ -1,0 +1,664 @@
+{
+ "about": "The titles the great beings hold (src/people/9999976-titles, D-183; moved here from data/legends.json and data/power.json so every title is one kind of data). A legend or a master names its titles by id; A.POWER reads each as it always did: buffs (capabilities, level, power) and honour, so the legends balance (D-176, D-177) is exactly what it was. weight X stands above SSS: these titles carry no person effects, only the beings buffs, except the Sword Saint, who is both a title and a class a person may one day earn when the old Saint is gone. born: held from birth (a Primordial Archdemon is born one). unique: one living holder.",
+ "titles": [
+  {
+   "id": "ash-crowned",
+   "name": "the Ash-Crowned",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "vaskareth"
+   ],
+   "born": false,
+   "honour": 60,
+   "buffs": {
+    "magic": 1,
+    "power": 4.79
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "burner-of-nine-towns",
+   "name": "Burner of Nine Towns",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "vaskareth"
+   ],
+   "born": false,
+   "honour": 40,
+   "buffs": {
+    "str": 1
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "first-of-the-deep",
+   "name": "First of the Deep",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "born",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "tessaly"
+   ],
+   "born": true,
+   "honour": 30,
+   "buffs": {
+    "hide": 1
+   },
+   "req": "born"
+  },
+  {
+   "id": "tide-mother",
+   "name": "the Tide-Mother",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "tessaly"
+   ],
+   "born": false,
+   "honour": 80,
+   "buffs": {
+    "regen": 1,
+    "power": 6.67
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "lord-of-the-sea",
+   "name": "Lord of the Sea",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "tessaly"
+   ],
+   "born": false,
+   "honour": 50,
+   "buffs": {
+    "swarm": 1,
+    "power": 0.1
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "lake-that-thinks",
+   "name": "the Lake That Thinks",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "ommul"
+   ],
+   "born": false,
+   "honour": 20,
+   "buffs": {
+    "cunning": 1,
+    "power": 4.81
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "eater-of-the-drowned-abbey",
+   "name": "Eater of the Drowned Abbey",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "ommul"
+   ],
+   "born": false,
+   "honour": 10,
+   "buffs": {
+    "regen": 1
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "fey-born",
+   "name": "Fey-Born",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "born",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "serrath"
+   ],
+   "born": true,
+   "honour": 10,
+   "buffs": {
+    "ward": 1
+   },
+   "req": "born"
+  },
+  {
+   "id": "queen-of-the-hollow-hills",
+   "name": "Queen of the Hollow Hills",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "serrath"
+   ],
+   "born": false,
+   "honour": 50,
+   "buffs": {
+    "magic": 1,
+    "ward": 1,
+    "power": 1.8
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "she-of-the-long-bargain",
+   "name": "She of the Long Bargain",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "serrath"
+   ],
+   "born": false,
+   "honour": 15,
+   "buffs": {
+    "cunning": 1
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "wandering-king-of-bones",
+   "name": "the Wandering King of Bones",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "ulmavren"
+   ],
+   "born": false,
+   "honour": 30,
+   "buffs": {
+    "ward": 1,
+    "power": 5.88
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "stormwing",
+   "name": "Stormwing",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "kethra"
+   ],
+   "born": false,
+   "honour": 25,
+   "buffs": {
+    "spd": 1,
+    "magic": 1,
+    "power": 0.16
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "mountain-that-walks",
+   "name": "the Mountain-That-Walks",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "orrun"
+   ],
+   "born": false,
+   "honour": 70,
+   "buffs": {
+    "str": 1,
+    "hide": 1,
+    "power": 7.46
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "mother-of-wolves",
+   "name": "Mother of Wolves",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "pale-shepherd"
+   ],
+   "born": false,
+   "honour": 30,
+   "buffs": {
+    "swarm": 1,
+    "cunning": 1,
+    "power": 9.82
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "primordial-archdemon",
+   "name": "Primordial Archdemon",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": false,
+   "kind": "born",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "morvane",
+    "ghazrul",
+    "vethrael"
+   ],
+   "born": true,
+   "honour": 0,
+   "buffs": {
+    "ward": 1,
+    "regen": 1,
+    "power": 1,
+    "fire": 2
+   },
+   "req": "born"
+  },
+  {
+   "id": "prince-of-the-seventh-gate",
+   "name": "Prince of the Seventh Gate",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "morvane"
+   ],
+   "born": false,
+   "honour": 0,
+   "buffs": {
+    "magic": 1,
+    "cunning": 1,
+    "power": 2.67,
+    "fire": 1
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "keeper-of-the-crowns-gate",
+   "name": "Keeper of the Crown's Gate",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "iron-warden"
+   ],
+   "born": false,
+   "honour": 40,
+   "buffs": {
+    "hide": 1,
+    "ward": 1,
+    "power": 0.41
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "sun-lion",
+   "name": "the Sun-Lion",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "saqqar"
+   ],
+   "born": false,
+   "honour": 35,
+   "buffs": {
+    "magic": 1,
+    "spd": 1,
+    "power": 0.59
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "white-winter",
+   "name": "the White Winter",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "hrimgala"
+   ],
+   "born": false,
+   "honour": 45,
+   "buffs": {
+    "magic": 1,
+    "ward": 1,
+    "power": 2.86
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "king-of-dragons",
+   "name": "King of Dragons",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "sarnavoth"
+   ],
+   "born": false,
+   "honour": 100,
+   "buffs": {
+    "str": 1,
+    "magic": 1,
+    "power": 1.25,
+    "fire": 3
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "dragon-born-of-the-first-clutch",
+   "name": "Dragon-Born of the First Clutch",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "born",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "sarnavoth"
+   ],
+   "born": true,
+   "honour": 40,
+   "buffs": {
+    "hide": 1,
+    "power": 0.3
+   },
+   "req": "born"
+  },
+  {
+   "id": "unmaker",
+   "name": "the Unmaker",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "ghazrul"
+   ],
+   "born": false,
+   "honour": 0,
+   "buffs": {
+    "str": 1,
+    "magic": 1,
+    "power": 2.21,
+    "fire": 1
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "sword-saint",
+   "name": "the Sword Saint",
+   "rarity": "legendary",
+   "weight": "S",
+   "unique": true,
+   "kind": "mastery",
+   "class": "Sword Saint",
+   "beings": [
+    "legend",
+    "person"
+   ],
+   "holders": [
+    "sword-saint"
+   ],
+   "born": false,
+   "honour": 100,
+   "renown": 30,
+   "buffs": {
+    "spd": 1,
+    "cunning": 1,
+    "power": 1.5,
+    "duel": 2
+   },
+   "req": "hidden",
+   "requires": { "all": [ { "age": [16, 999] }, { "skill": { "fam": "sword", "rank": "S", "lv": 10 } }, { "count": "duel_won", "min": 60 }, { "count": "champion_beaten", "distinct": 3 } ] },
+   "watch": ["duel_won", "champion_beaten", "month"],
+   "effects": [
+    { "type": "fight", "tag": "sword", "part": "atk", "v": 4 },
+    { "type": "fight", "tag": "sword", "part": "def", "v": 4 },
+    { "type": "edge", "tag": "sword", "v": 6 },
+    { "type": "stat", "stat": "spd", "v": 2 },
+    { "type": "resist", "of": "fear", "v": 3 }
+   ],
+   "hint": "Old soldiers say the Saint will name no heir: the sword, they say, will know the next one when he is gone, and not before.",
+   "earned": "The last of the old masters lays down his blade before yours, and by the next feast the whole country calls you what it called Cael Vardan.",
+   "style": "{name}, the Sword Saint",
+   "text": "A title and a class: the strongest art of one man against one foe the world has known. One living holder; for sixty years and more it was Cael Vardan's."
+  },
+  {
+   "id": "dragon-feller",
+   "name": "Dragon-Feller",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "sword-saint"
+   ],
+   "born": false,
+   "honour": 60,
+   "buffs": {
+    "str": 1,
+    "power": 0.2
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "binder-of-the-unmaker",
+   "name": "Binder of the Unmaker",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "sword-saint"
+   ],
+   "born": false,
+   "honour": 60,
+   "buffs": {
+    "ward": 1,
+    "power": 0.1
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "hollow-choir",
+   "name": "the Hollow Choir",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "legend"
+   ],
+   "holders": [
+    "vethrael"
+   ],
+   "born": false,
+   "honour": 0,
+   "buffs": {
+    "magic": 1,
+    "power": 2.92,
+    "fire": 1
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "breaker-of-the-ice-road",
+   "name": "Breaker of the Ice-Road",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "master"
+   ],
+   "holders": [
+    "m-giant-king"
+   ],
+   "born": false,
+   "honour": 30,
+   "buffs": {
+    "str": 1
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "who-held-the-ninth-gate",
+   "name": "Who Held the Ninth Gate",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "master"
+   ],
+   "holders": [
+    "m-dwarf-anvil"
+   ],
+   "born": false,
+   "honour": 25,
+   "buffs": {
+    "hide": 1,
+    "ward": 1
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "unhurried",
+   "name": "the Unhurried",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "master"
+   ],
+   "holders": [
+    "m-elf-blade"
+   ],
+   "born": false,
+   "honour": 20,
+   "buffs": {
+    "spd": 1,
+    "cunning": 1
+   },
+   "req": "hidden"
+  },
+  {
+   "id": "who-ate-the-iron-feast",
+   "name": "Who Ate the Iron Feast",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "master"
+   ],
+   "holders": [
+    "m-orc-khan"
+   ],
+   "born": false,
+   "honour": 15,
+   "buffs": {
+    "str": 1
+   },
+   "req": "hidden"
+  }
+ ]
+}

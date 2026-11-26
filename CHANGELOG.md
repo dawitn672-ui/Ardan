@@ -5,6 +5,16 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Titles.** The world now gives names for what you do: the Undefeated, the Unbought, Ironhide, the Hundred-Day Wall,
+  the Peacemaker, Beast-Bane, Wyrm-Slayer, the Sword of your realm and more. A title is never bought or trained, and
+  what earns one is never shown: at most you hear a rumour of it in a tavern once you have done something on its road.
+  Titles stack: each brings honour and renown once, and while you hold it a gift in words (a steadier nerve, a harder
+  guard, the regard of soldiers, a little more strength), never past the limits skills already have. Some are one of a
+  kind, held by one living person at a time, and some can be lost (a single defeat ends the Undefeated). Your profile
+  shows the title you bear beside your name and a row of your titles (press one for its story); Records lists them,
+  the ones you lost and the rumours you have heard. Other people's profiles show theirs. The legends keep their titles
+  and their strength exactly as before; the Sword Saint's is both a title and a class. Saved games load with no titles.
+
 ## v2.1.0-alpha.18 (2026-11-26 06:13 ET) · Skills that do things (effects and their caps, step 6) and a person's level on the ladder, earned by defeating people and beasts, with stat points to place
 
 - **Your level is earned.** You now carry a level on the same scale as every beast and legend (an ordinary grown

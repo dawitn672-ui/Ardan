@@ -9,23 +9,8 @@
    "int": "wise",
    "age": "about two thousand four hundred years",
    "titles": [
-    {
-     "n": "the Ash-Crowned",
-     "honour": 60,
-     "buffs": {
-      "magic": 1,
-      "power": 4.79
-     },
-     "req": "hidden"
-    },
-    {
-     "n": "Burner of Nine Towns",
-     "honour": 40,
-     "buffs": {
-      "str": 1
-     },
-     "req": "hidden"
-    }
+    "ash-crowned",
+    "burner-of-nine-towns"
    ],
    "prof": {
     "str": 10,
@@ -198,33 +183,9 @@
    "int": "wise",
    "age": "older than the coasts",
    "titles": [
-    {
-     "n": "First of the Deep",
-     "born": true,
-     "honour": 30,
-     "buffs": {
-      "hide": 1
-     },
-     "req": "born"
-    },
-    {
-     "n": "the Tide-Mother",
-     "honour": 80,
-     "buffs": {
-      "regen": 1,
-      "power": 6.67
-     },
-     "req": "hidden"
-    },
-    {
-     "n": "Lord of the Sea",
-     "honour": 50,
-     "buffs": {
-      "swarm": 1,
-      "power": 0.1
-     },
-     "req": "hidden"
-    }
+    "first-of-the-deep",
+    "tide-mother",
+    "lord-of-the-sea"
    ],
    "prof": {
     "str": 10,
@@ -378,23 +339,8 @@
    "int": "wise",
    "age": "nine centuries since it first thought",
    "titles": [
-    {
-     "n": "the Lake That Thinks",
-     "honour": 20,
-     "buffs": {
-      "cunning": 1,
-      "power": 4.81
-     },
-     "req": "hidden"
-    },
-    {
-     "n": "Eater of the Drowned Abbey",
-     "honour": 10,
-     "buffs": {
-      "regen": 1
-     },
-     "req": "hidden"
-    }
+    "lake-that-thinks",
+    "eater-of-the-drowned-abbey"
    ],
    "prof": {
     "str": 6,
@@ -544,33 +490,9 @@
    "int": "wise",
    "age": "older than the elves' coming west, some five thousand years",
    "titles": [
-    {
-     "n": "Fey-Born",
-     "born": true,
-     "honour": 10,
-     "buffs": {
-      "ward": 1
-     },
-     "req": "born"
-    },
-    {
-     "n": "Queen of the Hollow Hills",
-     "honour": 50,
-     "buffs": {
-      "magic": 1,
-      "ward": 1,
-      "power": 1.8
-     },
-     "req": "hidden"
-    },
-    {
-     "n": "She of the Long Bargain",
-     "honour": 15,
-     "buffs": {
-      "cunning": 1
-     },
-     "req": "hidden"
-    }
+    "fey-born",
+    "queen-of-the-hollow-hills",
+    "she-of-the-long-bargain"
    ],
    "prof": {
     "str": 3,
@@ -741,15 +663,7 @@
    "int": "wise",
    "age": "dead two thousand years",
    "titles": [
-    {
-     "n": "the Wandering King of Bones",
-     "honour": 30,
-     "buffs": {
-      "ward": 1,
-      "power": 5.88
-     },
-     "req": "hidden"
-    }
+    "wandering-king-of-bones"
    ],
    "prof": {
     "str": 7,
@@ -929,16 +843,7 @@
    "int": "speaking",
    "age": "about eleven centuries",
    "titles": [
-    {
-     "n": "Stormwing",
-     "honour": 25,
-     "buffs": {
-      "spd": 1,
-      "magic": 1,
-      "power": 0.16
-     },
-     "req": "hidden"
-    }
+    "stormwing"
    ],
    "prof": {
     "str": 8,
@@ -1089,16 +994,7 @@
    "int": "wise",
    "age": "older than any throne of men: some four thousand years",
    "titles": [
-    {
-     "n": "the Mountain-That-Walks",
-     "honour": 70,
-     "buffs": {
-      "str": 1,
-      "hide": 1,
-      "power": 7.46
-     },
-     "req": "hidden"
-    }
+    "mountain-that-walks"
    ],
    "prof": {
     "str": 10,
@@ -1259,16 +1155,7 @@
    "int": "wise",
    "age": "about fifteen centuries",
    "titles": [
-    {
-     "n": "Mother of Wolves",
-     "honour": 30,
-     "buffs": {
-      "swarm": 1,
-      "cunning": 1,
-      "power": 9.82
-     },
-     "req": "hidden"
-    }
+    "mother-of-wolves"
    ],
    "prof": {
     "str": 7,
@@ -1426,29 +1313,8 @@
    "int": "wise",
    "age": "came through the gate some three thousand years ago",
    "titles": [
-    {
-     "n": "Primordial Archdemon",
-     "born": true,
-     "honour": 0,
-     "buffs": {
-      "ward": 1,
-      "regen": 1,
-      "power": 1,
-      "fire": 2
-     },
-     "req": "born"
-    },
-    {
-     "n": "Prince of the Seventh Gate",
-     "honour": 0,
-     "buffs": {
-      "magic": 1,
-      "cunning": 1,
-      "power": 2.67,
-      "fire": 1
-     },
-     "req": "hidden"
-    }
+    "primordial-archdemon",
+    "prince-of-the-seventh-gate"
    ],
    "prof": {
     "str": 7,
@@ -1623,16 +1489,7 @@
    "int": "speaking",
    "age": "forged some eighteen centuries ago",
    "titles": [
-    {
-     "n": "Keeper of the Crown's Gate",
-     "honour": 40,
-     "buffs": {
-      "hide": 1,
-      "ward": 1,
-      "power": 0.41
-     },
-     "req": "hidden"
-    }
+    "keeper-of-the-crowns-gate"
    ],
    "prof": {
     "str": 10,
@@ -1792,16 +1649,7 @@
    "int": "speaking",
    "age": "about fourteen centuries",
    "titles": [
-    {
-     "n": "the Sun-Lion",
-     "honour": 35,
-     "buffs": {
-      "magic": 1,
-      "spd": 1,
-      "power": 0.59
-     },
-     "req": "hidden"
-    }
+    "sun-lion"
    ],
    "prof": {
     "str": 9,
@@ -1952,16 +1800,7 @@
    "int": "wise",
    "age": "as old as the ice",
    "titles": [
-    {
-     "n": "the White Winter",
-     "honour": 45,
-     "buffs": {
-      "magic": 1,
-      "ward": 1,
-      "power": 2.86
-     },
-     "req": "hidden"
-    }
+    "white-winter"
    ],
    "prof": {
     "str": 8,
@@ -2117,27 +1956,8 @@
    "int": "wise",
    "age": "about four thousand years",
    "titles": [
-    {
-     "n": "King of Dragons",
-     "honour": 100,
-     "buffs": {
-      "str": 1,
-      "magic": 1,
-      "power": 1.25,
-      "fire": 3
-     },
-     "req": "hidden"
-    },
-    {
-     "n": "Dragon-Born of the First Clutch",
-     "born": true,
-     "honour": 40,
-     "buffs": {
-      "hide": 1,
-      "power": 0.3
-     },
-     "req": "born"
-    }
+    "king-of-dragons",
+    "dragon-born-of-the-first-clutch"
    ],
    "prof": {
     "str": 12,
@@ -2341,29 +2161,8 @@
    "int": "wise",
    "age": "as old as the gates",
    "titles": [
-    {
-     "n": "Primordial Archdemon",
-     "born": true,
-     "honour": 0,
-     "buffs": {
-      "ward": 1,
-      "regen": 1,
-      "power": 1,
-      "fire": 2
-     },
-     "req": "born"
-    },
-    {
-     "n": "the Unmaker",
-     "honour": 0,
-     "buffs": {
-      "str": 1,
-      "magic": 1,
-      "power": 2.21,
-      "fire": 1
-     },
-     "req": "hidden"
-    }
+    "primordial-archdemon",
+    "unmaker"
    ],
    "prof": {
     "str": 12,
@@ -2545,35 +2344,9 @@
    "int": "wise",
    "age": "one hundred and nineteen years; his strength has kept him alive long past any man",
    "titles": [
-    {
-     "n": "the Sword Saint",
-     "honour": 100,
-     "buffs": {
-      "spd": 1,
-      "cunning": 1,
-      "power": 1.5,
-      "duel": 2
-     },
-     "req": "hidden"
-    },
-    {
-     "n": "Dragon-Feller",
-     "honour": 60,
-     "buffs": {
-      "str": 1,
-      "power": 0.2
-     },
-     "req": "hidden"
-    },
-    {
-     "n": "Binder of the Unmaker",
-     "honour": 60,
-     "buffs": {
-      "ward": 1,
-      "power": 0.1
-     },
-     "req": "hidden"
-    }
+    "sword-saint",
+    "dragon-feller",
+    "binder-of-the-unmaker"
    ],
    "prof": {
     "str": 9,
@@ -2803,28 +2576,8 @@
    "int": "wise",
    "age": "as old as the gates",
    "titles": [
-    {
-     "n": "Primordial Archdemon",
-     "born": true,
-     "honour": 0,
-     "buffs": {
-      "ward": 1,
-      "regen": 1,
-      "power": 1,
-      "fire": 2
-     },
-     "req": "born"
-    },
-    {
-     "n": "the Hollow Choir",
-     "honour": 0,
-     "buffs": {
-      "magic": 1,
-      "power": 2.92,
-      "fire": 1
-     },
-     "req": "hidden"
-    }
+    "primordial-archdemon",
+    "hollow-choir"
    ],
    "prof": {
     "str": 7,

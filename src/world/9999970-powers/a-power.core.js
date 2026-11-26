@@ -17,6 +17,18 @@
   if (!D || !BD || !LD) { console.error('[powers] data/power.json, bestiary.json or legends.json is missing'); return; }
   const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
   const PW = A.POWER = { D, BD, LD };
+  // Titles live in data/titles/ (src/people/9999976-titles, D-183): a legend's or a master's sheet names its titles by id,
+  // and each is read here as the object it always was ({ id, n, honour, buffs, born, req }), with the same buffs, so the
+  // matchups do not move
+  const TDEF = new Map();
+  for (const k of Object.keys(A.DATA)) if (/^titles\//.test(k) && A.DATA[k] && Array.isArray(A.DATA[k].titles)) for (const t of A.DATA[k].titles) if (!TDEF.has(t.id)) TDEF.set(t.id, t);
+  PW.titleRef = function (t) {
+    if (!t || typeof t !== 'string') return t;
+    const T = TDEF.get(t);
+    if (!T) { console.error('[powers] no title ' + t + ' in data/titles/'); return { id: t, n: t, honour: 0, buffs: {}, req: 'hidden' }; }
+    return { id: T.id, n: T.name, honour: T.honour || 0, buffs: T.buffs || {}, born: !!T.born || undefined, req: T.req || (T.born ? 'born' : 'hidden') };
+  };
+  for (const L of LD.legends.concat(D.masters)) if (Array.isArray(L.titles)) L.titles = L.titles.map(PW.titleRef);
   const CAPS = PW.CAPS = D.capabilities.map(c => c.k);
   const SP = PW.SP = new Map(BD.species.map(s => [s.id, s]));
   const BYCRE = PW.BYCRE = new Map();
@@ -112,7 +124,10 @@
       const m = PW.personMight(x), prof = PW.personProf(x);
       // the level is the person's own (src/people/9999975-level: held once he has one, earned by defeats); his might stays
       // his fighting worth, so the odds read what he can do now
-      return { kind: 'person', id: x.id, n: A.fullName ? A.fullName(x, false) : 'a person', level: A.LV ? A.LV.level(x, m) : PW.levelOf(m), t: PW.tOf(m), might: m, power: m, mastery: null, prof, int: 'wise', titles: [],
+      // his titles (src/people/9999976-titles) are named here for the cards; what they give is in his worth already, so
+      // they carry no buffs and his power stays his might; a title that is a class (the Sword Saint) is his class
+      return { kind: 'person', id: x.id, n: A.fullName ? A.fullName(x, false) : 'a person', level: A.LV ? A.LV.level(x, m) : PW.levelOf(m), t: PW.tOf(m), might: m, power: m, mastery: null, prof, int: 'wise',
+        titles: A.TT && x.tt ? A.TT.shownOf(x) : [], cls: A.TT && x.tt ? A.TT.classOf(x) : null,
         ranged: !!(x.gear && x.gear.ranged), hardy: clamp(((A.stat ? A.stat(x, 'sta') : 50) || 50) / 10, 0, 10) };
     }
     if (typeof x === 'object' && x.sp) {   // a wild individual: its species, its temper, its own name and titles

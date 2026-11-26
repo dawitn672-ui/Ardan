@@ -430,6 +430,9 @@ A.duelConsequences = function (D) {
   A.train(pc, "sta", 0.4);
   const won = D.result === "win" || D.result === "beastfled";
   // D-181: the person's level rises by defeats (src/people/9999975-level): the winner's experience, read on the ladder
+  // D-183: the titles' ledger (src/people/9999976-titles): a duel won or lost, a beast slain (read against his level
+  // before this fight raises it), a champion beaten
+  if (A.TT && A.TT.duel) A.TT.duel(pc, D);
   if (A.LV && A.LV.duel) A.LV.duel(pc, D);
   if (A.techSteal && !b.beast) for (const l of A.techSteal(D, pc)) out.push(l);
   if (

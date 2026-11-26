@@ -1081,7 +1081,7 @@ UI.personModal = function (t, close) {
     <div class="tag">${UI.esc(known ? A.relLabel(t, r) : "Known by sight")}</div>
     <h2 style="margin:0 0 2px">${UI.esc((sp.nob ? sp.nob + " " : "") + A.fullName(t))}</h2>
     <div class="prof-role">${UI.esc(sp.main || (adult ? (GD.STATUS[t.status] || {}).name || "" : "A child"))}</div>
-    ${sp.extra.length ? `<div class="small ink2">${sp.extra.map(UI.esc).join(" · ")}</div>` : ""}
+    ${sp.extra.length ? `<div class="small ink2">${sp.extra.map(UI.esc).join(" · ")}</div>` : ""}${t.tt && UI.TTV ? UI.TTV.chips(t) : "" /* D-183: the titles he holds (src/people/9999976-titles) */}
     <div class="small muted">${A.age(t)} years · ${UI.esc(GD.RACES[t.race].name)} · ${UI.esc(cu ? cu.name : "")} · ${UI.esc(fa ? fa.name : "no faith")}${t.alive ? "" : ' · <span class="bad">died ' + t.died + " of " + UI.esc(t.cause || "?") + "</span>"}</div>
     <div style="margin-top:4px">${adult ? UI.tierChip(t) : ""}${hs ? `<span class="chip gold click" data-a="ov" data-v="house:${hs.id}">${PORTRAIT.coat(hs, 14)} ${UI.esc(hs.name)}</span>` : ""}${t.traits.map(x => (GD.TRAITS[x] ? `<span class="chip" title="${UI.esc(GD.TRAITS[x].desc)}">${GD.TRAITS[x].name}</span>` : "")).join("")}${t.blood && t.blood.show && GD.BLOOD[t.blood.id] ? `<span class="chip blood">${UI.esc(GD.BLOOD[t.blood.id].short)}</span>` : ""}</div>
   </div></div>`;

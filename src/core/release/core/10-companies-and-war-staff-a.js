@@ -1214,7 +1214,8 @@ A.battleClose = function () {
     "battle",
   );
   if (pc.mil) {
-    pc.mil.battles++;
+    pc.mil.battles++; // D-183: a battle survived is a deed the titles count (src/people/9999976-titles)
+    if (A.TT && A.TT.battle) A.TT.battle(pc);
     pc.mil.merit += won ? 25 + pc.mil.rank * 5 : lost ? 5 : 12;
     if (pc.mil.battles >= 10) A.ach("ten_battles");
   }

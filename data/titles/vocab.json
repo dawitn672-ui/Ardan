@@ -1,0 +1,62 @@
+{
+ "about": "Titles (docs/design/skills-v2.md §11, as the owner's answers of order 82 change it: §15; D-183): the words a title is written in. tools/lint-titles.mjs validates data/titles/ against this file; src/people/9999976-titles reads it. A title's conditions are never shown to the player.",
+ "rarities": ["uncommon", "rare", "legendary"],
+ "rarityNote": "No common titles. 'unique' is not a rarity but a flag: one living holder at a time (the owner, order 82: the word only for what is one of a kind). A unique title spends a quarter more, a legendary one half more (the larger when both).",
+ "weights": ["D", "C", "B", "A", "S", "X"],
+ "budget": { "per": { "D": 1, "C": 2, "B": 4, "A": 8, "S": 16 }, "levels": 5, "unique": 1.25, "legendary": 1.5 },
+ "budgetNote": "A title spends at most perLevel(weight) x 5 (half a skill at Lv 10: D 5, C 10, B 20, A 40, S 80) on its person effects, priced with data/skills/vocab.json's costs. Weight X is the great beings' (above SSS): no person effects, only the beings' buffs that A.POWER reads.",
+ "statMax": 3,
+ "statNote": "At most +3 on one stat a title; skills' and titles' stat effects together at most +10 on one stat (the adapter's cap) and never past the body's potential by more than 5 (A.stat).",
+ "kinds": ["deed", "mastery", "service", "faith", "world", "infamy", "born"],
+ "fieldsNote": "A title: id, name (may hold {place} or {realm}), rarity, weight, unique (one living holder), per ('realm': one holder in each realm), once (given once an age), since (only for what is reached after the age began: whoever met its conditions when titles came into the world is written down and never earns it), grant ('ruler': the realm's ruler names him, through A.WHY), kind, beings, born (held from birth), holders (the great beings whose sheets name it), class (a title that is also a class: the Sword Saint), requires and watch (hidden), lose (the deeds that take it away), effects (the skills' vocabulary, for people), buffs (capabilities, level and power, for the great beings: A.POWER), honour and renown (paid once), hint, earned and lost (the world's words), style (beside the name), text, reasons (what it gives a decider, by kind of decision).",
+ "beings": ["person", "monster", "legend", "master"],
+ "effectTypes": ["stat", "edge", "fight", "resist", "social", "aura", "growth", "blunder", "surge"],
+ "social": ["soldiers", "clergy", "peasants", "nobles", "merchants", "faith", "all"],
+ "socialNote": "social: how a group of people regards the holder, in points of opinion (A.opinion adds it: the best group the viewer belongs to, at most +10). faith: those of the holder's own faith.",
+ "socialMax": 10,
+ "predicates": ["all", "any", "not", "count", "streak", "best", "skill", "has", "age", "race", "faith", "stat", "fame", "honor", "flag", "only", "ruling"],
+ "predicateNote": "count: { count: kind, min?, max?, distinct? } over the ledger (distinct: that many different keys, such as realms); streak: { streak: kind, min } (the run since a deed that breaks it); best: { best: kind, min } (the largest value one deed carried, such as a siege's days); skill: { fam, rank, lv? } (a family's rung, 'any' for the best); has: a title id held; age: [min, max]; race and faith: lists; stat: { str: 60 }; fame, honor: a minimum; flag: a flag set; only: { measure: a skill key, scope: 'realm' } (the best living by it in his realm); ruling: { kind, years } (one of the kind's keys is a living ruler who has sat a year since the deed). A unique title is free only while no living person or great being holds it (the census). Nothing reads the dice.",
+ "deeds": {
+  "duel_won": { "src": "A.duelConsequences: a duel, a brawl or a tourney bout won (not a spar), for the player and, when he loses, for his foe" },
+  "duel_lost": { "src": "A.duelConsequences: a fight lost or yielded (not a spar), for the player and for a foe he beats", "breaks": ["duel_won"] },
+  "champion_beaten": { "src": "A.duelConsequences: a duel won against a realm's champion (a holder of a fighting title or a tourney's winner, or a commander of its host); key: his realm" },
+  "beast_slain": { "src": "A.duelConsequences (a beast killed in a hunt or a fight), PW.resolve (a beast killed outright); value: its level" },
+  "beast_above": { "src": "as beast_slain, when the beast's level stood above the slayer's" },
+  "dragon_slain": { "src": "as beast_slain, for a beast of dragon kind (the bestiary's dragons and wyrms, the release's two dragons)" },
+  "wound_serious": { "src": "A.addWound: a lasting wound (perm, or two years and more to heal), anyone" },
+  "battle": { "src": "the three places a soldier's battles are counted (the line, the company, the division)" },
+  "battle_wounded": { "src": "as battle, when a serious wound came in the same month" },
+  "battle_won": { "src": "A.fightEnd through A.LV.field: a commander of a winning division in a field battle" },
+  "siege_held": { "src": "A.siegeTick: a besieged walled place whose siege was given up after it had stood; for its lord (the seat's holder) or the player if he served in it; value: the days it stood" },
+  "treaty_made": { "src": "A.endWar: a war ended by terms, for each side's ruler, and for the player when he ruled a side or carried its embassy" },
+  "bribe_refused": { "src": "a card's choice (choices below)" },
+  "bribe_taken": { "src": "a card's choice (choices below)", "breaks": ["bribe_refused"] },
+  "faith_kept": { "src": "a card's choice (choices below): faith held under threat of prison, torture or death" },
+  "faith_recanted": { "src": "a card's choice (choices below)" },
+  "town_put_to_sword": { "src": "a card's choice (choices below); key: the place" },
+  "tourney_won": { "src": "the release's deed line 'Champion of ...' (a tourney won), read each month" },
+  "king_made": { "src": "the release's deed lines of a crown won for another (none yet: the realm's peace W1-6 will call A.deedDone when a claimant the player backed is crowned); key: the ruler", "deferred": true },
+  "pupil_taught": { "src": "none yet: teaching another to a rung (the training screen, skills-v2 §12.3)", "deferred": true }
+ },
+ "deedLines": [
+  { "rx": "^Champion of ", "kind": "tourney_won" }
+ ],
+ "choices": {
+  "note": "Cards whose choices are deeds a title watches: ev, and on: { choice index: deed kind } (the index in the event's own list of choices). win: true counts a choice with a check only when it succeeds. key: the card's ctx token that names the place.",
+  "list": [
+   { "ev": "du_ct_magistrate_bribe", "on": { "0": "bribe_refused", "1": "bribe_taken", "2": "bribe_refused" } },
+   { "ev": "cn_foreign_bribe", "on": { "0": "bribe_refused", "1": "bribe_taken", "2": "bribe_taken" } },
+   { "ev": "du_ct_forged_charter", "on": { "0": "bribe_refused", "2": "bribe_taken" } },
+   { "ev": "mrb_bd_cup_bribe", "on": { "0": "bribe_refused", "1": "bribe_taken", "2": "bribe_taken" } },
+   { "ev": "ar_bribe_1", "on": { "0": "bribe_taken", "1": "bribe_taken", "2": "bribe_refused" } },
+   { "ev": "tr_eng_plans", "on": { "0": "bribe_taken", "1": "bribe_taken", "2": "bribe_refused", "3": "bribe_refused" } },
+   { "ev": "ao_ship_5", "on": { "2": "bribe_taken", "3": "bribe_refused" } },
+   { "ev": "ruler_petition", "on": { "2": "bribe_taken" } },
+   { "ev": "rk_cpt_massacre", "on": { "2": "town_put_to_sword" }, "key": "vil" }
+  ]
+ },
+ "seriousWounds": ["scar_face", "scar_arm", "scar_chest", "lost_eye", "lost_fingers", "lost_hand", "limp", "bad_knee", "broken_ribs", "deep_cut", "arrow_wound", "concussion", "burn", "broken_nose", "ear", "bite", "back", "broken_arm", "broken_leg", "crooked_arm", "stiff_hand"],
+ "seriousNote": "The wounds a fight, a beast or a battle leaves (GD.WOUNDS keys): a strain, a brand or a cough is not counted.",
+ "strength": [[16, "great"], [8, "strong"], [4, "fair"], [0, "slight"]],
+ "strengthNote": "What a title gives, in words (no numbers for the player): the sum of its effects' costs."
+}

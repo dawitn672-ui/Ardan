@@ -2875,3 +2875,40 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
   them off changes every stat in the world over a life and needs its own balance pass; points are an addition held to the
   same ceiling until then. Also deferred: the training screen and professions (§12.3-12.4); an event's murder pays as
   an average person's; NPC-against-NPC duels outside a battle record nothing.
+
+### D-183 · Titles: earned by hidden conditions, stacked under the skills' caps; the legends' titles moved into the same data (2026-11-26; skills-v2 §11 with §15; orders 79, 82, 83, 84, 89)
+- **One kind of data for every title.** `data/titles/` (`vocab.json`, `people.json`, `legends.json`; `A.DATA.titles`).
+  The legends' and masters' inline titles moved there; their sheets name them by id and `A.POWER` resolves each to the
+  object it always was (`PW.titleRef`: name, honour, buffs, born, req), so every level, power, profile and matchup is
+  identical (a dump of 16 legends, 4 masters, every pairwise matchup and 400 species before and after: byte for byte the
+  same; the powers tests unchanged). **Considered:** leaving them inline and copying their multipliers (two sources of one
+  number), or reading person-style effects for the great beings (their balance is in `buffs`, which D-177 tuned).
+- **A title is two things for two kinds of holder.** `effects` (the skills' vocabulary) for people, read through the
+  skills adapter as sources of rank = the title's weight, so §2.4's caps bind skills and titles together; `buffs` for the
+  great beings, read by `A.POWER`. A person's fighting worth already carries his title's fight effects, so his being lists
+  his titles without buffs (his power stays his might): counted once. *The Sword Saint* carries both: Cael's buffs, and
+  person effects and a `class` for whoever earns it when he is gone.
+- **"Unique" is a flag, not a rarity** (order 82: the word only for the one of a kind). Rarities are uncommon, rare and
+  legendary; `unique` means one living holder, held in the census `A.S.tt.u`; `per: "realm"` makes it one in each realm
+  (the Sword of a realm, like a post); a great being whose sheet names a unique title holds it while it lives. Three
+  archdemons share *Primordial Archdemon* (born to it), so it is legendary but not unique.
+- **Never rolled for.** Conditions are a small pure grammar over a counted deed ledger (`p.dl`, one door: `A.deedDone`)
+  and the person's state; a title someone grants (the Sword of a realm) is the ruler's choice through `A.WHY.decide` on a
+  seeded stream of its own, so the main stream never moves (`ttDeterministic`). Where two would earn a unique title in one
+  pass, the one first in id order holds it.
+- **Where the deeds come from.** Guarded calls beside each system's own record (duels, beasts, wounds, battles, field
+  battles, sieges given up, wars ended by terms, nine cards' choices through a table in `vocab.json`, the release's
+  "Champion of" deed line). `king_made` and `pupil_taught` have no source yet, so Kingmaker and the Silver Sage cannot be
+  earned in play until the realm's peace and the training screen call the door; the validator lists them.
+  **Considered:** reading every deed from `p.deeds`' text (fragile, and blind to NPCs), and editing the release's
+  minified cards to call the door (the choice table reads the choice the player made and leaves the cards' text alone).
+- **First of the Age is for an age that began with titles.** In every world tried, three to six of the realms' old
+  masters already stand at rank S at the start, so the first yearly pass gave it to one of them. A title marked `since`
+  writes down who met it when titles came into the world (`A.S.tt.pre`) and never gives it to them.
+- **Stats.** `A.stat` adds the capped stat effects (`SK2.statOf`: +10 a stat from skills and titles together) to the
+  body before age, traits and wounds, never past the potential by more than 5; a title adds at most +3 to a stat
+  (validator). **Social** effects add to `A.opinion` (the best group a viewer belongs to, at most +10); a title's
+  `reasons` give a decider reasons (`A.WHY.appointGeneral`).
+- Save version 19 (the step `titles`: the census, empty). Another builder may also bump `SV.VER`; the integrator settles
+  the number at the merge. Deferred: `ttRare` (200 bot lives, a balance-harness run), monsters' own ledgers, an
+  opponent's title on a duel's or court's card.

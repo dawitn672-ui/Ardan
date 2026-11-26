@@ -50,6 +50,8 @@
     s += `<div class="pf-top"><div class="pf-kick"><i class="pf-glyph g${k.glyph}" aria-hidden="true"></i>${esc(k.word)}</div>${coat ? `<div class="pf-arms" aria-hidden="true">${coat}</div>` : ''}</div>`;
     s += `<h2 class="pf-name">${esc(A.fullName(p, false))}</h2>`;
     if (p.epithet) s += `<div class="pf-epi">${esc(p.epithet)}</div>`;
+    // the titles held (src/people/9999976-titles, D-183): the one borne, and a strip of chips that open on a press
+    if (p.tt && PF.cardTitles) { try { s += PF.cardTitles(p) || ''; } catch (e) { console.error('profile titles', e); } }
     s += `<div class="pf-estate">${esc(line)}</div>`;
     if (place) s += `<div class="pf-place">${esc(place)}</div>`;
     if (held.length) s += `<ul class="pf-held" aria-label="Posts held">` + held.map(x => `<li>${trig(x.tip, esc(x.label), 'pf-w')}</li>`).join('') + '</ul>';

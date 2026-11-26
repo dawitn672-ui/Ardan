@@ -122,6 +122,7 @@ node tools/lint-kin.mjs                                   # no event mints kin o
 node tools/lint-docs-index.mjs                            # docs/README.md lists every doc under docs/ and links nothing that is gone: add a line when you add a doc
 node tools/lint-skills.mjs                                # S1: no proficiency a player reads, the skills data whole, older code's skill writes only falling
 node tools/lint-reasons.mjs [--list]                      # no new bare-dice decision in AI code (R1, W1-2): the count may only fall
+node tools/lint-titles.mjs                                # data/titles/ whole and within budget, every hidden condition declared, no screen reading one (D-183)
 node tests/run.mjs /tmp/me.html --features=my-feature     # core suites + that feature's tests
 node tests/run.mjs --only=testA,testB --workers=4         # some tests by name
 node tests/run.mjs --tier=quick --shard=0/8 --plan        # T1: the tier split and each shard's estimated time, runs nothing
@@ -329,6 +330,8 @@ Using these helpers matters, because `A.CX_RX` classifies events by matching the
 - `them: { op: 10 }` changes opinion with `ctx.pid`.
 - `event: "id"` queues another event right after this one.
 - `need: { rest, company, purpose, comfort }` meets the four needs of 35-moods.
+- A deed a title watches (a duel won, a bribe refused, a siege held) goes through one door, `A.deedDone(p, kind, ctx)`
+  (the kinds are `data/titles/vocab.json`'s deeds; D-183); a title is never granted by a card directly.
 - A feature that adds an effect key declares it in its core code: `(A.FX_EXTRA = A.FX_EXTRA || []).push('key')`. The linter reads that declaration.
 
 **Checks.** `check: { s, s2, d }` takes a skill or stat (`GD.SKILLS` keys: the 28 skills and the 10 legacy keys, which read their skill with that specialism; or str spd ins sta int wil). `d` is a level's value: even odds for someone whose skill reads `d` (45 is C Lv 6, 55 is B Lv 1), and each point is worth 1.6% of odds. A check trains its skill as a stretch against `d`, and one at the next rank's value or above, succeeded, is the deed for a person standing at that edge.

@@ -1392,7 +1392,8 @@ const battleStageOutcome = function (m, pc, ch, tier, mates) {
       A.applyLosses([m.enemy], lossB);
     }
     if (pc.mil) {
-      pc.mil.battles++;
+      pc.mil.battles++; // D-183: a battle survived is a deed the titles count (src/people/9999976-titles)
+      if (A.TT && A.TT.battle) A.TT.battle(pc);
       pc.mil.merit += Math.max(0, m.merit) + (win ? 10 : 3);
       pc.mil.kills += m.kills;
     }

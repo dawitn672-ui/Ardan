@@ -67,6 +67,7 @@
   "dietSaveBars100",
   "noTradeLoop",
   "sk5Lives",
-  "sk2Migrate"
+  "sk2Migrate",
+  "ttDeterministic"
  ]
 }

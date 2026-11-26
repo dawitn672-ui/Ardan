@@ -76,7 +76,7 @@ regeneration against no magic, numbers, magic against a ward, cunning. A person'
 
 **Titles** are data with `buffs` (capabilities, level, power) and honour; `A.POWER.being` reads them, so a title visibly
 makes a being stronger. Some are born (`born: true`: "Primordial Archdemon", "Old Blood" of the ancient dragons,
-"Gate-Born", "Dragon-Born of the First Clutch"); the rest carry `req: "hidden"`. The player's own titles are a separate design.
+"Gate-Born", "Dragon-Born of the First Clutch"); the rest carry `req: "hidden"`. Since D-183 every title lives in `data/titles/` (the legends' and masters' sheets name theirs by id, read as before: nothing moved) beside the titles people earn (`src/people/9999976-titles`); *the Sword Saint* is both Cael's title and a class a person may earn when he is gone.
 
 ## 3. The bestiary: 270 kinds
 
@@ -141,6 +141,6 @@ The world's own draws use a seeded stream of their own, so the main stream moves
 
 ## 6. Not done in this wave
 
-The player's own titles; lineage and innate gifts for playable races (the masters stand for each people's best); magic and
+Lineage and innate gifts for playable races (the masters stand for each people's best); magic and
 mana; legends on the map view; a host the player can join against a legend; drops in the market; beliefs about the new
 kinds; monster nations on the war map.
