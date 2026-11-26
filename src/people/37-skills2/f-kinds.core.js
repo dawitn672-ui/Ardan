@@ -397,6 +397,59 @@
     if (won && D.b && D.b.beast) { const K = SK2.kd(pc); K.survived_beast = (K.survived_beast || 0) + 1; }
   };
 
+  // ---- what the arts are worth before a fight: the honest odds (24-honest-duel-odds, 48's measure) ---------------------
+  // The odds a player sees read fighting worth; the arts change what a duel does, so they count in it. A fighter's arts
+  // are worth ART_WORTH x the root of what they are worth at their levels (their budget's spend), counting every readied
+  // active and buff and every passive whose condition a fight can bring (one that the fight's own facts rule out, the dark
+  // by day, a party that is not there, a foe not stronger, does not count). Fitted on the duel engine (D-186: honestOddsCells'
+  // setting with the foe's arts and none of the player's); a root, because the caps bind more as arts pile up.
+  SK2.ART_WORTH = 0.41;
+  SK2.ART_WORTH_BEAST = 0.8;   // a beast readies all it has and its moves are few: its arts come round more often (flBeastOdds)
+  const STATIC = { outnumbered: c => c.outnumbered, dawn: c => c.light === 'dawn' || c.light === 'dusk', night: c => c.light === 'night' || c.light === 'torch', foe_stronger: c => c.foeStronger };
+  SK2.artsWorth = function (D, f) {
+    const k = f && f.k2; if (!k) return 0;
+    const c = { outnumbered: !!(D && D.party && f === D.b), light: D && D.light, foeStronger: !!(D && D.cr0 && (f === D.a ? D.cr0[1] - D.cr0[0] : D.cr0[0] - D.cr0[1]) > 3) };
+    // a passive whose condition holds for the whole fight (a party round a beast, the dark, a stronger foe) gives its fight
+    // points in every exchange: they are worth points themselves (under the fight's cap); the rest by the root of their value
+    let v = 0, flat = 0;
+    // an active or a buff: what one use is worth (its spend without the cooldown's discount) times the uses a fight of ten
+    // exchanges gives it (every v exchanges: ten over v, at most four; once a fight: one), as far as its mana lasts
+    for (const u of k.arts) {
+      let n = u.cd && (u.cd.per === 'round' || u.cd.per === 'turn') ? Math.min(4, 10 / Math.max(1, +u.cd.v || 1)) : 1;
+      const m = E().costOf(u, 'mana'); if (m > 0) n = Math.min(n, Math.floor((k.mana0 || 0) / m));
+      v += (u.value || 0) / (u.cd ? E().coolFactor(u.cd) : 1) * n;
+    }
+    for (const u of k.pas) {
+      if (!STATIC[u.on]) { v += u.value || 0; continue; }
+      if (!STATIC[u.on](c)) continue;
+      for (const d of u.do) if (d.type === 'fight') flat += +d.v || 0; else v += E().effectCost(IX(), d, IX().BY[u.id]);
+    }
+    flat = Math.min(flat, Math.max(0, (k.worth || 0) * capOf(f, 'fightShare') - (f.sk2 ? Math.max(0, f.sk2.total || 0) : 0)));
+    return flat + (v > 0 ? (f.beast ? SK2.ART_WORTH_BEAST : SK2.ART_WORTH) * Math.sqrt(v) : 0);
+  };
+  // the same for a person before any fight (a profile's odds): his fighter as A.fightWorth builds it, his arts readied as a
+  // fight would ready them, by day, alone. Kept for the month by person, weapon and what he holds; pure.
+  const AW = new Map();
+  A.onMonth.push(() => { AW.clear(); });
+  SK2.artsWorthReset = () => AW.clear();
+  SK2.artsWorthOf = function (p) {
+    if (!p || !p.alive || !p.st) return 0;
+    const held = SK2.artsHeld(p); if (!held.length) return 0;
+    const R = isPC(p) ? SK2.readiedOf(p).filter(SK2.settled).map(x => x.id).join(',') : '';
+    const key = `${p.id}|${(p.gear && p.gear.weapon) || ''}|${(p.gear && p.gear.shield) || ''}|${held.map(h => h.id + h.lv).join(',')}|${R}`;
+    let v = AW.get(key);
+    if (v == null) {
+      // (as A.fightWorth does: a style the fighter only imagined is not kept)
+      const ns = p.styles === void 0, f = A.fighterFrom(p, {});
+      if (ns) delete p.styles;
+      SK2.fighterArts(null, f, p);
+      v = SK2.artsWorth({ light: 'day' }, f);
+      if (AW.size > 4096) AW.clear();
+      AW.set(key, v);
+    }
+    return v;
+  };
+
   // ---- the save step 'skills2arts' (save version 20): the player's stores, empty; nothing a check reads moves ------------
   SK2.migrateArts = function (S) {
     S = S || A.S; const pc = S && S.people && S.people[S.pc];

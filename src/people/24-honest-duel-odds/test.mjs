@@ -5,7 +5,9 @@ export default {
       A.newGame({ seed: 91, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
       const fs = []; for (let t = 1; t <= 6; t++) for (let k = 0; k < 4; k++) fs.push(A.makeFoe({ tier: t, realm: 'POL-01' }));
       let monotone = true, sym = 0;
-      const sorted = fs.slice().sort((x, y) => A.fightWorth(x) - A.fightWorth(y)), base = sorted[0];
+      // (the measure the odds read: the worth and, since D-186, what the arts of the three kinds are worth)
+      const m = x => A.fightWorth(x) + (A.SK2 && A.SK2.artsWorthOf ? A.SK2.artsWorthOf(x) : 0);
+      const sorted = fs.slice().sort((x, y) => m(x) - m(y)), base = sorted[0];
       for (let i = 1; i < sorted.length; i++) if (A.shownDuelOdds(sorted[i], base) + 1e-9 < A.shownDuelOdds(sorted[i - 1], base)) monotone = false;
       for (const a of fs.slice(0, 8)) for (const b of fs.slice(8, 16)) sym = Math.max(sym, Math.abs(A.shownDuelOdds(a, b) + A.shownDuelOdds(b, a) - 100));
       // the person view's line agrees with the function
