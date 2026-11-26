@@ -11,8 +11,130 @@ const saveFiles = () => [...fs.readdirSync(SAVES_DIR).filter(f => f.endsWith('.a
   ...fs.readdirSync(path.join(SAVES_DIR, 'press')).filter(f => f.endsWith('.ardan')).map(f => path.join(SAVES_DIR, 'press', f))];
 const b64 = f => fs.readFileSync(f).toString('base64');
 
-export const limits = { sk5Lives: 3600, sk2Migrate: 2400 };
+export const limits = { sk5Lives: 3600, sk2Migrate: 2400, sk2Caps: 900, sk6PerkSums: 1800 };
 export default {
+  // step 6 (D-180): the caps hold whatever the data says. Big edge, fight, blunder, surge and resist effects are planted
+  // on the sword family's D, C and B rungs (many sources, some of a thousand points); for everyone who holds a sword rung
+  // a check on sword gains at most +12 (exactly 12 here), the fighting worth at most +15% (and more than nothing), the
+  // judgment and will at most 2 steps, each resisting at most 3. Before the plant and after it is taken away every
+  // reader gives what it gave; working all of it out draws no die and writes nothing to the state.
+  async sk2Caps(pg) {
+    const r = await pg.evaluate(() => {
+      const SK2 = A.SK2, VS = A.V2S, out = { people: 0, bad: [], nBad: 0 };
+      if (!SK2 || !SK2.edgeOf || !A.CAPS) return { none: true };
+      const I = SK2.IX(), E = SK2.E();
+      T.enter({ seed: 4242, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 16 });
+      T.play(1);
+      const ids = ['stick_and_lath', 'basic_swordsmanship', 'measured_blade'], keep = ids.map(id => I.BY[id].levels);
+      const ck = { s: 'sword', d: 45 }, ck2 = { s: 'sword', s2: 'dagger', d: 55 }, ckFar = { s: 'persuasion', d: 45 };
+      const people = Object.values(A.S.people).filter(p => p && p.alive && p.st && A.skill(p, 'sword') >= 1).sort((a, b) => (a.id < b.id ? -1 : 1)).slice(0, 120);
+      const look = () => people.map(p => ({ ev: A.skillEff(p, 'sword'), cv: A.checkVal(p, ck), cv2: A.checkVal(p, ck2), far: A.checkVal(p, ckFar), fw: A.fightWorth(p), m: VS.minds(p, ck), odds: A.checkOdds(p, ck), wr: SK2.resistSteps(p, 'wounds'), fr: SK2.resistSteps(p, 'fear'), ir: SK2.resistShare(p, 'illness'), caps: A.CAPS(p), held: SK2.held(p).length, top: (SK2.rungFor(p, 'sword') || {}).rank }));
+      const rng0 = A.rngState, h0 = T.hash(A.S);
+      const before = look();
+      out.fastPath = before.every(x => x.held === 0 && x.caps.held.length === 0);
+      // the plant: nine sources of every kind across three rungs, some far past any budget
+      const big = [
+        { type: 'edge', tag: 'sword', v: 10 }, { type: 'edge', tag: 'arms', v: 1000 }, { type: 'edge', tag: 'all', v: 10 },
+        { type: 'fight', tag: 'all', part: 'atk', v: 40 }, { type: 'fight', tag: 'sword', part: 'def', v: 400 }, { type: 'fight', tag: 'all', part: 'burst', v: 20 }, { type: 'fight', tag: 'all', part: 'adapt', v: 10 },
+        { type: 'blunder', tag: 'sword', v: 3 }, { type: 'surge', tag: 'all', v: 30 },
+        { type: 'resist', of: 'wounds', v: 5 }, { type: 'resist', of: 'fear', v: 50 }, { type: 'resist', of: 'illness', v: 5 },
+      ];
+      ids.forEach((id, i) => { I.BY[id].levels = keep[i].map(b => (b.at === 1 ? { at: 1, effects: b.effects.concat(big) } : b)); if (!keep[i].some(b => b.at === 1)) I.BY[id].levels = [{ at: 1, effects: big.slice() }].concat(keep[i]); });
+      let after;
+      try { SK2.capsReset(); after = look(); } finally { ids.forEach((id, i) => { I.BY[id].levels = keep[i]; }); SK2.capsReset(); }
+      const restored = look();
+      out.pure = A.rngState === rng0 && T.hash(A.S) === h0;
+      const bad = (p, s) => { out.nBad++; if (out.bad.length < 8) out.bad.push(p.id + ': ' + s); };
+      let fwMax = 0, gained = 0;
+      people.forEach((p, i) => {
+        const b = before[i], a = after[i], z = restored[i];
+        out.people++;
+        if (JSON.stringify([b.ev, b.cv, b.cv2, b.far, b.fw, b.m, b.odds]) !== JSON.stringify([z.ev, z.cv, z.cv2, z.far, z.fw, z.m, z.odds])) bad(p, 'not as before once the plant is gone');
+        if (!a.held) { bad(p, 'holds a sword rung (' + b.top + ') but nothing was gathered'); return; }
+        if (a.ev - b.ev !== 12) bad(p, `edge on sword ${a.ev - b.ev}, not the cap of 12`);
+        if (!(a.cv - b.cv <= 12 + 1e-9 && a.cv2 - b.cv2 <= 12 + 1e-9 && a.cv > b.cv)) bad(p, `a check gained ${a.cv - b.cv} / ${a.cv2 - b.cv2}`);
+        if (a.far - b.far > 1e-9 + 12 || a.far - b.far < 0) bad(p, `a persuasion check moved ${a.far - b.far} (only 'all' reaches it)`);
+        const share = (a.fw - b.fw) / Math.max(1, b.fw);
+        if (b.fw >= 30) fwMax = Math.max(fwMax, share);
+        // (the worth is rounded: a share of a very small worth can round to nothing)
+        if (a.fw - b.fw > 0.15 * b.fw + 1.5 || a.fw < b.fw) bad(p, `fighting worth ${b.fw} -> ${a.fw}`);
+        if (a.fw > b.fw) out.fwUp = (out.fwUp || 0) + 1;
+        if (Math.abs(a.m.judgment - b.m.judgment - 2 * E.STEP_MIND) > 1e-9 || Math.abs(a.m.will - b.m.will - 2 * E.STEP_MIND) > 1e-9) bad(p, `judgment ${b.m.judgment} -> ${a.m.judgment}, will ${b.m.will} -> ${a.m.will} (2 steps each)`);
+        if (a.wr !== 3 || a.fr !== 3 || Math.abs(a.ir - 0.3) > 1e-9) bad(p, `resist wounds ${a.wr}, fear ${a.fr}, illness ${a.ir}`);
+        if (!Object.isFrozen(a.caps) || a.caps.edges.arms !== 12 || a.caps.resist.fear !== 3 || A.CAPS(p) === a.caps) bad(p, 'the profile (frozen, capped, forgotten after the reset)');
+        if (a.odds < b.odds) bad(p, `odds fell ${b.odds} -> ${a.odds}`);
+        gained++;
+      });
+      out.fwMax = Math.round(fwMax * 1000) / 1000; out.gained = gained;
+      return out;
+    });
+    if (r.none) return { ok: false, detail: 'no A.SK2.edgeOf or A.CAPS on the page' };
+    const ok = r.fastPath && r.pure && r.nBad === 0 && r.people >= 20 && (r.fwUp || 0) >= r.people * 0.8;
+    return { ok, detail: `${r.people} people holding a sword rung; before the plant every profile empty ${r.fastPath ? 'yes' : 'NO'}; with it: every check on sword +12 exactly, fighting worth up for ${r.fwUp || 0} by at most ${Math.round(r.fwMax * 1000) / 10}% (the cap 15%), judgment and will 2 steps, resisting 3 steps; ` +
+      `${r.nBad} faults${r.nBad ? ' (' + r.bad.join('; ') + ')' : ''}; no die drawn and the state untouched: ${r.pure ? 'yes' : 'NO'}` };
+  },
+
+  // step 6 (D-180): the knacks are the rungs' perk effects, served by A.SK2.perkRows. The rows are the release's GD.PERKS
+  // rows (threshold, name, text, effects) for each of the 38 keys; and over three bot lives, month by month, A.perkSum of
+  // every perk effect, A.perkOf of every key and effect and A.perksOf, for the player and for everyone with a skill at 35
+  // or more (a sample of 120 a year), equal the release's reading of GD.PERKS on the same state.
+  async sk6PerkSums(pg) {
+    const lives = [
+      { seed: 4242, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 16 },
+      { seed: 7, race: 'human', realm: 'POL-04', status: 'peasant', sex: 'M', startAge: 16 },
+      { seed: 2024, race: 'dwarf', realm: 'POL-20', status: 'artisan', sex: 'F', startAge: 18 },
+    ];
+    const r = await pg.evaluate((lives) => {
+      const out = { rows: 0, rowBad: [], sums: 0, nonzero: 0, nBad: 0, bad: [], months: 0, plays: [], served: false };
+      if (!A.SK2 || !A.SK2.perkRows) return { none: true };
+      const keys = Object.keys(GD.PERKS).sort();
+      out.served = keys.every(k => A.perkRows(k) && A.perkRows(k) !== GD.PERKS[k]);
+      for (const k of keys) {
+        const a = GD.PERKS[k], b = A.perkRows(k) || [];
+        out.rows += a.length;
+        if (JSON.stringify(a) !== JSON.stringify(b.map(x => [x[0], x[1], x[2], x[3]]))) out.rowBad.push(k);
+      }
+      const fxKeys = [...new Set(keys.flatMap(k => GD.PERKS[k].flatMap(x => Object.keys(x[3]))))].sort();
+      // the release's own reading (src/core/release/core/03-engine-base.js before step 6), on GD.PERKS
+      const R = {
+        perksOf: (p, k) => { const L = GD.PERKS[k]; if (!L) return []; const v = A.skill(p, k); return L.filter(x => v >= x[0]); },
+        perkOf: (p, k, key) => { let t = 0; for (const x of R.perksOf(p, k)) if (x[3][key]) t += x[3][key]; return t; },
+        perkSum: (p, key) => { let t = 0; if (!p || !p.skills) return 0; for (const k in p.skills) if (!(p.skills[k] < 35 || !GD.PERKS[k])) t += R.perkOf(p, k, key); return t; },
+      };
+      const cmp = p => {
+        for (const key of fxKeys) {
+          const a = A.perkSum(p, key), b = R.perkSum(p, key); out.sums++; if (a) out.nonzero++;
+          if (a !== b) { out.nBad++; if (out.bad.length < 8) out.bad.push(`${A.S.year} ${p.id} perkSum ${key}: ${a} / ${b}`); }
+        }
+        for (const k of keys) {
+          const a = A.perksOf(p, k).map(x => x[1]).join(), b = R.perksOf(p, k).map(x => x[1]).join();
+          if (a !== b) { out.nBad++; if (out.bad.length < 8) out.bad.push(`${A.S.year} ${p.id} perksOf ${k}: ${a} / ${b}`); continue; }
+          if (!a) continue;
+          for (const key of fxKeys) if (A.perkOf(p, k, key) !== R.perkOf(p, k, key)) { out.nBad++; if (out.bad.length < 8) out.bad.push(`${A.S.year} ${p.id} perkOf ${k} ${key}`); }
+        }
+      };
+      let n = 0;
+      const look = () => {
+        out.months++;
+        const pc = A.pc(); if (pc && pc.alive) cmp(pc);
+        if (n++ % 12) return;
+        const ppl = Object.values(A.S.people).filter(p => p && p.alive && p !== pc && p.skills && Object.values(p.skills).some(v => v >= 35)).sort((a, b) => (a.id < b.id ? -1 : 1));
+        const step = Math.max(1, Math.floor(ppl.length / 120));
+        for (let i = 0; i < ppl.length; i += step) cmp(ppl[i]);
+      };
+      for (const o of lives) {
+        T.enter(o); n = 0;
+        A.onMonth.push(look);
+        try { out.plays.push(T.play(4)); } finally { const i = A.onMonth.indexOf(look); if (i >= 0) A.onMonth.splice(i, 1); }
+      }
+      return out;
+    }, lives);
+    if (r.none) return { ok: false, detail: 'no A.SK2.perkRows on the page' };
+    const ok = r.served && !r.rowBad.length && r.rows === 114 && r.nBad === 0 && r.months >= 100 && r.nonzero > 1000;
+    return { ok, detail: `perks served from the rungs ${r.served ? 'yes' : 'NO'}; ${r.rows} rows against GD.PERKS${r.rowBad.length ? ', differing for ' + r.rowBad.join(', ') : ', every one the same'}; ` +
+      `${r.months} months over three lives (${r.plays.join(', ')}): ${r.sums} perk sums compared (${r.nonzero} not zero), ${r.nBad} differ${r.nBad ? ' (' + r.bad.join('; ') + ')' : ''}` };
+  },
+
   // step 5, the switch: over three bot lives, month by month, what every check reads through the rungs (A.skill since
   // the switch) is compared with what S1 read of the same state (A.skill with A.SK2.on put false for the read). Anyone
   // but the player reads exactly the same. The player reads the same wherever his rung is an odd level; where it differs,

@@ -225,9 +225,13 @@ export function stack(values, cap, weights) {
   return Math.max(-cap, t + n);
 }
 // the cap of a kind of bonus for the highest rank among its sources
+// The design's caps for the human ranks (§2.4), a ceiling the data cannot lift (step 6, D-180): vocab.json may tune a
+// cap lower, never higher. Above S the caps are the data's, rising by rank (§15.1).
+export const CAP_HUMAN = { edge: 12, fightShare: 0.15, aura: 3, blunderSurge: 2, resist: 3, growth: 50, stat: 10 };
 export function capOf(ix, what, topRank) {
-  const C = ix.V.caps[what]; if (!C) return Infinity;
-  return C[topRank] != null ? C[topRank] : C.S;
+  const C = (ix.V.caps || {})[what], hard = HUMAN.includes(topRank) || rankIx(topRank) < 0 ? CAP_HUMAN[what] : undefined;
+  const v = !C ? Infinity : C[topRank] != null ? C[topRank] : C.S != null ? C.S : Infinity;
+  return hard != null ? Math.min(v, hard) : v;
 }
 export const topRank = ranks => ranks.reduce((t, r) => (rankIx(r) > rankIx(t) ? r : t), 'D');
 
@@ -378,4 +382,132 @@ export function familyRead(ix, entries, fam) {
     if (v > best) best = v;
   }
   return best;
+}
+
+// ---- 10. effects in play: the capability profile and the caps (step 6, §2.3, §2.4, §3.6; D-180) ------------------------
+// held: [{ id, lv }], every skill a person holds (a family's rungs below his top one at Lv 10, the top one at its level,
+// §15.2). gather() lists every passive effect's sources by slot. Perks are not gathered: the adapter serves them from
+// the read of their key, as the release did (perkRows). trigger and active effects are listed, not summed: they act in
+// their moment (steps 7 and 11).
+// One step of blunder or surge is half a deviation of judgment or will (7.5 points on attempt()'s scale of 100 and 15).
+export const STEP_MIND = 7.5;
+// one step of resisting: a tenth off a wound's damage (the fighter's woundRes), a fifth off a foe's stare (fear), a tenth
+// off an illness's monthly toll; poison and mind wait for the systems that read them
+export const RESIST_STEP = { wounds: 0.1, fear: 0.2, illness: 0.1, poison: 0.1, mind: 0.1 };
+// the held list of a family's ladder at (rank, lv): every rung below at Lv 10, the top at its level
+export function heldOfRung(ix, fam, rank, lv) {
+  const out = [];
+  if (!(lv >= 1) || rankIx(rank) < 0) return out;
+  for (const r of RANKS) {
+    const id = rungOf(ix, fam, r);
+    if (rankIx(r) < rankIx(rank)) { if (id) out.push({ id, lv: MAX_LV }); continue; }
+    if (r === rank && id) out.push({ id, lv: Math.min(MAX_LV, lv) });
+    break;
+  }
+  return out;
+}
+// the slot an effect's sources stack in, under one cap
+export function srcKey(e) {
+  switch (e && e.type) {
+    case 'edge': case 'blunder': case 'surge': case 'growth': return e.type + '|' + e.tag;
+    case 'fight': return 'fight|' + e.tag + '|' + (e.part || 'atk');
+    case 'resist': return 'resist|' + e.of;
+    case 'aura': return 'aura|' + e.of + '|' + e.scale;
+    case 'stat': return 'stat|' + e.stat;
+    case 'social': return 'social|' + e.group;
+    case 'economy': return 'economy|' + e.of + '|' + (e.tag || 'all');
+    default: return null;
+  }
+}
+export function gather(ix, held) {
+  const src = {}, unlocks = [], actives = [], triggers = [];
+  for (const h of held || []) {
+    const s = ix.BY[h && h.id]; if (!s) continue;
+    for (const e of effectsAt(s, h.lv)) {
+      if (e.type === 'perk') continue;
+      if (e.type === 'unlock') { if (!unlocks.includes(e.what)) unlocks.push(e.what); continue; }
+      if (e.type === 'active') { actives.push({ id: s.id, name: e.name, limit: e.limit || null, do: e.do }); continue; }
+      if (e.type === 'trigger') { triggers.push({ id: s.id, on: e.on, limit: e.limit || null, do: e.do }); continue; }
+      const k = srcKey(e); if (!k) continue;
+      (src[k] = src[k] || []).push([+e.v || 0, s.rank, s.id]);
+    }
+  }
+  return { src, unlocks, actives, triggers };
+}
+// the diminishing weights of the sources, largest first (vocab.json's caps.weights; stack's own when missing)
+const weightsOf = ix => (ix.V.caps && ix.V.caps.weights) || undefined;
+// the capped total of a list of sources ([v, rank, id]) under the cap of kind `what` for the highest rank among them
+export function capped(ix, what, list) {
+  if (!list || !list.length) return 0;
+  const cap = capOf(ix, what, topRank(list.map(x => x[1])));
+  return stack(list.map(x => x[0]), cap, weightsOf(ix));
+}
+// the sources of several slots together (a check reads its key, its family, its focus, its group and 'all')
+const srcOf = (G, type, tags, part) => { const out = []; for (const t of tags) { const l = G.src[type + '|' + t + (part ? '|' + part : '')]; if (l) out.push(...l); } return out; };
+// what a check on these tags gets from edges: at most the cap (+12 up to S, rising above it)
+export const edgeOn = (ix, G, tags) => capped(ix, 'edge', srcOf(G, 'edge', tags));
+// steps of blunder (positive: fewer blunders) or surge on these tags: at most 2 either way (up to S)
+export const stepsOn = (ix, G, what, tags) => capped(ix, 'blunderSurge', srcOf(G, what, tags));
+// steps of resisting one thing: at most 3 (up to S)
+export const resistOn = (ix, G, of) => capped(ix, 'resist', G.src['resist|' + of] || []);
+// a fight's parts in fight-worth points for these weapon tags, each part's sources weighed 1, 1/2, 1/4, 1/8; then the
+// whole at most the share of the fighter's own worth (+15% up to S), scaled down evenly when over (a malus likewise,
+// down to minus it)
+export const FIGHT_PARTS = ['atk', 'def', 'burst', 'adapt'];
+export function fightOn(ix, G, tags, worth) {
+  const out = { atk: 0, def: 0, burst: 0, adapt: 0, total: 0, cap: 0 };
+  let all = [];
+  for (const part of FIGHT_PARTS) {
+    const l = srcOf(G, 'fight', tags, part); if (!l.length) continue;
+    all = all.concat(l); out[part] = stack(l.map(x => x[0]), Infinity, weightsOf(ix));
+  }
+  if (!all.length) return out;
+  const cap = Math.max(0, +worth || 0) * capOf(ix, 'fightShare', topRank(all.map(x => x[1])));
+  const t = FIGHT_PARTS.reduce((s, p) => s + out[p], 0);
+  const k = t > cap ? cap / t : t < -cap ? -cap / t : 1;
+  if (k !== 1) for (const p of FIGHT_PARTS) out[p] *= k;
+  out.total = FIGHT_PARTS.reduce((s, p) => s + out[p], 0); out.cap = cap;
+  return out;
+}
+// auras: the best one of each `of` and scale counts; at most +3 steps of any `of` (up to S)
+export function aurasOn(ix, G) {
+  const by = {}, lists = {};
+  for (const k of Object.keys(G.src).sort()) {
+    if (!k.startsWith('aura|')) continue;
+    const [, of, scale] = k.split('|'), l = G.src[k], best = l.reduce((b, x) => (x[0] > b[0] ? x : b), l[0]);
+    (lists[of] = lists[of] || []).push(best); (by[of] = by[of] || {})[scale] = best[0];
+  }
+  for (const of in by) { const l = lists[of]; by[of].total = Math.min(capOf(ix, 'aura', topRank(l.map(x => x[1]))), l.reduce((s, x) => s + x[0], 0)); }
+  return by;
+}
+// the capability profile (§3.6), every bonus capped; what A.CAPS(p) returns. fight holds each weapon tag's parts before
+// the share of worth (that needs the fighter: fightOn); G keeps the sources, for a check's or a fight's own tags.
+export function profile(ix, held) {
+  const G = gather(ix, held);
+  const P = { held: (held || []).map(h => ({ id: h.id, lv: h.lv })), edges: {}, fight: {}, blunder: {}, surge: {}, resist: {}, growth: {}, stat: {}, social: {}, economy: {}, auras: aurasOn(ix, G), unlocks: G.unlocks, actives: G.actives, triggers: G.triggers };
+  const W = weightsOf(ix);
+  for (const k of Object.keys(G.src).sort()) {
+    const [type, a, b] = k.split('|'), l = G.src[k];
+    if (type === 'edge') P.edges[a] = capped(ix, 'edge', l);
+    else if (type === 'blunder' || type === 'surge') P[type][a] = capped(ix, 'blunderSurge', l);
+    else if (type === 'resist') P.resist[a] = capped(ix, 'resist', l);
+    else if (type === 'growth') P.growth[a] = capped(ix, 'growth', l);
+    else if (type === 'stat') P.stat[a] = capped(ix, 'stat', l);
+    else if (type === 'social') P.social[a] = stack(l.map(x => x[0]), Infinity, W);
+    else if (type === 'economy') P.economy[a + (b && b !== 'all' ? ':' + b : '')] = stack(l.map(x => x[0]), Infinity, W);
+    else if (type === 'fight') { const f = P.fight[a] = P.fight[a] || { atk: 0, def: 0, burst: 0, adapt: 0 }; f[b] = stack(l.map(x => x[0]), Infinity, W); }
+  }
+  P.G = G;
+  return P;
+}
+// the release's knacks as the rungs carry them (§7): rows [threshold, name, text, fx] by key, the threshold the read of
+// the rung's rank at the band's level (C Lv 1: 35, B Lv 1: 55, A Lv 1: 72, S1's crossings), in order of threshold
+export function perkRows(ix) {
+  const out = {};
+  for (const s of ix.skills) {
+    if (!s.family || !HUMAN.includes(s.rank)) continue;
+    for (const b of s.levels || []) for (const e of b.effects || []) if (e.type === 'perk' && e.key) (out[e.key] = out[e.key] || []).push([value(s.rank, b.at), e.name || '', e.text || '', e.fx || {}]);
+  }
+  for (const k in out) out[k].sort((a, b) => a[0] - b[0]);
+  return out;
 }

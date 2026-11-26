@@ -1766,6 +1766,9 @@ A.fighterFrom = function (p, opts = {}) {
   f.pierce = (f.pierce || 0) + (qw.pierce || 0);
   f.wspd = (f.wspd || 0) + (qw.spd || 0);
   f.prot = (f.prot || 0) * qa.prot;
+  // the skills rebuild, step 6 (D-180): held skills' fight effects (capped at +15% of this fighter's worth) and their
+  // resisting of wounds and fear (src/people/37-skills2/c-effects); nothing while no skill carries one
+  if (A.SK2 && A.SK2.fightOn) A.SK2.fightOn(f, p);
   return f;
 };
 
@@ -1853,6 +1856,9 @@ A.CR = function (f, D) {
   if (f.fury > 0) v += 14;
   if (f.hp < f.maxHp * 0.3 && !f.painless) v *= 0.85;
   v += f.adapt;
+  // the skills rebuild, step 6 (D-180): held skills' fight effects in fight-worth points, at most +15% of the fighter's
+  // worth (A.SK2.fightOn sets f.sk2 in A.fighterFrom); a burst counts in the first three rounds
+  if (f.sk2) v += f.sk2.steady + (D.round <= 3 ? f.sk2.burst : 0);
   return v;
 };
 
@@ -2104,7 +2110,8 @@ const startDuelNow = function (pc, foe, opts) {
       } else D.log.push(f.isPC ? `Your opening ${verb} misses.` : `${f.short}'s opening ${verb} goes wide.`);
     }
   if (D.a.intim && !D.b.beast && D.kind !== "spar") {
-    const cut = Math.round(D.a.intim * (D.b.traits.includes("brave") ? 0.4 : 1));
+    // fearRes: steps of resisting fear from held skills (D-180), a fifth of the stare off each, at most three
+    const cut = Math.round(D.a.intim * (D.b.traits.includes("brave") ? 0.4 : 1) * (D.b.fearRes ? Math.max(0, 1 - 0.2 * D.b.fearRes) : 1));
     D.b.wil = Math.max(5, D.b.wil - cut);
     if (cut >= 4) D.log.push(`${D.b.short} meets your eyes and looks away first.`);
   }

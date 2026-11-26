@@ -36,7 +36,8 @@
       }
       // knacks: the release's perks, at the crossings into Advanced, Expert and Master
       const lv0 = b ? b.lv : 0;
-      if (s.lv > lv0 && GD.PERKS && GD.PERKS[k]) for (const [at, name, desc] of GD.PERKS[k]) if (VALUES[lv0] < at && VALUES[s.lv] >= at) {
+      const knacks = A.perkRows ? A.perkRows(k) : GD.PERKS && GD.PERKS[k];   // the rungs' perk effects since step 6 (D-180)
+      if (s.lv > lv0 && knacks) for (const [at, name, desc] of knacks) if (VALUES[lv0] < at && VALUES[s.lv] >= at) {
         SK.record(pc, k, 'knack', `${SK.name(k)}: a knack, "${name}"`);
         A.log(`${SK.name(k)}: you have a knack now, "${name}": ${desc}.`, 'good');
       }

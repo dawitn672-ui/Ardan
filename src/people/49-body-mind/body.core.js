@@ -177,6 +177,9 @@
     if (I.ask && !I.t && (I.wait || 0) < 3) { I.wait = (I.wait || 0) + 1; return; }
     const D = GD.DISEASES[I.k] || { name: I.name }, med = A.skill(pc, 'medicine');
     let hit = I.dmg / I.m * (1 - Math.min(0.3, med / 300));
+    // held skills that resist illness (the skills rebuild, step 6, D-180): a tenth off the toll a step, at most three
+    const rs = A.SK2 && A.SK2.resistShare ? A.SK2.resistShare(pc, 'illness') : 0;
+    if (rs) hit *= 1 - rs;
     // one crisis per illness, as the release's one blow had: once it has brought you to the edge (and you lived), the
     // rest of it can weaken you but not take you there again
     if (pc.health - hit <= 0) { if (I.crisis) hit = Math.max(0, pc.health - 1); else I.crisis = 1; }

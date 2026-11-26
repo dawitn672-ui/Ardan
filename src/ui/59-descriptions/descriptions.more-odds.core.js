@@ -41,7 +41,7 @@
     const raw = A.skill(p, k), syn = (GD.SKILL_SYN[k] || []).map(([j, m]) => [j, A.skill(p, j) * m]).filter(x => x[1] > raw).sort((a, b) => b[1] - a[1])[0];
     if (floor > eff) how = 'untrained: your stats lend 4 + 30% of their average';
     else if (syn && Math.round(syn[1]) >= eff - 1) how = `from ${esc(GD.SKILLS[syn[0]] || syn[0])}`;
-    else if (eff !== raw) how = 'with perks';
+    else if (eff !== raw) how = A.SK2 && A.SK2.edgeOf && A.SK2.edgeOf(p, k) ? 'with perks and what your skills add' : 'with perks';   // edges: D-180
     return { v: Math.max(eff, floor), how };
   };
   // what 9992-identity's thoughts add to the check's value (its A.checkVal wrapper, read back with ID.thoughtMod): a ripe
