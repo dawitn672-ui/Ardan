@@ -535,6 +535,7 @@ order is replaced, strike it through and say by what.
       advances, but rarer classes exist, with stronger effects.
     - **An archdemon who beats an equal a hundred times gains one or two levels;** there are just few who are his equal.
       The great mostly grow by refining their skills and techniques, their titles and their equipment.
+    - **Training gives single points:** a stat can gain +1 at a time from training (the message's end, sent next).
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
