@@ -92,8 +92,8 @@ export default {
         ver: d.S.ver, raw: [relS.length, packed.length], gz: [await gz(relS), await gz(packed)], kb: enc.bytes.length, bad: SV.check() };
     });
     const k = n => Math.round(n / 1024);
-    // (S1b, D-072: the save version is 15, its step 'skills'; the skills rebuild: 16, its step 'skills2')
-    const ok = r.same && r.clean && !r.markup.length && Object.values(r.fields).every(Boolean) && r.noMig && r.after && r.ver === 16 && !r.bad.length && r.gz[1] <= r.gz[0];
+    // (S1b, D-072: the save version is 15, its step 'skills'; the skills rebuild: 16, its step 'skills2'; the switch: 17, the same step)
+    const ok = r.same && r.clean && !r.markup.length && Object.values(r.fields).every(Boolean) && r.noMig && r.after && r.ver === 17 && !r.bad.length && r.gz[1] <= r.gz[0];
     return { ok, detail: `round trip ${r.same ? 'exact' : 'DIFFERS'}; clean leaves it ${r.clean}; markup in ${r.markup.slice(0, 3).join(', ') || 'no string'}; v2 fields ${JSON.stringify(r.fields)}; ` +
       `no migration on load ${r.noMig}, state after load the same ${r.after}; invariants [${r.bad.join('; ') || 'all hold'}]; ` +
       `size raw ${k(r.raw[0])} -> ${k(r.raw[1])} KB, gzipped ${k(r.gz[0])} -> ${k(r.gz[1])} KB (release packing -> v2), save ${k(r.kb)} KB` };

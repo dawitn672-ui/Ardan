@@ -22,9 +22,11 @@
   SK.E = () => { if (!E) { E = A.V2.skills; E.setData(D); } return E; };
 
   // ---- levels, read without the engine (the hot path: every check) --------------------------------------------------
-  const EDGE = [1, 15, 35, 55, 72, 88, 96, 101], STEPS = 5, MAX_LV = 35;
-  const WORDS = SK.WORDS = ['Beginner', 'Intermediate', 'Advanced', 'Expert', 'Master', 'Grandmaster', 'Legend'];
-  const ROMAN = ['I', 'II', 'III', 'IV', 'V'];
+  // S1's 35 steps in seven bands of five. The skills rebuild's switch (step 5, D-NEW-1): the rungs of 37-skills2 hold
+  // the level a check reads and the player sees; this table is the experience engine's working form under them, its
+  // step the S1 step the rung stands in. S1's names for the bands and steps (the seven words, Roman steps, SK.levelName,
+  // SK.wordName, SK.levelOfWord) are archived in archive/s1-skill-words/: a level is printed by A.SK2.label.
+  const EDGE = [1, 15, 35, 55, 72, 88, 96, 101], STEPS = 5, MAX_LV = 35, BANDS = SK.BANDS = 7;
   const wordOf = SK.wordOf = lv => (lv <= 0 ? -1 : Math.floor((lv - 1) / STEPS));
   const stepOf = SK.stepOf = lv => (lv <= 0 ? 0 : ((lv - 1) % STEPS) + 1);
   const VALUES = SK.VALUES = [0];
@@ -37,12 +39,18 @@
     while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (VALUES[mid] <= v + 1e-9) lo = mid; else hi = mid - 1; }
     return lo;
   };
-  SK.levelName = lv => (lv <= 0 ? 'untried' : `${WORDS[wordOf(lv)]} ${ROMAN[stepOf(lv) - 1]}`);
-  SK.wordName = lv => (lv <= 0 ? 'untried' : WORDS[wordOf(lv)]);
-  // a word as a check may name it: 'expert' -> the first level of Expert
-  const WORD_LV = {}; WORDS.forEach((w, i) => { WORD_LV[w.toLowerCase()] = i * STEPS + 1; });
-  SK.levelOfWord = w => WORD_LV[String(w).toLowerCase()] || 0;
-  SK.minValue = min => (typeof min === 'string' ? VALUES[SK.levelOfWord(min)] : min);
+  // the first step of a band (0 .. 6): what S1's word form of a check named (now only tests and the closed form)
+  SK.firstOf = w => w * STEPS + 1;
+  // a step and its experience, printed as the rung that holds it ("C · Lv 4"; 37-skills2), for records and checks
+  SK.stepLabel = (lv, xp) => (A.SK2 && A.SK2.labelS1 ? A.SK2.labelS1(lv, xp) : lv > 0 ? "step " + lv : "untried");
+  const on2 = () => !!(A.SK2 && A.SK2.on);
+  // a level's place on the ladder, for counting levels risen: rank x 10 + level (D Lv 1 = 1 .. S Lv 10 = 50); S1's step
+  // before the switch. ordOfStep reads a bare step as its odd rung (a season's start, where no experience was kept).
+  const RK = ['D', 'C', 'B', 'A', 'S'];
+  const ordR = r => (r ? RK.indexOf(r.rank) * 10 + r.lv : 0);
+  SK.ordOfStep = lv => (on2() ? ordR(A.SK2.E().rungOfS1(lv)) : lv);
+  SK.ordOf = (p, k) => { const s = full(p) && p.sk[k]; if (!s || !(s.lv > 0)) return 0; return on2() ? ordR(A.SK2.rungNow(s)) : s.lv; };
+  SK.rankOfOrd = o => (o > 0 ? RK[Math.min(4, Math.floor((o - 1) / 10))] : null);
 
   // ---- the skills and the legacy keys ------------------------------------------------------------------------------
   SK.IDS = D.skills.map(s => s.id);
@@ -90,7 +98,7 @@
     const c = SK.LEG[k] ? SK.LEG[k][0] : k;
     // the player's table; a number older code wrote since the month's pass is read at once (adopted at the month)
     if (full(p) && p.sk[c]) {
-      const m = p.skills && p.skills[c], lv0 = m == null || m === VALUES[p.sk[c].lv] ? p.sk[c].lv : lvOfValue(m);
+      const m = p.skills && p.skills[c], lv0 = m == null || m === SK.valueOf(p, c) ? p.sk[c].lv : lvOfValue(m);
       // a legacy key older code wrote (a test, a scene: p.skills.axe = 60) is read through its skill, the higher
       return c !== k && p.skills && p.skills[k] ? Math.max(lv0, lvOfValue(p.skills[k])) : lv0;
     }
@@ -104,6 +112,12 @@
   // what a check reads: the level's value, the specialism's steps (two up inside it, one down in a sibling), less rust.
   // The body's hold (C9) and wounds come after, in A.skill.
   SK.reads = function (p, k) {
+    // the switch: the rungs hold the level (37-skills2; their read equals this one on every odd rung, D-NEW-1)
+    if (on2()) return A.SK2.reads(p, k);
+    return SK.s1reads(p, k);
+  };
+  // S1's read, kept for the proof of the switch (sk5Switch, sk5Lives: the rungs read the same on the day of the switch)
+  SK.s1reads = function (p, k) {
     const L = SK.LEG[k], c = L ? L[0] : k;
     let lv = SK.lvOf(p, k);
     if (!lv) return 0;
@@ -125,9 +139,16 @@
   };
 
   // ---- writing a level: only here ------------------------------------------------------------------------------------
+  // the mirror's number for a person's table entry: the value of the rung that holds it (the switch: a C, B or A step's
+  // even level once past half its bar), or S1's step value while the rungs are off
+  SK.valueOf = function (p, c) {
+    const s = full(p) && p.sk[c]; if (!s || !(s.lv > 0)) return 0;
+    return on2() ? A.SK2.valueOfEntry(s) : VALUES[s.lv];
+  };
   SK.mirror = function (p, c) {
     if (!p.skills) p.skills = {};
-    const lv = full(p) && p.sk[c] ? p.sk[c].lv : SK.lvOf(p, c);
+    if (full(p) && p.sk[c]) { if (p.sk[c].lv > 0) p.skills[c] = SK.valueOf(p, c); else delete p.skills[c]; return; }
+    const lv = SK.lvOf(p, c);
     if (lv > 0) p.skills[c] = VALUES[lv]; else delete p.skills[c];
   };
   SK.blank = () => ({ lv: 0, xp: 0, st: 0, proved: false, best: 0, rust: 0, used: null, streak: 0, gap: 0, fresh: -1, ins: {}, got: {}, sp: [] });
@@ -140,12 +161,16 @@
       const s = p.sk[c] || (p.sk[c] = SK.blank());
       const from = s.lv;
       s.lv = lv; s.best = Math.max(s.best || 0, lv); s.xp = Math.min(s.xp || 0, Math.max(0, SK.E().cost(lv) - 1e-6)); s.st = 0; s.rust = 0;
+      // the switch: a level set outright reads its step's value (the odd rung): what the experience past its bar was
+      // worth does not carry into the even level (D-NEW-1)
+      if (on2() && from !== lv) { s.xp = Math.min(s.xp, A.SK2.oddBar(lv)); delete s.hold; }
       SK.graspHeld(p, c, s);
       if (from !== lv) SK.ledger(p, c, 0, why || 'set', ['set']);
     } else if (p.skx) delete p.skx[c];
     if (!p.skills) p.skills = {};
-    if (lv > 0) p.skills[c] = VALUES[lv]; else delete p.skills[c];
+    if (lv > 0) p.skills[c] = full(p) ? SK.valueOf(p, c) : VALUES[lv]; else delete p.skills[c];
     if (SK.LEG[k] && p.skills[k] != null) delete p.skills[k];
+    if (full(p) && on2() && A.SK2.syncFam) A.SK2.syncFam(p, c);
   };
   // a raw value, as older code wrote it: the level under it
   SK.put = (p, k, v, why) => { SK.set(p, k, lvOfValue(v), why); return v; };
@@ -153,7 +178,7 @@
   SK.raiseTo = (p, k, v, why) => { if (lvOfValue(v) > SK.lvOf(p, k)) SK.set(p, k, lvOfValue(v), why); return v; };
   SK.graspHeld = function (p, c, s) {
     const age = isPC(p) && A.S ? Math.floor(SK.ageF(p)) : 0, Eng = SK.E();
-    for (let w = 1; w <= wordOf(s.lv) && w < WORDS.length; w++) for (const cn of Eng.conceptsOf(c, w)) if (s.got[cn.id] == null) { s.got[cn.id] = age; delete s.ins[cn.id]; }
+    for (let w = 1; w <= wordOf(s.lv) && w < BANDS; w++) for (const cn of Eng.conceptsOf(c, w)) if (s.got[cn.id] == null) { s.got[cn.id] = age; delete s.ins[cn.id]; }
   };
 
   // ---- the player's view for the engine ------------------------------------------------------------------------------
@@ -260,7 +285,7 @@
     const key = SK.seasonKey();
     let L = p.skl; if (!L || typeof L !== 'object' || L.s == null) L = p.skl = { s: key, k: {}, prev: null };
     if (L.s !== key) { if (SK.seasonLine) SK.seasonLine(p, L); L.prev = { s: L.s, k: L.k }; L.s = key; L.k = {}; }
-    const e = L.k[k] || (L.k[k] = { x: 0, by: {}, tags: [], held: 0, lost: 0, back: 0, lv0: p.sk && p.sk[k] ? p.sk[k].lv : 0 });
+    const e = L.k[k] || (L.k[k] = { x: 0, by: {}, tags: [], held: 0, lost: 0, back: 0, lv0: p.sk && p.sk[k] ? p.sk[k].lv : 0, o0: SK.ordOf(p, k) });
     e.x = Math.round((e.x + x) * 100) / 100;
     if (extra) { if (extra.lost) e.lost += extra.lost; if (extra.back) e.back += extra.back; if (extra.held) e.held += extra.held; }
     if (x || !extra) {
@@ -278,16 +303,18 @@
     const Eng = SK.E();
     for (const k in pc.sk) {
       const s = pc.sk[k]; if (!SK.BY[k]) { bad.push('unknown ' + k); continue; }
-      const m = (pc.skills || {})[k] || 0, want = s.lv > 0 ? VALUES[s.lv] : 0;
-      if (Math.abs(m - want) > 1e-9 && !(SK.pendingAdopt && SK.pendingAdopt(pc, k))) bad.push(`mirror ${k} ${m} for ${SK.levelName(s.lv)}`);
-      for (let w = 1; w <= wordOf(s.lv) && w < WORDS.length; w++) for (const c of Eng.conceptsOf(k, w)) if (s.got[c.id] == null) bad.push(`${k} at ${SK.levelName(s.lv)} without ${c.name}`);
+      const m = (pc.skills || {})[k] || 0, want = SK.valueOf(pc, k);
+      if (Math.abs(m - want) > 1e-9 && !(SK.pendingAdopt && SK.pendingAdopt(pc, k))) bad.push(`mirror ${k} ${m} for ${SK.stepLabel(s.lv, s.xp)}`);
+      for (let w = 1; w <= wordOf(s.lv) && w < BANDS; w++) for (const c of Eng.conceptsOf(k, w)) if (s.got[c.id] == null) bad.push(`${k} at ${SK.stepLabel(s.lv, s.xp)} without ${c.name}`);
       if (!(s.xp >= 0) || !isFinite(s.xp) || !(s.st >= 0)) bad.push(`${k} experience ${s.xp}/${s.st}`);
     }
     for (const lk in SK.LEG) if ((pc.skills || {})[lk] != null) bad.push('legacy key ' + lk);
     return bad.slice(0, 6);
   };
   // a number older code wrote since the month's pass: it is adopted next month, not broken
-  SK.pendingAdopt = (pc, k) => { const s = pc.sk[k], m = (pc.skills || {})[k] || 0; return !!s && Math.abs(m - VALUES[s.lv]) > 1e-9 && Math.abs(m - VALUES[lvOfValue(m)]) > 1e-9; };
+  SK.pendingAdopt = (pc, k) => { const s = pc.sk[k], m = (pc.skills || {})[k] || 0; return !!s && Math.abs(m - SK.valueOf(pc, k)) > 1e-9 && !SK.onGrid(m); };
+  // a number on the ladder a check reads (the rungs once switched, S1's steps before)
+  SK.onGrid = v => (on2() ? A.SK2.isRungValue(v) : Math.abs(v - VALUES[lvOfValue(v)]) <= 1e-9);
 
   // the record of turning points (the player): at most 80, the oldest folded a decade at a time
   SK.REC_MAX = 80;

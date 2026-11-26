@@ -60,6 +60,8 @@
   SK.month = function (pc) {
     if (!pc || !pc.alive || !A.S) return;
     SK.ensure(pc);
+    // the switch: experience held back on a save's day of the switch lands now (37-skills2, D-NEW-1)
+    if (A.SK2 && A.SK2.on && A.SK2.land) A.SK2.land(pc);
     if (SK.sweepNew) SK.sweepNew();
     if (SK.queueMonth) SK.queueMonth(pc);
     const acts = Array.isArray(pc.skm) ? pc.skm : []; pc.skm = [];
@@ -69,6 +71,8 @@
     SK.E().month(v, SK.ageF(pc), acts, SK.monthCtx(pc, acts));
     SK.drain(pc, v, before);
     SK.trainStats(pc, v);
+    // the experience lands in the rungs: they hold the level from this moment
+    if (A.SK2 && A.SK2.on && A.SK2.sync) A.SK2.sync(pc);
   };
   // training a skill trains its governing stats a little (999997-bodies' rule): by the points the experience is worth
   SK.trainStats = function (pc, v) {
@@ -88,6 +92,7 @@
     const v = SK.view(pc), before = SK.snapshot(pc);
     SK.E().year(v, SK.ageF(pc));
     SK.drain(pc, v, before);
+    if (A.SK2 && A.SK2.on && A.SK2.sync) A.SK2.sync(pc);
     SK.offerDeed(pc);
   };
   // a person who has stood ready for a word a year (the concepts grasped, the proof wanting) is known to be ready, and the
@@ -107,7 +112,7 @@
     const s = pc.sk[k]; if (!s) return null;
     if (s.st > 0 || (e.held || 0) > 0) {
       const miss = SK.E().openConcepts(SK.view(pc), k);
-      return miss.length ? `you have not grasped ${miss[0].name}` : 'ready for the next word, and not yet proved';
+      return miss.length ? `you have not grasped ${miss[0].name}` : 'ready to rise, and the deed not yet done';
     }
     const t = e.tags || [];
     if (t.includes('your arm cannot carry what your hand knows')) return 'your arm cannot carry what your hand knows';
@@ -121,16 +126,17 @@
     let held = null;
     for (const k in L.k) {
       const e = L.k[k], s = pc.sk[k]; if (!s || !SK.BY[k]) continue;
-      const d = s.lv - (e.lv0 || 0);
+      // levels risen this season, counted on the rungs (an S1 step in C, B and A is two levels)
+      const o0 = e.o0 != null ? e.o0 : SK.ordOfStep(e.lv0 || 0), o1 = SK.ordOf(pc, k), d = o1 - o0;
       const causes = Object.keys(e.by).filter(w => e.by[w] > 0 && w !== 'other' && w !== 'set' && w !== 'stored').sort((a, b) => e.by[b] - e.by[a]).slice(0, 2);
-      if (d > 0) rose.push({ k, d, causes, x: e.x, word: SK.wordOf(s.lv) > SK.wordOf(e.lv0 || 0) ? SK.wordName(s.lv) : null });
+      if (d > 0) rose.push({ k, d, causes, x: e.x, word: Math.floor((o1 - 1) / 10) > Math.floor((Math.max(1, o0) - 1) / 10) || !o0 ? SK.rankOfOrd(o1) : null });
       // a stall is named once a year (the first season), not every season
       else if (!held && e.x > 0 && L.s % 4 === 0) { const why = SK.holdReason(pc, k, e); if (why) held = { k, why }; }
     }
     if (!rose.length && !held) return;
     rose.sort((a, b) => b.d - a.d || b.x - a.x);
     const cause = w => (/^carried over from /.test(w) ? 'what ' + w.slice(18) + ' carried over' : w);
-    const bits = rose.slice(0, 2).map(r => `${SK.name(r.k)} ${r.word ? 'reached ' + r.word : r.d === 1 ? 'rose a step' : 'rose ' + ['', '', 'two', 'three', 'four', 'five'][Math.min(5, r.d)] + ' steps'}${r.causes.length ? ', chiefly from ' + r.causes.map(cause).join(' and ') : ''}`);
+    const bits = rose.slice(0, 2).map(r => `${SK.name(r.k)} ${r.word ? 'reached rank ' + r.word : r.d === 1 ? 'rose a level' : 'rose ' + (['', '', 'two', 'three', 'four', 'five'][r.d] || 'many') + ' levels'}${r.causes.length ? ', chiefly from ' + r.causes.map(cause).join(' and ') : ''}`);
     let line = bits.length ? `This season ${bits.join('; ')}.` : '';
     if (held) line += `${line ? ' ' : 'This season '}${SK.name(held.k)} held: ${held.why}.`;
     A.log(line, 'muted');

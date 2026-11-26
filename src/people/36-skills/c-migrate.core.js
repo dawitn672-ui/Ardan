@@ -38,7 +38,7 @@
     for (const k in sk) {
       if (!SK.BY[k]) continue;
       const lv = SK.lvOfValue(+sk[k] || 0);
-      if (lv > 0) sk[k] = VALUES[lv]; else delete sk[k];
+      if (lv > 0) sk[k] = p.sk && typeof p.sk === 'object' && p.sk[k] && p.sk[k].lv === lv ? SK.valueOf(p, k) : VALUES[lv]; else delete sk[k];
     }
   };
   SK.foldNpc = function (p) {
@@ -66,7 +66,7 @@
       pc.sk[k] = s;
       SK.graspHeld(pc, k, s);
       const w = SK.wordOf(lv) + 1, step = SK.stepOf(lv);
-      if (w >= 1 && w < SK.WORDS.length && step > 1) for (const c of Eng.conceptsOf(k, w)) {
+      if (w >= 1 && w < SK.BANDS && step > 1) for (const c of Eng.conceptsOf(k, w)) {
         const nd = Eng.need(v, k, c); if (nd === Infinity) continue;
         const ins = Math.floor(nd * (step - 1) / 5 * 0.6); if (ins > 0) s.ins[c.id] = Math.min(ins, nd - 1);
       }
@@ -111,20 +111,22 @@
     for (const k in sk) {
       if (!SK.BY[k]) continue;
       const s = pc.sk[k], raw = +sk[k] || 0;
-      if (s && raw === VALUES[s.lv]) continue;
+      if (s && raw === SK.valueOf(pc, k)) continue;
       const lv = SK.lvOfValue(raw);
       if (!s && lv <= 0) { delete sk[k]; continue; }
-      if (s && lv === s.lv) { sk[k] = VALUES[lv]; continue; }
+      if (s && lv === s.lv) { sk[k] = SK.valueOf(pc, k); continue; }
       const t = s || (pc.sk[k] = SK.blank());
       const from = t.lv;
       t.lv = lv; t.best = Math.max(t.best || 0, lv); t.xp = Math.min(t.xp, Math.max(0, SK.E().cost(lv) - 1e-6)); t.st = 0;
+      // the switch: a number adopted reads its step's value (the odd rung), as SK.set does (D-NEW-1)
+      if (A.SK2 && A.SK2.on && from !== lv) { t.xp = Math.min(t.xp, A.SK2.oddBar(lv)); delete t.hold; }
       if (t.used == null) t.used = Math.floor(SK.ageF(pc));
       SK.graspHeld(pc, k, t);
-      if (lv > 0) sk[k] = VALUES[lv]; else delete sk[k];
+      if (lv > 0) sk[k] = SK.valueOf(pc, k); else delete sk[k];
       SK.ledger(pc, k, 0, 'set', ['set']);
-      if (lv > from && from > 0) SK.record(pc, k, 'set', `${SK.name(k)}: ${SK.levelName(lv)} (${SK.whyNow().why})`);
+      if (lv > from && from > 0) SK.record(pc, k, 'set', `${SK.name(k)}: ${SK.stepLabel(lv, t.xp)} (${SK.whyNow().why})`);
     }
-    for (const k in pc.sk) if (!sk[k] && pc.sk[k].lv > 0) sk[k] = VALUES[pc.sk[k].lv];
+    for (const k in pc.sk) if (!sk[k] && pc.sk[k].lv > 0) sk[k] = SK.valueOf(pc, k);
     if (pc.apt && typeof pc.apt === 'object') {
       for (const k in pc.apt) SK.raiseTalent(pc, k, SK.letterOfApt(+pc.apt[k] || 1));
       delete pc.apt;
