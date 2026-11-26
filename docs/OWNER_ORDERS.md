@@ -471,6 +471,13 @@ order is replaced, strike it through and say by what.
     order 80 ("a level gained in every walk of life"): crafts, trade and the other roads raise their skills by use, not the
     person's level (D-178).
 
+89. **The legends' levels again; the Sword Saint class** · recorded 2026-11-26. Kept unchanged in
+    `docs/prompts/2026-11-26-legend-levels-2.md`. The Primordial Archdemons about 770-780; Sarnavoth (about 800) still
+    matches all three, showing how large each level's gap is; Cael Vardan raised to about 700 ("7000" read as 700, which fits
+    every other number) and still matches one archdemon, through titles and skill quality and levels, above all his class,
+    Sword Saint, the strongest one-to-one combat class; the Dragon King's and each archdemon's unique titles carry far more raw
+    firepower (D-177 addendum).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,

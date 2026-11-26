@@ -2778,3 +2778,6 @@ A skill gains experience each time a related move, movement or the ability itsel
 points it brings) comes from experience for killing or defeating people and monsters, more for a stronger foe on the power
 ladder. Replaces my reading of order 80; skills-v2 §15.9; master prompt 9. To be built with the person's level and stat
 points (skills-v2 §12, after step 6).
+**D-177 addendum (order 89).** Archdemons 770-780; Sarnavoth about 800, even with the three; Cael about 700 (the owner's
+"7000" read as 700), even with one archdemon by titles, skills and his Sword Saint class (the strongest one-to-one class);
+the Dragon King's and archdemons' titles give raw firepower, the Saint's class the duel; the profile carries both.
