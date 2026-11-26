@@ -141,6 +141,22 @@
     for (const b in full) { const s = 1 - have[b] / full[b]; if (s > .08) out[b] = r2(Math.min(1, s)); }
     return out;
   };
+  // what the command's host is made of: each branch's share of its companies' strength (D-194: a realm's regiments are
+  // raised whole at the world's birth, so a small realm whose host is nearly all one arm, an elven crown's bows or a
+  // dwarven hold's foot, often lacks nothing; the bulk of its host is then the muster-master's reason to put a man there)
+  MU.mix = function (c) {
+    const out = {};
+    if (!c || !A.CMD || !A.CMD.divs) return out;
+    let tot = 0;
+    for (const d of A.CMD.divs(c)) for (const rec of d.bs || []) {
+      if (!rec) continue;
+      const code = rec.c, b = GD.BN && GD.BN[code] ? MU.branchOfTroop(code) : null;
+      const nom = b && GD.BN[code].men; if (!nom) continue;
+      out[b] = (out[b] || 0) + nom; tot += nom;
+    }
+    for (const b in out) out[b] = r2(out[b] / Math.max(1, tot));
+    return out;
+  };
 
   // a kinsman or friend who holds a field post in the realm speaks for the recruit at that branch
   MU.patrons = function (pc, rid) {
@@ -186,7 +202,7 @@
   MU.options = function (pc, c, o) {
     o = o || {};
     const R = o.read || MU.read(pc), rid = c && c.r;
-    const gaps = o.merc ? {} : MU.gaps(c), pats = o.merc ? [] : MU.patrons(pc, rid);
+    const gaps = o.merc ? {} : MU.gaps(c), mix = o.merc ? {} : MU.mix(c), pats = o.merc ? [] : MU.patrons(pc, rid);
     const noble = ['gentry', 'noble', 'royal'].includes(R.status);
     const out = [], open = MU.open(c, o);
     for (const B of open) {
@@ -231,7 +247,11 @@
       if (pat) reasons.push(rs('kin', 1.2, `your ${pat.rel === 'friend' ? 'friend' : pat.rel} ${pat.name} serves there`, { t: 'patron', id: pat.pid }, 1));
       // what the command lacks
       if (gaps[B.id]) reasons.push(rs('want', clamp(gaps[B.id] * 4, .3, 1.5), `${B.short} are short of men this season`, { t: 'gap', id: B.id, r: gaps[B.id] }, 1));
+      else if (mix[B.id] >= .15) reasons.push(rs('want', .5 * mix[B.id], `${B.short} are the most of this muster's host`, { t: 'mix', id: B.id, r: mix[B.id] }, 1));
       if (B.base) reasons.push(rs('want', B.base, `${B.short} always want men`, { t: 'base', id: B.id }, 0));
+      // the same small weight on every branch (it moves no choice): where nothing else speaks for the branch he is put in,
+      // this is the muster-master's reason, said aloud (D-194)
+      reasons.push(rs('want', .05, 'the muster takes every able man', { t: 'any' }, 0));
       out.push({ id: B.id, reasons });
     }
     return out;
@@ -262,7 +282,8 @@
       if (!op || !B) continue;
       const s = scoreOf(id);
       if (id !== rec.chose && (s < top - MU.T.gap || sum(op) < MU.T.floor)) continue;
-      const why = op.reasons.filter(x => x.weight > 0).sort((a, b) => b.weight - a.weight).slice(0, 2).map(x => x.label);
+      const pos = op.reasons.filter(x => x.weight > 0), real = pos.filter(x => !(x.source && x.source.t === 'any'));
+      const why = (real.length ? real : pos).sort((a, b) => b.weight - a.weight).slice(0, 2).map(x => x.label);
       offers.push({ b: id, name: MU.nameOf(B, c), why, score: r2(s) });
       if (offers.length >= MU.T.max) break;
     }

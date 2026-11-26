@@ -210,7 +210,8 @@ export default {
               o.ry++; tot.inc += B.inc; tot.up += B.up; tot.int += B.int; tot.debt += Math.max(0, B.d0 - B.d1);
               for (const k in B.cats) tot.cats[k] = (tot.cats[k] || 0) + B.cats[k];
               const q = x.treasury / Math.max(1, x.income); o.tre.push(q); if (q > 6) o.hoard++;
-              const L = LORE.realms[x.id], base = (L ? L.army : x.army0 || x.army) * (x.provPop || 1) / (x.basePop || 1);
+              // (D-194: a realm's normal host is its standing military's, A.MIL.normal, where that feature is built)
+              const L = LORE.realms[x.id], base = A.MIL && A.MIL.has(x) ? A.MIL.normal(x) : (L ? L.army : x.army0 || x.army) * (x.provPop || 1) / (x.basePop || 1);
               o.army.push(x.army / Math.max(1, base)); o.stab.push(x.stability);
             }
           }, () => { for (const w of A.S.wars) if (!ids.has(w.id)) { ids.add(w.id); o.wars++; } });

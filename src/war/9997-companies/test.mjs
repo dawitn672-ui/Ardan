@@ -124,11 +124,14 @@ export default {
         payLines = lines.filter(t => /^Pay day in the /.test(t)).length;
         // two costly fights won in one year by the soldier's battalion, in a fresh life (one whose soldier has a company
         // within two years: the next seed when he has none)
+        // (D-194: the muster may write him into a support company, the scouts or the engineers, which carries no colours;
+        // such a world is passed over like one where he has no company)
         let M = null;
-        for (const seed of [9743, 9747, 9748]) {
+        for (const seed of [9743, 9747, 9748, 9751, 9752, 9753]) {
           A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
           A.startWar('POL-01', A.neighbors('POL-01')[0], null, 'conquest'); A.enlist(A.pc());
           for (let g = 0; g < 24 && !M; g++) { A.S.queue = []; A.advance(30); M = A.pc().alive && A.pc().mil ? CO.mine(A.pc()) : null; }
+          if (M && !GD.BN[M.d.bs[M.b].c] && GD.SUP[M.d.bs[M.b].c]) M = null;
           if (M) break;
         }
         if (M) {

@@ -73,6 +73,11 @@ and its band's words (by hearsay only the best three). No percentages; no war sc
 - `src/nobility/56-court-and-treasury/treasury.core.js` `normalHost`: `A.MIL.normal`.
 - `src/world/9999970-powers/b-wilds.core.js` `PW.hostOf`: the knights at their worth.
 - `src/core/99998-v2-saves/saves.core.js`: save version 23 (the step `standing` is pushed from here).
+- What the larger hosts showed elsewhere: `src/core/release/core/11-armies-divisions-and-council-a.js` `A.wsDay` keeps
+  each realm's contingents whole every week (`A.CMD.keepWhole`), not only after a muster; `9999951-commands`'s audit
+  leaves a division in a fight where it is, as `keepWhole` does; `9999955-muster` reads the bulk of a command's host as a
+  reason (`MU.mix`: a realm raised whole often lacks nothing) and says "the muster takes every able man" where nothing
+  else speaks for a branch (the same weight on every branch: it moves no choice).
 
 ## State (optional; old saves load)
 

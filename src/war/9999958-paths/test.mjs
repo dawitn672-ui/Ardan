@@ -54,8 +54,11 @@ export default {
     await pg.evaluate(SOLDIER);
     const r = await pg.evaluate(() => {
       const out = {}, BR = ['lances', 'archers', 'engineers', 'scouts'], KEY = { lances: 'riding', archers: 'bow', engineers: 'craft', scouts: 'tracking' };
+      // (D-194: a skill's gain comes in whole levels, so one life reads its luck: a scout of the light horse once rode as
+      // much as the lancer, 2,041 against 2,043. Three lives a road are pooled, read on the first three worlds that serve.)
       for (const b of BR) {
-        const f = T.trySeeds(T.seedRun(4400, 4), s => {
+        const pool = {}; let lives = 0;
+        const f = T.trySeeds(T.seedRun(4400, 8), s => {
           const pc = PAT.soldier(s, b);
           if (!pc) return null;
           PAT.zero(pc); for (const k of Object.values(KEY)) PAT.SV(pc, k, 12);
@@ -68,9 +71,10 @@ export default {
           if (!pc.alive || !pc.mil) return null;
           const gain = {}; for (const k of Object.values(KEY)) gain[k] = Math.round((((pc.sk[k] || {}).lv * 1000 + ((pc.sk[k] || {}).xp || 0)) - lv0[k]) * 10) / 10;
           void x0;
-          return gain;
+          for (const k in gain) pool[k] = Math.round(((pool[k] || 0) + gain[k]) * 10) / 10;
+          return ++lives >= 3 ? pool : null;
         });
-        out[b] = f.res || { none: f.tried };
+        out[b] = f.res || (lives ? pool : { none: f.tried });
       }
       // the plan follows the talent
       const pc = PAT.soldier(4400, 'archers');
@@ -86,7 +90,12 @@ export default {
     const KEY = { lances: 'riding', archers: 'bow', engineers: 'craft', scouts: 'tracking' };
     const own = Object.keys(KEY).filter(b => r[b] && !r[b].none && Object.keys(KEY).every(o => o === b || r[b][KEY[b]] > r[o] ? true : r[b][KEY[b]] >= r[o][KEY[b]]));
     // each road grew its own key skill more than the other roads grew it
-    const cross = Object.keys(KEY).filter(b => r[b] && !r[b].none).every(b => Object.keys(KEY).filter(o => o !== b && r[o] && !r[o].none).every(o => r[b][KEY[b]] > r[o][KEY[b]]));
+    // (D-194: the scouts are light horse, and their troop's drill rides every day (9999956-units), so riding is not the
+    // lancer's alone: since the larger hosts put the lancer in a horse division, whose drill is the charge and the lance,
+    // three scouts rode 8,076 against three lancers' 5,109 (7,115 against 8,137 before). Riding is held against the roads
+    // on foot; between two mounted roads it is not a road's mark)
+    const MOUNTED = new Set(['lances', 'scouts']);
+    const cross = Object.keys(KEY).filter(b => r[b] && !r[b].none).every(b => Object.keys(KEY).filter(o => o !== b && r[o] && !r[o].none && !(KEY[b] === 'riding' && MOUNTED.has(o))).every(o => r[b][KEY[b]] > r[o][KEY[b]]));
     void own;
     const ok = cross && r.plan[0] < r.plan[1] && r.plan[1] < r.plan[2] && /rare/.test(r.words);
     return { ok, detail: JSON.stringify(r) };

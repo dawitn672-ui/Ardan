@@ -214,12 +214,19 @@ export default {
       out.first = res && res.ids;
       const rec = (A.S.why || []).find(x => x.k === 'drill');
       out.rec = rec ? { chose: rec.chose, why: rec.why.map(x => x[0]) } : null;
-      const g0 = M.rec.dg[res.ids[0]], others = Object.keys(M.rec.dg).filter(k => k !== res.ids[0]);
-      const o0 = M.rec.dg[others[0]], fam = U.D(res.ids[0]).feeds, dr0 = (M.d.dr || {})[fam] || 0;
-      for (let k = 0; k < 3; k++) U.drillMonth(pc);
-      out.rise = [g0, M.rec.dg[res.ids[0]]];
-      out.fade = [o0, M.rec.dg[others[0]]];
-      out.dr = [Math.round(dr0 * 1000) / 1000, Math.round(((M.d.dr || {})[fam] || 0) * 1000) / 1000];
+      // (D-194: each month the captain chooses again, and a drill already well learned gives way to another, so the drill
+      // of each month is read in that month: it rises, one left alone fades, the war map's drill of its family gains)
+      const rise = [], fade = [], dr = [];
+      for (let k = 0; k < 3; k++) {
+        const g = Object.assign({}, M.rec.dg), d0 = Object.assign({}, M.d.dr || {});
+        const rr = U.drillMonth(pc), id = rr && rr.ids[0];
+        if (!id) continue;
+        const fam = U.D(id).feeds, other = Object.keys(g).find(x => !rr.ids.includes(x) && g[x] > 0);
+        rise.push([g[id] || 0, M.rec.dg[id]]);
+        if (other) fade.push([g[other], M.rec.dg[other]]);
+        dr.push([Math.round((d0[fam] || 0) * 1000) / 1000, Math.round(((M.d.dr || {})[fam] || 0) * 1000) / 1000]);
+      }
+      out.rise = rise; out.fade = fade; out.dr = dr;
       out.scene = A.S.queue.filter(q => q.ev === 'un_drill').length;
       // a captain's own pick
       pc.mil.rank = 3; A.CO.place(pc);
@@ -231,7 +238,7 @@ export default {
       return out;
     });
     if (r.skip) return { ok: true, skip: r.skip };
-    const ok = r.first && r.rec && r.rec.why.length >= 1 && r.rise[1] > r.rise[0] && r.fade[1] < r.fade[0] && r.dr[1] > r.dr[0] && r.scene === 1 && r.own;
+    const ok = r.first && r.rec && r.rec.why.length >= 1 && r.rise.length === 3 && r.rise.every(x => x[1] > x[0] || x[1] >= 100) && r.fade.length && r.fade.every(x => x[1] < x[0]) && r.dr.every(x => x[1] > x[0]) && r.scene === 1 && r.own;
     return { ok, detail: JSON.stringify(r) };
   },
 

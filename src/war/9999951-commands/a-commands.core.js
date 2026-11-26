@@ -233,10 +233,12 @@
       }
     }
     // a house's contingent in one war is in one army
+    // (D-194: a division in a fight is left where it is until the fight ends, as CM.keepWhole leaves it)
+    const busy = d => !!(A.S.fights && ((d.atk != null && A.S.fights[d.atk]) || A.S.fights[d.loc]));
     for (const a of A.S.armies || []) for (const did of a.divs || []) {
-      const d = A.divById(did); if (!d || !d.own) continue;
+      const d = A.divById(did); if (!d || !d.own || busy(d)) continue;
       const h = CM.houseOf(d); if (!h) continue;
-      const other = (A.S.armies || []).find(b => b !== a && b.realm === a.realm && b.divs.some(x => { const e = A.divById(x); return e && e.own === h.id; }));
+      const other = (A.S.armies || []).find(b => b !== a && b.realm === a.realm && b.divs.some(x => { const e = A.divById(x); return e && e.own === h.id && !busy(e); }));
       if (other && a.id < other.id && a.divs.length < 24 && other.divs.length < 24) out.push(`${h.id}'s contingent split between ${a.id} and ${other.id}`);
     }
     return out;
