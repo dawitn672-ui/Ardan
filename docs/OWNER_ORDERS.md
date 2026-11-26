@@ -536,6 +536,8 @@ order is replaced, strike it through and say by what.
     - **An archdemon who beats an equal a hundred times gains one or two levels;** there are just few who are his equal.
       The great mostly grow by refining their skills and techniques, their titles and their equipment.
     - **Training gives single points:** a stat can gain +1 at a time from training (the message's end, sent next).
+    - **Remove the dragon of the High Roost** (a follow-up): the Dragon Lord of the High Roost and the High Roost Dragon,
+      both new in D-185, leave the bestiary; the three ancient dragons are Ash, Frost and Storm.
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
