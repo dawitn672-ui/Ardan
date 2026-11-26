@@ -4,11 +4,11 @@
 // moment (fx.proof) or plain experience, and each choice has its price.
 (function () {
   const SK = () => A.SK;
-  // the skill a card is about, with its name, its next word and the concept it lacks (the first, in the data's order)
+  // the skill a card is about, with its name, the rank it stands below ('B-rank') and the concept it lacks (the first, in the data's order)
   const fill = (p, ctx, k) => {
     if (!k) { ctx.skip = true; return false; }
     const s = p.sk[k], w = SK().wordOf(s.lv) + 1, open = SK().E().openConcepts(SK().view(p), k);
-    ctx.sk = k; ctx.skn = SK().name(k); ctx.skl = ctx.skn.toLowerCase(); ctx.word = SK().WORDS[Math.min(6, w)] || 'Legend';
+    ctx.sk = k; ctx.skn = SK().name(k); ctx.skl = ctx.skn.toLowerCase(); ctx.word = (r => (r ? r.rank + '-rank' : 'S-rank'))(A.SK2 && A.SK2.E().rungOfS1(SK().firstOf(Math.min(6, w))));
     ctx.concept = open.length ? open[0].name : 'what comes next';
     return true;
   };
@@ -73,7 +73,7 @@
 
     // ---- a specialism offered (Advanced, none yet) -----------------------------------------------------------------------
     { id: 'sk_specialism', title: 'Narrowing your art', scene: 'workshop',
-      cond: (p, C) => C.adult(p) && C.lvl(p, 'any', 'advanced'), w: 1.5, cool: 6,
+      cond: (p, C) => C.adult(p) && C.lvl(p, 'any', 35), w: 1.5, cool: 6,
       setup: (p, ctx) => {
         const k = Object.keys(p.sk).filter(x => SK().wordOf(p.sk[x].lv) >= 2 && !p.sk[x].sp.length).sort((a, b) => p.sk[b].lv - p.sk[a].lv)[0];
         if (!fill(p, ctx, k)) return;
@@ -120,7 +120,7 @@
 
     // ---- a pupil -----------------------------------------------------------------------------------------------------
     { id: 'sk_pupil', title: 'A youngster who wants to learn', scene: 'workshop',
-      cond: (p, C) => C.adult(p) && C.age(p) >= 25 && C.lvl(p, 'any', 'advanced'), w: 1, cool: 8,
+      cond: (p, C) => C.adult(p) && C.age(p) >= 25 && C.lvl(p, 'any', 35), w: 1, cool: 8,
       setup: (p, ctx) => { const k = Object.keys(p.sk).sort((a, b) => p.sk[b].lv - p.sk[a].lv)[0]; fill(p, ctx, k); },
       text: 'A youngster has been hanging about while you work at your {skl}, asking questions you have to think about before you answer. Their family cannot pay much.',
       choices: [

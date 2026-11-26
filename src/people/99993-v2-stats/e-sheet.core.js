@@ -62,11 +62,11 @@ VS.sheetHtml = function (p, opts = {}) {
   if (!opts.noLegend && fights) h += `<div class="tiny muted v2-legend">A conscript: an untrained spearman in a padded coat.</div>`;
   return h + '</div>';
 };
-// S1b (D-072): a skill's tier is its level in words ("Expert II"), read from the value its level reads; the hours were
+// a skill's tier is its level ("B · Lv 3", A.SK2: the skills rebuild's switch prints no words), read from the value; the hours were
 // a second reading of the same number and are gone (archive/s1-proficiencies/99993-v2-stats.tiers.js)
 VS.tierOf = function (v) {
-  const SK = A.SK, lv = SK ? SK.lvOfValue(+v || 0) : 0;
-  return { name: SK ? SK.levelName(lv) : String(v), hours: 0, next: SK && lv < SK.MAX_LV ? SK.levelName(lv + 1) : null, frac: 0 };
+  const K2 = A.SK2, r = K2 ? K2.E().rungOfValue(+v || 0) : null, nx = r && (r.lv < 10 ? { rank: r.rank, lv: r.lv + 1 } : K2.E().HUMAN.includes(K2.E().nextRank(r.rank)) ? { rank: K2.E().nextRank(r.rank), lv: 1 } : null);
+  return { name: K2 ? K2.labelValue(+v || 0) : String(v), hours: 0, next: K2 ? (r ? (nx ? K2.labelRung(nx.rank, nx.lv) : null) : K2.labelRung('D', 1)) : null, frac: 0 };
 };
 VS.skillRows = h => h;
 // a check chip's value (92-scene-card): a skill as its tier, a stat as a word for your place among your own kind

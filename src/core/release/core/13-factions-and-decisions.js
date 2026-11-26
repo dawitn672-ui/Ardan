@@ -1422,9 +1422,9 @@ DEC("treatise", {
   reqs: pc => {
     const best = A.bestSkillOf(pc);
     return [
-      // S1b (D-072): a level in words. E8 (order 76, the Emilio save): a book worth reading asks an Expert's grasp and
-      // the years to have used it (he wrote "The Book of Swordsmanship" at 23, at Advanced, and it "changed a life")
-      R(`A skill at Expert (best: ${GD.SKILLS[best.k]}, ${A.SK ? A.SK.levelName(A.SK.lvOfValue(best.v)) : best.v})`, best.v >= 55),
+      // a level (rank B: 55, what S1 called Expert; the skills rebuild's switch prints no words). E8 (order 76, the Emilio save): a book worth reading asks that grasp and
+      // the years to have used it (he wrote "The Book of Swordsmanship" at 23, at rank C, and it "changed a life")
+      R(`A skill at rank B (best: ${GD.SKILLS[best.k]}, ${A.SK2 ? A.SK2.labelValue(best.v) : best.v})`, best.v >= 55),
       R("Age 28 or more", A.age(pc) >= 28),
       R("Once every 6 years", !pc.flags.author || A.S.year - pc.flags.author >= 6),
     ];

@@ -108,14 +108,14 @@
 
   // ---- the condition helpers ------------------------------------------------------------------------------------------
   if (A.C) Object.assign(A.C, {
-    // a skill at least at a value (a number, as a check reads it) or a word ("expert")
+    // a skill at least at a value (a number, as a check reads it; S1's word form is gone with the words, D-NEW-1)
     // k 'any': the best skill the person holds
-    lvl: (p, k, min) => (k === 'any' ? SK.bestValue(p) : A.skill(p, k)) >= (min == null ? 40 : typeof min === 'string' ? SK.VALUES[SK.levelOfWord(min)] : min),
+    lvl: (p, k, min) => (k === 'any' ? SK.bestValue(p) : A.skill(p, k)) >= (min == null ? 40 : +min),
     // a talent at least this letter (B: gifted, by default)
     talent: (p, k, letter) => SK.TALENT_ORDER.indexOf(SK.talentOf(p, k)) >= SK.TALENT_ORDER.indexOf(letter || 'B'),
-    // at the edge of a word, its concepts grasped, wanting a proof
+    // at the edge of a rank (or a gate), its concepts grasped, wanting a deed
     ready: (p, k) => (k ? SK.edgeState(p, k) === 'ready' : !!SK.edgeSkill(p, 'ready')),
-    // at the edge of a word, behind a concept
+    // at the edge of a rank (or a gate), behind a concept
     stuck: (p, k) => (k ? SK.edgeState(p, k) === 'stuck' : !!SK.edgeSkill(p, 'stuck')),
   });
   SK.bestValue = function (p) { let v = 0; if (p && p.skills) for (const k in p.skills) if (SK.BY[k] && p.skills[k] > v) v = p.skills[k]; return v; };
@@ -134,7 +134,7 @@
     return best;
   };
 
-  // ---- notable: a breakthrough and a new word from Expert up go into the year's digest --------------------------------
+  // ---- notable: a breakthrough and a new rank from B up go into the year's digest ------------------------------------
   SK.notable = function (pc, r) {
     if (A.V2Y && typeof A.V2Y.met === 'function') { try { A.V2Y.met(r.text.replace(/^./, c => c.toUpperCase())); } catch (e) {} }
   };

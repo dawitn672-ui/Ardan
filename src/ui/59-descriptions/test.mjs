@@ -314,7 +314,7 @@ export default {
         for (const id in A.S.realms) { const x = A.S.realms[id]; if (x.alive && x.ind) A.indCount(x); }
         const s0 = JSON.stringify(A.S), g0 = JSON.stringify(A.rngState);
         const args = { stat: GD.STATS, potential: GD.STATS, worth: [pc.id], worthBody: [pc.id], worthSkill: [pc.id], worthGear: [pc.id], tier: GD.TIERS.map(t => t.k),
-          skill: Object.keys(GD.SKILLS), skillWord: A.SK ? A.SK.WORDS.map(w => w + ' I') : [], trait: Object.keys(GD.TRAITS), quirk: Object.keys(GD.QUIRKS || {}), race: Object.keys(GD.RACES), stage: Object.keys(GD.RACES),
+          skill: Object.keys(GD.SKILLS), skillWord: A.SK2 ? ['D', 'C', 'B', 'A', 'S'].map(r => A.SK2.labelRung(r, 1)) : [], trait: Object.keys(GD.TRAITS), quirk: Object.keys(GD.QUIRKS || {}), race: Object.keys(GD.RACES), stage: Object.keys(GD.RACES),
           opinion: Object.keys(pc.rel || {}).slice(0, 10), realmStab: [pc.realm, pc.ruler, 'POL-02'], realmLegit: [pc.realm], realmGold: [pc.realm, 'POL-03'], realmWeary: [pc.realm], infamy: [pc.realm],
           need: ['rest', 'company', 'purpose', 'comfort'], mood: ['rest', 'company', 'purpose', 'comfort', 'content'], age: [pc.id], faith: [pc.faith], wound: Object.keys(GD.WOUNDS) };
         let n = 0, empty = [];

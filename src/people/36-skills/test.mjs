@@ -42,7 +42,7 @@ export default {
           if (!s) { bad.push('no ' + c); continue; }
           const lv = SK.lvOfValue(v);
           // a month may have passed on load (a card at the turn); the level is at least the one under the old number
-          if (s.lv < lv) bad.push(c + ' ' + SK.levelName(s.lv) + ' under ' + v);
+          if (s.lv < lv) bad.push(c + ' ' + SK.stepLabel(s.lv, s.xp) + ' under ' + v);
           if (SK.wordOf(s.lv) < SK.wordOf(lv)) words++;
           if (pc.skills[c] !== SK.VALUES[s.lv]) bad.push('mirror ' + c);
           maxDrop = Math.max(maxDrop, v - SK.VALUES[lv]);
@@ -129,7 +129,7 @@ export default {
     return { ok: r.n >= 5 && !r.bad.length, detail: `${r.n} skills over 30 years (${r.play}); ${r.bad.length ? r.bad.slice(0, 3).join('; ') : 'every sum closes'}` };
   },
 
-  // every crossing of a word has its concepts' grasps (or breakthroughs) and, from Expert, a proof; every breakthrough
+  // every crossing of a band's edge (a rank, a gate) has its concepts' grasps (or breakthroughs) and, from rank B, a deed; every breakthrough
   // names a moment; every stall names what is missing
   async s1Reasons(pg) {
     const r = await pg.evaluate(() => {
@@ -142,10 +142,10 @@ export default {
         for (const rec of tap) {
           if (rec.t === 'grasp') out.grasps++;
           if (rec.t === 'breakthrough') { out.breaks++; if (!/a breakthrough: .+; you see .+/.test(rec.text)) out.bad.push('no moment: ' + rec.text); }
-          if (rec.t === 'stall') { out.stalls++; if (!/(has not grasped .+|not yet proved|no more to teach)/.test(rec.text)) out.bad.push('stall without a reason: ' + rec.text); }
+          if (rec.t === 'stall') { out.stalls++; if (!/(has not grasped .+|the deed not yet done|no more to teach)/.test(rec.text)) out.bad.push('stall without a reason: ' + rec.text); }
           if (rec.t === 'word') {
             out.words++;
-            const m = rec.text.match(/reaches (\w+)/), w = m ? SK.WORDS.indexOf(m[1]) : -1;
+            const m = rec.text.match(/reaches (rank [DCBAS]|[DS] · Lv 6)/), w = m ? ({ 'D · Lv 6': 1, 'rank C': 2, 'rank B': 3, 'rank A': 4, 'rank S': 5, 'S · Lv 6': 6 })[m[1]] || -1 : -1;
             if (w < 1) { out.bad.push('word? ' + rec.text); continue; }
             const before = tap.slice(0, tap.indexOf(rec));
             for (const c of SK.E().conceptsOf(rec.k, w)) if (!before.some(x => x.k === rec.k && (x.t === 'grasp' || x.t === 'breakthrough') && x.text.includes(c.name)) && !before.some(x => x.k !== rec.k && x.text.includes(c.name)))
@@ -211,7 +211,7 @@ export default {
       // eighteen pairs (CI 147 and H-082: which seeds' hidden grasp differs is the world's draw; the spread across many pairs
       // is what is tested)
       for (let i = 0; i < 18; i++) { const a = one(7100 + i * 2), b = one(7101 + i * 2); out.push([a, b]); }
-      return out.map(([a, b]) => [SK.levelName(a), SK.levelName(b), Math.abs(SK.wordOf(a) - SK.wordOf(b))]);
+      return out.map(([a, b]) => [SK.stepLabel(a, 0), SK.stepLabel(b, 0), Math.abs(SK.wordOf(a) - SK.wordOf(b))]);
     });
     // (H-082: six pairs were one world's luck. Measured: 17 of 36 pairs a word apart on the build of b8a779a (sets of six
     // read 3, 4, 1, 3, 3, 3) and 19 of 36 on a shifted world (2, 4, 3, 4, 3, 3): about half, so a bar of three of six
@@ -219,7 +219,7 @@ export default {
     // forty, and levels that keep a timetable (a word apart in a pair in seven or fewer) fail nine times in ten. That
     // the spread sits at the design's "at least half" itself (docs/design/skills.md) is the design's to judge, not this test's.)
     const apart = r.filter(x => x[2] >= 1).length;
-    return { ok: apart >= 6, detail: `${apart} of ${r.length} pairs a word or more apart: ` + r.map(x => `${x[0]} / ${x[1]}`).join('; ') };
+    return { ok: apart >= 6, detail: `${apart} of ${r.length} pairs a band or more apart (a rank, or the gate inside D or S): ` + r.map(x => `${x[0]} / ${x[1]}`).join('; ') };
   },
 
   // the spread run of the design, in the page's engine: 400 people of ordinary talent, the same good training
@@ -257,7 +257,7 @@ export default {
       await pg.setViewportSize({ width: w, height: h });
       const r = await pg.evaluate((BADs) => {
         const BAD = new RegExp(BADs, 'i'), out = [], rows = [];
-        const look = (where) => { const t = document.body.innerText || ''; const m = t.match(BAD); if (m) out.push(where + ': ' + t.slice(Math.max(0, m.index - 40), m.index + 40).replace(/\s+/g, ' ')); for (const el of document.querySelectorAll('.skrow, .pf-sk')) { const s = el.innerText; if (/\d|%|Journeyman|Adept|Novice|Untrained|Skilled|Trained/.test(s)) rows.push(s.replace(/\s+/g, ' ').slice(0, 80)); } };
+        const look = (where) => { const t = document.body.innerText || ''; const m = t.match(BAD); if (m) out.push(where + ': ' + t.slice(Math.max(0, m.index - 40), m.index + 40).replace(/\s+/g, ' ')); for (const el of document.querySelectorAll('.skrow, .pf-sk')) { const s = el.innerText; if (/\d|%|Journeyman|Adept|Novice|Untrained|Skilled|Trained|Beginner|Intermediate|Advanced|Expert|Grandmaster/.test(s.replace(/\b[DCBAS] · Lv \d{1,2}\b/g, ''))) rows.push(s.replace(/\s+/g, ' ').slice(0, 80)); } };
         for (const [seed, status] of [[3301, 'noble'], [3302, 'artisan'], [3303, 'peasant']]) {
           T.enter({ seed, race: 'human', realm: 'POL-01', status, sex: 'M', startAge: 14 });
           T.play(12, { onEvent: v => { const s = [v.title, v.text, ...v.choices.map(c => c.t)].join(' '); const m = s.match(BAD); if (m) out.push('card ' + v.title + ': ' + m[0]); } });

@@ -173,8 +173,8 @@ UI.planCard = function (pc) {
   const P = A.plan(pc),
     tt = A.trainTargets(pc),
     cur = P.train,
-    // S1b (D-072): a skill shows its level in words, a stat its number as before
-    val = k => (GD.TRAIN_STATS[k] ? Math.round(A.stat(pc, k)) : A.SK ? A.SK.levelName(A.SK.lvOf(pc, k)) : A.skill(pc, k)),
+    // a skill shows its level (rank and level, A.SK2.label: never a word since the skills rebuild's switch), a stat its number
+    val = k => (GD.TRAIN_STATS[k] ? Math.round(A.stat(pc, k)) : A.SK2 ? A.SK2.label(pc, k) : A.skill(pc, k)),
     grp = {};
   for (const x of tt) {
     const g = x.kind === "stat" ? "Body and mind" : x.cat;

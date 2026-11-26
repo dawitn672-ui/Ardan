@@ -293,13 +293,13 @@
 
   // ---- skills, traits, keywords --------------------------------------------------------------------------------------
   // S1b (D-072): a skill's sheet (36-skills' UI.skillSheet): the level in words, the way to the next step, the concepts
-  // of the next word, this season's causes, discipline, talent, specialism, knacks, kin, its story
+  // of the next rank, this season's causes, discipline, talent, specialism, knacks, kin, its story
   G.skill = function (k) {
     const p = pc(); if (!p || !GD.SKILLS[k] || !UI.skillSheet) return '';
     return UI.skillSheet(p, k);
   };
   G.skillWord = function (name) {
-    return H('Levels', null, esc(name)) + D('A skill has seven words, each in five steps: Beginner, Intermediate, Advanced, Expert, Master, Grandmaster, Legend. Experience fills the bar to the next step; a new word also asks its concepts grasped, and from Expert a proof.');
+    return H('Rank and level', null, esc(name)) + D('A skill has a rank, D, C, B, A or S, and a level from 1 to 10 within it. Experience fills the bar to the next level. A new rank also asks its concepts grasped, and from rank B a deed; a few skills have a gate inside a rank too.');
   };
   G.trait = function (t) {
     const T = GD.TRAITS[t]; if (!T) return '';

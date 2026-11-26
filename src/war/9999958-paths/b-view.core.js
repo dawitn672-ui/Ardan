@@ -14,10 +14,10 @@
     let h = `<div class="card pa-card"><div class="row">${UI.icon ? UI.icon('flag', 's') : ''}<span class="tag">Your road</span><b class="grow">${esc(cap(P.name))}</b></div>`;
     const plan = PA.plan(pc).map(x => PA.skillWords(pc, x.k));
     h += `<div class="row small"><span class="grow">At this rung it trains ${esc(list(plan))}</span><button class="small pa-why" data-note="${esc('A little of every month goes to it, more to what you have a gift for and less to what comes slowly. A teacher, a rival and real work go further.')}">how</button></div>`;
-    if (t.trial) h += `<div class="row small"><span class="grow muted">What proves a man here: ${esc(t.trial[1])}</span><button class="small pa-why" data-note="${esc(`When you stand at the edge of a new word in ${S ? S.name(t.trial[0]).toLowerCase() : t.trial[0]}, with all it asks grasped, the trial is set. Standing it is the proof.`)}">the trial</button></div>`;
+    if (t.trial) h += `<div class="row small"><span class="grow muted">What proves a man here: ${esc(t.trial[1])}</span><button class="small pa-why" data-note="${esc(`When you stand at the edge of a new rank in ${S ? S.name(t.trial[0]).toLowerCase() : t.trial[0]}, with all it asks grasped, the trial is set. Standing it is the deed the rank asks.`)}">the trial</button></div>`;
     const next = PA.wants(pc, idx + 1);
     if (next.length && idx < 4) {
-      const stand = next.map(k => { const w = S ? S.wordName(S.lvOf(pc, k)) : ''; return `${S ? S.name(k).toLowerCase() : k}: ${w}${PA.talentWord(pc, k) ? ', ' + PA.talentWord(pc, k) : ''}`; });
+      const stand = next.map(k => { const w = A.SK2 ? A.SK2.label(pc, k, { bare: true }) : ''; return `${S ? S.name(k).toLowerCase() : k}: ${w}${PA.talentWord(pc, k) ? ', ' + PA.talentWord(pc, k) : ''}`; });
       h += `<div class="row small"><span class="grow">The next rung wants ${esc(list(next.map(k => S ? S.name(k).toLowerCase() : k)))}</span><button class="small pa-why" data-note="${esc(`Where you stand: ${stand.join('; ')}.${PA.trialsAt(pc, idx) ? ' You have stood this rung\'s trial.' : ''}`)}">where you stand</button></div>`;
     }
     const sp = PA.specFor(pc);

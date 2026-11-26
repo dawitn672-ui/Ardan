@@ -1,22 +1,26 @@
-// S1b stage 5: what the player sees of a skill (docs/design/skills.md §8). No percentages and no bare numbers: a level
-// is its word and step, the way to the next step is a bar (a scaled <i>, no width animation) and a word, a concept's
-// state is a word, and every reason is a sentence. A row is one control of at least 44 points; it opens the skill's
+// S1b stage 5: what the player sees of a skill (docs/design/skills.md §8). No percentages and no bare numbers: since the
+// skills rebuild's switch (skills-v2 §6.1, D-NEW-1) a level is its rung, rank and level ("Basic Swordsmanship · C ·
+// Lv 3", A.SK2.label), never a word; the way to the next level is a bar (a scaled <i>, no width animation) and a word, a
+// concept's state is a word, and every reason is a sentence. A row is one control of at least 44 points; it opens the skill's
 // sheet on a tap (59-descriptions' popover, G.skill), never on hover.
 //
 // Drawing only reads: nothing here changes A.S or draws from A.rand.
 (function () {
   const SK = A.SK; if (!SK || !SK.DATA) return;
   const esc = s => UI.esc(String(s == null ? '' : s));
-  const ROMAN_WORD = ['first', 'second', 'third', 'fourth', 'fifth'];
+  const K2 = () => A.SK2;
   const isPC = p => !!(p && A.S && p.id === A.S.pc);
   const tt = k => (UI.ttAttrs ? UI.ttAttrs('skill', k, false) : '');
 
   // ---- reading a skill, in words --------------------------------------------------------------------------------------
   SK.bar = function (p, k) {
     const s = p.sk && p.sk[k]; if (!s) return { f: 0, word: '' };
-    const c = SK.E().cost(s.lv);
     if (s.lv >= SK.MAX_LV) return { f: 1, word: 'at the top' };
-    const f = Math.max(0, Math.min(1, s.xp / c));
+    // the bar is the rung's level (an S1 step in C, B and A is two levels: its bar is half the step's)
+    const r = K2() && K2().on ? K2().rungNow(s) : null;
+    const c = r ? K2().E().cost(r.rank, r.lv) : SK.E().cost(s.lv), x = r ? r.xp : s.xp;
+    const edge = s.xp >= SK.E().cost(s.lv) - 1e-6;
+    const f = edge ? 1 : Math.max(0, Math.min(1, x / c));
     return { f, word: f >= 1 - 1e-6 ? 'full' : SK.E().BAR_WORDS[Math.min(4, Math.floor(5 * f))] };
   };
   // the row's two words of state: why a full bar does not move; else discipline and the life
@@ -24,7 +28,7 @@
     const s = p.sk && p.sk[k]; if (!s) return '';
     const e = SK.edgeState ? SK.edgeState(p, k) : null;
     if (e === 'stuck') { const m = SK.E().openConcepts(SK.view(p), k); return 'held: ' + (m[0] ? m[0].name : 'a concept'); }
-    if (e === 'ready') return 'ready: wants a proof';
+    if (e === 'ready') return 'ready: wants a deed';
     if (s.rust > 0) { const yrs = s.used != null ? Math.max(0, Math.floor(SK.ageF(p) - s.used)) : 0; return yrs >= 2 ? `unused ${SK.yearsWord(yrs)} years` : 'coming back'; }
     const L = p.skl && p.skl.k && p.skl.k[k], tags = (L && L.tags) || [];
     const bits = [SK.E().disciplineWord(s.streak)];
@@ -32,23 +36,26 @@
     return bits.join(' · ');
   };
   SK.yearsWord = n => (['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'][n] || 'many');
-  // what the level reads to others: "Expert II", "Rusty · Advanced II"
-  SK.levelLabel = function (p, k) {
-    const lv = SK.lvOf(p, k), s = p.sk && p.sk[k];
-    return (s && s.rust > 0 ? 'Rusty · ' : '') + SK.levelName(lv);
-  };
+  // what the level reads to others: "C · Lv 3", "Rusty · C · Lv 3" (A.SK2.label: the only way a level is printed)
+  SK.levelLabel = (p, k) => K2().label(p, k);
   // what the level acts as, after rust, the body's hold and wounds (the sheet says both)
   SK.actsAs = function (p, k) {
-    const v = A.skill(p, k), lv = SK.lvOf(p, k);
-    const alv = SK.lvOfValue(v + 0.5);
-    return alv < lv ? (alv > 0 ? SK.levelName(alv) : 'hardly anything') : null;
+    const v = A.skill(p, k), r = K2().rungFor(p, k); if (!r) return null;
+    const own = K2().E().value(r.rank, r.lv);
+    return v + 0.5 < own ? (v + 0.5 >= 1 ? K2().labelValue(v + 0.5) : 'hardly anything') : null;
+  };
+  // how far a teacher of S1 step tl can take a pupil (the engine's cap: the top of the band below his): printed
+  SK.teachesTo = function (tl) {
+    const b = SK.wordOf(tl) - 1; if (b < 0) return null;
+    const r = K2().E().landed((b + 1) * SK.STEPS, 1e9); if (!r) return null;
+    return r.lv >= K2().E().MAX_LV ? `the top of rank ${r.rank}` : K2().labelRung(r.rank, r.lv);
   };
   // the pace, in a word, with its reason (from this season's ledger, or the last)
   SK.pace = function (p, k) {
     const s = p.sk && p.sk[k]; if (!s) return null;
     const e = SK.edgeState ? SK.edgeState(p, k) : null;
     if (e === 'stuck') { const m = SK.E().openConcepts(SK.view(p), k); return { word: 'held', why: `you have not grasped ${m.map(x => x.name).join(' or ')}` }; }
-    if (e === 'ready') return { word: 'held', why: 'ready for the next word, and not yet proved' };
+    if (e === 'ready') return { word: 'held', why: 'ready to rise, and the deed not yet done' };
     const L = p.skl && p.skl.k && (p.skl.k[k] || (p.skl.prev && p.skl.prev.k && p.skl.prev.k[k]));
     if (!L || !(L.x > 0)) return { word: 'not at all', why: 'you have not worked at it this season' };
     const share = L.x / SK.E().cost(s.lv);   // a season's experience against the step
@@ -61,10 +68,11 @@
             : t.includes('teacher') ? 'a teacher above you' : t.includes('hours shared') ? 'your hours are shared between studies' : null;
     return { word, why };
   };
-  SK.proofWords = function (k) {
+  // the deed a rank asks (S1's proof, now a condition of the rank: skills-v2 §3.2)
+  SK.deedWords = function (k) {
     const g = SK.BY[k] && SK.BY[k].group;
-    return g === 'Arms' || g === 'The body' ? 'a fight won against one of that word' : g === 'Crafts' ? 'a work judged by masters' : g === 'War' ? 'a battle commanded and won'
-      : g === 'Letters' || g === 'Faith' ? 'a case or a disputation carried' : 'a task of that word, done before those who know';
+    return g === 'Arms' || g === 'The body' ? 'a fight won against one of that rank' : g === 'Crafts' ? 'a work judged by masters' : g === 'War' ? 'a battle commanded and won'
+      : g === 'Letters' || g === 'Faith' ? 'a case or a disputation carried' : 'a task of that rank, done before those who know';
   };
 
   // ---- the rows (Profile's Skills panel, the rail, the sheet overlay) -----------------------------------------------
@@ -78,7 +86,7 @@
     const name = SK.name(k), lab = SK.levelLabel(p, k);
     if (!p.sk || opts.slim) return `<div class="skrow slim" role="button" tabindex="0"${tt(k)} aria-label="${esc(name)}, ${esc(lab)}"><span class="skn">${esc(name)}</span><span class="skl">${esc(lab)}</span></div>`;
     const b = SK.bar(p, k), s = p.sk[k], st = SK.E().storedSteps(s), lv = s.lv;
-    const next = lv < SK.MAX_LV ? SK.levelName(lv + 1) : '';
+    const next = lv < SK.MAX_LV ? K2().nextLabel(p, k) : '';
     const aria = `${name}, ${lab}${next ? `, ${b.word === 'full' ? 'the bar full' : b.word} to ${next}` : ''}`;
     return `<div class="skrow" role="button" tabindex="0"${tt(k)} aria-label="${esc(aria)}"><span class="skn">${esc(name)}</span><span class="skl">${esc(lab)}</span>` +
       `<span class="skbar" aria-hidden="true"><i style="transform:scaleX(${Math.round(b.f * 1000) / 1000})"></i></span>` +
@@ -110,7 +118,8 @@
     const S = SK.BY[k], name = S.name, lv = SK.lvOf(p, k), s = p.sk && p.sk[k];
     const P = (h, t) => `<div class="sk-sec"><div class="sk-h">${esc(h)}</div>${t}</div>`;
     const line = t => `<div class="sk-l">${t}</div>`;
-    let h = `<div class="sk-sheet"><div class="sk-title"><b>${esc(name)}</b><span class="sk-word"${UI.ttAttrs ? UI.ttAttrs("skillWord", SK.levelName(lv)) : ""}>${esc(lv > 0 ? `${SK.wordName(lv)}, the ${ROMAN_WORD[SK.stepOf(lv) - 1]} step of five` : 'untried')}</span></div>`;
+    const r2 = K2().rungFor(p, k);
+    let h = `<div class="sk-sheet"><div class="sk-title"><b>${esc(name)}</b><span class="sk-word"${UI.ttAttrs ? UI.ttAttrs("skillWord", K2().label(p, k, { bare: true })) : ""}>${esc(r2 ? `${K2().rungName(k, r2.rank)} · ${r2.rank}-rank · Lv ${r2.lv}` : 'untried')}</span></div>`;
     const desc = S.desc || (GD.SKILL_DESC && GD.SKILL_DESC[k]) || '';
     if (desc) h += `<div class="sk-desc">${esc(desc)}</div>`;
     if (!s) {   // someone else: the level, and what he is known for
@@ -118,19 +127,20 @@
     }
     // 2. the way to the next step
     const b = SK.bar(p, k), pace = SK.pace(p, k), acts = SK.actsAs(p, k);
-    if (lv < SK.MAX_LV) h += P('The way to the next step', `<div class="skbar big" aria-hidden="true"><i style="transform:scaleX(${Math.round(b.f * 1000) / 1000})"></i></div>` +
+    if (lv < SK.MAX_LV) h += P('The way to the next level', `<div class="skbar big" aria-hidden="true"><i style="transform:scaleX(${Math.round(b.f * 1000) / 1000})"></i></div>` +
       line(esc(`${b.word === 'full' ? 'The bar is full' : 'The bar: ' + b.word}${pace ? `; coming ${pace.word === 'held' ? 'no further' : pace.word}${pace.why ? ': ' + pace.why : ''}` : ''}.`)) +
-      (s.st > 0 ? line(esc(`Work stored beyond the edge: ${SK.yearsWord(SK.E().storedSteps(s))} ${SK.E().storedSteps(s) === 1 ? "step's" : "steps'"} worth, which lands at once when the way opens.`)) : ''));
+      (s.st > 0 ? line(esc(`Work stored beyond the edge (${['', 'a little', 'some', 'a good deal', 'much', 'a great deal'][SK.E().storedSteps(s)] || 'some'}), which lands at once when the way opens.`)) : ''));
     if (acts) h += line(esc(`${s.rust > 0 ? 'Rusty: it' : 'It'} acts as ${acts} for now${s.rust > 0 ? '; work brings it back five times as fast as it went' : ': your body or a wound holds it there'}.`));
-    // 3. the next word: its concepts, and the proof
+    // 3. what opens the next rank (or the gate inside D and S): its concepts, and the deed
     const w = SK.wordOf(lv) + 1;
-    if (w >= 1 && w < SK.WORDS.length) {
+    if (w >= 1 && w < SK.BANDS) {
       const v = SK.view(p), cs = SK.E().conceptsOf(k, w), years = s.stallAt != null ? SK.ageF(p) - s.stallAt : 0;
       const rows = cs.map(c => {
         const nd = SK.E().need(v, k, c), state = s.got[c.id] != null ? 'grasped' : SK.E().graspWord(s.ins[c.id] || 0, nd, years);
         return `<details class="sk-c"><summary><span>${esc(c.name.replace(/^./, x => x.toUpperCase()))}</span><b>${esc(state)}</b></summary><div class="sk-cd">${esc(c.desc || '')}${c.never && state !== 'grasped' ? `<div class="muted">Never grasped: ${esc(c.never)}</div>` : ''}</div></details>`;
       }).join('');
-      h += P(`The next word: ${SK.WORDS[w]}`, rows + (w >= SK.E().PROOF_FROM ? line(esc(`And a proof: ${SK.proofWords(k)}${s.proved ? ' (given)' : ''}.`)) : ''));
+      const g = K2().gateLabel(w);
+      h += P(/^rank /.test(g) ? `To reach ${g}` : `To pass ${g}`, rows + (w >= SK.E().PROOF_FROM ? line(esc(`And a deed: ${SK.deedWords(k)}${s.proved ? ' (done)' : ''}.`)) : ''));
     }
     // 4. this season
     const L = p.skl && p.skl.k && p.skl.k[k];
@@ -146,10 +156,10 @@
     const T = A.teacherFor ? A.teacherFor(p, k) : null;
     let about = line(esc(`Discipline: ${SK.E().disciplineWord(s.streak)}${s.streak >= 12 ? `, ${SK.yearsWord(Math.floor(s.streak / 12))} year${s.streak >= 24 ? 's' : ''} unbroken` : ''}.`)) +
       line(esc(`Talent: ${t}, ${SK.TALENT_WORD[t]}.`)) +
-      line(esc(sp.length ? `Specialism: ${sp.join(' and ')}.` : SK.wordOf(lv) >= 2 ? 'No specialism: the whole art, at no cost.' : 'A specialism comes at Advanced.'));
+      line(esc(sp.length ? `Specialism: ${sp.join(' and ')}.` : SK.wordOf(lv) >= 2 ? 'No specialism: the whole art, at no cost.' : 'A specialism comes at rank C.'));
     if (knacks.length) about += line(esc('Knacks: ' + knacks.map(x => x[1]).join(', ') + '.'));
     if (kin.length) about += line(esc('Helps: ' + kin.join(', ') + '.'));
-    if (T && T.p) about += line(esc(`A teacher in reach: ${A.fullName ? A.fullName(T.p, false) : T.p.given}, ${SK.levelName(SK.lvOf(T.p, k))}; lessons can take you to the top of ${SK.WORDS[Math.max(0, SK.wordOf(SK.lvOf(T.p, k)) - 1)]}.`));
+    if (T && T.p) { const to = SK.teachesTo(SK.lvOf(T.p, k)); about += line(esc(`A teacher in reach: ${A.fullName ? A.fullName(T.p, false) : T.p.given}, ${K2().label(T.p, k, { bare: true })}${to ? `; lessons can take you as far as ${to}` : ''}.`)); }
     h += P('You and it', about);
     // 6. its story
     const R = (p.skr || []).filter(r => r.k === k && r.t !== 'born').slice(-8);
@@ -190,7 +200,7 @@
     } else { cz = { q: 'practice', why: name + ', practised alone' }; msg = `You work at your ${name.toLowerCase()} alone for some days.`; }
     A.gainXp(pc, c, eu * mul, cz);
     const s = pc.sk && pc.sk[c];
-    msg += s && s.lv > 0 ? ` ${name}: ${SK.levelName(s.lv)}, the bar ${SK.bar(pc, c).word}; what the work is worth shows at the month's end.` : ' What it is worth shows at the month\'s end.';
+    msg += s && s.lv > 0 ? ` ${name}: ${K2().label(pc, c)}, the bar ${SK.bar(pc, c).word}; what the work is worth shows at the month's end.` : ' What it is worth shows at the month\'s end.';
     return { msg };
   };
   // the sheet's picker and its four ways (99998-click-open puts it under "What it is")
@@ -198,7 +208,7 @@
     const ks = SK.ranked(pc), plan = A.plan ? SK.canon(A.plan(pc).train || '')[0] : null;
     const cur = UI.practiceK && SK.canon(UI.practiceK)[0] ? SK.canon(UI.practiceK)[0] : plan && pc.sk[plan] ? plan : ks[0] || (A.weaponSkillOf ? SK.canon(A.weaponSkillOf(pc))[0] : 'melee');
     const opts = SK.IDS.slice().sort((a, b) => SK.lvOf(pc, b) - SK.lvOf(pc, a) || (SK.name(a) < SK.name(b) ? -1 : 1))
-      .map(k => `<option value="${esc(k)}"${k === cur ? ' selected' : ''}>${esc(SK.name(k))} — ${esc(SK.levelName(SK.lvOf(pc, k)))}</option>`).join('');
+      .map(k => `<option value="${esc(k)}"${k === cur ? ' selected' : ''}>${esc(SK.name(k))} — ${esc(K2().label(pc, k))}</option>`).join('');
     return `<div class="work-sheet"><label class="work-pick"><span>Which skill</span><select data-c="workPick" aria-label="Which skill">${opts}</select></label>` +
       SK.WORK_HOWS.map(([h, t]) => `<button class="work-how" data-a="workSkill" data-v="${esc(cur + ':' + h)}"><b>${esc(t)}</b><span>${esc(SK.workWords(pc, cur, h))}</span></button>`).join('') + '</div>';
   };

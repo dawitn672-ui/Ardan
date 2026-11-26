@@ -333,8 +333,8 @@
     switch (a.kind) {
       case 'coin': { const n = a.need(pc, ctx); if (n == null) return null; return { ok: (pc.coin || 0) >= n, t: `${coin(n)} (you have ${coin(Math.max(0, pc.coin || 0))})`, n }; }
       case 'literate': return { ok: !!pc.literate, t: 'reading and writing' };
-      // S1b (D-072): a skill wanted is a level in words ("Swordsmanship at Advanced IV, you are Intermediate II")
-      case 'prof': { if (!C.lvl || !GD.SKILLS || !GD.SKILLS[a.s]) return null; const SK = A.SK, have = A.skill ? A.skill(pc, a.s) : 0, w = v => (SK ? SK.levelName(SK.lvOfValue(v)) : String(Math.round(v))), need = v => (SK ? SK.levelName(Math.min(SK.MAX_LV, SK.VALUES.findIndex(x => x >= v - 1e-9))) : String(v)); return { ok: !!C.lvl(pc, a.s, a.n), t: `${skillWord(a.s)} at ${need(a.n)} (you are ${w(have)})` }; }
+      // a skill wanted is a level (the skills rebuild's switch: "Swordsmanship at C · Lv 7 (you are D · Lv 6)", never a word)
+      case 'prof': { if (!C.lvl || !GD.SKILLS || !GD.SKILLS[a.s]) return null; const K2 = A.SK2, have = A.skill ? A.skill(pc, a.s) : 0, w = v => (K2 ? K2.labelValue(v) : String(Math.round(v))), need = v => (K2 ? K2.labelAtLeast(v) : String(v)); return { ok: !!C.lvl(pc, a.s, a.n), t: `${skillWord(a.s)} at ${need(a.n)} (you are ${w(have)})` }; }
       case 'gear': { if (!C.gear) return null; return { ok: !!C.gear(pc, a.slot, a.sub || undefined), t: GEAR_WORD[a.slot] || a.slot }; }
       case 'mounted': { if (!C.mounted) return null; return { ok: !!C.mounted(pc), t: 'a horse' }; }
       case 'rank': { if (!C.jobRank) return null; return { ok: !!C.jobRank(pc, a.n), t: `rank ${a.n} in your work` }; }

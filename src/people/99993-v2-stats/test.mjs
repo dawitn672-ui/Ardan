@@ -183,9 +183,9 @@ export default {
       const full = UI.profBlock(A.pc());
       // S1b (D-072): a skill row is its name and its level in words (36-skills' .skrow); the hours are gone
       const rows = (full.match(/<div class="skrow[^"]*"[\s\S]*?<span class="skl">[^<]*<\/span>/g) || []);
-      const rowsOk = rows.length > 0 && rows.every(x => /<span class="skl">(Rusty · )?(Beginner|Intermediate|Advanced|Expert|Master|Grandmaster|Legend) [IV]+<\/span>/.test(x) && !/\d hours/.test(x) && !/<b>\d+<\/b>/.test(x));
+      const rowsOk = rows.length > 0 && rows.every(x => /<span class="skl">(Rusty · )?[DCBAS] · Lv \d{1,2}<\/span>/.test(x) && !/\d hours/.test(x) && !/<b>\d+<\/b>/.test(x));
       // C9 (D-040, order 34): the body in words on the measured scale, no real units (kg, m/s, km a day, ms) at all
-      return { t: t.slice(0, 1600), words: /Strength\s*(feeble|weak|slight|average|strong|very strong|mighty|off the chart)/.test(t), kg: /\d+ kg/.test(t), ms: /\d+(\.\d)? m\/s/.test(t), km: /km a day/.test(t), react: /\d+ ms/.test(t), mind: /Wits/.test(t), tier: /(Beginner|Intermediate|Advanced|Expert|Master|Grandmaster|Legend) [IV]+/.test(t) && !/\d hours/.test(t), oldBars: /Strength \d+|Combat Instincts/.test(t),
+      return { t: t.slice(0, 1600), words: /Strength\s*(feeble|weak|slight|average|strong|very strong|mighty|off the chart)/.test(t), kg: /\d+ kg/.test(t), ms: /\d+(\.\d)? m\/s/.test(t), km: /km a day/.test(t), react: /\d+ ms/.test(t), mind: /Wits/.test(t), tier: /\b[DCBAS] · Lv \d{1,2}\b/.test(t) && !/\b(Beginner|Intermediate|Advanced|Expert|Grandmaster|Legend) [IV]+\b/.test(t) && !/\d hours/.test(t), oldBars: /Strength \d+|Combat Instincts/.test(t),
         dupHeads: heads.length !== new Set(heads).size, heads, rowsOk, rows: rows.length };
     });
     const ok = r.words && !r.kg && !r.ms && !r.km && !r.react && r.mind && r.tier && !r.oldBars && !r.dupHeads && r.rowsOk;
@@ -232,7 +232,9 @@ export default {
       // a bare 0-100 number: digits not part of a date, a count with its unit, a speed in km or a "N more"
       const BARE = /(?<![\d.,:/×-])\b(\d{1,3})(?:\.\d+)?\b(?![\d,.:/]\d)(?!\s*(?:km|kg|cm|m\/s|ms|suns?|years?|days?|months?|men|more|hours?|initiative|of \d))/;
       // (a year, a log line's day and month, a count of friends are not scales) (round 4: nor a count of provinces, "Hold 25 provinces", on the Goals tab)
-      const plain = l => l.replace(/\b1[01]\d\d\b/g, '').replace(/^\s*\d{1,2} [A-Z][a-z]{2}/, '').replace(/\d+ friends?|\(up to \d+\)|at its best at \d+|until about \d+|fading since about \d+|\bHold \d+ provinces\b/g, '');
+      // (a skill's level, "C · Lv 3", is the one number a player reads: skills-v2 §8, the skills rebuild's switch)
+      const LVL = /\b[DCBAS] · Lv \d{1,2}\b/g;
+      const plain = l => l.replace(LVL, '').replace(/\b1[01]\d\d\b/g, '').replace(/^\s*\d{1,2} [A-Z][a-z]{2}/, '').replace(/\d+ friends?|\(up to \d+\)|at its best at \d+|until about \d+|fading since about \d+|\bHold \d+ provinces\b/g, '');
       const check = (where, t) => { for (const line of String(t).split('\n')) if (BARE.test(plain(line))) bad.push(`${where}: ${line.trim().slice(0, 90)}`); };
       // verifier, round 5: titles and aria-labels went only through the ruler pass's scanR, which reads a line only when it
       // names a realm measure, so a skill row's aria-label ("Melee: 24", 59-descriptions' profile hook) was never read. Every
@@ -243,7 +245,7 @@ export default {
       const MON = '(?:January|February|March|April|May|June|July|August|September|October|November|December)';
       const DATE = new RegExp(`\\b\\d{1,2} ${MON}\\b|\\b${MON} \\d{1,2}\\b`, 'g');
       const attrPlain = (v, el) => {
-        let t = v.replace(/^Portrait of [^,]*, \d{1,3}$/, '').replace(/\bInitiative [\d.]+ of \d+/g, '').replace(/,? age \d{1,3}\b/g, '')
+        let t = v.replace(LVL, '').replace(/^Portrait of [^,]*, \d{1,3}$/, '').replace(/\bInitiative [\d.]+ of \d+/g, '').replace(/,? age \d{1,3}\b/g, '')
           .replace(DATE, '').replace(/^Provinces since \d+: \d+ to \d+$/, '')
           // (S1b CI 139: an army is counted in men, not on the 0-100 scale; a host that fell to nothing reads "Army since 1105: 0 to 67k")
           .replace(/^Army since \d+: [\d.,]+k? to [\d.,]+k?$/, '')
@@ -256,8 +258,8 @@ export default {
       let attrsRead = 0, skillAria = '';
       const checkAttrs = (where, root) => {
         for (const el of root.querySelectorAll('[title],[aria-label]')) for (const k of ['title', 'aria-label']) { const v = el.getAttribute(k); if (v) { attrsRead++; check(`${where} [${k}]`, attrPlain(v, el)); } }
-        // S1b (D-072): a skill row is its name and level in words ("Riding and the lance, Expert II, about half way to Expert III")
-        for (const el of root.querySelectorAll('.skrow[aria-label]')) if (!skillAria && /^[^\d&]+, (Rusty · )?[A-Z][a-z]+ [IV]+/.test(el.getAttribute('aria-label'))) skillAria = el.getAttribute('aria-label');
+        // a skill row is its name and level ("Riding and the lance, B · Lv 3, about half way to B · Lv 4"; the switch: no words)
+        for (const el of root.querySelectorAll('.skrow[aria-label]')) if (!skillAria && /^[^\d&]+, (Rusty · )?[DCBAS] · Lv \d+/.test(el.getAttribute('aria-label'))) skillAria = el.getAttribute('aria-label');
       };
       T.enter({ seed: 9611, race: 'human', realm: 'POL-02', status: 'peasant', sex: 'F', startAge: 16 });
       const pc = A.pc(); A.plan(pc).train = 'survival';
@@ -436,7 +438,7 @@ export default {
         peace === 'Aldmark is tiring. What they will accept depends on the war score.', /Legitimacy accepted\.$/.test(ttl)], rulerWords = rw.every(Boolean);
       return { bad: [...new Set(bad)], wordsShown, infamyWords, rulerWords, rw: rw.map(Number).join('') + ' bars: ' + bars.slice(0, 160), letter: letter.split('\n').filter(l => /infam|feared/.test(l)).join(' ').slice(0, 200), coal: coal.replace(/\n/g, " ").slice(0, 160), gridWords, foe: !!foe, log: log.length, logged, pure, attrsRead, skillAria, cfTip };
     });
-    const ok = r.bad.length === 0 && r.wordsShown && r.infamyWords && r.rulerWords && r.gridWords && r.foe && r.log > 0 && r.pure && r.attrsRead > 100 && /^[^\d]+, (Rusty · )?[A-Z][a-z]+ [IV]+/.test(r.skillAria) && /^[^\d]*rank 1 of 5: .*Next rank: [^\d]*$/.test(r.cfTip);
+    const ok = r.bad.length === 0 && r.wordsShown && r.infamyWords && r.rulerWords && r.gridWords && r.foe && r.log > 0 && r.pure && r.attrsRead > 100 && /^[^\d]+, (Rusty · )?[DCBAS] · Lv \d+/.test(r.skillAria) && /^[^\d]*rank 1 of 5: .*Next rank: [^\d]*$/.test(r.cfTip);
     return { ok, detail: `${r.bad.length ? r.bad.length + ' bare numbers, e.g. ' + r.bad.slice(0, 6).join(' | ') : 'no bare 0-100 number'}; needs in words ${r.wordsShown}; infamy in words ${r.infamyWords} ("${r.coal}"), for a ruler ${r.rulerWords} (${r.rw}: "${r.letter}"); War Room grid compared ${r.gridWords}; ${r.attrsRead} titles and aria-labels read (a skill row: "${r.skillAria}"; a confidant's pips: "${r.cfTip}"); ${r.log} training log lines, e.g. "${r.logged}"; no draw ${r.pure}` };
   },
 
@@ -465,18 +467,20 @@ export default {
       // "Under your command": "Under your command · 54 · Soldier" is a man of 54, not a command of 54. Seed 38's world
       // gives the life a subordinate on a page the test reads since the market fix shifted the stream. The bond word is read
       // apart from the age that follows it.)
-      const ROW = l => l.replace(/^under your command · \d{1,3} · /i, '');
+      // (the skills rebuild's switch: a skill's level, "C · Lv 3", is the one number a player reads, skills-v2 §8)
+      const ROW = l => l.replace(/^under your command · \d{1,3} · /i, '').replace(/\b[DCBAS] · Lv \d{1,2}\b/g, '');
+      const NOLV = t => t.replace(/\b[DCBAS] · Lv \d{1,2}\b/g, '');
       const scan = async where => {
         await tick();
         const root = document.querySelector('#modal') && document.querySelector('#modal').innerText.trim() ? document.querySelector('#modal') : document.querySelector('#tabbody');
         const roots = [root, document.querySelector('#profile')].filter(Boolean);
         for (const R of roots) {
-          for (const line of R.innerText.split('\n')) if (/\d/.test(line) && (LINE.test(ROW(line)) || MORE.some(x => x.test(line)))) found.push(`${where}: ${line.trim().slice(0, 90)}`);
+          for (const line of R.innerText.split('\n')) if (/\d/.test(ROW(line)) && (LINE.test(ROW(line)) || MORE.some(x => x.test(ROW(line))))) found.push(`${where}: ${line.trim().slice(0, 90)}`);
           for (const el of R.querySelectorAll('[data-tt]')) {
             const k = el.getAttribute('data-tt'), v = el.getAttribute('data-v') || '';
             if (!(KEYS.has(k) || (k === 'board' && BOARD.test(v))) || el.children.length) continue;
             // a worth is said in conscripts, a real unit ("about 25 conscripts")
-            if (/\d/.test(el.textContent) && !(k === 'worth' && /\bconscripts?$/.test(el.textContent.trim()))) found.push(`${where} [${k}]: ${el.textContent.trim().slice(0, 40)}`);
+            if (/\d/.test(NOLV(el.textContent)) && !(k === 'worth' && /\bconscripts?$/.test(el.textContent.trim()))) found.push(`${where} [${k}]: ${el.textContent.trim().slice(0, 40)}`);
           }
           for (const el of R.querySelectorAll('.barrow > .val')) {
             const l = ((el.parentNode.querySelector('.lbl') || {}).textContent || '').trim();
@@ -485,7 +489,7 @@ export default {
         }
       };
       // the log: the story's own lines (a season's practice, merit, a battle's reckoning)
-      const scanLog = where => { for (const line of (document.querySelector('#log') || { innerText: '' }).innerText.split('\n')) if (/\d/.test(line) && (LINE.test(line) || MORE.some(x => x.test(line)))) found.push(`${where} log: ${line.trim().slice(0, 90)}`); };
+      const scanLog = where => { for (const line of (document.querySelector('#log') || { innerText: '' }).innerText.split('\n')) if (/\d/.test(NOLV(line)) && (LINE.test(NOLV(line)) || MORE.some(x => x.test(NOLV(line))))) found.push(`${where} log: ${line.trim().slice(0, 90)}`); };
       let pages = 0;
       for (const st of [{ seed: 38, startAge: 16 }, { seed: 41, startAge: 17, status: 'noble' }]) {
         T.enter(st);

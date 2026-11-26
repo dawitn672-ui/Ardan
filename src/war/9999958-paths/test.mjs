@@ -92,7 +92,7 @@ export default {
     return { ok, detail: JSON.stringify(r) };
   },
 
-  // the trial: at the edge of a word in the rung's skill, wanting a proof, the trial's card comes; standing it is S1's
+  // the trial: at the edge of a rank in the rung's skill, wanting its deed, the trial's card comes; standing it is S1's
   // proof and is recorded for the board, which then weighs it
   async paTrial(pg) {
     await pg.evaluate(SOLDIER);
@@ -100,8 +100,8 @@ export default {
       const pc = PAT.soldier(4400, 'archers');
       if (!pc) return { skip: 'no soldier' };
       const SK = A.SK, out = {};
-      // stand him at the edge of Expert in the bow: Advanced V, the step's experience full, every concept of the next word held
-      const lv = SK.levelOfWord('advanced') + 4;
+      // stand him at the edge of rank B in the bow: C Lv 10 (S1's fifth step of the band), the bar full, every concept of rank B held
+      const lv = SK.firstOf(2) + 4;
       SK.set(pc, 'bow', lv);
       const s = pc.sk.bow; s.xp = SK.E().cost(lv) + 1;
       for (const c of SK.E().openConcepts(SK.view(pc), 'bow')) { s.got = s.got || {}; s.got[c.id] = A.S.year; }
@@ -129,7 +129,7 @@ export default {
       const pc = PAT.soldier(4400, 'archers');
       if (!pc) return { skip: 'no soldier' };
       const SK = A.SK, sp = A.PATHS.specFor(pc), out = { sp };
-      SK.set(pc, sp[0], SK.levelOfWord('advanced') + 1);
+      SK.set(pc, sp[0], SK.firstOf(2) + 1);
       A.PATHS.month(pc);
       const q = A.S.queue.find(x => x.ev === 'pa_spec');
       out.card = !!q;
