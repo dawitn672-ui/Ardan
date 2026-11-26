@@ -15,3 +15,8 @@ group; seeded by `tools/skills2/seed-data.mjs`), `recipes.json` (merges). Valida
 `level.json` (a person's level and its stat points, `src/people/9999975-level`, D-181): the experience curve on the
 power ladder, the foes with no sheet, the floor of growing up, points, ceilings, room and costs, and the ways of life a
 placement leans to.
+
+`titles/` (titles, `src/people/9999976-titles`, D-183; on the page also as `A.DATA.titles`): `vocab.json` (rarities,
+weights and budget, the hidden predicates, the deed kinds and where each is recorded, the cards whose choices are deeds),
+`people.json` (the titles a person may earn), `legends.json` (the great beings' titles, named by id from `legends.json`
+and `power.json`'s masters). Validated by `tools/lint-titles.mjs`.

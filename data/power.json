@@ -191,14 +191,7 @@
         "duel": 3
       },
       "titles": [
-        {
-          "n": "Breaker of the Ice-Road",
-          "honour": 30,
-          "buffs": {
-            "str": 1
-          },
-          "req": "hidden"
-        }
+        "breaker-of-the-ice-road"
       ],
       "d": "The eldest giant still on a throne. Three hundred years of war in his arms and shoulders.",
       "skills": [
@@ -270,15 +263,7 @@
         "duel": 3
       },
       "titles": [
-        {
-          "n": "Who Held the Ninth Gate",
-          "honour": 25,
-          "buffs": {
-            "hide": 1,
-            "ward": 1
-          },
-          "req": "hidden"
-        }
+        "who-held-the-ninth-gate"
       ],
       "d": "Two centuries at the forge and the gate. Rune-steel on his back that no smith of men can scratch.",
       "skills": [
@@ -351,15 +336,7 @@
         "duel": 6
       },
       "titles": [
-        {
-          "n": "the Unhurried",
-          "honour": 20,
-          "buffs": {
-            "spd": 1,
-            "cunning": 1
-          },
-          "req": "hidden"
-        }
+        "unhurried"
       ],
       "d": "Four hundred years with one sword. She has outlived every school that tried to teach men her way.",
       "skills": [
@@ -426,14 +403,7 @@
         "duel": 3
       },
       "titles": [
-        {
-          "n": "Who Ate the Iron Feast",
-          "honour": 15,
-          "buffs": {
-            "str": 1
-          },
-          "req": "hidden"
-        }
+        "who-ate-the-iron-feast"
       ],
       "d": "Took his seat over the bodies of forty challengers. No man of the west has lasted a minute with him.",
       "skills": [
