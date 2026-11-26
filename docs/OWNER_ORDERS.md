@@ -481,6 +481,12 @@ order is replaced, strike it through and say by what.
 90. **Sarnavoth slightly behind the three** · recorded 2026-11-26. "change sarnavoth to being at a slight disadvantage against
     the 3 primordials": against the three archdemons together he wins a little less than half the time (D-177 addendum).
 
+91. **Experience from anyone; walls at every hundredth level** · recorded 2026-11-26. Kept unchanged in
+    `docs/prompts/2026-11-26-xp-from-anyone.md`. Any defeated foe gives experience, whatever his level (D-181's "nothing
+    from a foe 25 levels down" is withdrawn; a weaker foe still gives less). The experience a level asks rises steeply as
+    one climbs, and most of all at each hundredth level (100, 200, 300 ...), where a person gets a **class upgrade or a
+    stat boost**, as in the manhwa *Overgeared* (D-184).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
