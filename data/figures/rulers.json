@@ -1,0 +1,10 @@
+{
+ "about": "The rulers (order 96, D-193): generated people, never stored here. Every living realm's ruler is a profile computed from the world as it is (src/world/9999977-figures): his level from A.LV, his class from his road, his skills and arts from his real reads, his titles from A.TT, his temper from his traits through A.WHY, his story from the realm's line and the world record. This file holds only the rule and the words.",
+ "category": { "id": "rulers", "name": "Rulers", "group": "realms", "order": 1, "kind": "generated", "note": "The kings, queens and lords who rule the realms of the continent. Every one is known by name; what they want, and what they would do for it, only those close to them know." },
+ "rule": { "from": "realms", "known": "all" },
+ "voice": {
+  "reign": "{Name} has ruled {realm} since {since}.",
+  "line": "The {nth} of the {line} on its throne.",
+  "first": "The first of the {line} to rule it."
+ }
+}

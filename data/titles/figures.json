@@ -1,0 +1,531 @@
+{
+ "about": "The titles of the fixed figures (data/figures/, D-193): the ancient demons' and dragons' honours, named by id from their sheets (holders must agree; tools/lint-titles.mjs). Weight X, no person effects: A.POWER reads the buffs. Hell-Born and Old Blood are the bestiary's inline titles of those kinds, written here for the individuals.",
+ "titles": [
+  {
+   "id": "hell-born",
+   "name": "Hell-Born",
+   "rarity": "rare",
+   "weight": "X",
+   "unique": false,
+   "kind": "born",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "ansel",
+    "brann",
+    "cantor",
+    "dirge",
+    "dross",
+    "gorm",
+    "grael",
+    "grisel",
+    "harrak",
+    "knell",
+    "lark",
+    "lull",
+    "mag",
+    "mother-grey",
+    "mother-mire",
+    "mott",
+    "mute",
+    "nil",
+    "old-smoke",
+    "ossa",
+    "quill",
+    "rook",
+    "ruk",
+    "sallow",
+    "scathe",
+    "silk",
+    "skarn",
+    "varo",
+    "velvet",
+    "vesh",
+    "vesper",
+    "wenna",
+    "wren"
+   ],
+   "born": true,
+   "honour": 15,
+   "buffs": {
+    "ward": 1
+   },
+   "req": "born",
+   "text": "Born on the far side of the gates, of the first fire."
+  },
+  {
+   "id": "ember-sworn",
+   "name": "Ember-Sworn",
+   "rarity": "rare",
+   "weight": "X",
+   "unique": false,
+   "kind": "world",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "brann",
+    "gorm",
+    "grisel",
+    "harrak",
+    "mag",
+    "old-smoke",
+    "ossa",
+    "quill",
+    "ruk",
+    "scathe",
+    "skarn",
+    "vesh"
+   ],
+   "born": false,
+   "honour": 6,
+   "buffs": {
+    "fire": 1
+   },
+   "req": "hidden",
+   "text": "Sworn to Ghazrul, the Archdemon under the glass."
+  },
+  {
+   "id": "debt-sworn",
+   "name": "Debt-Sworn",
+   "rarity": "rare",
+   "weight": "X",
+   "unique": false,
+   "kind": "world",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "ansel",
+    "dross",
+    "grael",
+    "mother-mire",
+    "mott",
+    "nil",
+    "rook",
+    "sallow",
+    "silk",
+    "varo",
+    "wenna"
+   ],
+   "born": false,
+   "honour": 6,
+   "buffs": {
+    "cunning": 1
+   },
+   "req": "hidden",
+   "text": "Sworn to Morvane, the Archdemon of the Counting House."
+  },
+  {
+   "id": "choir-sworn",
+   "name": "Choir-Sworn",
+   "rarity": "rare",
+   "weight": "X",
+   "unique": false,
+   "kind": "world",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "cantor",
+    "dirge",
+    "knell",
+    "lark",
+    "lull",
+    "mother-grey",
+    "mute",
+    "velvet",
+    "vesper",
+    "wren"
+   ],
+   "born": false,
+   "honour": 6,
+   "buffs": {
+    "ward": 1
+   },
+   "req": "hidden",
+   "text": "Sworn to Vethrael, the Archdemon of the Choir."
+  },
+  {
+   "id": "first-marquis",
+   "name": "First Marquis of the Burning Court",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "skarn"
+   ],
+   "born": false,
+   "honour": 25,
+   "buffs": {
+    "swarm": 1,
+    "power": 0.1
+   },
+   "req": "hidden",
+   "text": "First of the twenty, by Ghazrul's own word."
+  },
+  {
+   "id": "first-of-the-counting-house",
+   "name": "First of the Counting House",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "silk"
+   ],
+   "born": false,
+   "honour": 22,
+   "buffs": {
+    "cunning": 1,
+    "power": 0.08
+   },
+   "req": "hidden",
+   "text": "Keeper of Morvane's house while he walks above."
+  },
+  {
+   "id": "first-voice",
+   "name": "the First Voice",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "lark"
+   ],
+   "born": false,
+   "honour": 22,
+   "buffs": {
+    "magic": 1,
+    "power": 0.08
+   },
+   "req": "hidden",
+   "text": "Leader of the Choir when its master walks the roads."
+  },
+  {
+   "id": "warden-of-the-march",
+   "name": "Warden of the Burnt Mile",
+   "rarity": "rare",
+   "weight": "X",
+   "unique": true,
+   "kind": "deed",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "harrak"
+   ],
+   "born": false,
+   "honour": 12,
+   "buffs": {
+    "hide": 1
+   },
+   "req": "hidden",
+   "text": "Three hundred years on the disputed ground."
+  },
+  {
+   "id": "mother-of-imps",
+   "name": "Mother of Imps",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": false,
+   "kind": "born",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "mother-grey",
+    "old-smoke"
+   ],
+   "born": true,
+   "honour": 18,
+   "buffs": {
+    "swarm": 1
+   },
+   "req": "born",
+   "text": "An eldest of the brood-mothers."
+  },
+  {
+   "id": "keeper-of-accounts",
+   "name": "Keeper of Accounts",
+   "rarity": "rare",
+   "weight": "X",
+   "unique": false,
+   "kind": "world",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "nil",
+    "quill",
+    "vesper"
+   ],
+   "born": false,
+   "honour": 12,
+   "buffs": {
+    "cunning": 1
+   },
+   "req": "hidden",
+   "text": "One of the three who keep the account of every bargain made through the gates."
+  },
+  {
+   "id": "keeper-of-the-first-ledger",
+   "name": "Keeper of the First Ledger",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "nil"
+   ],
+   "born": false,
+   "honour": 25,
+   "buffs": {
+    "ward": 1,
+    "power": 0.05
+   },
+   "req": "hidden",
+   "text": "The book even the Archdemons are written in."
+  },
+  {
+   "id": "eater-of-two-dragons",
+   "name": "Eater of Two Dragons",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "deed",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "gorm"
+   ],
+   "born": false,
+   "honour": 20,
+   "buffs": {
+    "str": 1,
+    "power": 0.08
+   },
+   "req": "hidden",
+   "text": "The songs tell of it; the dragons remember."
+  },
+  {
+   "id": "old-blood",
+   "name": "Old Blood",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": false,
+   "kind": "born",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "ashgar",
+    "galeheart",
+    "rimewing"
+   ],
+   "born": true,
+   "honour": 20,
+   "buffs": {
+    "level": 10,
+    "ward": 1
+   },
+   "req": "born",
+   "text": "Of the first clutches, as old as the King's reign."
+  },
+  {
+   "id": "the-kings-fire",
+   "name": "the King's Fire",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "ashgar"
+   ],
+   "born": false,
+   "honour": 30,
+   "buffs": {
+    "fire": 1,
+    "power": 0.12
+   },
+   "req": "hidden",
+   "text": "First of the three who serve the King of Dragons."
+  },
+  {
+   "id": "the-kings-winter",
+   "name": "the King's Winter",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "rimewing"
+   ],
+   "born": false,
+   "honour": 30,
+   "buffs": {
+    "ward": 1,
+    "power": 0.12
+   },
+   "req": "hidden",
+   "text": "Second of the three who serve the King of Dragons."
+  },
+  {
+   "id": "the-kings-thunder",
+   "name": "the King's Thunder",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "galeheart"
+   ],
+   "born": false,
+   "honour": 30,
+   "buffs": {
+    "spd": 1,
+    "power": 0.12
+   },
+   "req": "hidden",
+   "text": "Third of the three who serve the King of Dragons."
+  },
+  {
+   "id": "elder-of-the-mountains",
+   "name": "Elder of the Mountains",
+   "rarity": "rare",
+   "weight": "X",
+   "unique": false,
+   "kind": "world",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "ashfang",
+    "cinder",
+    "galecrest",
+    "hoarfrost",
+    "rimeheart",
+    "saltjaw",
+    "smolder",
+    "thunderhide",
+    "widow"
+   ],
+   "born": false,
+   "honour": 12,
+   "buffs": {
+    "hide": 1
+   },
+   "req": "hidden",
+   "text": "One of the nine elder dragons of the Dragon Mountains."
+  },
+  {
+   "id": "keeper-of-the-tithe",
+   "name": "Keeper of the Tithe",
+   "rarity": "rare",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "cinder"
+   ],
+   "born": false,
+   "honour": 12,
+   "buffs": {
+    "power": 0.05
+   },
+   "req": "hidden",
+   "text": "The north's herds go to it every spring."
+  },
+  {
+   "id": "warden-of-the-wyrm-gate",
+   "name": "Warden of the Wyrm Gate",
+   "rarity": "rare",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "ashfang"
+   ],
+   "born": false,
+   "honour": 12,
+   "buffs": {
+    "ward": 1
+   },
+   "req": "hidden",
+   "text": "Nothing passes the gate it has not allowed."
+  },
+  {
+   "id": "breaker-of-towers",
+   "name": "Breaker of Towers",
+   "rarity": "rare",
+   "weight": "X",
+   "unique": true,
+   "kind": "deed",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "thunderhide"
+   ],
+   "born": false,
+   "honour": 10,
+   "buffs": {
+    "str": 1
+   },
+   "req": "hidden",
+   "text": "Every tower built on its ridges is down."
+  },
+  {
+   "id": "widow-of-the-eyries",
+   "name": "Widow of the Eyries",
+   "rarity": "legendary",
+   "weight": "X",
+   "unique": true,
+   "kind": "world",
+   "beings": [
+    "monster"
+   ],
+   "holders": [
+    "widow"
+   ],
+   "born": false,
+   "honour": 18,
+   "buffs": {
+    "ward": 1,
+    "power": 0.05
+   },
+   "req": "hidden",
+   "text": "She lies beside her mate's bones."
+  }
+ ]
+}

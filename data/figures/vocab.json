@@ -1,0 +1,20 @@
+{
+ "about": "The words the figures registry is written in (src/world/9999977-figures, tools/lint-figures.mjs; D-193). A category is a file of this folder; its kind says how its profiles come to be: fixed (hand-written profiles here), link (another data file's sheets, with an overlay here), generated (people of the world, computed from state by the rule in the file, never stored).",
+ "kinds": ["fixed", "link", "generated"],
+ "groups": [
+  { "id": "realms", "name": "Of the realms" },
+  { "id": "beyond", "name": "Beyond the realms" }
+ ],
+ "fame": { "known": "its name and its public story are known to all", "whispered": "only its kind and its count are known; its name and story once you learn them" },
+ "traits": ["brave", "craven", "ambitious", "content", "cruel", "kind", "honest", "deceitful", "zealous", "cynical", "greedy", "generous", "wrathful", "calm", "gregarious", "shy", "patient", "impetuous", "loyal", "fickle", "curious", "stubborn", "humble", "proud"],
+ "axes": ["pride", "wrath", "caution", "patience", "honor", "greed", "warmth", "zeal", "social", "ambition"],
+ "axisWords": {
+  "pride": ["humble", "proud"], "wrath": ["slow to anger", "quick to anger"], "caution": ["reckless", "cautious"], "patience": ["hasty", "patient"],
+  "honor": ["faithless", "honourable"], "greed": ["open-handed", "greedy"], "warmth": ["cold", "warm"], "zeal": ["worldly", "devout"],
+  "social": ["solitary", "sociable"], "ambition": ["content", "ambitious"]
+ },
+ "goalKinds": ["duty", "debt", "loyalty", "kin", "faith", "ambition", "want", "claim", "coin", "station"],
+ "grudgeAt": ["figure", "legend", "realm", "race", "kind", "being", "people"],
+ "qualities": ["common", "fine", "masterwork", "legendary"],
+ "levelSpread": 10
+}

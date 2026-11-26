@@ -1,0 +1,10 @@
+{
+ "about": "The great houses (order 96, D-193): the heads of every realm's ducal and marcher houses (rungs N01 and N02 of A.S.houses), generated people, never stored here. Each is a profile computed from the world as it is (src/world/9999977-figures). This file holds only the rule and the words.",
+ "category": { "id": "great-houses", "name": "Great Houses", "group": "realms", "order": 2, "kind": "generated", "note": "The dukes and marquises who head the great houses of each realm, with their own lands, men and quarrels. You know those of your own realm by name, and others once you have met them." },
+ "rule": { "from": "houses", "rungs": ["N01", "N02"], "known": "realm" },
+ "voice": {
+  "head": "{Name} heads {house}, {rank} in {realm}.",
+  "since": "{Khe} has held it since {since}.",
+  "seat": "The house is seated at {seat}."
+ }
+}

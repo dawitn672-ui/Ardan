@@ -225,10 +225,15 @@ UI.TAB.codex = function (pc) {
   if (
     ((h = h.replace(
       '<div class="row" style="margin-bottom:8px">',
-      `<div class="row" style="margin-bottom:8px"><button class="small ${UI.codex === "power" ? "primary" : ""}" data-a="codex" data-v="power">Power &amp; scale</button>`,
+      `<div class="row" style="margin-bottom:8px"><button class="small ${UI.codex === "power" ? "primary" : ""}" data-a="codex" data-v="power">Power &amp; scale</button>` +
+        // the figures registry (src/world/9999977-figures, order 96, D-193): "Figures of the Age", by category
+        (UI.figuresPage
+          ? `<button class="small ${UI.codex === "figures" ? "primary" : ""}" data-a="codex" data-v="figures">Figures of the Age</button>`
+          : ""),
     )),
     // powers wave 1 (src/world/9999970-powers): the level scale and the great beings below the human tiers
     UI.codex === "power" && (h += UI.powerPage(pc) + (UI.powersPage ? UI.powersPage(pc) : "")),
+    UI.codex === "figures" && UI.figuresPage && (h += UI.figuresPage(pc)),
     UI.codex === "beasts")
   ) {
     const i = h.indexOf('<div class="card"><b>' + UI.esc(LORE.creatures[0].name)),

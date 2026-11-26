@@ -1,0 +1,11 @@
+{
+ "about": "The legends' circle (order 96, D-193): linked to data/legends.json, never copied. The sheets there are the profiles (level, titles, skills, items, class, temper, traits, grudges, home, story); this file only orders them into groups and says what of each is secret: the fields named in secret are shown only once the player has met the legend (A.S.pw.metLeg), as the codex shows its skills and items. Every legend must be in exactly one group (tools/lint-figures.mjs).",
+ "category": { "id": "legends", "name": "The Legends", "group": "beyond", "order": 1, "kind": "link", "link": "legends", "note": "The legends stand above every other being: each one of a kind, each with a title, each a threat to nations. The King of Dragons is the strongest of all; below him the three Primordial Archdemons, then the Sword Saint, the strongest man alive." },
+ "groups": [
+  { "name": "The King of Dragons", "ids": ["sarnavoth"] },
+  { "name": "The Primordial Archdemons", "ids": ["ghazrul", "morvane", "vethrael"] },
+  { "name": "The Sword Saint", "ids": ["sword-saint"] },
+  { "name": "The great beasts and spirits", "ids": ["vaskareth", "tessaly", "ulmavren", "hrimgala", "serrath", "orrun", "pale-shepherd", "ommul", "kethra", "saqqar", "iron-warden"] }
+ ],
+ "secret": ["century", "grudges", "fears", "desires"]
+}

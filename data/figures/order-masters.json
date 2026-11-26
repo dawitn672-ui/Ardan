@@ -1,0 +1,9 @@
+{
+ "about": "The masters of the knightly orders (order 96, D-193): the Grand Master of each elite order of the realms (A.POSTS 'order:' posts), generated people, never stored here. Each is a profile computed from the world as it is (src/world/9999977-figures). This file holds only the rule and the words.",
+ "category": { "id": "order-masters", "name": "Masters of the Orders", "group": "realms", "order": 4, "kind": "generated", "note": "The Grand Masters of the elite orders, the few hundred knights a realm counts as its best. Their names are known across the continent." },
+ "rule": { "from": "orders", "known": "all" },
+ "voice": {
+  "master": "{Name} is Grand Master of {order}, the elite order of {realm}.",
+  "since": "{Khe} has held it since {since}."
+ }
+}

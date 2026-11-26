@@ -5,6 +5,13 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Figures of the Age.** A new page of the codex lists the great of the continent by kind: the rulers, the great
+  houses, the Generals, the masters of the knightly orders and of the peoples, the legends, the three ancient dragons,
+  the nine elder dragons and the thirty-three ancient demons sworn to the three Archdemons. Each has a full profile:
+  level, class, skills, arts, titles, arms, temper, home and story. You read only what you would know: a name you have
+  heard, the arts and arms of those you have met, and what drives them only once you are close or have learned it.
+  Demons whose names have not reached you are only a count.
+
 - **Breakthroughs, and many more classes.** Every hundredth level is now a breakthrough: your body takes new points,
   and a skill can jump a whole rank when you are ready for it (enough talent, the deeds it asks, most of what it
   teaches already understood). Then the road divides: take a class or keep to your road. There are now over a hundred

@@ -1,0 +1,879 @@
+{
+ "about": "The nine elder dragons of the Dragon Mountains (order 96: few elder dragons; D-191 counts nine; D-193): hand-written, each a full profile. kind: its bestiary species (Elder Ash x3, Elder Frost x2, Elder Storm x2, Elder Brine x1, the Red Widow). Validated by tools/lint-figures.mjs.",
+ "category": {
+  "id": "elder-dragons",
+  "name": "The Elder Dragons",
+  "group": "beyond",
+  "order": 3,
+  "kind": "fixed",
+  "note": "Nine elder dragons live in the Dragon Mountains, subjects of the sleeping King. Few in all the world; only the three ancient dragons stand above them."
+ },
+ "figures": [
+  {
+   "id": "cinder",
+   "name": "Cinder",
+   "kind": "elder-ash-dragon",
+   "level": 754,
+   "class": null,
+   "liege": "sarnavoth",
+   "skills": [
+    {
+     "id": "wyrmfire",
+     "lvl": 6,
+     "fight": true
+    },
+    {
+     "id": "ancient_hide",
+     "lvl": 4,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 5,
+     "fight": true
+    },
+    {
+     "n": "Ash Cloud",
+     "rank": "A",
+     "lvl": 7,
+     "kind": "active",
+     "fight": true,
+     "does": "A breath of hot ash that buries a village where it stands."
+    }
+   ],
+   "arts": [
+    "wyrmfire",
+    "dread_gaze"
+   ],
+   "titles": [
+    "elder-of-the-mountains",
+    "keeper-of-the-tithe"
+   ],
+   "items": [
+    {
+     "n": "A hoard of bells",
+     "kind": "hoard",
+     "quality": "masterwork",
+     "does": "The bells of every church in the valleys below the Burnt Vale.",
+     "gives": {}
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.5,
+    "caution": 0.2,
+    "patience": 0.6,
+    "honor": 0,
+    "greed": 0.8,
+    "warmth": -0.5,
+    "zeal": 0,
+    "social": -0.6,
+    "ambition": 0.4
+   },
+   "traits": [
+    "greedy",
+    "proud",
+    "patient"
+   ],
+   "goals": [
+    {
+     "kind": "coin",
+     "w": 1.4,
+     "why": "the herds of the north driven into the Burnt Vale every spring, as the tithe"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "sword-saint",
+     "kind": "legend",
+     "w": 1.2,
+     "why": "the old man struck down the King"
+    }
+   ],
+   "home": {
+    "name": "the Burnt Vale",
+    "domain": "the Dragon Mountains",
+    "known": true
+   },
+   "fame": "known",
+   "story": [
+    "The eldest of the elder ash dragons, who takes the dragons' tithe of herds in the Burnt Vale every spring.",
+    "The realms of the north pay it, and have for three hundred years."
+   ],
+   "secret": {
+    "story": [
+     "Cinder keeps part of the tithe that is meant for the King's hoard under the Wyrmcrown. The ancient dragons have begun to count."
+    ]
+   }
+  },
+  {
+   "id": "smolder",
+   "name": "Smolder",
+   "kind": "elder-ash-dragon",
+   "level": 750,
+   "class": null,
+   "liege": "sarnavoth",
+   "skills": [
+    {
+     "id": "wyrmfire",
+     "lvl": 5,
+     "fight": true
+    },
+    {
+     "id": "ancient_hide",
+     "lvl": 3,
+     "fight": true
+    },
+    {
+     "id": "ember_breath",
+     "lvl": 10,
+     "fight": true
+    },
+    {
+     "n": "Smoke-Strike",
+     "rank": "B",
+     "lvl": 9,
+     "kind": "active",
+     "fight": true,
+     "does": "It strikes out of its own smoke before it can be seen."
+    }
+   ],
+   "arts": [
+    "wyrmfire",
+    "ember_breath"
+   ],
+   "titles": [
+    "elder-of-the-mountains"
+   ],
+   "items": [
+    {
+     "n": "A knight's shield",
+     "kind": "trophy",
+     "quality": "common",
+     "does": "Kept in the nest. The knight was not.",
+     "gives": {}
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.8,
+    "caution": 0.2,
+    "patience": 0.2,
+    "honor": 0,
+    "greed": 0.8,
+    "warmth": -0.5,
+    "zeal": 0,
+    "social": -0.6,
+    "ambition": 0.4
+   },
+   "traits": [
+    "wrathful",
+    "impetuous",
+    "brave"
+   ],
+   "goals": [
+    {
+     "kind": "want",
+     "w": 1.3,
+     "why": "a war, any war, to burn in"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "gorm",
+     "kind": "figure",
+     "w": 1.5,
+     "why": "Gorm the Pit Wyrm ate two of its brood"
+    }
+   ],
+   "home": {
+    "name": "the Eyries",
+    "domain": "the Dragon Mountains",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "An elder ash dragon of the Eyries, the black cliffs over the northern ice."
+   ],
+   "secret": {
+    "story": [
+     "The two young dragons Gorm ate were Smolder's. It has flown to the edge of the Cinderlands three times, and turned back three times."
+    ]
+   }
+  },
+  {
+   "id": "ashfang",
+   "name": "Ashfang",
+   "kind": "elder-ash-dragon",
+   "level": 746,
+   "class": null,
+   "liege": "sarnavoth",
+   "skills": [
+    {
+     "id": "wyrmfire",
+     "lvl": 4,
+     "fight": true
+    },
+    {
+     "id": "ancient_hide",
+     "lvl": 5,
+     "fight": true
+    },
+    {
+     "id": "frost_veil",
+     "lvl": 6,
+     "fight": false
+    },
+    {
+     "n": "Gate-Ward",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": true,
+     "does": "Nothing passes the Wyrm Gate it has not allowed."
+    }
+   ],
+   "arts": [
+    "wyrmfire",
+    "frost_veil"
+   ],
+   "titles": [
+    "elder-of-the-mountains",
+    "warden-of-the-wyrm-gate"
+   ],
+   "items": [
+    {
+     "n": "The toll-stones",
+     "kind": "stones",
+     "quality": "masterwork",
+     "does": "A cairn of stones, one for every traveller it has let pass.",
+     "gives": {}
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.5,
+    "caution": 0.2,
+    "patience": 0.6,
+    "honor": 0.6,
+    "greed": 0.8,
+    "warmth": -0.5,
+    "zeal": 0,
+    "social": -0.6,
+    "ambition": 0.4
+   },
+   "traits": [
+    "proud",
+    "honest",
+    "stubborn"
+   ],
+   "goals": [
+    {
+     "kind": "duty",
+     "w": 1.5,
+     "why": "to keep the Wyrm Gate, as the King set it to sixty years ago"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "human",
+     "kind": "race",
+     "w": 0.6,
+     "why": "men cross its gate as if they were owed the road"
+    }
+   ],
+   "home": {
+    "name": "the Wyrm Gate",
+    "domain": "the Dragon Mountains",
+    "known": true
+   },
+   "fame": "known",
+   "story": [
+    "An elder ash dragon that keeps the Wyrm Gate. Since the three days' fight on the Saint's Stair it lets men cross, as its King commanded."
+   ],
+   "secret": {
+    "story": [
+     "The King gave no such command. Ashfang let the first men through out of respect for the Saint, and the rest followed."
+    ]
+   }
+  },
+  {
+   "id": "rimeheart",
+   "name": "Rimeheart",
+   "kind": "elder-frost-dragon",
+   "level": 758,
+   "class": null,
+   "liege": "sarnavoth",
+   "skills": [
+    {
+     "id": "wyrmfire",
+     "lvl": 6,
+     "fight": true
+    },
+    {
+     "id": "ancient_hide",
+     "lvl": 5,
+     "fight": true
+    },
+    {
+     "id": "frost_veil",
+     "lvl": 10,
+     "fight": false
+    },
+    {
+     "n": "White Silence",
+     "rank": "A",
+     "lvl": 7,
+     "kind": "aura",
+     "fight": true,
+     "does": "A cold so deep that men stop where they stand and do not start again."
+    }
+   ],
+   "arts": [
+    "wyrmfire",
+    "frost_veil"
+   ],
+   "titles": [
+    "elder-of-the-mountains"
+   ],
+   "items": [
+    {
+     "n": "An ice-locked hoard",
+     "kind": "hoard",
+     "quality": "legendary",
+     "does": "Gold under a glacier, seen through the ice.",
+     "gives": {
+      "hide": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.2,
+    "caution": 0.2,
+    "patience": 0.9,
+    "honor": 0,
+    "greed": 0.8,
+    "warmth": -0.5,
+    "zeal": 0,
+    "social": -0.6,
+    "ambition": 0.4
+   },
+   "traits": [
+    "calm",
+    "patient",
+    "proud"
+   ],
+   "goals": [
+    {
+     "kind": "want",
+     "w": 1.2,
+     "why": "to sleep a hundred years undisturbed"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "hrimgala",
+     "kind": "legend",
+     "w": 0.9,
+     "why": "the White Winter claims the Frostfells as her own"
+    }
+   ],
+   "home": {
+    "name": "the Frostfells",
+    "domain": "the Dragon Mountains",
+    "known": true
+   },
+   "fame": "known",
+   "story": [
+    "An elder frost dragon of the Frostfells, the Dragon Mountains' southern snowfields. It sleeps more than it wakes."
+   ],
+   "secret": {
+    "story": [
+     "It has struck a bargain with Hrimgala: the high ice for her, the snowfields for it. Neither has told the King."
+    ]
+   }
+  },
+  {
+   "id": "hoarfrost",
+   "name": "Hoarfrost",
+   "kind": "elder-frost-dragon",
+   "level": 752,
+   "class": null,
+   "liege": "sarnavoth",
+   "skills": [
+    {
+     "id": "wyrmfire",
+     "lvl": 5,
+     "fight": true
+    },
+    {
+     "id": "ancient_hide",
+     "lvl": 4,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 6,
+     "fight": true
+    },
+    {
+     "n": "Rime Coat",
+     "rank": "B",
+     "lvl": 9,
+     "kind": "buff",
+     "fight": false,
+     "does": "It coats itself in ice that turns a lance."
+    }
+   ],
+   "arts": [
+    "wyrmfire",
+    "dread_gaze"
+   ],
+   "titles": [
+    "elder-of-the-mountains"
+   ],
+   "items": [
+    {
+     "n": "A frozen library",
+     "kind": "hoard",
+     "quality": "masterwork",
+     "does": "Books from a monastery it froze, readable through the ice.",
+     "gives": {
+      "cunning": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.5,
+    "caution": 0.2,
+    "patience": 0.6,
+    "honor": 0,
+    "greed": 0.8,
+    "warmth": -0.5,
+    "zeal": 0,
+    "social": -0.8,
+    "ambition": 0.4
+   },
+   "traits": [
+    "curious",
+    "shy",
+    "greedy"
+   ],
+   "goals": [
+    {
+     "kind": "want",
+     "w": 1.1,
+     "why": "books, and men who can read them aloud"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "POL-27",
+     "kind": "realm",
+     "w": 0.8,
+     "why": "Skyhold's monks built on the King's roof"
+    }
+   ],
+   "home": {
+    "name": "the Eyrie Stair",
+    "domain": "the Dragon Mountains",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "An elder frost dragon that nests on the Eyrie Stair, the high pass to the Eyries."
+   ],
+   "secret": {
+    "story": [
+     "It keeps a monk of Skyhold in its cave to read to it. He has been there eleven years."
+    ]
+   }
+  },
+  {
+   "id": "thunderhide",
+   "name": "Thunderhide",
+   "kind": "elder-storm-dragon",
+   "level": 768,
+   "class": null,
+   "liege": "sarnavoth",
+   "skills": [
+    {
+     "id": "wyrmfire",
+     "lvl": 6,
+     "fight": true
+    },
+    {
+     "id": "ancient_hide",
+     "lvl": 6,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 7,
+     "fight": true
+    },
+    {
+     "n": "Thunder-Clap",
+     "rank": "A",
+     "lvl": 8,
+     "kind": "active",
+     "fight": true,
+     "does": "Its wings meet over its back and the sound breaks a shield wall."
+    }
+   ],
+   "arts": [
+    "wyrmfire",
+    "dread_gaze"
+   ],
+   "titles": [
+    "elder-of-the-mountains",
+    "breaker-of-towers"
+   ],
+   "items": [
+    {
+     "n": "A tower's bell",
+     "kind": "trophy",
+     "quality": "common",
+     "does": "From the tower it pulled down on its ridge.",
+     "gives": {}
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.8,
+    "caution": 0.2,
+    "patience": 0.6,
+    "honor": 0,
+    "greed": 0.8,
+    "warmth": -0.5,
+    "zeal": 0,
+    "social": -0.6,
+    "ambition": 0.4
+   },
+   "traits": [
+    "wrathful",
+    "brave",
+    "proud"
+   ],
+   "goals": [
+    {
+     "kind": "claim",
+     "w": 1.4,
+     "why": "the sky of the north, all of it"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "kethra",
+     "kind": "legend",
+     "w": 1.3,
+     "why": "Stormwing flies its sky as if it owned it"
+    }
+   ],
+   "home": {
+    "name": "the Eyries",
+    "domain": "the Dragon Mountains",
+    "known": true
+   },
+   "fame": "known",
+   "story": [
+    "The strongest of the elder dragons, a storm dragon of the Eyries that has pulled down every tower built on its ridges."
+   ],
+   "secret": {
+    "story": [
+     "It means to challenge the Ancient Storm Dragon for its place beside the King, if the King does not wake."
+    ]
+   }
+  },
+  {
+   "id": "galecrest",
+   "name": "Galecrest",
+   "kind": "elder-storm-dragon",
+   "level": 762,
+   "class": null,
+   "liege": "sarnavoth",
+   "skills": [
+    {
+     "id": "wyrmfire",
+     "lvl": 5,
+     "fight": true
+    },
+    {
+     "id": "ancient_hide",
+     "lvl": 5,
+     "fight": true
+    },
+    {
+     "id": "ember_breath",
+     "lvl": 8,
+     "fight": true
+    },
+    {
+     "n": "Gale",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "A wind that throws a rider off his horse a mile away."
+    }
+   ],
+   "arts": [
+    "wyrmfire",
+    "ember_breath"
+   ],
+   "titles": [
+    "elder-of-the-mountains"
+   ],
+   "items": [
+    {
+     "n": "A weathervane",
+     "kind": "trophy",
+     "quality": "common",
+     "does": "Gilded, from a cathedral roof. It still turns with the wind.",
+     "gives": {}
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.5,
+    "caution": 0.2,
+    "patience": 0.6,
+    "honor": 0,
+    "greed": 0.8,
+    "warmth": -0.5,
+    "zeal": 0,
+    "social": 0.2,
+    "ambition": 0.4
+   },
+   "traits": [
+    "fickle",
+    "curious",
+    "gregarious"
+   ],
+   "goals": [
+    {
+     "kind": "want",
+     "w": 1,
+     "why": "to see the southern sea"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "thunderhide",
+     "kind": "figure",
+     "w": 0.9,
+     "why": "Thunderhide keeps it out of the high sky"
+    }
+   ],
+   "home": {
+    "name": "the Burnt Vale",
+    "domain": "the Dragon Mountains",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "An elder storm dragon that hunts over the Burnt Vale and the steppes beyond."
+   ],
+   "secret": {
+    "story": [
+     "It has flown south to the edge of the Grass Sea and back, against the King's old law that keeps the dragons north."
+    ]
+   }
+  },
+  {
+   "id": "saltjaw",
+   "name": "Saltjaw",
+   "kind": "elder-brine-dragon",
+   "level": 745,
+   "class": null,
+   "liege": "sarnavoth",
+   "skills": [
+    {
+     "id": "wyrmfire",
+     "lvl": 4,
+     "fight": true
+    },
+    {
+     "id": "ancient_hide",
+     "lvl": 4,
+     "fight": true
+    },
+    {
+     "id": "frost_veil",
+     "lvl": 8,
+     "fight": false
+    },
+    {
+     "n": "Wreck-Wave",
+     "rank": "B",
+     "lvl": 9,
+     "kind": "active",
+     "fight": true,
+     "does": "A wave raised with one beat of its wings, which breaks a ship."
+    }
+   ],
+   "arts": [
+    "wyrmfire",
+    "frost_veil"
+   ],
+   "titles": [
+    "elder-of-the-mountains"
+   ],
+   "items": [
+    {
+     "n": "A hoard of wrecks",
+     "kind": "hoard",
+     "quality": "masterwork",
+     "does": "The wrecks of a hundred ships, piled on a shoal.",
+     "gives": {}
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.5,
+    "caution": 0.2,
+    "patience": 0.6,
+    "honor": 0,
+    "greed": 0.9,
+    "warmth": -0.5,
+    "zeal": 0,
+    "social": -0.6,
+    "ambition": 0.4
+   },
+   "traits": [
+    "greedy",
+    "patient",
+    "calm"
+   ],
+   "goals": [
+    {
+     "kind": "coin",
+     "w": 1.4,
+     "why": "a ship's share of every cargo that passes the Cold Narrows"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "tessaly",
+     "kind": "legend",
+     "w": 1,
+     "why": "the Lord of the Sea takes the deep-water tithe it wants"
+    }
+   ],
+   "home": {
+    "name": "the Cold Narrows",
+    "domain": "the Dragon Mountains",
+    "known": true
+   },
+   "fame": "known",
+   "story": [
+    "The one elder brine dragon, which keeps the Cold Narrows below the Dragon Mountains and takes a share of every ship."
+   ],
+   "secret": {
+    "story": [
+     "It pays Tessaly a share of its own share, so the Lord of the Sea will leave the Narrows to it."
+    ]
+   }
+  },
+  {
+   "id": "widow",
+   "name": "The Red Widow",
+   "kind": "red-widow",
+   "level": 760,
+   "class": null,
+   "liege": "sarnavoth",
+   "skills": [
+    {
+     "id": "wyrmfire",
+     "lvl": 6,
+     "fight": true
+    },
+    {
+     "id": "ancient_hide",
+     "lvl": 3,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 8,
+     "fight": true
+    },
+    {
+     "n": "Widow's Grief",
+     "rank": "A",
+     "lvl": 8,
+     "kind": "aura",
+     "fight": true,
+     "does": "Those near her bones feel a grief that is not their own, and run."
+    }
+   ],
+   "arts": [
+    "wyrmfire",
+    "dread_gaze"
+   ],
+   "titles": [
+    "elder-of-the-mountains",
+    "widow-of-the-eyries"
+   ],
+   "items": [
+    {
+     "n": "Her mate's bones",
+     "kind": "relic",
+     "quality": "legendary",
+     "does": "She lies curled about them.",
+     "gives": {
+      "ward": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.5,
+    "caution": 0.2,
+    "patience": 0.6,
+    "honor": 0,
+    "greed": 0.8,
+    "warmth": -0.8,
+    "zeal": 0,
+    "social": -0.9,
+    "ambition": 0.4
+   },
+   "traits": [
+    "wrathful",
+    "stubborn",
+    "shy"
+   ],
+   "goals": [
+    {
+     "kind": "kin",
+     "w": 1.6,
+     "why": "that no one come near her mate's bones"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "human",
+     "kind": "race",
+     "w": 1.2,
+     "why": "she hates all men, the songs say"
+    }
+   ],
+   "home": {
+    "name": "the Eyries",
+    "domain": "the Dragon Mountains",
+    "known": true
+   },
+   "fame": "known",
+   "story": [
+    "The largest great ash dragon on record, one of a kind, who lives alone in the Eyries beside the bones of her mate. The songs say she killed him, or that she mourns him."
+   ],
+   "secret": {
+    "story": [
+     "She did not kill him. Gorm did, in the Cinderlands, and she carried the bones home. She has never told the other dragons."
+    ]
+   }
+  }
+ ]
+}
