@@ -19,4 +19,13 @@ placement leans to.
 `titles/` (titles, `src/people/9999976-titles`, D-183; on the page also as `A.DATA.titles`): `vocab.json` (rarities,
 weights and budget, the hidden predicates, the deed kinds and where each is recorded, the cards whose choices are deeds),
 `people.json` (the titles a person may earn), `legends.json` (the great beings' titles, named by id from `legends.json`
-and `power.json`'s masters). Validated by `tools/lint-titles.mjs`.
+and `power.json`'s masters), `figures.json` (the ancient demons' and dragons' titles, named by id from `figures/`).
+Validated by `tools/lint-titles.mjs`.
+
+`figures/` (the figures registry, `src/world/9999977-figures`, order 96, D-193): one file a category. `vocab.json` (the
+words: kinds, groups, fame, traits, temper axes, goal and grudge kinds); **fixed** categories hold hand-written full
+profiles (`ancient-demons.json` 33, `ancient-dragons.json` 3, `elder-dragons.json` 9); **link** categories point at
+another file's sheets and add only what they lack (`legends.json` groups `legends.json`'s sheets; `race-masters.json`
+overlays `power.json`'s masters); **generated** categories (`rulers.json`, `great-houses.json`, `generals.json`,
+`order-masters.json`) hold only the rule and the words: their people are computed from the world, never stored.
+Validated by `tools/lint-figures.mjs`.

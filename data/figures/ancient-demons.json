@@ -1,0 +1,3197 @@
+{
+ "about": "The thirty-three ancient demons below the three Primordial Archdemons (order 96, D-193): hand-written, each a full profile. kind: its bestiary species (Marquis of the Burning Court x20, Pit-Mother x6, Ledger-Keeper x3, Pit Wyrm x4: data/bestiary.json world counts); liege: the Archdemon it is sworn to (Ghazrul 12, Morvane 11, Vethrael 10; their disputes are its grudges); home: a place of Hell by name (the domains of map version 5: the Cinderlands, the Gatelands, the Hush, the disputed Scorched March, and the Ashen Marches where the lower demons cross), so this file does not depend on the map. Validated by tools/lint-figures.mjs.",
+ "category": {
+  "id": "ancient-demons",
+  "name": "The Ancient Demons",
+  "group": "beyond",
+  "order": 4,
+  "kind": "fixed",
+  "note": "Thirty-three ancient demons stand below the three Primordial Archdemons, each sworn to one of them: twenty Marquises of the Burning Court, six Pit-Mothers, three Ledger-Keepers and four Pit Wyrms. They rival the elder dragons.",
+  "groupBy": "liege"
+ },
+ "figures": [
+  {
+   "id": "skarn",
+   "name": "Skarn",
+   "style": "the Kiln-Lord",
+   "kind": "marquis-of-the-burning-court",
+   "level": 752,
+   "class": null,
+   "liege": "ghazrul",
+   "skills": [
+    {
+     "id": "ember_breath",
+     "lvl": 10,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 6,
+     "fight": true
+    },
+    {
+     "id": "frost_veil",
+     "lvl": 7,
+     "fight": false
+    },
+    {
+     "n": "Court of Cinders",
+     "rank": "A",
+     "lvl": 8,
+     "kind": "aura",
+     "fight": true,
+     "does": "Every fiend of his court fights as if she were watching."
+    }
+   ],
+   "arts": [
+    "ember_breath",
+    "dread_gaze"
+   ],
+   "titles": [
+    "hell-born",
+    "ember-sworn",
+    "first-marquis"
+   ],
+   "items": [
+    {
+     "n": "The Kiln-Crown",
+     "kind": "crown",
+     "quality": "legendary",
+     "does": "A crown fired in the Kiln itself; it is never cool to the touch.",
+     "gives": {
+      "fire": 1,
+      "power": 0.05
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.6,
+    "caution": 0.2,
+    "patience": 0.5,
+    "honor": 0.3,
+    "greed": 0.6,
+    "warmth": -0.6,
+    "zeal": 0,
+    "social": 0.6,
+    "ambition": 0.8
+   },
+   "traits": [
+    "proud",
+    "wrathful",
+    "loyal"
+   ],
+   "goals": [
+    {
+     "kind": "duty",
+     "w": 1.6,
+     "why": "to break the Glass Seal and bring his mistress up into the light"
+    },
+    {
+     "kind": "ambition",
+     "w": 0.8,
+     "why": "to sit at her right hand when she rules the south again"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "sword-saint",
+     "kind": "legend",
+     "w": 1.8,
+     "why": "the old man bound his mistress under the sand"
+    },
+    {
+     "at": "morvane",
+     "kind": "legend",
+     "w": 1,
+     "why": "Morvane walked away free and left her bound"
+    }
+   ],
+   "home": {
+    "name": "the Kiln",
+    "domain": "the Cinderlands",
+    "known": true
+   },
+   "fame": "known",
+   "story": [
+    "The first of the Marquises of the Burning Court, and the oldest of Ghazrul's servants. He keeps her court at the Kiln while she lies under the Burning Waste.",
+    "The other Marquises bow to him in her name, and the lower demons of the Cinderlands come when he calls."
+   ],
+   "secret": {
+    "story": [
+     "He has sent three hosts of fiends against the Glass Seal in eighty years. Each burned itself out against the glass. He means to send a fourth."
+    ]
+   }
+  },
+  {
+   "id": "vesh",
+   "name": "Vesh",
+   "style": "of Brimstone",
+   "kind": "marquis-of-the-burning-court",
+   "level": 746,
+   "class": null,
+   "liege": "ghazrul",
+   "skills": [
+    {
+     "id": "ember_breath",
+     "lvl": 9,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 8,
+     "fight": true
+    },
+    {
+     "id": "mana_drain",
+     "lvl": 4,
+     "fight": true
+    },
+    {
+     "n": "Sulphur Tongue",
+     "rank": "B",
+     "lvl": 9,
+     "kind": "active",
+     "fight": true,
+     "does": "A word spoken in fire: those who hear it choke on the air."
+    }
+   ],
+   "arts": [
+    "dread_gaze",
+    "ember_breath"
+   ],
+   "titles": [
+    "hell-born",
+    "ember-sworn"
+   ],
+   "items": [
+    {
+     "n": "A brimstone mantle",
+     "kind": "cloak",
+     "quality": "masterwork",
+     "does": "Yellow smoke hangs about it like a cloak of its own.",
+     "gives": {
+      "ward": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.3,
+    "caution": 0.2,
+    "patience": 0.5,
+    "honor": -0.8,
+    "greed": 0.6,
+    "warmth": -0.6,
+    "zeal": 0,
+    "social": 0.6,
+    "ambition": 1
+   },
+   "traits": [
+    "cruel",
+    "ambitious",
+    "deceitful"
+   ],
+   "goals": [
+    {
+     "kind": "ambition",
+     "w": 1.5,
+     "why": "to take the Kiln from Skarn and be first of the court"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "skarn",
+     "kind": "figure",
+     "w": 1.3,
+     "why": "Skarn was named first, and Vesh is the cleverer"
+    }
+   ],
+   "home": {
+    "name": "Brimstone",
+    "domain": "the Cinderlands",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "A Marquis of the Burning Court who holds the yellow hills of Brimstone for Ghazrul."
+   ],
+   "secret": {
+    "story": [
+     "Vesh has sent letters across the Scorched March to Morvane's counting house. If the seal never breaks, Vesh means to have a new mistress."
+    ]
+   }
+  },
+  {
+   "id": "mag",
+   "name": "Mag",
+   "style": "of the Red Steps",
+   "kind": "marquis-of-the-burning-court",
+   "level": 744,
+   "class": null,
+   "liege": "ghazrul",
+   "skills": [
+    {
+     "id": "ember_breath",
+     "lvl": 10,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 5,
+     "fight": true
+    },
+    {
+     "n": "Stair of Fire",
+     "rank": "B",
+     "lvl": 8,
+     "kind": "active",
+     "fight": true,
+     "does": "She climbs on a stair of flame that burns whoever stands on the next step."
+    }
+   ],
+   "arts": [
+    "ember_breath"
+   ],
+   "titles": [
+    "hell-born",
+    "ember-sworn"
+   ],
+   "items": [
+    {
+     "n": "The stepped spear",
+     "kind": "spear",
+     "quality": "masterwork",
+     "does": "A black spear notched once for every gate-captain she has killed.",
+     "gives": {
+      "duel": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.3,
+    "caution": -0.2,
+    "patience": 0.5,
+    "honor": 0.4,
+    "greed": 0.6,
+    "warmth": -0.6,
+    "zeal": 0,
+    "social": 0.6,
+    "ambition": 0.8
+   },
+   "traits": [
+    "brave",
+    "stubborn",
+    "loyal"
+   ],
+   "goals": [
+    {
+     "kind": "duty",
+     "w": 1.2,
+     "why": "to hold the Red Steps against Vethrael's choir, step by step"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "vethrael",
+     "kind": "legend",
+     "w": 1,
+     "why": "the Hush has crept up the Red Steps a stair a century"
+    }
+   ],
+   "home": {
+    "name": "the Red Steps",
+    "domain": "the Cinderlands",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "A Marquis of the Burning Court who holds the Red Steps, the burnt stair of hills where the Cinderlands meet the Hush."
+   ],
+   "secret": {
+    "story": [
+     "She has lost two of the high steps to the Hush already and told no one; Skarn believes the stair is whole."
+    ]
+   }
+  },
+  {
+   "id": "harrak",
+   "name": "Harrak",
+   "style": "of the Burnt Mile",
+   "kind": "marquis-of-the-burning-court",
+   "level": 749,
+   "class": null,
+   "liege": "ghazrul",
+   "skills": [
+    {
+     "id": "ember_breath",
+     "lvl": 10,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 7,
+     "fight": true
+    },
+    {
+     "n": "Ash March",
+     "rank": "A",
+     "lvl": 7,
+     "kind": "active",
+     "fight": true,
+     "does": "He walks, and the ground he walks over burns behind him for a mile."
+    }
+   ],
+   "arts": [
+    "ember_breath",
+    "dread_gaze"
+   ],
+   "titles": [
+    "hell-born",
+    "ember-sworn",
+    "warden-of-the-march"
+   ],
+   "items": [
+    {
+     "n": "Iron hooves",
+     "kind": "armour",
+     "quality": "masterwork",
+     "does": "Shod in iron from a gate he tore down.",
+     "gives": {
+      "hide": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.9,
+    "caution": 0.2,
+    "patience": -0.4,
+    "honor": -0.4,
+    "greed": 0.6,
+    "warmth": -0.6,
+    "zeal": 0,
+    "social": 0.6,
+    "ambition": 0.8
+   },
+   "traits": [
+    "wrathful",
+    "impetuous",
+    "brave"
+   ],
+   "goals": [
+    {
+     "kind": "claim",
+     "w": 1.4,
+     "why": "to hold the whole Scorched March for the Cinderlands"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "grael",
+     "kind": "figure",
+     "w": 1.4,
+     "why": "Grael holds Bonefield for Morvane, a day's burn from his camp"
+    },
+    {
+     "at": "dirge",
+     "kind": "figure",
+     "w": 0.9,
+     "why": "Dirge sings at Cinder Ford, and his fiends will not cross it"
+    }
+   ],
+   "home": {
+    "name": "the Burnt Mile",
+    "domain": "the Scorched March",
+    "known": true
+   },
+   "fame": "known",
+   "story": [
+    "A Marquis of the Burning Court who camps on the Burnt Mile, the disputed ground all three Archdemons claim. He has fought Morvane's and Vethrael's servants there for three hundred years."
+   ],
+   "secret": {
+    "story": [
+     "He is tired. He has offered a truce at Cinder Ford in secret, and wants it more than he wants the March."
+    ]
+   }
+  },
+  {
+   "id": "ossa",
+   "name": "Ossa",
+   "style": "the Gate-Keeper",
+   "kind": "marquis-of-the-burning-court",
+   "level": 741,
+   "class": null,
+   "liege": "ghazrul",
+   "skills": [
+    {
+     "id": "ember_breath",
+     "lvl": 8,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 9,
+     "fight": true
+    },
+    {
+     "id": "mana_drain",
+     "lvl": 5,
+     "fight": true
+    },
+    {
+     "n": "Open Door",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": false,
+     "does": "She knows every place in the Ashen Marches where Hell is thin."
+    }
+   ],
+   "arts": [
+    "dread_gaze",
+    "mana_drain"
+   ],
+   "titles": [
+    "hell-born",
+    "ember-sworn"
+   ],
+   "items": [
+    {
+     "n": "A ring of gate-keys",
+     "kind": "keys",
+     "quality": "legendary",
+     "does": "Nine keys of black iron. None of them opens a door men have built.",
+     "gives": {
+      "cunning": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.3,
+    "caution": 0.2,
+    "patience": 0.8,
+    "honor": -0.4,
+    "greed": 0.6,
+    "warmth": -0.6,
+    "zeal": 0,
+    "social": 0.8,
+    "ambition": 0.8
+   },
+   "traits": [
+    "patient",
+    "curious",
+    "deceitful"
+   ],
+   "goals": [
+    {
+     "kind": "want",
+     "w": 1.3,
+     "why": "to send the lower demons over the Sundering, a few each year, and see what comes back"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "human",
+     "kind": "race",
+     "w": 0.8,
+     "why": "the wardens of the Sundering burn every fiend she sends across"
+    }
+   ],
+   "home": {
+    "name": "the Ashen Marches",
+    "domain": "the Ashen Marches",
+    "known": true
+   },
+   "fame": "known",
+   "story": [
+    "A Marquis of the Burning Court who watches the Ashen Marches, the burned borderland where the lower demons cross into the world of men.",
+    "The border lords know her name. They light fires on the Sundering when her fiends are seen."
+   ],
+   "secret": {
+    "story": [
+     "She has crossed herself, twice, in a man's shape, and stood in a market of Goldsand. No one knew her."
+    ]
+   }
+  },
+  {
+   "id": "brann",
+   "name": "Brann",
+   "style": "the Glassmaker",
+   "kind": "marquis-of-the-burning-court",
+   "level": 747,
+   "class": null,
+   "liege": "ghazrul",
+   "skills": [
+    {
+     "id": "ember_breath",
+     "lvl": 9,
+     "fight": true
+    },
+    {
+     "id": "mana_drain",
+     "lvl": 6,
+     "fight": true
+    },
+    {
+     "id": "frost_veil",
+     "lvl": 6,
+     "fight": false
+    },
+    {
+     "n": "Glass Hand",
+     "rank": "A",
+     "lvl": 6,
+     "kind": "active",
+     "fight": true,
+     "does": "What he grips turns to black glass, and breaks."
+    }
+   ],
+   "arts": [
+    "mana_drain",
+    "ember_breath"
+   ],
+   "titles": [
+    "hell-born",
+    "ember-sworn"
+   ],
+   "items": [
+    {
+     "n": "A glass knife",
+     "kind": "knife",
+     "quality": "legendary",
+     "does": "Cut from the same black glass as the seal over his mistress.",
+     "gives": {
+      "magic": 1,
+      "power": 0.05
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0,
+    "caution": 0.2,
+    "patience": 0.8,
+    "honor": -0.4,
+    "greed": 0.6,
+    "warmth": -0.6,
+    "zeal": 0,
+    "social": 0.6,
+    "ambition": 0.8
+   },
+   "traits": [
+    "curious",
+    "patient",
+    "proud"
+   ],
+   "goals": [
+    {
+     "kind": "duty",
+     "w": 1.4,
+     "why": "to learn how the Saint's glass was made, and how to unmake it"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "sword-saint",
+     "kind": "legend",
+     "w": 1.2,
+     "why": "his glass is better than Brann's"
+    }
+   ],
+   "home": {
+    "name": "Black Glass",
+    "domain": "the Cinderlands",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "A Marquis of the Burning Court who works the black glass of Black Glass, where the sand runs to glass in the heat."
+   ],
+   "secret": {
+    "story": [
+     "He has made a seal of his own, smaller, and tried it on a Pit-Mother's child. It held a year."
+    ]
+   }
+  },
+  {
+   "id": "ruk",
+   "name": "Ruk",
+   "style": "of Emberfall",
+   "kind": "marquis-of-the-burning-court",
+   "level": 743,
+   "class": null,
+   "liege": "ghazrul",
+   "skills": [
+    {
+     "id": "ember_breath",
+     "lvl": 10,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 6,
+     "fight": true
+    },
+    {
+     "n": "Falling Embers",
+     "rank": "B",
+     "lvl": 9,
+     "kind": "active",
+     "fight": true,
+     "does": "Fire that falls like snow on a host and does not go out."
+    }
+   ],
+   "arts": [
+    "ember_breath"
+   ],
+   "titles": [
+    "hell-born",
+    "ember-sworn"
+   ],
+   "items": [
+    {
+     "n": "A hoard of teeth",
+     "kind": "hoard",
+     "quality": "common",
+     "does": "He keeps the teeth of every captain he has eaten, strung on chains.",
+     "gives": {}
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.3,
+    "caution": 0.2,
+    "patience": 0.5,
+    "honor": -0.7,
+    "greed": 0.9,
+    "warmth": -0.6,
+    "zeal": 0,
+    "social": 0.6,
+    "ambition": 0.8
+   },
+   "traits": [
+    "greedy",
+    "cruel",
+    "fickle"
+   ],
+   "goals": [
+    {
+     "kind": "coin",
+     "w": 1.2,
+     "why": "souls, of any kind and any master, so long as they are his"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "scathe",
+     "kind": "figure",
+     "w": 1,
+     "why": "Scathe the Pit Wyrm hunts in Emberfall and takes the best of his souls"
+    }
+   ],
+   "home": {
+    "name": "Emberfall",
+    "domain": "the Cinderlands",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "A Marquis of the Burning Court who holds Emberfall, where it rains cinders."
+   ],
+   "secret": {
+    "story": [
+     "Ruk sells souls to Morvane's court through the Scorched March. Skarn would burn him for it."
+    ]
+   }
+  },
+  {
+   "id": "old-smoke",
+   "name": "Old Smoke",
+   "kind": "pit-mother",
+   "level": 754,
+   "class": null,
+   "liege": "ghazrul",
+   "skills": [
+    {
+     "id": "ember_breath",
+     "lvl": 10,
+     "fight": true
+    },
+    {
+     "id": "mana_drain",
+     "lvl": 5,
+     "fight": true
+    },
+    {
+     "id": "frost_veil",
+     "lvl": 8,
+     "fight": false
+    },
+    {
+     "n": "Brood-Call",
+     "rank": "A",
+     "lvl": 9,
+     "kind": "aura",
+     "fight": true,
+     "does": "She calls, and the imps and fiends of her pits come up out of the ground."
+    }
+   ],
+   "arts": [
+    "ember_breath",
+    "mana_drain"
+   ],
+   "titles": [
+    "hell-born",
+    "ember-sworn",
+    "mother-of-imps"
+   ],
+   "items": [
+    {
+     "n": "The smoking pits",
+     "kind": "lair",
+     "quality": "legendary",
+     "does": "A hollow of a hundred pits, every one of them warm.",
+     "gives": {
+      "swarm": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.3,
+    "wrath": 0.7,
+    "caution": 0.1,
+    "patience": 0.3,
+    "honor": -0.5,
+    "greed": 0.4,
+    "warmth": 0.5,
+    "zeal": 0,
+    "social": -0.5,
+    "ambition": 0.2
+   },
+   "traits": [
+    "wrathful",
+    "loyal",
+    "stubborn"
+   ],
+   "goals": [
+    {
+     "kind": "kin",
+     "w": 1.6,
+     "why": "to fill the Cinderlands with her brood again, as before the seal"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "human",
+     "kind": "race",
+     "w": 1,
+     "why": "the wardens of the Sundering burn her children"
+    }
+   ],
+   "home": {
+    "name": "Smokehollow",
+    "domain": "the Cinderlands",
+    "known": true
+   },
+   "fame": "known",
+   "story": [
+    "The eldest of the six Pit-Mothers, who keeps the brood-pits of Smokehollow. Most of the imps that ever crossed the Sundering came out of her pits."
+   ],
+   "secret": {
+    "story": [
+     "Her pits have been cold for twenty years: fewer of her young come up each spring, and she does not know why."
+    ]
+   }
+  },
+  {
+   "id": "grisel",
+   "name": "Grisel",
+   "kind": "pit-mother",
+   "level": 748,
+   "class": null,
+   "liege": "ghazrul",
+   "skills": [
+    {
+     "id": "ember_breath",
+     "lvl": 9,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 6,
+     "fight": true
+    },
+    {
+     "n": "Swarm of Ash",
+     "rank": "B",
+     "lvl": 8,
+     "kind": "active",
+     "fight": true,
+     "does": "A cloud of her young, each no bigger than a crow, each with teeth."
+    }
+   ],
+   "arts": [
+    "ember_breath"
+   ],
+   "titles": [
+    "hell-born",
+    "ember-sworn"
+   ],
+   "items": [
+    {
+     "n": "A cracked egg",
+     "kind": "relic",
+     "quality": "common",
+     "does": "The first egg she ever laid. She carries the shell.",
+     "gives": {}
+    }
+   ],
+   "temper": {
+    "pride": 0.3,
+    "wrath": 0.9,
+    "caution": 0.1,
+    "patience": 0.3,
+    "honor": -0.5,
+    "greed": 0.4,
+    "warmth": 0.4,
+    "zeal": 0,
+    "social": -0.5,
+    "ambition": 0.2
+   },
+   "traits": [
+    "cruel",
+    "impetuous",
+    "greedy"
+   ],
+   "goals": [
+    {
+     "kind": "kin",
+     "w": 1.3,
+     "why": "to raise a brood larger than Old Smoke's"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "old-smoke",
+     "kind": "figure",
+     "w": 1.1,
+     "why": "Old Smoke is honoured, and Grisel is not"
+    }
+   ],
+   "home": {
+    "name": "the Cinder Flats",
+    "domain": "the Cinderlands",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "A Pit-Mother of the Cinder Flats, whose brood hunts across the burning sand."
+   ],
+   "secret": {
+    "story": [
+     "She has been stealing Old Smoke's young out of the pits of Smokehollow, one by one."
+    ]
+   }
+  },
+  {
+   "id": "quill",
+   "name": "Quill",
+   "kind": "ledger-keeper",
+   "level": 752,
+   "class": null,
+   "liege": "ghazrul",
+   "skills": [
+    {
+     "id": "dread_gaze",
+     "lvl": 10,
+     "fight": true
+    },
+    {
+     "id": "mana_drain",
+     "lvl": 8,
+     "fight": true
+    },
+    {
+     "id": "frost_veil",
+     "lvl": 9,
+     "fight": false
+    },
+    {
+     "n": "The Ember Ledger",
+     "rank": "A",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": false,
+     "does": "It knows every soul that ever burned for Ghazrul, and what was paid for it."
+    }
+   ],
+   "arts": [
+    "dread_gaze",
+    "mana_drain"
+   ],
+   "titles": [
+    "hell-born",
+    "ember-sworn",
+    "keeper-of-accounts"
+   ],
+   "items": [
+    {
+     "n": "A pen of bone",
+     "kind": "pen",
+     "quality": "legendary",
+     "does": "It writes in a fire that does not burn the page.",
+     "gives": {
+      "ward": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.4,
+    "wrath": -0.4,
+    "caution": 0.7,
+    "patience": 0.9,
+    "honor": 0.8,
+    "greed": 0.5,
+    "warmth": -0.8,
+    "zeal": 0,
+    "social": -0.3,
+    "ambition": 0.3
+   },
+   "traits": [
+    "patient",
+    "honest",
+    "calm"
+   ],
+   "goals": [
+    {
+     "kind": "debt",
+     "w": 1.8,
+     "why": "that every debt owed to the Cinderlands be paid, to the last soul"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "nil",
+     "kind": "figure",
+     "w": 0.8,
+     "why": "Nil's ledger and Quill's disagree by three souls"
+    }
+   ],
+   "home": {
+    "name": "Glasswaste",
+    "domain": "the Cinderlands",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "One of the three Ledger-Keepers, who keeps the account of the Cinderlands in the black glass of Glasswaste."
+   ],
+   "secret": {
+    "story": [
+     "Quill's books show that Ghazrul owes Morvane a debt from the day the seventh gate opened. Quill has told no one, because no one has asked."
+    ]
+   }
+  },
+  {
+   "id": "gorm",
+   "name": "Gorm",
+   "style": "the Dragon-Eater",
+   "kind": "pit-wyrm",
+   "level": 770,
+   "class": null,
+   "liege": "ghazrul",
+   "skills": [
+    {
+     "id": "ember_breath",
+     "lvl": 10,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 6,
+     "fight": true
+    },
+    {
+     "id": "mana_drain",
+     "lvl": 3,
+     "fight": true
+    },
+    {
+     "n": "Dragon-Eater",
+     "rank": "A",
+     "lvl": 9,
+     "kind": "passive",
+     "fight": true,
+     "does": "Against a dragon it fights with the hunger of the two it has eaten."
+    }
+   ],
+   "arts": [
+    "ember_breath",
+    "dread_gaze"
+   ],
+   "titles": [
+    "hell-born",
+    "ember-sworn",
+    "eater-of-two-dragons"
+   ],
+   "items": [
+    {
+     "n": "Two dragons' skulls",
+     "kind": "trophy",
+     "quality": "legendary",
+     "does": "It sleeps between them.",
+     "gives": {
+      "power": 0.05
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.7,
+    "wrath": 0.9,
+    "caution": -0.2,
+    "patience": -0.3,
+    "honor": -0.6,
+    "greed": 0.5,
+    "warmth": -0.9,
+    "zeal": 0,
+    "social": -0.8,
+    "ambition": 0.5
+   },
+   "traits": [
+    "wrathful",
+    "proud",
+    "cruel"
+   ],
+   "goals": [
+    {
+     "kind": "want",
+     "w": 1.6,
+     "why": "a third dragon, and then an elder"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "sarnavoth",
+     "kind": "legend",
+     "w": 1.4,
+     "why": "the King of Dragons once threw it down the Kiln's throat"
+    },
+    {
+     "at": "dragon",
+     "kind": "kind",
+     "w": 1.2,
+     "why": "it hates dragons, as all its kind do"
+    }
+   ],
+   "home": {
+    "name": "Glasswaste",
+    "domain": "the Cinderlands",
+    "known": true
+   },
+   "fame": "known",
+   "story": [
+    "A Pit Wyrm, a demon in a dragon's shape, that lairs in the mountains of Glasswaste. The old songs say one of the four has eaten two dragons. This is the one."
+   ],
+   "secret": {
+    "story": [
+     "The two it ate were young, the songs never say. It has never faced a grown dragon, and it knows it."
+    ]
+   }
+  },
+  {
+   "id": "scathe",
+   "name": "Scathe",
+   "kind": "pit-wyrm",
+   "level": 762,
+   "class": null,
+   "liege": "ghazrul",
+   "skills": [
+    {
+     "id": "ember_breath",
+     "lvl": 9,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 7,
+     "fight": true
+    },
+    {
+     "n": "Pit-Dive",
+     "rank": "B",
+     "lvl": 9,
+     "kind": "active",
+     "fight": true,
+     "does": "It drops on its prey from the clouds of ash with its wings folded."
+    }
+   ],
+   "arts": [
+    "ember_breath"
+   ],
+   "titles": [
+    "hell-born",
+    "ember-sworn"
+   ],
+   "items": [
+    {
+     "n": "A gate-captain's chain",
+     "kind": "trophy",
+     "quality": "common",
+     "does": "Worn round one horn.",
+     "gives": {}
+    }
+   ],
+   "temper": {
+    "pride": 0.7,
+    "wrath": 0.9,
+    "caution": -0.5,
+    "patience": -0.3,
+    "honor": -0.6,
+    "greed": 0.5,
+    "warmth": -0.9,
+    "zeal": 0,
+    "social": -0.8,
+    "ambition": 0.5
+   },
+   "traits": [
+    "impetuous",
+    "greedy",
+    "wrathful"
+   ],
+   "goals": [
+    {
+     "kind": "want",
+     "w": 1.3,
+     "why": "the Broken Ground, all of it, for its pit"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "ruk",
+     "kind": "figure",
+     "w": 0.9,
+     "why": "Ruk calls it a thief of souls"
+    }
+   ],
+   "home": {
+    "name": "the Broken Ground",
+    "domain": "the Scorched March",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "A Pit Wyrm that hunts the Broken Ground of the Scorched March, in Ghazrul's name when it remembers to be."
+   ],
+   "secret": {
+    "story": [
+     "It answers to no Marquis. Skarn has given up sending for it."
+    ]
+   }
+  },
+  {
+   "id": "silk",
+   "name": "Silk",
+   "style": "the Toll-Taker",
+   "kind": "marquis-of-the-burning-court",
+   "level": 751,
+   "class": null,
+   "liege": "morvane",
+   "skills": [
+    {
+     "id": "dread_gaze",
+     "lvl": 9,
+     "fight": true
+    },
+    {
+     "id": "mana_drain",
+     "lvl": 6,
+     "fight": true
+    },
+    {
+     "id": "ember_breath",
+     "lvl": 6,
+     "fight": true
+    },
+    {
+     "n": "Fair Terms",
+     "rank": "A",
+     "lvl": 8,
+     "kind": "aura",
+     "fight": true,
+     "does": "Those who bargain with her feel that every word she says is reasonable."
+    }
+   ],
+   "arts": [
+    "dread_gaze",
+    "mana_drain"
+   ],
+   "titles": [
+    "hell-born",
+    "debt-sworn",
+    "first-of-the-counting-house"
+   ],
+   "items": [
+    {
+     "n": "The toll-scales",
+     "kind": "scales",
+     "quality": "legendary",
+     "does": "They weigh a soul against a coin and are always right.",
+     "gives": {
+      "cunning": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": -0.2,
+    "caution": 0.2,
+    "patience": 0.8,
+    "honor": -0.4,
+    "greed": 0.6,
+    "warmth": -0.6,
+    "zeal": 0,
+    "social": 0.9,
+    "ambition": 0.8
+   },
+   "traits": [
+    "deceitful",
+    "patient",
+    "gregarious"
+   ],
+   "goals": [
+    {
+     "kind": "coin",
+     "w": 1.5,
+     "why": "a toll on every soul that passes the Seventh Gate"
+    },
+    {
+     "kind": "loyalty",
+     "w": 1,
+     "why": "to keep her master's house while he wears a merchant's face above"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "skarn",
+     "kind": "figure",
+     "w": 1,
+     "why": "the Kiln-Lord calls her master a coward who left his sister bound"
+    }
+   ],
+   "home": {
+    "name": "the Toll Road",
+    "domain": "the Gatelands",
+    "known": true
+   },
+   "fame": "known",
+   "story": [
+    "The first of Morvane's Marquises, who keeps the Toll Road to the Counting House and takes a toll of every soul that passes.",
+    "She is said to be fair. She is."
+   ],
+   "secret": {
+    "story": [
+     "She has not seen her master in eighty years. She keeps his house as if he might come back tomorrow, and fears he never will."
+    ]
+   }
+  },
+  {
+   "id": "varo",
+   "name": "Varo",
+   "style": "of Tollbridge",
+   "kind": "marquis-of-the-burning-court",
+   "level": 745,
+   "class": null,
+   "liege": "morvane",
+   "skills": [
+    {
+     "id": "dread_gaze",
+     "lvl": 8,
+     "fight": true
+    },
+    {
+     "id": "ember_breath",
+     "lvl": 7,
+     "fight": true
+    },
+    {
+     "n": "Bridge-Toll",
+     "rank": "B",
+     "lvl": 9,
+     "kind": "passive",
+     "fight": true,
+     "does": "No one crosses a river he holds without paying something."
+    }
+   ],
+   "arts": [
+    "dread_gaze"
+   ],
+   "titles": [
+    "hell-born",
+    "debt-sworn"
+   ],
+   "items": [
+    {
+     "n": "A purse that never fills",
+     "kind": "purse",
+     "quality": "masterwork",
+     "does": "He drops coins in. They go somewhere.",
+     "gives": {}
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.3,
+    "caution": 0.2,
+    "patience": 0.5,
+    "honor": -0.4,
+    "greed": 0.9,
+    "warmth": -0.6,
+    "zeal": 0,
+    "social": 0.6,
+    "ambition": 0.8
+   },
+   "traits": [
+    "greedy",
+    "calm",
+    "deceitful"
+   ],
+   "goals": [
+    {
+     "kind": "coin",
+     "w": 1.4,
+     "why": "to hold every crossing of the Gatelands"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "sallow",
+     "kind": "figure",
+     "w": 0.8,
+     "why": "Sallow undercuts his prices at Soulmarket"
+    }
+   ],
+   "home": {
+    "name": "Tollbridge",
+    "domain": "the Gatelands",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "A Marquis of the Gatelands who holds the bridge-town of Tollbridge."
+   ],
+   "secret": {
+    "story": [
+     "His tolls are short. He has been taking a tithe of Morvane's own souls for a hundred years."
+    ]
+   }
+  },
+  {
+   "id": "dross",
+   "name": "Dross",
+   "style": "of Ironsoul",
+   "kind": "marquis-of-the-burning-court",
+   "level": 742,
+   "class": null,
+   "liege": "morvane",
+   "skills": [
+    {
+     "id": "ember_breath",
+     "lvl": 9,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 6,
+     "fight": true
+    },
+    {
+     "n": "Iron Debt",
+     "rank": "B",
+     "lvl": 8,
+     "kind": "active",
+     "fight": true,
+     "does": "A debtor's chain of iron that tightens with every lie told."
+    }
+   ],
+   "arts": [
+    "ember_breath"
+   ],
+   "titles": [
+    "hell-born",
+    "debt-sworn"
+   ],
+   "items": [
+    {
+     "n": "Debtor's chains",
+     "kind": "chains",
+     "quality": "masterwork",
+     "does": "Every link a soul that could not pay.",
+     "gives": {
+      "str": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.3,
+    "caution": 0.2,
+    "patience": 0.5,
+    "honor": 0.3,
+    "greed": 0.6,
+    "warmth": -0.8,
+    "zeal": 0,
+    "social": 0.6,
+    "ambition": 0.8
+   },
+   "traits": [
+    "stubborn",
+    "cruel",
+    "loyal"
+   ],
+   "goals": [
+    {
+     "kind": "debt",
+     "w": 1.4,
+     "why": "to work off every debt in the mines of Ironsoul"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "harrak",
+     "kind": "figure",
+     "w": 0.9,
+     "why": "Harrak burned his mines at the edge of the March"
+    }
+   ],
+   "home": {
+    "name": "Ironsoul",
+    "domain": "the Gatelands",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "A Marquis of the Gatelands who keeps the mines of Ironsoul, where debts are worked off in iron."
+   ],
+   "secret": {
+    "story": [
+     "There are men in his mines who still remember their names. He lets them, because they work harder."
+    ]
+   }
+  },
+  {
+   "id": "sallow",
+   "name": "Sallow",
+   "style": "of Soulmarket",
+   "kind": "marquis-of-the-burning-court",
+   "level": 748,
+   "class": null,
+   "liege": "morvane",
+   "skills": [
+    {
+     "id": "dread_gaze",
+     "lvl": 9,
+     "fight": true
+    },
+    {
+     "id": "mana_drain",
+     "lvl": 5,
+     "fight": true
+    },
+    {
+     "n": "Market Cry",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "aura",
+     "fight": true,
+     "does": "Every voice in the market turns to him when he speaks."
+    }
+   ],
+   "arts": [
+    "dread_gaze",
+    "mana_drain"
+   ],
+   "titles": [
+    "hell-born",
+    "debt-sworn"
+   ],
+   "items": [
+    {
+     "n": "A merchant's rings",
+     "kind": "rings",
+     "quality": "masterwork",
+     "does": "Ten of them, each with a soul set where the stone should be.",
+     "gives": {
+      "magic": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.3,
+    "caution": 0.2,
+    "patience": 0.5,
+    "honor": -0.4,
+    "greed": 0.6,
+    "warmth": -0.6,
+    "zeal": 0,
+    "social": 1,
+    "ambition": 0.8
+   },
+   "traits": [
+    "gregarious",
+    "greedy",
+    "curious"
+   ],
+   "goals": [
+    {
+     "kind": "coin",
+     "w": 1.6,
+     "why": "to make Soulmarket the only market in Hell"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "vethrael",
+     "kind": "legend",
+     "w": 1,
+     "why": "Vethrael's choir takes souls for singing and pays nothing"
+    }
+   ],
+   "home": {
+    "name": "Soulmarket",
+    "domain": "the Gatelands",
+    "known": true
+   },
+   "fame": "known",
+   "story": [
+    "A Marquis of the Gatelands who keeps Soulmarket, where the souls of the damned are bought and sold.",
+    "Men who make bargains at the crossroads are said to be dealing with Sallow's agents."
+   ],
+   "secret": {
+    "story": [
+     "He has bought the soul of a living king, on terms that come due at his death. Which king, only his book says."
+    ]
+   }
+  },
+  {
+   "id": "grael",
+   "name": "Grael",
+   "style": "of Bonefield",
+   "kind": "marquis-of-the-burning-court",
+   "level": 750,
+   "class": null,
+   "liege": "morvane",
+   "skills": [
+    {
+     "id": "ember_breath",
+     "lvl": 10,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 8,
+     "fight": true
+    },
+    {
+     "id": "mana_drain",
+     "lvl": 4,
+     "fight": true
+    },
+    {
+     "n": "Bone Wall",
+     "rank": "A",
+     "lvl": 7,
+     "kind": "buff",
+     "fight": false,
+     "does": "He raises the dead of Bonefield into a wall that walks."
+    }
+   ],
+   "arts": [
+    "ember_breath",
+    "dread_gaze"
+   ],
+   "titles": [
+    "hell-born",
+    "debt-sworn"
+   ],
+   "items": [
+    {
+     "n": "The Bonefield banner",
+     "kind": "banner",
+     "quality": "masterwork",
+     "does": "Sewn from the cloaks of Ghazrul's fiends.",
+     "gives": {
+      "ward": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0,
+    "caution": 0.4,
+    "patience": 0.5,
+    "honor": -0.4,
+    "greed": 0.6,
+    "warmth": -0.6,
+    "zeal": 0,
+    "social": 0.6,
+    "ambition": 0.8
+   },
+   "traits": [
+    "calm",
+    "brave",
+    "proud"
+   ],
+   "goals": [
+    {
+     "kind": "claim",
+     "w": 1.4,
+     "why": "to hold Bonefield and the road through the March for the Gatelands"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "harrak",
+     "kind": "figure",
+     "w": 1.4,
+     "why": "Harrak has burned his camp four times in a century"
+    }
+   ],
+   "home": {
+    "name": "Bonefield",
+    "domain": "the Scorched March",
+    "known": true
+   },
+   "fame": "known",
+   "story": [
+    "Morvane's Marquis on the Scorched March, who holds Bonefield against Ghazrul's fiends and Vethrael's singers."
+   ],
+   "secret": {
+    "story": [
+     "He has met Harrak at Cinder Ford, alone, and they did not fight. They talked of a truce."
+    ]
+   }
+  },
+  {
+   "id": "ansel",
+   "name": "Ansel",
+   "style": "of Pale Harbour",
+   "kind": "marquis-of-the-burning-court",
+   "level": 739,
+   "class": null,
+   "liege": "morvane",
+   "skills": [
+    {
+     "id": "dread_gaze",
+     "lvl": 8,
+     "fight": true
+    },
+    {
+     "id": "ember_breath",
+     "lvl": 6,
+     "fight": true
+    },
+    {
+     "id": "frost_veil",
+     "lvl": 7,
+     "fight": false
+    },
+    {
+     "n": "Grey Tide",
+     "rank": "B",
+     "lvl": 8,
+     "kind": "active",
+     "fight": true,
+     "does": "A tide of ash-water that drags men under."
+    }
+   ],
+   "arts": [
+    "dread_gaze"
+   ],
+   "titles": [
+    "hell-born",
+    "debt-sworn"
+   ],
+   "items": [
+    {
+     "n": "A drowned man's compass",
+     "kind": "compass",
+     "quality": "masterwork",
+     "does": "It points to the nearest soul in debt.",
+     "gives": {
+      "cunning": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.3,
+    "caution": 0.2,
+    "patience": 0.8,
+    "honor": -0.4,
+    "greed": 0.6,
+    "warmth": -0.6,
+    "zeal": 0,
+    "social": -0.2,
+    "ambition": 0.8
+   },
+   "traits": [
+    "shy",
+    "curious",
+    "patient"
+   ],
+   "goals": [
+    {
+     "kind": "want",
+     "w": 1.2,
+     "why": "ships, to cross the Sundering by sea"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "human",
+     "kind": "race",
+     "w": 0.7,
+     "why": "the shipmasters of the Sundering will not sell him a keel"
+    }
+   ],
+   "home": {
+    "name": "Pale Harbour",
+    "domain": "the Gatelands",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "A Marquis of the Gatelands who keeps Pale Harbour on the Southern Ocean, the only harbour in Hell."
+   ],
+   "secret": {
+    "story": [
+     "He has built one ship. It sank. He is building a second."
+    ]
+   }
+  },
+  {
+   "id": "mott",
+   "name": "Mott",
+   "style": "of the Grey Spires",
+   "kind": "marquis-of-the-burning-court",
+   "level": 744,
+   "class": null,
+   "liege": "morvane",
+   "skills": [
+    {
+     "id": "ember_breath",
+     "lvl": 8,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 8,
+     "fight": true
+    },
+    {
+     "n": "Spire-Fall",
+     "rank": "B",
+     "lvl": 9,
+     "kind": "active",
+     "fight": true,
+     "does": "A spire of grey stone that falls where he points."
+    }
+   ],
+   "arts": [
+    "ember_breath",
+    "dread_gaze"
+   ],
+   "titles": [
+    "hell-born",
+    "debt-sworn"
+   ],
+   "items": [
+    {
+     "n": "A spire-stone",
+     "kind": "stone",
+     "quality": "common",
+     "does": "A shard of the first spire, worn at the throat.",
+     "gives": {}
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.3,
+    "caution": 0.2,
+    "patience": 0.5,
+    "honor": -0.4,
+    "greed": 0.6,
+    "warmth": -0.6,
+    "zeal": 0,
+    "social": 0.6,
+    "ambition": 1
+   },
+   "traits": [
+    "proud",
+    "ambitious",
+    "deceitful"
+   ],
+   "goals": [
+    {
+     "kind": "ambition",
+     "w": 1.5,
+     "why": "to be first in the Counting House when Silk falls"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "silk",
+     "kind": "figure",
+     "w": 1.2,
+     "why": "Silk holds the place he means to have"
+    }
+   ],
+   "home": {
+    "name": "the Grey Spires",
+    "domain": "the Gatelands",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "A Marquis of the Gatelands who holds the Grey Spires, a forest of stone towers above the Sundering."
+   ],
+   "secret": {
+    "story": [
+     "He tells the other Marquises that Morvane is dead. He is not sure it is a lie."
+    ]
+   }
+  },
+  {
+   "id": "mother-mire",
+   "name": "Mother Mire",
+   "kind": "pit-mother",
+   "level": 751,
+   "class": null,
+   "liege": "morvane",
+   "skills": [
+    {
+     "id": "ember_breath",
+     "lvl": 9,
+     "fight": true
+    },
+    {
+     "id": "mana_drain",
+     "lvl": 6,
+     "fight": true
+    },
+    {
+     "n": "Brood-Call",
+     "rank": "A",
+     "lvl": 8,
+     "kind": "aura",
+     "fight": true,
+     "does": "She calls, and the imps and fiends of her pits come up out of the ground."
+    }
+   ],
+   "arts": [
+    "ember_breath",
+    "mana_drain"
+   ],
+   "titles": [
+    "hell-born",
+    "debt-sworn"
+   ],
+   "items": [
+    {
+     "n": "A debtor's cradle",
+     "kind": "lair",
+     "quality": "masterwork",
+     "does": "Her young are born owing.",
+     "gives": {
+      "swarm": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.3,
+    "wrath": 0.7,
+    "caution": 0.1,
+    "patience": 0.3,
+    "honor": -0.5,
+    "greed": 0.4,
+    "warmth": 0.6,
+    "zeal": 0,
+    "social": -0.5,
+    "ambition": 0.2
+   },
+   "traits": [
+    "kind",
+    "stubborn",
+    "greedy"
+   ],
+   "goals": [
+    {
+     "kind": "kin",
+     "w": 1.4,
+     "why": "to keep her brood fed in the Debt Fields"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "grisel",
+     "kind": "figure",
+     "w": 0.8,
+     "why": "Grisel's brood raids her fields"
+    }
+   ],
+   "home": {
+    "name": "the Debt Fields",
+    "domain": "the Gatelands",
+    "known": true
+   },
+   "fame": "known",
+   "story": [
+    "A Pit-Mother of the Debt Fields, whose young are put to work the day they crawl out of the pits."
+   ],
+   "secret": {
+    "story": [
+     "She lets some of her young go over the Sundering unbound, owing nothing. Morvane's Marquises would call it theft."
+    ]
+   }
+  },
+  {
+   "id": "wenna",
+   "name": "Wenna",
+   "kind": "pit-mother",
+   "level": 745,
+   "class": null,
+   "liege": "morvane",
+   "skills": [
+    {
+     "id": "ember_breath",
+     "lvl": 8,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 7,
+     "fight": true
+    },
+    {
+     "n": "Gallows Brood",
+     "rank": "B",
+     "lvl": 9,
+     "kind": "active",
+     "fight": true,
+     "does": "Her young drop from above on threads, like spiders."
+    }
+   ],
+   "arts": [
+    "dread_gaze"
+   ],
+   "titles": [
+    "hell-born",
+    "debt-sworn"
+   ],
+   "items": [
+    {
+     "n": "A hangman's rope",
+     "kind": "rope",
+     "quality": "common",
+     "does": "From the first gallows of Gallowsgate.",
+     "gives": {}
+    }
+   ],
+   "temper": {
+    "pride": 0.3,
+    "wrath": 0.7,
+    "caution": 0.1,
+    "patience": 0.3,
+    "honor": -0.5,
+    "greed": 0.4,
+    "warmth": 0.4,
+    "zeal": 0,
+    "social": -0.8,
+    "ambition": 0.2
+   },
+   "traits": [
+    "cruel",
+    "patient",
+    "shy"
+   ],
+   "goals": [
+    {
+     "kind": "kin",
+     "w": 1.2,
+     "why": "a brood of her own, apart from the other mothers"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "mother-mire",
+     "kind": "figure",
+     "w": 0.7,
+     "why": "Mother Mire is too soft with her young"
+    }
+   ],
+   "home": {
+    "name": "Gallowsgate",
+    "domain": "the Gatelands",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "A Pit-Mother of Gallowsgate, the gate-town of hangings at the edge of the Gatelands."
+   ],
+   "secret": {
+    "story": [
+     "She has been feeding on Morvane's debtors before they are written down. Nil has noticed."
+    ]
+   }
+  },
+  {
+   "id": "nil",
+   "name": "Nil",
+   "kind": "ledger-keeper",
+   "level": 758,
+   "class": null,
+   "liege": "morvane",
+   "skills": [
+    {
+     "id": "dread_gaze",
+     "lvl": 10,
+     "fight": true
+    },
+    {
+     "id": "mana_drain",
+     "lvl": 9,
+     "fight": true
+    },
+    {
+     "id": "frost_veil",
+     "lvl": 10,
+     "fight": false
+    },
+    {
+     "n": "The First Ledger",
+     "rank": "S",
+     "lvl": 6,
+     "kind": "passive",
+     "fight": false,
+     "does": "Every bargain made through the gates since the first, and its terms, to the letter."
+    }
+   ],
+   "arts": [
+    "dread_gaze",
+    "mana_drain"
+   ],
+   "titles": [
+    "hell-born",
+    "debt-sworn",
+    "keeper-of-the-first-ledger",
+    "keeper-of-accounts"
+   ],
+   "items": [
+    {
+     "n": "The First Ledger",
+     "kind": "book",
+     "quality": "legendary",
+     "does": "A book the size of a house. Even the Archdemons are written in it.",
+     "gives": {
+      "cunning": 1,
+      "ward": 1,
+      "power": 0.05
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.4,
+    "wrath": -0.4,
+    "caution": 0.7,
+    "patience": 0.9,
+    "honor": 0.9,
+    "greed": 0.5,
+    "warmth": -0.8,
+    "zeal": 0,
+    "social": -0.3,
+    "ambition": 0.3
+   },
+   "traits": [
+    "honest",
+    "patient",
+    "calm"
+   ],
+   "goals": [
+    {
+     "kind": "debt",
+     "w": 2,
+     "why": "that every bargain be kept to its letter, by anyone, even an Archdemon"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "wenna",
+     "kind": "figure",
+     "w": 0.9,
+     "why": "Wenna eats debtors before they are written down"
+    }
+   ],
+   "home": {
+    "name": "the Ledger",
+    "domain": "the Gatelands",
+    "known": true
+   },
+   "fame": "known",
+   "story": [
+    "The eldest of the three Ledger-Keepers, who keeps the First Ledger in the Ledger, a town that is one great library.",
+    "It is said even the Archdemons are in its books. It is said truly."
+   ],
+   "secret": {
+    "story": [
+     "The First Ledger says Morvane's debt from the Seventh Gate was never paid: the sorcerer-prince who opened it is owed something still. Nil is waiting for his heir to claim it."
+    ]
+   }
+  },
+  {
+   "id": "rook",
+   "name": "Rook",
+   "kind": "pit-wyrm",
+   "level": 766,
+   "class": null,
+   "liege": "morvane",
+   "skills": [
+    {
+     "id": "ember_breath",
+     "lvl": 10,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 6,
+     "fight": true
+    },
+    {
+     "n": "Spire-Coil",
+     "rank": "A",
+     "lvl": 8,
+     "kind": "active",
+     "fight": true,
+     "does": "It coils round a tower and crushes it with whoever is inside."
+    }
+   ],
+   "arts": [
+    "ember_breath"
+   ],
+   "titles": [
+    "hell-born",
+    "debt-sworn"
+   ],
+   "items": [
+    {
+     "n": "A hoard of debts",
+     "kind": "hoard",
+     "quality": "masterwork",
+     "does": "Promissory notes, thousands, that it cannot read.",
+     "gives": {}
+    }
+   ],
+   "temper": {
+    "pride": 0.7,
+    "wrath": 0.4,
+    "caution": 0.3,
+    "patience": -0.3,
+    "honor": -0.6,
+    "greed": 0.5,
+    "warmth": -0.9,
+    "zeal": 0,
+    "social": -0.8,
+    "ambition": 0.5
+   },
+   "traits": [
+    "calm",
+    "greedy",
+    "loyal"
+   ],
+   "goals": [
+    {
+     "kind": "loyalty",
+     "w": 1.3,
+     "why": "to guard the Counting House until Morvane comes home"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "dragon",
+     "kind": "kind",
+     "w": 1.2,
+     "why": "it hates dragons, as all its kind do"
+    }
+   ],
+   "home": {
+    "name": "the Grey Spires",
+    "domain": "the Gatelands",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "A Pit Wyrm that nests among the Grey Spires and guards the road to the Counting House."
+   ],
+   "secret": {
+    "story": [
+     "It is the only demon of the Gatelands that ever saw Morvane's true face. It will not describe it."
+    ]
+   }
+  },
+  {
+   "id": "lark",
+   "name": "Lark",
+   "style": "of Bellmoor",
+   "kind": "marquis-of-the-burning-court",
+   "level": 750,
+   "class": null,
+   "liege": "vethrael",
+   "skills": [
+    {
+     "id": "dread_gaze",
+     "lvl": 10,
+     "fight": true
+    },
+    {
+     "id": "mana_drain",
+     "lvl": 6,
+     "fight": true
+    },
+    {
+     "id": "frost_veil",
+     "lvl": 7,
+     "fight": false
+    },
+    {
+     "n": "Bell-Song",
+     "rank": "A",
+     "lvl": 8,
+     "kind": "aura",
+     "fight": true,
+     "does": "A song like bells that makes a host forget why it came."
+    }
+   ],
+   "arts": [
+    "dread_gaze",
+    "mana_drain"
+   ],
+   "titles": [
+    "hell-born",
+    "choir-sworn",
+    "first-voice"
+   ],
+   "items": [
+    {
+     "n": "The Bellmoor bells",
+     "kind": "bells",
+     "quality": "legendary",
+     "does": "Seven bells of grey iron that ring with no one pulling them.",
+     "gives": {
+      "ward": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": -0.2,
+    "caution": 0.2,
+    "patience": 0.5,
+    "honor": -0.4,
+    "greed": 0.6,
+    "warmth": 0.2,
+    "zeal": 0,
+    "social": 0.6,
+    "ambition": 0.8
+   },
+   "traits": [
+    "gregarious",
+    "curious",
+    "kind"
+   ],
+   "goals": [
+    {
+     "kind": "faith",
+     "w": 1.4,
+     "why": "that the choir grow, voice by voice"
+    },
+    {
+     "kind": "loyalty",
+     "w": 1,
+     "why": "to sing as Vethrael wishes"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "sallow",
+     "kind": "figure",
+     "w": 1,
+     "why": "Sallow sells voices that belong to the choir"
+    }
+   ],
+   "home": {
+    "name": "Bellmoor",
+    "domain": "the Hush",
+    "known": true
+   },
+   "fame": "known",
+   "story": [
+    "The first of Vethrael's Marquises, who keeps the bells of Bellmoor and leads the choir when its master walks the roads of men."
+   ],
+   "secret": {
+    "story": [
+     "Lark has heard a voice in the choir that sings a song Vethrael never taught it: the Sword Saint's mother's. Lark does not know what it means."
+    ]
+   }
+  },
+  {
+   "id": "dirge",
+   "name": "Dirge",
+   "style": "of Cinder Ford",
+   "kind": "marquis-of-the-burning-court",
+   "level": 747,
+   "class": null,
+   "liege": "vethrael",
+   "skills": [
+    {
+     "id": "dread_gaze",
+     "lvl": 9,
+     "fight": true
+    },
+    {
+     "id": "mana_drain",
+     "lvl": 5,
+     "fight": true
+    },
+    {
+     "n": "Ford-Dirge",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "aura",
+     "fight": true,
+     "does": "No fiend crosses the ford while he sings; most turn and go home."
+    }
+   ],
+   "arts": [
+    "dread_gaze"
+   ],
+   "titles": [
+    "hell-born",
+    "choir-sworn"
+   ],
+   "items": [
+    {
+     "n": "A ferryman's pole",
+     "kind": "staff",
+     "quality": "masterwork",
+     "does": "It has never touched the bottom of the Ashwater.",
+     "gives": {}
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.3,
+    "caution": 0.4,
+    "patience": 0.9,
+    "honor": -0.4,
+    "greed": 0.6,
+    "warmth": -0.6,
+    "zeal": 0,
+    "social": 0.6,
+    "ambition": 0.8
+   },
+   "traits": [
+    "calm",
+    "patient",
+    "brave"
+   ],
+   "goals": [
+    {
+     "kind": "duty",
+     "w": 1.3,
+     "why": "to hold Cinder Ford, the one crossing of the Ashwater, for the Hush"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "harrak",
+     "kind": "figure",
+     "w": 0.9,
+     "why": "Harrak burns the reeds of the ford every summer"
+    }
+   ],
+   "home": {
+    "name": "Cinder Ford",
+    "domain": "the Scorched March",
+    "known": true
+   },
+   "fame": "known",
+   "story": [
+    "Vethrael's Marquis on the Scorched March, who sings at Cinder Ford and holds the one crossing of the Ashwater."
+   ],
+   "secret": {
+    "story": [
+     "He has heard Harrak and Grael talk of a truce at his ford. He has told Vethrael, and Vethrael said nothing."
+    ]
+   }
+  },
+  {
+   "id": "velvet",
+   "name": "Velvet",
+   "style": "of Stillwater",
+   "kind": "marquis-of-the-burning-court",
+   "level": 742,
+   "class": null,
+   "liege": "vethrael",
+   "skills": [
+    {
+     "id": "dread_gaze",
+     "lvl": 8,
+     "fight": true
+    },
+    {
+     "id": "frost_veil",
+     "lvl": 8,
+     "fight": false
+    },
+    {
+     "id": "ember_breath",
+     "lvl": 5,
+     "fight": true
+    },
+    {
+     "n": "Still Water",
+     "rank": "B",
+     "lvl": 8,
+     "kind": "active",
+     "fight": true,
+     "does": "A pool of silence that drowns the sound of a man's own heart."
+    }
+   ],
+   "arts": [
+    "dread_gaze"
+   ],
+   "titles": [
+    "hell-born",
+    "choir-sworn"
+   ],
+   "items": [
+    {
+     "n": "A veil of grey silk",
+     "kind": "veil",
+     "quality": "masterwork",
+     "does": "No one has seen her face under it.",
+     "gives": {
+      "cunning": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.3,
+    "caution": 0.2,
+    "patience": 0.5,
+    "honor": -0.4,
+    "greed": 0.6,
+    "warmth": -0.6,
+    "zeal": 0,
+    "social": -0.2,
+    "ambition": 0.8
+   },
+   "traits": [
+    "shy",
+    "deceitful",
+    "patient"
+   ],
+   "goals": [
+    {
+     "kind": "want",
+     "w": 1.2,
+     "why": "a voice of her own, the one Vethrael took from her"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "vethrael",
+     "kind": "legend",
+     "w": 0.7,
+     "why": "it took her voice for the choir, long ago"
+    }
+   ],
+   "home": {
+    "name": "Stillwater",
+    "domain": "the Hush",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "A Marquis of the Hush who keeps the silent lake of Stillwater."
+   ],
+   "secret": {
+    "story": [
+     "She has no voice. Vethrael took it, and she serves to get it back."
+    ]
+   }
+  },
+  {
+   "id": "cantor",
+   "name": "Cantor",
+   "style": "of the Long Quiet",
+   "kind": "marquis-of-the-burning-court",
+   "level": 745,
+   "class": null,
+   "liege": "vethrael",
+   "skills": [
+    {
+     "id": "dread_gaze",
+     "lvl": 9,
+     "fight": true
+    },
+    {
+     "id": "mana_drain",
+     "lvl": 6,
+     "fight": true
+    },
+    {
+     "n": "Choir-Lash",
+     "rank": "B",
+     "lvl": 9,
+     "kind": "active",
+     "fight": true,
+     "does": "A hundred voices raised at once, which break bone."
+    }
+   ],
+   "arts": [
+    "dread_gaze",
+    "mana_drain"
+   ],
+   "titles": [
+    "hell-born",
+    "choir-sworn"
+   ],
+   "items": [
+    {
+     "n": "A cantor's staff",
+     "kind": "staff",
+     "quality": "masterwork",
+     "does": "It beats time for the choir.",
+     "gives": {
+      "magic": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.3,
+    "caution": 0.2,
+    "patience": 0.5,
+    "honor": -0.4,
+    "greed": 0.6,
+    "warmth": -0.6,
+    "zeal": 0.8,
+    "social": 0.6,
+    "ambition": 0.8
+   },
+   "traits": [
+    "zealous",
+    "stubborn",
+    "proud"
+   ],
+   "goals": [
+    {
+     "kind": "faith",
+     "w": 1.6,
+     "why": "that the choir be perfect"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "elf",
+     "kind": "race",
+     "w": 1,
+     "why": "the elves sing better and will not join"
+    }
+   ],
+   "home": {
+    "name": "the Long Quiet",
+    "domain": "the Hush",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "A Marquis of the Hush who trains the choir in the Long Quiet, a land where nothing makes a sound but the singing."
+   ],
+   "secret": {
+    "story": [
+     "He has kept an elf's voice, alone, in a cage of silence for two hundred years. It will not sing for him."
+    ]
+   }
+  },
+  {
+   "id": "wren",
+   "name": "Wren",
+   "style": "of Ashmeadow",
+   "kind": "marquis-of-the-burning-court",
+   "level": 740,
+   "class": null,
+   "liege": "vethrael",
+   "skills": [
+    {
+     "id": "ember_breath",
+     "lvl": 8,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 7,
+     "fight": true
+    },
+    {
+     "n": "Ash-Wind",
+     "rank": "B",
+     "lvl": 8,
+     "kind": "active",
+     "fight": true,
+     "does": "A wind full of grey ash that blinds a company."
+    }
+   ],
+   "arts": [
+    "ember_breath"
+   ],
+   "titles": [
+    "hell-born",
+    "choir-sworn"
+   ],
+   "items": [
+    {
+     "n": "A shepherd's pipe",
+     "kind": "pipe",
+     "quality": "common",
+     "does": "Taken from a boy who played it at a funeral Vethrael sang at.",
+     "gives": {}
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.3,
+    "caution": 0.2,
+    "patience": 0.5,
+    "honor": -0.4,
+    "greed": 0.6,
+    "warmth": 0,
+    "zeal": 0,
+    "social": 0.6,
+    "ambition": 0.4
+   },
+   "traits": [
+    "curious",
+    "fickle",
+    "kind"
+   ],
+   "goals": [
+    {
+     "kind": "want",
+     "w": 1,
+     "why": "to see the world above, once"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "mag",
+     "kind": "figure",
+     "w": 0.8,
+     "why": "Mag holds the high Red Steps that look over Ashmeadow"
+    }
+   ],
+   "home": {
+    "name": "Ashmeadow",
+    "domain": "the Hush",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "The youngest of the Marquises, who keeps the grey meadows of Ashmeadow for the Hush."
+   ],
+   "secret": {
+    "story": [
+     "Wren took the two high steps from Mag and told Vethrael it was easy. It was not."
+    ]
+   }
+  },
+  {
+   "id": "mute",
+   "name": "Mute",
+   "style": "of the Silent Water",
+   "kind": "marquis-of-the-burning-court",
+   "level": 746,
+   "class": null,
+   "liege": "vethrael",
+   "skills": [
+    {
+     "id": "dread_gaze",
+     "lvl": 8,
+     "fight": true
+    },
+    {
+     "id": "mana_drain",
+     "lvl": 7,
+     "fight": true
+    },
+    {
+     "id": "frost_veil",
+     "lvl": 6,
+     "fight": false
+    },
+    {
+     "n": "Silence",
+     "rank": "A",
+     "lvl": 6,
+     "kind": "aura",
+     "fight": true,
+     "does": "Where he stands, no spell is spoken and no horn is heard."
+    }
+   ],
+   "arts": [
+    "mana_drain",
+    "dread_gaze"
+   ],
+   "titles": [
+    "hell-born",
+    "choir-sworn"
+   ],
+   "items": [
+    {
+     "n": "A stopper of lead",
+     "kind": "relic",
+     "quality": "masterwork",
+     "does": "For bottles that hold voices.",
+     "gives": {
+      "ward": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.8,
+    "wrath": 0.3,
+    "caution": 0.2,
+    "patience": 0.5,
+    "honor": 0.2,
+    "greed": 0.6,
+    "warmth": -0.6,
+    "zeal": 0,
+    "social": -0.6,
+    "ambition": 0.8
+   },
+   "traits": [
+    "calm",
+    "shy",
+    "loyal"
+   ],
+   "goals": [
+    {
+     "kind": "loyalty",
+     "w": 1.4,
+     "why": "to keep the voices of the Silent Water still until they are needed"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "silk",
+     "kind": "figure",
+     "w": 0.7,
+     "why": "Silk takes a toll on every voice that passes the Toll Road"
+    }
+   ],
+   "home": {
+    "name": "the Silent Water",
+    "domain": "the Hush",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "A Marquis of the Hush who keeps the Silent Water, where the choir's voices rest when they are not singing."
+   ],
+   "secret": {
+    "story": [
+     "He has never spoken. The other Marquises believe he cannot."
+    ]
+   }
+  },
+  {
+   "id": "mother-grey",
+   "name": "Mother Grey",
+   "kind": "pit-mother",
+   "level": 756,
+   "class": null,
+   "liege": "vethrael",
+   "skills": [
+    {
+     "id": "mana_drain",
+     "lvl": 7,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 8,
+     "fight": true
+    },
+    {
+     "id": "frost_veil",
+     "lvl": 9,
+     "fight": false
+    },
+    {
+     "n": "Brood-Call",
+     "rank": "A",
+     "lvl": 9,
+     "kind": "aura",
+     "fight": true,
+     "does": "She calls, and the imps and fiends of her pits come up out of the ground."
+    }
+   ],
+   "arts": [
+    "mana_drain",
+    "dread_gaze"
+   ],
+   "titles": [
+    "hell-born",
+    "choir-sworn",
+    "mother-of-imps"
+   ],
+   "items": [
+    {
+     "n": "The grey pits",
+     "kind": "lair",
+     "quality": "legendary",
+     "does": "Pits of grey ash in the court of the Choir itself.",
+     "gives": {
+      "swarm": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.3,
+    "wrath": 0.3,
+    "caution": 0.1,
+    "patience": 0.3,
+    "honor": -0.5,
+    "greed": 0.4,
+    "warmth": 0.7,
+    "zeal": 0,
+    "social": -0.5,
+    "ambition": 0.2
+   },
+   "traits": [
+    "patient",
+    "kind",
+    "stubborn"
+   ],
+   "goals": [
+    {
+     "kind": "kin",
+     "w": 1.5,
+     "why": "that her brood sing, too, one day"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "old-smoke",
+     "kind": "figure",
+     "w": 0.8,
+     "why": "Old Smoke calls her brood dumb"
+    }
+   ],
+   "home": {
+    "name": "the Grey Fields",
+    "domain": "the Hush",
+    "known": true
+   },
+   "fame": "known",
+   "story": [
+    "The eldest Pit-Mother of the Hush, whose pits are in the Grey Fields under the roofless cathedral of the Choir."
+   ],
+   "secret": {
+    "story": [
+     "Her youngest can sing. She hides it from Vethrael, who would take the voice."
+    ]
+   }
+  },
+  {
+   "id": "lull",
+   "name": "Lull",
+   "kind": "pit-mother",
+   "level": 744,
+   "class": null,
+   "liege": "vethrael",
+   "skills": [
+    {
+     "id": "dread_gaze",
+     "lvl": 8,
+     "fight": true
+    },
+    {
+     "id": "ember_breath",
+     "lvl": 6,
+     "fight": true
+    },
+    {
+     "n": "Lullaby",
+     "rank": "B",
+     "lvl": 9,
+     "kind": "active",
+     "fight": true,
+     "does": "A song that puts a sentry to sleep where he stands."
+    }
+   ],
+   "arts": [
+    "dread_gaze"
+   ],
+   "titles": [
+    "hell-born",
+    "choir-sworn"
+   ],
+   "items": [
+    {
+     "n": "A cradle of bone",
+     "kind": "relic",
+     "quality": "common",
+     "does": "She rocks it. It is empty.",
+     "gives": {}
+    }
+   ],
+   "temper": {
+    "pride": 0.3,
+    "wrath": 0.7,
+    "caution": 0.1,
+    "patience": 0.3,
+    "honor": -0.5,
+    "greed": 0.4,
+    "warmth": 0.4,
+    "zeal": 0,
+    "social": -0.5,
+    "ambition": 0.2
+   },
+   "traits": [
+    "calm",
+    "cruel",
+    "patient"
+   ],
+   "goals": [
+    {
+     "kind": "kin",
+     "w": 1.1,
+     "why": "children of men, to raise as her own"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "human",
+     "kind": "race",
+     "w": 0.9,
+     "why": "they took back the children she stole"
+    }
+   ],
+   "home": {
+    "name": "the Hollow Downs",
+    "domain": "the Hush",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "A Pit-Mother of the Hollow Downs, of whom the border villages tell their children to be quiet at night."
+   ],
+   "secret": {
+    "story": [
+     "Three children of men grew up in her pits. One of them is still alive, and grown."
+    ]
+   }
+  },
+  {
+   "id": "vesper",
+   "name": "Vesper",
+   "kind": "ledger-keeper",
+   "level": 755,
+   "class": null,
+   "liege": "vethrael",
+   "skills": [
+    {
+     "id": "dread_gaze",
+     "lvl": 9,
+     "fight": true
+    },
+    {
+     "id": "mana_drain",
+     "lvl": 8,
+     "fight": true
+    },
+    {
+     "n": "The Ledger of Voices",
+     "rank": "A",
+     "lvl": 10,
+     "kind": "passive",
+     "fight": false,
+     "does": "Every voice in the choir, whose it was, and what it was promised."
+    }
+   ],
+   "arts": [
+    "dread_gaze",
+    "mana_drain"
+   ],
+   "titles": [
+    "hell-born",
+    "choir-sworn",
+    "keeper-of-accounts"
+   ],
+   "items": [
+    {
+     "n": "A lamp that never goes out",
+     "kind": "lamp",
+     "quality": "masterwork",
+     "does": "The last light of Lastlight.",
+     "gives": {
+      "ward": 1
+     }
+    }
+   ],
+   "temper": {
+    "pride": 0.4,
+    "wrath": -0.4,
+    "caution": 0.7,
+    "patience": 0.9,
+    "honor": 0.8,
+    "greed": 0.5,
+    "warmth": -0.8,
+    "zeal": 0,
+    "social": -0.3,
+    "ambition": 0.3
+   },
+   "traits": [
+    "honest",
+    "calm",
+    "curious"
+   ],
+   "goals": [
+    {
+     "kind": "debt",
+     "w": 1.6,
+     "why": "that every voice in the choir was rightly taken"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "cantor",
+     "kind": "figure",
+     "w": 0.8,
+     "why": "Cantor keeps a voice he never wrote down"
+    }
+   ],
+   "home": {
+    "name": "Lastlight",
+    "domain": "the Hush",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "One of the three Ledger-Keepers, who writes down every voice that joins Vethrael's choir, at Lastlight."
+   ],
+   "secret": {
+    "story": [
+     "Vesper's ledger shows a voice owed to the choir that was never taken: a king's, promised long ago."
+    ]
+   }
+  },
+  {
+   "id": "knell",
+   "name": "Knell",
+   "kind": "pit-wyrm",
+   "level": 760,
+   "class": null,
+   "liege": "vethrael",
+   "skills": [
+    {
+     "id": "ember_breath",
+     "lvl": 9,
+     "fight": true
+    },
+    {
+     "id": "dread_gaze",
+     "lvl": 8,
+     "fight": true
+    },
+    {
+     "n": "Grave-Bell",
+     "rank": "B",
+     "lvl": 10,
+     "kind": "active",
+     "fight": true,
+     "does": "A cry like a funeral bell; those who hear it feel their years."
+    }
+   ],
+   "arts": [
+    "dread_gaze",
+    "ember_breath"
+   ],
+   "titles": [
+    "hell-born",
+    "choir-sworn"
+   ],
+   "items": [
+    {
+     "n": "A cracked bell",
+     "kind": "bell",
+     "quality": "common",
+     "does": "Torn from a chapel of men and worn on its tail.",
+     "gives": {}
+    }
+   ],
+   "temper": {
+    "pride": 0.7,
+    "wrath": 0.5,
+    "caution": -0.2,
+    "patience": 0.5,
+    "honor": -0.6,
+    "greed": 0.5,
+    "warmth": -0.9,
+    "zeal": 0,
+    "social": -0.8,
+    "ambition": 0.5
+   },
+   "traits": [
+    "calm",
+    "patient",
+    "cruel"
+   ],
+   "goals": [
+    {
+     "kind": "loyalty",
+     "w": 1.2,
+     "why": "to guard the graves of Graveside, where the choir buries what it cannot use"
+    }
+   ],
+   "grudges": [
+    {
+     "at": "gorm",
+     "kind": "figure",
+     "w": 1,
+     "why": "Gorm boasts of dragons; Knell has eaten nothing so grand"
+    }
+   ],
+   "home": {
+    "name": "Graveside",
+    "domain": "the Hush",
+    "known": false
+   },
+   "fame": "whispered",
+   "story": [
+    "A Pit Wyrm that coils among the graves of Graveside in the Hush."
+   ],
+   "secret": {
+    "story": [
+     "It sleeps on the grave of the sorcerer-prince who opened the Seventh Gate. It does not know whose grave it is."
+    ]
+   }
+  }
+ ]
+}

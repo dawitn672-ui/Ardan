@@ -1,0 +1,58 @@
+{
+ "about": "The masters of the playable races (order 96, D-193): linked, never copied. Their sheets (level, capabilities, titles, skills, items, story) are data/power.json's masters, which A.POWER reads; this file adds only what a full profile needs that those sheets lack: the class road (data/classes.json, step by step from a first class), the arts readied (names of their own active skills), a temper and traits, goals and grudges A.WHY can read, the home's name and whether it is known, and the secret. Validated by tools/lint-figures.mjs.",
+ "category": { "id": "race-masters", "name": "Masters of the Peoples", "group": "realms", "order": 5, "kind": "link", "link": "power.masters", "note": "The strongest of the giants, the dwarves, the elves and the orcs: each the best of a people, and very few on the whole continent stand near them." },
+ "figures": [
+  {
+   "id": "m-giant-king",
+   "road": ["warrior", "berserker", "crown-warrior"],
+   "arts": ["Breaker of Ice"],
+   "temper": { "pride": 0.7, "wrath": 0.4, "caution": 0.2, "patience": 0.5, "honor": 0.6, "greed": 0.2, "warmth": 0.3, "zeal": 0, "social": 0.3, "ambition": 0.2 },
+   "traits": ["proud", "brave", "stubborn"],
+   "goals": [{ "kind": "duty", "w": 1.5, "why": "to keep the ice road open, so his people are never shut in the fells again" }, { "kind": "kin", "w": 0.9, "why": "to see a son of his on the throne under Jotunhall" }],
+   "grudges": [{ "at": "m-dwarf-anvil", "kind": "figure", "w": 0.8, "why": "the dwarves of Irondeep hold the passes his people need" }],
+   "home": { "name": "Jotunhall", "domain": "the giants' fells", "known": true },
+   "fame": "known",
+   "story": ["The eldest giant still on a throne, who broke the ice road open with his own maul when the fells were shut by a winter that lasted nine years."],
+   "secret": { "story": ["He is dying of his years, slowly. Two of his sons are already counting the spears of the other."] }
+  },
+  {
+   "id": "m-dwarf-anvil",
+   "road": ["shieldbearer", "iron-shield", "iron-shield-master"],
+   "arts": ["Hammer and Shield"],
+   "temper": { "pride": 0.6, "wrath": 0.2, "caution": 0.7, "patience": 0.9, "honor": 0.8, "greed": 0.4, "warmth": 0.2, "zeal": 0.3, "social": -0.2, "ambition": 0 },
+   "traits": ["stubborn", "honest", "patient"],
+   "goals": [{ "kind": "duty", "w": 1.8, "why": "that the Ninth Gate of Irondeep is never opened from below again" }],
+   "grudges": [{ "at": "vaskareth", "kind": "legend", "w": 1.0, "why": "the Ash-Crowned has burned three dwarf halls for one stolen scale" }],
+   "home": { "name": "Irondeep", "domain": "the dwarf holds", "known": true },
+   "fame": "known",
+   "story": ["The warden of the Ninth Gate of Irondeep, who held it alone for a night and a day when something came up out of the deep roads."],
+   "secret": { "story": ["What came up the deep roads was not killed. It went back down, and the gate has been knocked on from below every winter since."] }
+  },
+  {
+   "id": "m-elf-blade",
+   "road": ["swordsman", "blade-dancer", "wyrm-blade"],
+   "arts": ["Moon-Cut"],
+   "temper": { "pride": 0.5, "wrath": -0.3, "caution": 0.4, "patience": 1, "honor": 0.5, "greed": -0.4, "warmth": 0, "zeal": 0, "social": -0.4, "ambition": -0.2 },
+   "traits": ["patient", "calm", "proud"],
+   "goals": [{ "kind": "want", "w": 1.4, "why": "one more bout with the Sword Saint before one of them dies" }],
+   "grudges": [{ "at": "vethrael", "kind": "legend", "w": 1.0, "why": "the Archdemon sang at his sister's funeral and took her voice" }],
+   "home": { "name": "Evenglade", "domain": "the Evenwood", "known": true },
+   "fame": "known",
+   "story": ["The eldest blade of the elves of Evenglade, who has never once hurried a cut in nine hundred years. He fought the Sword Saint once, when both were younger, and lost by a hair."],
+   "secret": { "story": ["He let the Saint win. He has wondered every day since whether he had to."] }
+  },
+  {
+   "id": "m-orc-khan",
+   "road": ["rider", "blood-rider", "blood-rider-master"],
+   "arts": ["Skull-Splitter"],
+   "temper": { "pride": 0.8, "wrath": 0.7, "caution": -0.2, "patience": -0.2, "honor": 0.4, "greed": 0.5, "warmth": 0, "zeal": 0.2, "social": 0.5, "ambition": 0.9 },
+   "traits": ["ambitious", "wrathful", "brave"],
+   "goals": [{ "kind": "ambition", "w": 1.6, "why": "every clan of the Grass Sea under one khan, and that khan himself" }, { "kind": "coin", "w": 0.8, "why": "the iron of the dwarves, by trade or by taking" }],
+   "grudges": [{ "at": "m-giant-king", "kind": "figure", "w": 0.7, "why": "the giants laughed at his father's embassy" }],
+   "home": { "name": "Urgol", "domain": "the Grass Sea", "known": true },
+   "fame": "known",
+   "story": ["The Skull-Khan of Urgol, who ate at the Iron Feast and rose from it khan of nine clans. He wears the skulls of the eight khans who did not."],
+   "secret": { "story": ["One of the eight is still alive, in a pit under Urgol. The khan visits him on feast days and asks him how it feels to lose."] }
+  }
+ ]
+}

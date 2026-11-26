@@ -1,0 +1,12 @@
+{
+ "about": "The generals (order 96, D-193): the Generals of the realms' hosts who are people (A.HOSTS: the crown's commissioned Generals, the senior General of each first host, and the great lords who lead their first host by right), generated people, never stored here. A lord already listed among the rulers or the great houses stays there. Each is a profile computed from the world as it is (src/world/9999977-figures). This file holds only the rule and the words.",
+ "category": { "id": "generals", "name": "Generals", "group": "realms", "order": 3, "kind": "generated", "note": "The men and women who lead the hosts of the realms: the crown's Generals and the lords who lead their own men by right. A realm's senior General sits at its council." },
+ "rule": { "from": "hosts", "known": "realm" },
+ "voice": {
+  "leads": "{Name} leads {host} for {realm}.",
+  "senior": "The senior General of {realm}, with a seat at its council.",
+  "byRight": "{Khe} leads the first host of {house} by right of rank.",
+  "battles": "{Khe} has seen {battles}.",
+  "age": "{Khe} is {age}."
+ }
+}

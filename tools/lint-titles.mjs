@@ -9,7 +9,8 @@
 //     kind over its rarity's cap (boost.cap; unique: the unique figure); a boost cap above the engine's ceiling
 //     (E.CAP_BOOST), and any of these on something no person holds
 //   - a title that cannot be met by any start (a predicate walk: an all() asking a count both above and below one number)
-//   - a legend's or a master's sheet naming a title not in data/titles/, or a title whose holders disagree with the sheets
+//   - a legend's, a master's or a fixed figure's sheet (data/figures/, D-193) naming a title not in data/titles/, or a title
+//     whose holders disagree with the sheets
 //   - a card choice table naming a deed kind not declared
 //   - any file under src/ui/ or any *view*.core.js reading .requires or .watch (the conditions are never shown)
 //   - a title carrying a hint, or a card or a screen telling of titles not yet held (order 92: no hints anywhere; the
@@ -153,8 +154,12 @@ for (const t of LIST) {
 
 // ---- the great beings' sheets name their titles by id; holders agree
 const legends = J('data/legends.json').legends, masters = J('data/power.json').masters;
+// the figures registry's fixed beings (data/figures/, D-193: the ancient demons and dragons) name theirs the same way
+const figDir = path.join(root, 'data/figures');
+const figures = fs.existsSync(figDir) ? fs.readdirSync(figDir).filter(f => f.endsWith('.json') && f !== 'vocab.json').sort()
+  .flatMap(f => { const d = J('data/figures/' + f); return d.category && d.category.kind === 'fixed' ? d.figures || [] : []; }) : [];
 const named = new Map();
-for (const L of legends.concat(masters)) for (const id of L.titles || []) {
+for (const L of legends.concat(masters, figures)) for (const id of L.titles || []) {
   if (typeof id !== 'string') { bad.push(`${L.id}: titles are ids into data/titles/ (found ${JSON.stringify(id).slice(0, 40)})`); continue; }
   if (!ids.has(id)) bad.push(`${L.id}: no title ${id} in data/titles/`);
   if (!named.has(id)) named.set(id, []); named.get(id).push(L.id);
