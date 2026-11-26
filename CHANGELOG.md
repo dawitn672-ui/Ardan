@@ -5,6 +5,8 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+## v2.1.0-alpha.18 (2026-11-26 06:13 ET) · Skills that do things (effects and their caps, step 6) and a person's level on the ladder, earned by defeating people and beasts, with stat points to place
+
 - **Your level is earned.** You now carry a level on the same scale as every beast and legend (an ordinary grown
   person about 25, a soldier about 100). It grows while you grow up; after that only by beating people and beasts in a
   fight, more for a stronger foe and almost nothing for a far weaker one. Each level brings a point to place in strength,
