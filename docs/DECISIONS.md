@@ -3263,3 +3263,36 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
   `pwStretched`: 600-800 holds only calamity natures, 30 to 73 kinds (45), the High Roost gone, D-185's ten remaining new
   lines reach the band at their apex, the widest hole at most 30 (25). `pwLadder`: the Great Ash Dragon among the grown,
   the three ancient 780-800 above every elder. `pwBestiary`: the duel rows against `duelT`.
+
+### D-193 · The figures registry: full profiles of the great, by category; fixed beings by hand, people as views (2026-11-26; order 96, with orders 87 and 93; D-177, D-183, D-184, D-191)
+- **Nine categories in two groups, one data file each** (`data/figures/`): of the realms, the rulers, the great houses
+  (dukes and marquises: rungs N01 and N02), the Generals (the hosts' Generals who are people), the masters of the
+  orders, the masters of the peoples; beyond the realms, the legends, the three ancient dragons, the nine elder dragons
+  and the thirty-three ancient demons. A file's kind says how its profiles come to be: **fixed** (hand-written here),
+  **link** (another file's sheets with an overlay: the legends are grouped, never copied; the masters gain a class road,
+  a temper, goals, grudges and a secret), **generated** (people of the world).
+- **People are views, not copies.** A ruler's, a lord's, a General's or a Grand Master's profile is computed from the
+  state when it is read (level `A.LV`, class `A.LV.CL.shown`, skills from his rungs, arts by the fight's own pure choice,
+  titles `A.TT`, temper `A.WHY`, a story from the realm's line, his post's record and the world record), cached by the
+  state and the date in a `Map`, never saved: no new state, no save version (still 22). `LV.fromData` is not used: no
+  person's level is set from data (the fixed beings are not people).
+- **The fixed beings are real in A.POWER** the way the legends are (`PW.FIG`, read by `PW.being`, kind `figure`): an
+  individual's level stays within ten of its kind's (the ancient dragons' Old Blood adds ten, as the bestiary's title
+  does); its arts are the library's that its kind is born with, and one of its own; its titles are new monster titles
+  (`data/titles/figures.json`, weight X; holders agree with the sheets, `lint-titles`). Measured: every one below every
+  legend (log10 power at most 6.54 against the weakest legend's 7.57), the ancient dragons above the elders (6.41 against
+  5.58 on average), the ancient demons about the elders (half their mean power; the bestiary's levels 754 against 755).
+  The bestiary's counts are the figures' counts (lint): the wilds still spawn no ancient being. **No class for a dragon
+  or a demon:** `data/classes.json` is a tree of arms for people; their nature (the bestiary tier) stands in its place,
+  as with every legend but the Sword Saint.
+- **The demons' allegiance and disputes:** sworn 12 / 11 / 10 to Ghazrul, Morvane and Vethrael; their grudges carry the
+  Archdemons' quarrel (Ghazrul's servants against Morvane, who walked free while she lies bound; the three courts' Marquises
+  on the disputed Scorched March; Vethrael's choir against Morvane's soul-market). Homes are Hell's places by name (map
+  version 5's domains on `map-lock-2`), so the registry does not wait on that branch.
+- **Only what the player should know** (order 93): a fixed being is named once it is `known` (its fame) or learned; a
+  whispered one is a count of its kind. A person: rulers and Grand Masters by name everywhere, great houses and Generals
+  in his own realm, anyone he has met. Arts and arms once met; goals, grudges and the secret once close (kin, friend,
+  lover, his lord, a bond of 50) or learned (a flag `fig_<id>`: any card may set it). No card sets it yet.
+- **Not chosen.** Storing generated profiles (save growth, and they would go stale as people age and die); profiling the
+  counts (201 at the start: a page of noise); adding the fixed beings to `PW.great()` (its tale draws from that list, so
+  every world's tales would move; a door for later).

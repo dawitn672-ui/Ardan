@@ -3405,3 +3405,57 @@ playtester and a separate reviewer (the integrator's).
 line and the two species rows); the last commit that built them is `1c8631b6`.
 
 **Undo.** Revert this step's commits; to keep the bands but bring back the High Roost, see its `NOTE.md`.
+
+### H-159 · 2026-11-26 · The figures registry: "Figures of the Age" (order 96; D-193)
+
+**What.** The owner's order 96 asked for "many full profiles across the strongest most influential people across the
+continent. kings, nobles, generals, all the ancient dragons and demons etc clear categorical organization", with order 87's
+full profile (skills, levels, items, titles, personality, story) and order 93's rule that the player is told only what he
+should know. Built on the orders 91-96 batch (6e63c80f), on the branch `figures`:
+- **Data, one file a category** (`data/figures/`): 33 ancient demons, 3 ancient dragons and 9 elder dragons written by
+  hand, each a full profile (kind from the bestiary, level near its kind's, the library's arts its kind is born with and
+  one of its own, arts readied, titles, an item, temper and traits of the game's people, goals and grudges A.WHY reads, a
+  home by name, fame, a public and a secret story). The demons are sworn 12 / 11 / 10 to Ghazrul, Morvane and Vethrael,
+  in the bestiary's counts (Marquis x20, Pit-Mother x6, Ledger-Keeper x3, Pit Wyrm x4), housed in Hell's domains of map
+  version 5 by name (the Cinderlands, the Gatelands, the Hush, the Scorched March, the Ashen Marches); their grudges carry
+  the Archdemons' disputes. The ancient dragons are Ashgar, Rimewing and Galeheart (Ash, Frost, Storm). The legends are
+  linked and grouped (`legends.json`), the masters of the peoples overlaid (`race-masters.json`: class roads such as
+  Swordsman, Blade Dancer, Wyrm Blade; temper, goals, grudges, secret). Rulers, great houses, Generals and the orders'
+  Grand Masters are generated: their files hold only the rule and the words. `data/titles/figures.json`: 21 titles of the
+  fixed beings (monster titles, weight X).
+- **The engine** (`src/world/9999977-figures/a-registry.core.js`, `A.FIG`): profiles of every category; the people's
+  computed from the state (level, class, rungs, arts readied by the fight's own choice, titles, temper, goals and grudges,
+  a story from the realm's line, the post's record, the world record), cached by state and date, never stored; the fixed
+  beings wired into `A.POWER` as the legends are (`PW.FIG`, read by `PW.being`).
+- **The view** (`b-view.core.js`): the codex's **Figures of the Age**; categories as buttons in two groups, rows grouped by
+  liege, legend group or realm, a profile opened in place; what the player has not heard of is a count.
+- **The validator** `tools/lint-figures.mjs` (run by `tools/check.mjs`); `tools/lint-titles.mjs` reads the fixed sheets
+  as holders.
+
+**Counts** (seed 7): rulers 35, great houses 78, Generals 17, masters of the orders 8, masters of the peoples 4, legends
+16, ancient dragons 3, elder dragons 9, ancient demons 33 (197 profiles; seeds 23 and 41: 72 and 77 great houses, 18 and
+19 Generals).
+
+**Files.** `data/figures/*.json` (10, new), `data/titles/figures.json` (new), `data/README.md`,
+`src/world/9999977-figures/` (new: `a-registry.core.js`, `b-view.core.js`, `test.mjs`, `README.md`),
+`src/world/9999970-powers/a-power.core.js` (`PW.being` reads `PW.FIG`, kind `figure`),
+`src/core/release/core/23-ui-f.js` (the codex's button and page, guarded), `tools/lint-figures.mjs` (new),
+`tools/lint-titles.mjs`, `tools/check.mjs`, `docs/DECISIONS.md` (D-193), `CHANGELOG.md`.
+
+**Proof.** On a private build (`/tmp/ardan/figures/x.html`, workers 2): `figRegistry` (every category, the fixed counts,
+every profile whole and valid; power in log10: legends from 7.57, the figures at most 6.54, ancient dragons 6.41, elders
+5.58, ancient demons 5.28, half the elders' mean; three worlds each with every living realm's ruler and every person
+listed once), `figKnown` (213 profiles a fresh peasant may read, opened over three worlds: no secret, no whispered name;
+a flag and a meeting open them), `figDeterministic`, `figPhone` pass; the eleven powers tests, the ten titles tests
+(`ttDeterministic` and `ttUnique` included), the thirteen level tests but `lvAnchors` (long, not run), `uiSmoke`,
+`renderRng`, `replayWithRender`, `v2svRoundTrip` and `statMigrate`: 38 of 38; the codex's neighbours (`ttCov2Realm`,
+`ttPure2`, `foldLongTabs`, `ladderPage`, `freshRealmsRender`, `scopeShape`, `scopeActs`, `childrenSeeOnlyWhatTheyCan`):
+8 of 8. Engine tests 166 of 166. `lint-figures`,
+`lint-titles`, `lint-skills`, `lint-stages` (146, at its baseline), `lint-reasons` (41, at its baseline),
+`lint-docs-index`, `version.mjs check`. No state is added (save version 22). Not run: the whole suite, the long tier,
+coherency and the balance harness (nothing here moves a world: no draw, no write), a playtester and a separate reviewer.
+
+**Archived.** Nothing.
+
+**Undo.** Revert the step's commits; the build without `src/world/9999977-figures` hides the codex's button, and
+`PW.being` reads no `PW.FIG`.
