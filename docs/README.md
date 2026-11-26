@@ -18,6 +18,7 @@ left the tree on that day; git history holds them (the last commit with them is 
 | [DECISIONS.md](DECISIONS.md) | Every decision: what, what else was considered, why |
 | [HISTORY.md](HISTORY.md) | What was done, step by step, and how to undo it (append only) |
 | [VERSIONS.md](VERSIONS.md) | Every version, its commit and its sample save |
+| [BALANCE_BASELINE.md](BALANCE_BASELINE.md) | What the bot lives read (age, coin, renown, crowns, best skill levels), so a change that eases or hardens a life shows; no targets |
 | [BRANCHES.md](BRANCHES.md) | The branches on GitHub and why each is there |
 | [TOOLING.md](TOOLING.md) | Skills, plugins and connectors: what is on, what is off, and why |
 | [IDEAS.md](IDEAS.md) | Ideas parked for later, each with why |
