@@ -84,6 +84,7 @@ Tag a commit whose CI is green, or the end of a step the owner asked for. Say in
 | v2.1.0-alpha.14 | 2026-11-19 | `6f325bf4` | The realm's peace (stability, factions, coups, private wars, all with reasons); the military path (the muster, units that differ, careers, each weapon's road); a lighter save |
 | v2.1.0-alpha.15 | 2026-11-19 | `b405db5a` | Everyone ages and the houses go on; the game built by CI; versions cut one way · build `sha256:f65cd1ebd2d1099814f04f5a68fde903d214d6d333321a8599e06f9640e7d1d1` |
 | v2.1.0-alpha.16 | 2026-11-25 | `4a97b98d` | Phase 1: the Emilio fixes, the exploit stopgaps (breakthroughs, the throne plot), outlaws hunted, one time button · build `sha256:4b0c1b3322597085871ac858a55f7abc03590a4881dec1b3a1e42bacc11eea5d` |
+| v2.1.0-alpha.17 | 2026-11-26 | `82bcc376` | The world grows: the level ladder for every being, 270 species and 16 legends (Sarnavoth, the Primordial Archdemons, the Sword Saint), encounters in the wilds, skills read in rank and level · build `sha256:81dec1eae3f61b45bee0f015bb3c6f0c7704af2f0800333af397f2bbd2e9d6dd` |
 <!-- versions:end -->
 
 **Release branches (D-134).** From v2.1.0-alpha.10 on, `release/<version>` points at exactly the row's commit, the one CI

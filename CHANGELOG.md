@@ -5,6 +5,8 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+## v2.1.0-alpha.17 (2026-11-26 01:13 ET) · The world grows: the level ladder for every being, 270 species and 16 legends (Sarnavoth, the Primordial Archdemons, the Sword Saint), encounters in the wilds, skills read in rank and level
+
 - **Skills have ranks and levels, not words.** A skill now reads like "Basic Swordsmanship · C · Lv 3": a rank from D
   up to S, and a level from 1 to 10 within it. Beginner, Intermediate, Advanced, Expert, Master, Grandmaster and Legend
   are gone from every skill row, the skill sheet, the training plan, the "Work at a skill" picker, the choice that asks
