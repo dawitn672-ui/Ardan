@@ -216,4 +216,31 @@ export default {
     return { ok, detail: `${r.worlds.map(w => `world ${w.seed}: ${w.n} NPCs, the same on a replay ${w.same}, none placed ${w.none}, main stream moved ${w.moved}; e.g. ${w.sample.join('; ')}`).join(' | ')}; ${F.way} of ${F.all} points went to the two stats of the person's own way of life (${Object.entries(F.ways).map(([k, n]) => k + ' ' + n).join(', ')})` };
   },
 
+  // the phone: at 375 x 667 the profile's button and the allocation sheet fit, every control is 44 points, no percentage,
+  // a stat's note opens on a press (not a hover), and + then Keep places a point that stays placed
+  async lvPhone(pg) {
+    if (!(await pg.evaluate(GATE))) return NO;
+    await pg.setViewportSize({ width: 375, height: 667 });
+    await pg.evaluate(() => { T.enter({ seed: 9791, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 24 }); A.S.queue = []; const pc = A.pc(); A.LV.seed(pc); pc.lv.pts = 5; UI.tab = 'profile'; UI.ov = null; UI.render(); });
+    const btn = await pg.evaluate(() => { const b = document.querySelector('.lv-place'); if (!b) return null; const r = b.getBoundingClientRect(); return { w: r.width, h: r.height, t: b.textContent }; });
+    await pg.click('.lv-place');
+    const sheet = await pg.evaluate(() => {
+      const m = document.querySelector('.lv-sheet'); if (!m) return null;
+      const r = m.getBoundingClientRect(), small = [...m.querySelectorAll('button')].filter(b => { const q = b.getBoundingClientRect(); return q.width > 0 && (q.width < 44 || q.height < 44); }).map(b => b.className + ':' + b.textContent.trim());
+      return { rows: m.querySelectorAll('.lv-row').length, left: r.left, right: r.right, vw: innerWidth, small, pct: /\d\s?%/.test(m.textContent), sideways: document.documentElement.scrollWidth > innerWidth, hoverAttrs: m.querySelectorAll('[onmouseover],[onmouseenter],[title]').length };
+    });
+    await pg.hover('.lv-sheet .lv-row[data-s="str"] .lv-name .tt'); const hov = await pg.evaluate(() => (UI.TT ? UI.TT.depth() : 0));
+    await pg.click('.lv-sheet .lv-row[data-s="str"] .lv-name .tt'); const open = await pg.evaluate(() => (UI.TT ? UI.TT.depth() : 0));
+    await pg.keyboard.press('Escape');
+    const placed = await pg.evaluate(() => {
+      const pc = A.pc(), s = GD.STATS.find(k => A.LV.canPlace(pc, k)); if (!s) return { none: true };
+      const st0 = A.stat(pc, s), pts0 = pc.lv.pts;
+      UI.A.lvPlus(s); UI.A.lvKeep();
+      return { s, put: (pc.lv.put || {})[s] || 0, pts0, pts: pc.lv.pts, st0, st: A.stat(pc, s), closed: !UI.ov };
+    });
+    await pg.setViewportSize({ width: 1366, height: 768 });
+    const ok = !!btn && btn.h >= 44 && btn.w >= 44 && !/\d/.test(btn.t) && !!sheet && sheet.rows === 6 && sheet.left >= 0 && sheet.right <= sheet.vw + 0.5 && !sheet.small.length && !sheet.pct && !sheet.sideways && !sheet.hoverAttrs &&
+      hov === 0 && open > 0 && placed.put === 1 && placed.pts < placed.pts0 && placed.st >= placed.st0 && placed.closed;
+    return { ok, detail: `button ${btn ? `"${btn.t}" ${Math.round(btn.w)}x${Math.round(btn.h)}` : 'missing'}; sheet ${sheet ? `${sheet.rows} rows, ${Math.round(sheet.left)}-${Math.round(sheet.right)} of ${sheet.vw}, small controls ${sheet.small.length} ${sheet.small.slice(0, 3).join(' ')}, percentages ${sheet.pct}, sideways ${sheet.sideways}` : 'missing'}; hover opened ${hov}, a press ${open}; placed ${JSON.stringify(placed)}` };
+  },
 };
