@@ -202,7 +202,8 @@ export default {
         // what S1 read before the step: run every upgrade step but 'skills2' on a copy
         const d0 = await SAVES.decode(bytes), ver0 = d0.S.ver;
         // (since the switch, S1's reads: the rungs off for the copy's load and its reads)
-        const keep = SV.STEPS, on0 = SK2.on; SV.STEPS = keep.filter(s => s[0] !== 'skills2'); SK2.on = false;
+        // (a save made at version 17 or later was born on the rungs: what it read is the rungs' read, H-144)
+        const keep = SV.STEPS, on0 = SK2.on, born = ver0 >= 17; SV.STEPS = keep.filter(s => s[0] !== 'skills2'); if (!born) SK2.on = false;
         let before = {};
         try { UI.enterSaveSafe(d0); for (const id in A.S.people) { const p = A.S.people[id]; if (p && p.alive) before[id] = keys.map(k => A.skill(p, k)); } }
         finally { SV.STEPS = keep; SK2.on = on0; }
@@ -231,7 +232,7 @@ export default {
             if (!(e.xp == null || (e.xp >= 0 && e.xp < E.cost(s.rank, e.lv)))) bad.push(id + ' xp ' + e.xp);
             top[s.family] = Math.max(top[s.family] || 0, E.value(s.rank, e.lv));
           }
-          for (const c in pc.sk || {}) if (pc.sk[c].lv > 0 && top[c] !== A.SK.VALUES[pc.sk[c].lv]) bad.push('rung of ' + c + ' reads ' + top[c] + ' for ' + A.SK.VALUES[pc.sk[c].lv]);
+          for (const c in pc.sk || {}) if (pc.sk[c].lv > 0 && top[c] !== A.SK.VALUES[pc.sk[c].lv] && !(born && E.s1LevelOfValue(top[c] + 1e-9) === E.s1LevelOfValue(A.SK.VALUES[pc.sk[c].lv] + 1e-9))) bad.push('rung of ' + c + ' reads ' + top[c] + ' for ' + A.SK.VALUES[pc.sk[c].lv]);
           const st = SK2.stale(pc); if (st.length) bad.push('stale ' + st.join(','));
           // the perks the release reads from the numbers are the perk effects the held rungs carry (§7)
           const want = new Set(A.perkNames(pc).map(x => x[1])), have = new Set();

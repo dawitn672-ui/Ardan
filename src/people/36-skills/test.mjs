@@ -44,7 +44,8 @@ export default {
           // a month may have passed on load (a card at the turn); the level is at least the one under the old number
           if (s.lv < lv) bad.push(c + ' ' + SK.stepLabel(s.lv, s.xp) + ' under ' + v);
           if (SK.wordOf(s.lv) < SK.wordOf(lv)) words++;
-          if (pc.skills[c] !== SK.VALUES[s.lv]) bad.push('mirror ' + c);
+          // (since the switch the mirror is the rung's read, which on a save born on the rungs can be a C, B or A step's even level)
+          if (pc.skills[c] !== SK.VALUES[s.lv] && !(A.SK2 && A.SK2.on && SK.lvOfValue(pc.skills[c]) === s.lv)) bad.push('mirror ' + c);
           maxDrop = Math.max(maxDrop, v - SK.VALUES[lv]);
           steps++;
         }

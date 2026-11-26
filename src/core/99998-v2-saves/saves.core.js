@@ -116,7 +116,9 @@
     SV.last = null;
     if (from != null && from < SV.VER && A.S) {
       const f = from; from = null;
-      SV.last = { from: f, steps: SV.upgrade(A.S) };
+      // the steps may ask which version the save was made at (S.ver is the release's by now): SV.from (H-144)
+      SV.from = f;
+      try { SV.last = { from: f, steps: SV.upgrade(A.S) }; } finally { SV.from = null; }
       A.S.rng = A.rngState;
     }
     return r;

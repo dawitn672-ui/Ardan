@@ -2966,3 +2966,21 @@ level 10 the cap). Decisions: D-180.
   60-100), and the baseline build reads the same 50 on the same seeds (`--paths=royal --lives-per=4`), so it is the small
   league's noise, not this step. CI's long tier runs the full league.
 - Undo: revert the step's commits; a save made at version 18 would then be refused as newer.
+
+### H-144 · 2026-11-26 · A game born on the rungs loads without the hold-back (sk2Migrate, s1Migrate on alpha 17's sample)
+
+**What.** A game started at save version 17 (since the switch, step 5) never ran the save step 'skills2', so it carried no
+`S.sk2v`. Loaded by a later build, the step took it for a version-16 save and held back its C, B and A even levels: a
+skill could read one step lower on load (alpha 17's sample: command 37 to 35). Step 6's builder found it in `sk2Migrate`
+and `s1Migrate` on `v2.1.0-alpha.17-noble-life.ardan`, failing on the base too.
+
+**Fix.** `A.V2SAVE.from` is the version the save was made at, set while the upgrade steps run (`S.ver` is the release's
+by then). `SK2.migrate` only marks a save made at 17 or later (`S.sk2v = 2`) and never holds it back. The two tests read
+such a save as born on the rungs: its reads before the step are the rungs' reads, and a mirror or rung may stand on the
+even level of the same S1 step.
+
+**Proof.** `sk2Migrate` (24 saves, 1,032,688 reads the same, idempotent), `s1Migrate`, `statMigrate`, `sk2Caps`,
+`sk6PerkSums`, `lvFromDefeats`, `uiSmoke`, `renderRng`, `replayWithRender`, `pwLadder`, `lvPhone`, `pfNumbers`, `pfFits`
+pass on the merged build; engine tests 151 of 151; the lints at their baselines.
+
+**Undo.** Revert this commit (the two test files, `b-migrate.core.js`, `saves.core.js`).

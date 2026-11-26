@@ -13,6 +13,10 @@
   SK2.migrate = function (S) {
     S = S || A.S; if (!S || !S.people) return 0;
     if (S.sk2v >= (SK2.on ? 2 : 1)) return 0;
+    // a state made at version 17 or later was born on the rungs (a new game never ran this step, so it has no mark):
+    // it only needs the mark, never the hold-back, which would move a level it already holds (H-144)
+    const made = A.V2SAVE && A.V2SAVE.from != null ? +A.V2SAVE.from : +S.ver;
+    if (SK2.on && made >= 17) { S.sk2v = 2; return 0; }
     const pc = S.people[S.pc];
     let n = 0;
     // S1's step runs first ('skills'): a save older than S1 has its table by now
