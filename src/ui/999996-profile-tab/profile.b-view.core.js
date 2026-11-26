@@ -261,6 +261,12 @@
     let s = '';
     if (arts.length) s += '<ul class="pf-list">' + arts.map(x => li(x.main ? 'Main style' : 'Style', `${note('A way of fighting taught by a school or a house. Each rank unlocks techniques you can use in a duel.', esc(x.name), 'pf-w')} <span class="pf-m2">${esc(x.rankWord)}</span>`)).join('') + '</ul>';
     s += rows.length ? '<ul class="pf-skills">' + rows.map(skillRow).join('') + '</ul>' : empty(UI.scope && !UI.scope(p).sees('skills') ? 'A babe has learned nothing yet.' : 'Nothing learned yet. Try your hand at something.');
+    // the arts of the three kinds (37-skills2's g-view, D-186): what is in hand, and the way to change it (the Skills sheet)
+    try {
+      const K2 = A.SK2, held = K2 && K2.artsHeld && A.S && p.id === A.S.pc ? K2.artsHeld(p) : [];
+      if (held.length) { const R = K2.readiedOf(p).map(x => (K2.art(x.id) || {}).name).filter(Boolean);
+        s += `<div class="pf-arts">${esc(R.length ? 'In hand: ' + R.join(', ') : 'Nothing in hand')} <button class="small" data-a="ov" data-v="profs">Arts</button></div>`; }
+    } catch (e) {}
     return s;
   } });
   PF.addPanel({ k: 'gear', label: 'Gear', body: p => {

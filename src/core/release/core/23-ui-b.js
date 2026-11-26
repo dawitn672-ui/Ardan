@@ -594,7 +594,8 @@ UI.icon = function (name, cls) {
 // S1b (D-072): the proficiency lists (category, number, tier word, a bar by width, stars) are retired to
 // archive/s1-proficiencies/old-views.js; the skills panel is 36-skills' UI.skillsBlock and UI.skillRows (§8).
 UI.profBlock = function (p, opts = {}) {
-  return UI.skillsBlock ? UI.skillsBlock(p, opts) : "";
+  // and the arts of the three kinds beside the ladders (37-skills2's g-view, step 11, D-186)
+  return (UI.skillsBlock ? UI.skillsBlock(p, opts) : "") + (UI.artsBlock ? UI.artsBlock(p, opts) : "");
 };
 
 UI.topProfs = function (p, n = 5) {
@@ -1570,7 +1571,7 @@ UI.duelTechBar = function (D) {
         const l = A.techStatusLine ? A.techStatusLine(f) : "";
         return l ? `<div class="tiny bad center">${who}: ${UI.esc(l)}</div>` : "";
       },
-      extra = UI.duelTechBar(D) + st(D.a, "You") + st(D.b, D.b.short);
+      extra = UI.duelTechBar(D) + (UI.duelArtsBar ? UI.duelArtsBar(D) : "") + st(D.a, "You") + st(D.b, D.b.short);
     if (
       (!D.over &&
         extra &&
