@@ -1,7 +1,7 @@
 // Skills with levels and experience (S1b; docs/design/skills.md, D-072): the model, ported from
-// docs/design/skills/model.mjs, which stays the reference. Levels (seven words of five steps), experience at the
-// standard's price, concepts a person must grasp to pass into a word, breakthroughs at named moments, proof from
-// Expert up, stored experience that lands as a leap, discipline, rivals, a new place, needs, kin skills, hours shared,
+// docs/design/skills/model.mjs, which stays the reference. Levels (seven bands of five steps), experience at the
+// standard's price, concepts a person must grasp to pass a band's edge, breakthroughs at named moments, a deed from
+// the fourth band up, stored experience that lands as a leap, discipline, rivals, a new place, needs, kin skills, hours shared,
 // specialisms, and disuse. Every change is written to the person's ledger with its cause, every turning point to the
 // record.
 //
@@ -12,6 +12,7 @@
 // The game's store (src/people/36-skills) keeps the player's skills in exactly this shape (p.sk[k]) and calls month()
 // and year(); other people go by the closed form at the end (npcYear, graspedBy).
 import { CURVE, TALENT, PAST_REACH, quality, teacherMul, LEARN_AGE, interp, GRACE, GRACE_KIND, RUST_STEP, REGAIN, PERMANENT } from './growth.js';
+import { s1Label, gateLabel } from './skills2.js';
 
 export { TALENT };
 export let DATA = null;
@@ -28,14 +29,19 @@ export function setData(d) {
   return d;
 }
 
-// ---- 1. levels: seven words of five steps (35 levels); Myth is for the dead ------------------------------------------
-export const WORDS = ['Beginner', 'Intermediate', 'Advanced', 'Expert', 'Master', 'Grandmaster', 'Legend'];
+// ---- 1. levels: seven bands of five steps (35 steps) ------------------------------------------------------------------
+// The skills rebuild's switch (step 5, D-NEW-1): S1's names for the bands and steps (seven words, Roman steps) are gone
+// from everything a player reads (archive/s1-skill-words/); a level is printed as its rung, "C · Lv 3"
+// (skills2.js: D is the first two bands one for one, C, B and A a band each at two levels a step, S the last two).
+// The arithmetic is S1's, unchanged: a band's edge is where its concepts gate (and, from the fourth band, a deed).
+export const BANDS = 7;
 export const EDGE = [1, 15, 35, 55, 72, 88, 96, 101];
-export const STEPS = 5, MAX_LV = WORDS.length * STEPS;
-export const ROMAN = ['I', 'II', 'III', 'IV', 'V'];
+export const STEPS = 5, MAX_LV = BANDS * STEPS;
 export const wordOf = lv => (lv <= 0 ? -1 : Math.floor((lv - 1) / STEPS));
 export const stepOf = lv => (lv <= 0 ? 0 : ((lv - 1) % STEPS) + 1);
-export const levelName = lv => (lv <= 0 ? 'untried' : `${WORDS[wordOf(lv)]} ${ROMAN[stepOf(lv) - 1]}`);
+// a step and its experience, printed as the rung that holds it ("B · Lv 4"); the band edge w as the rung it opens
+export const levelName = (lv, xp) => s1Label(lv, xp || 0);
+export const edgeName = w => gateLabel(w);
 export function value(lv) {
   if (lv <= 0) return 0;
   const w = wordOf(lv);
@@ -49,7 +55,7 @@ export function levelOfValue(v) {
   while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (VALUES[mid] <= v + 1e-9) lo = mid; else hi = mid - 1; }
   return lo;
 }
-// the first level of a word (0 Beginner .. 6 Legend)
+// the first step of a band (0 .. 6)
 export const firstOf = w => w * STEPS + 1;
 
 // ---- 2. experience: ten for a month of steady drill; each level costs more, by the standard's practice curve ---------
@@ -123,7 +129,7 @@ export const BREAK = {
 };
 // the owner's choices (docs/design/skills.md §11), each one named constant
 export const STORE_RATE = 0.5;   // §11 item 3: effort at an edge without the grasp is stored at half
-export const PROOF_FROM = 3;     // §11 item 4: from Expert (word 3) up, the crossing needs a proving moment
+export const PROOF_FROM = 3;     // §11 item 4: from the fourth band (rank B) up, the crossing needs a deed (S1's proof)
 
 // ---- 5. what moves with the life ------------------------------------------------------------------------------------
 export const DYN = {
@@ -156,7 +162,7 @@ const lostLine = (p, age, k, x, why) => { if (x > 1e-9) p.ledger.push({ age: Mat
 const rec = (p, age, k, kind, text) => p.rec.push({ age: Math.floor(age), k, kind, text });
 export const reads = (p, k) => { const s = p.sk[k]; return s ? Math.max(0, value(s.lv) - s.rust) : 0; };
 
-export const openConcepts = (p, k) => { const s = sk(p, k), w = wordOf(s.lv) + 1; return w >= 1 && w < WORDS.length ? conceptsOf(k, w).filter(c => s.got[c.id] == null) : []; };
+export const openConcepts = (p, k) => { const s = sk(p, k), w = wordOf(s.lv) + 1; return w >= 1 && w < BANDS ? conceptsOf(k, w).filter(c => s.got[c.id] == null) : []; };
 export const atEdge = s => s.lv > 0 && stepOf(s.lv) === STEPS && s.lv < MAX_LV;
 // the room the store has: up to the whole next word
 export const storeRoom = s => Math.max(0, totalTo(Math.min(MAX_LV, s.lv + 1 + STEPS)) - totalTo(s.lv + 1) - s.st);
@@ -172,7 +178,7 @@ export function grasp(p, k, c, age, how, text) {
 export function settle(p, k, age, why) {
   const s = sk(p, k);
   for (;;) {
-    if (s.lv >= MAX_LV) { lostLine(p, age, k, s.xp, 'nothing above Legend'); s.xp = 0; break; }
+    if (s.lv >= MAX_LV) { lostLine(p, age, k, s.xp, 'nothing above the top'); s.xp = 0; break; }
     const c = cost(s.lv);
     if (s.xp < c) break;
     if (atEdge(s)) {
@@ -186,14 +192,14 @@ export function settle(p, k, age, why) {
         if (s.stallAt == null) s.stallAt = age;
         if (!s.stallSaid && age - s.stallAt >= 1) {
           s.stallSaid = true;
-          rec(p, age, k, 'stall', missing.length ? `${SKILL[k].name} holds at ${levelName(s.lv)}: has not grasped ${missing.map(x => x.name).join(' or ')}` : `${SKILL[k].name} holds at ${levelName(s.lv)}: ready, and not yet proved`);
+          rec(p, age, k, 'stall', missing.length ? `${SKILL[k].name} holds at ${levelName(s.lv, s.xp)}: has not grasped ${missing.map(x => x.name).join(' or ')}` : `${SKILL[k].name} holds at ${levelName(s.lv, s.xp)}: ready, and the deed not yet done`);
         }
         break;
       }
       const by = w >= PROOF_FROM && s.proofWhy ? s.proofWhy : why;
       s.xp -= c; s.lv++; s.proved = false; s.proofWhy = null; s.stallAt = null; s.stallSaid = false;
       const leap = s.st; s.xp += s.st; s.st = 0;
-      rec(p, age, k, 'word', `${SKILL[k].name} reaches ${WORDS[w]}: ${by}${leap >= cost(s.lv) ? ' (what was stored lands at once)' : ''}`);
+      rec(p, age, k, 'word', `${SKILL[k].name} reaches ${edgeName(w)}: ${by}${leap >= cost(s.lv) ? ' (what was stored lands at once)' : ''}`);
     } else { s.xp -= c; s.lv++; }
     s.best = Math.max(s.best, s.lv);
   }
@@ -306,7 +312,7 @@ export function year(p, age) {
     let lost = loss * PERMANENT * XP_UNIT / (CURVE.A * Math.exp(-value(s.lv) / CURVE.S));
     const want = lost;
     while (lost > 0 && s.lv > 1) { if (s.xp >= lost) { s.xp -= lost; lost = 0; } else { lost -= s.xp; s.lv--; s.xp = cost(s.lv); } }
-    // the ledger says what was taken (at Beginner I nothing is left to take)
+    // the ledger says what was taken (at the first step nothing is left to take)
     led(p, age, k, -(want - lost), `unused ${Math.round(idle)} years`, ['rust']);
     s.streak = 0;
   }
@@ -318,7 +324,7 @@ export function storedSteps(s) { return s.st > 0 ? Math.min(STEPS, Math.ceil(STE
 export function describe(p, k, age) {
   const s = sk(p, k), open = openConcepts(p, k), c = cost(s.lv);
   const bar = s.lv >= MAX_LV ? 'the top' : s.xp >= c ? 'full' : BAR_WORDS[Math.min(4, Math.floor(5 * s.xp / c))];
-  return { level: levelName(s.lv), lv: s.lv, reads: Math.round(reads(p, k)), bar, stored: storedSteps(s),
+  return { level: levelName(s.lv, s.xp), lv: s.lv, reads: Math.round(reads(p, k)), bar, stored: storedSteps(s),
     discipline: disciplineWord(s.streak), rusty: s.rust > 0, concepts: open.map(x => `${x.name}: ${graspWord(s.ins[x.id] || 0, need(p, k, x), s.stallAt != null ? age - s.stallAt : 0)}`) };
 }
 

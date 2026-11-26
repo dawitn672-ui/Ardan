@@ -23,7 +23,8 @@ test('value and levelOfValue round-trip; the doc\'s check readings', () => {
   assert.deepEqual([16, 17, 18, 19, 20].map(i => Math.round(value(i))), [55, 58, 62, 65, 69]);
   assert.equal(value(31), 96); assert.equal(value(35), 100);
   assert.equal(levelOfValue(54.9), 15); assert.equal(levelOfValue(0.5), 0); assert.equal(levelOfValue(100), 35);
-  assert.equal(levelName(17), 'Expert II'); assert.equal(levelName(0), 'untried');
+  // the switch (step 5): a step prints as the rung that holds it; past half a C, B or A step's bar, its even level
+  assert.equal(levelName(17), 'B · Lv 3'); assert.equal(levelName(17, cost(17) * 0.75), 'B · Lv 4'); assert.equal(levelName(5), 'D · Lv 5'); assert.equal(levelName(26), 'S · Lv 1'); assert.equal(levelName(0), 'untried');
 });
 
 test('need is pure and the same across two runs', () => {
@@ -138,7 +139,7 @@ test('s1BlindSpot: forty years of the best training stop at step V; the page say
     if (mi % 12 === 11) year(p, 15 + Math.floor(mi / 12));
   }
   const s = sk(p, 'sword');
-  assert.equal(s.lv, 15, `stops at Advanced V, not ${levelName(s.lv)}`);
+  assert.equal(s.lv, 15, `stops at the top of C (S1 step 15), not ${levelName(s.lv)}`);
   assert.ok(s.st > 0, 'experience is stored at the edge');
   const d = describe(p, 'sword', 54);
   assert.ok(d.concepts.some(x => x === 'the measure: it does not come'), d.concepts.join('; '));
