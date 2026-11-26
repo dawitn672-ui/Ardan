@@ -1164,26 +1164,38 @@ var __ARDAN_V2_MAKE = (() => {
     ADVANCE_CHANCE: () => ADVANCE_CHANCE,
     ADVANCE_FROM: () => ADVANCE_FROM,
     BANDS: () => BANDS,
+    BASES: () => BASES,
     CAP_HUMAN: () => CAP_HUMAN,
+    COOL_UNITS: () => COOL_UNITS,
     CURVE_A: () => CURVE_A,
     CURVE_S: () => CURVE_S,
     EDGE_GATE: () => EDGE_GATE,
     EDGE_RANK: () => EDGE_RANK,
     FIGHT_PARTS: () => FIGHT_PARTS,
     FOUND_CHANCE: () => FOUND_CHANCE,
+    HEAL_OF: () => HEAL_OF,
     HUMAN: () => HUMAN,
     IX: () => IX,
+    KINDS3: () => KINDS3,
     MAX_LV: () => MAX_LV,
+    MONTHS_OF: () => MONTHS_OF,
     RANKS: () => RANKS,
     REACH: () => REACH,
     RESIST_STEP: () => RESIST_STEP,
     S1_MAX: () => S1_MAX,
     S1_VALUES: () => S1_VALUES,
+    SLOTS_MAX: () => SLOTS_MAX,
+    STATUS: () => STATUS,
     STEP_MIND: () => STEP_MIND,
+    USE_TYPES: () => USE_TYPES,
     XP_K: () => XP_K,
     XP_UNIT: () => XP_UNIT,
     addXp: () => addXp,
+    artUse: () => artUse,
     aurasOn: () => aurasOn,
+    beingArts: () => beingArts,
+    beingLevel: () => beingLevel,
+    beingOk: () => beingOk,
     budget: () => budget,
     budgetFaults: () => budgetFaults,
     canAdvance: () => canAdvance,
@@ -1191,9 +1203,17 @@ var __ARDAN_V2_MAKE = (() => {
     canMerge: () => canMerge,
     capOf: () => capOf,
     capped: () => capped,
+    chooseReady: () => chooseReady,
+    condOk: () => condOk,
+    coolFactor: () => coolFactor,
+    coolWord: () => coolWord,
     cost: () => cost,
+    costOf: () => costOf,
+    costWord: () => costWord,
     deedCount: () => deedCount,
     descendants: () => descendants,
+    doList: () => doList,
+    durWord: () => durWord,
     edgeNeeds: () => edgeNeeds,
     edgeOn: () => edgeOn,
     edgeVerdict: () => edgeVerdict,
@@ -1207,6 +1227,7 @@ var __ARDAN_V2_MAKE = (() => {
     familyRead: () => familyRead,
     fightOn: () => fightOn,
     findCycle: () => findCycle,
+    fires: () => fires,
     fromS1: () => fromS1,
     gateLabel: () => gateLabel,
     gather: () => gather,
@@ -1214,18 +1235,25 @@ var __ARDAN_V2_MAKE = (() => {
     hashKey: () => hashKey,
     heldOfRung: () => heldOfRung,
     index: () => index,
+    isArt: () => isArt,
+    kindFaults: () => kindFaults,
     label: () => label,
     landed: () => landed,
+    manaOf: () => manaOf,
     merge: () => merge,
     mergeEntry: () => mergeEntry,
     missing: () => missing,
     nextRank: () => nextRank,
+    nextRound: () => nextRound,
+    npcArts: () => npcArts,
     openRecipes: () => openRecipes,
     pastReach: () => pastReach,
     perkRows: () => perkRows,
+    plan: () => plan,
     prevRank: () => prevRank,
     profile: () => profile,
     rankIx: () => rankIx,
+    ready: () => ready,
     recipeFaults: () => recipeFaults,
     resistOn: () => resistOn,
     rungOf: () => rungOf,
@@ -1236,7 +1264,9 @@ var __ARDAN_V2_MAKE = (() => {
     s1OfRung: () => s1OfRung,
     s1Pos: () => s1Pos,
     setData: () => setData,
+    shareWord: () => shareWord,
     shifted: () => shifted,
+    slots: () => slots,
     spendAt: () => spendAt,
     srcKey: () => srcKey,
     stack: () => stack,
@@ -1244,8 +1274,10 @@ var __ARDAN_V2_MAKE = (() => {
     topRank: () => topRank,
     totalTo: () => totalTo,
     unitOf: () => unitOf,
+    usesMana: () => usesMana,
     value: () => value,
-    valueAt: () => valueAt
+    valueAt: () => valueAt,
+    weaponOk: () => weaponOk
   });
   var RANKS = ["D", "C", "B", "A", "S", "SS", "SSS", "X"];
   var HUMAN = ["D", "C", "B", "A", "S"];
@@ -1406,9 +1438,10 @@ var __ARDAN_V2_MAKE = (() => {
     return per * at * (1 + bonus);
   }
   var tagKind = (ix, tag) => ix.FAM[tag] ? "family" : ix.groups.has(tag) ? "group" : "narrow";
-  function effectCost(ix, e) {
+  function effectCost(ix, e, skill) {
+    if (Array.isArray(e)) return e.reduce((t, x) => t + effectCost(ix, x, skill), 0);
     if (!e || typeof e !== "object") return 0;
-    const C = ix.V.costs, a = Math.abs(+e.v || 0);
+    const C = ix.V.costs, a = Math.abs(+e.v || 0), K2 = C.kinds || {}, sh = Math.abs(+e.share || 0);
     switch (e.type) {
       case "stat":
         return C.stat * a;
@@ -1436,9 +1469,21 @@ var __ARDAN_V2_MAKE = (() => {
       case "perk":
         return e.legacy ? C.perkLegacy : C.perk * (a || 1);
       case "trigger":
-        return effectCost(ix, e.do) * ((ix.V.rareTriggers || []).includes(e.on) ? C.triggerRare : C.trigger);
+        return effectCost(ix, e.do, skill) * ((ix.V.rareTriggers || []).includes(e.on) ? C.triggerRare : C.trigger);
       case "active":
-        return effectCost(ix, e.do) * (ix.V.limits[e.limit] != null ? ix.V.limits[e.limit] : 1);
+        return effectCost(ix, e.do, skill) * (isArt(skill) && skill.spec && skill.spec.cooldown ? coolFactor(skill.spec.cooldown) : ix.V.limits[e.limit] != null ? ix.V.limits[e.limit] : 1);
+      // the three kinds' moments (step 11, D-186): a share of the user's fighting worth as a blow, of his blood or wind
+      // healed, of the harm a guard takes off; a stat raised for a while; a foe's state; each in vocab.json's costs.kinds
+      case "strike":
+        return (K2.strikeShare || 0) * sh * (e.tag === "all" ? K2.allTag || 1 : 1) + (K2.pierce || 0) * Math.abs(+e.pierce || 0);
+      case "heal":
+        return e.of === "wounds" ? (K2.healWound || 0) * a : (K2.healShare || 0) * sh;
+      case "raise":
+        return (skill && skill.spec && skill.spec.duration && /^(month|season|year)$/.test(skill.spec.duration.unit) ? K2.raiseMonth : K2.raise || 0) * a;
+      case "guard":
+        return (K2.guardShare || 0) * sh;
+      case "status":
+        return ((K2.status || {})[e.of] || 0) * a;
       default:
         return 0;
     }
@@ -1456,7 +1501,7 @@ var __ARDAN_V2_MAKE = (() => {
     }
     return [...held.values()];
   }
-  var spendAt = (ix, skill, lv) => effectsAt(skill, lv).reduce((t, e) => t + effectCost(ix, e), 0);
+  var spendAt = (ix, skill, lv) => effectsAt(skill, lv).reduce((t, e) => t + effectCost(ix, e, skill), 0);
   function budgetFaults(ix, skill) {
     const out = [];
     for (const b of skill.levels || []) {
@@ -1478,7 +1523,23 @@ var __ARDAN_V2_MAKE = (() => {
     const n3 = neg.reduce((s, v) => s + v, 0);
     return Math.max(-cap3, t + n3);
   }
-  var CAP_HUMAN = { edge: 12, fightShare: 0.15, aura: 3, blunderSurge: 2, resist: 3, growth: 50, stat: 10 };
+  var CAP_HUMAN = {
+    edge: 12,
+    fightShare: 0.15,
+    aura: 3,
+    blunderSurge: 2,
+    resist: 3,
+    growth: 50,
+    stat: 10,
+    // the three kinds in a fight (step 11, D-186): one blow at most 0.4 of the user's fighting worth; what is healed in one
+    // fight at most 0.35 of his blood; a guard takes at most half of a blow; a stat raised by buffs at most +10 (the stat
+    // cap, kept apart from it: a buff wears off); a foe held stunned or off balance at most 2 rounds
+    strikeShare: 0.4,
+    healShare: 0.35,
+    guardShare: 0.5,
+    raise: 10,
+    status: 2
+  };
   function capOf(ix, what, topRank2) {
     const C = (ix.V.caps || {})[what], hard = HUMAN.includes(topRank2) || rankIx(topRank2) < 0 ? CAP_HUMAN[what] : void 0;
     const v = !C ? Infinity : C[topRank2] != null ? C[topRank2] : C.S != null ? C.S : Infinity;
@@ -1924,6 +1985,359 @@ var __ARDAN_V2_MAKE = (() => {
     }
     for (const k in out) out[k].sort((a, b) => a[0] - b[0]);
     return out;
+  }
+  var KINDS3 = ["active", "passive", "buff"];
+  function isArt(s) {
+    return !!(s && s.art === true && KINDS3.includes(s.kind));
+  }
+  var BASES = ["strike", "feint", "guard", "press", "grapple"];
+  var USE_TYPES = { active: ["strike", "status", "fight", "heal"], buff: ["heal", "raise", "guard", "fight"], passive: ["fight", "guard", "heal", "status", "strike"] };
+  var STATUS = ["stun", "knock", "bleed", "slow", "disarm", "tire"];
+  var HEAL_OF = ["hp", "wind", "wounds", "illness"];
+  var COOL_UNITS = ["round", "duel", "battle", "day", "month", "season", "year"];
+  var MONTHS_OF = { month: 1, season: 3, year: 12 };
+  var doList = (e) => !e || e.do == null ? [] : Array.isArray(e.do) ? e.do : [e.do];
+  function coolFactor(cd) {
+    if (!cd || typeof cd !== "object") return 1;
+    const v = Math.max(1, +cd.v || 1);
+    switch (cd.per) {
+      case "round":
+      case "turn":
+        return Math.min(1.5, 4.5 / v);
+      case "duel":
+      case "battle":
+      case "day":
+        return 1 / v;
+      case "week":
+        return 0.75 / v;
+      case "month":
+        return 0.5 / v;
+      case "season":
+        return 0.4 / v;
+      case "year":
+        return 0.25 / v;
+      default:
+        return 1;
+    }
+  }
+  function artUse(ix, s, lv) {
+    if (!isArt(s)) return null;
+    lv = Math.max(1, Math.min(MAX_LV, lv | 0));
+    const e = effectsAt(s, lv).find((x) => x.type === "active" || x.type === "trigger");
+    if (!e) return null;
+    const sp = s.spec || {};
+    return {
+      id: s.id,
+      kind: s.kind,
+      name: s.name,
+      rank: s.rank,
+      lv,
+      base: e.base || null,
+      on: e.on || null,
+      do: doList(e),
+      cd: sp.cooldown || null,
+      cost: Array.isArray(sp.cost) ? sp.cost : [],
+      dur: sp.duration || null,
+      cond: Array.isArray(sp.conditions) ? sp.conditions : [],
+      value: Math.round(spendAt(ix, s, lv) * 100) / 100
+    };
+  }
+  var costOf = (u, res) => (u && u.cost || []).reduce((t, c) => t + (c && c.res === res ? +c.v || 0 : 0), 0);
+  var usesMana = (s) => !!(s && s.spec && Array.isArray(s.spec.cost) && s.spec.cost.some((c) => c && c.res === "mana"));
+  function weaponOk(ix, list, ctx) {
+    if (!list || !list.length || list.includes("any")) return true;
+    ctx = ctx || {};
+    for (const w of list) {
+      if (w === "melee" && !ctx.beast) return true;
+      if (w === "shield" && ctx.shield) return true;
+      if (w === "mounted" && ctx.mounted) return true;
+      if (w === "ranged" && ctx.ranged) return true;
+      if (w === "beast" && ctx.beast) return true;
+      if (ctx.weapon && !ctx.beast && (w === ctx.weapon || w === famOf(ix, ctx.weapon))) return true;
+    }
+    return false;
+  }
+  function beingOk(need2, b) {
+    if (!need2) return true;
+    if (!b) return false;
+    if (Array.isArray(need2.fam) && need2.fam.length && !need2.fam.includes(b.fam)) return false;
+    if (need2.magic != null && !((+b.magic || 0) >= need2.magic)) return false;
+    return true;
+  }
+  function condOk(ix, u, ctx) {
+    ctx = ctx || {};
+    for (const c of u && u.cond || []) {
+      if (!c || typeof c !== "object") continue;
+      if (c.weapon && !weaponOk(ix, [].concat(c.weapon), ctx)) return false;
+      if (c.being && !beingOk(c.being, ctx.being)) return false;
+    }
+    if (costOf(u, "mana") > 0 && !(ctx.mana > 0)) return false;
+    return true;
+  }
+  function fires(on, ctx) {
+    if (!on) return true;
+    ctx = ctx || {};
+    switch (on) {
+      case "duel_start":
+      case "first_strike":
+        return ctx.round === 1;
+      case "attacked_first":
+        return ctx.round === 1 && (ctx.foeAct === "strike" || ctx.foeAct === "press");
+      case "wounded":
+        return ctx.hp < 0.5;
+      case "near_death":
+        return ctx.hp < 0.2;
+      case "foe_wounded":
+        return ctx.foeHp < 0.5;
+      case "outnumbered":
+        return !!ctx.outnumbered;
+      case "foe_stronger":
+        return !!ctx.foeStronger;
+      case "dawn":
+        return ctx.light === "dawn" || ctx.light === "dusk";
+      case "night":
+        return ctx.light === "night" || ctx.light === "torch";
+      case "win":
+        return !!ctx.won;
+      case "lose":
+        return !!ctx.lost;
+      case "parried":
+        return !!ctx.parried;
+      default:
+        return false;
+    }
+  }
+  var SLOTS_MAX = 5;
+  function slots(f) {
+    f = f || {};
+    if (!(f.age >= 12)) return 0;
+    let n3 = f.age >= 16 ? 2 : 1;
+    if (f.int >= 50 && f.wil >= 50) n3++;
+    if (f.age >= 30 && rankIx(f.best) >= rankIx("B")) n3++;
+    if (f.age >= 30 && rankIx(f.best) >= rankIx("A")) n3++;
+    return Math.min(SLOTS_MAX, n3);
+  }
+  function ready(u, st, ctx) {
+    if (!u || u.kind === "passive") return false;
+    st = st || {};
+    ctx = ctx || {};
+    const cd = u.cd, per = cd && cd.per, v = Math.max(1, +(cd && cd.v) || 1);
+    if (per === "round" || per === "turn") {
+      if ((st.next || {})[u.id] > ctx.round) return false;
+    } else if (MONTHS_OF[per]) {
+      const l = (st.last || {})[u.id];
+      if (l != null && ctx.month != null && ctx.month - l < v * MONTHS_OF[per]) return false;
+      if ((st.used || {})[u.id]) return false;
+    } else if (((st.used || {})[u.id] || 0) >= 1) return false;
+    const sta = costOf(u, "stamina"), mana = costOf(u, "mana");
+    if (sta > 0 && (st.fat || 0) + sta > 90) return false;
+    if (mana > 0 && !((st.mana || 0) >= mana)) return false;
+    if (u.on && !fires(u.on, ctx)) return false;
+    return true;
+  }
+  var nextRound = (u, r) => u && u.cd && (u.cd.per === "round" || u.cd.per === "turn") ? r + Math.max(1, +u.cd.v || 1) : Infinity;
+  function chooseReady(uses, n3, ctx) {
+    const ok = (uses || []).filter((u) => u && u.kind !== "passive" && (!ctx || !ctx.ix || condOk(ctx.ix, u, ctx))).sort((a, b) => b.value - a.value || (a.id < b.id ? -1 : 1));
+    if (!(n3 > 0) || !ok.length) return [];
+    const out = ok.slice(0, n3);
+    if (n3 >= 2 && !out.some((u) => u.kind === "buff")) {
+      const b = ok.find((u) => u.kind === "buff");
+      if (b) {
+        out.pop();
+        out.push(b);
+      }
+    }
+    return out.map((u) => u.id);
+  }
+  function plan(uses, st, ctx) {
+    ctx = ctx || {};
+    st = st || {};
+    let best = null, bs = -Infinity;
+    for (const u of uses || []) {
+      if (!u || u.base !== ctx.act || !ready(u, st, ctx)) continue;
+      const d = u.do[0] || {}, t = d.type;
+      let sc;
+      if (t === "heal" && (d.of || "hp") === "hp") {
+        if (!(ctx.hp < 0.5)) continue;
+        sc = 3;
+      } else if (t === "heal" && d.of === "wind") {
+        if (!((st.fat || 0) > 40)) continue;
+        sc = 2.5;
+      } else if (t === "heal") continue;
+      else if (u.kind === "buff") {
+        if ((st.inForce || []).some((x) => x.id === u.id) || !(ctx.round <= 3 || ctx.behind)) continue;
+        sc = 2;
+      } else sc = 1;
+      sc += (u.value || 0) / 1e3;
+      if (sc > bs || sc === bs && best && u.id < best.id) {
+        best = u;
+        bs = sc;
+      }
+    }
+    return best ? best.id : null;
+  }
+  var beingLevel = (L) => Math.max(1, Math.min(MAX_LV, Math.round(1 + 3 * Math.log10(Math.max(1, +L || 1)))));
+  function beingArts(ix, b) {
+    const out = [];
+    if (!b) return out;
+    for (const s of ix.skills) {
+      if (!isArt(s)) continue;
+      const r = (s.acquire || []).find((a) => a.via === "birth" && a.needs && a.needs.being && beingOk(a.needs.being, b));
+      if (!r || usesMana(s) && !(b.magic > 0)) continue;
+      out.push({ id: s.id, lv: beingLevel(b.level) });
+    }
+    return out;
+  }
+  var manaOf = (b) => b && b.magic > 0 ? Math.round(10 * b.magic) : 0;
+  function npcArts(ix, reads2, facts) {
+    const out = [], held = {};
+    facts = facts || {};
+    const lvOf = (needs) => {
+      const fam = needs && needs.family;
+      if (!fam) return 0;
+      let lv = MAX_LV;
+      for (const f in fam) {
+        const r = reads2(f);
+        if (!(r >= fam[f])) return 0;
+        lv = Math.min(lv, 1 + Math.floor((r - fam[f]) / 3));
+      }
+      for (const st in needs.stat || {}) if (!((facts.stat || {})[st] >= needs.stat[st])) return 0;
+      if (needs.age && !(facts.age >= needs.age[0] && facts.age <= needs.age[1])) return 0;
+      return Math.max(1, Math.min(MAX_LV, lv));
+    };
+    const arts = ix.skills.filter(isArt);
+    for (let pass = 0; pass < 4; pass++) for (const s of arts) {
+      if (held[s.id] || usesMana(s)) continue;
+      let lv = 0;
+      for (const r of s.acquire || []) {
+        if (r.via === "practice" || r.via === "teacher" || r.via === "school") lv = Math.max(lv, lvOf(r.needs));
+        else if (r.via === "evolve" && held[r.from] >= MAX_LV) lv = Math.max(lv, lvOf(r.needs));
+      }
+      if (lv > 0) held[s.id] = lv;
+    }
+    for (const id of Object.keys(held).sort()) out.push({ id, lv: held[id] });
+    return out;
+  }
+  var an = (w) => (/^[aeiou]/.test(String(w)) ? "an " : "a ") + w;
+  function kindFaults(ix, s) {
+    const out = [];
+    if (!isArt(s)) return out;
+    const V = ix.V, sp = s.spec || {}, trig = new Set(V.triggers || []);
+    const moments = [];
+    for (const b of s.levels || []) for (const e of b.effects || []) {
+      if (e.type === "active" || e.type === "trigger") moments.push([b.at, e]);
+      else out.push(`Lv ${b.at}: ${an(e.type)} effect; an art acts only in its moment (an active or a trigger)`);
+    }
+    if (!moments.length) out.push("no moment (an active or a trigger effect)");
+    const want = s.kind === "passive" ? "trigger" : "active";
+    for (const [at, e] of moments) {
+      if (e.type !== want) out.push(`Lv ${at}: ${an(s.kind)} acts by ${want === "trigger" ? "a trigger" : "an active"}, not ${e.type}`);
+      if (e.type === "trigger" && !trig.has(e.on)) out.push(`Lv ${at}: trigger on ${e.on}`);
+      if (e.type === "active") {
+        if (!BASES.includes(e.base)) out.push(`Lv ${at}: base ${e.base} (one of ${BASES.join(", ")})`);
+        if (e.on != null && !trig.has(e.on)) out.push(`Lv ${at}: an active's own trigger ${e.on}`);
+      }
+      const L = doList(e);
+      if (!L.length) out.push(`Lv ${at}: nothing done`);
+      for (const d of L) {
+        if (!d || !USE_TYPES[s.kind].includes(d.type)) {
+          out.push(`Lv ${at}: ${an(s.kind)} cannot ${d && d.type}`);
+          continue;
+        }
+        if ((d.type === "strike" || d.type === "guard") && !(d.share > 0)) out.push(`Lv ${at}: ${d.type} without a share`);
+        if (d.type === "heal" && !HEAL_OF.includes(d.of)) out.push(`Lv ${at}: heal of ${d.of}`);
+        if (d.type === "heal" && (d.of === "wounds" ? !(d.v >= 1) : !(d.share > 0))) out.push(`Lv ${at}: heal without its amount`);
+        if (d.type === "status" && (!STATUS.includes(d.of) || !(d.v > 0))) out.push(`Lv ${at}: status ${d.of} ${d.v}`);
+        if (d.type === "raise" && (!(V.stats || []).includes(d.stat) || !(d.v > 0))) out.push(`Lv ${at}: raise ${d.stat} ${d.v}`);
+        if (d.type === "fight" && !(d.v > 0)) out.push(`Lv ${at}: fight without its points`);
+      }
+    }
+    const cd = sp.cooldown, kindsOf = new Set(moments.flatMap(([, e]) => doList(e).map((d) => d && d.type)));
+    if (s.kind !== "passive") {
+      if (!cd) out.push("no cooldown");
+      if (!Array.isArray(sp.cost) || !sp.cost.length) out.push("no cost");
+      else for (const c of sp.cost) if (!["stamina", "mana", "time"].includes(c && c.res)) out.push(`cost in ${c && c.res} (stamina, mana or time)`);
+      if (s.slot !== true) out.push("an active or a buff takes a slot (slot: true)");
+    } else if (s.slot) out.push("a passive takes no slot");
+    if (cd && !COOL_UNITS.includes(cd.per)) out.push(`cooldown per ${cd.per}`);
+    if (!sp.effect) out.push("no effect");
+    if (!Array.isArray(sp.conditions)) out.push("no conditions list");
+    if (s.kind === "buff" && (kindsOf.has("raise") || kindsOf.has("guard") || kindsOf.has("fight")) && !sp.duration) out.push("a buff that raises or guards has no duration");
+    const m1 = moments.find(([at]) => at === 1), d1 = m1 && doList(m1[1])[0];
+    if (sp.effect && d1) {
+      const share = d1.share != null ? d1.share : null, amt = d1.v != null ? d1.v : null;
+      if (sp.effect.share != null ? sp.effect.share !== share : sp.effect.amount !== amt) out.push(`spec.effect ${JSON.stringify(sp.effect)} is not the Lv-1 band's ${JSON.stringify(share != null ? { share } : { amount: amt })}`);
+    }
+    if (usesMana(s)) {
+      for (const r of s.acquire || []) if (!(r.needs && r.needs.being && r.needs.being.magic > 0)) out.push(`a mana-based art reachable without mana (via ${r.via})`);
+      if (!(sp.conditions || []).some((c) => c && c.being && c.being.magic > 0)) out.push("a mana-based art whose conditions ask no being with mana");
+    }
+    const born = (s.acquire || []).length > 0 && (s.acquire || []).every((r) => r.via === "birth" || r.via === "awaken");
+    if (!born && !(s.trains && ix.FAM[s.trains])) out.push(`trains ${s.trains}: a person's art grows from a family's work`);
+    for (const t of s.evolvesTo || []) if (ix.BY[t.id] && !isArt(ix.BY[t.id])) out.push(`evolves to ${t.id}, which is not an art`);
+    return out;
+  }
+  function shareWord(x) {
+    x = +x || 0;
+    if (x <= 0) return "nothing";
+    const W = [[0.035, "a sliver"], [0.075, "a twentieth"], [0.115, "a tenth"], [0.155, "an eighth"], [0.185, "a sixth"], [0.23, "a fifth"], [0.29, "a quarter"], [0.37, "a third"], [0.45, "two fifths"], [0.6, "half"], [0.8, "two thirds"]];
+    for (const [t, w] of W) if (x < t) return w;
+    return "nearly all";
+  }
+  var NUMW = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
+  function coolWord(cd) {
+    if (!cd) return "whenever its moment comes";
+    const v = Math.max(1, +cd.v || 1), n3 = NUMW[v] || "many";
+    switch (cd.per) {
+      case "round":
+      case "turn":
+        return v === 1 ? "every exchange" : `once in ${n3} exchanges`;
+      case "duel":
+        return v === 1 ? "once a fight" : `once in ${n3} fights`;
+      case "battle":
+        return "once a battle";
+      case "day":
+        return "once a day";
+      case "month":
+        return v === 1 ? "once a month" : `once in ${n3} months`;
+      case "season":
+        return "once a season";
+      case "year":
+        return "once a year";
+      default:
+        return "now and then";
+    }
+  }
+  function costWord(cost3) {
+    const L = (cost3 || []).filter((c) => c && c.v > 0);
+    if (!L.length) return "nothing";
+    return L.map((c) => {
+      const v = +c.v;
+      if (c.res === "stamina") return v <= 5 ? "a little wind" : v <= 10 ? "some wind" : v <= 16 ? "much wind" : "most of your wind";
+      if (c.res === "mana") return v <= 10 ? "a little mana" : v <= 20 ? "much mana" : "a great draw of mana";
+      if (c.res === "time") return v <= 1 ? "a day" : v <= 3 ? "a few days" : "a week or more";
+      return c.res;
+    }).join(" and ");
+  }
+  function durWord(d) {
+    if (!d) return "at once";
+    const v = Math.max(1, +d.v || 1), n3 = NUMW[v] || "many";
+    switch (d.unit) {
+      case "round":
+      case "turn":
+        return v === 1 ? "for an exchange" : `for ${n3} exchanges`;
+      case "duel":
+      case "battle":
+        return "for the rest of the fight";
+      case "day":
+        return "for a day";
+      case "month":
+        return v === 1 ? "for a month" : `for ${n3} months`;
+      case "season":
+        return "for a season";
+      default:
+        return "for a while";
+    }
   }
 
   // src/people/engine/skills.js
@@ -2704,14 +3118,14 @@ var __ARDAN_V2_MAKE = (() => {
     // his opinion of you: op / 25, at most 3, for (or against when below zero)
   };
   var n = (x) => isFinite(x) ? +x : 0;
-  var an = (w) => (/^[aeiou]/i.test(String(w)) ? "an " : "a ") + w;
+  var an2 = (w) => (/^[aeiou]/i.test(String(w)) ? "an " : "a ") + w;
   var R2 = (kind, weight, label2, source, pub) => ({ kind, weight, label: label2, source: source || null, pub: pub ? 1 : 0 });
   var her = (s) => String(s).replace(/\bhimself\b/g, "herself").replace(/\bhe\b/g, "she").replace(/\bHe\b/g, "She").replace(/\bhis\b/g, "her").replace(/\bhim\b/g, "her");
   function options(c) {
     const act = ACTS[c.act] || ACTS.know, tr = c.traits || [], has2 = (t) => tr.includes(t);
     const yes = [], no = [];
     const gap = Math.max(0, n(c.gap) - T2.near);
-    if (gap > 0) no.push(R2("station", act.k * T2.step * gap, `${an(c.lowWord || "commoner")} is far beneath ${an(c.highWord || "lord")}`, { t: "gap", g: n(c.gap) }, 1));
+    if (gap > 0) no.push(R2("station", act.k * T2.step * gap, `${an2(c.lowWord || "commoner")} is far beneath ${an2(c.highWord || "lord")}`, { t: "gap", g: n(c.gap) }, 1));
     if (c.born === "gold") no.push(R2("station", T2.gold, "born to gold, he has never had to look down", { t: "born" }, 1));
     if (c.born === "low") yes.push(R2("sympathy", T2.risen, `he was born ${c.origWord || "low"} himself`, { t: "born" }, 1));
     if (has2("cruel")) no.push(R2("station", T2.cruel, "he likes to see a man refused", { t: "trait", k: "cruel" }));
@@ -5025,17 +5439,17 @@ var __ARDAN_V2_MAKE = (() => {
     const me = g2.me, a = me.age;
     me.body.wounds = me.body.wounds.filter((w) => !g2.rng.chance(["hand", "knee"].includes(w.kind) ? 0.02 : 0.12));
     if (a < 2) return;
-    const plan = g2.plan;
+    const plan2 = g2.plan;
     const childPlay = () => {
       train(me, "sprint", 0.5);
       train(me, "march", 0.4);
       train(me, "lift", 0.25);
     };
     if (a < 14) {
-      if (plan === "lessons") {
+      if (plan2 === "lessons") {
         practise(me, "letters", 25);
         childPlay();
-      } else if (plan === "chores") {
+      } else if (plan2 === "chores") {
         train(me, "lift", 0.6);
         train(me, "march", 0.4);
         practise(me, "craft", 15);
@@ -5046,7 +5460,7 @@ var __ARDAN_V2_MAKE = (() => {
       return;
     }
     const trained = /* @__PURE__ */ new Set();
-    if (plan === "arms") {
+    if (plan2 === "arms") {
       practise(me, "sword", 45);
       practise(me, "spear", 15);
       for (const k of ["lift", "toughness", "march"]) {
@@ -5056,23 +5470,23 @@ var __ARDAN_V2_MAKE = (() => {
       train(me, "reaction", 0.5);
       trained.add("reaction");
     }
-    if (plan === "study") {
+    if (plan2 === "study") {
       practise(me, "letters", 50);
       practise(me, "law", 20);
       me.mentalXp ?? (me.mentalXp = {});
       me.mentalXp.learning = (me.mentalXp.learning ?? 0) + 0.15;
     }
-    if (plan === "work") {
+    if (plan2 === "work") {
       practise(me, me.estate === "commoner" ? "smithing" : "trade", 50);
       train(me, "lift", 0.4);
       trained.add("lift");
       me.wealth = (me.wealth ?? 0) + 1;
     }
-    if (plan === "court") {
+    if (plan2 === "court") {
       practise(me, "persuasion", 30);
       practise(me, "intrigue", 10);
     }
-    if (plan === "rest") {
+    if (plan2 === "rest") {
       me.fatigue = 0;
       for (const w of me.body.wounds) w.healed = true;
       me.body.wounds = me.body.wounds.filter((w) => g2.rng.chance(0.6));
@@ -6858,10 +7272,10 @@ var __ARDAN_V2_MAKE = (() => {
     const wideA = (P.wide + (male ? 0 : -0.012)) * H * (1 + 0.1 * mu);
     F.leg = side.map((s, i) => {
       const free = (sway >= 0 ? -1 : 1) === s ? Math.abs(sway) : 0;
-      const an2 = [s * wideA / 2 + cx * 0.35 + s * free * H * 0.012, y.ankle], hip = F.hipJ[i];
-      const kn = add(mix2(hip, an2, 0.5), [s * H * (4e-3 + 0.015 * free), -B * 0.012 + free * H * 5e-3]);
+      const an3 = [s * wideA / 2 + cx * 0.35 + s * free * H * 0.012, y.ankle], hip = F.hipJ[i];
+      const kn = add(mix2(hip, an3, 0.5), [s * H * (4e-3 + 0.015 * free), -B * 0.012 + free * H * 5e-3]);
       const toe = rad(s * (16 + 16 * free + (male ? 4 : -4)));
-      return { hip, kn, an: an2, toe, free, s };
+      return { hip, kn, an: an3, toe, free, s };
     });
     F.arm = side.map((s, i) => {
       const A = P.arm[i], S = F.shJ[i], fs = A.fs || [1, 1], L1 = F.armL[0] * fs[0], L2 = F.armL[1] * fs[1];
@@ -8173,7 +8587,7 @@ var __ARDAN_V2_MAKE = (() => {
       const R0 = form === "flail" ? 34 : 42, cc = F.W(c[0], c[1]), n3 = 8;
       let sp = "";
       for (let i = 0; i < n3; i++) {
-        const an2 = i / n3 * Math.PI * 2 + 0.2, ca = Math.cos(an2), sa = Math.sin(an2), w2 = q === 0 ? 4 : 8, len2 = R0 * (q === 0 ? 1.5 : 1.75);
+        const an3 = i / n3 * Math.PI * 2 + 0.2, ca = Math.cos(an3), sa = Math.sin(an3), w2 = q === 0 ? 4 : 8, len2 = R0 * (q === 0 ? 1.5 : 1.75);
         sp += polyline(F.P([[c[0] + ca * R0 * 0.8 - sa * w2, c[1] + sa * R0 * 0.8 + ca * w2], [c[0] + ca * len2, c[1] + sa * len2], [c[0] + ca * R0 * 0.8 + sa * w2, c[1] + sa * R0 * 0.8 - ca * w2]]), true);
       }
       S.both(sp, st.l, st.k, 0.9);
@@ -9611,8 +10025,8 @@ var __ARDAN_V2_MAKE = (() => {
         S.stroke(polyline([add(G.an, [sg * F.legR[3] * 0.8, F.footL * 0.12]), a, b]), g2.b, 2);
         let d = "";
         for (let k = 0; k < 6; k++) {
-          const an2 = k * Math.PI / 3, q = F.footL * 0.05;
-          d += `M${n1(b[0])} ${n1(b[1])}l${n1(Math.cos(an2) * q)} ${n1(Math.sin(an2) * q)}`;
+          const an3 = k * Math.PI / 3, q = F.footL * 0.05;
+          d += `M${n1(b[0])} ${n1(b[1])}l${n1(Math.cos(an3) * q)} ${n1(Math.sin(an3) * q)}`;
         }
         S.stroke(d, g2.k, 1.6);
         S.stroke(d, g2.l, 0.8);
