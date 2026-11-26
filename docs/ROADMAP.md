@@ -7,12 +7,27 @@ built mapped onto them (master prompt 0.2 steps 3 and 7, 4.2). The rules are `do
 today is `docs/STATUS.md`. Plan in rolling waves: the next phase in detail, the later ones in outline. Re-plan after
 every phase and every new prompt. *Written 2026-11-25 by the sync (H-108), on `v2-integration` at `0982302`.*
 
-"Main" below is `v2-integration`, where all work lands and CI runs. GitHub's `main` is still the upload of 2026-11-01.
+"Main" is GitHub's `main`, the trunk (order 76); `v2-integration` is kept level with it.
 
 Contents: 1 the phases · 2 section 3 re-checked · 3 the old queue on the new phases · 4 conflicts and owner questions ·
 5 the carry-over checklist (31 rows).
 
 ---
+
+## 0. Now (2026-11-26, after orders 77 to 86)
+
+The order of work, by importance (master prompt 13.1, order 78), and where each stands:
+
+| # | Work | State |
+|---|---|---|
+| 1 | Keep `main` playable | Green on alpha 16; the skills merge's run under way |
+| 2 | Bugs from the owner's lives, the exploits | **Done** (alpha 16): Emilio E1 to E10, breakthroughs, the throne plot, duel foes on demand |
+| 3 | **The power scale and bestiary** (section 17's first wave; orders 77, 78, 81 to 85) | A helper building: the level ladder (a commoner 20-30 to the Dragon King about 800), capability profiles, behaviour per species, 150+ species with evolution, legends with character sheets and titles, encounters |
+| 3b | **The map redesigned and locked** (section 7; orders 84, 86) | A helper building from M1: a detailed gazetteer, the Dragon Mountains, the sea lord's waters, the Sword Saint's places; plain renders for the owner, then the lock |
+| 4 | **The skills rebuild** with titles, a person's level, stat points and training (section 9; orders 76, 79, 80, 82, 83) | Design done (`docs/design/skills-v2.md`); steps 1 to 4 merged (data, engine, adapter off, save version 16); steps 5 on next |
+| 5 | Professions and pathways (section 18; order 80) | After the skills |
+| 6 | Magic, new races, the canon rewrite (section 17) | After professions |
+| 7 | Difficulty (the throne for an outsider, A2) and war | Later; stopgaps in place |
 
 ## 1. The phases, with what is already done
 
