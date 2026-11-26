@@ -3008,3 +3008,37 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
 - **Also:** `pupil_taught` has a source (the teaching activities), so the Silver Sage can be earned.
 - **Deferred:** the "new order in battle" kind of part (the war core is being rebuilt, §10); class parts for a career's
   monthly work; a training screen for classes; magic classes (v4); NPC-against-NPC duels still record nothing.
+
+### D-185 · The scale stretched (orders 92, 93, 94): Sarnavoth at 1000, every anchor moved, the legends' balance kept; no hints about titles (2026-11-26)
+- **The legends x 1000/800 (order 92).** "Shift out the levelling system putting Sarnavoth at 1000 and increasing the
+  other legends accordingly": every legend's level is its D-177 level x 1.25, rounded (Sarnavoth 1000, Ghazrul 975,
+  Morvane 969, Vethrael 963, Cael 875, Vaskareth 865, Tessaly 863, Hrimgala 853, Ul-Mavren 850, Orrun 843, Serrath 840,
+  Kethra 830, Ommul 823, Saqqar 813, the Pale Shepherd 810, the Iron Warden 800).
+- **Every anchor stretched (order 93, replacing order 84's; order 94 on knights).** One curve still reads every level
+  from the might (`data/power.json` levelCurve), now `log10(might) = -0.637 + 0.005858 L + 0.0000015 L^2` above level 20,
+  fifteen levels a tenfold below. Nobody's might changed (a person's is still his fighting worth in conscripts, squared);
+  only the level read from it. Two points fix it (the median grown man at 35, a soldier's might 1-2 at 106-154); the square
+  term then lands a knight's might 9-25 at 255-321 (ordinary 230-299, and past 299 more than an ordinary knight: no cap),
+  an elite's 25-60 at 321-376 (300-420; 420 is might 122, a strong realm's elite), the best man of a world at 493-552
+  (500-700, very few) and the bestiary's grown dragons at 700 with no second knot. The masters of the races 615-700 (the
+  giant king brought from 760 to 700, the other three keep their might). The A.LV level (`src/people/9999975-level`) reads
+  this curve: its values change at every level (a person seeded at 27 is now seeded at 35; a stored level is not moved).
+- **The bestiary by kind.** The generator's t values (the even log scale) set for the new anchors: the lower demons
+  307-477, the great demons 611-675 (average 647), the grown dragons 688-713, the elder 750-762, the ancient 775-787 (plus
+  the Old Blood's ten), the abyss leviathan 787, so nothing below the legends reaches 800. A first 29 new kinds in eleven
+  new lines (titans, hydras, liches, hive-empresses, tempest rocs, caldera spirits, sea-girdling serpents, the High Roost
+  dragons, the Grey Hunt, gate-dukes, colossi), 585 to 787, fill the band around the dragons up to the legends; from 600 to
+  800 stand 74 kinds of 17 families with no hole wider than 13 levels. None spawns in the wild yet (spawns are t 12-45) and
+  the cards' draw centres far below them.
+- **The balance kept by the titles.** On the new curve the legends' mights moved by different amounts, so each legend's
+  signature title (its own title with the most power) takes (1 + power) x a factor that gives back D-177's power ratios
+  between the legends, the smallest factor 1 so no title loses power. Every matchup is D-177's to the rounding (Sarnavoth
+  against the three 0.415, Cael against each archdemon 0.53, 0.46, 0.47, over the Lord of the Sea 0.770). **Considered:**
+  flattening the curve above 800 (a level near the top worth less than one below, against "each level exponentially
+  harder"); a second knot at 500 (not needed); letting the matchups drift (the owner set them).
+- **No hints about titles (order 92).** D-183's tavern rumour (`tt_hint`), `TT.hintable`, `TT.heard`, Records' "Things you
+  have heard" and the hint lines go to `archive/titles-hints/`. Two more hints found and closed: the log line "The crown does
+  not name you ... this year" (it told the player he had met the hidden conditions) and the deed on another person's title
+  card (the earned sentence and the title's own line name the deed: "Twenty fights and never put down"); his card now shows
+  the name, rarity, gifts and honour. The earning and losing cards stay. `tools/lint-titles.mjs` fails a title carrying a
+  hint and any source line telling of titles not yet held.

@@ -487,6 +487,19 @@ order is replaced, strike it through and say by what.
     one climbs, and most of all at each hundredth level (100, 200, 300 ...), where a person gets a **class upgrade or a
     stat boost**, as in the manhwa *Overgeared* (D-184).
 
+92. **Three kinds of skill; classes as branches; no title hints; Sarnavoth at 1000** · recorded 2026-11-26. Kept unchanged
+    in `docs/prompts/2026-11-26-classes-and-scale.md`.
+    - **Skills come in three kinds:** *active* (combat, from melee and swordsmanship to mana-based), *passive* (they fire
+      under conditions, with large effects or boosts) and *buff* (healing, a stat raised for a while).
+    - **Titles and classes** take after *Overgeared*'s titles and the classes of *Overgeared* and *Reincarnated as a Slime*.
+    - **No hints anywhere about titles** (D-183's tavern rumours go).
+    - **The wall's reward is a branch the person chooses**, and **a class change adds new things to do** (new actions,
+      new ways to play), never only bigger numbers.
+    - **The legends grow too,** like everyone else, though a level is incredibly hard for them to gain.
+    - **The scale is stretched:** Sarnavoth at level 1000 and the other legends raised to match, so countless more
+      monsters and creatures fit in between for the players (my reading: the legends scale by 1000/800; the human and
+      dragon anchors of order 84 stay; D-185).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
