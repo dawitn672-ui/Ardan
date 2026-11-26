@@ -50,11 +50,11 @@ export default {
         // a beast of the release, alone (a hunt's fight): a kill raises him by its level on the ladder
         for (let i = 0; i < 12 && out.beasts.length < 1; i++) {
           pc.health = 100; pc.alive = true;
-          const before = stand(pc);
+          const before = stand(pc), heroL = pc.lv.L;
           A.S.queue = []; const D = A.startDuel(pc, { beastId: 'CRE-21' }, { kind: 'beast', lethal: true, forceSolo: true });
           const q = A.S.queue.find(x => x.type === 'duel'); if (!q) continue;
           A.S.queue = [q]; A.duelAuto(q.d); A.S.queue = [];
-          if (q.d.result === 'win' && pc.alive) out.beasts.push({ seed, F: LV.foeLevel(q.d.b, null), gain: Math.round((stand(pc) - before) * 1000) / 1000 });
+          if (q.d.result === 'win' && pc.alive) out.beasts.push({ seed, F: LV.foeLevel(q.d.b, null), L: heroL, gain: Math.round((stand(pc) - before) * 1000) / 1000 });
           else if (!pc.alive) break;
         }
         return out.duels.length >= 3 ? seed : null;
@@ -68,10 +68,12 @@ export default {
     // within his level the gain is the rule's to the rounding; crossing into the next, at least the rest of his level and at
     // most the rule's with the next level's need (more levels after it ask more again)
     const fit = r.duels.every(d => (d.want === 0 ? d.gain === 0 : d.gain > 0 && (d.f0 + d.want >= 1 ? d.gain >= 1 - d.f0 - 0.002 && d.gain <= d.cross + 0.01 : Math.abs(d.gain - d.want) <= 0.002)));
-    const beast = r.beasts.length === 0 || r.beasts.every(b => b.gain > 0 || b.F + 30 <= 0);
+    // (the beast's level against the hero's at the kill: D-191 re-banded the release's beasts, the Evenwood Wolf at 110; a far
+    // weaker beast's share may round to nothing)
+    const beast = r.beasts.length === 0 || r.beasts.every(b => b.gain > 0 || b.F + 30 <= b.L);
     const weak = r.weak.every(([L, w40, w30, up20]) => w40 > 0 && w40 < 0.02 && w30 > 0 && up20 > 0.25 && up20 > w40 * 50);
     const ok = r.duels.length >= 3 && r.duels.some(d => d.gain > 0) && fit && beast && weak;
-    return { ok, detail: `worlds tried ${r.tried.join(', ')}; duels won ${r.duels.map(d => `at ${d.L} over ${d.F}: +${d.gain} of a level (rule ${d.want})`).join('; ')}; beasts killed ${r.beasts.map(b => `level ${b.F}: +${b.gain}`).join('; ') || 'none won in 12 tries'}; a foe 40 levels down gives ${r.weak.map(x => `${x[1].toFixed(4)} of a level at ${x[0]}`).join(', ')}; 30 down: ${r.weak.map(x => x[2]).join(', ')}; 20 up: ${r.weak.map(x => x[3].toFixed(2)).join(', ')} of a level` };
+    return { ok, detail: `worlds tried ${r.tried.join(', ')}; duels won ${r.duels.map(d => `at ${d.L} over ${d.F}: +${d.gain} of a level (rule ${d.want})`).join('; ')}; beasts killed ${r.beasts.map(b => `level ${b.F} by a hero of ${b.L}: +${b.gain}`).join('; ') || 'none won in 12 tries'}; a foe 40 levels down gives ${r.weak.map(x => `${x[1].toFixed(4)} of a level at ${x[0]}`).join(', ')}; 30 down: ${r.weak.map(x => x[2]).join(', ')}; 20 up: ${r.weak.map(x => x[3].toFixed(2)).join(', ')} of a level` };
   },
 
   // farming is slow, never nothing (order 91, D-184): a thousand defeats of men twenty levels below him lift a grown man

@@ -448,7 +448,8 @@ export default {
       A.S.queue = [];
       const theirs = TT.cardText(npc, 'undefeated'), mine = TT.cardText(pc, 'undefeated'), hw = ((npc.tt && npc.tt.h && npc.tt.h.undefeated) || {}).w || '';
       out.npcHeld = TT.holds(npc, 'undefeated'); out.pcHeld = TT.holds(pc, 'undefeated');
-      out.theirs = theirs; out.theirsDeed = !!(hw && theirs.includes(hw)) || theirs.includes(U.text) || /twent/i.test(theirs);
+      out.theirs = theirs; // (the deed's count in words, not D-192's share boost: "a twentieth more might" names no deed)
+      out.theirsDeed = !!(hw && theirs.includes(hw)) || theirs.includes(U.text) || /twenty (fights|times)|twentieth (fight|time)/i.test(theirs);
       out.mineDeed = mine.includes(U.text);
       UI.PF.view = 'profile'; UI.render();
       T.play(30);

@@ -3174,6 +3174,23 @@ save made with titles as it was, as `statMigrate` does (H-147). `lvAnchors` pass
 Engine tests 164 of 164. The class parts use the release's duel techniques; mapping them onto D-186's arts
 (`SK2.learnArt`) is the natural next step.
 
+**Addendum: orders 95 and 96, and the integration** (`4bf26b39`; merges of main `b748817f`, the skills line D-192
+and the bestiary bands D-191). Seeding by the band of a person's life with the computed level as a ceiling, nobles
+50-99 by upbringing, a hook for data (`LV.fromData`); the breakthrough at every wall (points, the skills engine's rank
+jump `A.SK2.rankJumps` at most one, then the class branch); 155 classes from a generator with rarities that a line
+keeps; above 400 a level only 0.05% dearer (an archdemon: 1.36 levels from 100 equal defeats); the legends' yearly
+refinement, alike for all (a matchup 0.644 before and after ten years); at most sixteen peers from one defeat; the
+player's training in single +1s. Save version 22 (`classes`), after the skills line's 21 (`skills2line`). Test fixes:
+`pwLadder` reads the average folk's median among commoners without post or service (29-35); `lvFromDefeats` records the
+hero's level with a beast's kill (D-191's Evenwood Wolf at 110) and measures a crossing against the next level's need;
+`ttHidden`'s deed check no longer mistakes D-192's "a twentieth more might" for the deed's count. New tests: `lvSeed`,
+`lvBreak`, `trainOnes`. On the merged build with `--workers=2`: 51 of 51 named tests (the level, titles, powers and
+skills sets with `sk2Jump`, `pwBands`, `ttGameChanger`; `statMigrate` on every sample save; `sk2Migrate`; `uiSmoke`,
+`renderRng`, `replayWithRender`, `v2svRoundTrip`, `w1NoMarshalLint`, `w4NoLevyLint`, `pfNumbers`, `pfFits`) after the
+`ttHidden` fix; engine tests 166 of 166; the lints; coherency `--baseline=quick` no check rose. `lvAnchors` (order 95
+build, 967 s): peasants who never fought 33-36, fighters 114-130 with classes taken at the breakthrough (Spearman,
+Shieldbearer, Rider), nobles 95-96, nobody at a wall.
+
 **Undo.** Revert the step's commits; a save made at version 22 would then be refused as newer. `data/classes.json`
 and `c-classes.core.js` can go to `archive/` with a note if classes are retired alone (the level keeps its walls).
 
