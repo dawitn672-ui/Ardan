@@ -515,6 +515,10 @@ order is replaced, strike it through and say by what.
       anchors; Sarnavoth at 1000 stands from order 92).
     - **The levelling reviewed and refined** as I judge best, adjusted as needed.
 
+94. **Knights do not stall at 299** · recorded 2026-11-26. Kept unchanged in `docs/prompts/2026-11-26-knights-past-300.md`.
+    230-299 is the ordinary knight; a knight can pass 300, and one who does is more than an ordinary knight (the wall at
+    300 is a threshold to cross, with its class branch, not a ceiling; refines order 93).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
