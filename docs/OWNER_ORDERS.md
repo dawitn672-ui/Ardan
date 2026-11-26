@@ -519,6 +519,23 @@ order is replaced, strike it through and say by what.
     230-299 is the ordinary knight; a knight can pass 300, and one who does is more than an ordinary knight (the wall at
     300 is a threshold to cross, with its class branch, not a ceiling; refines order 93).
 
+95. **Knights few, dragons three, breakthroughs every hundred levels** · recorded 2026-11-26. Kept unchanged in
+    `docs/prompts/2026-11-26-knights-dragons-breakthroughs.md` (the message ends mid-word).
+    - **Numbers in a kingdom:** knights are powerful and few, the top 50 to 3,000 of a kingdom; an elite is usually in a
+      kingdom's top ten; regular soldiers number from tens of thousands to hundreds of thousands, by the kingdom.
+    - **Ancient demons rival elder dragons;** **only three ancient dragons** serve under the Dragon King.
+    - **No weak creature raised to fill a gap:** the bands between 600 and 800 hold only beings that truly belong there.
+    - **An evolved skill becomes the next skill:** the old one is gone (replaces order 82's answer 2, D-182).
+    - **No rare leap as an event.** A **breakthrough comes at every hundredth level:** stats are boosted, and skills can
+      jump ranks where several conditions allow.
+    - **Titles can be game changers:** boosts by a share, and stat boosts.
+    - **Ability can differ widely at one level,** from talent, titles and skills: an untrained noble may stand above 50
+      and below 100 and still beat a soldier through titles, skills from birth and talent.
+    - **Classes as in *Overgeared*:** hundreds, branching from the base ones; a class's rarity never changes when it
+      advances, but rarer classes exist, with stronger effects.
+    - **An archdemon who beats an equal a hundred times gains one or two levels;** there are just few who are his equal.
+      The great mostly grow by refining their skills and techniques, their titles and their equipment.
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
