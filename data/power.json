@@ -69,14 +69,14 @@
     {
       "from": 525,
       "r": "SS",
-      "w": "a strong dragon",
-      "d": "A strong dragon (about 525), the elder wyrms, the sea monsters that sink fleets. Kingdoms make their peace with them."
+      "w": "a calamity",
+      "d": "A strong dragon (about 525), the elder wyrms, the sea monsters that sink fleets; and above them, all the way up to the legends, the calamities: titans, the serpents that girdle the sea, the lich-kings, the hive-empresses, the fire under the mountains. Kingdoms make their peace with them, or move out of their way."
     },
     {
-      "from": 600,
+      "from": 800,
       "r": "SSS",
       "w": "a legend",
-      "d": "The legends: each one of a kind, each with a title, the strongest beings on the continent, a threat to nations and, in the end, to the world. The Sword Saint, the strongest man alive, stands about 650; the three Primordial Archdemons 725 to 750; the Dragon King about 800, by far the strongest of all."
+      "d": "The legends: each one of a kind, each with a title, the strongest beings on the continent, a threat to nations and, in the end, to the world. They stand from 800 up: the Sword Saint, the strongest man alive, about 875; the three Primordial Archdemons 963 to 975; the Dragon King at 1000, by far the strongest of all."
     }
   ],
   "capabilities": [
@@ -447,7 +447,7 @@
   ],
   "myth": "The faiths speak of gods. No one has ever measured one, and the scale does not hold them: it stops at the legends.",
   "levelCurve": {
-    "about": "log10(might) = a + b x level + c x level^2 from level 20 up (c > 0: each level multiplies the might by more than the one before, so 650 is far beyond 600); below level 20, fifteen levels to a tenfold. Fitted to the owner's anchors (2026-11-25): an average human 20-30 (might about 0.36), a regular soldier 75-125, a knight 150-200, an elite 200-250, a kingdom's strongest 300-380 (today's best Masters, might 400-1,250), an average grown dragon about 450, a strong one about 525; the legends above 600 are written in data.",
+    "about": "log10(might) = a + b x level + c x level^2 from level 20 up (c > 0: each level multiplies the might by more than the one before, so 650 is far beyond 600); below level 20, fifteen levels to a tenfold. Fitted to the owner's anchors (2026-11-25): an average human 20-30 (might about 0.36), a regular soldier 75-125, a knight 150-200, an elite 200-250, a kingdom's strongest 300-380 (today's best Masters, might 400-1,250), an average grown dragon about 450, a strong one about 525; the legends (800 to 1000, order 92: Sarnavoth at 1000) and the calamities between the strong dragons and them are written in data.",
     "a": -0.695,
     "b": 0.009746,
     "c": 0.000002,

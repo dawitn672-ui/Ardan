@@ -7,8 +7,9 @@ const NO = { ok: false, detail: 'A.POWER not in this build' };
 
 export default {
   // the owner's anchors (2026-11-25): an average human 20-30, a kingdom's strongest 300-380 in most cases, the masters of
-  // the races above them, an average grown dragon about 450 and a strong one about 525, every legend above 600 with the
-  // Sword Saint about 700, three Primordial Archdemons 770-780 and the Dragon King about 800, by far the strongest single being
+  // the races above them, an average grown dragon about 450 and a strong one about 525; the top stretched by order 92
+  // (D-185, every legend x 1000/800): every legend from 800 up, the Sword Saint about 875, three Primordial Archdemons
+  // 963-975 and the Dragon King at 1000, by far the strongest single being
   async pwLadder(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     const r = await pg.evaluate(() => {
@@ -37,23 +38,23 @@ export default {
     const ok = r.bands.join() === 'G,F,E,D,C,B,A,S,SS,SSS' && !r.godBand && r.allTitled &&
       min >= 290 && max <= 400 && r.meds.every(m => m >= 18 && m <= 32) &&
       r.masters.every(x => x > max && x < 520) && r.dragons.every(x => x >= 420 && x <= 480) && r.strong.every(x => x >= 495 && x <= 560) &&
-      L.every(x => x[1] > 600) && L[0][0] === 'sarnavoth' && Math.abs(L[0][1] - 800) <= 10 &&
-      r.arch.length === 3 && r.arch.every(x => x >= 765 && x <= 785) && Math.abs(r.saint - 700) <= 10 && r.saintHuman && !r.pcts;
+      L.every(x => x[1] >= 800) && L[0][0] === 'sarnavoth' && L[0][1] === 1000 &&
+      r.arch.length === 3 && r.arch.every(x => x >= 955 && x <= 985) && Math.abs(r.saint - 875) <= 10 && r.saintHuman && !r.pcts;
     return { ok, detail: `strongest human by world ${r.tops.join(', ')}, median ${r.meds.join(', ')}; masters ${r.masters.join(', ')}; grown dragons ${r.dragons.join(', ')}, strong ${r.strong.join(', ')}; legends ${L.map(x => x[0] + ' ' + x[1]).join(', ')}; the best man against a giant king, a grown dragon, the Saint, the Dragon King: ${r.words.join(' / ')}` };
   },
 
   // the level is not everything (the owner, 2026-11-25 and 26): each level multiplies the might by more than the one before,
   // and fighting power is the level's might times titles, items and art (skills of rank D-S, level at most 10). The three
-  // matchups he named: Sarnavoth (about 800) at a slight disadvantage against the three Primordial Archdemons together
-  // (wins 40-45%); the Sword Saint (about 700) even with ONE archdemon (770-780) through his class, titles, skills and
-  // sword; the Lord of the Sea (about 690) below the Saint
+  // matchups he named: Sarnavoth (1000 since order 92) at a slight disadvantage against the three Primordial Archdemons
+  // together (wins 40-45%); the Sword Saint (about 875) even with ONE archdemon (963-975) through his class, titles, skills
+  // and sword; the Lord of the Sea (about 863) below the Saint. The might per level keeps rising all the way to 1000
   async pwPowerNotLevel(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     const r = await pg.evaluate(() => {
       const PW = A.POWER, ARCH = ['ghazrul', 'morvane', 'vethrael'];
       A.newGame({ seed: 7, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
       const ratio = L => PW.mightOf(L + 1) / PW.mightOf(L);
-      const steps = [25, 100, 300, 600, 800].map(ratio);
+      const steps = [25, 100, 300, 600, 800, 999].map(ratio);
       const convex = steps.every((x, i) => i === 0 || x > steps[i - 1]);
       const king = PW.compare('sarnavoth', PW.group(ARCH));
       const one = ARCH.map(id => [id, PW.level(id), PW.compare('sword-saint', id).p]);
@@ -72,6 +73,33 @@ export default {
     const ok = r.convex && r.far > 3 && r.king >= 0.38 && r.king <= 0.47 && r.one.every(x => x[2] >= 0.4 && x[2] <= 0.6 && x[1] > r.saintL) &&
       r.sea >= 0.65 && r.sea <= 0.8 && r.seaL < r.saintL && r.top === 'sarnavoth' && r.topGap > 1.5 && r.kingArch >= 3.2 && r.kingArch <= 3.6 && r.maxStep <= 4 && r.even >= 3 && r.farAbove > 20 && !r.over10.length && !r.complete.length && r.saintClass === 'Sword Saint';
     return { ok, detail: `might per level ${r.steps.map(x => x.toFixed(4)).join(' < ')}; 650 is ${r.far.toFixed(1)} times 600. Sarnavoth against the three archdemons together: p ${r.king.toFixed(2)} (${r.kingEdges.join('; ')}); the Sword Saint (level ${r.saintL}) against one: ${r.one.map(x => `${x[0]} (${x[1]}) ${x[2].toFixed(2)}`).join(', ')}; against the Lord of the Sea (${r.seaL}): ${r.sea.toFixed(2)}, ${r.seaPow.toFixed(0)} times her power; Sarnavoth ${r.topGap.toFixed(1)} times the next single being and ${r.kingArch.toFixed(2)} times an archdemon on average; neighbours at most ${r.maxStep.toFixed(2)} times apart, ${r.even} neighbour pairs near even; the weakest legend ${r.farAbove.toFixed(0)} times the strongest beast or master; skills over level 10: ${r.over10.length}; incomplete sheets: ${r.complete.join(', ') || 'none'}` };
+  },
+
+  // order 92 (D-185): the scale stretched at the top. Every legend stands at its old level x 1000/800 (Sarnavoth 800 -> 1000,
+  // the archdemons 770-780 -> 963-975, the Saint 700 -> 875, the Lord of the Sea 690 -> 863), the people's and the dragons'
+  // anchors where they were, and the band opened between the strong dragons and the weakest legend holds the calamities:
+  // twenty and more kinds over many families, spread with no wide hole, each a whole species, every one far below a legend
+  async pwStretched(pg) {
+    if (!(await pg.evaluate(GATE))) return NO;
+    const r = await pg.evaluate(() => {
+      const PW = A.POWER;
+      A.newGame({ seed: 7, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      const OLD = { sarnavoth: 800, ghazrul: 780, morvane: 775, vethrael: 770, 'sword-saint': 700, vaskareth: 692, tessaly: 690, hrimgala: 682, ulmavren: 680, orrun: 674, serrath: 672, kethra: 664, ommul: 658, saqqar: 650, 'pale-shepherd': 648, 'iron-warden': 640 };
+      const wrong = PW.LD.legends.filter(l => OLD[l.id] == null || PW.level(l.id) !== Math.round(OLD[l.id] * 1000 / 800)).map(l => `${l.id} ${PW.level(l.id)}`);
+      const legs = PW.LD.legends.map(l => PW.being(l.id)), low = Math.min(...legs.map(b => b.level)), weakest = Math.min(...legs.map(b => b.power));
+      const strong = Math.max(...['elder-ash-dragon', 'elder-frost-dragon', 'elder-storm-dragon', 'elder-brine-dragon'].map(id => PW.level(id)));
+      const band = PW.BD.species.filter(s => PW.level(s.id) > strong + 50 && PW.level(s.id) < low).sort((a, b) => PW.level(a.id) - PW.level(b.id));
+      const lv = band.map(s => PW.level(s.id)), holes = lv.slice(1).map((x, i) => x - lv[i]);
+      const whole = band.every(s => s.beh && s.beh.drives.length && s.beh.social && s.beh.people && s.drops.length && s.seasons.length && (s.terr.length || s.coast) && s.prof && PW.D.capabilities.every(c => s.prof[c.k] >= 0 && s.prof[c.k] <= 10));
+      const strongestKind = Math.max(...band.map(s => PW.power(s.id)));
+      // each level exponentially harder, and more so the higher: the step from 990 to 1000 is wider than from 800 to 810
+      const wider = PW.mightOf(1000) / PW.mightOf(990) > PW.mightOf(810) / PW.mightOf(800);
+      return { wrong, low, strong, n: band.length, fams: [...new Set(band.map(s => s.fam))].length, lines: [...new Set(band.map(s => s.line))].length,
+        top: lv[lv.length - 1], bottom: lv[0], hole: Math.max(0, ...holes), ints: [...new Set(band.map(s => s.int))], whole, below: weakest / strongestKind, wider,
+        names: band.map(s => `${s.n} ${PW.level(s.id)}`) };
+    });
+    const ok = !r.wrong.length && r.low === 800 && r.n >= 20 && r.fams >= 6 && r.lines >= 8 && r.bottom <= r.strong + 80 && r.top >= 760 && r.hole <= 40 && r.ints.length >= 3 && r.whole && r.below > 20 && r.wider;
+    return { ok, detail: `legends off their stretched level: ${r.wrong.join(', ') || 'none'} (the weakest at ${r.low}); the high band, from the strong dragons (${r.strong}) to the legends: ${r.n} kinds in ${r.fams} families and ${r.lines} lines, levels ${r.bottom} to ${r.top}, the widest hole ${r.hole} levels, minds ${r.ints.join('/')}; the weakest legend ${r.below.toFixed(0)} times its strongest; a level at 1000 worth more than one at 800 ${r.wider}: ${r.names.join(', ')}` };
   },
 
   // the bestiary: countless kinds in families and evolution lines; the release's beasts placed by their own duel rows
