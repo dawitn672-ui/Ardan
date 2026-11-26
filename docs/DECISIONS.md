@@ -2962,3 +2962,55 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
 - Save version 19 (the step `titles`: the census, empty). Another builder may also bump `SV.VER`; the integrator settles
   the number at the merge. Deferred: `ttRare` (200 bot lives, a balance-harness run), monsters' own ledgers, an
   opponent's title on a duel's or court's card.
+
+### D-186 · The three kinds of skill: arts (active, passive, buff) in the data, the engine and the duel (2026-11-26; order 92; skills-v2 §3.5, §10 step 11, §15, §16; orders 82, 83, 87, 88)
+- **An art is marked, not inferred.** The owner's three kinds are `kind` `active`, `passive` or `buff` with `art: true`
+  (`data/skills/kinds/`). The 148 rungs and merge results were already `passive` (always on, no moment); reading every
+  passive as an art would have made them all conditional. **Considered:** a fourth kind name for conditional passives (the
+  owner named three kinds; his "passive" is the conditional one, so the rungs keep the older sense and the marker says which).
+- **An art acts only in its moment.** An active or a buff is one `active` effect riding on a duel move (`base`), a passive
+  is `trigger` effects; static effects (edges, fight) stay the rungs' and the titles' business, so `A.CAPS` and every
+  fighting worth, power and odds the world reads are untouched by the library (the arts live in their own store, `pc.ka`,
+  never in `pc.ks`, and `SK2.worthOfFighter` ignores them). The validator's check 11 (`E.kindFaults`) holds the rest:
+  the specification whole (§15.6) with `spec.effect` equal to the Lv-1 band, what each kind may do, a duration for what
+  lasts, a family it trains or a birth route, and mana only for beings with magic.
+- **Budget by cooldown; new caps for the new dimensions.** An active's or a buff's cost is its effect's times its
+  cooldown's factor (`E.coolFactor`), not the `limit` label; the effects new to §2.3 (strike, heal, raise, guard,
+  status) are priced in `vocab.json` (a share 40 points a whole for a blow or a heal, 30 for a guard). §2.4's caps bind
+  the fight points (the arts' share with the rungs' 15%); five new caps bind the rest (a blow 0.4 of the worth, one
+  fight's heals 0.35 of the blood, a guard half a blow, a raise +10, a held foe two exchanges), the engine's `CAP_HUMAN`
+  the ceiling up to S and `vocab.json` rising above it. **Considered:** a separate, larger fight cap for passives ("large
+  effects"): it would let a passive and a rung stack past §2.4's ceiling; a passive may instead take the whole 15% alone.
+- **Choices are pure functions, not dice.** Anyone's readying (`E.chooseReady`) and use (`E.plan`) is a pure function of
+  his arts, his weapon, his blood and wind and the move he makes; the player presses a button, or the same function
+  chooses when the fight runs by itself. A.WHY is for structural choices with reasons from the record; a fighter's
+  choice of a cut is a reflex of his state, and a pure function draws nothing (`lint-reasons` unchanged).
+- **The foe announces his move; his art rides on it.** An NPC uses an art only on the move he announced (as techniques
+  do since ENG-DUEL-TECH), and not in the same exchange as a technique. A blow or a state lands only on an exchange won;
+  a heal, a raise and a guard begin whatever the exchange.
+- **Who holds what.** The player learns by the routes the data names, at the month's turn, at most two a month (an old
+  save's grown player would otherwise learn a dozen in one month); anyone else holds arts in the closed form
+  (`E.npcArts`), nothing stored; a monster or a legend what its kind is born with (`E.beingArts`). **Mana** only where the
+  data has magic (the bestiary's and the legends' `prof.magic`: ten a step); a person has none until magic (§17), and the
+  validator refuses a mana-based art any person could reach.
+- **Readying takes a month** (§3.5): an art readied this month is in hand from the next; never in a fight. A month's buff
+  (a wound, an illness, a stat for a month) needs no place and is used from the Skills sheet with its time and cooldown;
+  its raise is read by `A.stat` through `SK2.statOf`, under the stat cap.
+- **The odds stay honest: they count the arts.** With the foe's arts and none of the player's, honestOddsCells read the
+  even cell 39 shown, 30 won, and flBeastOdds a bin 18 points off: the arts change what a duel does, so the measure the odds
+  read counts them (`SK2.artsWorth` in 48's duel measure, `SK2.artsWorthOf` in `A.shownDuelOdds`, 24's and 48's), never
+  `A.fightWorth` (the power ladder, the tiers and the levels read that). Worth: a passive whose condition holds for the whole
+  fight (a party round a beast, the dark, a stronger foe) gives its fight points flat, under the cap; the rest is k x the
+  root of what the arts are worth (an active's or a buff's use times the uses ten exchanges give it, as far as its mana
+  lasts), k 0.41 for a person and 0.8 for a beast (which readies all it has and uses it more often). Fitted on the duel
+  engine: honestOddsCells worst 2.7 points (base 4.2), flBeastOdds mean 1.8 and worst bin 6.8 (base 2.0 and 6.2).
+  `honestOdds`' monotone check sorts by the same measure (worth and arts). **Considered:** arts inside `A.fightWorth`
+  (it would move every level, tier and power read off it); weaker arts for NPCs (the owner's passives are meant to be large).
+- **Release edits** (07-duels `A.duelAct`, `A.applyHit`, `A.duelFinish`, `A.duelAuto`; 06 `A.CR`, `startDuelNow`;
+  23-ui-b `UI.profBlock`, `UI.duelModalTech`), each guarded by `A.SK2`'s functions, no new stage (`lint-stages` unchanged).
+- **Save version 20** (step `skills2arts`: the player's `pc.ka` and `pc.kr`, empty; his reads' arts come at the first
+  month, so nothing a check or a fight reads moves on load). The level-and-classes builder (orders 91, 92) may also bump
+  `SV.VER`; the integrator settles the number at the merge.
+- **Deferred** (skills-v2 §16.6): battles (the line battle's personal fight and the companies), auras into the war core,
+  actives at work (an edge on a card's check), NPCs' month buffs, legends' arts in their own fights, and the rest of the
+  library (check 9's shares bind at 200 skills; the library is 194).

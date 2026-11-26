@@ -68,6 +68,7 @@
   "noTradeLoop",
   "sk5Lives",
   "sk2Migrate",
-  "ttDeterministic"
+  "ttDeterministic",
+  "sk2ArtsMonth"
  ]
 }
