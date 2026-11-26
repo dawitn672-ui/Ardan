@@ -45,12 +45,24 @@
   // after the data changed under the page (a test plants effects): forget what was worked out from it
   SK2.capsReset = function () { ACT = null; PERK = null; EMPTY = null; TAGS.clear(); MEMO.clear(); };
 
+  // ---- titles beside the skills (src/people/9999976-titles, D-183): a person's titles are sources in the same pool, under
+  // the same caps. SK2.xHeld(p) (the titles' module sets it) lists them as { id, lv }; SK2.addSource registers each one's
+  // skill-shaped object ({ id, rank: its weight, levels: [{ at: 1, effects }] }), put into the index on first use
+  const XSRC = new Map();
+  let XREG = false;
+  SK2.addSource = s => { if (s && s.id) { XSRC.set(s.id, s); XREG = false; } };
+  const regX = () => { if (XREG) return; const B = IX().BY; for (const [id, s] of XSRC) if (!B[id]) B[id] = s; XREG = true; };
+  const xOf = p => (SK2.xHeld && p ? SK2.xHeld(p) : null);
+  const off = p => !p || (active().none && !xOf(p));
+
   // ---- what a person holds that may carry effects ------------------------------------------------------------------------
   // the rungs of the families that carry effects (his table's, or his number's for anyone else: SK2.rungFor), each with
   // the rungs below it at Lv 10 (§15.2), and the player's other held skills (named skills, from step 9)
   SK2.held = function (p) {
     const out = [], act = active();
-    if (!p || act.none) return out;
+    if (!p) return out;
+    const x = xOf(p);
+    if (act.none) { if (x) { regX(); out.push(...x); } return out; }
     const Eng = E(), I = IX();
     for (const c of act.fams) { const r = SK2.rungFor(p, c); if (r) out.push(...Eng.heldOfRung(I, c, r.rank, r.lv)); }
     if (act.named && p.ks && typeof p.ks === 'object') for (const id of Object.keys(p.ks).sort()) {
@@ -58,6 +70,7 @@
       if (!s || !e || !(e.lv >= 1) || (s.family && Eng.rungOf(I, s.family, s.rank) === id)) continue;
       out.push({ id, lv: Math.min(Eng.MAX_LV, e.lv) });
     }
+    if (x) { regX(); out.push(...x); }
     return out;
   };
   // A.CAPS(p): the capability profile (§3.6), frozen, shared by everyone who holds the same skills at the same levels
@@ -92,7 +105,7 @@
 
   // ---- edge: a check's points (A.skillEff) ------------------------------------------------------------------------------
   SK2.edgeOf = function (p, k) {
-    if (active().none || !p || !k) return 0;
+    if (off(p) || !k) return 0;
     const P = A.CAPS(p); if (P === EMPTY) return 0;
     return E().edgeOn(IX(), P.G, SK2.tagsOf(k));
   };
@@ -100,7 +113,7 @@
   // ---- blunder and surge: steps of judgment and will (VS.minds) ----------------------------------------------------------
   // the check's skills (s, s2, and a fight check's weapon skill); with no check only what is tagged 'all'
   SK2.mindSteps = function (p, check) {
-    if (active().none || !p) return null;
+    if (off(p)) return null;
     const P = A.CAPS(p); if (P === EMPTY) return null;
     const keys = [];
     if (check && typeof check === 'object') {
@@ -114,7 +127,7 @@
 
   // ---- resist: steps, and the share of harm they take off ----------------------------------------------------------------
   SK2.resistSteps = function (p, of) {
-    if (active().none || !p) return 0;
+    if (off(p)) return 0;
     const P = A.CAPS(p); return P === EMPTY ? 0 : P.resist[of] || 0;
   };
   SK2.resistShare = function (p, of) {
@@ -129,7 +142,7 @@
     return Math.max(0, v + (f.wdmg || 3) * 0.9 + (f.prot || 0) * 1.1 + (f.shield || 0) * 1.4);
   };
   SK2.fightOn = function (f, p) {
-    if (active().none || !f || !p) return f;
+    if (!f || off(p)) return f;
     const P = A.CAPS(p); if (P === EMPTY) return f;
     const Eng = E(), I = IX();
     const w = P.resist.wounds || 0, fear = P.resist.fear || 0;
@@ -139,6 +152,12 @@
     const parts = Eng.fightOn(I, P.G, tags, SK2.worthOfFighter(f));
     if (parts.total || parts.burst) f.sk2 = { steady: parts.atk + parts.def + parts.adapt, burst: parts.burst, total: parts.total, cap: parts.cap };
     return f;
+  };
+
+  // ---- stat: what held skills' and titles' stat effects add to a stat (A.stat), at most +10 (the cap, §2.4, §11.5) -----
+  SK2.statOf = function (p, s) {
+    if (off(p)) return 0;
+    const P = A.CAPS(p); return P === EMPTY ? 0 : P.stat[s] || 0;
   };
 
   // ---- perks: the rungs' perk effects as the release's rows ---------------------------------------------------------------

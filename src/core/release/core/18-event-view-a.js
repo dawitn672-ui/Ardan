@@ -257,6 +257,8 @@ A.eventChoose = function (idx) {
   }
   pc.flags.ev = pc.flags.ev || {};
   pc.flags.ev[q.ev] = A.S.year;
+  // D-183: a choice that is a deed a title watches (data/titles/vocab.json choices: a bribe refused, a village burned)
+  if (A.TT && A.TT.chose) A.TT.chose(pc, q.ev, vc.i, success, q.ctx || {});
   q.result = {
     text: A.T(text, ctxT),
     success,

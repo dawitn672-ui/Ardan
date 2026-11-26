@@ -138,6 +138,7 @@
       p.coin = (p.coin || 0) + coin; if (A.fame) A.fame(p, fame);
       if (gap > 0 && Array.isArray(p.deeds)) p.deeds.push({ y: A.S.year, t: `Killed ${name} alone` });
       PW.slainBy(p, ctx);
+      if (A.TT && A.TT.beastSlain) A.TT.beastSlain(p, b);   // D-183: a beast slain is a deed the titles count
       if (A.LV && A.LV.defeat) A.LV.defeat(p, b.level, 'kill');   // D-181: a beast killed raises the person's level
       return gap > 0 ? `Against all sense, it is dead and you are not. What it leaves fetches ${A.coin ? A.coin(coin) : coin}.` : `It is no match for you. What it leaves fetches ${A.coin ? A.coin(coin) : coin}.`;
     }

@@ -753,6 +753,13 @@ A.stat = function (p, s) {
   // D-181: the stat points a level brought (src/people/9999975-level), held to the body's room at this age; age, traits,
   // wounds and weariness below lower what is read, never what is placed
   if (p.lv && p.lv.put && A.LV) v = A.LV.withPut(p, s, v);
+  // D-183: what titles' (and skills') stat effects add (37-skills2's SK2.statOf: at most +10 a stat, the adapter's cap),
+  // never past the potential by more than 5 (src/people/9999976-titles); 0 for anyone who holds none
+  if (A.SK2 && A.SK2.statOf) {
+    const b = A.SK2.statOf(p, s);
+    if (b > 0) v = Math.max(v, Math.min(v + b, ((p.pot && p.pot[s]) || v) + 5));
+    else if (b < 0) v += b;
+  }
   v *= A.ageFactor(p, s);
   for (const t of p.traits) {
     const T = GD.TRAITS[t];
@@ -890,6 +897,12 @@ A.removeTrait = (p, t) => {
 A.has = (p, t) => p.traits.includes(t) || p.quirks.includes(t);
 
 A.addWound = function (p, k) {
+  const n = A.addWoundNow(p, k);
+  // D-183: a serious wound is a deed the titles' ledger counts (src/people/9999976-titles)
+  if (n && A.TT && A.TT.wound) A.TT.wound(p, k);
+  return n;
+};
+A.addWoundNow = function (p, k) {
   const W = GD.WOUNDS[k];
   return !W ||
     (W.perm && p.wounds.some(w => w.k === k)) ||
@@ -1015,7 +1028,9 @@ A.link = function (a, b, type, op = 30, backType = null) {
   }
 };
 
-A.opinion = (a, b) => (a && b && a.rel[b.id] ? a.rel[b.id].op : 0);
+// D-183: a title's social effect (soldiers think better of an Undefeated captain) adds to how a viewer regards its holder
+// (src/people/9999976-titles, A.TT.socialOf: the best group he belongs to, at most +10); 0 for anyone who holds none
+A.opinion = (a, b) => (a && b ? (a.rel[b.id] ? a.rel[b.id].op : 0) + (b.tt && A.TT ? A.TT.socialOf(b, a) : 0) : 0);
 
 A.addOp = function (a, b, d) {
   if (!a || !b) return;

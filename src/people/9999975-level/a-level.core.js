@@ -132,6 +132,7 @@
     if (!won.length) return;
     const F_ = lost.length ? Math.max(...lost.map(p => LV.level(p))) : D.foes.soldier;
     for (const p of won) LV.defeat(p, F_, 'defeat');
+    if (A.TT && A.TT.field) A.TT.field(won);   // D-183: a field battle won is a deed the titles count
   };
 
   // ---------------------------------------------------------------- stat points: ceiling, room, cost

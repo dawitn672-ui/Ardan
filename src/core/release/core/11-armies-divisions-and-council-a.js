@@ -1605,7 +1605,8 @@ A.fightEnd = function (pid, winner) {
       Math.round((won ? 6 + size * 4 : 2 + size) * (1 + pc.mil.rank * 0.25) * sm * (atkW && won ? 1.15 : 1) * fresh),
     );
   pc.mil.merit += gain;
-  pc.mil.battles++;
+  pc.mil.battles++; // D-183: a battle survived is a deed the titles count (src/people/9999976-titles)
+  if (A.TT && A.TT.battle) A.TT.battle(pc);
   if (won && role === "div") pc.mil.divWins = (pc.mil.divWins || 0) + 1;
   if (won && role === "army") pc.mil.armyWins = (pc.mil.armyWins || 0) + 1;
   if (role !== "line") {
@@ -1877,8 +1878,11 @@ A.wsSiegeDay = function (live) {
     if (P.sgBy !== rid) {
       P.sgBy = rid;
       P.sgd = 0;
+      P.sgPk = 0;
     }
     P.sgd = (P.sgd || 0) + 1;
+    // D-183: the most days this siege has stood (src/people/9999976-titles: a place that stood a long siege)
+    if (P.sgd > (P.sgPk || 0)) P.sgPk = P.sgd;
     P.sgNeed = need;
     for (const d of L) d.sieging = true;
     if (P.sgd >= need) {
@@ -1907,7 +1911,12 @@ A.wsSiegeDay = function (live) {
   for (const P of S.prov)
     if (P.sgBy && !(by[P.id] && by[P.id].some(d => d.r === P.sgBy))) {
       P.sgd = Math.max(0, (P.sgd || 0) - 2);
-      if (!P.sgd) P.sgBy = null;
+      if (!P.sgd) {
+        // D-183: the siege is given up and the place stood: a deed for whoever held it (src/people/9999976-titles)
+        if (A.TT && A.TT.siegeLifted) A.TT.siegeLifted(P, P.sgPk || 0);
+        P.sgBy = null;
+        P.sgPk = 0;
+      }
     }
 };
 

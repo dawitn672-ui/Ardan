@@ -369,6 +369,7 @@
     const opts = cands.map(({ p, v }) => {
       const rs = [{ kind: 'merit', weight: r2(v / 40), label: `${A.skill(p, 'command') >= 60 ? 'A proven commander' : 'An able commander'}${(p.milRank || 0) >= 6 ? ' of a General\'s grade' : ''}`, source: { t: 'merit', id: p.id, r: Math.round(v) }, pub: 1 }];
       if (ru && p.house && ru.house && p.house === ru.house) rs.push({ kind: 'kin', weight: .3, label: 'Of the king\'s own house', source: { t: 'kin', id: p.id }, pub: 1 });
+      if (A.TT && A.TT.reasons) for (const x of A.TT.reasons(p, 'appoint')) rs.push(x);   // D-183: soldiers follow an Undefeated captain
       if ((p.fame || 0) >= 60 && (kingT.caution || 0) > .2) rs.push({ kind: 'fear', weight: -.3, label: 'A man the soldiers may love more than their king', source: { t: 'fame', id: p.id, r: Math.round(p.fame) }, pub: 0 });
       return { id: String(p.id), reasons: rs };
     });
