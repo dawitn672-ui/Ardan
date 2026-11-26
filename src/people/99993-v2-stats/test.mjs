@@ -526,7 +526,7 @@ export default {
         'You take a hit — 7 damage.', 'Your superiors notice the extra hours. (Merit +15)', 'For Commander: merit 379/600, command skill 28/35, months at your present rank 1/16.',
         'In a fight: Crushed knee that never bends right: worth 45 to 43 (speed -7, stamina -3).', 'Captain Godric of Highwold (Cunning, command 56)'].map(w);
       const traits = Object.keys(GD.ORDERS || {}).flatMap(k => A.orderTraits(k));
-      for (const l of lines.concat(traits)) if (LINE.test(l) || MORE.some(x => x.test(l)) || /%|\+\d/.test(l)) found.push('line: ' + l.slice(0, 90));
+      for (const l of lines.concat(traits)) if (LINE.test(NOLV(l)) || MORE.some(x => x.test(NOLV(l))) || /%|\+\d/.test(l)) found.push('line: ' + l.slice(0, 90));
       // verifier: the captain rule ate the release's head count ("You command 4,500 men" -> "You command Untrained,500
       // men") and the hearsay rule hedged the player's own sums and sums already hedged ("about some 2,000 suns").
       // These lines must come through unchanged.
@@ -538,7 +538,7 @@ export default {
       // the release's war games give both rolls, or neither: "(your tactics 47 vs 52)", lost "(47 vs 52)"
       const games = ['The war games go your way: your men outmaneuver the "enemy" (your tactics 61 vs 52). The high command takes note.',
         'The war games go badly: the umpires rule you "destroyed" (47 vs 52). Still, you learn.', 'Sir Hal · command 45 · tactics 30 · logistics 20'].map(w);
-      for (const l of games) if (/\d/.test(l)) found.push('line: ' + l.slice(0, 90));
+      for (const l of games) if (/\d/.test(NOLV(l))) found.push('line: ' + l.slice(0, 90));
       return { pages, found: [...new Set(found)], lines, kept, games, traits: traits.filter(t => /faster|Charge/.test(t)).slice(0, 2) };
     });
     // (the season's practice line is j-numbers.core.js's: i-numbers' training-log rule leaves a line that says "of it

@@ -257,7 +257,7 @@ export default {
       await pg.setViewportSize({ width: w, height: h });
       const r = await pg.evaluate((BADs) => {
         const BAD = new RegExp(BADs, 'i'), out = [], rows = [];
-        const look = (where) => { const t = document.body.innerText || ''; const m = t.match(BAD); if (m) out.push(where + ': ' + t.slice(Math.max(0, m.index - 40), m.index + 40).replace(/\s+/g, ' ')); for (const el of document.querySelectorAll('.skrow, .pf-sk')) { const s = el.innerText; if (/\d|%|Journeyman|Adept|Novice|Untrained|Skilled|Trained|Beginner|Intermediate|Advanced|Expert|Grandmaster/.test(s.replace(/\b[DCBAS] · Lv \d{1,2}\b/g, ''))) rows.push(s.replace(/\s+/g, ' ').slice(0, 80)); } };
+        const look = (where) => { const t = document.body.innerText || ''; const m = t.match(BAD); if (m) out.push(where + ': ' + t.slice(Math.max(0, m.index - 40), m.index + 40).replace(/\s+/g, ' ')); for (const el of document.querySelectorAll('.skrow, .pf-sk')) { const s = el.innerText; if (/\d|%|Journeyman|Adept|Novice|Untrained|Skilled|Trained|Beginner|Intermediate|Advanced|Expert|Grandmaster/.test(s.replace(/(Rusty · )?[DCBAS] · Lv \d{1,2}(?!\d)/g, ' '))) rows.push(s.replace(/\s+/g, ' ').slice(0, 80)); } };
         for (const [seed, status] of [[3301, 'noble'], [3302, 'artisan'], [3303, 'peasant']]) {
           T.enter({ seed, race: 'human', realm: 'POL-01', status, sex: 'M', startAge: 14 });
           T.play(12, { onEvent: v => { const s = [v.title, v.text, ...v.choices.map(c => c.t)].join(' '); const m = s.match(BAD); if (m) out.push('card ' + v.title + ': ' + m[0]); } });
