@@ -38,4 +38,5 @@ To see one as it was in its own version, `node tools/version.mjs get <version>` 
 | `v2.1.0-alpha.17-noble-life.ardan` | v2.1.0-alpha.17 | a noble's first three years: any version's world, loaded and played on | Load it from the Menu (Load save file); the Life tab |
 | `v2.1.0-alpha.18-noble-life.ardan` | v2.1.0-alpha.18 | a noble's first three years: any version's world, loaded and played on | Load it from the Menu (Load save file); the Life tab |
 | `v2.1.0-alpha.19-noble-life.ardan` | v2.1.0-alpha.19 | a noble's first three years: any version's world, loaded and played on | Load it from the Menu (Load save file); the Life tab |
+| `v2.1.0-alpha.20-noble-life.ardan` | v2.1.0-alpha.20 | a noble's first three years: any version's world, loaded and played on | Load it from the Menu (Load save file); the Life tab |
 <!-- saves:end -->
