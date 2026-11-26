@@ -85,25 +85,27 @@
   SK2.reads = function (p, k) {
     const c = famOf(k); if (!c || !p) return 0;
     const Eng = SK2.E(), L = SK.LEG[k], sk = p.skills || {};
-    let rung = null, rust = 0, focus = null;
+    let rung = null, rust = 0, focus = null, mv = 0;
     if (p.sk && typeof p.sk === 'object' && p.sk[c]) {
       const t = tableTop(p, c);
       if (t) { rung = { rank: t.rank, lv: t.e.lv }; rust = t.e.rust || 0; focus = t.e.focus || []; }
+      // a family absorbed by a merge reads through it, never below its floor (step 8, e-merge; the mirror holds the better)
+      mv = SK2.mergedRead ? SK2.mergedRead(p, c) : 0;
       // a number older code wrote since the month's pass is read at once, as S1 reads it (adopted at the month)
       const m = sk[c];
-      if (m != null && (!rung || m !== Eng.value(rung.rank, rung.lv))) rung = rungOfNum(m);
+      if (m != null && (!rung || m !== Math.max(Eng.value(rung.rank, rung.lv), mv))) { rung = rungOfNum(m); mv = 0; }
     } else {
       rung = rungOfNum(sk[c] || 0);
       focus = (p.ssp && p.ssp[c]) || [];
     }
     // a legacy key older code wrote (p.skills.axe = 60) is read through its family, the higher of the two
     if (c !== k && sk[k]) { const r2 = rungOfNum(sk[k]); if (r2 && (!rung || Eng.value(r2.rank, r2.lv) > Eng.value(rung.rank, rung.lv))) rung = r2; }
-    if (!rung) return 0;
+    if (!rung) return mv;
     // a focus (S1's specialism): two steps up inside it, one down in a sibling
     const steps = L && focus && focus.length ? (focus.indexOf(L[1]) >= 0 ? 2 : -1) : 0;
     let v = Eng.shifted(rung.rank, rung.lv, steps);
     if (rust > 0) v = Math.max(0, v - rust);
-    return v;
+    return mv > v ? mv : v;
   };
   // the number A.skill gives, through the rungs: the body's hold (C9), wounds, the clamp (03-engine-base's order), and a
   // fresh wound's part (49-body-mind)
@@ -205,7 +207,11 @@
   // "C·Lv 3" (two words, for a row that already names the skill: the Profile's page, under its word budget)
   SK2.label = function (p, k, o) {
     o = o || {};
-    const r = SK2.rungFor(p, k); if (!r) return 'untried';
+    const r = SK2.rungFor(p, k);
+    // a family absorbed by a merge (step 8) is printed as the art it went into
+    const mg = SK2.mergedOf ? SK2.mergedOf(p, famOf(k)) : null;
+    if (mg && (!r || mg.v >= SK2.E().value(r.rank, r.lv))) { const lv = Math.min(SK2.E().MAX_LV, mg.e.lv); let t = o.compact ? `${mg.s.rank}·Lv ${lv}` : SK2.E().label(mg.s.rank, lv); if (o.name) t = mg.s.name + ' · ' + t; return t; }
+    if (!r) return 'untried';
     let t = o.compact ? `${r.rank}·Lv ${r.lv}` : SK2.E().label(r.rank, r.lv);
     if (o.name) t = SK2.rungName(r.c, r.rank) + ' · ' + t;
     const s = p.sk && p.sk[r.c];
@@ -224,6 +230,8 @@
   };
   // the level after a person's own in a family ("C · Lv 4"; at the top of a rank, the next rank's first)
   SK2.nextLabel = function (p, k) {
+    const mg = SK2.mergedOf ? SK2.mergedOf(p, famOf(k)) : null;
+    if (mg) return mg.e.lv < SK2.E().MAX_LV ? SK2.E().label(mg.s.rank, mg.e.lv + 1) : '';
     const r = SK2.rungFor(p, k); if (!r) return SK2.E().label('D', 1);
     if (r.lv < SK2.E().MAX_LV) return SK2.E().label(r.rank, r.lv + 1);
     const nr = SK2.E().nextRank(r.rank);

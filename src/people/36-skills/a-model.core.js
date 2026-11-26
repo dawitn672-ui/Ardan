@@ -143,7 +143,10 @@
   // even level once past half its bar), or S1's step value while the rungs are off
   SK.valueOf = function (p, c) {
     const s = full(p) && p.sk[c]; if (!s || !(s.lv > 0)) return 0;
-    return on2() ? A.SK2.valueOfEntry(s) : VALUES[s.lv];
+    if (!on2()) return VALUES[s.lv];
+    // a family a merge absorbed reads through it (37-skills2's e-merge, D-182): the better of the two
+    const v = A.SK2.valueOfEntry(s), mv = A.SK2.mergedRead ? A.SK2.mergedRead(p, c) : 0;
+    return mv > v ? mv : v;
   };
   SK.mirror = function (p, c) {
     if (!p.skills) p.skills = {};

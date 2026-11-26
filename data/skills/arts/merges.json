@@ -1,0 +1,117 @@
+{
+  "about": "Skills rebuild, step 8 (docs/design/skills-v2.md §3.4; §15.2, §15.8; D-182): the first merge results. Each is made by one recipe of recipes.json from two level-10 rungs of different families, absorbs them, and reads every family they read (never below the better part's read). B rank, one above their C parts. Written by hand.",
+  "skills": [
+    {
+      "id": "sword_and_buckler", "name": "Sword and Buckler", "rank": "B", "rarity": "uncommon", "kind": "passive", "category": "arms.sword_shield",
+      "family": null, "reads": ["sword", "shield"],
+      "levels": [
+        { "at": 1, "effects": [] },
+        { "at": 5, "effects": [{ "type": "edge", "tag": "sword", "v": 1 }, { "type": "edge", "tag": "shield", "v": 1 }] },
+        { "at": 10, "effects": [{ "type": "edge", "tag": "sword", "v": 2 }, { "type": "edge", "tag": "shield", "v": 2 }] }
+      ],
+      "gates": [], "acquire": [{ "via": "merge", "recipe": "sword_with_shield" }], "evolvesTo": [],
+      "transfer": { "teach": "school", "inherit": false, "steal": false, "sell": false, "lose": [] },
+      "slot": false, "census": "count", "spec": { "cooldown": null, "cost": null, "effect": null, "duration": null, "conditions": [] },
+      "text": "Blade and shield as one weapon: the cover opens the cut, the cut closes the cover.",
+      "never": "Your shield and your sword take turns."
+    },
+    {
+      "id": "horse_and_haft", "name": "Horse and Haft", "rank": "B", "rarity": "uncommon", "kind": "passive", "category": "arms.horse_haft",
+      "family": null, "reads": ["riding", "spear"],
+      "levels": [
+        { "at": 1, "effects": [] },
+        { "at": 5, "effects": [{ "type": "edge", "tag": "riding", "v": 1 }, { "type": "edge", "tag": "spear", "v": 1 }] },
+        { "at": 10, "effects": [{ "type": "edge", "tag": "riding", "v": 2 }, { "type": "edge", "tag": "spear", "v": 2 }] }
+      ],
+      "gates": [], "acquire": [{ "via": "merge", "recipe": "riding_with_spear" }], "evolvesTo": [],
+      "transfer": { "teach": "school", "inherit": false, "steal": false, "sell": false, "lose": [] },
+      "slot": false, "census": "count", "spec": { "cooldown": null, "cost": null, "effect": null, "duration": null, "conditions": [] },
+      "text": "The horse's weight goes down the shaft and into the point; the seat and the grip are one thing.",
+      "never": "You ride, and then you strike."
+    },
+    {
+      "id": "field_captaincy", "name": "Field Captaincy", "rank": "B", "rarity": "uncommon", "kind": "passive", "category": "war.captaincy",
+      "family": null, "reads": ["command", "tactics"],
+      "levels": [
+        { "at": 1, "effects": [] },
+        { "at": 5, "effects": [{ "type": "edge", "tag": "command", "v": 1 }, { "type": "edge", "tag": "tactics", "v": 1 }] },
+        { "at": 10, "effects": [{ "type": "edge", "tag": "command", "v": 2 }, { "type": "edge", "tag": "tactics", "v": 2 }] }
+      ],
+      "gates": [], "acquire": [{ "via": "merge", "recipe": "command_with_tactics" }], "evolvesTo": [],
+      "transfer": { "teach": "school", "inherit": false, "steal": false, "sell": false, "lose": [] },
+      "slot": false, "census": "count", "spec": { "cooldown": null, "cost": null, "effect": null, "duration": null, "conditions": [] },
+      "text": "The plan and the men who carry it out, held in one head: you order what the ground allows.",
+      "never": "Your orders and your plans disagree."
+    },
+    {
+      "id": "counting_house", "name": "The Counting House", "rank": "B", "rarity": "uncommon", "kind": "passive", "category": "trade.counting_house",
+      "family": null, "reads": ["trade", "stewardship"],
+      "levels": [
+        { "at": 1, "effects": [] },
+        { "at": 5, "effects": [{ "type": "edge", "tag": "trade", "v": 1 }, { "type": "edge", "tag": "stewardship", "v": 1 }] },
+        { "at": 10, "effects": [{ "type": "edge", "tag": "trade", "v": 2 }, { "type": "edge", "tag": "stewardship", "v": 2 }] }
+      ],
+      "gates": [], "acquire": [{ "via": "merge", "recipe": "trade_with_stewardship" }], "evolvesTo": [],
+      "transfer": { "teach": "school", "inherit": false, "steal": false, "sell": false, "lose": [] },
+      "slot": false, "census": "count", "spec": { "cooldown": null, "cost": null, "effect": null, "duration": null, "conditions": [] },
+      "text": "What a house holds and what the market wants, in one ledger: you buy for the store and sell from it.",
+      "never": "You keep accounts, and someone else makes money."
+    },
+    {
+      "id": "treaty_tongue", "name": "Treaty Tongue", "rank": "B", "rarity": "uncommon", "kind": "passive", "category": "court.treaty",
+      "family": null, "reads": ["persuasion", "diplomacy"],
+      "levels": [
+        { "at": 1, "effects": [] },
+        { "at": 5, "effects": [{ "type": "edge", "tag": "persuasion", "v": 1 }, { "type": "edge", "tag": "diplomacy", "v": 1 }] },
+        { "at": 10, "effects": [{ "type": "edge", "tag": "persuasion", "v": 2 }, { "type": "edge", "tag": "diplomacy", "v": 2 }] }
+      ],
+      "gates": [], "acquire": [{ "via": "merge", "recipe": "persuasion_with_diplomacy" }], "evolvesTo": [],
+      "transfer": { "teach": "school", "inherit": false, "steal": false, "sell": false, "lose": [] },
+      "slot": false, "census": "count", "spec": { "cooldown": null, "cost": null, "effect": null, "duration": null, "conditions": [] },
+      "text": "You argue a man round and leave his master room to agree: the case and the form of it, together.",
+      "never": "You win the argument and lose the treaty."
+    },
+    {
+      "id": "woodsmans_way", "name": "Woodsman's Way", "rank": "B", "rarity": "uncommon", "kind": "passive", "category": "land.woodsman",
+      "family": null, "reads": ["survival", "tracking"],
+      "levels": [
+        { "at": 1, "effects": [] },
+        { "at": 5, "effects": [{ "type": "edge", "tag": "survival", "v": 1 }, { "type": "edge", "tag": "tracking", "v": 1 }] },
+        { "at": 10, "effects": [{ "type": "edge", "tag": "survival", "v": 2 }, { "type": "edge", "tag": "tracking", "v": 2 }] }
+      ],
+      "gates": [], "acquire": [{ "via": "merge", "recipe": "survival_with_tracking" }], "evolvesTo": [],
+      "transfer": { "teach": "school", "inherit": false, "steal": false, "sell": false, "lose": [] },
+      "slot": false, "census": "count", "spec": { "cooldown": null, "cost": null, "effect": null, "duration": null, "conditions": [] },
+      "text": "You live off the country as you cross it, and read it as you live off it.",
+      "never": "You follow a trail and go hungry."
+    },
+    {
+      "id": "hospitallers_hands", "name": "Hospitaller's Hands", "rank": "B", "rarity": "rare", "kind": "passive", "category": "faith.hospital",
+      "family": null, "reads": ["medicine", "faith"],
+      "levels": [
+        { "at": 1, "effects": [] },
+        { "at": 5, "effects": [{ "type": "edge", "tag": "medicine", "v": 1 }, { "type": "edge", "tag": "faith", "v": 1 }] },
+        { "at": 10, "effects": [{ "type": "edge", "tag": "medicine", "v": 2 }, { "type": "edge", "tag": "faith", "v": 2 }] }
+      ],
+      "gates": [], "acquire": [{ "via": "merge", "recipe": "medicine_with_faith" }], "evolvesTo": [],
+      "transfer": { "teach": "faith", "inherit": false, "steal": false, "sell": false, "lose": [] },
+      "slot": false, "census": "count", "spec": { "cooldown": null, "cost": null, "effect": null, "duration": null, "conditions": [] },
+      "text": "The body and the soul tended at one bedside; the dying are eased and the living mended.",
+      "never": "You treat the wound and leave the man."
+    },
+    {
+      "id": "quiet_knife", "name": "The Quiet Knife", "rank": "B", "rarity": "rare", "kind": "passive", "category": "shadow.quiet_knife",
+      "family": null, "reads": ["stealth", "intrigue"],
+      "levels": [
+        { "at": 1, "effects": [] },
+        { "at": 5, "effects": [{ "type": "edge", "tag": "stealth", "v": 1 }, { "type": "edge", "tag": "intrigue", "v": 1 }] },
+        { "at": 10, "effects": [{ "type": "edge", "tag": "stealth", "v": 2 }, { "type": "edge", "tag": "intrigue", "v": 2 }] }
+      ],
+      "gates": [], "acquire": [{ "via": "merge", "recipe": "stealth_with_intrigue" }], "evolvesTo": [],
+      "transfer": { "teach": "none", "inherit": false, "steal": true, "sell": false, "lose": [] },
+      "slot": false, "census": "count", "spec": { "cooldown": null, "cost": null, "effect": null, "duration": null, "conditions": [] },
+      "text": "The plot and the hand that carries it out, both yours: nobody else knows, so nobody talks.",
+      "never": "Your plots need other men's hands."
+    }
+  ]
+}

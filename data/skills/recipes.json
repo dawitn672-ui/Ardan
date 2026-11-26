@@ -1,4 +1,13 @@
 {
-  "about": "Skills rebuild (docs/design/skills-v2.md §3.4): merge recipes. A recipe is { id, kind (known | found | age), parts: [{ id, lv }] (two or more), result, needs?, moment?, chance? }; the parts are absorbed into the result (§15.2). Evolution lives on the skill itself (evolvesTo). The first recipes come with step 8.",
-  "recipes": []
+  "about": "Skills rebuild (docs/design/skills-v2.md §3.4; §15.2, §15.8): merge recipes. A recipe is { id, kind (known | found | age), parts: [{ id, lv }] (two or more), result, needs?, moment? }: only level-10 skills of different families merge, and the parts are absorbed into the result. Known: a teacher or a school shows it; found: it comes at a named moment (any, or the one named), 1 in 200 a moment, once a life. Evolution lives on the skill itself (evolvesTo). The first eight with step 8 (D-182); written by hand, checked by tools/lint-skills.mjs.",
+  "recipes": [
+    { "id": "sword_with_shield", "kind": "known", "parts": [{ "id": "basic_swordsmanship", "lv": 10 }, { "id": "shield_work", "lv": 10 }], "result": "sword_and_buckler" },
+    { "id": "riding_with_spear", "kind": "known", "parts": [{ "id": "horsemanship", "lv": 10 }, { "id": "basic_polearm", "lv": 10 }], "result": "horse_and_haft" },
+    { "id": "command_with_tactics", "kind": "known", "parts": [{ "id": "steady_command", "lv": 10 }, { "id": "field_tactics", "lv": 10 }], "result": "field_captaincy" },
+    { "id": "trade_with_stewardship", "kind": "known", "parts": [{ "id": "trader", "lv": 10 }, { "id": "stewardship", "lv": 10 }], "result": "counting_house" },
+    { "id": "persuasion_with_diplomacy", "kind": "known", "parts": [{ "id": "persuasion", "lv": 10 }, { "id": "diplomacy", "lv": 10 }], "result": "treaty_tongue" },
+    { "id": "survival_with_tracking", "kind": "known", "parts": [{ "id": "woodcraft", "lv": 10 }, { "id": "tracker", "lv": 10 }], "result": "woodsmans_way" },
+    { "id": "medicine_with_faith", "kind": "found", "moment": "near_death", "parts": [{ "id": "leechcraft", "lv": 10 }, { "id": "devout", "lv": 10 }], "result": "hospitallers_hands" },
+    { "id": "stealth_with_intrigue", "kind": "found", "parts": [{ "id": "stealth", "lv": 10 }, { "id": "intrigue", "lv": 10 }], "result": "quiet_knife" }
+  ]
 }

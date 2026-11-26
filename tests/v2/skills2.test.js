@@ -307,6 +307,37 @@ test('step 7: an edge of a family\'s ladder is its rung\'s route: S1\'s concepts
   assert.equal(E.edgeNeeds(IX, 'no_such_family', 3), null);
 });
 
+test('step 8: a merge\'s entry, its read and its levels; the recipes are sound; the moments\' chances are their hashes\'', () => {
+  const R = IX.RECIPE.sword_with_shield;
+  assert.ok(R && IX.recipes.length === 8);
+  for (const r of IX.recipes) assert.deepEqual(E.recipeFaults(IX, r), [], r.id);
+  const e = E.mergeEntry(IX, R, { basic_swordsmanship: { lv: 10 }, shield_work: { lv: 10 } }, 1120);
+  assert.deepEqual(e, { lv: 1, xp: 0, via: 'merge', rc: 'sword_with_shield', of: ['basic_swordsmanship', 'shield_work'], fams: ['shield', 'sword'], floor: 53, y: 1120 });
+  assert.equal(E.entryRead(IX, 'sword_and_buckler', e), 55, 'a B result reads its own Lv 1, above its parts');
+  assert.equal(E.entryRead(IX, 'sword_and_buckler', Object.assign({}, e, { floor: 60 })), 60, 'never below its floor');
+  // its levels: B's costs; at Lv 10 the bar fills and stops (no Lv 11)
+  const x = Object.assign({}, e);
+  assert.equal(E.addXp('B', x, E.cost('B', 1) + E.cost('B', 2) + 1), 2); assert.equal(x.lv, 3);
+  assert.equal(E.addXp('B', x, 1e9), 7); assert.equal(x.lv, 10); assert.equal(x.xp, E.cost('B', 10));
+  assert.equal(E.addXp('B', x, 1e9), 0); assert.equal(x.lv, 10);
+  // the merge itself goes through canMerge: every part at Lv 10, the result not yet held
+  const f = { skills: { basic_swordsmanship: { lv: 10 }, shield_work: { lv: 10 } }, knows: () => true };
+  assert.equal(E.canMerge(IX, R, f).ok, true);
+  assert.deepEqual(E.canMerge(IX, R, { skills: { basic_swordsmanship: { lv: 9 }, shield_work: { lv: 10 } }, knows: () => true }).missing, ['part:basic_swordsmanship']);
+  assert.deepEqual(E.openRecipes(IX, f).map(r => r.id), ['sword_with_shield']);
+  // a found recipe asks its moment
+  const F = IX.RECIPE.medicine_with_faith, ff = { skills: { leechcraft: { lv: 10 }, devout: { lv: 10 } } };
+  assert.deepEqual(E.canMerge(IX, F, Object.assign({ moment: 'deed_above' }, ff)).missing, ['moment']);
+  assert.equal(E.canMerge(IX, F, Object.assign({ moment: 'near_death' }, ff)).ok, true);
+  // the chances: a hash of the moment's key, near 1 in 100 and 1 in 200 over many keys, the same key the same answer
+  let a = 0, b = 0;
+  for (let i = 0; i < 100000; i++) { if (E.unitOf('k|' + i + '|adv') < E.ADVANCE_CHANCE) a++; if (E.unitOf('k|' + i + '|found') < E.FOUND_CHANCE) b++; }
+  assert.ok(a > 900 && a < 1100, 'advance ' + a); assert.ok(b > 420 && b < 580, 'found ' + b);
+  assert.equal(E.unitOf('same'), E.unitOf('same'));
+  // a planted fault is named
+  assert.ok(E.recipeFaults(IX, Object.assign({}, R, { parts: [{ id: 'basic_swordsmanship', lv: 10 }, { id: 'measured_blade', lv: 10 }] })).some(m => /both read sword/.test(m)));
+});
+
 test('step 7: S1\'s engine reads an edge through the game\'s gate when it gives one, its own conditions when not', () => {
   const p = S1.person({ id: 'g1', talent: { sword: 'C' } });
   const s = S1.sk(p, 'sword'); s.lv = 15; s.xp = S1.cost(15) + 50; for (const c of S1.conceptsOf('sword', 3)) s.got[c.id] = 20; s.proved = true;

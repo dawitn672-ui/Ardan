@@ -320,6 +320,14 @@ at a named moment only (a near death, a deed far above you, a blessing, a long s
 costs something named: a wound that stays, a flaw gained (Night Terrors), years. Its concepts are deemed grasped; its
 deed is the moment itself.
 
+*As built (steps 7 and 8, D-182), with §15's answers 2 and 8:* an evolution adds the next rung at Lv 1 and keeps the old
+at Lv 10; its conditions are the target rung's `evolve` route, read at S1's edge (the concepts are S1's, the deed S1's
+proof, the S rung's renowned deed that proof by someone of renown, at thirty or more); the player's card comes from rank B
+and for his first; anyone else's deed is his post or a stretch won. Every merge asks level-10 parts of different families
+(the found kind's Lv 7 is gone); known recipes are offered when a school or a teacher at the result's rank is near, found
+ones at a named moment (`deed_above`, `near_death` so far). An advance is the top rung at Lv 5 or more, 1 in 100 a named
+moment by the moment's hash, once a life, inside D-163's budget, its price a scar.
+
 ### 3.5 Slots for actives
 
 A person readies at most `slots` actives: 1 at 12, 2 at 16, +1 for intellect and will both 50 or more, +1 at 30 if
@@ -826,8 +834,8 @@ sees.
 | 4 | Migration step `skills2`, `SV.VER` 16 | `sk2Migrate` (§7) on every sample save; `version.mjs check` | Done (H-131) |
 | 5 | The switch: rungs hold the level, `A.gainXp` lands in rungs, `SK2.label` prints levels; S1's words, level names and proofs go to `archive/s1-skill-words/` | `tools/release/identity-probe.mjs` before and after (same event classes; fixed-seed lives the same); S1's `test.mjs` ported to rungs; `s1Reasons` (the ledger closes) | Done (H-138, D-179) |
 | 6 | Effects on: edges, fight, resist, blunder and surge, perks served from `perk` effects, `A.CAPS`; caps | `sk2Caps` (no check above +12, no fight above +15%); `A.perkSum` identical; balance bands hold | Done (H-142, D-180): the readers and the caps on; the rungs carry only perks until the data review writes effects |
-| 7 | Evolution at Lv 10 with concepts and deeds; the evolution card | `sk2Evolve`: a bot life evolves D → C with the reason in the log; none evolves without its conditions | Next |
-| 8 | Merging and advancing; D-163's budget shared | `sk2Merge`, `sk2Advance`: one each in a bot life (seed fallback), each named; at most one advance a life |  |
+| 7 | Evolution at Lv 10 with concepts and deeds; the evolution card | `sk2Evolve`: a bot life evolves D → C with the reason in the log; none evolves without its conditions | Done (H-146, D-182): S1's edges read the rung's route; the card from B and for the first; the closed form's deed is a post or a stretch won |
+| 8 | Merging and advancing; D-163's budget shared | `sk2Merge`, `sk2Advance`: one each in a bot life (seed fallback), each named; at most one advance a life | Done (H-146, D-182): eight recipes (level-10 parts only), the parts absorbed; an advance 1 in 100 a named moment by its hash, once a life, a breakthrough of the budget; the tests plant the parts (seed fallback for a teacher) |
 | 9 | The rest of the 200 (named, faith, houses, offices, trauma, flaws), the census, `C.has/C.rank`, `gain/lose/focus` fx; `data/skills.json` to `archive/` | `sk2OneHolder` (no unique or summit with two living holders over a 100-year life, the one-holder audit); house secrets deterministic from the seed |  |
 | 10 | The skills screen and card (§8); every player-facing word of §6.1 replaced | `sk2Phone` (375 × 667, no horizontal scroll, 44-point targets), click-open lint, no-percent lint, no level word lint; the `ardan-ui-review` pass |  |
 | 11 | Actives and slots in duels and battles; auras into the war core | `sk2Active` (a readied active used once a duel at most); war unit tests read auras |  |

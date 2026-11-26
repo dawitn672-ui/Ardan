@@ -11,8 +11,158 @@ const saveFiles = () => [...fs.readdirSync(SAVES_DIR).filter(f => f.endsWith('.a
   ...fs.readdirSync(path.join(SAVES_DIR, 'press')).filter(f => f.endsWith('.ardan')).map(f => path.join(SAVES_DIR, 'press', f))];
 const b64 = f => fs.readFileSync(f).toString('base64');
 
-export const limits = { sk5Lives: 3600, sk2Migrate: 2400, sk2Caps: 900, sk6PerkSums: 1800, sk2Evolve: 2400 };
+export const limits = { sk5Lives: 3600, sk2Migrate: 2400, sk2Caps: 900, sk6PerkSums: 1800, sk2Evolve: 2400, sk2Merge: 900, sk2Advance: 900 };
+// a grown player whose body carries rank B (C9 holds a skill to what its stats carry), and a family planted at an S1 step
+// with its bar full (15: C · Lv 10)
+const GROW = `(pc => { for (const st of GD.STATS) { pc.pot[st] = Math.max(pc.pot[st], 90); pc.st[st] = Math.max(pc.st[st], 85); } })`;
+const PLANT = `((pc, c, step) => { A.SK.set(pc, c, step, 'planted'); pc.sk[c].xp = A.SK.E().cost(step) - 0.01; A.SK.mirror(pc, c); A.SK2.syncFam(pc, c); })`;
 export default {
+  // step 8 (D-182): merging. A grown player with a known recipe's two parts at C · Lv 10 and someone to show it (seed
+  // fallback, H-082: the first world of the run whose planted player has a teacher or a school for one recipe) is offered
+  // the merge at the month's turn; joined, the result is held at Lv 1, the parts are absorbed (shown nowhere, sealed: the
+  // concepts and a deed bring no evolution) and both families read through it, never lower than before; the mirror holds;
+  // it grows from what its families earn and stops at Lv 10; it is not offered again. A found recipe comes only at a named
+  // moment, 1 in 200 by the moment's hash, once a life; no die is drawn for either.
+  async sk2Merge(pg) {
+    const r = await pg.evaluate(({ GROW, PLANT }) => {
+      const SK = A.SK, SK2 = A.SK2, out = { bad: [] };
+      if (!SK2 || !SK2.doMerge || !SK2.afterMonth || !SK2.moment) return { none: true };
+      const grow = eval(GROW), plant = eval(PLANT), I = SK2.IX(), E = SK2.E();
+      const bad = s => { if (out.bad.length < 10) out.bad.push(s); };
+      const known = I.recipes.filter(x => x.kind === 'known');
+      const f = T.trySeeds(T.seedRun(9821, 12), seed => {
+        T.enter({ seed, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 26 }); A.S.queue = [];
+        const pc = A.pc(); SK.month(pc); grow(pc);
+        for (const x of known) { const fams = x.parts.map(p => I.BY[p.id].family); for (const c of fams) plant(pc, c, 15); if (SK2.knows(pc, x)) return { rc: x.id, fams }; }
+        return null;
+      });
+      out.seed = f.seed; out.tried = f.tried;
+      if (!f.res) return out;
+      const pc = A.pc(), R = I.RECIPE[f.res.rc], res = I.BY[R.result], [c1, c2] = f.res.fams;
+      out.rc = R.id; out.parts = R.parts.map(p => I.BY[p.id].name);
+      const before = [A.skill(pc, c1), A.skill(pc, c2)], rng0 = JSON.stringify(A.rngState);
+      // the month offers it (only one offer stands at a time)
+      A.S.queue = []; SK2.ke(pc).off = {};
+      SK2.afterMonth(pc, { ledger: [] });
+      out.pure = JSON.stringify(A.rngState) === rng0;
+      const qi = A.S.queue.findIndex(q => q && q.ev === 'sk2_merge_offer');
+      if (qi < 0) { bad('no offer'); return out; }
+      A.S.queue.unshift(A.S.queue.splice(qi, 1)[0]);
+      const v = A.eventView(A.S.queue[0]);
+      out.words = String(v.text).split(/\s+/).length; out.choices = v.choices.map(c => c.t);
+      if (out.words > 80 || v.choices.length < 2) bad('the card: ' + out.words + ' words');
+      A.eventChoose(v.choices.findIndex(c => /Join/.test(c.t))); A.eventClose();
+      const e = pc.ks[R.result], K = pc.ke || {};
+      out.after = [A.skill(pc, c1), A.skill(pc, c2)]; out.before = before;
+      out.label = SK2.label(pc, c1, { name: true });
+      if (!e || e.lv !== 1 || !(K.m || []).includes(R.result)) bad('not held: ' + JSON.stringify(e));
+      if (!(out.after[0] >= before[0] && out.after[1] >= before[1])) bad('a family reads lower: ' + JSON.stringify([before, out.after]));
+      if (out.after[0] !== Math.round(E.value(res.rank, 1))) bad('the family does not read the result: ' + out.after[0]);
+      if (!out.label.startsWith(res.name)) bad('the label: ' + out.label);
+      const tops = SK2.tops(pc);
+      for (const p of R.parts) { if (tops[p.id]) bad('the part ' + p.id + ' still shows'); if (!SK2.absorbed(pc, p.id)) bad('the part ' + p.id + ' not absorbed'); }
+      if (!(K.ev || []).some(x => x.how === 'merge' && x.to === R.result && x.why)) bad('no record of the merge');
+      if (!A.S.log.flatMap(x => x.lines.map(l => l[0])).some(t => t.includes(res.name + ', ' + res.rank + ' · Lv 1'))) bad('no log line');
+      const chk = SK.checkPC(pc); if (chk.length) bad('the table: ' + chk.join(', '));
+      // sealed: every concept and a deed for the B edge, and still no evolution
+      const s1 = pc.sk[c1];
+      for (const cn of SK.E().conceptsOf(c1, 3)) s1.got[cn.id] = 20;
+      SK.proof(pc, c1, 'a planted deed'); SK.month(pc);
+      out.sealedAt = SK2.rungFor(pc, c1);
+      if (out.sealedAt.rank !== 'C') bad('an absorbed part evolved: ' + JSON.stringify(out.sealedAt));
+      out.sealedWhy = (SK2.gate(pc)(c1, 3, pc.sk[c1], 30) || {}).other;
+      // it grows from its families' work, and stops at Lv 10
+      for (let m = 0; m < 30; m++) { A.gainXp(pc, c1, 3, { q: 'drill', why: 'planted drill' }); A.gainXp(pc, c2, 3, { q: 'drill', why: 'planted drill' }); SK.month(pc); }
+      out.grown = pc.ks[R.result].lv; out.grownRead = A.skill(pc, c1);
+      if (!(out.grown > 1) || !(out.grownRead > out.after[0])) bad('it did not grow: Lv ' + out.grown);
+      pc.ks[R.result].lv = 10; pc.ks[R.result].xp = 0;
+      for (let m = 0; m < 6; m++) { A.gainXp(pc, c1, 10, { q: 'drill', why: 'planted drill' }); SK.month(pc); }
+      if (pc.ks[R.result].lv !== 10) bad('past Lv 10: ' + pc.ks[R.result].lv);
+      const chk2 = SK.checkPC(pc); if (chk2.length) bad('the table after: ' + chk2.join(', '));
+      // never offered again
+      A.S.queue = []; SK2.ke(pc).off = {}; SK2.afterMonth(pc, { ledger: [] });
+      if (A.S.queue.some(q => q && q.ev === 'sk2_merge_offer' && q.ctx.rc === R.id)) bad('offered again');
+      // found: the parts of a found recipe at Lv 10; a moment's hash, 1 in 200, once a life (the advance's budget shut)
+      A.S.queue = []; pc.btN = 99;
+      const F = I.recipes.find(x => x.kind === 'found' && !x.moment) || I.recipes.find(x => x.kind === 'found');
+      for (const p of F.parts) plant(pc, I.BY[p.id].family, 15);
+      const kind = F.moment || 'near_death';
+      let n = 0; const rng1 = JSON.stringify(A.rngState);
+      while (!SK2.ke(pc).fd && n < 4000) { n++; SK2.moment(pc, kind, { why: 'a planted moment' }); }
+      out.foundAfter = n;
+      const q = A.S.queue.find(x => x && x.ev === 'sk2_merge_offer');
+      if (!SK2.ke(pc).fd || !q || q.ctx.rc !== F.id || q.ctx.kind !== 'found') bad('no found offer in ' + n + ' moments');
+      for (let i = 0; i < 2000; i++) SK2.moment(pc, kind, { why: 'a planted moment' });
+      if (A.S.queue.filter(x => x && x.ev === 'sk2_merge_offer').length !== 1) bad('a found merge offered twice');
+      out.pure2 = JSON.stringify(A.rngState) === rng1;
+      // and the hash's rate over many moments: about 1 in 200
+      let hits = 0; for (let i = 0; i < 40000; i++) if (E.unitOf('rate|' + i + '|found') < E.FOUND_CHANCE) hits++;
+      out.rate = hits / 40000;
+      if (!(out.rate > 0.004 && out.rate < 0.006)) bad('found rate ' + out.rate);
+      return out;
+    }, { GROW, PLANT });
+    if (r.none) return { ok: false, detail: 'no merging on the page' };
+    if (!r.seed) return { ok: false, detail: `no world of ${r.tried.join(', ')} gave a planted noble a teacher or a school for any known recipe` };
+    const ok = !r.bad.length && r.pure && r.pure2;
+    return { ok, detail: `world ${r.seed} (tried ${r.tried.join(', ')}): ${r.rc}, ${r.parts.join(' + ')}; offered at the month's turn (card ${r.words} words, ${JSON.stringify(r.choices)}); joined, the families read ${JSON.stringify(r.before)} -> ${JSON.stringify(r.after)} ("${r.label}"); ` +
+      `a part given every concept and a deed stays ${r.sealedAt && r.sealedAt.rank + ' · Lv ' + r.sealedAt.lv} (${(r.sealedWhy || []).join('; ')}); thirty months of drill: Lv ${r.grown}, read ${r.grownRead}; capped at Lv 10; ` +
+      `a found merge offered after ${r.foundAfter} moments and never again; hash rate ${r.rate}; no die drawn ${r.pure && r.pure2 ? 'yes' : 'NO'}; ${r.bad.length} faults${r.bad.length ? ': ' + r.bad.join('; ') : ''}` };
+  },
+
+  // step 8 (D-182): advancing. At a named moment a skill held at Lv 5 or more leaps to the next rank's Lv 1, 1 in 100 by
+  // the moment's hash (worlds tried in turn, H-082), once a life, only while D-163's breakthrough budget is open (it spends
+  // one), its concepts deemed grasped, its price a wound that stays, its reason in the record and the log. Thousands of
+  // moments after it bring no second; a life whose budget is spent never advances; no die is drawn.
+  async sk2Advance(pg) {
+    const r = await pg.evaluate(({ GROW, PLANT }) => {
+      const SK = A.SK, SK2 = A.SK2, out = { bad: [], worlds: [] };
+      if (!SK2 || !SK2.moment || !SK2.advance) return { none: true };
+      const grow = eval(GROW), plant = eval(PLANT), I = SK2.IX(), E = SK2.E();
+      const bad = s => { if (out.bad.length < 10) out.bad.push(s); };
+      const f = T.trySeeds(T.seedRun(9841, 3), seed => {
+        T.enter({ seed, race: 'human', realm: 'POL-02', status: 'peasant', sex: 'M', startAge: 24 }); A.S.queue = [];
+        const pc = A.pc(); SK.month(pc); grow(pc);
+        if (!pc.alive) return null;
+        // sword at C · Lv 5 (S1 13), the one family of his at Lv 5 or more with a next rank
+        for (const c of SK.IDS) if (pc.sk[c] && pc.sk[c].lv > 0) { SK.set(pc, c, 1, 'planted'); SK2.syncFam(pc, c); }
+        plant(pc, 'sword', 13);
+        const rng0 = JSON.stringify(A.rngState), bt0 = pc.btN || 0, w0 = pc.wounds.length;
+        let n = 0, msg = null;
+        while (!(pc.ke && pc.ke.adv) && n < 3000) { n++; const m = SK2.moment(pc, 'deed_above', { k: 'sword', why: 'a planted fight' }); if (m && m.adv) msg = m.adv; }
+        const t = SK2.rungFor(pc, 'sword'), e = ((pc.ke && pc.ke.ev) || []).find(x => x.how === 'advance');
+        out.worlds.push(seed);
+        return { n, msg, t, e, bt: [bt0, pc.btN], wounds: pc.wounds.slice(w0).map(w => w.k), got: SK.E().conceptsOf('sword', 3).every(c => pc.sk.sword.got[c.id] != null), pure: JSON.stringify(A.rngState) === rng0 };
+      });
+      if (!f.res) { bad('no advance in 3000 moments in ' + f.tried.join(', ')); return out; }
+      Object.assign(out, f.res, { seed: f.seed });
+      const pc = A.pc();
+      if (!out.t || out.t.rank !== 'B' || out.t.lv !== 1) bad('not at B · Lv 1: ' + JSON.stringify(out.t));
+      if (!out.e || !(out.e.at >= 5) || !/cost you/.test(out.e.why) || out.e.to !== 'measured_blade') bad('the record: ' + JSON.stringify(out.e));
+      if (!out.got) bad('the concepts not deemed grasped');
+      if (out.bt[1] !== out.bt[0] + 1) bad('the breakthrough budget not spent: ' + out.bt);
+      if (!out.wounds.length) bad('no wound that stays');
+      if (!A.S.log.flatMap(x => x.lines.map(l => l[0])).some(t => /leaps past its last levels to Measured Blade/.test(t))) bad('no log line');
+      // once a life: thousands more moments, with the budget opened again, bring no second
+      pc.btN = 0; pc.btY = null; plant(pc, 'bow', 13);
+      for (let i = 0; i < 3000; i++) SK2.moment(pc, 'near_death', { why: 'a planted moment' });
+      out.second = (pc.ke.ev || []).filter(x => x.how === 'advance').length;
+      if (out.second !== 1 || SK2.rungFor(pc, 'bow').rank !== 'C') bad('a second advance');
+      // a spent budget: no advance at all
+      T.enter({ seed: 9851, race: 'human', realm: 'POL-02', status: 'peasant', sex: 'M', startAge: 24 }); A.S.queue = [];
+      const p2 = A.pc(); SK.month(p2); grow(p2); plant(p2, 'sword', 13); p2.btN = A.BT_MAX;
+      for (let i = 0; i < 3000; i++) SK2.moment(p2, 'deed_above', { k: 'sword', why: 'a planted fight' });
+      out.spent = (p2.ke.ev || []).filter(x => x.how === 'advance').length;
+      if (out.spent) bad('an advance with the budget spent');
+      let hits = 0; for (let i = 0; i < 40000; i++) if (E.unitOf('rate|' + i + '|adv') < E.ADVANCE_CHANCE) hits++;
+      out.rate = hits / 40000;
+      if (!(out.rate > 0.0085 && out.rate < 0.0115)) bad('advance rate ' + out.rate);
+      return out;
+    }, { GROW, PLANT });
+    if (r.none) return { ok: false, detail: 'no advancing on the page' };
+    const ok = !r.bad.length && r.pure;
+    return { ok, detail: `world ${r.seed}: after ${r.n} moments at C · Lv 5, ${r.t && r.t.rank + ' · Lv ' + r.t.lv} ("${r.msg}"; record: "${r.e && r.e.why}"); budget ${JSON.stringify(r.bt)}, wounds ${JSON.stringify(r.wounds)}, concepts deemed ${r.got}; ` +
+      `3000 more moments: ${r.second} advance in the life; a spent budget: ${r.spent}; hash rate ${r.rate}; no die drawn ${r.pure ? 'yes' : 'NO'}; ${r.bad.length} faults${r.bad.length ? ': ' + r.bad.join('; ') : ''}` };
+  },
   // step 7 (D-182): evolution at Lv 10, gated by the rung's own route. (1) The rule, planted on a grown player at Basic
   // Swordsmanship C · Lv 10 with the bar full: two years of practice (no stretch, so no deed) with the B rung's concepts
   // taken away bring no evolution, and the stall names what is wanting; the concepts and a deed bring Measured Blade at

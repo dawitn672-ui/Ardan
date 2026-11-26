@@ -17,4 +17,16 @@ A.defEvents([
       { t: 'Say nothing, and rest a while',
         r: 'You tell no one. It keeps, and so do you.', fx: { need: { rest: 8 }, happy: 2 } },
     ] },
+
+  // ---- a merge offered: two level-10 arts that a recipe joins (known: a teacher or a school shows it; found: it comes) ----
+  { id: 'sk2_merge_offer', title: 'Two roads, one art', trigger: true, cool: 1, scene: 'field',
+    cond: (p, C) => C.age(p) >= 12,
+    setup: (p, ctx) => { if (!ctx.rc || !A.SK2 || !A.SK2.mergeOpen || !A.SK2.mergeOpen(p, ctx.rc)) ctx.skip = true; },
+    text: '{how} Your {an} and your {bn} have each gone as far as they will go alone. Held together they could be one art, {rn}. Joined, neither grows on by itself again. Kept apart, either may yet become something more.',
+    choices: [
+      { t: 'Join them into one art',
+        r: 'A season of clumsy work, then it is not clumsy: {rn} is yours, and people notice the change.', fx: { skTurn: 'merge', fame: 1, need: { rest: -4 } } },
+      { t: 'Keep them apart',
+        r: 'You keep both roads open. Either may go further on its own.', fx: { happy: 1 } },
+    ] },
 ]);

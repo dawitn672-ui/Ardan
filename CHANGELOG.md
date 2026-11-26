@@ -5,6 +5,16 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Skills evolve.** When a skill reaches level 10 and you have what its next rank asks (the concepts and, from rank B,
+  a deed; thirty years for the highest), it evolves: the new skill begins beside the old one, which you keep. The log
+  says why. From rank B, and for your first, a card asks what you make of it: a point for the body, the first months'
+  work, renown, or rest.
+- **Two skills can become one.** Some pairs at level 10 (sword and shield, command and tactics, trade and stewardship,
+  and others) can be joined into a stronger art when someone who knows it is near; a few come only in the worst of
+  moments. Joined, both read through the new art and neither grows alone again.
+- **A rare leap.** Once in a life, in a fight won far above you or at the edge of death, a skill may leap to the next
+  rank at once. It always leaves a mark.
+
 ## v2.1.0-alpha.18 (2026-11-26 06:13 ET) · Skills that do things (effects and their caps, step 6) and a person's level on the ladder, earned by defeating people and beasts, with stat points to place
 
 - **Your level is earned.** You now carry a level on the same scale as every beast and legend (an ordinary grown

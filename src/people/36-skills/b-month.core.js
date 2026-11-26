@@ -76,6 +76,8 @@
     SK.trainStats(pc, v);
     // the experience lands in the rungs: they hold the level from this moment
     if (A.SK2 && A.SK2.on && A.SK2.sync) A.SK2.sync(pc);
+    // merges and moments (37-skills2's e-merge, D-182): a merged skill's month, a known recipe offered, a near death
+    if (A.SK2 && A.SK2.on && A.SK2.afterMonth) A.SK2.afterMonth(pc, v);
   };
   // training a skill trains its governing stats a little (999997-bodies' rule): by the points the experience is worth
   SK.trainStats = function (pc, v) {
