@@ -17,6 +17,26 @@ node tools/version.mjs make-save v2.1.0-alpha.13 [--sample=<recipe>]   # a versi
 node tools/version.mjs check                        # rows, release branches, changelog headings, sample saves agree
 ```
 
+**The basis for versions (D-175, the owner's request of 2026-11-26: "have your own basis on how to create and adjust versions; when to go to v3, v4").** The integrator decides by these rules and says which rule a version follows in its row:
+
+- **Patch** (v2.1.**1**): fixes only, nothing new a player could notice beyond a bug gone.
+- **Pre-release step** (v2.1.0-alpha.**17**): each batch green on both tiers that adds, replaces or rebalances something a
+  player meets. Cut one from every green batch (D-134), so the owner always has the newest playable build.
+- **Minor** (v2.**2**.0-alpha.1): a whole workstream lands for the player (the skills switched on, professions, a war core).
+- **Alpha, beta, rc:** alpha while the major's systems are still landing; beta once its systems are all in and the owner has
+  played it; rc when only fixes remain before calling it done.
+- **Major**: the game a player meets changes its nature, so that an old life would not read the same. The majors from here:
+  - **v2**, today: the realistic medieval life refined (the owner's v2 spec, Phase 1).
+  - **v3: the world of levels and monsters.** The first build in which the player sees the new world: the level ladder
+    for every being, the bestiary and the legends, the map locked, and skills shown in levels (the skills rebuild's switch,
+    its step 5). v3.0.0-alpha.1 is cut when those four are in and green. (This replaces `docs/V3_SPEC.md`'s older "living
+    world" meaning; its economy and armoury work moves to v4's professions.)
+  - **v4: the high-fantasy world.** Magic, new playable races, the canon rewrite, professions and pathways (sections 17
+    and 18 in full).
+  - **v5: the phone release.** The App Store build: Capacitor, accounts and saves, the store's packs; its first store
+    release is the store's "1.0".
+  A later major only when the owner sets a new design of that size.
+
 **What gets a version** (also in CLAUDE.md):
 
 | Part | When it changes | Examples |

@@ -2752,3 +2752,11 @@ test holds. The Dragon Mountains are the dragons' home; there is no demon kingdo
 >>>>>>> worktree-agent-ae273c4866bddc5a1
 **D-173 addendum (order 86).** The redesign's effort goes into a detailed gazetteer in data (every range, river, coast,
 realm, seat, road and wild with its reason, sizes and travel times), not into renders; plain renders only to check layout.
+
+### D-175 · The basis for versions; what v3, v4 and v5 are (2026-11-26; the owner's request)
+**What.** Patch = fixes; a pre-release step from every green batch a player would notice; minor = a workstream landing;
+alpha / beta / rc by how complete and played the major is; major = the game's nature changes. v3 = the world of levels and
+monsters (the ladder, bestiary and legends, the locked map, skills in levels); v4 = the high-fantasy world (magic, races,
+canon, professions); v5 = the phone release. Written in `docs/VERSIONS.md` and `CLAUDE.md`. **Considered:** keeping v3 as
+`docs/V3_SPEC.md`'s living world (economy, armoury, growth): those now belong to professions (v4) and the skills rebuild
+(v3); the newest instruction wins. **Why:** the owner asked me to own the basis.
