@@ -3166,6 +3166,14 @@ lives with `lvAnchors`' seeds (D-184's last point): peasants who never fought 29
 seeded 115-170. Not run: `tools/bench/balance.mjs` (the league of 70-year lives could not finish on the shared machine)
 and the long tier as a whole (`lives` and `x3HonestCards` timed out at their limits under the load).
 
+**After the merges** (the rescale, D-185, and main at alpha 19 with the arts, D-186; save version 21): on the merged
+build, 41 of 42 named tests passed with `--workers=2` (the level, titles, powers and skills sets, `uiSmoke`, `renderRng`,
+`replayWithRender`, `v2svRoundTrip`, `statMigrate` on 26 saves, `sk2Migrate`, the lints, `pfNumbers`, `pfFits`); `ttSave`
+failed on main's own build too (alpha 19's sample save, made at version 19, holds titles earned in play) and now reads a
+save made with titles as it was, as `statMigrate` does (H-147). `lvAnchors` passed (1,407 s) on the rescale's merge.
+Engine tests 164 of 164. The class parts use the release's duel techniques; mapping them onto D-186's arts
+(`SK2.learnArt`) is the natural next step.
+
 **Undo.** Revert the step's commits; a save made at version 21 would then be refused as newer. `data/classes.json`
 and `c-classes.core.js` can go to `archive/` with a note if classes are retired alone (the level keeps its walls).
 
