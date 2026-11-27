@@ -7456,7 +7456,14 @@
    "Qadir–Sabra War",
    1020,
    "1025",
-   "Sabra breaks from Qadir."
+   "Sabra breaks from Qadir; the Red War (1023–1025) burns both sides to a standstill and ends it."
+  ],
+  [
+   "WAR-44",
+   "The Red War",
+   1023,
+   "1025",
+   "the Primordial Archdemon Red comes north out of the Burning Waste and burns towns of Qadir, Sabra, Tamar and the Sahrim; Cael Vardan, a swordsman of Aldmark, binds her under the sand with the Glass Seal (1025) and cuts the first face from the Archdemon Noir, who comes to bargain for her."
   ],
   [
    "WAR-29",
@@ -7471,6 +7478,13 @@
    1033,
    "1037",
    "Velgrad vs Drevna; Drevna holds."
+  ],
+  [
+   "WAR-45",
+   "The Valley Burnings",
+   1044,
+   "1045",
+   "dragons of Sarnavoth, King of Dragons, burn the high valleys under the Dragon Mountains; they end when Cael Vardan meets the King alone on the ridge now called the Saint's Stair (the Fight on the Stair, autumn 1045) and the King falls into the mountain."
   ],
   [
    "WAR-31",
@@ -8203,6 +8217,15 @@
    "who": "The Grey Mothers of Gorath, who keep the hide; Brak Longwind, head of the line.",
    "proof": "The Grey Mothers' winter-count hide for 961, kept at Urgol, shows 'the winter the pale thrall bore a son'. Aldmark's own chronicles count the 140 captives of 954.",
    "ifr": "The Longwinds have been mocked as half human for 140 years. Proof would shame Brak on the war-chief's council, where he carries Vrag's most private words, and would cheer Tarn Halfblood's half-orcs, who could say Gorath's best runners were always of two…"
+  },
+  {
+   "id": "SEC-72",
+   "title": "The terms on the Stair",
+   "pub": "The Sword Saint threw Sarnavoth, King of Dragons, under the mountain in 1045 and watches the peak in case he wakes, because he will not kill a beaten foe in his sleep. He keeps the terms of the fight, and the valleys under the Stair keep their peace.",
+   "truth": "The King's crown is what holds three hundred dragons to their dominions. Killed, he would leave it to the ancients to fight over across every northern sky. The King told the Saint so on the third day, when both could barely stand, and his last words as the rock closed were \"Wait for me.\" The Saint promised. He watches to keep that promise, so that the King, waking, finds the fight he wants on the ridge and not in the valleys, and he will die there rather than leave the King to wake to no one.",
+   "who": "The Sword Saint, the King of Dragons, the elder dragons who keep his hall, and the abbots of the Stair House, Skyhold's daughter-house on the ridge.",
+   "proof": "The Stair House's book of the Fight, written down in 1048 from the Saint's own telling and kept sealed. No dragon has burned a valley under the Stair since the autumn of 1045.",
+   "ifr": "Every crown that fears the dragons would learn what holds them: a sleeping King and an old man's promise. A king who went into the rock to kill the King for glory would loose the dragons on the north, and when the Saint dies the King wakes to a promise kept by no one."
   }
  ],
  "creatures": [
@@ -9711,6 +9734,22 @@
    "1026",
    "1094",
    "Emperor of Zanara 1046–1094"
+  ],
+  [
+   "FIG-101",
+   "Cael Vardan, the Sword Saint",
+   "human",
+   "986",
+   null,
+   "shepherd's son of Oat Hill in the western hills of Aldmark; held Vardan's Ford alone (1017); bound the Archdemon Red under the Burning Waste (1025); fought Sarnavoth, King of Dragons, three days on the Saint's Stair (1045); refused every crown; still lives on the ridge"
+  ],
+  [
+   "FIG-102",
+   "Ossery the Black",
+   "human",
+   "1041",
+   "1089",
+   "swordsman of Qadir who challenged the Sword Saint nine times (1062–1088) and lost nine times; buried at the foot of the Saint's Stair"
   ]
  ],
  "schools": [
@@ -13601,6 +13640,31 @@
    1104,
    "Thora's oath at the Kindling",
    "At the Kindling of 1104, as every forge is relit from the First Hall's fire, Eldest Carver Thora Grimstone declares that the crucible steel of Chanari is too…"
+  ],
+  [
+   1085,
+   "The fourth kettle",
+   "Stonehold's smiths carry a new copper kettle up the Saint's Stair, as they have every tenth year since 1055. The old man thanks them, sets it beside the other three, and boils his water in the iron pot."
+  ],
+  [
+   1088,
+   "Ossery's ninth challenge",
+   "Ossery the Black of Qadir climbs the Saint's Stair for the ninth time and is disarmed at the second pass. He sits on a stone below the hut and weeps until dark; the herders call it the Weeping Stone."
+  ],
+  [
+   1089,
+   "Ossery buried below the Stair",
+   "Ossery the Black dies at forty-eight of a winter cough in the valley inn. At his own asking he is buried at the foot of the Saint's Stair. The Saint digs the grave himself."
+  ],
+  [
+   1097,
+   "Elven blades at the Stair",
+   "Sylvaran sends three of its best blades to sit with the Sword Saint for a year, as the elves have done since 1046. They come back saying he watched the peak more than he watched them."
+  ],
+  [
+   1104,
+   "The fifty-ninth autumn",
+   "Pilgrims crowd the Saint's Stair for the autumn of the Fight, as every year. The Sword Saint, a hundred and eighteen, walks down to the valley villages and back up in a day."
   ]
  ],
  "clock": [
@@ -13870,6 +13934,36 @@
    "Grom's Whale",
    "Giants of the Kingdom of Hrimfell and the Halls of Frostholm.",
    "Slow, slow, the ice is wide.\nSlow, slow, the whale is dead.\nGrom pulls, and the halls are fed.\nSlow, slow, by the Mother's side."
+  ],
+  [
+   "The Shepherd on the Stair",
+   "Hall-singers of the Empire of Aldmark and every Northfolk hearth.",
+   "A shepherd's son of Oat Hill\nbought a sword for a sack of oats.\nHe bound the Red beneath the sand,\nhe threw the King into the stone,\nand he sits on the Stair with his goats."
+  ],
+  [
+   "The Glass Under the Sand",
+   "The Sultanate of Qadir and the Emirate of Sabra, at the Wells in the month of the burning; the north sings it brighter.",
+   "Nine towns were ash before he came,\nthe wells were black, the palms were flame.\nHe came on foot, he came alone,\nhe came too late, and still he came."
+  ],
+  [
+   "The Kettle Song",
+   "Dwarves of every hold, at the forge; the verse over the door of every smithy of Stonehold.",
+   "Strike the bar, the bar holds fast.\nThe man on the Stair has kept his word\nsixty years, and the iron less.\nCarry him a kettle. He will not use it."
+  ],
+  [
+   "The Short Life Long",
+   "The elves of the Kingdom of Sylvaran and of Eldergrove, on Leaf Fall.",
+   "Sixty summers a man is given,\nand one man spent them as we spend four hundred.\nGo up and sit with him, children:\nsoon he will have spent them all."
+  ],
+  [
+   "The Grey Brother",
+   "Drummers of the Horde of Gorath; the Ughrak clans sing it slower.",
+   "Our champions went up, our champions came down,\nnot one of them dead and not one of them proud.\nHe broke bread with a beaten khan.\nThe Grey Brother dies standing."
+  ],
+  [
+   "The Mountain That Sat Down",
+   "Giants of the Kingdom of Hrimfell and the Halls of Frostholm.",
+   "Slow, slow, the ice is wide.\nA mountain stood up to fight a king,\nthen sat down on itself to wait.\nWhen it stands again, go far."
   ]
  ],
  "sayings": [
@@ -14172,6 +14266,31 @@
    "\"Take one, not two.\"",
    "Leaf People of the Deep Green",
    "Never take more than you need. From their hunting song (17.1, REL-16)."
+  ],
+  [
+   "\"Go home. Your mother is waiting.\"",
+   "Northfolk of the Empire of Aldmark, to a boy who wants a sword",
+   "Not yet, and not you: there is work at home. The Sword Saint's word to the young challengers who climb the Stair."
+  ],
+  [
+   "\"A sword is a promise you keep with your hands.\"",
+   "Holdfolk smiths; carved over their forges",
+   "Do what you said you would. The Sword Saint's saying, kept by the dwarves."
+  ],
+  [
+   "\"He came late, and still he came.\"",
+   "Qadiri and Sabrans",
+   "Thank the help that comes after the harm, but do not wait on it. From the south's telling of the Red War."
+  ],
+  [
+   "\"The King sleeps; the shepherd watches.\"",
+   "Northfolk of the high valleys under the Dragon Mountains",
+   "A quiet that holds is kept by somebody. Do not thank the quiet."
+  ],
+  [
+   "\"Sit with the old man.\"",
+   "Sylvari",
+   "Learn by watching one who has already learned. From the elven blades sent to sit with the Sword Saint."
   ]
  ],
  "map": {

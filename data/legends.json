@@ -46,7 +46,7 @@
     "social": -0.6,
     "ambition": 0.5
    },
-   "history": "Hatched in the first age, when the western realms were still tribes around fires. She took tribute from the first kings of Aldmark eighteen centuries ago and burned the ninth town that stopped paying; the chronicles of four realms begin their years from that fire. She has outlived every dynasty that ever paid her.",
+   "history": "Hatched in the first age, when the western realms were still tribes around fires. She took tribute from the hill-chiefs of the north eighteen centuries ago, some seven hundred years before the Return (1 AR) and seventeen centuries before Aldmark was founded (951 AR), and burned the ninth town that stopped paying; the oldest songs of the north still count their generations from that fire. She has outlived every line of chiefs and kings that ever paid her.",
    "traits": [
     "vain",
     "patient in hate",
@@ -2037,7 +2037,7 @@
      "at": "POL-27",
      "kind": "realm",
      "w": 1,
-     "why": "Skyhold's monks built their monastery on his roof"
+     "why": "Skyhold's monks built the Stair House, a daughter-house of their order, on the ridge above his sealed hall (1048)"
     }
    ],
    "speech": "Courtly and old, like a king addressing a petitioner. Calls the Saint 'my only equal' and no one else anything at all.",
@@ -2204,7 +2204,7 @@
     "social": -0.6,
     "ambition": 0.7
    },
-   "history": "The second Primordial Archdemon, who came through the seventh gate with Morvane and Vethrael three thousand years ago and burned her way across the south for the better part of that time. Eighty years ago the Sword Saint met her in what was then a green country; when it was over the country was the Burning Waste and she was under it, bound by a seal of glass. The sand above it is still warm.",
+   "history": "The second Primordial Archdemon, who came through the seventh gate with Morvane and Vethrael three thousand years ago and burned her way across the south for the better part of that time. Eighty years ago, in 1025 AR, the Sword Saint met her at the green edge of the Burning Waste, the wells and date groves between Qadir and Sabra; when it was over the groves were desert too and she was under the sand, bound by a seal of glass. The sand above it is still warm.",
    "traits": [
     "ravenous",
     "cruel",
@@ -2383,7 +2383,7 @@
     "social": 0.2,
     "ambition": -0.8
    },
-   "history": "A shepherd's son of the western hills, born in a year of famine, who learned the sword from a deserter for a sack of oats. By thirty no one alive could stand against him. At thirty-nine he bound the Archdemon Ghazrul under the Burning Waste and cut the first face from Morvane. At fifty-nine he climbed the ridge to meet Sarnavoth, King of Dragons, alone, as he had promised; three days later the King was under the mountain. That was sixty years ago. He has lived on the ridge since, keeping goats and keeping watch, refusing every crown that has been offered. He is very old now, and still the strongest man alive: his class, Sword Saint, is the strongest one-to-one art there is, and no single being has outlasted him blade to blade.",
+   "history": "A shepherd's son of Oat Hill in the western hills of Aldmark, born in the famine year 986 AR, who learned the sword from a deserter of the Gold Road War for a sack of oats. By thirty no one alive could stand against him; at thirty-one he held Vardan's Ford on the Glenwash alone against a raiding host. At thirty-nine, in 1025, he ended the Red War: he bound the Primordial Red under the Burning Waste and cut the first face from Noir. At fifty-nine, in 1045, he climbed the ridge to meet Sarnavoth, King of Dragons, alone, as he had promised when the King's dragons were burning the high valleys under the Dragon Mountains; the terms were one against one, and while the King lay under the mountain no dragon of his would burn the valleys below it. Three days later the King was under the mountain. That was sixty years ago. He has lived on the ridge since, keeping goats and keeping the watch the terms ask of him: the valleys keep their peace while he does, and he will not go down into the rock to finish a beaten foe in his sleep. He has refused every crown, Aldmark's first in 1046, saying that a king must send other men to die and cannot sit on a ridge waiting for a dragon. He is very old now, and still the strongest man alive: his class, Sword Saint, is the strongest one-to-one art there is, and no single being has outlasted him blade to blade.",
    "traits": [
     "humble",
     "patient",

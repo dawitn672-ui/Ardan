@@ -5,6 +5,13 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **The Sword Saint in the history books.** Cael Vardan's deeds are now part of the world's past: the Red War of 1023
+  to 1025, when he bound the Primordial Red under the Burning Waste; the Valley Burnings and his three-day fight with the
+  King of Dragons on the Saint's Stair in 1045; the challenger who lost to him nine times. The codex's wars, songs and
+  sayings tell it, and each people tells it its own way: the north as a shepherd's triumph, the south as help that came
+  late, the dwarves as a promise kept. Why he still lives on that ridge, and why he will not wear a crown or finish the
+  sleeping King, is in his story, and part of it is a secret you can learn.
+
 - **"Legend" means the legends.** The word now belongs only to the great beings of the world's top, such as the King of
   Dragons and the Sword Saint. The two highest tiers of ordinary fighters are now called Formidable and Peerless (there
   are still perhaps five Peerless fighters alive), the beasts nobody has ever seen are Tales, and the achievement for

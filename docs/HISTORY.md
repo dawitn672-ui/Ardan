@@ -3732,3 +3732,38 @@ Legends" and its detail.
 **Tests.** See H-176's checks (one build of the three steps).
 
 **Undo.** Revert the commit (the folder rename reverts with it).
+
+### H-175 · 2026-11-27 · The Sword Saint enters the lore; the legends' dates and places agree with it (order 98, C-33, C-34)
+
+**What and why.** Order 83 makes the Sword Saint the best-known figure of history, told differently by every people;
+order 98: he enters the lore's history, wars and chronicles; order 97 asks why he lives where he does and does not rule
+or fight the Dragon King. The release lore (`src/core/release/core/00-lore.json`, edited by a script and written in
+its own layout, `tools/release/format.mjs`'s `prettyJson`) gains (D-204):
+- **wars** WAR-44 *The Red War* (1023-1025, placed after the Qadir-Sabra War, whose line now says the Red War ended it)
+  and WAR-45 *The Valley Burnings* (1044-1045, ended by the Fight on the Stair);
+- **figures** FIG-101 Cael Vardan, the Sword Saint (born 986, living) and FIG-102 Ossery the Black (1041-1089);
+- **chronicle** five entries 1085-1104 (the fourth kettle, Ossery's ninth challenge and his grave below the Stair, the
+  elven blades, the fifty-ninth autumn), appended so the canon ids of `57-world-chronicle`'s citations keep their places;
+- **songs** six, one for each people's telling (Aldmark, the south, the dwarves, the elves, the orc clans, the giants),
+  and **sayings** five ("Go home. Your mother is waiting." among them; the culture-matched ones reach `15-lf`'s sayings);
+- **secret** SEC-72 *The terms on the Stair*: why he watches and will not finish the King (the King's crown holds three
+  hundred dragons to their dominions; "Wait for me").
+The Primordials are written by order 98's names: Red (Ghazrul), Noir (Morvane), Blanc (Vethrael).
+
+**C-34 and the legends' sheets (`data/legends.json`; four history sentences, the Primordials' builder owns the rest of
+the file this round).** Vaskareth's tribute is dated against the reckoning (some seven hundred years before the Return,
+seventeen centuries before Aldmark's founding in 951 AR; the north's oldest songs count from the fire, not four realms'
+chronicles). Sarnavoth's grudge against Skyhold (POL-27) is the Stair House, a daughter-house of the order built on the
+ridge in 1048, not a monastery two thousand kilometres from the Dragon Mountains. Ghazrul's (Red's) history no longer
+makes the Burning Waste in 1025 (the lore has Zahir cross it in 790): the Saint met her at its green edge, the wells and
+groves between Qadir and Sabra. The Sword Saint's history gets its dates in AR, Vardan's Ford, the Red War, the terms of
+the Fight on the Stair and his reasons for the ridge and against a crown (the new names, Red and Noir, in that sentence;
+his `grudges` and `rivals` still name `ghazrul` and `morvane` for the Primordials' builder to rename).
+
+**For the merge.** Lines of `data/legends.json` touched: Vaskareth `history`; Sarnavoth `grudges[POL-27].why`; Ghazrul
+`history` (its second sentence); sword-saint `history`. If the Primordials' builder rewrote the same sentences, keep their
+names and ids and these dates and places.
+
+**Tests.** See H-176's checks (one build of the three steps).
+
+**Undo.** Revert the commit.

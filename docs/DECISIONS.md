@@ -3399,3 +3399,31 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
   best skill of 96 or more as "legend" (`S.top.legend`, the comment "Legend (96)", `s1Census`'s detail "Legends"); the
   report of H-174 lists the exact change.
 
+
+### D-204 · The Sword Saint in the lore: dated deeds, the terms on the Stair, each people's telling (2026-11-27; orders 83, 97 and 98; audit C-33, C-34; H-175)
+- **Dates** (AR, the Common Reckoning; the game opens in 1105): Cael Vardan born 986 at Oat Hill in the western hills
+  of Aldmark; taught by a deserter of the Gold Road War (996-1004); Vardan's Ford on the Glenwash held alone (1017); **the
+  Red War** (1023-1025, WAR-44): the Primordial Red burns towns of Qadir, Sabra, Tamar and the Sahrim and ends the
+  Qadir-Sabra War (WAR-28) with both sides spent; he binds her under the Burning Waste with the Glass Seal and cuts the
+  first face from Noir (1025); **the Valley Burnings** (1044-1045, WAR-45) end in **the Fight on the Stair** (autumn
+  1045); Aldmark offers him a crown, the first he refuses (1046); Skyhold's monks build the Stair House on the ridge (1048); the dwarves' kettle
+  every tenth year from 1055; Ossery the Black's nine challenges (1062-1088) and grave (1089). These agree with
+  `data/legends.json` (a hundred and nineteen in 1105; thirty-nine at the Glass Seal; fifty-nine on the Stair; "sixty
+  years ago"). The order's new names are written: Red, Noir, Blanc (order 98).
+- **Why he lives on the ridge, and does not rule or finish the King** (order 97's example of depth). Public: the terms
+  of the fight (one against one; while the King lies under the mountain no dragon of his burns the valleys below it), so
+  he keeps the watch, and he will not kill a beaten foe in his sleep; he refused every crown because "a king must send
+  other men to die and cannot sit on a ridge waiting for a dragon". The secret (SEC-72, *The terms on the Stair*,
+  learnable as the others are): the King's crown is what holds three hundred dragons to their dominions, and his last
+  words were "Wait for me"; the Saint promised.
+- **Each people tells it its own way** (order 83): six songs (Aldmark's hall-singers, the south's "came too late", the
+  dwarves' kettle, the elves' short life long, the orc clans' Grey Brother, the giants' mountain that sat down) and five
+  sayings, beside the legends' `tellings`.
+- **C-34.** Vaskareth's tribute is dated against the reckoning (some seven hundred years before the Return, seventeen
+  centuries before Aldmark's founding in 951 AR; the north's oldest songs, not four realms' chronicles, count from the
+  fire). Sarnavoth's grudge against Skyhold is the Stair House, a daughter-house on the ridge, not the abbey two thousand
+  kilometres away. Red's history no longer makes the Burning Waste in 1025 (Zahir crossed it in 790): she burned its
+  green edge, the wells and groves between Qadir and Sabra.
+- **Shared file.** `data/legends.json` belongs to the Primordials' builder this round; the edits there are four history
+  sentences only (Vaskareth, Sarnavoth's grudge, Red's, the Saint's), listed in H-175 for the merge.
+
