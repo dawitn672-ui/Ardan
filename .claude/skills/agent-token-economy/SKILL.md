@@ -86,3 +86,12 @@ All figures are estimates for this repo unless a source is cited there; re-measu
 When a lever is measured (a `/usage` reading, a bulk job's real cost), update the number here and add the reading to
 `references/levers.md`. When a doc source changes (settings keys move often), re-check with Context7 or the docs page
 named in the reference, then edit.
+
+## Choosing models dynamically (the owner asked, 2026-11-27)
+- Pick the model **per job at spawn**, every time: Haiku for bulk and mechanical work, Sonnet for systems, data, research
+  and test fixing, the biggest model only for real design. Re-choose at the next job, never mid-job.
+- A job that proves harder or easier than planned: stop it at a clean point (it commits) and start the next piece on the
+  fitting model, rather than letting a big model grind through routine work.
+- Smaller jobs, chosen well, beat one long job on one model: each keeps its own cache warm.
+- The integrator's own model is the owner's choice (`/model`); recommend keeping the integrator on the strong model,
+  since its judgment gates every builder's work.
