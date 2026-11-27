@@ -207,6 +207,39 @@ export default {
     return { ok: !r.bad.length && r.moves > 0, detail: r.bad.slice(0, 4).join('; ') || `no title with two holders in ${r.years} checks over 30 seeds; ${r.moves} headships passed by law` };
   },
 
+  // ci-fix-21 (H-166): a man who heads another house than his own, with its seat's county, leaves the county with that
+  // house's headship. Mauger of seed 9022 (House Eastbridge) came to head House Goldman through his mother, with its seat;
+  // at his death Goldman's headship went down Goldman's line and the county down Eastbridge's, so the seat had two holders
+  // (v2fOneHolder). Here the two lines are made to part: the house's successor is set aside for one look (a stranger to his
+  // own line), and his son stands first in his own line
+  async v2fLordshipWithSeat(pg) {
+    const r = await pg.evaluate(() => {
+      const F = A.V2F, HO = A.HOUSE;
+      T.enter({ seed: 9022, status: 'gentry', startAge: 24 });
+      const live = p => !!(p && p.alive);
+      const Y = Object.values(A.S.houses).find(h => h.great !== false && /^N0[123]$/.test(h.rung || '') && F.seatProv(h) != null && live(A.P(h.headPid)));
+      if (!Y) return { skip: 'no great landed house' };
+      const X = Object.values(A.S.houses).find(h => h.id !== Y.id && h.realm === Y.realm) || Object.values(A.S.houses).find(h => h.id !== Y.id);
+      const seat = F.seatProv(Y), y = A.S.year, h0 = A.P(Y.headPid);
+      for (const id in A.S.people) { const q = A.S.people[id]; if (q.alive && q.noble && String(q.noble.holding) === String(seat)) q.noble = null; }
+      const m = A.newPerson({ sex: 'M', born: y - 50, race: 'human', realm: Y.realm, house: X.id });
+      const son = A.newPerson({ sex: 'M', born: y - 22, race: 'human', realm: Y.realm, house: X.id });
+      const heir = A.newPerson({ sex: 'F', born: y - 25, race: 'human', realm: Y.realm, house: Y.id });
+      son.parents = [m.id]; m.children = [son.id];
+      m.noble = { rung: A.rungIndex ? A.rungIndex(Y.rung) : 6, realm: Y.realm, holding: seat };
+      if (A.setHead) A.setHead(Y, m.id, 'test'); else Y.headPid = m.id;
+      const own = F.line(m, F.houseLaw(X.id), 3).line.find(e => live(e.p) && e.p.id !== m.id);
+      const succ = HO.successor;
+      HO.successor = function (hid, from) { return hid === Y.id && from === m ? heir : succ.apply(this, arguments); };
+      try { A.kill(m, 'the test'); } finally { HO.successor = succ; }
+      const audit = F.audit().filter(x => String(x.id) === String(seat));
+      return { house: Y.name, seat, h0: h0 && h0.given, ownFirst: own ? own.p.given + (own.p === son ? ' (his son)' : '') : null, head: Y.headPid === heir.id, heirHolds: !!(heir.noble && String(heir.noble.holding) === String(seat)), sonHolds: !!(son.noble && String(son.noble.holding) === String(seat)), audit };
+    });
+    if (r.skip) return { ok: true, skip: r.skip };
+    const ok = r.ownFirst && r.head && r.heirHolds && !r.sonHolds && !r.audit.length;
+    return { ok, detail: `${r.house}, seat ${r.seat}: his own line's first ${r.ownFirst}; the house's heir heads it ${r.head}, holds its county ${r.heirHolds}; his son holds it ${r.sonHolds}; the audit at the seat ${JSON.stringify(r.audit)}` };
+  },
+
   // playtest 1, #14: the house panel never shows a head its own law forbids, and a passed-over line says why
   async v2fLawPanelTrue(pg) {
     const r = await pg.evaluate(() => {

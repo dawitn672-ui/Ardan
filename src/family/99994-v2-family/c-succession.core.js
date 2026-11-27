@@ -213,15 +213,22 @@
     const first = (L, but) => (L.line.find(e => live(e.p) && (!but || e.p.id !== but.id)) || {}).p || null;
     if (heir === undefined) {
       const hs = F.headedHouses(from);
+      // the lordship goes with the headship of the house whose seat it is, else with his own house's (ci-fix-21, H-166:
+      // Mauger of seed 9022, of House Eastbridge, came to head House Goldman through his mother and with it its seat's
+      // county; at his death Goldman's headship went down Goldman's line and the county down Eastbridge's, so the seat
+      // had one holder and the house another, against the one holder per post)
+      const hold = from.noble && from.noble.holding != null ? String(from.noble.holding) : null;
+      const seatH = hold != null ? hs.find(h => greatLanded(h) && String(seatProv(h)) === hold) : null;
+      const lordH = seatH || (hs.includes(own) ? own : null);
       for (const h of hs) {
         delete h._v2head;
         const next = HO.successor(h.id, from, 3);
         giveHeadship(h, next, from);
         moved.push({ k: 'house', id: h.id, to: next ? next.id : null });
-        if (next && h === own) giveLordship(from, next);
+        if (next && h === lordH) giveLordship(from, next);
       }
-      // the rung goes with his own house's headship, as before; without it, down his line
-      if (!hs.includes(own) && from.noble && from.noble.rung >= 2 && !from.noble.passed) {
+      // the rung goes with that house's headship, as before; without one, down his line
+      if (!lordH && from.noble && from.noble.rung >= 2 && !from.noble.passed) {
         const L = F.line(from, lawOf(own), 3), next = first(L);
         if (next) { giveLordship(from, next); moved.push({ k: 'lordship', to: next.id }); }
       }
