@@ -20,13 +20,13 @@ re-count with the one-liners at the end before you quote one. Paths are from the
 | --- | --- | --- | --- |
 | `src/core/release/core/00-lore.json` | `const LORE = JSON.parse("...")` at the head of the core blob | at start | the release core and ~40 features (`LORE.realms`, `.creatures`, `.cultures`, `.map`...) |
 | `src/core/release/lore/NN-key.json` (cast, families, houseDeep, styles, academies) | the `ardan-lore` blob, `LORE.cast` etc. on first use (`window.ARDAN_LORE()`) | lazily | release core, `56-court-and-treasury`, `40-memory-realm-blood`, tests |
-| `data/**/*.json` | `A.DATA['<path without .json>']` (`data/titles/people.json` -> `A.DATA['titles/people']`), one statement before the first feature (`tools/build.mjs` `dataBlock()`) | before any `*.core.js` | features; never the release core directly, except `03-engine-base.js` (names, skills) |
+| `data/**/*.json` | `A.DATA['<path without .json>']` (`data/titles/people.json` -> `A.DATA['titles/people']`), one statement before the first feature (`tools/build.mjs` `dataBlock()`) | before any `*.core.js` | features only; the release core reaches it through their APIs (`A.NAMES`, `A.perkRows`, `A.TT`), guarded |
 | `GD.*` tables in `src/core/release/core/02-game-data-a.js` / `-b.js` | `GD` | at start | everything. **`-b` redefines some of `-a`'s tables** (`GD.SHOP`, `GD.HAIRSTYLES`, `GD.BEARDS`, `GD.BUILDS`): the later one wins, so edit the `-b` copy or you change nothing |
 | `*.data.core.js` in a feature | code appended to the core blob | at start | that feature |
 
 Assembled at run time, never a file: `A.DATA.titles = { vocab, titles }` (built by `src/people/9999976-titles/a-titles.core.js`
 from every `data/titles/*.json` except vocab), `A.TT.BY`, `A.POWER.LEG/MAS/FIG` (`src/world/9999970-powers`),
-`A.FIG.FILES` (`src/world/9999977-figures`), the generated classes (`CL.generate` in
+`A.FIG.FILES` (`src/world/9999977-figures`), the generated classes (the local `generate()` of
 `src/people/9999975-level/c-classes.core.js`, from `data/classes.json` `generator`). **Any new `data/titles/*.json`,
 `data/figures/*.json` or `data/skills/**/*.json` with the right shape is picked up by its reader automatically**
 (they loop over `A.DATA` keys by prefix).
@@ -184,7 +184,7 @@ with a save step for old saves). Change an id only with a step in `SV.STEPS` tha
 | `data/names.json` | `node tools/c7/build-names-data.mjs` | `docs/research/c7-name-data.json`, its `LEAN` table | **fails**: W1-1 (`35b2f9e3`) swept "Marshal" -> "Marcher" by hand in `common.family` and `common.trades`; running the generator would put "Marshal" back. Fix the input (or a rule in the generator), then regenerate |
 | `src/core/99990-v2-engine/a-v2.core.js` | `node tools/build-v2.mjs` | `src/*/engine/*.js` | `--check` (run by `tools/check.mjs`) |
 | `docs/NAMES.md` | `tools/rename-pass.mjs` | `tools/rename-map.json` | file and folder renames only, not world names |
-| the generated classes (155 in all with the 29 hand ones, per the audit of 2026-11-26) | `CL.generate` at load | `data/classes.json` `generator` | n/a |
+| the generated classes (155 in all with the 29 hand ones, per the audit of 2026-11-26) | `generate()` in `c-classes.core.js`, at load | `data/classes.json` `generator` | n/a |
 
 No CI job runs the three data generators' `--check`: run them yourself after touching their files.
 
