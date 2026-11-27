@@ -138,3 +138,12 @@ here before reporting success.
 - **Root cause:** the session ran from yesterday through orders 97 to 102 without a handoff; no rule bounded a session.
 - **Rule now:** move to a fresh session at each wave boundary or when `/context` shows history past about 40% (integration
   skill §5c); builders' branches are merged and pushed first, since a new session runs in a fresh container.
+
+### L-018 · 2026-11-27 · The usage limit hit again with only six agents
+- **What went wrong:** at about 10:00 UTC the 5-hour limit stopped the realms builder and the census builder again; the
+  session's worker then restarted three times and lost three hours (10:12 to 13:10 UTC) of the owner's day.
+- **Root cause:** L-001 capped the number of agents, not their size: each Opus builder ran to 400K-600K tokens of its own
+  context (long test logs, whole-file reads), and this integrator session itself carried 600K+ (L-017).
+- **Rule now:** cap the *size* too: builders on Sonnet unless the job is real design; briefs name files and lines and cap
+  command output (agent-token-economy levers 4 and 5); a builder past about 250K tokens hands off and a fresh one continues;
+  and the integrator hands off at each wave (L-017).
