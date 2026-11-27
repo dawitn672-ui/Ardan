@@ -248,6 +248,22 @@ A.careerYear = function (pc) {
   j.perf = A.clamp(Math.round(j.perf + (target - j.perf) * 0.35 + A.ri(-8, 8)), 0, 100);
   if (C.skill) A.trainSkill(pc, C.skill, 3.5);
   if (C.stat) A.train(pc, C.stat, 0.8);
+  // order 97 (D-195, H-162): a merchant's ledger is his deed. Trade's next rank asks a deed from rank B, and the cards hold
+  // few checks of trade at that value, so a Merchant at the top of rank C (trade 53, the Merchant prince's post asking 54)
+  // waited on a card's luck for decades with the post's merit long earned. A Merchant or better who has run his trade at
+  // its best for a year (performance 80 or more), with the next post's merit earned, standing at the edge with nothing but
+  // the deed wanting, has done it: commerce is proved by its books. Other trades keep their own deeds (a guild's
+  // masterpiece, a field won, a cure)
+  if (
+    j.c === "merchant" &&
+    j.r >= 2 &&
+    j.perf >= 80 &&
+    (j.merit || 0) >= A.JOB_MERIT(j.r + 1) &&
+    A.SK &&
+    A.SK.edgeState &&
+    A.SK.edgeState(pc, "trade") === "ready"
+  )
+    A.SK.proof(pc, "trade", "a year at the head of your trade");
   const rank = C.ranks[j.r];
   let pay =
     rank[2] *
