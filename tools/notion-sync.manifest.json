@@ -1,0 +1,245 @@
+{
+ "version": 1,
+ "records": {
+  "Decision:200": {
+   "pageId": "425d84dd-d9e3-810d-b4ed-e2d3f36c730d",
+   "hash": "5672aa5cb58c135e",
+   "name": "D-200 · One rarity ladder: basic, rare, epic, legendary, myt"
+  },
+  "History:164": {
+   "pageId": "425d84dd-d9e3-818e-9f60-e0377bc16044",
+   "hash": "b45fdd7964e67568",
+   "name": "H-164 · Two contradictions from the audit closed (order 97's"
+  },
+  "Order:1": {
+   "pageId": "425d84dd-d9e3-8104-914d-f3df0fedec52",
+   "hash": "17d9a93df3562507",
+   "name": "Order 1 · Read before starting"
+  },
+  "Order:2": {
+   "pageId": "425d84dd-d9e3-8119-bace-f55fa957cb59",
+   "hash": "5db1e745b8cc1f8d",
+   "name": "Order 2 · Plan first, then exceed the ask"
+  },
+  "Order:3": {
+   "pageId": "425d84dd-d9e3-81a5-814e-fc8224c3ec17",
+   "hash": "f9d23723e5978543",
+   "name": "Order 3 · Rebuild freely"
+  },
+  "Order:4": {
+   "pageId": "425d84dd-d9e3-81e1-827b-c5b0baf9aaae",
+   "hash": "51c189072a3b8bfa",
+   "name": "Order 4 · Never throw work away"
+  },
+  "Order:5": {
+   "pageId": "425d84dd-d9e3-810b-b086-fa1a15b978d6",
+   "hash": "e81d2bee9cfcfdad",
+   "name": "Order 5 · Record everything"
+  },
+  "Order:6": {
+   "pageId": "425d84dd-d9e3-81e9-9dbf-faef2fe86394",
+   "hash": "7a68051bdd8924b7",
+   "name": "Order 6 · Milestones"
+  },
+  "Order:7": {
+   "pageId": "425d84dd-d9e3-81ed-8745-efc5f10d746d",
+   "hash": "6b04b146d540f061",
+   "name": "Order 7 · After each step"
+  },
+  "Order:8": {
+   "pageId": "425d84dd-d9e3-81e8-8d8f-c40d6b5f48d6",
+   "hash": "a5e4bb900e86f02f",
+   "name": "Order 8 · Honest ETAs, padded for at least one extra CI roun"
+  },
+  "Order:9": {
+   "pageId": "425d84dd-d9e3-8131-aabe-df82b1eab948",
+   "hash": "ab60394b3ba08e1a",
+   "name": "Order 9 · CI"
+  },
+  "Order:10": {
+   "pageId": "425d84dd-d9e3-815a-b32a-cf0a4d88f7f6",
+   "hash": "e7aac54e1c986ed7",
+   "name": "Order 10 · Branch deletion is left to the owner"
+  },
+  "Order:11": {
+   "pageId": "425d84dd-d9e3-817f-90e3-cfac5d188908",
+   "hash": "d932fa8e9ae6168b",
+   "name": "Order 11 · Pause after the critique"
+  },
+  "Order:12": {
+   "pageId": "425d84dd-d9e3-8187-ac4c-c2fbddddf4de",
+   "hash": "0d97250a6015a578",
+   "name": "Order 12 · Token efficiency by any means, with the game's go"
+  },
+  "Order:13": {
+   "pageId": "425d84dd-d9e3-81a5-a0c1-f85938d5b08c",
+   "hash": "37e797b9a50f3791",
+   "name": "Order 13 · Don't make the owner repeat instructions"
+  },
+  "Order:14": {
+   "pageId": "425d84dd-d9e3-81d3-98dc-c8d43396caf5",
+   "hash": "846e5dba32a59698",
+   "name": "Order 14 · Any outside tool or AI is allowed"
+  },
+  "Order:15": {
+   "pageId": "425d84dd-d9e3-8166-8bd0-ff5926e3c1e6",
+   "hash": "1159241398743bfc",
+   "name": "Order 15 · Time-stamp every entry"
+  },
+  "Order:16": {
+   "pageId": "425d84dd-d9e3-8153-b31c-d96366bdc3ed",
+   "hash": "0177f70102f64f24",
+   "name": "Order 16 · Auto-resume after limits, even when the owner is "
+  },
+  "Order:17": {
+   "pageId": "425d84dd-d9e3-8103-8f43-cb7d0660879c",
+   "hash": "b048b56fdb6891a5",
+   "name": "Order 17 · Continue with the structure according to plan"
+  },
+  "Order:18": {
+   "pageId": "425d84dd-d9e3-814f-beab-c67063087e48",
+   "hash": "e4b2e249a81882e8",
+   "name": "Order 18 · Many more names"
+  },
+  "Order:19": {
+   "pageId": "425d84dd-d9e3-8137-a5dd-fdc96f4d41d7",
+   "hash": "88beaed101cd4e9f",
+   "name": "Order 19 · Model versions"
+  },
+  "Order:20": {
+   "pageId": "425d84dd-d9e3-81ee-8874-d66f6270aecf",
+   "hash": "853bae68ca818419",
+   "name": "Order 20 · Queued: a naming pass (work item X6)"
+  },
+  "Order:21": {
+   "pageId": "425d84dd-d9e3-81b6-947f-f019b4696095",
+   "hash": "b503dbe9feacbbb9",
+   "name": "Order 21 · Keep docs/PROGRESS.md current"
+  },
+  "Order:22": {
+   "pageId": "425d84dd-d9e3-81d7-bc24-e736407a1723",
+   "hash": "d45bc71d91b5efd3",
+   "name": "Order 22 · Every finished step is a new version, organised a"
+  },
+  "Order:23": {
+   "pageId": "425d84dd-d9e3-810d-a363-ff710d9f7787",
+   "hash": "91f113fa9c68732d",
+   "name": "Order 23 · Pause for review after the character demos"
+  },
+  "Order:24": {
+   "pageId": "425d84dd-d9e3-8142-87f8-f13ce3703336",
+   "hash": "6c2b6a5f18792cb3",
+   "name": "Order 24 · Characters in a detailed 2D illustrated style"
+  },
+  "Order:25": {
+   "pageId": "425d84dd-d9e3-81e6-ba2e-ffc5094e0bf4",
+   "hash": "0dcc70eb8a8f0365",
+   "name": "Order 25 · Tone-led finish; the look of Pick Me Up's charact"
+  },
+  "Order:26": {
+   "pageId": "425d84dd-d9e3-81b8-9109-c2cdbc05ef48",
+   "hash": "a4b3ac81c109021f",
+   "name": "Order 26 · The reference picture"
+  },
+  "Order:27": {
+   "pageId": "425d84dd-d9e3-8187-af5a-d3cc6ac8c823",
+   "hash": "5203acf94af40185",
+   "name": "Order 27 · The medieval reference"
+  },
+  "Order:28": {
+   "pageId": "425d84dd-d9e3-81e9-83f4-d2804d17c43c",
+   "hash": "21bafa3220b34818",
+   "name": "Order 28 · A much bigger economy"
+  },
+  "Order:29": {
+   "pageId": "425d84dd-d9e3-81e0-a01a-c1a90a06a859",
+   "hash": "430aeea43a31bdde",
+   "name": "Order 29 · Hundreds of weapons and unique items"
+  },
+  "Order:30": {
+   "pageId": "425d84dd-d9e3-8192-a99d-d5e894abc7fb",
+   "hash": "01cf8aca9babf1e6",
+   "name": "Order 30 · Far more face and build options"
+  },
+  "Order:31": {
+   "pageId": "425d84dd-d9e3-81cc-a026-d6d441e9e7a5",
+   "hash": "577270928d59a8ee",
+   "name": "Order 31 · The economy and armoury, the owner's answers"
+  },
+  "Order:32": {
+   "pageId": "425d84dd-d9e3-811a-95b2-f95782360498",
+   "hash": "7368159a22ace161",
+   "name": "Order 32 · Growth in depth: stats, skills, fighting styles"
+  },
+  "Order:33": {
+   "pageId": "425d84dd-d9e3-81db-a554-c708296b1e3f",
+   "hash": "5bd430ffdc2d13de",
+   "name": "Order 33 · Gate 2 approved; a Profile tab"
+  },
+  "Order:34": {
+   "pageId": "425d84dd-d9e3-81a0-a7b4-f9873903d449",
+   "hash": "3fde279fadeab409",
+   "name": "Order 34 · Arts, talent, real bodies, a cleaner profile, war"
+  },
+  "Order:35": {
+   "pageId": "425d84dd-d9e3-81b2-8fc6-f3158cc85505",
+   "hash": "d58434c523b2806d",
+   "name": "Order 35 · Baselines, then any build"
+  },
+  "Order:36": {
+   "pageId": "425d84dd-d9e3-810d-b4f1-e7bdddff9653",
+   "hash": "5afdd26bb9344c57",
+   "name": "Order 36 · Combat ranks, talents at birth, arts that stay, l"
+  },
+  "Order:37": {
+   "pageId": "425d84dd-d9e3-811f-b828-cb9db91fcebd",
+   "hash": "e4f3019e9ea6b56b",
+   "name": "Order 37 · Talents by budget, no count limit"
+  },
+  "Order:38": {
+   "pageId": "425d84dd-d9e3-815e-a69a-dd8c2655002e",
+   "hash": "1fff1d32325ca523",
+   "name": "Order 38 · A first scope of the talent budget now, full buil"
+  },
+  "Order:39": {
+   "pageId": "425d84dd-d9e3-81fb-aeaf-d025486c51e1",
+   "hash": "c3027db0c21a5381",
+   "name": "Order 39 · S and SSS grow abnormally fast"
+  },
+  "Order:40": {
+   "pageId": "425d84dd-d9e3-8141-8f91-f60494dca1fc",
+   "hash": "979efd57aad86084",
+   "name": "Order 40 · Cheaper talents, a bigger budget"
+  },
+  "Order:41": {
+   "pageId": "425d84dd-d9e3-8144-b1e3-e35fb0d0be96",
+   "hash": "da68e86d0aa7dbf7",
+   "name": "Order 41 · No build should be the obvious buy"
+  },
+  "Order:42": {
+   "pageId": "425d84dd-d9e3-8146-a1e3-c8eeb6aaddb2",
+   "hash": "5872f297558932cc",
+   "name": "Order 42 · A slightly bigger budget; one SSS at most"
+  },
+  "Order:43": {
+   "pageId": "425d84dd-d9e3-811b-8bcd-facb35585f83",
+   "hash": "8a11e7629851ddd4",
+   "name": "Order 43 · A master key on the talent page"
+  },
+  "Order:44": {
+   "pageId": "425d84dd-d9e3-819d-be5f-fad3027faff7",
+   "hash": "9b53260c0b86437a",
+   "name": "Order 44 · No master key"
+  },
+  "Order:45": {
+   "pageId": "425d84dd-d9e3-81e6-a7cf-c3599d0fca1a",
+   "hash": "2525a907cb81fe56",
+   "name": "Order 45 · A legendary blade example"
+  },
+  "Order:97": {
+   "pageId": "425d84dd-d9e3-8166-a4fb-d3a6b6b48788",
+   "hash": "5c7bcf86d956f41c",
+   "name": "Order 97 · The world rebuilt in depth; a full diagnostic, th"
+  }
+ }
+}

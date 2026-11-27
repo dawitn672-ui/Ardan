@@ -205,18 +205,21 @@ const sha = s => crypto.createHash('sha1').update(s).digest('hex').slice(0, 16);
 
 // ---------- chronicle records ----------
 const rd = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
-const strip = s => s.replace(/<!--[\s\S]*?-->/g, '').replace(/~~/g, '').replace(/\*\*/g, '').replace(/`/g, '').replace(/\[([^\]]+)\]\([^)]*\)/g, '$1').replace(/^[-> #]+/, '').replace(/\s+/g, ' ').trim();
+const strip = s => s.replace(/<!--[\s\S]*?-->/g, '').replace(/~~/g, '').replace(/\*\*/g, '').replace(/`/g, '').replace(/\[([^\]]+)\]\([^)]*\)/g, '$1').replace(/\*([^*\s][^*]*)\*/g, '$1').replace(/^[-> #]+/, '').replace(/\s+/g, ' ').trim();
 const ABBR = /(?:e\.g|i\.e|vs|etc|approx|no|cf|St|Mr|Dr|Nov|Dec|Oct|Sep|Jan|Feb|Mar|Apr|Jun|Jul|Aug|v\d+)$/i;
 // the first sentence, cut at a sentence boundary under max chars; else at a clause, else at a word (never mid-word)
 export function firstSentence(s, max = 200) {
   s = strip(s);
   const re = /[.!?](?=\s+[A-Z0-9"'(])|\.$/g; let m, end = -1;
-  while ((m = re.exec(s))) { const head = s.slice(0, m.index); if (ABBR.test(head) || /\d$/.test(head) && /\b\d{1,2}$/.test(head) && s[m.index + 1] === ' ' && /^\s+\d/.test(s.slice(m.index + 1))) continue; end = m.index + 1; break; }
+  while ((m = re.exec(s))) { const head = s.slice(0, m.index); if (ABBR.test(head) || (head.match(/\(/g) || []).length > (head.match(/\)/g) || []).length || (head.match(/"/g) || []).length % 2 || /\d$/.test(head) && /\b\d{1,2}$/.test(head) && s[m.index + 1] === ' ' && /^\s+\d/.test(s.slice(m.index + 1))) continue; end = m.index + 1; break; }
   if (end > 0 && end < 26 && s.length > end + 20) return firstSentence(s.slice(end), max); // a label such as "The conflict."
   if (end > 0 && end <= max) return s.slice(0, end);
   if (end < 0 && s.length <= max) return s;
-  const lim = s.slice(0, max);
-  for (const sep of ['; ', ' - ', ': ', ', ']) { const k = lim.lastIndexOf(sep); if (k > max * 0.5) return lim.slice(0, k).replace(/[,;:\s-]+$/, '') + '.'; }
+  let lim = s.slice(0, max);
+  const open = (t) => (t.match(/\(/g) || []).length > (t.match(/\)/g) || []).length;
+  if (open(lim) && lim.lastIndexOf('(') > max * 0.4) lim = lim.slice(0, lim.lastIndexOf('(')).trimEnd();
+  if ((lim.match(/"/g) || []).length % 2 && lim.lastIndexOf('"') > max * 0.4) lim = lim.slice(0, lim.lastIndexOf('"')).trimEnd();
+  for (const sep of ['; ', ' - ', ': ', ', ']) { let k = lim.lastIndexOf(sep); if (k > max * 0.5) { let t = lim.slice(0, k); if (open(t) && t.lastIndexOf('(') > max * 0.4) t = t.slice(0, t.lastIndexOf('(')); return t.replace(/[,;:\s-]+$/, '') + '.'; } }
   const k = lim.lastIndexOf(' ');
   return lim.slice(0, k > 0 ? k : max).replace(/[,;:(\s-]+$/, '') + '…';
 }
@@ -242,8 +245,8 @@ export function parseRecords() {
       const bm = x.lines[0].match(/\*\*(.+?)\*\*/);
       const title = cut(strip(bm ? bm[1] : x.lines[0].replace(/^\d+\. /, '')).replace(/[:.]+$/, ''), 80);
       for (const pm of text.matchAll(/docs\/prompts\/([\w.-]+\.md)/g)) promptMap[pm[1]] = promptMap[pm[1]] || x.n;
-      const body = [x.lines[0].replace(/^\d+\. /, '').replace(/\s*·\s*recorded .*$/, ''), ...dedent(x.lines.slice(1))].join('\n').trim();
-      add({ kind, id: String(x.n), num: x.n, date: dm ? dm[1] : null, name: `${kind} ${x.n} · ${title}`, sum: firstSentence(body.replace(/^\*\*[^*]+\*\*\s*[:.·-]*\s*/, '').replace(/^[·\s]*(recorded [^.]*?(ET|\d)\.?)?\s*/, '') || body), src: `docs/OWNER_ORDERS.md › ${sec.name.split(' (')[0]} #${x.n}`, refs: kind === 'Order' ? `Order ${x.n}` : '', md: body });
+      const body = [x.lines[0].replace(/^\d+\. /, '').replace(/\s*·\s*recorded \d{4}-\d\d-\d\d(?: [\d:]+)?(?: ET)?\.?/, '.'), ...dedent(x.lines.slice(1))].join('\n').trim();
+      add({ kind, id: String(x.n), num: x.n, date: dm ? dm[1] : null, name: `${kind} ${x.n} · ${title}`, sum: firstSentence(body), src: `docs/OWNER_ORDERS.md › ${sec.name.split(' (')[0]} #${x.n}`, refs: kind === 'Order' ? `Order ${x.n}` : '', md: body });
     }
   }
   // prompts
