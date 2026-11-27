@@ -6,6 +6,536 @@
    "hash": "5672aa5cb58c135e",
    "name": "D-200 · One rarity ladder: basic, rare, epic, legendary, myt"
   },
+  "History:001": {
+   "pageId": "425d84dd-d9e3-81ec-b51e-ddef4f7a25de",
+   "hash": "dad6dc15c7eef4e5",
+   "name": "H-001 · Step 0: the repo restructured, and given a memory"
+  },
+  "History:002": {
+   "pageId": "425d84dd-d9e3-8167-b85e-c4d332103618",
+   "hash": "2b0a14932575ec3b",
+   "name": "H-002 · Step 0 verified by CI; the coherency registry starte"
+  },
+  "History:003": {
+   "pageId": "425d84dd-d9e3-810e-b024-eaec8af32e36",
+   "hash": "bc85e286a516e7b7",
+   "name": "H-003 · Step 1 done: the critique and the order of work; pre"
+  },
+  "History:004": {
+   "pageId": "425d84dd-d9e3-81f8-abdc-d861e4e29639",
+   "hash": "07ff9888c1e8c66b",
+   "name": "H-004 · A0: stop the bleeding (P1, P20, R5, E10, Q7)"
+  },
+  "History:005": {
+   "pageId": "425d84dd-d9e3-815d-a2f0-f174659bb445",
+   "hash": "5f5d475b8fe68202",
+   "name": "H-005 · Queued: X6, the naming pass (owner's order)"
+  },
+  "History:006": {
+   "pageId": "425d84dd-d9e3-81e7-b13c-da25fd65eda0",
+   "hash": "72b71a613cbb5b9d",
+   "name": "H-006 · X6: the naming pass (owner's orders 20, immediate)"
+  },
+  "History:007": {
+   "pageId": "425d84dd-d9e3-81d6-ac16-ec4d21f9269f",
+   "hash": "423efb394ac812bc",
+   "name": "H-007 · A3a: the net (Q1, Q3, Q5, Q10, P22; part of Q4, Q8)"
+  },
+  "History:008": {
+   "pageId": "425d84dd-d9e3-8128-bb00-c8c712b86799",
+   "hash": "e99a7521db3374e3",
+   "name": "H-008 · B4: click-to-open (D-007); CI 97 red after A3a, as e"
+  },
+  "History:009": {
+   "pageId": "425d84dd-d9e3-816d-af70-d3fc9c473909",
+   "hash": "d2dac815d0552dfc",
+   "name": "H-009 · C8b first gate: the character demos (a working draft"
+  },
+  "History:010": {
+   "pageId": "425d84dd-d9e3-810c-9ee5-ecb03d11c7c0",
+   "hash": "cafcb7858516781c",
+   "name": "H-010 · A1: lag, the drawing side (one redraw per press)"
+  },
+  "History:011": {
+   "pageId": "425d84dd-d9e3-81a4-a7d7-d1f87abf7fe2",
+   "hash": "9c98af52b6ed7b72",
+   "name": "H-011 · C8 2D, gate 1: the style frame (characters.md §15)"
+  },
+  "History:012": {
+   "pageId": "425d84dd-d9e3-8186-8d17-f14124243ab6",
+   "hash": "e939968251e1f778",
+   "name": "H-012 · CI 97's 22 failures fixed (5 game bugs, 17 tests mad"
+  },
+  "History:013": {
+   "pageId": "425d84dd-d9e3-8121-973c-f0ebf4e87a47",
+   "hash": "72bf7b6034dd68a2",
+   "name": "H-013 · B6: Next month or Next year (D-008, D-019, D-026)"
+  },
+  "History:014": {
+   "pageId": "425d84dd-d9e3-8178-aa4c-e736c334fb4a",
+   "hash": "12cd7a860c964cf9",
+   "name": "H-014 · CI 98's last three failures fixed (both regressions "
+  },
+  "History:015": {
+   "pageId": "425d84dd-d9e3-8111-8028-da1c248ecf38",
+   "hash": "5a2f1952ddbfd021",
+   "name": "H-015 · CI 100's five failures fixed (one real slowdown from"
+  },
+  "History:016": {
+   "pageId": "425d84dd-d9e3-810b-b7cd-e52ab5bc46f7",
+   "hash": "98724a0172840124",
+   "name": "H-016 · v2.1.0-alpha.2 cut; X1 merged: the release is readab"
+  },
+  "History:017": {
+   "pageId": "425d84dd-d9e3-81ff-8d02-eb80d73f796b",
+   "hash": "f7355e34522fd1d2",
+   "name": "H-017 · E1/E2 design written (owner orders 28, 29)"
+  },
+  "History:018": {
+   "pageId": "425d84dd-d9e3-8161-8095-dc1da15b1925",
+   "hash": "83bdfbf78ab6b3c9",
+   "name": "H-018 · C8 2D gate 2 built (tone-led, after the owner's two "
+  },
+  "History:019": {
+   "pageId": "425d84dd-d9e3-8177-8454-da298ee64192",
+   "hash": "3840465bd9a71a18",
+   "name": "H-019 · G design written (owner order 32); Fable's weekly li"
+  },
+  "History:020": {
+   "pageId": "425d84dd-d9e3-81c9-a09c-e2a09bf905cd",
+   "hash": "4d73fbc84c84312f",
+   "name": "H-020 · B5 declutter, part 1 (the shell)"
+  },
+  "History:021": {
+   "pageId": "425d84dd-d9e3-8163-89eb-e081f0254107",
+   "hash": "2b18e989b0de267f",
+   "name": "H-021 · C8b: the gate 2 figure library draws every portrait "
+  },
+  "History:022": {
+   "pageId": "425d84dd-d9e3-8180-983c-e4ee32aa706c",
+   "hash": "f68c796c2707f7df",
+   "name": "H-022 · CI 103's four failures fixed (all tests that followe"
+  },
+  "History:023": {
+   "pageId": "425d84dd-d9e3-817d-8baf-d1eb7f5582d9",
+   "hash": "438bef0de7e5612e",
+   "name": "H-023 · P: the Profile page, first page of the You place (ow"
+  },
+  "History:024": {
+   "pageId": "425d84dd-d9e3-81de-9c6c-f8f067f0df5b",
+   "hash": "a65ae97db89c2150",
+   "name": "H-024 · A2 stage 1: one registry of posts; the Marshal's sea"
+  },
+  "History:025": {
+   "pageId": "425d84dd-d9e3-814d-bbd4-d32316d4efe3",
+   "hash": "cebdf3ecf0af7bf7",
+   "name": "H-025 · After the A2 merge: checks pass; full CI on A2 and P"
+  },
+  "History:026": {
+   "pageId": "425d84dd-d9e3-8103-9bec-ea4a7112e82d",
+   "hash": "66e989c5beff0aa7",
+   "name": "H-026 · G design revised for order 34 (D-039)"
+  },
+  "History:027": {
+   "pageId": "425d84dd-d9e3-81be-a799-fd16fb49683a",
+   "hash": "7e45ea3fee251221",
+   "name": "H-027 · P2: a clean Profile page; the past in Records (owner"
+  },
+  "History:028": {
+   "pageId": "425d84dd-d9e3-816d-82b8-ca67774c040a",
+   "hash": "46486b3ecc072f9f",
+   "name": "H-028 · Fable 5.2 is available again; the legendary designs "
+  },
+  "History:029": {
+   "pageId": "425d84dd-d9e3-8141-b66e-cb225514b12e",
+   "hash": "e8e88151a0468aa9",
+   "name": "H-029 · CI 105: one failure (lfRepeats, fixed in 9bf37ee); o"
+  },
+  "History:030": {
+   "pageId": "425d84dd-d9e3-81f5-b7c1-e619b0addd45",
+   "hash": "eeb318d0d9ca1b0d",
+   "name": "H-030 · Ten legendary arms drawn; the owner's pause begins ("
+  },
+  "History:031": {
+   "pageId": "425d84dd-d9e3-8116-ae8a-ff1cecec4df0",
+   "hash": "f8ce10295dabd021",
+   "name": "H-031 · C9: bodies that make sense, skill baselines, longer "
+  },
+  "History:032": {
+   "pageId": "425d84dd-d9e3-8152-ab3a-c9d7e86149fa",
+   "hash": "ac061afbc25bfe38",
+   "name": "H-032 · D12a: the war design (order 49, D-047)"
+  },
+  "History:033": {
+   "pageId": "425d84dd-d9e3-815a-8fd6-c6df4bdd5b5a",
+   "hash": "08f1c9e61aeda156",
+   "name": "H-033 · CI 107's failures after C9: 13 of 17 fixed; the slow"
+  },
+  "History:034": {
+   "pageId": "425d84dd-d9e3-819b-b2a2-e3ce4a137a0c",
+   "hash": "9612125887b5e1c4",
+   "name": "H-034 · X3 part 1: honest cards and clocks (D-051)"
+  },
+  "History:035": {
+   "pageId": "425d84dd-d9e3-8159-a877-ccc08b04ef02",
+   "hash": "a5d09a1806f48cf5",
+   "name": "H-035 · Order 52: names worth saying, ordinary arms as made "
+  },
+  "History:036": {
+   "pageId": "425d84dd-d9e3-81b1-9ba4-e3b6e1d5385a",
+   "hash": "6b74020805f61ea5",
+   "name": "H-036 · W0 and D10: no war score, no army templates; war scr"
+  },
+  "History:037": {
+   "pageId": "425d84dd-d9e3-8149-9a7a-cfa8e26c57dd",
+   "hash": "804414c4604bad39",
+   "name": "H-037 · CI 108's bot-life tests: two test fixes; three pass "
+  },
+  "History:039": {
+   "pageId": "425d84dd-d9e3-811e-bcfb-fc6248b15110",
+   "hash": "4d3f9d24f5028ece",
+   "name": "H-039 · CI 109: nine reds, all fixed (eight tests that had n"
+  },
+  "History:040": {
+   "pageId": "425d84dd-d9e3-81ec-bb39-cfe79635dad4",
+   "hash": "c9673b6339e2615c",
+   "name": "H-040 · CI 110: six reds fixed (two in the game)"
+  },
+  "History:041": {
+   "pageId": "425d84dd-d9e3-8157-ad6a-d4a8c815bd47",
+   "hash": "3f3526eb66164db9",
+   "name": "H-041 · A2 stage 2: an optional Marshal; seven more kinds of"
+  },
+  "History:042": {
+   "pageId": "425d84dd-d9e3-8123-8ff4-d28fcee8f51c",
+   "hash": "d2ddd49736767ac8",
+   "name": "H-042 · CI 112 on A2 stage 2: one game fix, a faster registr"
+  },
+  "History:043": {
+   "pageId": "425d84dd-d9e3-81ca-95d0-d95d31f32434",
+   "hash": "ec34b1e057846bc1",
+   "name": "H-043 · X7 part 1: phone speed at load (D-054, owner order 3"
+  },
+  "History:044": {
+   "pageId": "425d84dd-d9e3-81d4-8184-c56399683765",
+   "hash": "1d070141c0c1488b",
+   "name": "H-044 · CI 114 on A2 stage 2 and X7 part 1: one test left, f"
+  },
+  "History:045": {
+   "pageId": "425d84dd-d9e3-813b-8553-d6acaec776ca",
+   "hash": "c02058ca98f5b0d1",
+   "name": "H-045 · CI 115: the woodcut masked; the year's cost measured"
+  },
+  "History:046": {
+   "pageId": "425d84dd-d9e3-815e-a7be-e0a2daa25a34",
+   "hash": "e6b824c3c45f66ea",
+   "name": "H-046 · B5 part 2: one UI.scope, the six-life draw test, one"
+  },
+  "History:047": {
+   "pageId": "425d84dd-d9e3-812f-9cf3-c49e24ba90c9",
+   "hash": "4f2410600d3089a5",
+   "name": "H-047 · X2: named stages for the seven hot functions; the mu"
+  },
+  "History:048": {
+   "pageId": "425d84dd-d9e3-8115-81ce-e56066f97ac1",
+   "hash": "b4a889337aa0d80c",
+   "name": "H-048 · C6: households, how you met, no kin minted, one reso"
+  },
+  "History:049": {
+   "pageId": "425d84dd-d9e3-8116-ab20-d3393d018e50",
+   "hash": "2fd019eb4f0b7b3f",
+   "name": "H-049 · CI 119 on C6: five game fixes, two tests"
+  },
+  "History:050": {
+   "pageId": "425d84dd-d9e3-81ff-820a-f2bd377cbc17",
+   "hash": "18f014b40403eb29",
+   "name": "H-050 · CI 120: oaFireRate on twelve lives"
+  },
+  "History:051": {
+   "pageId": "425d84dd-d9e3-8163-894e-e3812aaa6b8f",
+   "hash": "ab57b9c991551ceb",
+   "name": "H-051 · C7: names are data, flavour is a weighting, people f"
+  },
+  "History:052": {
+   "pageId": "425d84dd-d9e3-8199-8e3f-d25a3240513f",
+   "hash": "4bee781368e52769",
+   "name": "H-052 · CI 122 on C7: one game fix, tests on the new pools a"
+  },
+  "History:053": {
+   "pageId": "425d84dd-d9e3-81ae-8f45-de0bf6314054",
+   "hash": "0d604e20f8b7df8a",
+   "name": "H-053 · CI 123 on C7: two tests on new worlds"
+  },
+  "History:054": {
+   "pageId": "425d84dd-d9e3-818b-9340-d27e3b6550d3",
+   "hash": "dcdc84f96cfec438",
+   "name": "H-054 · C8c: dress, class and regalia (D-060)"
+  },
+  "History:055": {
+   "pageId": "425d84dd-d9e3-8195-bf74-cce947b40908",
+   "hash": "5599ea0a62b97105",
+   "name": "H-055 · X3 part 2: cards held to the life they are dealt to "
+  },
+  "History:056": {
+   "pageId": "425d84dd-d9e3-8157-bc66-cd5a1cd5bca5",
+   "hash": "089c5444f68c7493",
+   "name": "H-056 · CI 126 on C8c and X3 part 2: the gates spare story s"
+  },
+  "History:057": {
+   "pageId": "425d84dd-d9e3-818b-beea-f1dc37fe6951",
+   "hash": "f7c340ce5e8a5cec",
+   "name": "H-057 · CI 127: counsel by letter"
+  },
+  "History:058": {
+   "pageId": "425d84dd-d9e3-814f-bbf2-fced99d9d8f0",
+   "hash": "0af7c0f0bc95f797",
+   "name": "H-058 · CI 128: lfRepeats at 70%"
+  },
+  "History:059": {
+   "pageId": "425d84dd-d9e3-811c-b119-fbe7bb7ed086",
+   "hash": "3cefc2ec4ccc7da5",
+   "name": "H-059 · T1: two test tiers, shards by time"
+  },
+  "History:060": {
+   "pageId": "425d84dd-d9e3-8153-82eb-c74d29e85bb3",
+   "hash": "9081cc2f8cb2e7d3",
+   "name": "H-060 · D12a-2: the war design revised with the owner's ten "
+  },
+  "History:061": {
+   "pageId": "425d84dd-d9e3-813a-884f-f1e38d10f069",
+   "hash": "71981163ec4186a4",
+   "name": "H-061 · W1-1: no Marshal, five ranks"
+  },
+  "History:062": {
+   "pageId": "425d84dd-d9e3-8107-a5a9-e8587df1c53f",
+   "hash": "9ea49d8eb0ae1ba8",
+   "name": "H-062 · G0: the growth standard (research and design only)"
+  },
+  "History:063": {
+   "pageId": "425d84dd-d9e3-81d3-97b6-dfc6cb0afa43",
+   "hash": "d80a59734e71fc69",
+   "name": "H-063 · C8d gate 1: profile cards in the owner's manhwa refe"
+  },
+  "History:064": {
+   "pageId": "425d84dd-d9e3-8133-a98b-f5459fb46e79",
+   "hash": "bc9f8a1652be67f5",
+   "name": "H-064 · W1-2: minds (R1's core)"
+  },
+  "History:065": {
+   "pageId": "425d84dd-d9e3-818e-b8d9-cf0bb57be6ff",
+   "hash": "6eee2b076f47ff93",
+   "name": "H-065 · I1-0: the route to the iPhone App Store, researched "
+  },
+  "History:066": {
+   "pageId": "425d84dd-d9e3-8131-9e4b-c82bcd5877cd",
+   "hash": "3d296fc0cc680f6d",
+   "name": "H-066 · The old Ardan Codex reviewed (research only)"
+  },
+  "History:067": {
+   "pageId": "425d84dd-d9e3-8175-95fe-f38064ac46f5",
+   "hash": "3fe99e6ea2a94edf",
+   "name": "H-067 · S1a: the design for skills with levels and experienc"
+  },
+  "History:068": {
+   "pageId": "425d84dd-d9e3-81d8-9b31-f4e5e01a5866",
+   "hash": "ddb68409a61dd976",
+   "name": "H-068 · P3: the owner's playtest fixes (order 54, D-062 adde"
+  },
+  "History:069": {
+   "pageId": "425d84dd-d9e3-81d6-a7cc-cb610354cb1c",
+   "hash": "060d96a60e31d545",
+   "name": "H-069 · S1b: skills with levels and experience, built (order"
+  },
+  "History:073": {
+   "pageId": "425d84dd-d9e3-8177-991d-f47a32dc759d",
+   "hash": "8f864ec067c60905",
+   "name": "H-073 · R2: every relationship needs a base (order 55, rule "
+  },
+  "History:074": {
+   "pageId": "425d84dd-d9e3-8160-a2d0-cd3072bf7474",
+   "hash": "8b92d569770fe451",
+   "name": "H-074 · I1-2: iPhone readiness (order 62; the audit's fixes "
+  },
+  "History:074-addendum": {
+   "pageId": "425d84dd-d9e3-81db-8ea5-d950e02e7c6d",
+   "hash": "fe21f28fef75ebc0",
+   "name": "H-074 addendum · I1-2 merged with v2.1.0-alpha.10"
+  },
+  "History:075": {
+   "pageId": "425d84dd-d9e3-813d-896b-d18db0d953a5",
+   "hash": "060bda5e0aafd14d",
+   "name": "H-075 · W1-3: commands and the summons"
+  },
+  "History:076": {
+   "pageId": "425d84dd-d9e3-8106-911a-d48463eaf453",
+   "hash": "2b540693101b2f18",
+   "name": "H-076 · W1-4: no levies"
+  },
+  "History:077": {
+   "pageId": "425d84dd-d9e3-81f6-bac2-e5659cadf057",
+   "hash": "1571b5efa2cf24f4",
+   "name": "H-077 · D9: the map's ground, read by the game and drawn (D-"
+  },
+  "History:078": {
+   "pageId": "425d84dd-d9e3-8148-807a-c8a68a7a6b97",
+   "hash": "1bdb12c10c48ca11",
+   "name": "H-078 · Speed: a new world after D9 (CI long run 12's timeou"
+  },
+  "History:079": {
+   "pageId": "425d84dd-d9e3-8135-b775-dc6d5e9893f5",
+   "hash": "e3458bed76e729f7",
+   "name": "H-079 · CI check run 143 and long run 13: eight failures rea"
+  },
+  "History:080": {
+   "pageId": "425d84dd-d9e3-818c-96c5-e9485f09436a",
+   "hash": "fabfc9fff1746429",
+   "name": "H-080 · CI check run 144: the last three quick-tier failures"
+  },
+  "History:081": {
+   "pageId": "425d84dd-d9e3-8110-842c-c78d546c826f",
+   "hash": "eaf7fc755ae754b6",
+   "name": "H-081 · CI check run 147 after W1-3 and W1-4: eleven failure"
+  },
+  "History:082": {
+   "pageId": "425d84dd-d9e3-81c8-aeab-d1de22e329ca",
+   "hash": "037b8bd3228d3c7f",
+   "name": "H-082 · Tests that hold in any world (test-hardening round)"
+  },
+  "History:083": {
+   "pageId": "425d84dd-d9e3-81e1-a2b6-db937fd3c432",
+   "hash": "57bc2d96294706db",
+   "name": "H-083 · CI check run 148 and long run 20 on `2bfd18a`: five "
+  },
+  "History:084": {
+   "pageId": "425d84dd-d9e3-81b0-9499-d71ebc6d4961",
+   "hash": "26685409ee1ba088",
+   "name": "H-084 · W1-5: surrender or defeat"
+  },
+  "History:085": {
+   "pageId": "425d84dd-d9e3-819a-94c7-ea223312cab4",
+   "hash": "4b16fb70f035d307",
+   "name": "H-085 · CI 150 and long 26 after W1-5: three failures read ("
+  },
+  "History:086": {
+   "pageId": "425d84dd-d9e3-810c-83d4-cefae5675bfc",
+   "hash": "49b36f2a8c228ffd",
+   "name": "H-086 · W1-6: the realm's peace"
+  },
+  "History:087": {
+   "pageId": "425d84dd-d9e3-8122-9d2c-dd89019c1eb5",
+   "hash": "4320ac9d958a4acc",
+   "name": "H-087 · X5 part 1: the state diet"
+  },
+  "History:088": {
+   "pageId": "425d84dd-d9e3-815f-ad42-d254bb499bd9",
+   "hash": "2cda7a734ac9aa9b",
+   "name": "H-088 · D11-1: the muster"
+  },
+  "History:089": {
+   "pageId": "425d84dd-d9e3-816a-abb8-f4cfb7a769ee",
+   "hash": "2e6ebc77a204df78",
+   "name": "H-089 · CI 152 after the W1-6 merge: three failures read (br"
+  },
+  "History:090": {
+   "pageId": "425d84dd-d9e3-814d-9c16-eae2694b2702",
+   "hash": "42b26e4048a6276e",
+   "name": "H-090 · X5: the unknown die, the houses go on (D-107, D-108)"
+  },
+  "History:091": {
+   "pageId": "425d84dd-d9e3-815d-97e9-c6cbb2c51882",
+   "hash": "0d928e19f02cfeb3",
+   "name": "H-091 · X5: the built game leaves git (D-109)"
+  },
+  "History:092": {
+   "pageId": "425d84dd-d9e3-816d-942f-c5292515897e",
+   "hash": "c5fca52059a30e0d",
+   "name": "H-092 · D11-2: units that differ"
+  },
+  "History:093": {
+   "pageId": "425d84dd-d9e3-8180-9d25-de806efe977c",
+   "hash": "6046cce21e7dbd70",
+   "name": "H-093 · D11-3: careers"
+  },
+  "History:094": {
+   "pageId": "425d84dd-d9e3-81c9-9db2-e405a1391efb",
+   "hash": "ef0d1d4a773137e4",
+   "name": "H-094 · CI 154 and long 38 after W1-6, D11-1 and w16-ci: sev"
+  },
+  "History:095": {
+   "pageId": "425d84dd-d9e3-81ff-b2c2-e1f9ddd2d4d0",
+   "hash": "700aaf90693beacf",
+   "name": "H-095 · D11+: the military path"
+  },
+  "History:096": {
+   "pageId": "425d84dd-d9e3-819f-b587-d0eac2bae0b3",
+   "hash": "e7abb616d5824fe1",
+   "name": "H-096 · d11-ci: CI 155 and long 38 after D11-2 and D11-3"
+  },
+  "History:097": {
+   "pageId": "425d84dd-d9e3-8180-9db3-e1e2266193db",
+   "hash": "41074f76764d3c83",
+   "name": "H-097 · w18-ci: one ruler for every standing realm (the nigh"
+  },
+  "History:098": {
+   "pageId": "425d84dd-d9e3-8140-bed6-f35fdb79187f",
+   "hash": "eff82379d532f06c",
+   "name": "H-098 · w19-ci: csWorlds' share of decisions in character is"
+  },
+  "History:099": {
+   "pageId": "425d84dd-d9e3-8125-bc4c-e79663ec45cc",
+   "hash": "bf0ccaef512ddcf4",
+   "name": "H-099 · CI 160 after the second batch (x5-deaths, x5-build):"
+  },
+  "History:100": {
+   "pageId": "425d84dd-d9e3-81d9-ad1a-d9677456e194",
+   "hash": "b13217aa04e32190",
+   "name": "H-100 · X5 CI: the long run's two failures after the generat"
+  },
+  "History:104": {
+   "pageId": "425d84dd-d9e3-81a6-b155-f947c1018fc8",
+   "hash": "ca490f21dc2fb9d5",
+   "name": "H-104 · Stopped on the owner's order (74): where everything "
+  },
+  "History:106": {
+   "pageId": "425d84dd-d9e3-81cb-96a4-e8a2ccd74170",
+   "hash": "7f77626067db98dd",
+   "name": "H-106 · Repository tidy: README, docs index and its lint, br"
+  },
+  "History:107": {
+   "pageId": "425d84dd-d9e3-8129-b0f8-d3692e1d1368",
+   "hash": "333b4c89459dbbdb",
+   "name": "H-107 · The skills and tools review (master prompt section 1"
+  },
+  "History:108": {
+   "pageId": "425d84dd-d9e3-8186-a0c2-c6c1f12fa962",
+   "hash": "b9a86d4ef7cf2511",
+   "name": "H-108 · The sync with the work in progress (master prompt 0."
+  },
+  "History:109": {
+   "pageId": "425d84dd-d9e3-81bd-9391-c64571c3340f",
+   "hash": "533856187011082e",
+   "name": "H-109 · The owner's answers merged (order 76): newest instru"
+  },
+  "History:110": {
+   "pageId": "425d84dd-d9e3-8152-8bfb-d6a01bd57705",
+   "hash": "16de9275643b2482",
+   "name": "H-110 · Plugins off for this repo; docs cleared to the refer"
+  },
+  "History:111": {
+   "pageId": "425d84dd-d9e3-81d7-a225-c831fb294a0c",
+   "hash": "e27aca3b47c3eecc",
+   "name": "H-111 · The two unfinished features archived (order 76)"
+  },
+  "History:112": {
+   "pageId": "425d84dd-d9e3-81b3-b92c-caf53d3ec239",
+   "hash": "0802ff8a7da4dc82",
+   "name": "H-112 · Phase 1 begins: Emilio findings E1 to E3 fixed (orde"
+  },
+  "History:113": {
+   "pageId": "425d84dd-d9e3-812a-a0d6-f3e331416013",
+   "hash": "947246eb63399897",
+   "name": "H-113 · Emilio findings E4 to E10 checked; E5, E6, E8, E9 fi"
+  },
   "History:164": {
    "pageId": "425d84dd-d9e3-818e-9f60-e0377bc16044",
    "hash": "b45fdd7964e67568",
@@ -386,10 +916,375 @@
    "hash": "6b138fb902d1cdb1",
    "name": "Order 75 · The master prompt: recalibrate, reconstruct, reor"
   },
+  "Order:76": {
+   "pageId": "425d84dd-d9e3-8148-90c6-f16d14bcf821",
+   "hash": "94130d5520edd9b8",
+   "name": "Order 76 · Answers and new direction: the newest instruction"
+  },
+  "Order:77": {
+   "pageId": "425d84dd-d9e3-81d8-b28e-e2fc026748da",
+   "hash": "3c179e024ba25ec1",
+   "name": "Order 77 · A much larger power scale, now: countless beasts "
+  },
+  "Order:78": {
+   "pageId": "425d84dd-d9e3-816a-a745-c4244d81256a",
+   "hash": "57510f73d8776d35",
+   "name": "Order 78 · Levels, not tier words; beings differ at one leve"
+  },
+  "Order:79": {
+   "pageId": "425d84dd-d9e3-81f7-83d7-c35e5d69b52b",
+   "hash": "d462035f7c5c3eb7",
+   "name": "Order 79 · Titles: stackable, with buffs, very hard to earn,"
+  },
+  "Order:80": {
+   "pageId": "425d84dd-d9e3-81ff-a629-f84814fcea0e",
+   "hash": "42b93c4114f215b3",
+   "name": "Order 80 · Stat points per level, skill training, blacksmith"
+  },
+  "Order:81": {
+   "pageId": "425d84dd-d9e3-8171-baae-c8afbf73d5f2",
+   "hash": "3ccc4d83a7e73bb4",
+   "name": "Order 81 · Deeper, personal minds for every creature and leg"
+  },
+  "Order:82": {
+   "pageId": "425d84dd-d9e3-817d-b9f8-c3788443819e",
+   "hash": "be4eab3c7ae66fe3",
+   "name": "Order 82 · Answers to the skills design; paths named; creatu"
+  },
+  "Order:83": {
+   "pageId": "425d84dd-d9e3-81f2-adca-cb9c55788d5f",
+   "hash": "85bff462009e9cb7",
+   "name": "Order 83 · Legends without gods; the Sword Saint; no crown b"
+  },
+  "Order:84": {
+   "pageId": "425d84dd-d9e3-8130-9819-e5298a389d11",
+   "hash": "b191fd83932f0ae9",
+   "name": "Order 84 · The level anchors; legends as national threats; t"
+  },
+  "Order:85": {
+   "pageId": "425d84dd-d9e3-81f4-9af8-cba9da4163ee",
+   "hash": "52183f40adfc5901",
+   "name": "Order 85 · Exponential levels; titles and skill quality beat"
+  },
+  "Order:86": {
+   "pageId": "425d84dd-d9e3-8183-b393-c319ed0165d3",
+   "hash": "f4d910df35c56f96",
+   "name": "Order 86 · The map: substance over looks"
+  },
+  "Order:87": {
+   "pageId": "425d84dd-d9e3-8194-8b01-cbc8519e26d6",
+   "hash": "1ac287277e8ff1a4",
+   "name": "Order 87 · Legends rescaled; skills stop at level 10; full p"
+  },
+  "Order:88": {
+   "pageId": "425d84dd-d9e3-81f1-bce1-ce7c95f360e1",
+   "hash": "515e32a0f01e0011",
+   "name": "Order 88 · Where experience comes from"
+  },
+  "Order:89": {
+   "pageId": "425d84dd-d9e3-81bf-82c8-eb25f8c6168e",
+   "hash": "11adf95fdcad6c8b",
+   "name": "Order 89 · The legends' levels again; the Sword Saint class"
+  },
+  "Order:90": {
+   "pageId": "425d84dd-d9e3-8142-92ef-f0b1b4b795ef",
+   "hash": "a9b125082c21cae0",
+   "name": "Order 90 · Sarnavoth slightly behind the three"
+  },
+  "Order:91": {
+   "pageId": "425d84dd-d9e3-81d6-87dc-cfacb0d7a8b7",
+   "hash": "70851de1c6c9225e",
+   "name": "Order 91 · Experience from anyone; walls at every hundredth "
+  },
+  "Order:92": {
+   "pageId": "425d84dd-d9e3-811f-89e7-c2c3b914df8b",
+   "hash": "cc57b67db5cc354e",
+   "name": "Order 92 · Three kinds of skill; classes as branches; no tit"
+  },
+  "Order:93": {
+   "pageId": "425d84dd-d9e3-81c5-b953-df7a4c53d878",
+   "hash": "87e523141eccb979",
+   "name": "Order 93 · The map larger, with a Hell; only the known on it"
+  },
+  "Order:94": {
+   "pageId": "425d84dd-d9e3-8168-af77-fb8483a7528d",
+   "hash": "733c47b5adc0d0cb",
+   "name": "Order 94 · Knights do not stall at 299"
+  },
+  "Order:95": {
+   "pageId": "425d84dd-d9e3-8133-9b77-ef42a931c6a0",
+   "hash": "80357cacedbd5a61",
+   "name": "Order 95 · Knights few, dragons three, breakthroughs every h"
+  },
+  "Order:96": {
+   "pageId": "425d84dd-d9e3-81b9-b4e5-c2465339da71",
+   "hash": "6e9b4a8bf6e28142",
+   "name": "Order 96 · Counts of the great; profiles of the powerful"
+  },
   "Order:97": {
    "pageId": "425d84dd-d9e3-8166-a4fb-d3a6b6b48788",
    "hash": "5c7bcf86d956f41c",
    "name": "Order 97 · The world rebuilt in depth; a full diagnostic, th"
+  },
+  "Order:98": {
+   "pageId": "425d84dd-d9e3-8147-a30e-caec452c7daf",
+   "hash": "d21318045c7a7c95",
+   "name": "Order 98 · Fix the diagnostic's contradictions, as order 97 "
+  },
+  "Order:99": {
+   "pageId": "425d84dd-d9e3-810b-8d0d-e6e4d2213fbf",
+   "hash": "54c8f068d3451236",
+   "name": "Order 99 · Thirty-four realms of five forms"
+  },
+  "Order:100": {
+   "pageId": "425d84dd-d9e3-811c-ab59-faab3f4649b5",
+   "hash": "4f134bcc5ffcf904",
+   "name": "Order 100 · Complete everything; every decision is yours"
+  },
+  "Order:101": {
+   "pageId": "425d84dd-d9e3-81f5-96ae-de4ae35a3059",
+   "hash": "daa144a8df783378",
+   "name": "Order 101 · Constant, harsh self-critique; never the same mi"
+  },
+  "Order:102": {
+   "pageId": "425d84dd-d9e3-81ab-83af-c00f505c6bdd",
+   "hash": "eb3bcf0d842f1198",
+   "name": "Order 102 · Three homes: GitHub, Notion, Claude"
+  },
+  "Prompt:2026-11-25-answers-and-direction.md": {
+   "pageId": "425d84dd-d9e3-8112-a4b3-f752afa4a9c0",
+   "hash": "0a1bcceabddaff10",
+   "name": "Prompt · Answers and direction"
+  },
+  "Prompt:2026-11-25-answers-skills-titles.md": {
+   "pageId": "425d84dd-d9e3-8131-b688-de2d995ecb98",
+   "hash": "c167fea17530981b",
+   "name": "Prompt · Answers skills titles"
+  },
+  "Prompt:2026-11-25-exponential-levels.md": {
+   "pageId": "425d84dd-d9e3-81dc-928d-e13869f8c4d7",
+   "hash": "a67b9f1ef5f6d7e2",
+   "name": "Prompt · Exponential levels"
+  },
+  "Prompt:2026-11-25-legends-and-throne.md": {
+   "pageId": "425d84dd-d9e3-810e-bc89-dcb695441915",
+   "hash": "aea5f8e18e67ebe9",
+   "name": "Prompt · Legends and throne"
+  },
+  "Prompt:2026-11-25-levels-and-beings.md": {
+   "pageId": "425d84dd-d9e3-8101-b20c-fd6bc768968d",
+   "hash": "635002cefca34ffe",
+   "name": "Prompt · Levels and beings"
+  },
+  "Prompt:2026-11-25-levels-legends-map.md": {
+   "pageId": "425d84dd-d9e3-81e5-b50a-f6383be8e9b5",
+   "hash": "4b58579498eff4f1",
+   "name": "Prompt · Levels legends map"
+  },
+  "Prompt:2026-11-25-map-detail.md": {
+   "pageId": "425d84dd-d9e3-8166-b3c0-c912b359b6d3",
+   "hash": "a0be88b8d314911a",
+   "name": "Prompt · Map detail"
+  },
+  "Prompt:2026-11-25-master-prompt.md": {
+   "pageId": "425d84dd-d9e3-8125-a15f-fbf5c61d3ad2",
+   "hash": "ee788b7774623a7c",
+   "name": "Prompt · Master prompt"
+  },
+  "Prompt:2026-11-25-pathways.md": {
+   "pageId": "425d84dd-d9e3-819a-89b8-cd43d0904262",
+   "hash": "1eb3341ad7ed6294",
+   "name": "Prompt · Pathways"
+  },
+  "Prompt:2026-11-25-power-scale.md": {
+   "pageId": "425d84dd-d9e3-81b1-af8f-de34b6cee4c0",
+   "hash": "817bd79871eebef3",
+   "name": "Prompt · Power scale"
+  },
+  "Prompt:2026-11-25-titles.md": {
+   "pageId": "425d84dd-d9e3-8163-81ae-c21e14bf4be0",
+   "hash": "cb9c947df09d13cb",
+   "name": "Prompt · Titles"
+  },
+  "Prompt:2026-11-26-classes-and-scale.md": {
+   "pageId": "425d84dd-d9e3-81b4-bfaf-f5888ac33462",
+   "hash": "60586b198bf4b1b9",
+   "name": "Prompt · Classes and scale"
+  },
+  "Prompt:2026-11-26-figures-and-counts.md": {
+   "pageId": "425d84dd-d9e3-81be-8840-c7af8a79922d",
+   "hash": "3d7e200307885dd8",
+   "name": "Prompt · Figures and counts"
+  },
+  "Prompt:2026-11-26-knights-dragons-breakthroughs.md": {
+   "pageId": "425d84dd-d9e3-81f8-838c-eac092b3c0fb",
+   "hash": "0ffe023a6b643d65",
+   "name": "Prompt · Knights dragons breakthroughs"
+  },
+  "Prompt:2026-11-26-knights-past-300.md": {
+   "pageId": "425d84dd-d9e3-818a-90f5-dec7f65646e5",
+   "hash": "746d1705887e521b",
+   "name": "Prompt · Knights past 300"
+  },
+  "Prompt:2026-11-26-legend-levels-2.md": {
+   "pageId": "425d84dd-d9e3-812c-a3a6-f6b77b2b0f4a",
+   "hash": "39f105acc96a9e28",
+   "name": "Prompt · Legend levels 2"
+  },
+  "Prompt:2026-11-26-legend-scaling.md": {
+   "pageId": "425d84dd-d9e3-8190-aebd-f8075f469c3a",
+   "hash": "bc5853469e0dce2c",
+   "name": "Prompt · Legend scaling"
+  },
+  "Prompt:2026-11-26-map-hell-anchors.md": {
+   "pageId": "425d84dd-d9e3-818d-a559-f11542c88354",
+   "hash": "cadff60b213cb811",
+   "name": "Prompt · Map hell anchors"
+  },
+  "Prompt:2026-11-26-world-rebuild-and-diagnostic.md": {
+   "pageId": "425d84dd-d9e3-81a2-85fb-f26b2fdca7ed",
+   "hash": "d5aacd915fbc33f5",
+   "name": "Prompt · World rebuild and diagnostic"
+  },
+  "Prompt:2026-11-26-xp-from-anyone.md": {
+   "pageId": "425d84dd-d9e3-8139-89b8-fa7ba297c21e",
+   "hash": "0fe9f146f004ba5d",
+   "name": "Prompt · Xp from anyone"
+  },
+  "Prompt:2026-11-26-xp-sources.md": {
+   "pageId": "425d84dd-d9e3-815c-b28c-fe5b07108bd9",
+   "hash": "66e20113f58764bb",
+   "name": "Prompt · Xp sources"
+  },
+  "Prompt:2026-11-27-complete-everything.md": {
+   "pageId": "425d84dd-d9e3-8143-8720-d4dcef3513d3",
+   "hash": "40180264bb2d3e1d",
+   "name": "Prompt · Complete everything"
+  },
+  "Prompt:2026-11-27-fix-the-contradictions.md": {
+   "pageId": "425d84dd-d9e3-81b8-8d03-ebfe524585f8",
+   "hash": "6297c5dbfb65b4e7",
+   "name": "Prompt · Fix the contradictions"
+  },
+  "Prompt:2026-11-27-github-notion-claude.md": {
+   "pageId": "425d84dd-d9e3-81a2-8994-ec9b29e8ef31",
+   "hash": "837faa154f9fe307",
+   "name": "Prompt · Github notion claude"
+  },
+  "Prompt:2026-11-27-self-critique-and-notion.md": {
+   "pageId": "425d84dd-d9e3-81f6-9e68-c9acb2f3be57",
+   "hash": "7331c09df27c9e3a",
+   "name": "Prompt · Self critique and notion"
+  },
+  "Prompt:2026-11-27-thirty-four-realms.md": {
+   "pageId": "425d84dd-d9e3-8117-a9ef-fd24942e6526",
+   "hash": "b7ab81e59fa5381c",
+   "name": "Prompt · Thirty four realms"
+  },
+  "Rule:1": {
+   "pageId": "425d84dd-d9e3-81b7-ac8d-d1b5d7306d2b",
+   "hash": "3039c5c41dbe7f86",
+   "name": "Rule 1 · Descriptions open on click (button or info icon), n"
+  },
+  "Rule:2": {
+   "pageId": "425d84dd-d9e3-81f7-a55e-df38b1beb953",
+   "hash": "d5f13025954f519e",
+   "name": "Rule 2 · No percentages the player sees: words and a tipped "
+  },
+  "Rule:3": {
+   "pageId": "425d84dd-d9e3-819b-a2e6-c7b7483d831d",
+   "hash": "c6e6019e6cfcc691",
+   "name": "Rule 3 · Every system deterministic from the seed. (v2) · re"
+  },
+  "Rule:4": {
+   "pageId": "425d84dd-d9e3-819d-8078-d9e608c7d8bb",
+   "hash": "87f5a89ed9d4d35e",
+   "name": "Rule 4 · One holder per post; a promotion hands over the rea"
+  },
+  "Rule:5": {
+   "pageId": "425d84dd-d9e3-81b7-b782-f242d6ff5389",
+   "hash": "289ebbdeaa04d9d3",
+   "name": "Rule 5 · War screens only when deployed, on a mission, or th"
+  },
+  "Rule:6": {
+   "pageId": "425d84dd-d9e3-81c1-ac33-e5a833e53587",
+   "hash": "fa3283c1240b81ca",
+   "name": "Rule 6 · Time: Next month or Next year (a year stops early w"
+  },
+  "Rule:7": {
+   "pageId": "425d84dd-d9e3-8141-b462-f895615f6959",
+   "hash": "9a70807587c03835",
+   "name": "Rule 7 · Relationships start with only the people really in "
+  },
+  "Rule:8": {
+   "pageId": "425d84dd-d9e3-814c-a4ce-e13b28175627",
+   "hash": "2f6cfd30799ac0db",
+   "name": "Rule 8 · Superseded by rule 11"
+  },
+  "Rule:9": {
+   "pageId": "425d84dd-d9e3-81ed-8b34-ce73bd704b7f",
+   "hash": "f75d21a277c4910f",
+   "name": "Rule 9 · Keep it game-like and simple"
+  },
+  "Rule:10": {
+   "pageId": "425d84dd-d9e3-818e-8a2b-f518ed6d5e09",
+   "hash": "317031439b75c4fe",
+   "name": "Rule 10 · If an order conflicts with how the code works, rec"
+  },
+  "Rule:11": {
+   "pageId": "425d84dd-d9e3-81b6-944b-f4d49470c03b",
+   "hash": "97798261101943a2",
+   "name": "Rule 11 · One common language, different cultures"
+  },
+  "Rule:12": {
+   "pageId": "425d84dd-d9e3-813a-b02d-fab112565702",
+   "hash": "7f5c28957c022723",
+   "name": "Rule 12 · Art: animated (anime), but far more detailed, as i"
+  },
+  "Rule:13": {
+   "pageId": "425d84dd-d9e3-81f2-93bb-d5a962b5d275",
+   "hash": "892f516751fe8020",
+   "name": "Rule 13 · Feudal armies"
+  },
+  "Rule:14": {
+   "pageId": "425d84dd-d9e3-8194-ba8d-f3183fa28329",
+   "hash": "599ddb14042de290",
+   "name": "Rule 14 · Characters as realistic as possible"
+  },
+  "Rule:15": {
+   "pageId": "425d84dd-d9e3-8183-ad4f-d16994ebacb7",
+   "hash": "05bb64821680ba95",
+   "name": "Rule 15 · An inked, detailed map"
+  },
+  "Rule:16": {
+   "pageId": "425d84dd-d9e3-8194-9287-c9639e9a198e",
+   "hash": "c5d529a1938bc733",
+   "name": "Rule 16 · The Marshal's seat stays vacant until truly needed"
+  },
+  "Rule:17": {
+   "pageId": "425d84dd-d9e3-817c-b076-ff7ff0562f0d",
+   "hash": "c6f62d37e3e35f8f",
+   "name": "Rule 17 · No initiative cap;"
+  },
+  "Rule:18": {
+   "pageId": "425d84dd-d9e3-819b-a4b4-ee061d71e440",
+   "hash": "10ae50a03a22f366",
+   "name": "Rule 18 · NOTHING HAPPENS WITHOUT REASON"
+  },
+  "Rule:19": {
+   "pageId": "425d84dd-d9e3-8109-8a16-dd96941c5a7f",
+   "hash": "4e98eeda6192ede1",
+   "name": "Rule 19 · Every relationship needs a base"
+  },
+  "Rule:20": {
+   "pageId": "425d84dd-d9e3-8151-a3ad-da50a60a744c",
+   "hash": "599a075eee8166a6",
+   "name": "Rule 20 · Growth is not a timetable"
+  },
+  "Rule:21": {
+   "pageId": "425d84dd-d9e3-8140-bf17-f1a57fefac0d",
+   "hash": "34aca66d0cb599d3",
+   "name": "Rule 21 · Built for the iPhone App Store from today"
   }
  }
 }
