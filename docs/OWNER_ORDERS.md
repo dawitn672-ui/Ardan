@@ -616,6 +616,12 @@ order is replaced, strike it through and say by what.
     - **Kings' levels are personal** (answer 3): countless factors, shown mainly in the kings who do little themselves.
     - Troubleshoot anything else that contradicts or confuses, in whatever way seems best.
 
+99. **Thirty-four realms of five forms** · recorded 2026-11-27 01:45 ET. Kept unchanged in
+    `docs/prompts/2026-11-27-thirty-four-realms.md`. For the updated world design (it amends order 97's map, which asked
+    for "more nations"): **34 realms**, with **larger kingdoms and empires**; **no emirates or sultanates**; besides
+    kingdoms and empires the only forms are a **principality**, a **merchant republic** and a **free city**. Applied to
+    today's 34 realms at once (their forms and names); the larger map waits for the rebuild.
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
