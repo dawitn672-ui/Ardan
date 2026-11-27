@@ -10,8 +10,8 @@
       cr: { race: 'human', realm: 'POL-03', status: 'noble', order: 'younger', sex: 'M', startAge: 19 }, setup: pc => { pc.coin += 60; } },
     { id: 'debt_stone', title: 'The Carved Debt', blurb: 'A dwarf of Stonehold. Your family\'s debt is cut into the hall\'s debt-stone, and your name is the next line down.',
       cr: { race: 'dwarf', realm: 'POL-28', status: 'artisan', startAge: 32 }, setup: pc => { pc.coin = Math.max(0, pc.coin - 40); } },
-    { id: 'clanless', title: 'Clanless', blurb: 'An orc of Ughrak, sixteen, cast out for sparing an enemy the War-Mother wanted dead.',
-      cr: { race: 'orc', realm: 'POL-34', status: 'peasant', startAge: 16 } },
+    { id: 'clanless', title: 'Clanless', blurb: 'A half-orc of Ughrak, sixteen, cast out for sparing an enemy the War-Mother wanted dead.',
+      cr: { race: 'halforc', realm: 'POL-34', status: 'peasant', startAge: 16 } },   // orcs are not playable (D-199)
     { id: 'last_tree', title: 'The Last Tree of Your Line', blurb: 'An elf of Sylvaran. The tree your ancestors went into is dying, and the singers say no sapling has taken.',
       cr: { race: 'elf', realm: 'POL-06', status: 'gentry', startAge: 55 } },
     { id: 'articles', title: 'Born Under the Articles', blurb: 'A child of Corvasse, sixteen. Your mother died with a full share owed her, and the quartermaster says the Articles forgot.',

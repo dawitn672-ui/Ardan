@@ -270,6 +270,41 @@ export default {
     return { ok, detail: `${r.bad.length ? 'faults: ' + r.bad.join('; ') + '. ' : ''}demons drawn on the continent ${r.demonsDrawn.length} of ${r.drawn} encounter draws and 1,200 spawns over four worlds; the ancient demons' mean ${r.mean.toFixed(1)}, ${r.horned} of ${r.n} horned, ${r.looks} looks, ranks ${r.ranks.join(', ')}; trolls and ogres ${r.common.join(', ')}, their leaders ${r.leaders.join(', ')}; wild giants in the world ${r.giants.join(', ')}` };
   },
 
+  // order 98 (D-199): orcs are demonic creatures, not a people, and not playable. The creation screen and a random start
+  // offer none and A.newGame makes a half-orc of one asked for; a world made since holds no orc person (its people, its
+  // houses, a stranger an event asks for), while an old save's world keeps its orcs; Gorath and Ughrak are half-orc realms
+  // of the five forms (a kingdom and a principality) whose half-orc royals are born to their house; the orcs are a kind of
+  // the bestiary. Over four worlds
+  async pwOrcsNotAPeople(pg) {
+    if (!(await pg.evaluate(GATE))) return NO;
+    const r = await pg.evaluate(() => {
+      const out = { orcs: 0, people: 0, worlds: [] };
+      for (const seed of [7, 11, 23, 41]) {
+        A.newGame({ seed, race: 'orc', realm: 'POL-11', status: 'peasant', sex: 'M', startAge: 16 });
+        const pc = A.pc();
+        // the two realms' houses seated (their members are made on first reading)
+        for (const rid of ['POL-11', 'POL-34']) Object.keys(A.S.houses || {}).filter(id => (A.famData(id) || {}).realm === rid).slice(0, 6).forEach(id => A.famMembers(id));
+        for (let i = 0; i < 10; i++) A.makeAcquaintance(pc, 'friend');
+        const stranger = A.newPerson({ race: 'orc', realm: 'POL-11' });
+        const ppl = Object.values(A.S.people);
+        out.orcs += ppl.filter(q => q.race === 'orc').length; out.people += ppl.length;
+        const G = A.realm('POL-11'), U = A.realm('POL-34');
+        out.worlds.push({ seed, pc: pc.race, stranger: stranger.race, realms: [G.race, U.race, G.name, U.name, LORE.realms['POL-11'].type, LORE.realms['POL-34'].type], rulers: [A.P(G.ruler), A.P(U.ruler)].map(q => q && q.race) });
+      }
+      A.newGame({ seed: 12, race: 'halforc', realm: 'POL-11', status: 'royal', sex: 'F', startAge: 16 });
+      out.royal = [A.pc().race, A.pc().status, !!A.pc().house];
+      delete A.S.noOrcs; out.oldSave = A.newPerson({ race: 'orc', realm: 'POL-11' }).race;
+      UI.cr = UI.crDefaults(); out.offered = UI.crStepBirth().includes('race:orc'); UI.A.crSet && UI.A.crSet('race:orc'); out.setTo = UI.cr.race;
+      let rand = 0; for (let i = 0; i < 60; i++) { UI.crRandomize(); if (UI.cr.race === 'orc') rand++; } out.rand = rand;
+      const kind = A.POWER.BD.species.filter(s => s.fam === 'orcs');
+      out.kind = kind.length && kind.every(s => s.tier === 'demonic creature' && s.terr.includes('steppe'));
+      return out;
+    });
+    const ok = r.orcs === 0 && r.people > 1000 && r.worlds.every(w => w.pc === 'halforc' && w.stranger === 'halforc' && w.realms.slice(0, 2).join() === 'halforc,halforc' && w.realms[4] === 'kingdom' && w.realms[5] === 'principality' && w.rulers.every(x => x === 'halforc')) &&
+      r.royal.join() === 'halforc,royal,true' && r.oldSave === 'orc' && !r.offered && r.setTo !== 'orc' && !r.rand && r.kind;
+    return { ok, detail: `orc people in four new worlds ${r.orcs} of ${r.people}; ${r.worlds.map(w => `seed ${w.seed}: player ${w.pc}, a stranger asked as an orc ${w.stranger}, ${w.realms[2]} and ${w.realms[3]} (${w.realms[0]}, ${w.realms[1]}), rulers ${w.rulers.join('/')}`).join('; ')}; a half-orc royal of Gorath ${r.royal.join(' ')}; an old save's orc ${r.oldSave}; offered on the creation screen ${r.offered}, set by a tap ${r.setTo}, drawn by 60 random starts ${r.rand}; the orc a demonic creature of the bestiary ${r.kind}` };
+  },
+
   async pwEvolution(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     const r = await pg.evaluate(() => {

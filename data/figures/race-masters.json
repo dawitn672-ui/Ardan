@@ -1,6 +1,6 @@
 {
  "about": "The masters of the playable races (order 96, D-193): linked, never copied. Their sheets (level, capabilities, titles, skills, items, story) are data/power.json's masters, which A.POWER reads; this file adds only what a full profile needs that those sheets lack: the class road (data/classes.json, step by step from a first class), the arts readied (names of their own active skills), a temper and traits, goals and grudges A.WHY can read, the home's name and whether it is known, and the secret. Validated by tools/lint-figures.mjs.",
- "category": { "id": "race-masters", "name": "Masters of the Peoples", "group": "realms", "order": 5, "kind": "link", "link": "power.masters", "note": "The strongest of the giants, the dwarves, the elves and the orcs: each the best of a people, and very few on the whole continent stand near them." },
+ "category": { "id": "race-masters", "name": "Masters of the Peoples", "group": "realms", "order": 5, "kind": "link", "link": "power.masters", "note": "The strongest of the giants, the dwarves, the elves and the half-orc clans of Gorath: each the best of a people, and very few on the whole continent stand near them." },
  "figures": [
   {
    "id": "m-giant-king",
@@ -51,8 +51,8 @@
    "grudges": [{ "at": "m-giant-king", "kind": "figure", "w": 0.7, "why": "the giants laughed at his father's embassy" }],
    "home": { "name": "Urgol", "domain": "the Grass Sea", "known": true },
    "fame": "known",
-   "story": ["The Skull-Khan of Urgol, who ate at the Iron Feast and rose from it khan of nine clans. He wears the skulls of the eight khans who did not."],
-   "secret": { "story": ["One of the eight is still alive, in a pit under Urgol. The khan visits him on feast days and asks him how it feels to lose."] }
+   "story": ["The Skull-Champion of Urgol, who ate at the Iron Feast and rose from it the champion of the nine clans of Gorath; he fights the King's fights, and wears the skulls of the eight champions who did not."],
+   "secret": { "story": ["One of the eight is still alive, in a pit under Urgol. The champion visits him on feast days and asks him how it feels to lose."] }
   }
  ]
 }

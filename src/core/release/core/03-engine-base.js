@@ -123,6 +123,8 @@ A.newState = function (seed) {
     seed,
     year: 1105,
     nextId: 1,
+    // order 98 (D-199): a world made since has no orc people (orcs are demonic creatures); an old save has no field
+    noOrcs: 1,
     people: {},
     pc: null,
     log: [],
@@ -364,7 +366,8 @@ A.shortName = p => (p ? p.given : "someone");
 
 A.newPerson = function (o) {
   const S = A.S,
-    race = o.race || "human",
+    // orcs are demonic creatures, not a people (order 98, D-199): in a world made since, one asked for is born half-orc
+    race = o.race === "orc" && S && S.noOrcs ? "halforc" : o.race || "human",
     R2 = GD.RACES[race],
     p = {
       id: o.id || A.uid(),
@@ -1442,6 +1445,8 @@ A.cultureFor = function (race, realm) {
   if (GD.RACE_CULTURE[race]) return GD.RACE_CULTURE[race](realm);
   const def = GD.REALM_CULTURE[realm] || "CUL-02",
     cr = LORE.cultures[def] ? LORE.cultures[def].race : "human";
+  // the half-orc clans keep the clans' culture in their own realms (D-199)
+  if (race === "halforc" && (realm === "POL-11" || realm === "POL-34")) return def;
   return (race === "human" || race === "halfelf" || race === "halforc") && cr !== "human"
     ? GD.REALM_HUMAN_CULTURE[realm] || "CUL-02"
     : def;
@@ -1746,6 +1751,7 @@ A.initWorld = function () {
                 dwarf: "dwarf",
                 orc: "orc",
                 giant: "giant",
+                halforc: "halforc", // the half-orc crowns of Gorath and Ughrak (D-199)
               }[L.race] || "human",
         cult: GD.REALM_CULTURE[id],
         faith: GD.REALM_FAITH[id],

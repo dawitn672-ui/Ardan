@@ -222,6 +222,9 @@ GD.RACES = {
 };
 
 GD.RACE_LIST = ["human", "elf", "dwarf", "orc", "giant", "halfelf", "halforc"];
+// Order 98 (D-199): orcs are demonic creatures, not a people, and no longer playable. "orc" stays a race of the code
+// so an old save's orcs (and an orc player) live on; a world made since has none (A.S.noOrcs, A.newPerson).
+GD.PLAYABLE_RACES = GD.RACE_LIST.filter(r => r !== "orc");
 
 GD.RACE_POPKEY = {
   human: "human",
