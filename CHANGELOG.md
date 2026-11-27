@@ -14,6 +14,9 @@ What changed for the player, in plain words, one section per version (newest fir
   realm's card says its might in round words ("about 216,000 soldiers, some 3,000 knights"), as well as you would know
   it, and *its best* tells its infantry, archers and cavalry and names its champions. A crown raises or cuts regiments each
   year for reasons of its own: a war, a rival's larger host, an empty treasury.
+- **A county stays with its house.** A lord who came to head another house, and held its seat, now leaves that county
+  to the house's own heir, so a seat never has one lord and its house another. A division's figures name what its
+  knights add, and a short tag (a trait of one word) is as easy to tap on a phone as the rest.
 - **A merchant's books prove him.** A Merchant who has run his trade at its best for a year, with the standing for the
   next post, no longer waits on a lucky bargain to reach the next rank of the trade: his year's work is the proof. More
   merchants rise to Merchant prince and Banker, and a great house of trade can grow richer than a noble house.

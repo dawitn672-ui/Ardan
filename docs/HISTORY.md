@@ -3653,3 +3653,52 @@ youths' means, and lets a man's kills climb only where his might allows. The mer
 bootstrapped spread of a 24-life league), the rule held by `merchantLedgerProof`.
 
 **Undo.** Revert the merges and this commit.
+
+### H-166 · 2026-11-27 · CI fixes on 135632b7 (ci-fix-21)
+
+The batch of 135632b7 failed twelve tests and the royal balance band. Each, its cause and its fix:
+
+- **`v2fOneHolder`** (seed 9022, 1114: lordship-seat 32 held by two). A real breach of one holder per post, in
+  `F.inherit` (`src/family/99994-v2-family/c-succession.core.js`), not in the standing military: Mauger of House Eastbridge
+  had come to head House Goldman through his mother, with its seat's county; at his death Goldman's headship went down
+  Goldman's line (Selma) and the county down Eastbridge's (Thorald). The lordship now goes with the headship of the house
+  whose seat it is, else with his own house's, as before. New regression test `v2fLordshipWithSeat` (fails on 1cb21803,
+  passes here); `v2fOneHolder` passes (2,578 checks, 30 seeds).
+- **`tapTargets44`**: a one-word chip ("Shy", 41 points) was narrow as well as short; `9990-tap-targets` gives a chip's
+  hit box at least 44 points of width, centred, as well as height.
+- **`ttSums2`** (division figure, gap 7.81%): D-194's knights' factor (`c.kf` in `A.divCombat`) had no row in
+  `TT.divStatParts`; the row is added (blows and breakthrough by the factor, the stand by its square root).
+- **`mwWeaveOnlyWithMemory`**: the skill rule's +5 read 34 -> 38 on the card: the honest chance (99993-v2-stats) of 39 for
+  this person rounds to 38. The test reads 67's shifts on the old chain, where the rule adds them, as
+  `mwOddsAreTheOddsPlayed` does; that test holds the honest card.
+- **`journeysKinds`**: seed 33's life now begins in the Free Port of Corvasse, whose faith no other realm holds, in its
+  capital: no shrine, rightly. The pilgrimage is tried on the first world with a shrine a road away (3302).
+- **`lnWorkAndYear`**: seed 6903's man of Ashmere reads bow 30 at 60 (his body), under the butts' fame line (45); the
+  butts are played in the first world whose body carries it, as the marches already were.
+- **`s1TwoLives`** (1 of 18): a person's need for a concept is a hash of the world's seed and his id; the batch moved the
+  players' ids, and in seeds 7100-7135 none is blind at the B-to-A edge (0 of 72; 19 of 300 on both builds over
+  7100-7249). Seventeen 18-pair windows on this build read 1 to 14 (mean 7.7, spread 3.1): pooled to 36 pairs, bar 7.
+- **`s1Reasons`**: seed 6161's peasant starts at survival D Lv 6 with the fire, rusts to Lv 5 and crosses D Lv 6 again
+  at a ford: a concept held from the start needs no new grasp record. Its "breakthroughs" are S1's moments (no bar),
+  not the duel's leap order 95 retired (H-164): nothing reintroduced.
+- **`x3HonestCards`** (1 card read away from home, bar 20): the away cards came from one soldier's campaigns (125 of
+  them); seed 8134's POL-06 saw no war in thirty years on this world (wars over six worlds: 105 before, 104 now).
+  Standby soldier lives from other seeds while the count is short (at most three rounds): 140 of 21 lives.
+- **balance, royal `medianPeakCoin` 6,160** (floor 8,000): two humps, not the upkeep. Slots 0-11 part into six under
+  6,200 (dead at 17 to 30 of a ruin, a Snow Ape, a hanging, a Cave Bear, an escort's wounds; an outlaw) and six over
+  65,000; POL-02's treasury stays in the millions through a royal life, so the stipend is paid. The royal path plays 24
+  lives, as the noble's and merchant's (H-096): slots 12-23 read 133,968, the 24 lives 65,550 (12 from the league,
+  12 replayed with its seeds and bot). The floor is unchanged.
+- **`s1Census`** (seed 8383: Grandmasters 0 by year 33): **left open.** Not this batch: the count falls in every world on
+  both builds (4486afc8: 11 to 2, 10 to 1, 8 to 0 by year 39 on seed 8888) because the lore's Grandmasters die and few
+  replace them: only people with a job, a post in arms or an office grow (`SK.npcGrowYear`) and pass an edge
+  (`SK2.npcGate`), and the fourteen standing a step under Grandmaster in seed 8383's world (year 10) hold none. The design
+  (docs/design/skills.md §10) says the needs are tuned when the world does not hold 1 to 12; that is the owner's call
+  (who counts as working at a skill), so the bar stands and the test stays red until it is made.
+
+Checks (`/tmp/ardan/cf/x.html`): the twelve tests above as listed, 64 neighbours and core tests (the tap, descriptions,
+journeys, memory weave, family, every-number and standing features' quick tests, `uiSmoke`, `renderRng`,
+`replayWithRender`, `v2svRoundTrip`, `statMigrate`) 64 of 64, `s1Cost` 0.716 ms, `node --test tests/v2` 166 of 166, the
+stages, reasons, docs-index lints, `version.mjs check`, `--check-tiers`.
+
+**Undo.** Revert the step's commits on `ci-fix-21`.

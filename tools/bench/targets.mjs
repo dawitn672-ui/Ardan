@@ -73,6 +73,12 @@ export const TARGETS = {
     royal: {
       start: { race: 'human', realm: 'POL-02', status: 'royal', startAge: 16 },
       note: 'The noisiest path: a royal younger child often dies young (a fight, a hanging, a fever, a wound gone bad), and the 8-life median falls on either side of that. Across five builds that differ only in their random stream, median peak wealth ran 12,000-139,000 and median peak fame 12-63, so the floors were lowered from 20,000 and 30 to 8,000 and 8.',
+      // 24 lives (ci-fix-21, H-166), as the noble's and the merchant's: on 135632b7 the 12 lives read a median peak coin of
+      // 6,160, slots 0-11 parting into six under 6,200 (dead at 17 to 30 of a ruin, a Snow Ape, a hanging, a Cave Bear, an
+      // escort's wounds; one outlaw) and six over 65,000; the build before the standing military (4486afc8) read 48,854
+      // with four under 8,000. Not the court's army upkeep (D-194): POL-02's treasury stays in the millions through a royal
+      // life, so the stipend is paid. Slots 12-23 read 133,968, the 24 lives 65,550. The floor is unchanged
+      lives: 24,
       bands: { medianDeathAge: [30, 85], medianPeakCoin: [8000, 700000], medianPeakFame: [8, 100], notableSharePct: [60, 100] },
     },
   },
