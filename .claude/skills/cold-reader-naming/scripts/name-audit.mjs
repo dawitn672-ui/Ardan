@@ -55,9 +55,10 @@ const BUZZ = {
 const SUFFIX = ['born', 'sworn', 'kin', 'bane', 'slayer', 'walker', 'caller', 'breaker', 'weaver', 'singer', 'fang', 'hide', 'mane'];
 // Names lifted from other works or real places: a cold reader who knows them is thrown out of the world.
 const BORROWED = ('Durin Thrain Thror Thorin Oakenshield Khazad Dain Nain Fundin Balin Dwalin Bombur Gloin Oin Anduin Celeborn ' +
-  'Elrohir Elrond Galadriel Thranduil Arwen Legolas Gimli Rohan Gondor Mordor Moria Erebor Isildur Elendil Gruumsh Ironforge ' +
+  'Elrohir Elrond Galadriel Thranduil Arwen Legolas Gimli Gondor Mordor Moria Erebor Isildur Elendil Gruumsh Ironforge ' +
   'Blackrock Hammerfell Stormbringer Elric Drizzt Samarkand Tashkent Almaty Basra Madurai Karakorum Bukhar Otrar Thanjavur ' +
-  'Halab Attila Jotunheim Utgard Asgard Valhalla Midgard Camelot Avalon').split(' ');
+  'Halab Attila Jotunheim Utgard Asgard Valhalla Midgard Camelot').split(' ');
+// (Durin, Thrain, Dain and the other dwarves are from the Norse list of dwarves, but a reader knows them as Tolkien's.)
 
 function strings(dir) {
   const out = [];

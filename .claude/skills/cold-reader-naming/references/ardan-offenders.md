@@ -21,7 +21,7 @@ Today a newcomer meets, in plain sight:
   and a legend), several in triples: Corvasse / Corvane / Morvane / Corvan; Kesh / Vesh; Harrow / Harrak / Harrak;
 - **14 of the 34 realms named outside order 99's five forms** (Holy See, Republic, Halls, Horde, Khanate, League,
   Sultanate, Confederacy, Emirate, Abbey, Free Port, Clans), and Kesh, the owner's own example, with no descriptor at all;
-- **names lifted from other works and from real cities** in the name pools: Galadriel, Thranduil, Celeborn, Durin,
+- **35 names lifted from other works and from real cities** in the name pools: Galadriel, Thranduil, Celeborn, Durin,
   Thrain, Thror, Oakenshield, Khazad, Elrohir, Anduin (Tolkien), Ironforge, Blackrock (Warcraft), Gruumsh (D&D),
   Hammerfell (Elder Scrolls), Stormbringer, Elric (Moorcock), Samarkand, Tashkent, Almaty, Basra, Madurai, Karakorum;
 - **untranslated institutions** carried as if the player knew them: the Thing (132), Well-Keepers (130), Law-Carvers
@@ -236,9 +236,11 @@ dragonet, wyrmling, drakeling, drake, wyrm, wyvern, great, elder) and a tier lit
 
 ## 8. People and houses
 
-- **Borrowed given and family names** (`name-audit.mjs --borrowed`): Durin, Thrain, Thror, Dain, Nain, Fundin, Bombur,
-  Gloin, Oakenshield (dwarf); Anduin, Elrohir, Elric (sea elf); Arwen (wood elf, as a family name); Stormbringer
-  (orc); Attila (steppe); Rohan (south). Out, the same way.
+- **Borrowed given and family names** (`name-audit.mjs --borrowed`, 35 with the places above): Durin, Thrain, Thror,
+  Dain, Nain, Fundin, Bombur, Gloin, Oakenshield (the Norse list of dwarves, but read as Tolkien's), Anduin, Elrohir,
+  Elric, Arwen (Tolkien, Moorcock), Stormbringer (Moorcock's sword, as an orc family name), Attila (the Hun). Out, the
+  same way. Real given names from any language are fine (that is the common pool): the list is only names a reader
+  ties to another work or one famous person.
 - **House names that are a realm's name plus a letter**: House Kharsan (Kharsa), House Brannoc (Brannoch), House
   Tessaran (Tessaria), House Tamaren (Tamar), House Sabrani (Sabra), House Keshari (Kesh), House Zarani (Zarak). A house
   named for its land is real history (the House of Wessex), so either make it exactly the land's name ("House of
