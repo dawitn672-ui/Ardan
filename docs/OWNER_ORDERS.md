@@ -651,6 +651,9 @@ order is replaced, strike it through and say by what.
     world, its systems, the orders, decisions, plans, lessons): the knowledge base agents read one small page at a time.
     **Claude** codes. It replaces the earlier "the repo is the source of truth" for information: the repo keeps what the
     code and the build need and the history of changes; Notion is where information lives and is looked up.
+    - **Follow-up, 04:50 ET: system work comes first.** Changes to how the work is done (the Notion knowledge base,
+      the `CLAUDE.md` trim, models, skills, tooling) take precedence over game work, because they amplify everything
+      after them. They start now, not after the current wave.
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
