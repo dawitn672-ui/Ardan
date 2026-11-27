@@ -628,6 +628,9 @@ order is replaced, strike it through and say by what.
     cold-reader naming, thousands of skills, hundreds of classes and the rest), with order 98 and 99. **Every decision is
     the session's own unless the owner says otherwise**; update, recalibrate and improve as the work goes, documenting and
     learning along the way. The plan and its waves are in `docs/PROGRESS.md` ("Order 100").
+    - **Follow-up, 02:25 ET: plain language over buzzwords.** Cold-reader naming must far exceed what the game has
+      today: plain English most of the time ("dragon", not "wyrm"; "young dragon", not "wyrmling"), invented or archaic
+      words only where they earn their place. A standing rule for every builder from now on; wave 5 sweeps the rest.
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
