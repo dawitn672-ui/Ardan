@@ -122,14 +122,16 @@ Rarity uses the ladder this audience already reads from gacha games. Use it **on
 - legendary beasts;
 - deeds and achievements.
 
+The tiers are the one rarity ladder (orders 97 and 98, D-200, `data/rarity.json`): basic, rare, epic, legendary, mythical
+(the old common and uncommon read as basic; a fighting tier's single ◆ step keeps basic's colour).
+
 | Tier | Gem | Dark | Light |
 | --- | --- | --- | --- |
-| `--r-common` | ◇ | `#b3b8c9` | `#5c6070` |
-| `--r-uncommon` | ◆ | `#74d68a` | `#1f6c33` |
+| `--r-basic` | ◇ | `#b3b8c9` | `#5c6070` |
 | `--r-rare` | ◆◆ | `#6cb6ff` | `#1f5fb3` |
 | `--r-epic` | ◆◆◆ | `#c59bff` | `#7a3fc4` |
 | `--r-legendary` | ★ | `#ffb648` | `#8a4f00` |
-| `--r-mythic` | ✦ | `#ff7a6b` | `#a82d1a` |
+| `--r-mythical` | ✦ | `#ff7a6b` | `#a82d1a` |
 
 All tier colours pass 4.5:1 as text on every surface (dark ≥5.4, light ≥4.8). A rarity item shows:
 

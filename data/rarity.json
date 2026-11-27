@@ -1,0 +1,14 @@
+{
+ "about": "The one rarity ladder (orders 97 and 98, D-200): how rare a thing is, the same five words for skills, titles, classes and items. Levels are a separate system beside it (order 97). Every system reads its ladder from here: tools/lint-skills.mjs (tools/lib/skills2-check.mjs), tools/lint-titles.mjs, tools/lint-figures.mjs, the classes (src/people/9999975-level) and every screen that prints a rarity (A.RARITY, src/people/9999976-titles/a-titles.core.js). A system keeps its own figures by these words (a title's caps, a skill's budget bonus, a class's gifts), never a ladder of its own.",
+ "ladder": ["basic", "rare", "epic", "legendary", "mythical"],
+ "words": { "basic": "basic", "rare": "rare", "epic": "epic", "legendary": "legendary", "mythical": "mythical" },
+ "gems": { "basic": "◇", "rare": "◆◆", "epic": "◆◆◆", "legendary": "★", "mythical": "✦" },
+ "old": { "common": "basic", "uncommon": "basic", "mythic": "mythical" },
+ "oldNote": "Words of the four ladders before order 98, read as the ladder's (A.RARITY.of): common and uncommon are basic (the owner's answer 1). 'unique' was a rarity below legendary for skills and above it for classes and titles; it is no rarity now (one holder at a time is a flag: a title's unique, a skill's census one, every legendary and mythical class), so it is mapped where it stood, by hand, in each system's data, never on read. No save holds a rarity word: titles, classes and skills are stored by id.",
+ "oneHolder": ["legendary", "mythical"],
+ "oneHolderNote": "Classes: a legendary or mythical class has one living holder at a time (the class census, A.S.lvc) and cannot be advanced: nothing follows it at a later wall (order 97). Titles and skills say one holder with their own flag (a title's unique, a skill's census 'one'), apart from rarity: a rare title may be one man's at a time (one realm's Warden).",
+ "makes": ["crude", "plain", "fine", "masterwork"],
+ "makesNote": "A made thing's make is the smith's care, a craft grade apart from rarity (D-200): a masterwork sabre is a basic thing well made; the Ledger of Souls is a mythical thing whatever its stitching. An item of a great being's sheet carries a rarity (the ladder) and may carry a make; a screen says the make and the rarity above basic ('a masterwork sabre', 'a legendary relic'). The figure library's numbers are the same two axes (q: make 0 crude to 3 masterwork; r: rarity 0 basic to 3 legendary, src/ui/engine/figure/make.js).",
+ "beings": { "ancient-demons": "legendary", "ancient-dragons": "legendary", "legends": "legendary" },
+ "beingsNote": "A great being's own arts (its sheet's skills) are a set of one rarity (order 97: the Primordials, the Dragon King and the Sword Saint hold mythical skill sets; ancient demons and dragons legendaries of their own): the rarest title it holds, and at least its category's figure here. A.RARITY.setOf reads it; the profile prints it beside the arts."
+}

@@ -359,6 +359,60 @@ export default {
       `the Sword Saint open ${r.saint.open} (holder ${r.saint.holder}; the Sword Master's options ${r.saint.opts.join(', ')}), with the title ${r.saint.withTitle}` };
   },
 
+  // legendary classes (order 97, D-201): one living holder each, never advanced, very few. Two grown men of one world, each a
+  // Spear Master past a true dragon slain and five beasts above him: the first takes the Dragonslayer Spear at his wall, and the
+  // second finds it shut (CL.open, and CL.take refuses it); the holder finds every class after it shut; when the holder
+  // dies the year's census frees it and the second may take it. No road a person's skills would give (the profile, a
+  // seeded life) holds a legendary or mythical class; the elf master's Dragonslayer Blade is his while he lives; the tree holds at
+  // most three legendaries and one mythical; a save's census is rebuilt from the roads (the earliest taker), a class the
+  // tree no longer makes struck from a road. Nothing drawn.
+  async lvClassOne(pg) {
+    if (!(await pg.evaluate(GATE))) return NO;
+    const r = await pg.evaluate(() => {
+      const LV = A.LV, CL = LV.CL, out = {};
+      A.newGame({ seed: 9861, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 }); A.S.queue = [];
+      const rng0 = JSON.stringify(A.rngState);
+      const men = Object.values(A.S.people).filter(p => p.alive && p.st && p.id !== A.S.pc && A.age(p) >= 25 && A.age(p) < 50).sort((a, b) => (a.id < b.id ? -1 : 1)).slice(0, 2);
+      const fit = p => {
+        LV.seed(p); for (const k of CL.D.keys.spear || ['spear']) { if (p.sk) delete p.sk[k]; p.skills[k] = 95; }
+        p.lv.cr = [['spearman', A.S.year - 2, 1], ['spear-master', A.S.year - 1, 1]];
+        p.dl = { beast_above: [5, 0, A.S.year, 0, []], dragon_slain: [1, 0, A.S.year, 0, []] };
+        if (A.SK2 && A.SK2.capsReset) A.SK2.capsReset(); if (A.cacheResetAll) A.cacheResetAll();
+      };
+      const [a, b] = men; fit(a); fit(b);
+      const W = CL.BY.get('dragonslayer-spear');
+      out.legend = W ? W.rarity : null;
+      out.openA = CL.open(a, W); out.openB0 = CL.open(b, W);
+      out.takeA = CL.take(a, 'dragonslayer-spear'); out.holder = CL.holder('dragonslayer-spear') === a.id;
+      out.openB = CL.open(b, W); out.takeB = CL.take(b, 'dragonslayer-spear'); out.roadB = b.lv.cr.map(x => x[0]).join('>');
+      out.after = CL.LIST.filter(c => CL.open(a, c)).map(c => c.id);
+      out.optsA = CL.options(a).length;
+      a.alive = false; CL.year(); out.freed = CL.holder('dragonslayer-spear') == null; out.openB2 = CL.open(b, W); a.alive = true;
+      // the shown roads and the tree
+      out.shownOne = 0; let n = 0;
+      for (const p of Object.values(A.S.people)) { if (!p.alive || !p.st || n > 400 || p === a || p === b) continue; n++; const c = CL.shown(p); if (c && CL.one(c)) out.shownOne++; for (const id of CL.chain(p, 4)) if (CL.one(CL.BY.get(id))) out.shownOne++; }
+      out.elf = CL.holder('dragonslayer-blade');
+      out.tree = { legendary: CL.LIST.filter(c => c.rarity === 'legendary').map(c => c.id), mythical: CL.LIST.filter(c => c.rarity === 'mythical').map(c => c.id) };
+      // the save step: a copy of the state with two roads holding the Dragonslayer Spear (the earlier wins, under its old id
+      // Wyrm Spear) and a cut class
+      const S = JSON.parse(JSON.stringify(A.S)); delete S.lvc;
+      const pa = S.people[a.id], pb = S.people[b.id];
+      pa.lv.cr = [['spearman', 1, 1], ['spear-master', 2, 1], ['dragonslayer-spear', 1105, 1]];
+      pb.lv.cr = [['spearman', 1, 1], ['spear-master', 2, 1], ['wyrm-spear', 1101, 1]];
+      const pc = S.people[S.pc]; pc.lv = pc.lv || {}; pc.lv.cr = [['brawler', 1, 1], ['pit-fighter', 2, 1], ['wyrm-fist', 3, 1]];
+      out.cut = CL.migrateOne(S); out.census = S.lvc && S.lvc.u && S.lvc.u['dragonslayer-spear'] === b.id; out.pcRoad = pc.lv.cr.map(x => x[0]).join('>');
+      out.pure = JSON.stringify(A.rngState) === rng0;
+      return out;
+    });
+    const t = r.tree;
+    const ok = r.legend === 'legendary' && r.openA && r.openB0 && r.takeA && r.holder && !r.openB && !r.takeB && !/dragonslayer/.test(r.roadB) && !r.after.length && !r.optsA &&
+      r.freed && r.openB2 && r.shownOne === 0 && r.elf === 'm-elf-blade' && t.legendary.length >= 1 && t.legendary.length <= 3 && t.mythical.join() === 'sword-saint' &&
+      r.cut === 1 && r.census && r.pcRoad === 'brawler>pit-fighter' && r.pure;
+    return { ok, detail: `Dragonslayer Spear ${r.legend}: open to both ${r.openA}/${r.openB0}; the first takes it ${r.takeA} (census ${r.holder}); then shut to the second ${!r.openB}, refused ${!r.takeB} (his road ${r.roadB}); ` +
+      `after it the holder finds ${r.after.length} classes open (${r.optsA} options); dead, it is free ${r.freed} and open to the second ${r.openB2}; legendary or mythical on a shown road ${r.shownOne}; ` +
+      `Dragonslayer Blade held by ${r.elf}; the tree's legendaries ${t.legendary.join(', ')}, mythical ${t.mythical.join(', ')}; the save step struck ${r.cut}, census to the earlier taker ${r.census}, road ${r.pcRoad}; pure ${r.pure}` };
+  },
+
   // what a class adds to play (order 92): a technique in the duel's bar, a passive that fires once under its condition, an
   // activity held to the class (hidden from others), a buff that raises a stat for its months and then ends, the class
   // beside the level on the profile with a note opened by a press; and the class data: a tree, every class adding a part
@@ -374,7 +428,7 @@ export default {
       for (const c of CL.LIST) {
         if (!/^[A-Z][A-Za-z' -]{2,26}$/.test(c.name) || /marshal|levy/i.test(JSON.stringify(c))) bad.push('name ' + c.id);
         for (const e of c.effects || []) { if (!types.includes(e.type)) bad.push(c.id + ' effect ' + e.type); if (e.type === 'stat' && e.v > 3) bad.push(c.id + ' stat ' + e.v); }
-        if (!(CL.D.rarities || []).includes(c.rarity)) bad.push(c.id + ' rarity ' + c.rarity);
+        if (!A.RARITY.LADDER.includes(c.rarity)) bad.push(c.id + ' rarity ' + c.rarity);
         // order 95: a class's rarity never changes along its line (an advancement keeps it)
         for (const f of c.from) if (f && CL.BY.get(f) && CL.BY.get(f).line === c.line && CL.BY.get(f).rarity !== c.rarity) bad.push(c.id + ' changes rarity on its line');
         for (const f of c.from) if (f !== null && !CL.BY.has(f)) bad.push(c.id + ' from ' + f);
@@ -384,11 +438,10 @@ export default {
         if (!parts(c).length) bad.push(c.id + ' no part');
       }
       const leads = {}; for (const c of CL.LIST) for (const f of c.from) if (f) leads[f] = (leads[f] || 0) + 1;
-      const names = new Set(CL.LIST.map(c => c.name)), uniq = CL.LIST.filter(c => c.rarity === 'unique');
+      const names = new Set(CL.LIST.map(c => c.name));
       if (names.size !== CL.LIST.length) bad.push('names repeat');
-      if (uniq.some(c => !c.unique && !c.title)) bad.push('a unique class with no single holder');
       const rar = {}; for (const c of CL.LIST) rar[c.rarity] = (rar[c.rarity] || 0) + 1;
-      out.data = { n: CL.LIST.length, bad, branching: Object.values(leads).filter(n => n >= 2).length, steps: [1, 2, 3].map(s => CL.LIST.filter(c => c.step === s).length), rar, hidden: CL.LIST.filter(c => c.req).length };
+      out.data = { ladder: A.RARITY.LADDER.slice(), n: CL.LIST.length, bad, branching: Object.values(leads).filter(n => n >= 2).length, steps: [1, 2, 3].map(s => CL.LIST.filter(c => c.step === s).length), rar, hidden: CL.LIST.filter(c => c.req).length };
       // a duel: the player a Berserker (Warrior before him): his techniques in the bar, the passive fires once when he bleeds
       T.enter({ seed: 9811, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 24 });
       const pc = A.pc(); LV.seed(pc); pc.lv.cr = [['warrior', A.S.year, 1], ['berserker', A.S.year, 1]];
@@ -424,7 +477,7 @@ export default {
     await pg.click('.lv-line .lv-cls .tt'); const open = await pg.evaluate(() => (UI.TT ? UI.TT.depth() : 0)); await pg.keyboard.press('Escape');
     await pg.setViewportSize({ width: 1366, height: 768 });
     const d = r.data, p = r.passive, bf = r.buff;
-    const ok = !d.bad.length && d.n >= 100 && d.branching >= 15 && d.steps.every(n => n >= 5) && d.hidden >= 50 && ['common', 'uncommon', 'rare', 'epic', 'legendary', 'unique'].every(k => d.rar[k] > 0) &&
+    const ok = !d.bad.length && d.n >= 100 && d.branching >= 15 && d.steps.every(n => n >= 5) && d.hidden >= 50 && d.ladder.length === 5 && d.ladder.every(k => d.rar[k] > 0) &&
       r.duel.techs.includes('cl-heavy-blow') && r.duel.lvp.includes('Blood Rage') && p.e1 > 0 && p.fury > 0 && p.logs1 === 1 && p.logs2 === 1 && p.e2 === p.e1 && p.e3 === 0 &&
       r.acts.mine[0] && !r.acts.theirs[0] && /position/.test(r.acts.theirs[1]) && bf.ok && bf.s1 > bf.s0 && bf.s2 > bf.s0 && Math.abs(bf.s3 - bf.s0) < 1e-9 && !bf.left &&
       r.earn.ok && (r.earn.coin > 0 || r.earn.health < 0) && r.prof.cls === 'Guardian' && r.prof.note.length > 40 && !/\d\s?%/.test(r.prof.note) && r.prof.title === 0 && r.prof.width <= r.prof.vw + 0.5 && open > 0;

@@ -55,7 +55,8 @@ const LADDER = {
 const ID = { 'Master of the Long Edge': 'long_edge_master', "General's Grasp": 'marshals_grasp' };
 const idOf = n => ID[n] || n.toLowerCase().replace(/'/g, '').replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
 const RANKS = ['D', 'C', 'B', 'A', 'S'];
-const RARITY = { D: 'common', C: 'common', B: 'uncommon', A: 'rare', S: 'rare' };
+// the rung's rarity on the one ladder (data/rarity.json, D-200): the D, C and B rungs basic, A and S rare
+const RARITY = { D: 'basic', C: 'basic', B: 'basic', A: 'rare', S: 'rare' };
 const PERK_AT = { C: 40, B: 65, A: 85 };   // the release's thresholds (S1 read them at 35, 55, 72)
 const TEXT = {
   D: n => `The first habits of ${n}: what to do, if not yet when.`,

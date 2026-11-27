@@ -13,7 +13,7 @@ const fresh = () => JSON.parse(JSON.stringify(loadSkills2(root)));
 const by = (D, id) => D.skills.find(s => s.id === id);
 const checks = (D, opt) => validate(D, opt).map(e => e.check);
 const SPEC = () => ({ cooldown: null, cost: null, effect: null, duration: null, conditions: [] });
-const named = (o) => Object.assign({ rarity: 'common', kind: 'passive', category: 'mind.focus', family: null, reads: [], levels: [{ at: 1, effects: [] }],
+const named = (o) => Object.assign({ rarity: 'basic', kind: 'passive', category: 'mind.focus', family: null, reads: [], levels: [{ at: 1, effects: [] }],
   acquire: [{ via: 'practice' }], transfer: { teach: 'any' }, spec: SPEC(), text: 'A planted skill.' }, o);
 
 test('the data passes every check', () => {
@@ -60,7 +60,7 @@ test('check 3, the budget: example 6 of §9.2 is refused at Lv 1 and passes with
 
 test('check 4, stats apart: a stat on a passive is refused, on a blessing allowed', () => {
   let D = fresh(); by(D, 'measured_blade').levels.push({ at: 5, effects: [{ type: 'stat', stat: 'str', v: 1 }] }); assert.ok(checks(D).includes(4));
-  D = fresh(); D.skills.push(named({ id: 'small_grace', name: 'Small Grace', rank: 'C', rarity: 'unique', census: 'one', kind: 'blessing', category: 'faith.blessing', levels: [{ at: 1, effects: [] }, { at: 2, effects: [{ type: 'stat', stat: 'wil', v: 1 }] }] }));
+  D = fresh(); D.skills.push(named({ id: 'small_grace', name: 'Small Grace', rank: 'C', rarity: 'epic', census: 'one', kind: 'blessing', category: 'faith.blessing', levels: [{ at: 1, effects: [] }, { at: 2, effects: [{ type: 'stat', stat: 'wil', v: 1 }] }] }));
   assert.deepEqual(checks(D).filter(c => c === 4), []);
 });
 
@@ -102,11 +102,12 @@ test('check 8, merges (step 8, D-182): only level-10 parts of different families
   assert.ok(checks(D).includes(7));
 });
 
-test('check 9, shares: a library of 200 that is all D fails; a unique without a census fails', () => {
+test('check 9, shares: a library of 200 that is all D fails; a legendary without a census fails', () => {
   let D = fresh();
   for (let i = 0; i < 70; i++) D.skills.push(named({ id: 'filler_' + i, name: 'Filler ' + i, rank: 'D' }));
   assert.ok(validate(D).some(e => e.check === 9 && /rank D/.test(e.msg)));
-  D = fresh(); by(D, 'edge_beyond_teaching').rarity = 'unique'; assert.ok(checks(D).includes(9));
+  D = fresh(); by(D, 'edge_beyond_teaching').rarity = 'legendary'; assert.ok(checks(D).includes(9));
+  D = fresh(); by(D, 'edge_beyond_teaching').rarity = 'uncommon'; assert.ok(checks(D).includes(1), 'a word of no ladder (D-200)');
 });
 
 test('check 10, names: a level word as a level, and a denied name', () => {

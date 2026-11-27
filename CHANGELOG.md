@@ -5,6 +5,19 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **The mythical few, and the Dragon Slayer.** The three Primordials, the Dragon King and the Sword Saint now hold
+  mythical titles, and their own arts are mythical; every other legend's, and the ancient dragons' and demons', are
+  legendary. A great being's profile says so beside its skills. Wyrm-Slayer is now the **Dragon Slayer**; whoever held it
+  in an old save still does.
+- **Legendary classes are one man's.** A legendary class (now only three: the Dragonslayer Blade, the Dragonslayer
+  Spear and the Dragonslayer Bow, once the Wyrm Blade, Spear and Bow, for one who has killed a true dragon and five beasts stronger than himself) has one living holder at a time, and
+  nothing follows it: at later walls its holder takes the breakthrough's strength instead. When he dies, the next may
+  take it. The Sword Saint's class is mythical, and his alone while he lives.
+- **One rarity for everything.** Skills, titles, classes and the arms of the great now share one ladder: basic, rare,
+  epic, legendary, mythical. What was common or uncommon is basic; nothing is called "unique" any more, and a title held
+  by one person at a time says so beside its rarity ("legendary, one of a kind"). A thing's make (plain, fine, masterwork)
+  is the smith's care, told apart from how rare it is: "a masterwork sabre", "a legendary relic". The shop's ordinary make
+  reads "Plain".
 - **Armies of their true size.** Every realm now keeps a standing host by its people, its wealth and its kind: from
   about ten thousand soldiers in a small kingdom to more than a quarter of a million in the greatest empire, while a poor
   abbey or a pirate port keeps what it can pay. Knights are few and strong: from about fifty to three thousand in a

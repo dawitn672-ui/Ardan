@@ -56,7 +56,7 @@
     {
      "n": "The Kiln-Crown",
      "kind": "crown",
-     "quality": "legendary",
+     "rarity": "legendary",
      "does": "A crown fired in the Kiln itself; it is never cool to the touch.",
      "gives": {
       "fire": 1,
@@ -168,7 +168,8 @@
     {
      "n": "A brimstone mantle",
      "kind": "cloak",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "Yellow smoke hangs about it like a cloak of its own.",
      "gives": {
       "ward": 1
@@ -261,7 +262,8 @@
     {
      "n": "The stepped spear",
      "kind": "spear",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "A black spear notched once for every gate-captain she has killed.",
      "gives": {
       "duel": 1
@@ -356,7 +358,8 @@
     {
      "n": "Iron hooves",
      "kind": "armour",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "Shod in iron from a gate he tore down.",
      "gives": {
       "hide": 1
@@ -461,7 +464,7 @@
     {
      "n": "A ring of gate-keys",
      "kind": "keys",
-     "quality": "legendary",
+     "rarity": "legendary",
      "does": "Nine keys of black iron. None of them opens a door men have built.",
      "gives": {
       "cunning": 1
@@ -561,7 +564,7 @@
     {
      "n": "A glass knife",
      "kind": "knife",
-     "quality": "legendary",
+     "rarity": "legendary",
      "does": "Cut from the same black glass as the seal over his mistress.",
      "gives": {
       "magic": 1,
@@ -655,7 +658,7 @@
     {
      "n": "A hoard of teeth",
      "kind": "hoard",
-     "quality": "common",
+     "rarity": "basic",
      "does": "He keeps the teeth of every captain he has eaten, strung on chains.",
      "gives": {}
     }
@@ -752,7 +755,7 @@
     {
      "n": "The smoking pits",
      "kind": "lair",
-     "quality": "legendary",
+     "rarity": "legendary",
      "does": "A hollow of a hundred pits, every one of them warm.",
      "gives": {
       "swarm": 1
@@ -844,7 +847,7 @@
     {
      "n": "A cracked egg",
      "kind": "relic",
-     "quality": "common",
+     "rarity": "basic",
      "does": "The first egg she ever laid. She carries the shell.",
      "gives": {}
     }
@@ -941,7 +944,7 @@
     {
      "n": "A pen of bone",
      "kind": "pen",
-     "quality": "legendary",
+     "rarity": "legendary",
      "does": "It writes in a fire that does not burn the page.",
      "gives": {
       "ward": 1
@@ -1041,7 +1044,7 @@
     {
      "n": "Two dragons' skulls",
      "kind": "trophy",
-     "quality": "legendary",
+     "rarity": "legendary",
      "does": "It sleeps between them.",
      "gives": {
       "power": 0.05
@@ -1139,7 +1142,7 @@
     {
      "n": "A gate-captain's chain",
      "kind": "trophy",
-     "quality": "common",
+     "rarity": "basic",
      "does": "Worn round one horn.",
      "gives": {}
     }
@@ -1237,7 +1240,7 @@
     {
      "n": "The toll-scales",
      "kind": "scales",
-     "quality": "legendary",
+     "rarity": "legendary",
      "does": "They weigh a soul against a coin and are always right.",
      "gives": {
       "cunning": 1
@@ -1336,7 +1339,8 @@
     {
      "n": "A purse that never fills",
      "kind": "purse",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "He drops coins in. They go somewhere.",
      "gives": {}
     }
@@ -1427,7 +1431,8 @@
     {
      "n": "Debtor's chains",
      "kind": "chains",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "Every link a soul that could not pay.",
      "gives": {
       "str": 1
@@ -1521,7 +1526,8 @@
     {
      "n": "A merchant's rings",
      "kind": "rings",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "Ten of them, each with a soul set where the stone should be.",
      "gives": {
       "magic": 1
@@ -1621,7 +1627,8 @@
     {
      "n": "The Bonefield banner",
      "kind": "banner",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "Sewn from the cloaks of Ghazrul's fiends.",
      "gives": {
       "ward": 1
@@ -1719,7 +1726,8 @@
     {
      "n": "A drowned man's compass",
      "kind": "compass",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "It points to the nearest soul in debt.",
      "gives": {
       "cunning": 1
@@ -1813,7 +1821,7 @@
     {
      "n": "A spire-stone",
      "kind": "stone",
-     "quality": "common",
+     "rarity": "basic",
      "does": "A shard of the first spire, worn at the throat.",
      "gives": {}
     }
@@ -1904,7 +1912,8 @@
     {
      "n": "A debtor's cradle",
      "kind": "lair",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "Her young are born owing.",
      "gives": {
       "swarm": 1
@@ -1996,7 +2005,7 @@
     {
      "n": "A hangman's rope",
      "kind": "rope",
-     "quality": "common",
+     "rarity": "basic",
      "does": "From the first gallows of Gallowsgate.",
      "gives": {}
     }
@@ -2094,7 +2103,7 @@
     {
      "n": "The First Ledger",
      "kind": "book",
-     "quality": "legendary",
+     "rarity": "legendary",
      "does": "A book the size of a house. Even the Archdemons are written in it.",
      "gives": {
       "cunning": 1,
@@ -2189,7 +2198,8 @@
     {
      "n": "A hoard of debts",
      "kind": "hoard",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "Promissory notes, thousands, that it cannot read.",
      "gives": {}
     }
@@ -2287,7 +2297,7 @@
     {
      "n": "The Bellmoor bells",
      "kind": "bells",
-     "quality": "legendary",
+     "rarity": "legendary",
      "does": "Seven bells of grey iron that ring with no one pulling them.",
      "gives": {
       "ward": 1
@@ -2385,7 +2395,8 @@
     {
      "n": "A ferryman's pole",
      "kind": "staff",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "It has never touched the bottom of the Ashwater.",
      "gives": {}
     }
@@ -2481,7 +2492,8 @@
     {
      "n": "A veil of grey silk",
      "kind": "veil",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "No one has seen her face under it.",
      "gives": {
       "cunning": 1
@@ -2575,7 +2587,8 @@
     {
      "n": "A cantor's staff",
      "kind": "staff",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "It beats time for the choir.",
      "gives": {
       "magic": 1
@@ -2668,7 +2681,7 @@
     {
      "n": "A shepherd's pipe",
      "kind": "pipe",
-     "quality": "common",
+     "rarity": "basic",
      "does": "Taken from a boy who played it at a funeral Vethrael sang at.",
      "gives": {}
     }
@@ -2765,7 +2778,8 @@
     {
      "n": "A stopper of lead",
      "kind": "relic",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "For bottles that hold voices.",
      "gives": {
       "ward": 1
@@ -2864,7 +2878,7 @@
     {
      "n": "The grey pits",
      "kind": "lair",
-     "quality": "legendary",
+     "rarity": "legendary",
      "does": "Pits of grey ash in the court of the Choir itself.",
      "gives": {
       "swarm": 1
@@ -2956,7 +2970,7 @@
     {
      "n": "A cradle of bone",
      "kind": "relic",
-     "quality": "common",
+     "rarity": "basic",
      "does": "She rocks it. It is empty.",
      "gives": {}
     }
@@ -3048,7 +3062,8 @@
     {
      "n": "A lamp that never goes out",
      "kind": "lamp",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "The last light of Lastlight.",
      "gives": {
       "ward": 1
@@ -3141,7 +3156,7 @@
     {
      "n": "A cracked bell",
      "kind": "bell",
-     "quality": "common",
+     "rarity": "basic",
      "does": "Torn from a chapel of men and worn on its tail.",
      "gives": {}
     }

@@ -70,7 +70,7 @@ export default {
       T.enter({ seed: 91, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
       const TEXT = ['--ink', '--ink-2', '--ink-3', '--accent', '--accent-strong', '--danger', '--ok', '--warn', '--info', '--crown-ink', '--blood-ink', '--lore-ink', '--war-ink', '--peace-ink', '--rubric-ink',
         '--vital-health', '--st-str', '--st-spd', '--st-ins', '--st-sta', '--st-int', '--st-wil', '--odds-likely', '--odds-even', '--odds-risky', '--odds-long',
-        '--r-common', '--r-uncommon', '--r-rare', '--r-epic', '--r-legendary', '--r-mythic', '--focus'];
+        '--r-basic', '--r-rare', '--r-epic', '--r-legendary', '--r-mythical', '--focus'];
       const SURF = ['--bg', '--surface', '--raised', '--raised-hover', '--overlay', '--sunken'];
       const bad = [], worst = {}, alias = [];
       const MAP = { '--text-1': '--ink', '--text-2': '--ink-2', '--text-3': '--ink-3', '--surface-1': '--surface', '--bg-1': '--bg', '--bg-0': '--sunken', '--border-2': '--line-strong', '--bad': '--danger' };
@@ -273,12 +273,12 @@ export default {
         const ach = [...document.querySelectorAll('#tabbody .achgrid .card.ach.rar')];
         const tiers = new Set(ach.map(a => a.dataset.tier));
         const pure = T.hash(A.S) === h0 && JSON.stringify(A.S.rng) === g0;
-        return { rows: rows.length, maxH: Math.max(...hs), fit, band: !!band, nums, nameInk: cs && cs.color, ink: ink.ink, chip: /rar-epic/.test(chip) && /◆◆◆/.test(chip), fine: /rar-uncommon/.test(fine), none: none === '', ach: ach.length, achAll: Object.keys(GD.ACH).length, tiers: tiers.size, pure };
+        return { rows: rows.length, maxH: Math.max(...hs), fit, band: !!band, nums, nameInk: cs && cs.color, ink: ink.ink, chip: /rar-rare/.test(chip) && /◆◆/.test(chip) && /Masterwork/.test(chip), fine: /rar-basic/.test(fine) && /Fine/.test(fine) && !/[Uu]ncommon|[Cc]ommon/.test(fine), none: none === '', ach: ach.length, achAll: Object.keys(GD.ACH).length, tiers: tiers.size, pure };
       });
       const hex = c => { const m = String(c).match(/\d+/g); return m ? '#' + m.slice(0, 3).map(v => (+v).toString(16).padStart(2, '0')).join('') : c; };
       const ok = r.rows >= 5 && r.maxH <= 32 && r.fit >= 18 && r.band && r.nums === 4 && hex(r.nameInk) === r.ink && r.chip && r.fine && r.none && r.ach === r.achAll && r.tiers >= 5 && r.pure;
       return { ok, detail: `People: ${r.rows} rows of at most ${r.maxH} px, ${r.fit} fit in the panel; Realm band ${r.band} with ${r.nums} numbers, name in its ink ${hex(r.nameInk) === r.ink}; ` +
-        `Masterwork epic ${r.chip}, Fine uncommon ${r.fine}, common plain ${r.none}; ${r.ach}/${r.achAll} achievements tiered in ${r.tiers} tiers; pure ${r.pure}` };
+        `Masterwork rare ${r.chip}, Fine basic ${r.fine}, common plain ${r.none}; ${r.ach}/${r.achAll} achievements tiered in ${r.tiers} tiers; pure ${r.pure}` };
     } finally { await ctx.close(); }
   },
   // the rest of this round's look: a war's strength bar, the rail's delta flash, beasts' tiers in the Codex, the realm

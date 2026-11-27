@@ -237,7 +237,7 @@
     if (isPc(p)) {
       if (A.cacheResetAll) try { A.cacheResetAll(); } catch (e) {}
       A.S.queue.push({ type: 'event', ev: 'tt_earned', ctx: { tid: t.id, ttl: n, why: rec.w }, forced: true });
-    } else if (t.unique || t.rarity === 'legendary') {
+    } else if (t.unique || t.rarity === 'legendary' || t.rarity === 'mythical') {
       if (A.news) A.news(`${A.fullName ? A.fullName(p, false) : 'Someone'}${r ? ' of ' + (r.short || r.name) : ''} is called ${n} now.`, 'crown');
     }
     return rec;
@@ -311,7 +311,7 @@
     if (L > mine) TT.deedDone(p, 'beast_above', { v: L });
     const fam = sp && sp.fam;
     // a true dragon only: a drake or wyvern of the wyrm family is no dragon (H-164; a level-60 Sand Dragon of that family
-    // earned the Wyrm-Slayer before)
+    // earned the Dragon Slayer, then Wyrm-Slayer, before)
     if (fam === 'dragons' || (typeof beast === 'string' && DRAGON_CRE.has(beast))) TT.deedDone(p, 'dragon_slain', { v: L });
   };
   // a realm's champion: one who holds a fighting title, has won a tourney, or commands a host of his realm
@@ -372,12 +372,12 @@
 
   // ---------------------------------------------------------------- the adapter's sources (A.CAPS) and what others read
   // a title as a skill source: rank = its weight, held at level 1, its effects as written (37-skills2/c-effects); its
-  // rarity and uniqueness set the cap of its share boosts (order 95, D-192: E.CAP_BOOST, lowered by vocab.json's boost.cap)
+  // rarity sets the cap of its share boosts (order 95, D-192: E.CAP_BOOST, lowered by vocab.json's boost.cap); one holder at
+  // a time is a flag apart from rarity and lifts no cap (the one ladder, D-200)
   const XS = TT.XS = new Map();
   const BC = (V.boost && V.boost.cap) || {};
   for (const t of TT.PERSON) if (Array.isArray(t.effects) && t.effects.length) {
-    const tier = t.unique ? 'unique' : t.rarity;
-    XS.set(t.id, { id: 'title:' + t.id, rank: t.weight, rarity: t.rarity, unique: !!t.unique, kind: 'title', boostCap: BC[tier] != null ? BC[tier] : 0, levels: [{ at: 1, effects: t.effects }] });
+    XS.set(t.id, { id: 'title:' + t.id, rank: t.weight, rarity: t.rarity, unique: !!t.unique, kind: 'title', boostCap: BC[t.rarity] != null ? BC[t.rarity] : 0, levels: [{ at: 1, effects: t.effects }] });
   }
   TT.xHeld = function (p) {
     if (!p || !p.tt || !p.tt.h) return null;
@@ -429,6 +429,27 @@
     if (S && (!S.tt || typeof S.tt !== 'object')) S.tt = { u: {}, first: {} };
     return S ? Object.keys(S.tt.u || {}).length : 0;
   };
+
+  // save version 24 (D-202): a title renamed keeps what was held under its old id (Wyrm-Slayer is the Dragon Slayer, order
+  // 98): the held, the lost, the borne, a refused grant, the census, the once-an-age record and the age's first list
+  TT.RENAMED = { 'wyrm-slayer': 'dragon-slayer' };
+  TT.migrateIds = function (S) {
+    S = S || A.S; if (!S || !S.people) return 0;
+    let n = 0;
+    const move = (o, from, to) => { if (o && typeof o === 'object' && Object.prototype.hasOwnProperty.call(o, from)) { if (!(to in o)) o[to] = o[from]; delete o[from]; n++; } };
+    for (const pid of Object.keys(S.people)) {
+      const tt = S.people[pid] && S.people[pid].tt; if (!tt || typeof tt !== 'object') continue;
+      for (const [from, to] of Object.entries(TT.RENAMED)) { move(tt.h, from, to); move(tt.x, from, to); move(tt.gw, from, to); if (tt.b === from) { tt.b = to; n++; } }
+    }
+    const st = S.tt;
+    if (st && typeof st === 'object') for (const [from, to] of Object.entries(TT.RENAMED)) {
+      move(st.first, from, to); move(st.pre, from, to);
+      if (st.u && typeof st.u === 'object') for (const k of Object.keys(st.u)) if (k === from || k.startsWith(from + ':')) move(st.u, k, to + k.slice(from.length));
+    }
+    return n;
+  };
+  const SVt = A.V2SAVE;
+  if (SVt && Array.isArray(SVt.STEPS) && !SVt.STEPS.some(x => x[0] === 'titleIds')) SVt.STEPS.push(['titleIds', S => TT.migrateIds(S)]);
 
   A.onMonth = A.onMonth || [];
   A.onMonth.push(pc => { try { TT.month(pc); } catch (e) { console.error('[titles] month', e); } });

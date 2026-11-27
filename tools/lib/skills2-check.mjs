@@ -10,7 +10,7 @@ import * as E from '../../src/people/engine/skills2.js';
 export function loadSkills2(root) {
   const base = path.join(root, 'data/skills');
   const read = f => JSON.parse(fs.readFileSync(path.join(base, f), 'utf8'));
-  const D = { vocab: read('vocab.json'), families: read('families.json'), skills: [], recipes: (read('recipes.json').recipes || []), files: {} };
+  const D = { rarity: JSON.parse(fs.readFileSync(path.join(root, 'data/rarity.json'), 'utf8')), vocab: read('vocab.json'), families: read('families.json'), skills: [], recipes: (read('recipes.json').recipes || []), files: {} };
   const walk = d => { for (const f of fs.readdirSync(d).sort()) { const p = path.join(d, f); if (fs.statSync(p).isDirectory()) walk(p); else if (f.endsWith('.json')) { const rel = path.relative(base, p); if (['vocab.json', 'families.json', 'recipes.json'].includes(rel)) continue; const j = JSON.parse(fs.readFileSync(p, 'utf8')); for (const s of j.skills || []) { D.skills.push(s); D.files[s.id] = rel; } } } };
   walk(base);
   return D;
@@ -23,7 +23,7 @@ const SPEC_FIELDS = ['cooldown', 'cost', 'effect', 'duration', 'conditions'];   
 export function validate(D, opt = {}) {
   const out = [], err = (check, msg) => out.push({ check, msg });
   const V = D.vocab, IX = E.index(D), fams = IX.fams;
-  const R = new Set(V.ranks), RAR = new Set(V.rarities), KIND = new Set(V.kinds), TEACH = new Set(V.teach), CENSUS = new Set(V.census), VIA = new Set(V.vias), NEED = new Set(V.needKeys);
+  const R = new Set(V.ranks), RAR = new Set((D.rarity && D.rarity.ladder) || V.rarities || []), KIND = new Set(V.kinds), TEACH = new Set(V.teach), CENSUS = new Set(V.census), VIA = new Set(V.vias), NEED = new Set(V.needKeys);
   const deeds = new Set(V.deeds), places = new Set(V.places), flags = new Set(V.flags), offices = new Set(V.offices), items = new Set(V.items), groupsSoc = new Set(V.socialGroups), trig = new Set(V.triggers), limits = new Set(Object.keys(V.limits));
   const cultureRx = new RegExp(V.culturePattern), faithRx = new RegExp(V.faithPattern), houseRx = new RegExp(V.housePattern);
   const famConcept = new Set(), famFocus = new Set();
@@ -232,7 +232,7 @@ export function validate(D, opt = {}) {
   // ---- 6. reachable -----------------------------------------------------------------------------------------------------
   // A route's leaf is open to a start when its via is (vocab.starts); evolve, merge and awaken open once their sources
   // are reached. Every skill must be reachable by some newborn; every ladder rung D to A by a newborn of every start,
-  // whatever his culture (a route asking a culture, race, faith or house is closed to "every"). Unique and legendary
+  // whatever his culture (a route asking a culture, race, faith or house is closed to "every"). Legendary and mythical
   // skills may need a route no start has (an event's, a god's), so they are checked only for having a route at all.
   const starts = Object.keys(V.starts).filter(k => k !== 'note');
   const RESTRICT = ['culture', 'race', 'faith', 'house'];
@@ -302,7 +302,7 @@ export function validate(D, opt = {}) {
       if (pct < lo - 1e-9 || pct > hi + 1e-9) err(9, `rank ${r}: ${pct.toFixed(1)} in 100 (${lo} to ${hi})`);
     }
   }
-  for (const s of D.skills) if ((s.rarity === 'unique' || s.rarity === 'legendary') && s.census !== 'one' && s.census !== 'age') err(9, `skill ${s.id}: ${s.rarity} without census one or age`);
+  for (const s of D.skills) if ((s.rarity === 'legendary' || s.rarity === 'mythical') && s.census !== 'one' && s.census !== 'age') err(9, `skill ${s.id}: ${s.rarity} without census one or age`);
 
   // ---- 10. names ---------------------------------------------------------------------------------------------------------------
   const LW = V.levelWords.join('|'), ROM = '(I|II|III|IV|V|VI|VII|VIII|IX|X)';

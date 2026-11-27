@@ -3,10 +3,11 @@
 //   - a title without an id, a name, a known rarity, weight, kind or being, or two titles with one id
 //   - a predicate or a deed kind not declared in vocab.json; a skill family or rank that does not exist; a watched kind
 //     that is not a deed or 'month'; a person's title that watches nothing, or whose ledger conditions nothing wakes
-//   - person effects over the weight's budget (perLevel x 5, x1.25 unique, x1.5 legendary), a stat over its rarity's most
+//   - a rarity not a word of the one ladder (data/rarity.json, D-200), or a ladder word vocab.json gives no figure
+//   - person effects over the weight's budget (perLevel x 5, times its rarity's figure), a stat over its rarity's most
 //     a title (vocab.json statMax), an effect type, tag, group or slot the vocabularies do not have
 //   - a share boost (order 95, D-192) of a kind vocab.json does not name, not a share above 0, or a title's boosts of one
-//     kind over its rarity's cap (boost.cap; unique: the unique figure); a boost cap above the engine's ceiling
+//     kind over its rarity's cap (boost.cap; one holder lifts nothing); a boost cap above the engine's ceiling
 //     (E.CAP_BOOST), and any of these on something no person holds
 //   - a title that cannot be met by any start (a predicate walk: an all() asking a count both above and below one number)
 //   - a legend's, a master's or a fixed figure's sheet (data/figures/, D-193) naming a title not in data/titles/, or a title
@@ -24,7 +25,7 @@ import { CAP_BOOST } from '../src/people/engine/skills2.js';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const J = f => JSON.parse(fs.readFileSync(path.join(root, f), 'utf8'));
-const V = J('data/titles/vocab.json'), SV = J('data/skills/vocab.json'), FAMS = (x => (Array.isArray(x) ? x : x.families))(J('data/skills/families.json'));
+const V = J('data/titles/vocab.json'), SV = J('data/skills/vocab.json'), LADDER = J('data/rarity.json').ladder, FAMS = (x => (Array.isArray(x) ? x : x.families))(J('data/skills/families.json'));
 const files = fs.readdirSync(path.join(root, 'data/titles')).filter(f => f.endsWith('.json') && f !== 'vocab.json').sort();
 const LIST = files.flatMap(f => J('data/titles/' + f).titles.map(t => Object.assign({ _file: f }, t)));
 const bad = [], note = [];
@@ -56,7 +57,7 @@ function cost(e) {
 const budget = t => {
   const B = V.budget, per = B.per[t.weight];
   if (per == null) return 0;
-  const m = Math.max(1, t.unique ? B.unique : 1, t.rarity === 'legendary' ? B.legendary : 1);
+  const m = (B.rarity && B.rarity[t.rarity]) || 1;
   return per * B.levels * m;
 };
 // a tag an edge or a fight may carry: a family, a legacy key, a group, a check tag, a family's focus, or all
@@ -91,21 +92,25 @@ function contradiction(q) {
   return null;
 }
 
-// ---- the share boosts' caps: named for every rarity and for unique, never above the engine's ceiling
+// ---- the share boosts' caps, the stat figures and the budget's: one for every word of the one ladder and no other (D-200),
+// never above the engine's ceiling
 const BV = V.boost || {}, BCAP = BV.cap || {};
-for (const k of V.rarities.concat(['unique'])) {
+if ('rarities' in V) bad.push('vocab.json rarities: the ladder is data/rarity.json\'s alone (D-200)');
+for (const [what, o] of [['boost.cap', BCAP], ['statMax', V.statMax || {}], ['budget.rarity', (V.budget || {}).rarity || {}]]) for (const k of Object.keys(o)) if (!LADDER.includes(k)) bad.push(`vocab.json ${what}.${k}: not a word of the one ladder`);
+for (const k of LADDER) if (!(((V.budget || {}).rarity || {})[k] >= 1)) bad.push(`vocab.json budget.rarity: no figure for ${k}`);
+for (const k of LADDER) {
   if (!(BCAP[k] >= 0)) bad.push(`vocab.json boost.cap: no cap for ${k}`);
   else if (BCAP[k] > (CAP_BOOST[k] ?? 0) + 1e-9) bad.push(`vocab.json boost.cap.${k} ${BCAP[k]} above the engine's ceiling ${CAP_BOOST[k]}`);
 }
-const statMaxOf = t => (typeof V.statMax === 'object' ? V.statMax[t.unique ? 'unique' : t.rarity] : V.statMax);
-for (const k of V.rarities.concat(['unique'])) if (typeof V.statMax === 'object' && !(V.statMax[k] >= 0)) bad.push(`vocab.json statMax: no figure for ${k}`);
+const statMaxOf = t => (typeof V.statMax === 'object' ? V.statMax[t.rarity] : V.statMax);
+for (const k of LADDER) if (typeof V.statMax === 'object' && !(V.statMax[k] >= 0)) bad.push(`vocab.json statMax: no figure for ${k}`);
 
 const ids = new Set();
 for (const t of LIST) {
   if (!t.id || !/^[a-z0-9-]+$/.test(t.id)) fail(t, 'an id of lowercase words and hyphens');
   if (ids.has(t.id)) fail(t, 'two titles with one id'); ids.add(t.id);
   if (!t.name) fail(t, 'no name');
-  if (!V.rarities.includes(t.rarity)) fail(t, `rarity ${t.rarity} is not one of ${V.rarities.join(', ')} (unique is a flag, not a rarity)`);
+  if (!LADDER.includes(t.rarity)) fail(t, `rarity ${t.rarity} is not one of ${LADDER.join(', ')} (data/rarity.json; one holder is the flag unique, not a rarity)`);
   if (!V.weights.includes(t.weight)) fail(t, `weight ${t.weight}`);
   if (!V.kinds.includes(t.kind)) fail(t, `kind ${t.kind}`);
   if (!Array.isArray(t.beings) || !t.beings.length || t.beings.some(b => !V.beings.includes(b))) fail(t, `beings ${t.beings}`);
@@ -144,9 +149,9 @@ for (const t of LIST) {
     }
     const sm = statMaxOf(t);
     for (const s in stat) if (stat[s] > sm) fail(t, `+${stat[s]} ${s}: at most +${sm} a stat a title of its rarity`);
-    const bc = BCAP[t.unique ? 'unique' : t.rarity] || 0;
+    const bc = BCAP[t.rarity] || 0;
     for (const k in boost) if (boost[k] > bc + 1e-9) fail(t, `boosts ${k} by ${boost[k]}, over its rarity's cap of ${bc}`);
-    if (spend > budget(t) + 1e-9) fail(t, `spends ${spend}, over its budget of ${budget(t)} (${t.weight}${t.unique ? ', unique' : ''}${t.rarity === 'legendary' ? ', legendary' : ''})`);
+    if (spend > budget(t) + 1e-9) fail(t, `spends ${spend}, over its budget of ${budget(t)} (${t.weight}, ${t.rarity})`);
   } else if (t.effects && t.effects.length) fail(t, 'person effects on a title no person may hold');
   if (t.buffs && typeof t.buffs !== 'object') fail(t, 'buffs is an object');
   if ('hint' in t) fail(t, 'carries a hint: no title is hinted at anywhere (order 92)');

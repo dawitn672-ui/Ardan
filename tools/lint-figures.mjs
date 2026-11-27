@@ -29,7 +29,7 @@ const bad = [], note = [];
 const fail = (who, m) => bad.push(`${who}: ${m}`);
 const words = s => String(s || '').trim().split(/\s+/).filter(Boolean).length;
 
-const V = J('data/figures/vocab.json');
+const V = J('data/figures/vocab.json'), RAR = J('data/rarity.json');
 const BD = J('data/bestiary.json'), SP = new Map(BD.species.map(s => [s.id, s]));
 const LD = J('data/legends.json').legends, LEG = new Map(LD.map(l => [l.id, l]));
 const MAS = new Map(J('data/power.json').masters.map(m => [m.id, m]));
@@ -40,19 +40,23 @@ const TBY = new Map(); for (const f of TFILES) for (const t of J('data/titles/' 
 const REALMS = { has: id => /^POL-\d{2}[A-Z]?$/.test(String(id)) };   // the release's realm ids (LORE.realms)
 
 // ---- the class tree: the hand-made classes and the branches its generator makes (as c-classes.core.js makes them)
-const CD = J('data/classes.json'), CLS = new Map(CD.classes.map(c => [c.id, { id: c.id, step: c.step, from: c.from }]));
+const CD = J('data/classes.json'), CLS = new Map(CD.classes.map(c => [c.id, { id: c.id, step: c.step, from: c.from, rarity: c.rarity }]));
 {
   const G = CD.generator, slug = s => String(s).toLowerCase().replace(/[^a-z]+/g, '-');
   for (const r of G.roads) {
     const step2 = [];
     for (const t of G.templates) {
+      if (Array.isArray(t.roads) && !t.roads.includes(r.fam)) continue;
       const id = `${t.key}-${slug(r.noun)}${r.fam === 'melee' ? '-m' : ''}`;
-      if (t.step === 2) { CLS.set(id, { id, step: 2, from: [r.base] }); step2.push(id); if (t.master) CLS.set(id + '-master', { id: id + '-master', step: 3, from: [id] }); }
-      else CLS.set(id, { id, step: 3, from: CD.classes.filter(c => c.step === 2 && (c.from || []).includes(r.base)).map(c => c.id).concat(step2) });
+      if (t.step === 2) { CLS.set(id, { id, step: 2, from: [r.base], rarity: t.rarity }); step2.push(id); if (t.master) CLS.set(id + '-master', { id: id + '-master', step: 3, from: [id] }); }
+      else CLS.set(id, { id, step: 3, rarity: t.rarity, from: CD.classes.filter(c => c.step === 2 && (c.from || []).includes(r.base)).map(c => c.id).concat(step2) });
     }
   }
 }
-const roadOk = road => Array.isArray(road) && road.length >= 1 && road.every((id, i) => { const c = CLS.get(id); return c && c.step === i + 1 && (c.from || []).includes(i ? road[i - 1] : null); });
+// a legendary or mythical class has one holder and nothing after it (D-201)
+const ONE = new Set(J('data/rarity.json').oneHolder || []);
+const roadOk = road => Array.isArray(road) && road.length >= 1 && road.every((id, i) => { const c = CLS.get(id); return c && c.step === i + 1 && (c.from || []).includes(i ? road[i - 1] : null) && !(i && ONE.has((CLS.get(road[i - 1]) || {}).rarity)); });
+const oneHeld = new Map();
 
 // ---- the categories
 const files = fs.readdirSync(path.join(root, 'data/figures')).filter(f => f.endsWith('.json') && f !== 'vocab.json').sort();
@@ -129,7 +133,7 @@ for (const [cid, f] of FIX) {
     if (!(T.holders || []).includes(f.id)) fail(who, `title ${t}: its holders do not name ${f.id}`);
   }
   if (!Array.isArray(f.items) || !f.items.length) fail(who, 'at least one item');
-  for (const i of f.items || []) { if (!i.n || !i.kind || !i.does) fail(who, 'an item needs a name, a kind and what it does'); if (!V.qualities.includes(i.quality)) fail(who, `item quality ${i.quality}`); for (const k of Object.keys(i.gives || {})) if (k !== 'power' && !CAPS.includes(k)) fail(who, `item gives ${k}`); textOk(who, i.does); }
+  for (const i of f.items || []) { if (!i.n || !i.kind || !i.does) fail(who, 'an item needs a name, a kind and what it does'); if (!RAR.ladder.includes(i.rarity)) fail(who, `item rarity ${i.rarity}: not a word of the one ladder (data/rarity.json)`); if (i.make != null && !RAR.makes.includes(i.make)) fail(who, `item make ${i.make}`); if ('quality' in i) fail(who, 'an item says rarity and make, not quality (D-200)'); for (const k of Object.keys(i.gives || {})) if (k !== 'power' && !CAPS.includes(k)) fail(who, `item gives ${k}`); textOk(who, i.does); }
   temperOk(f.temper, who); traitsOk(f.traits, who);
   if (!(f.goals || []).length) fail(who, 'at least one goal'); for (const g of f.goals || []) { goalOk(g, who); textOk(who, g.why); }
   if (!(f.grudges || []).length) fail(who, 'at least one grudge'); for (const g of f.grudges || []) { atOk(g, who); textOk(who, g.why); }
@@ -175,6 +179,7 @@ if (rm) {
   for (const f of rm.figures || []) {
     const who = `race-masters/${f.id}`, M = MAS.get(f.id); if (!M) continue;
     if (!roadOk(f.road)) fail(who, `class road ${(f.road || []).join(' > ')} is not a chain of data/classes.json from a first class`);
+    for (const id of f.road || []) if (ONE.has((CLS.get(id) || {}).rarity)) { if (oneHeld.has(id)) fail(who, `${id} is one holder's, and ${oneHeld.get(id)} holds it`); else oneHeld.set(id, f.id); }
     const walls = Math.floor(M.level / 100); if ((f.road || []).length > walls) fail(who, `${f.road.length} classes but only ${walls} walls passed at level ${M.level}`);
     for (const a of f.arts || []) { const k = (M.skills || []).find(x => x.n === a); if (!k) fail(who, `art ${a} is not the master's skill`); else if (!['active', 'buff'].includes(k.kind)) fail(who, `art ${a} is a ${k.kind}`); }
     temperOk(f.temper, who); traitsOk(f.traits, who);

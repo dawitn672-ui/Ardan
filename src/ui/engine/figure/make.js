@@ -28,9 +28,9 @@ export const rivets = (S, pts, n, r, m) => { let d = ''; for (let i = 0; i < n; 
 
 // ---------------------------------------------------------------- make and rarity -----------------------------------
 // Two measures on every piece of arms and armour. MAKE (q: 0 crude, 1 plain, 2 fine, 3 masterwork) is the smith's
-// care: finish, edging, engraving. RARITY (r: 0 common, 1 rare, 2 epic, 3 legendary) is what the thing is: its metal and
-// its own shape. A common masterwork blade is bright steel, gilt and engraved; a rare plain one is blued and bare.
-export const MAKES = ['Crude', 'Plain', 'Fine', 'Masterwork'], RARITIES = ['Common', 'Rare', 'Epic', 'Legendary'];
+// care: finish, edging, engraving. RARITY (r: 0 basic, 1 rare, 2 epic, 3 legendary: the one ladder's first four, data/rarity.json, D-200) is what the thing is: its metal and
+// its own shape. A basic masterwork blade is bright steel, gilt and engraved; a rare plain one is blued and bare.
+export const MAKES = ['Crude', 'Plain', 'Fine', 'Masterwork'], RARITIES = ['Basic', 'Rare', 'Epic', 'Legendary'];
 export const PLATE = [['iron', 'steel', 'steel', 'bright'], ['blued', 'blued', 'blued', 'blued'], ['black', 'black', 'black', 'black'], ['sunsteel', 'sunsteel', 'sunsteel', 'sunsteel']];
 export const FIT = [['iron', 'iron', 'bronze', 'gold'], ['iron', 'bronze', 'silver', 'gold'], ['bronze', 'bronze', 'gold', 'gold'], ['gold', 'gold', 'gold', 'gold']];
 export const dull = m => ({ b: mixc(m.b, '#6d655d', .45), s: mixc(m.s, '#48423d', .4), d: m.d, l: mixc(m.l, m.b, .65), hi: mixc(m.hi, m.b, .75), k: m.k });

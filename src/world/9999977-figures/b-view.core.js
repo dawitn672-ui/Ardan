@@ -25,7 +25,9 @@
     const lab = k.label || `${k.rank} · Lv ${k.lvl}`;
     return `<li>${note(`${k.n}: ${k.kind ? k.kind + ', ' : ''}${lab}.${k.does ? ' ' + k.does : ''}${k.from ? ' (' + k.from + ')' : ''}`, k.n)} <span class="muted">${e(lab)}</span></li>`;
   };
-  const itemBit = i => `<li>${note(`${i.n}${i.quality ? ' (' + i.quality + (i.kind ? ' ' + i.kind : '') + ')' : ''}.${i.does ? ' ' + i.does : ''}${capWords(i.gives) ? ' It gives ' + capWords(i.gives) + '.' : ''}`, i.n)}</li>`;
+  // an item's make and its rarity above basic (the one ladder, D-200): 'a masterwork, legendary maul'
+  const itemWords = i => [A.RARITY ? A.RARITY.itemWords(i) : '', i.kind].filter(Boolean).join(' ');
+  const itemBit = i => `<li>${note(`${i.n}${itemWords(i) ? ' (' + itemWords(i) + ')' : ''}.${i.does ? ' ' + i.does : ''}${capWords(i.gives) ? ' It gives ' + capWords(i.gives) + '.' : ''}`, i.n)}</li>`;
   FIG.profileHtml = function (pc, p, k) {
     k = k || FIG.knows(pc, p);
     let h = '<div class="fig-body">';
@@ -38,7 +40,10 @@
     if (p.looks) h += `<div class="small muted">${e(p.looks)}</div>`;
     for (const s of p.story || []) h += `<p class="small fig-story">${e(s)}</p>`;
     if (k.arts) {
-      if (p.skills && p.skills.length) h += `<div class="small"><b>Skills</b></div><ul class="fig-list small">${p.skills.map(skillBit).join('')}</ul>`;
+      // a great being's own arts are one set of one rarity (order 97, D-202): the Primordials', the Dragon King's and the
+      // Sword Saint's mythical, the ancients' legendary
+      const set = p.type !== 'person' && A.RARITY ? A.RARITY.setOf(p, p.cat) : null;
+      if (p.skills && p.skills.length) h += `<div class="small"><b>Skills</b>${set ? ` <span class="muted">${e(A.RARITY.word(set))} arts</span>` : ''}</div><ul class="fig-list small">${p.skills.map(skillBit).join('')}</ul>`;
       if (p.arts && p.arts.length) h += `<div class="small"><b>Arts readied:</b> ${e(p.arts.join(', '))}</div>`;
       if (p.items && p.items.length) h += `<div class="small"><b>Carries</b></div><ul class="fig-list small">${p.items.map(itemBit).join('')}</ul>`;
     } else h += `<div class="small muted">What ${p.type === 'person' ? 'this one' : 'it'} can do, and what ${p.type === 'person' ? 'they carry' : 'it carries'}, you would learn only by meeting ${p.type === 'person' ? 'them' : 'it'}.</div>`;

@@ -3389,3 +3389,80 @@ gain, re-indexing every wipe, telemetry); claude-mem (its own model spends token
 lost on wipe); 9router (stores the owner's Claude login behind a default password, syncs to its servers, can swap models,
 and routing a subscription through it breaks Anthropic's terms). Sources: `.claude/skills/agent-token-economy/references/tools-verdicts.md`.
 
+### D-200 · One rarity ladder: basic, rare, epic, legendary, mythical, for skills, titles, classes and items; make apart from rarity (2026-11-27; orders 97 and 98, the owner's answer 1; audit C-04; H-171)
+- **The conflict.** Four ladders, none order 97's: skills common, uncommon, rare, *unique*, legendary (unique below
+  legendary); titles uncommon, rare, legendary with a `unique` flag worth more than legendary; classes common, uncommon,
+  rare, epic, legendary, *unique* (above legendary); items plain, fine, masterwork, legendary, unique. The look's tiers
+  (achievements, beasts, gear) a sixth: common, uncommon, rare, epic, legendary, mythic.
+- **The ladder.** `data/rarity.json` holds the five words; every system reads them from there (the validators, the
+  classes test, `A.RARITY` for every screen) and keeps only its own figures by them. **Common and uncommon read as basic**
+  (answer 1; `A.RARITY.of` maps them for any older text, e.g. a mod). **"Unique" is no rarity anywhere:** where it was a
+  skill rarity it would sit at epic (no skill held it); the Sword Saint's class (unique, above legendary) is mythical
+  (order 97: his set is mythical); items "unique" are legendary, or mythical for the Primordials', the Dragon King's and the
+  Sword Saint's. One holder at a time is a separate flag: a title's `unique`, a skill's census `one`, and, for classes,
+  the rarity itself (legendary and mythical: D-201).
+- **Figures kept whole.** A title's caps were "its rarity's, or the unique figure when one holder"; every legendary title a
+  person may earn was one holder's, so the old unique figure is the legendary one now (boost cap 0.25, +6 on a stat, budget
+  x1.5) and no title's numbers move. Epic sits between (0.1, +4, x1.25), mythical above (0.4, +8, x2). `E.CAP_BOOST`
+  names the five words (one holder lifts no cap). The skills' budget bonus: basic 0, rare 0, epic 0.25, legendary 0.5,
+  mythical 1. The classes' generator figures by the ladder; the three hidden step-2 lines that were uncommon (storm, iron,
+  wolf) keep their gifts by figures of their own on the template (`fight` 2, `honour` 3).
+- **Make apart from rarity** (the brief's question, decided here). A made thing's make (crude, plain, fine, masterwork) is
+  the smith's care; its rarity is what the thing is. An item of a sheet says `rarity` and may say `make` (`quality` is
+  gone; `tools/lint-figures.mjs` fails it); a screen prints the make and the rarity above basic ("masterwork sabre",
+  "legendary relic"). The figure library already drew the two apart (q make, r rarity). The release's gear keeps its make
+  (`GD.QUAL`; its "Common" reads "Plain", the key unchanged); the look tints a masterwork piece rare, others basic.
+- **The budget proposal** of `.claude/skills/rpg-progression-design` (§3.1: x1, 1.25, 1.5, 2, 3 by step, one table in
+  `data/rarity.json`) is not adopted here: this step moves no number (the skills' bonus reads x1, 1, 1.25, 1.5, 2; the titles'
+  budget the same), so no title's, skill's or class's strength changes with the words. The proposal is for waves 3 and 4
+  to measure (`ttGameChanger`, `balance.mjs`) and then write in `data/rarity.json`.
+- **Not chosen.** Keeping `rarities` lists in each vocabulary and checking them equal (two sources that can drift);
+  dropping the craft grade into the ladder (a masterwork sabre is not an epic thing). Saves: no save holds a rarity word
+  (titles, classes, skills are kept by id; checked on the sample saves), so the ladder itself needs no migration.
+
+### D-201 · Legendary and mythical classes: one living holder each, never advanced; three legendaries, one mythical (2026-11-27; orders 97 and 98; audit C-05; H-172; D-184, D-200)
+- **The conflict.** Order 97: "Legendary classes (one holder at a time; they cannot be advanced)"; legendaries "very few and
+  nearly impossible". The generator's `wyrm` template made a legendary class on all nine roads, open to anyone who killed
+  five beasts above him at his third wall, and `CL.open` only kept the Sword Saint's unique class off the shown road.
+- **The rule, by rarity** (`data/rarity.json` oneHolder): a legendary or mythical class has one living holder. The census
+  `A.S.lvc.u` (class -> holder id) is written when one is taken (`CL.take` refuses it while another lives), cleared of the
+  dead once a year (`CL.year`), and a great being whose road holds one (the elf master's Wyrm Blade, `data/figures/`) holds
+  it while he lives (`CL.holder`, as a title's sheet holder does). `CL.open` refuses it while another holds it, refuses
+  every class after a one-holder class (cannot be advanced: its holder takes the breakthrough's points at later walls), and
+  no road a person's skills would give (`CL.chain`: the profile's shown class, a seeded life's worn road) holds one.
+  `tools/lint-figures.mjs` fails a sheet's road that goes past one, or two sheets holding one.
+- **Few.** The `wyrm` template is made on three roads (`roads`: the sword, the spear and the bow, the arms the songs say
+  have killed dragons) and asks a true dragon slain as well as five beasts above him (`req.deeds`, every one). Three
+  legendary classes, the Sword Saint's class the one mythical (D-200). The others' parts are not lost from the game: the
+  template's technique and passive are the three's.
+- **Saves** (version 24, step `classOne`): the census is built from everyone's road (the earliest living taker, by year
+  then id); a road's class the tree no longer makes (the six cut legendaries) is struck from it. No sample save holds one.
+- **Plain names** (the owner's standing rule on naming, given during this work: plain words a newcomer reads cold, not
+  "wyrm"): the three are the **Dragonslayer Blade, Spear and Bow** (`dragonslayer-*`; the template's passive *Bane of
+  Beasts*, once Wyrmsbane); the save step `classOne` moves a road's `wyrm-blade`, `wyrm-spear`, `wyrm-bow` to the new ids
+  (`CL.RENAMED`) before it builds the census, and the elf master's road names the new one. The release's own Wyrm Spears
+  (the Spear Yard of Aming's hunters) are left to the whole-game naming pass.
+- **Not chosen.** Keeping nine with one holder each (order 97: very few); a separate `one` flag on the class (the rarity
+  already says it, and a flag could disagree with it); letting a legendary class lead to a later one (order 97).
+
+### D-202 · Mythical titles and arts for the Primordials, the Dragon King and the Sword Saint; Wyrm-Slayer is the Dragon Slayer (2026-11-27; orders 97 and 98; audit C-06, C-25; H-173; D-183, D-200)
+- **Mythical titles.** The rarity line only (the names, texts and looks are the other builder's, order 98's renaming):
+  `primordial-archdemon` (the three Primordials), each Primordial's own (`prince-of-the-seventh-gate`, `unmaker`,
+  `hollow-choir`), `king-of-dragons` and `sword-saint`. Their second titles (the Dragon King's first clutch, the Saint's
+  Dragon-Feller and Binder) stay legendary: mythical is for what each of them *is*. The Sword Saint's title is one a person
+  may take after him: mythical, its figures (D-200: boost cap 0.4, +8 on a stat, budget x2) allow more than its effects
+  spend, and they are unchanged.
+- **A great being's own arts are one set** of one rarity (`A.RARITY.setOf`): the rarest title it holds, at least its
+  category's (`data/rarity.json` beings: the legends, the ancient demons and the ancient dragons legendary). The five are
+  mythical, every other legend, ancient demon and ancient dragon legendary; the profile says it beside the arts ("mythical
+  arts"; the codex "Its arts are mythical"). A rarity on each sheet skill was not chosen: those lines are being rewritten
+  (the Primordials' powers, order 97) on another branch, and a set read from the titles cannot disagree with them. Ranks
+  are untouched (the legends' skills top out at S 10; SS to X for their arts, C-28, is the skills library's next wave), so
+  no being's power moves.
+- **Ancient demons' own legendaries** (order 97: "legendaries of their own") are not written here: six of the 33 hold one
+  (`first-marquis` ...), and order 98's demons-by-rank rework, with each demon's own title, is the other builder's. Their
+  arts read legendary by their category.
+- **The Dragon Slayer.** The title's id, name, style and earned line (`dragon-slayer`; "the Dragon Slayer"); a true dragon
+  only (H-164). An old save's holder keeps it: save step `titleIds` (version 24) moves the held, lost, borne, refused-grant,
+  census, once and the age's first records from the old id (`TT.RENAMED`). The release's "Dragonslayer" epithet stays
+  apart (it fires for the release's two dragons only). `docs/MASTER_PROMPT.md` and the owner's prompts keep their words.

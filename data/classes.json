@@ -1,6 +1,6 @@
 {
- "about": "The classes a person may take at the walls of his level (each hundredth level: 100, 200, 300 ...), as in the manhwa Overgeared and the classes of Reincarnated as a Slime, with names of our own (orders 91 and 92, D-184; src/people/9999975-level/c-classes.core.js). A tree, not a ladder: a class leads to several at the next wall (from), and at each wall a person chooses among the classes his road and skills open (two to four options on a card for the player; A.WHY.decide for anyone else) or takes a stat boost instead. A class ADDS things to do: a technique for duels (tech: an active skill, read as a style's technique), a passive that fires under its condition in a duel (passive), a buff (a stat raised for some months, or blood recovered: an activity), a new way to earn or fight (act: an activity). Every class on a person's road keeps its parts; only the class he holds now gives its effects (the skills adapter's vocabulary, so the caps of skills-v2 §2.4 bind it with his skills and titles). Order 95: classes as in Overgeared, hundreds in the end: the base classes and their advancements here by hand, and the generator below adding advanced and hidden branches on every road; a class's rarity (common, uncommon, rare, epic, legendary, unique: one holder) never changes along its line (an advancement keeps it), while a hidden branch may be rarer, with stronger effects. A class read at seeding (on load, at the first month, at an NPC's first fight) is worn: its parts, no effects, no honour, no points (his worth, from which his level was read, already holds them).",
- "fieldsNote": "A class: id, rarity (common, uncommon, rare, epic, legendary, unique), line (its advancements keep the line and the rarity), req (hidden conditions: skill [key, min], deed [kind, min], status [list], rung (a house's rank, at least)), name, step (1 the first class on a road, 2, 3), from (the classes it follows; null: a first class), fam (the skill families whose best level must reach need[step]; 'any' is any art of arms), ways (the ways of life it suits, level.json ways), deeds (deed-ledger kinds that speak for it), title (a title he must hold: the Sword Saint), unique (one living holder), rank (its weight as a source in the skills adapter), honour (paid once, on taking it), effects (the skills' vocabulary), tech (an active: a duel technique, the release's fields: base strike/feint/guard/press, weapon, uses, cost, fx, desc), passive (on: lowHp, beast, first, mounted, shieldGuard, foeGuard, late; edge, fury, heal; once a duel for fury and heal), act (an activity: key, name, desc, cat, s, s2, d, coin [lo, hi], hurt, deed) and buff (an activity: key, name, desc, stat, v, months, or heal), hook (a few words for the card at the wall), text (what the class is, in the world's words).",
+ "about": "The classes a person may take at the walls of his level (each hundredth level: 100, 200, 300 ...), as in the manhwa Overgeared and the classes of Reincarnated as a Slime, with names of our own (orders 91 and 92, D-184; src/people/9999975-level/c-classes.core.js). A tree, not a ladder: a class leads to several at the next wall (from), and at each wall a person chooses among the classes his road and skills open (two to four options on a card for the player; A.WHY.decide for anyone else) or takes a stat boost instead. A class ADDS things to do: a technique for duels (tech: an active skill, read as a style's technique), a passive that fires under its condition in a duel (passive), a buff (a stat raised for some months, or blood recovered: an activity), a new way to earn or fight (act: an activity). Every class on a person's road keeps its parts; only the class he holds now gives its effects (the skills adapter's vocabulary, so the caps of skills-v2 §2.4 bind it with his skills and titles). Order 95: classes as in Overgeared, hundreds in the end: the base classes and their advancements here by hand, and the generator below adding advanced and hidden branches on every road; a class's rarity (a word of the one ladder, data/rarity.json, D-200: basic, rare, epic, legendary, mythical; a legendary or mythical class has one living holder and cannot be advanced) never changes along its line (an advancement keeps it), while a hidden branch may be rarer, with stronger effects. A class read at seeding (on load, at the first month, at an NPC's first fight) is worn: its parts, no effects, no honour, no points (his worth, from which his level was read, already holds them).",
+ "fieldsNote": "A class: id, rarity (the one ladder, data/rarity.json: basic, rare, epic, legendary, mythical; legendary and mythical: one living holder, nothing follows them), line (its advancements keep the line and the rarity), req (hidden conditions: skill [key, min], deed [kind, min], deeds [[kind, min], ...] (each), status [list], rung (a house's rank, at least)), name, step (1 the first class on a road, 2, 3), from (the classes it follows; null: a first class), fam (the skill families whose best level must reach need[step]; 'any' is any art of arms), ways (the ways of life it suits, level.json ways), deeds (deed-ledger kinds that speak for it), title (a title he must hold: the Sword Saint), rank (its weight as a source in the skills adapter), honour (paid once, on taking it), effects (the skills' vocabulary), tech (an active: a duel technique, the release's fields: base strike/feint/guard/press, weapon, uses, cost, fx, desc), passive (on: lowHp, beast, first, mounted, shieldGuard, foeGuard, late; edge, fury, heal; once a duel for fury and heal), act (an activity: key, name, desc, cat, s, s2, d, coin [lo, hi], hurt, deed) and buff (an activity: key, name, desc, stat, v, months, or heal), hook (a few words for the card at the wall), text (what the class is, in the world's words).",
  "need": {
   "1": 35,
   "2": 55,
@@ -113,7 +113,7 @@
     "edge": 1
    },
    "text": "A man the sword has chosen: a cut of his own in a duel, and an eye that measures a foe in the first exchange.",
-   "rarity": "common",
+   "rarity": "basic",
    "line": "blade"
   },
   {
@@ -173,7 +173,7 @@
     "edge": 1
    },
    "text": "A spear that keeps men off: a thrust from far out, and a point he cannot hide from behind his guard.",
-   "rarity": "common",
+   "rarity": "basic",
    "line": "spear"
   },
   {
@@ -232,7 +232,7 @@
     "edge": 2
    },
    "text": "The bow as a trade: a shot taken before the clash, and an eye at its sharpest in the first exchange.",
-   "rarity": "common",
+   "rarity": "basic",
    "line": "bow"
   },
   {
@@ -289,7 +289,7 @@
     "edge": 2
    },
    "text": "A wall of one: a shield that strikes back, and a guard that holds when he braces behind it.",
-   "rarity": "common",
+   "rarity": "basic",
    "line": "shield"
   },
   {
@@ -348,7 +348,7 @@
     "edge": 1
    },
    "text": "A fighter on horseback: a charge that carries the horse's weight, and a seat that steadies every blow.",
-   "rarity": "common",
+   "rarity": "basic",
    "line": "rider"
   },
   {
@@ -409,7 +409,7 @@
     "edge": 2
    },
    "text": "Fists and a hard head: a blow that stuns, and a body that fights hardest when it is losing.",
-   "rarity": "common",
+   "rarity": "basic",
    "line": "fist"
   },
   {
@@ -481,7 +481,7 @@
     "hurt": 4
    },
    "text": "The woods as a living: a cut that brings a beast down, a sense for the wild, and game to sell.",
-   "rarity": "common",
+   "rarity": "basic",
    "line": "hunt"
   },
   {
@@ -539,7 +539,7 @@
     "heal": 10
    },
    "text": "Any weapon, any fight: one blow with all his weight, and breath that comes back when he is nearly down.",
-   "rarity": "common",
+   "rarity": "basic",
    "line": "war"
   },
   {
@@ -615,7 +615,7 @@
     "deed": "pupil_taught"
    },
    "text": "The sword as an art to teach: a counter that flows, and pupils who pay to learn it.",
-   "rarity": "common",
+   "rarity": "basic",
    "line": "blade"
   },
   {
@@ -686,7 +686,7 @@
     "hurt": 9
    },
    "text": "One man against one: a feint that reads him, and fights for a purse wherever men wager.",
-   "rarity": "uncommon",
+   "rarity": "basic",
    "line": "duel"
   },
   {
@@ -751,7 +751,7 @@
     "months": 3
    },
    "text": "The sword as a dance: steps that cut as they turn, and a body kept light by the forms.",
-   "rarity": "uncommon",
+   "rarity": "basic",
    "line": "dance"
   },
   {
@@ -825,7 +825,7 @@
     "deed": "pupil_taught"
    },
    "text": "The spear as a line of men: a thrust through mail, and lads drilled into a wall for pay.",
-   "rarity": "common",
+   "rarity": "basic",
    "line": "spear"
   },
   {
@@ -887,7 +887,7 @@
     "edge": 2
    },
    "text": "Horse and lance as one weapon: a couched charge that unhorses, and a first pass that decides.",
-   "rarity": "uncommon",
+   "rarity": "basic",
    "line": "lance"
   },
   {
@@ -957,7 +957,7 @@
     "months": 3
    },
    "text": "The shot that does not miss: an arrow for the gap in the armour, and an eye kept keen by practice.",
-   "rarity": "common",
+   "rarity": "basic",
    "line": "bow"
   },
   {
@@ -1026,7 +1026,7 @@
     "hurt": 6
    },
    "text": "The wild roads as a beat: a fight on ground of his choosing, and lords who pay for their roads watched.",
-   "rarity": "uncommon",
+   "rarity": "basic",
    "line": "ranger"
   },
   {
@@ -1092,7 +1092,7 @@
     "hurt": 8
    },
    "text": "A shield hired out: wounds bound the old soldier's way, and carts kept safe on the roads for pay.",
-   "rarity": "common",
+   "rarity": "basic",
    "line": "shield"
   },
   {
@@ -1158,7 +1158,7 @@
     "edge": 2
    },
    "text": "The one who holds the gate: a stand that gets his breath back, and a guard that grows as the fight runs on.",
-   "rarity": "uncommon",
+   "rarity": "basic",
    "line": "warden"
   },
   {
@@ -1232,7 +1232,7 @@
     "hurt": 10
    },
    "text": "Fighting as a living: a clinch that strips a weapon, and the pits where men pay to watch.",
-   "rarity": "common",
+   "rarity": "basic",
    "line": "fist"
   },
   {
@@ -1312,7 +1312,7 @@
     "hurt": 14
    },
    "text": "What preys on men, hunted: a stroke that bleeds a beast, patience against it, and bounties from frightened villages.",
-   "rarity": "uncommon",
+   "rarity": "basic",
    "line": "beast"
   },
   {
@@ -1368,7 +1368,7 @@
     "months": 2
    },
    "text": "Rage as a weapon: a fury that wakes when he bleeds, and strength he can call up for a season.",
-   "rarity": "uncommon",
+   "rarity": "basic",
    "line": "rage"
   },
   {
@@ -1385,7 +1385,6 @@
     "sword"
    ],
    "title": "sword-saint",
-   "unique": true,
    "ways": [
     "captain",
     "lord",
@@ -1446,7 +1445,7 @@
     "edge": 3
    },
    "text": "The strongest art of one man against one foe the world has known. One living holder, and he must bear the Saint's name.",
-   "rarity": "unique",
+   "rarity": "mythical",
    "line": "saint"
   },
   {
@@ -1523,7 +1522,7 @@
     "deed": "pupil_taught"
    },
    "text": "A master of masters: cuts that open a man by inches, and a hall of his own full of paying pupils.",
-   "rarity": "common",
+   "rarity": "basic",
    "line": "blade"
   },
   {
@@ -1659,7 +1658,7 @@
     "edge": 3
    },
    "text": "The bow at its height: two arrows at once, and a first shot that is almost never wasted.",
-   "rarity": "common",
+   "rarity": "basic",
    "line": "bow"
   },
   {
@@ -1718,7 +1717,7 @@
     "months": 4
    },
    "text": "The man who does not fall: blood that comes back when he should be down, and a body hardened like a wall.",
-   "rarity": "common",
+   "rarity": "basic",
    "line": "shield"
   },
   {
@@ -2041,43 +2040,32 @@
     "hurt": 18
    },
    "text": "The hunter of monsters: a snare laid days ahead, an old enmity with every beast, and bounties no one else will take.",
-   "rarity": "uncommon",
+   "rarity": "basic",
    "line": "beast"
   }
  ],
- "rarities": [
-  "common",
-  "uncommon",
-  "rare",
-  "epic",
-  "legendary",
-  "unique"
- ],
  "generator": {
-  "about": "Advanced and hidden branches made on every road at load (c-classes.core.js CL.generate), each a class like the hand-made ones: an id, a name from the template's prefix and the road's noun, a rarity its line keeps, hidden conditions, and parts of its own (a technique named for the road, and the template's passive, buff or work). step 2 templates follow the road's base class and have an advancement at step 3 (the same line and rarity: '<name> Master', with a further part); step 3 templates follow any step-2 class off the road's base.",
+  "about": "Advanced and hidden branches made on every road at load (c-classes.core.js CL.generate), each a class like the hand-made ones: an id, a name from the template's prefix and the road's noun, a rarity its line keeps (its gifts by rarityStat, rarityFight and rarityHonour, unless the template gives fight or honour of its own), hidden conditions, and parts of its own (a technique named for the road, and the template's passive, buff or work). A template with roads is made on those roads only (by the road's fam). step 2 templates follow the road's base class and have an advancement at step 3 (the same line and rarity: '<name> Master', with a further part); step 3 templates follow any step-2 class off the road's base.",
   "rarityStat": {
-   "common": 1,
-   "uncommon": 1,
+   "basic": 1,
    "rare": 2,
    "epic": 2,
    "legendary": 3,
-   "unique": 3
+   "mythical": 3
   },
   "rarityFight": {
-   "common": 1,
-   "uncommon": 2,
+   "basic": 1,
    "rare": 2,
    "epic": 3,
    "legendary": 3,
-   "unique": 4
+   "mythical": 4
   },
   "rarityHonour": {
-   "common": 2,
-   "uncommon": 3,
+   "basic": 2,
    "rare": 5,
    "epic": 8,
    "legendary": 12,
-   "unique": 15
+   "mythical": 15
   },
   "roads": [
    {
@@ -2173,7 +2161,9 @@
    {
     "key": "storm",
     "prefix": "Storm",
-    "rarity": "uncommon",
+    "rarity": "basic",
+    "fight": 2,
+    "honour": 3,
     "step": 2,
     "req": {
      "skill": [
@@ -2222,7 +2212,9 @@
    {
     "key": "iron",
     "prefix": "Iron",
-    "rarity": "uncommon",
+    "rarity": "basic",
+    "fight": 2,
+    "honour": 3,
     "step": 2,
     "req": {
      "deed": [
@@ -2322,7 +2314,9 @@
    {
     "key": "wolf",
     "prefix": "Wolf",
-    "rarity": "uncommon",
+    "rarity": "basic",
+    "fight": 2,
+    "honour": 3,
     "step": 2,
     "req": {
      "deed": [
@@ -2496,14 +2490,26 @@
     "text": "A {noun} of a great house: arts no common master teaches, and the young of the great to teach in turn."
    },
    {
-    "key": "wyrm",
-    "prefix": "Wyrm",
+    "key": "dragonslayer",
+    "prefix": "Dragonslayer",
     "rarity": "legendary",
+    "roads": [
+     "sword",
+     "spear",
+     "bow"
+    ],
+    "roadsNote": "Legendary classes are very few and nearly impossible (order 97, D-201): three, on the arms the songs say have killed dragons, each one living man's at a time, never advanced; a true dragon slain, and five beasts stronger than him.",
     "step": 3,
     "req": {
-     "deed": [
-      "beast_above",
-      5
+     "deeds": [
+      [
+       "beast_above",
+       5
+      ],
+      [
+       "dragon_slain",
+       1
+      ]
      ]
     },
     "stat": "str",
@@ -2520,7 +2526,7 @@
     },
     "passive": {
      "on": "beast",
-     "name": "Wyrmsbane",
+     "name": "Bane of Beasts",
      "edge": 5
     },
     "hook": "a blow through scale, and a bane to every beast",

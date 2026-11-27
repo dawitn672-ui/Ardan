@@ -35,8 +35,10 @@
       if (L && L.titles) more += ' Titles: ' + L.titles.map(y => y.n + (capWords(y.buffs) ? ' (' + capWords(y.buffs) + ')' : '')).join('; ') + '.';
       if (L && kn >= 2) {
         if (L.class) more += ` Class: ${L.class}.`;
-        if (L.skills) more += ' Skills: ' + L.skills.map(k => `${k.n}, ${k.rank}-rank, level ${k.lvl} of 10: ${k.does}${k.from ? ' (' + k.from + ')' : ''}`).join(' ');
-        if (L.items && L.items.length) more += ' Carries: ' + L.items.map(i => `${i.n} (${i.quality} ${i.kind}): ${i.does}${capWords(i.gives) ? ' Gives ' + capWords(i.gives) + '.' : ''}`).join(' ');
+        // its own arts, one set of one rarity (order 97, D-202)
+        const set = A.RARITY ? A.RARITY.setOf(L, PW.LEG.has(x.id) ? 'legends' : null) : null;
+        if (L.skills) more += (set ? ` Its arts are ${A.RARITY.word(set)}.` : '') + ' Skills: ' + L.skills.map(k => `${k.n}, ${k.rank}-rank, level ${k.lvl} of 10: ${k.does}${k.from ? ' (' + k.from + ')' : ''}`).join(' ');
+        if (L.items && L.items.length) more += ' Carries: ' + L.items.map(i => `${i.n} (${[A.RARITY ? A.RARITY.itemWords(i) : '', i.kind].filter(Boolean).join(' ')}): ${i.does}${capWords(i.gives) ? ' Gives ' + capWords(i.gives) + '.' : ''}`).join(' ');
       } else if (L) more += ' What it can do, and what it carries, you would only learn by meeting it.';
       const where = PW.great().length;
       return `<tr><td>${num(x.rank, `Of the ${where} greatest beings of the world, by fighting power: level, titles, skills and arms together.`)}</td><td data-note="${e((L && L.d ? L.d : 'A named monster of the wilds.') + more)}"><b>${e(x.n)}</b>${t ? ' <span class="muted">' + e(t) + '</span>' : ''}</td><td>${num(x.level, PW.band(x.level).d)}</td></tr>`;

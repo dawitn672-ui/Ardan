@@ -106,7 +106,7 @@ The build puts them on the page as `A.DATA.skills2` (one object, ids as keys), a
   "id": "measured_blade",                 // lowercase, unique, stable forever (saves hold it)
   "name": "Measured Blade",
   "rank": "B",                            // D C B A S
-  "rarity": "uncommon",                   // common uncommon rare unique legendary
+  "rarity": "basic",                      // the one ladder (data/rarity.json, D-200): basic rare epic legendary mythical
   "kind": "passive",                      // passive active reaction aura blessing flaw
   "category": "combat.sword",             // group.sub; the screen's tabs are the groups
   "family": "sword",                      // a ladder rung reads its family (§5); null for a named skill
@@ -863,7 +863,7 @@ requirements that need to be met that can't be seen."
 ### 11.1 What a title is
 
 A **title** is a name the world gives a person for what he has done or become: *Undefeated*, *the Hundred-Day Wall*,
-*Wyrm-Slayer*. It is its own system beside skills:
+*the Dragon Slayer* (Wyrm-Slayer until order 98). It is its own system beside skills:
 - **Earned, never bought, never trained.** No experience, no levels, no shop, no card choice that grants one directly.
 - **Very hard to get.** An ordinary life ends with none; a remarkable one with one or two; the great with four or five.
 - **Hidden requirements.** The player never sees a title's conditions or his progress toward it. At most a **hint**,

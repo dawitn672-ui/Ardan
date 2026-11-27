@@ -19,9 +19,13 @@
 // A.canAct holds to those who have the class: LV.hasAct). Every class on his road keeps its parts; the class he holds now
 // gives its effects in the skills adapter (SK2.xClass), so the caps bind it with his skills and titles. A class read at
 // seeding (worn: on load, at the first month, at an NPC's first fight) has its parts and no effects, honour or points.
+// One holder (order 97, D-201): a legendary or mythical class (A.RARITY.oneHolder) has one living holder at a time and
+// cannot be advanced: CL.open refuses it while another living person holds it (the census, A.S.lvc.u) and refuses every
+// class after it; no road a person's skills would give (CL.chain, the profile's shown class, a seeded life) holds one.
 // State (optional, old saves load; the save step 'classes', version 22): p.lv.ct (the walls settled), p.lv.cr ([[class,
 // year, earned 1 or worn 0]], his road), p.lv.wp (the player's walls waiting for an answer), p.lv.bf ([stat, v, months]:
-// a buff running). Nothing here draws on render.
+// a buff running); A.S.lvc = { u: { class: holder id } } (the census; the save step 'classOne', version 24). Nothing here
+// draws on render.
 (function () {
   const LV = A.LV, D = A.DATA && A.DATA.classes;
   if (!LV || !D || !Array.isArray(D.classes)) { if (LV) console.error('[level] data/classes.json is missing'); return; }
@@ -36,12 +40,14 @@
     for (const r of G.roads) {
       const fam = [r.fam], step2 = [];
       for (const t of G.templates) {
+        if (Array.isArray(t.roads) && !t.roads.includes(r.fam)) continue;   // a template for some roads only (the legendaries)
         const id = `${t.key}-${slug(r.noun)}${r.fam === 'melee' ? '-m' : ''}`, name = `${t.prefix} ${r.noun}`, line = id;
-        const sv = G.rarityStat[t.rarity] || 1, fv = G.rarityFight[t.rarity] || 1;
+        // its gifts by its rarity (the one ladder, D-200), or the template's own figures where it keeps an older one's
+        const sv = G.rarityStat[t.rarity] || 1, fv = t.fight || G.rarityFight[t.rarity] || 1, hv = t.honour || G.rarityHonour[t.rarity] || 2;
         const tag = r.fam === 'any' ? 'all' : r.fam;
         const base = {
-          id, name, step: t.step, rarity: t.rarity, line, gen: t.key, fam, req: t.req || null, ways: [], deeds: t.req && t.req.deed ? [t.req.deed[0]] : [],
-          rank: t.rarity === 'legendary' ? 'S' : t.step >= 3 ? 'A' : 'B', honour: G.rarityHonour[t.rarity] || 2,
+          id, name, step: t.step, rarity: t.rarity, line, gen: t.key, fam, req: t.req || null, ways: [], deeds: t.req && t.req.deed ? [t.req.deed[0]] : t.req && t.req.deeds ? t.req.deeds.map(x => x[0]) : [],
+          rank: t.rarity === 'legendary' || t.rarity === 'mythical' ? 'S' : t.step >= 3 ? 'A' : 'B', honour: hv,
           effects: [{ type: 'fight', tag, part: t.part || 'atk', v: fv }, { type: 'stat', stat: t.stat || 'str', v: sv }],
           hook: t.hook, text: String(t.text || '').replace('{noun}', r.noun.toLowerCase()),
         };
@@ -53,7 +59,7 @@
           base.from = [r.base];
           out.push(base); step2.push(id);
           if (t.master) {
-            const m = Object.assign({}, base, { id: id + '-master', name: name + ' Master', step: 3, from: [id], rank: 'A', honour: (G.rarityHonour[t.rarity] || 2) + 2,
+            const m = Object.assign({}, base, { id: id + '-master', name: name + ' Master', step: 3, from: [id], rank: 'A', honour: hv + 2,
               hook: t.hook, text: `${base.text} Mastered: what the road taught him is his to teach.` });
             delete m.tech; delete m.passive; delete m.buff; delete m.act;
             if (t.master.tech) m.tech = fx(r, Object.assign({ id: 'cl-' + id + '-master' }, t.master.tech));
@@ -96,19 +102,37 @@
     const way = LV.wayOf ? LV.wayOf(p) : 'common', d = deedCount(p, cls.deeds);
     return { v, need, way: (cls.ways || []).includes(way), deeds: d, score: (v - need) / 10 + ((cls.ways || []).includes(way) ? 1 : 0) + Math.min(1, d / 10) };
   };
-  // a hidden branch's conditions (pure): a skill's level, a deed done often enough, a birth and a house's rank
+  // a hidden branch's conditions (pure): a skill's level, a deed done often enough (deeds: several, each often enough), a
+  // birth and a house's rank
   CL.reqMet = function (p, r) {
     if (r.skill && CL.famValue(p, r.skill[0]) < r.skill[1]) return false;
     if (r.deed && deedCount(p, [r.deed[0]]) < r.deed[1]) return false;
+    if (r.deeds && r.deeds.some(d => deedCount(p, [d[0]]) < d[1])) return false;
     if (r.status && !r.status.includes(p.status)) return false;
     if (r.rung && !(((p.noble && p.noble.rung) || 0) >= r.rung || p.status === 'royal' || p.ruler)) return false;
     return true;
   };
+  // one holder (D-201): a legendary or mythical class; its living holder (a person, by the census), or null. Pure
+  // (read once at load: CL.open runs for every class at every wall of every seeded life)
+  const ONESET = new Set(ALL.filter(c => (A.RARITY ? A.RARITY.oneHolder(c.rarity) : c.rarity === 'legendary' || c.rarity === 'mythical')).map(c => c.id));
+  const ONE = CL.one = cls => !!cls && ONESET.has(cls.id);
+  // a great being whose road (data/figures/, a master's overlay) holds the class holds it while he lives (the elf's Wyrm
+  // Blade), as a title's sheet holder does (A.TT.holder)
+  const BEING = new Map();
+  for (const k of Object.keys(A.DATA || {}).filter(k => /^figures\//.test(k)).sort()) for (const f of (A.DATA[k] && A.DATA[k].figures) || []) for (const id of f.road || []) if (!BEING.has(id)) BEING.set(id, f.id);
+  const beingLives = id => { const PW = A.POWER; if (!PW) return false; if (PW.MAS && PW.MAS.has(id)) return true; if (!PW.LEG || !PW.LEG.has(id)) return false; const g = A.S && A.S.pw && A.S.pw.leg && A.S.pw.leg[id]; return !(g && g.slain); };
+  CL.holder = function (id) {
+    const u = A.S && A.S.lvc && A.S.lvc.u, h = u ? u[id] : null;
+    if (h != null) { const q = A.P ? A.P(h) : null; if (q && q.alive !== false) return h; }
+    const b = BEING.get(id); return b != null && ONE(CL.BY.get(id)) && beingLives(b) ? b : null;
+  };
   CL.open = function (p, cls, cur, shown) {
-    if (!(cls.from || []).includes(cur === undefined ? CL.current(p) : cur)) return false;
+    const from = cur === undefined ? CL.current(p) : cur;
+    if (!(cls.from || []).includes(from)) return false;
+    if (from && ONE(CL.BY.get(from))) return false;   // a legendary or mythical class cannot be advanced
     if (CL.road(p).some(x => x[0] === cls.id)) return false;
     if (cls.title && (shown || !(A.TT && A.TT.holds(p, cls.title)))) return false;
-    if (cls.unique && shown) return false;
+    if (ONE(cls)) { if (shown) return false; const h = CL.holder(cls.id); if (h != null && String(h) !== String(p.id)) return false; }
     if (cls.req && !CL.reqMet(p, cls.req)) return false;
     return CL.fitValue(p, cls) >= (D.need[cls.step] || 0);
   };
@@ -116,7 +140,7 @@
     return CL.LIST.filter(c => CL.open(p, c, cur, shown)).map(c => ({ c, f: CL.fit(p, c) }))
       .sort((a, b) => b.f.score - a.f.score || byId(a.c.id, b.c.id)).slice(0, 3);
   };
-  // the road his skills would give him over n walls, each step the best open class (pure; never a unique one)
+  // the road his skills would give him over n walls, each step the best open class (pure; never a legendary or mythical one)
   CL.chain = function (p, n) {
     const out = []; let cur = null;
     for (let i = 0; i < n; i++) { const o = CL.options(p, cur, true)[0]; if (!o) break; out.push(o.c.id); cur = o.c.id; }
@@ -157,11 +181,16 @@
   };
   CL.take = function (p, id) {
     const cls = CL.BY.get(id), lv = p.lv; if (!cls || !lv) return false;
+    if (ONE(cls)) {
+      const h = CL.holder(id); if (h != null && String(h) !== String(p.id)) return false;
+      const st = A.S.lvc && typeof A.S.lvc === 'object' ? A.S.lvc : (A.S.lvc = {});
+      (st.u = st.u && typeof st.u === 'object' ? st.u : {})[id] = p.id;
+    }
     lv.cr = CL.road(p).concat([[id, A.S.year, 1]]);
     if (cls.honour) p.honor = Math.max(0, Math.min(100, (p.honor || 0) + cls.honour));
     (p.deeds = p.deeds || []).push({ y: A.S.year, t: `Became a ${cls.name}` });
     if (A.cacheResetAll && isPc(p)) try { A.cacheResetAll(); } catch (e) {}
-    if (!isPc(p) && (cls.step >= 3 || ['epic', 'legendary', 'unique'].includes(cls.rarity)) && A.news) A.news(`${A.fullName ? A.fullName(p, false) : 'Someone'} is a ${cls.name} now.`, 'crown');
+    if (!isPc(p) && (cls.step >= 3 || ['epic', 'legendary', 'mythical'].includes(cls.rarity)) && A.news) A.news(`${A.fullName ? A.fullName(p, false) : 'Someone'} is a ${cls.name} now.`, 'crown');
     return true;
   };
   CL.boost = function (p, t) { return LV.grant(p, CL.pointsAt(t), `the breakthrough at level ${t * WALL}`); };
@@ -180,7 +209,7 @@
 
   // anyone but the player: the class branch by his reasons (A.WHY.decide), on a stream of his own; or none yet
   CL.reasons = function (p) {
-    const RW = { common: 0, uncommon: 0.15, rare: 0.3, epic: 0.45, legendary: 0.6, unique: 0.8 };
+    const RW = { basic: 0, rare: 0.3, epic: 0.45, legendary: 0.6, mythical: 0.8 };
     const out = CL.options(p).map(({ c, f }) => {
       const rs = [{ kind: 'merit', weight: 0.6 + Math.max(0, f.v - f.need) / 20, label: `his skill fits a ${c.name}`, source: { t: 'class', id: c.id }, pub: true }];
       if (f.way) rs.push({ kind: 'duty', weight: 0.8, label: `a ${c.name} suits his life`, source: { t: 'way', id: c.id }, pub: true });
@@ -249,7 +278,7 @@
     const road = CL.road(p), mine = road.length && road[road.length - 1][0] === cls.id ? road[road.length - 1] : null;
     const how = mine ? (mine[2] ? `Taken at a wall of the level, in ${mine[1]}.` : 'What a life like this is called; no wall was crossed for it in the record.') : 'What a life like this is called.';
     const prev = road.slice(0, -1).map(x => (CL.BY.get(x[0]) || {}).name).filter(Boolean);
-    return `${cls.name}, a ${cls.rarity || 'common'} class. ${cls.text} ${how}${prev.length ? ` Before it: ${prev.join(', then ')}; their arts are kept.` : ''} ${CL.gifts(cls)}`.replace(/\s+/g, ' ').trim();
+    return `${cls.name}, a ${(A.RARITY && A.RARITY.word(cls.rarity)) || 'basic'} class. ${cls.text} ${how}${prev.length ? ` Before it: ${prev.join(', then ')}; their arts are kept.` : ''} ${CL.gifts(cls)}`.replace(/\s+/g, ' ').trim();
   };
 
   // ---------------------------------------------------------------- the parts in play
@@ -341,6 +370,32 @@
     if (Array.isArray(lv.bf)) { lv.bf[2]--; if (!(lv.bf[2] > 0)) { delete lv.bf; if (A.cacheResetAll) try { A.cacheResetAll(); } catch (e) {} } }
   };
   A.onMonth.push(pc => { try { CL.month(pc); } catch (e) { console.error('[level] classes month', e); } });
+  // the census keeps only the living: a dead holder's legendary class is free for the next (his road keeps it, as history)
+  CL.year = function () {
+    const u = A.S && A.S.lvc && A.S.lvc.u; if (!u) return 0; let n = 0;
+    for (const id of Object.keys(u)) { const q = A.P ? A.P(u[id]) : null; if (!q || q.alive === false) { delete u[id]; n++; } }
+    return n;
+  };
+  (A.onYear = A.onYear || []).push(function () { try { CL.year(); } catch (e) { console.error('[level] classes year', e); } });
+  // save version 24 (D-201): the census of the one-holder classes from everyone's road, the earliest living taker of each
+  // (by year, then id); a class renamed keeps its holder (the Wyrm Blade, Spear and Bow are the Dragonslayer's: plain
+  // words, D-201), and a road's class the tree no longer makes (the six legendaries D-201 cut) is struck from it, so what
+  // follows on his road and his class read as the tree has them
+  CL.RENAMED = { 'wyrm-blade': 'dragonslayer-blade', 'wyrm-spear': 'dragonslayer-spear', 'wyrm-bow': 'dragonslayer-bow' };
+  CL.migrateOne = function (S) {
+    S = S || A.S; if (!S || !S.people) return 0;
+    const best = {}; let cut = 0;
+    for (const pid of Object.keys(S.people).sort()) {
+      const p = S.people[pid], r = p && p.lv && p.lv.cr; if (!Array.isArray(r)) continue;
+      for (const x of r) if (Array.isArray(x) && CL.RENAMED[x[0]]) x[0] = CL.RENAMED[x[0]];
+      const kept = r.filter(x => Array.isArray(x) && CL.BY.has(x[0])); if (kept.length !== r.length) { cut += r.length - kept.length; p.lv.cr = kept; }
+      if (p.alive === false) continue;
+      for (const x of kept) if (ONE(CL.BY.get(x[0])) && x[2]) { const b = best[x[0]]; if (!b || x[1] < b[1]) best[x[0]] = [p.id, x[1]]; }
+    }
+    const st = S.lvc && typeof S.lvc === 'object' ? S.lvc : (S.lvc = {}); st.u = st.u && typeof st.u === 'object' ? st.u : {};
+    for (const id of Object.keys(best).sort()) if (st.u[id] == null) st.u[id] = best[id][0];
+    return cut;
+  };
   // save version 22: everyone with a held level has his walls settled (worn classes: nothing paid, no effects)
   CL.migrate = function (S) {
     S = S || A.S; let n = 0;
@@ -349,5 +404,6 @@
   };
   const SV = A.V2SAVE;
   if (SV && Array.isArray(SV.STEPS) && !SV.STEPS.some(x => x[0] === 'classes')) SV.STEPS.push(['classes', S => CL.migrate(S)]);
+  if (SV && Array.isArray(SV.STEPS) && !SV.STEPS.some(x => x[0] === 'classOne')) SV.STEPS.push(['classOne', S => CL.migrateOne(S)]);
   CL.clean = clean;
 })();

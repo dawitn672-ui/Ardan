@@ -24,7 +24,7 @@ LOOK.THEMES = {
     '--vital-health': '#ff7070', '--vital': '#bdb8cc',
     '--st-str': '#ff8f73', '--st-spd': '#5fd8cc', '--st-ins': '#c4a6ff', '--st-sta': '#9bdc6e', '--st-int': '#7fb2ff', '--st-wil': '#ff8cc6',
     '--odds-likely': '#6fd49a', '--odds-even': '#f0c062', '--odds-risky': '#ff9e57', '--odds-long': '#ff7a85', '--odds-tint': '14%',
-    '--r-common': '#b3b8c9', '--r-uncommon': '#74d68a', '--r-rare': '#6cb6ff', '--r-epic': '#c59bff', '--r-legendary': '#ffb648', '--r-mythic': '#ff7a6b',
+    '--r-basic': '#b3b8c9', '--r-rare': '#6cb6ff', '--r-epic': '#c59bff', '--r-legendary': '#ffb648', '--r-mythical': '#ff7a6b',
     '--e-1': 'inset 0 1px 0 rgba(255,255,255,.05), 0 1px 2px rgba(0,0,0,.45)', '--e-2': '0 6px 16px rgba(4,6,14,.45)', '--e-3': '0 18px 48px rgba(4,6,14,.6)',
     '--glow-accent': '0 0 0 1px rgba(240,192,98,.55), 0 0 18px rgba(240,192,98,.28)', '--glow-danger': '0 0 0 1px rgba(255,138,115,.55), 0 0 18px rgba(255,138,115,.28)',
     '--ok-tint': 'rgba(111,212,154,.14)', '--danger-tint': 'rgba(255,138,115,.14)', '--warn-tint': 'rgba(245,196,81,.14)', '--info-tint': 'rgba(140,192,255,.14)',
@@ -41,7 +41,7 @@ LOOK.THEMES = {
     '--vital-health': '#b3261e', '--vital': '#3a3e55',
     '--st-str': '#a8321a', '--st-spd': '#0a6b62', '--st-ins': '#6b45c2', '--st-sta': '#366b17', '--st-int': '#2759b8', '--st-wil': '#a8286c',
     '--odds-likely': '#1a6a41', '--odds-even': '#7f5100', '--odds-risky': '#9a4300', '--odds-long': '#b3261e', '--odds-tint': '12%',
-    '--r-common': '#5c6070', '--r-uncommon': '#1f6c33', '--r-rare': '#1f5fb3', '--r-epic': '#7a3fc4', '--r-legendary': '#8a4f00', '--r-mythic': '#a82d1a',
+    '--r-basic': '#5c6070', '--r-rare': '#1f5fb3', '--r-epic': '#7a3fc4', '--r-legendary': '#8a4f00', '--r-mythical': '#a82d1a',
     '--e-1': 'inset 0 1px 0 rgba(255,255,255,.6), 0 1px 2px rgba(40,30,10,.12)', '--e-2': '0 6px 16px rgba(40,30,10,.16)', '--e-3': '0 18px 48px rgba(40,30,10,.22)',
     '--glow-accent': '0 0 0 2px #8a5a10', '--glow-danger': '0 0 0 2px #8a2414',
     '--ok-tint': 'rgba(26,106,65,.10)', '--danger-tint': 'rgba(168,45,26,.10)', '--warn-tint': 'rgba(127,83,0,.10)', '--info-tint': 'rgba(31,94,168,.10)',
@@ -106,7 +106,8 @@ LOOK.STATS = { str: ['Strength', 'STR'], spd: ['Speed', 'SPD'], ins: ['Combat in
 // the engine's odds bands, kept exactly: likely 75 and up, even 50 to 74, risky 30 to 49, long under 30
 LOOK.band = pct => pct >= 75 ? 'likely' : pct >= 50 ? 'even' : pct >= 30 ? 'risky' : 'long';
 LOOK.PIPS = { likely: '●●●●', even: '●●●○', risky: '●●○○', long: '●○○○' };
-LOOK.TIERS = { common: '◇', uncommon: '◆', rare: '◆◆', epic: '◆◆◆', legendary: '★', mythic: '✦' };
+// the one rarity ladder's gems (data/rarity.json, D-200)
+LOOK.TIERS = Object.assign({ basic: '◇', rare: '◆◆', epic: '◆◆◆', legendary: '★', mythical: '✦' }, (A.DATA && A.DATA.rarity && A.DATA.rarity.gems) || {});
 
 // ---- UI.realmInk(hex, theme): a realm's colour made safe to show (brief §1.6). Pure and memoized.
 //   swatch: the raw colour, for fills of 8 x 8 px and up with a --line-strong border

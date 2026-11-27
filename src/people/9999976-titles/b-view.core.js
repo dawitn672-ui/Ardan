@@ -15,7 +15,6 @@
   const esc = s => UI.esc(String(s == null ? '' : s));
   const PF = UI.PF;
   const note = (text, inner, cls) => `<span class="tt ${cls || ''}" data-tt="note" data-v="${esc(text)}" tabindex="0" role="button" aria-haspopup="dialog" aria-expanded="false">${inner}</span>`;
-  const RAR = { uncommon: 'uncommon', rare: 'rare', legendary: 'legendary' };
 
   // ---------------------------------------------------------------- what a title gives, in words
   const STAT = s => ((UI.PF && UI.PF.V2LABEL && UI.PF.V2LABEL[s]) || (GD.STAT_NAMES && GD.STAT_NAMES[s]) || s).toLowerCase();
@@ -51,7 +50,8 @@
     return l.length ? l.join('; ') : '';
   };
   TT.honourWord = h => (h >= 10 ? 'great honour' : h >= 5 ? 'honour' : h > 0 ? 'a little honour' : h < 0 ? 'shame' : 'no honour');
-  TT.rarityWord = t => (t.unique ? 'one of a kind' : RAR[t.rarity] || 'rare');
+  // the title's rarity, a word of the one ladder (A.RARITY, D-200), and one holder at a time apart from it
+  TT.rarityWord = t => { const w = (A.RARITY ? A.RARITY.word(t.rarity) : t.rarity) || 'rare'; return t.unique ? `${w}, one of a kind` : w; };
   // the line an earned card ends on
   TT.cardLine = function (p, id) {
     const t = TT.BY.get(id); if (!t) return '';
@@ -76,7 +76,7 @@
   // ---------------------------------------------------------------- the chips
   const chip = (p, id) => {
     const t = TT.BY.get(id); if (!t) return '';
-    return note(TT.cardText(p, id), `<i class="tt-gem g-${t.unique ? 'unique' : esc(t.rarity)}" aria-hidden="true"></i>${esc(TT.nameOf(p, id))}`, 'tt-chip');
+    return note(TT.cardText(p, id), `<i class="tt-gem g-${esc(A.RARITY ? A.RARITY.of(t.rarity) || 'basic' : t.rarity)}${t.unique ? ' one' : ''}" aria-hidden="true"></i>${esc(TT.nameOf(p, id))}`, 'tt-chip');
   };
   const V = UI.TTV = {};
   V.chips = function (p) {
@@ -118,7 +118,7 @@
 .tt-chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px}
 .tt-chip{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 10px;border:1px solid var(--line,#bbb);border-radius:22px;background:var(--surface-2,transparent);max-width:100%;overflow-wrap:anywhere}
 .tt-gem{width:10px;height:10px;transform:rotate(45deg);display:inline-block;flex:none;background:var(--ink-3,#999)}
-.tt-gem.g-rare{background:var(--accent,#a77)}.tt-gem.g-legendary{background:var(--gold,#c9a227)}.tt-gem.g-unique{background:var(--gold,#c9a227);box-shadow:0 0 0 2px var(--accent,#a77)}
+.tt-gem.g-rare{background:var(--r-rare,#a77)}.tt-gem.g-epic{background:var(--r-epic,#7a3fc4)}.tt-gem.g-legendary{background:var(--r-legendary,#c9a227)}.tt-gem.g-mythical{background:var(--r-mythical,#a82d1a)}.tt-gem.one{box-shadow:0 0 0 2px var(--accent,#a77)}
 .tt-list .pf-c{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .tt-bearbtn{min-height:44px;min-width:44px;padding:0 12px}
 `;

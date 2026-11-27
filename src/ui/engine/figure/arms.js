@@ -1,7 +1,7 @@
 // The figure library · arms. Every weapon and shield is a made thing: a blade with its shoulders, fuller, ridge and honed
 // edge; a guard, a bound grip and a pommel; a scabbard with its locket, bands and chape; a haft with langets, rivets and a
 // shod butt; a bow with its nocks, grip and string. Each is drawn from its FORM (what it is: an arming sword, a bearded
-// axe, a halberd), its MAKE (q: 0 crude .. 3 masterwork, the smith's care), its RARITY (r: 0 common .. 3 legendary, what it
+// axe, a halberd), its MAKE (q: 0 crude .. 3 masterwork, the smith's care), its RARITY (r: 0 basic .. 3 legendary, what it
 // is made of) and its STYLE (st: whose hands made it: north, solen, desert, dwarf, elf, orc). Sizes are true: millimetres.
 // Pure: nothing here reads the page, the clock or a die; a piece's wear comes from a stream seeded by its own measures.
 // A detail is drawn only where it can be seen (see()), and a piece that lies outside the picture costs nothing (gone()).

@@ -149,7 +149,7 @@
     const g = p.gear || {}, out = [];
     for (const slot of ['weapon', 'ranged', 'armor', 'shield', 'helm', 'mount']) {
       const k = g[slot]; if (!k || k === 'none' || k === 'fists') continue;
-      const G = GD.GEAR && GD.GEAR[k]; out.push({ n: G && G.name ? G.name : k, kind: slot, quality: 'fine', does: '', gives: {} });
+      const G = GD.GEAR && GD.GEAR[k]; out.push({ n: G && G.name ? G.name : k, kind: slot, rarity: 'basic', make: 'fine', does: '', gives: {} });
     }
     return out;
   };

@@ -3702,3 +3702,73 @@ journeys, memory weave, family, every-number and standing features' quick tests,
 stages, reasons, docs-index lints, `version.mjs check`, `--check-tiers`.
 
 **Undo.** Revert the step's commits on `ci-fix-21`.
+
+### H-171 · 2026-11-27 · One rarity ladder for skills, titles, classes and items (order 98, D-200)
+
+Audit C-04. `data/rarity.json` (new) holds basic, rare, epic, legendary, mythical, the older words' map (common and
+uncommon are basic), the makes and the great beings' set floors; `src/people/9999974-rarity` (new) reads it as
+`A.RARITY`. Skills: `tools/skills2/seed-data.mjs` writes the rungs basic (D, C, B) and rare (A, S) and the ladders were
+rewritten by it; the arts and merges basic where they were common or uncommon; `vocab.json` drops its `rarities` (the
+validator reads the ladder) and gives `rarityBonus` by the ladder; check 9 holds legendary and mythical to a census.
+Titles: `vocab.json` drops `rarities` and the unique figures (`budget.rarity`, `statMax`, `boost.cap` by the ladder);
+Blooded and Unbought basic; `E.CAP_BOOST` by the ladder (the engine rebundled); a title's card reads "legendary, one of a
+kind". Classes: the ladder in `data/classes.json` and its generator (the Sword Saint's class mythical, its `unique`
+field gone). Items: `quality` split into `rarity` and `make` in `data/legends.json`, `data/power.json` and
+`data/figures/*.json` (field lines only); the profiles print them through `A.RARITY.itemWords`. The look's tiers
+(`91-visual-style`, `92-scene-card`): tokens `--r-basic` .. `--r-mythical`, the achievements' words from the ladder, a
+masterwork chip rare; the release's "Common" make reads "Plain" (`GD.QUAL`).
+
+Checks: `rarityOneLadder` (new), the lints (skills, titles, figures), `node --test tests/v2`, and the step's tests
+(see H-173 for the run on the branch's last commit).
+
+**Undo.** Revert the commit; rebuild the engine bundle (`node tools/build-v2.mjs`) and the skills' rungs
+(`node tools/skills2/seed-data.mjs`).
+
+### H-172 · 2026-11-27 · Legendary classes: one holder each, never advanced, three of them (order 98, D-201)
+
+Audit C-05. `src/people/9999975-level/c-classes.core.js`: `CL.one`, `CL.holder` (the census `A.S.lvc.u`, and a great
+being's road), `CL.open` (one holder; nothing after a one-holder class; none on a shown road), `CL.take` (writes the
+census, refuses a held one), `CL.year` (the dead freed), `CL.migrateOne` (save step `classOne`; `SV.VER` 24 in
+`src/core/99998-v2-saves`); the generator reads a template's `roads` and `CL.reqMet` a list of deeds (`req.deeds`).
+`data/classes.json`: the `wyrm` template on the sword, spear and bow roads, asking a true dragon slain too (155 classes
+to 149). `tools/lint-figures.mjs` makes the tree as the game does (`roads`) and holds a sheet's road to the rule. New test
+`lvClassOne`.
+
+**Undo.** Revert the commit (a version-24 save then loads in the older build only if `SV.VER` goes back with it; the
+census key `lvc` is read by nothing else).
+
+### H-173 · 2026-11-27 · Mythical titles and arts; the Dragon Slayer (order 98, D-202)
+
+Audits C-06, C-25. `data/titles/legends.json`: six titles' rarity mythical (the rarity lines only). `A.RARITY.setOf` reads
+title objects as well as ids; the figures' profile (`src/world/9999977-figures/b-view.core.js`) and the codex's great
+beings (`src/world/9999970-powers/d-view.core.js`) say a being's arts' rarity. `data/titles/people.json`: Wyrm-Slayer is
+`dragon-slayer`, "Dragon Slayer"; `vocab.json`'s `dragon_slain` says dragons only. `a-titles.core.js`: `TT.RENAMED`,
+`TT.migrateIds` (save step `titleIds`, version 24). Tests: `ttMythical` (new), the titles' tests renamed.
+
+Not done, and why: **C-26** (no class past the third wall) needs steps 4 to 6 of the tree and order 97's 300-plus classes:
+content to design, not a fix. **C-27** (skill kinds): the kinds carry engine rules (check 4 lets a blessing or flaw carry a
+stat, check 11 holds a buff to an art riding a duel move, a flaw must spend its whole budget), so mapping aura and blessing
+to buff, flaw to debuff and adding spell is a design step of the skills library, and the great beings' 26 aura and flaw
+sheet skills sit in files another builder is rewriting.
+
+**Undo.** Revert the commit (the `titleIds` step then has nothing to move; `SV.VER` stays 24 with H-172).
+
+### H-173 addendum · 2026-11-27 · Plain names for the three legendary classes (D-201)
+
+The owner's standing rule on naming (plain words a newcomer reads cold), applied to what this branch touched: the `wyrm`
+template is `dragonslayer` (the Dragonslayer Blade, Spear and Bow; the passive Bane of Beasts); `CL.RENAMED` moves an old
+save's `wyrm-*` class ids in the `classOne` step; `data/figures/race-masters.json` (the elf master's road, the class id only)
+and `lvClassOne` follow. The title is the Dragon Slayer (H-173).
+
+**Undo.** Revert the commit.
+
+**H-173 checks** (branch head, `/tmp/ardan/o98r/x4.html` and `x5.html`; the container shared at a load of 30 to 80 on four
+cores): `rarityOneLadder`, `lvClassOne`, `lvClassParts`, `lvClass`, `lvWalls`, `lvLegends`, `lvSeed`, `lvPhone`, `lvBreak`,
+`ttEarned`, `ttUnique`, `ttGameChanger` (its cap read per kind, for boosts that reach everyone), `ttCaps`, `ttNpc`,
+`ttSave`, `ttPhone`, `ttLegends`, `ttHidden`, `ttMythical`, `figRegistry`, `figKnown`, `figPhone`, `figDeterministic`,
+`pwProfiles`, `pwLegends`, `pwPureAndOldSave`, `pwBestiary`, `scBeastTier`, `lookRows`, `tokensContrast`, `sk2Caps`,
+`sk2ArtsView`, `renderRng`, `replayWithRender`, `v2svRoundTrip`, `savesStillLoad` (25 saves), `saveRoundTrip` pass;
+`uiSmoke` passes when the machine gives it the CPU and times out on its 30-second click otherwise, as the trunk's build
+did in the same hour (a new game's main-thread CPU is the same on both builds, 1.8 to 3.0 s against 1.8 to 2.4 s).
+`node --test tests/v2` 166 of 166; the skills, titles, figures, reasons (41), stages, docs-index lints; `version.mjs check`;
+`--check-tiers`. A class's one-holder test is read from a set made at load (`CL.one`), not the ladder at each call.

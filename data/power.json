@@ -224,7 +224,7 @@
         {
           "n": "The Ice-Road Maul",
           "kind": "maul",
-          "quality": "legendary",
+          "rarity": "legendary",
           "does": "Iron and a whale's jaw.",
           "gives": {
             "power": 0.2
@@ -233,7 +233,8 @@
         {
           "n": "A coat of walrus hide",
           "kind": "armour",
-          "quality": "masterwork",
+          "rarity": "basic",
+          "make": "masterwork",
           "does": "Thick as a door.",
           "gives": {
             "hide": 1
@@ -296,7 +297,7 @@
         {
           "n": "Rune-steel plate",
           "kind": "armour",
-          "quality": "legendary",
+          "rarity": "legendary",
           "does": "His own making; no smith of men can scratch it.",
           "gives": {
             "power": 0.2,
@@ -306,7 +307,8 @@
         {
           "n": "The Gate-Hammer",
           "kind": "hammer",
-          "quality": "masterwork",
+          "rarity": "basic",
+          "make": "masterwork",
           "does": "A short hammer that rings like a bell.",
           "gives": {
             "power": 0.1
@@ -372,7 +374,7 @@
         {
           "n": "Evenglade's first sword",
           "kind": "sword",
-          "quality": "legendary",
+          "rarity": "legendary",
           "does": "Forged before the elves came west.",
           "gives": {
             "power": 0.2,
@@ -436,7 +438,8 @@
         {
           "n": "The Skull Axe",
           "kind": "axe",
-          "quality": "masterwork",
+          "rarity": "basic",
+          "make": "masterwork",
           "does": "Forty notches.",
           "gives": {
             "power": 0.1

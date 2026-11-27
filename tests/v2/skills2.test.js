@@ -63,10 +63,10 @@ test('talent reach (S1\'s letters through the bands)', () => {
   assert.equal(E.pastReach('SSS', 'S', 10), false);
 });
 
-test('the budget: D 1 to S 16 a level, SS 32 and SSS 64 (§15.1), rarity\'s share from unique up; the design\'s examples cost what it says', () => {
-  const sk = (rank, rarity = 'common') => ({ rank, rarity });
+test('the budget: D 1 to S 16 a level, SS 32 and SSS 64 (§15.1), rarity\'s share from epic up (the one ladder, D-200); the design\'s examples cost what it says', () => {
+  const sk = (rank, rarity = 'basic') => ({ rank, rarity });
   assert.deepEqual(['D', 'C', 'B', 'A', 'S', 'SS', 'SSS', 'X'].map(r => E.budget(IX, sk(r), 1)), [1, 2, 4, 8, 16, 32, 64, 128]);
-  assert.equal(E.budget(IX, sk('A', 'unique'), 1), 10); assert.equal(E.budget(IX, sk('S', 'legendary'), 2), 48); assert.equal(E.budget(IX, sk('B', 'rare'), 3), 12);
+  assert.equal(E.budget(IX, sk('A', 'epic'), 1), 10); assert.equal(E.budget(IX, sk('A', 'mythical'), 1), 16); assert.equal(E.budget(IX, sk('S', 'legendary'), 2), 48); assert.equal(E.budget(IX, sk('B', 'rare'), 3), 12);
   const c = e => E.effectCost(IX, e);
   assert.equal(c({ type: 'edge', tag: 'persuasion:the-bargain', v: 2 }), 2);      // a focus: narrow
   assert.equal(c({ type: 'edge', tag: 'persuasion', v: 3 }), 6);                  // a family
@@ -403,18 +403,21 @@ test('step 7: S1\'s engine reads an edge through the game\'s gate when it gives 
 
 test('titles\' share boosts (order 95, D-192): a pool of their own, capped by the rarest title among the sources', () => {
   const D7 = JSON.parse(JSON.stringify(D)), t = (id, rarity, unique, effects, boostCap) => Object.assign({ id, name: id, rank: 'S', rarity, unique, kind: 'title', reads: [], levels: [{ at: 1, effects }] }, boostCap != null ? { boostCap } : {});
-  D7.skills.push(t('t_unc', 'uncommon', false, [{ type: 'boost', of: 'fight', v: 1 }]), t('t_rare', 'rare', false, [{ type: 'boost', of: 'fight', v: 0.04 }, { type: 'boost', of: 'check', tag: 'sword', v: 0.05 }]),
+  D7.skills.push(t('t_unc', 'basic', false, [{ type: 'boost', of: 'fight', v: 1 }]), t('t_rare', 'rare', false, [{ type: 'boost', of: 'fight', v: 0.04 }, { type: 'boost', of: 'check', tag: 'sword', v: 0.05 }]),
     t('t_one', 'legendary', true, [{ type: 'boost', of: 'fight', v: 0.2 }]), t('t_low', 'legendary', false, [{ type: 'boost', of: 'fight', v: 1 }], 0.1),
     { id: 'not_a_title', name: 'x', rank: 'S', rarity: 'rare', kind: 'passive', reads: [], levels: [{ at: 1, effects: [{ type: 'boost', of: 'fight', v: 1 }] }] });
   const ix = E.index(D7), on = (held, of, tags) => E.boostOn(ix, E.gather(ix, held.map(id => ({ id, lv: 1 }))), of, tags);
-  assert.equal(on(['t_unc'], 'fight'), E.CAP_BOOST.uncommon, 'an uncommon title far past its cap: its cap');
+  assert.equal(on(['t_unc'], 'fight'), E.CAP_BOOST.basic, 'a basic title far past its cap: its cap');
   assert.equal(on(['t_rare'], 'fight'), 0.04, 'under the cap: as written');
   assert.equal(on(['t_unc', 't_rare'], 'fight'), E.CAP_BOOST.rare, 'the rarest among them sets the cap');
-  assert.ok(Math.abs(on(['t_one', 't_rare'], 'fight') - (0.2 + 0.02)) < 1e-9, 'weighed 1, 1/2 under the one of a kind\'s cap');
+  assert.ok(Math.abs(on(['t_one', 't_rare'], 'fight') - (0.2 + 0.02)) < 1e-9, 'weighed 1, 1/2 under the legendary\'s cap');
   assert.equal(on(['t_low'], 'fight'), 0.1, 'the vocabulary may lower a cap (boostCap), never lift it');
   assert.equal(on(['not_a_title'], 'fight'), 0, 'only a title boosts');
   assert.equal(on(['t_rare'], 'check', ['sword', 'all']), 0.05); assert.equal(on(['t_rare'], 'check', ['bow', 'all']), 0, 'a family\'s checks only');
   assert.deepEqual(E.profile(ix, [{ id: 't_rare', lv: 1 }]).boost, { 'fight:all': 0.04, 'check:sword': 0.05 });
-  assert.ok(E.CAP_BOOST.uncommon < E.CAP_BOOST.rare && E.CAP_BOOST.rare < E.CAP_BOOST.legendary && E.CAP_BOOST.legendary < E.CAP_BOOST.unique);
-  assert.ok(E.CAP_BOOST.unique > E.CAP_HUMAN.fightShare, 'a title one of a kind may change a fight more than every skill together');
+  const LAD = JSON.parse(fs.readFileSync(path.join(root, 'data/rarity.json'), 'utf8')).ladder;
+  assert.deepEqual(Object.keys(E.CAP_BOOST), LAD, 'one tier for each word of the one ladder (D-200), no other');
+  for (let i = 1; i < LAD.length; i++) assert.ok(E.CAP_BOOST[LAD[i - 1]] < E.CAP_BOOST[LAD[i]], LAD[i] + ' above ' + LAD[i - 1]);
+  assert.equal(E.boostCapOf({ kind: 'title', rarity: 'rare', unique: true }), E.CAP_BOOST.rare, 'one holder lifts no cap');
+  assert.ok(E.CAP_BOOST.legendary > E.CAP_HUMAN.fightShare, 'a legendary title may change a fight more than every skill together');
 });
