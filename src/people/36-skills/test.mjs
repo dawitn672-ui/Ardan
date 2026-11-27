@@ -137,6 +137,11 @@ export default {
       const SK = A.SK, out = { words: 0, grasps: 0, breaks: 0, stalls: 0, bad: [] };
       for (const [seed, status] of [[5151, 'noble'], [6161, 'peasant'], [7171, 'artisan']]) {
         T.enter({ seed, race: 'human', realm: 'POL-01', status, sex: seed % 2 ? 'M' : 'F', startAge: 12 });
+        // the concepts a life starts with (its childhood, seeded before the tap: no record of their grasp). A word lost to
+        // rust and crossed again needs no new grasp of them (ci-fix-21, H-166: seed 6161's peasant starts at survival D Lv 6
+        // with the fire, rusts to Lv 5, and crosses D Lv 6 again at a ford in 1132)
+        const pc0 = A.pc(), held = new Set();
+        for (const k in pc0.sk || {}) for (const id in (pc0.sk[k] && pc0.sk[k].got) || {}) held.add(k + ':' + id);
         const tap = SK.tap = [];
         T.play(30);
         SK.tap = null;
@@ -149,7 +154,7 @@ export default {
             const m = rec.text.match(/reaches (rank [DCBAS]|[DS] · Lv 6)/), w = m ? ({ 'D · Lv 6': 1, 'rank C': 2, 'rank B': 3, 'rank A': 4, 'rank S': 5, 'S · Lv 6': 6 })[m[1]] || -1 : -1;
             if (w < 1) { out.bad.push('word? ' + rec.text); continue; }
             const before = tap.slice(0, tap.indexOf(rec));
-            for (const c of SK.E().conceptsOf(rec.k, w)) if (!before.some(x => x.k === rec.k && (x.t === 'grasp' || x.t === 'breakthrough') && x.text.includes(c.name)) && !before.some(x => x.k !== rec.k && x.text.includes(c.name)))
+            for (const c of SK.E().conceptsOf(rec.k, w)) if (!held.has(rec.k + ':' + c.id) && !before.some(x => x.k === rec.k && (x.t === 'grasp' || x.t === 'breakthrough') && x.text.includes(c.name)) && !before.some(x => x.k !== rec.k && x.text.includes(c.name)))
               out.bad.push(`${rec.text}: no grasp of ${c.name}`);
             if (w >= 3 && !/: .+/.test(rec.text)) out.bad.push('no proof: ' + rec.text);
           }
@@ -157,6 +162,9 @@ export default {
       }
       return out;
     });
+    // ("breakthroughs" here are S1's moments: a concept seen at once on a trigger, a lost bout or a word from a teacher,
+    // engine/skills.js month(); no bar rides on their count. They are not the duel's stat leap (A.breakthrough), which order
+    // 95 retired in H-164, nor the level's breakthrough at every hundredth level, 9999975-level.)
     return { ok: !r.bad.length && r.grasps > 3, detail: `${r.words} words crossed, ${r.grasps} grasps, ${r.breaks} breakthroughs, ${r.stalls} stalls in three 30-year lives; ${r.bad.length ? r.bad.slice(0, 3).join(' | ') : 'every one with its reason'}` };
   },
 

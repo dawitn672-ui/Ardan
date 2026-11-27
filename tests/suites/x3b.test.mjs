@@ -180,7 +180,14 @@ export default {
     const nursery = [0, 1, 2, 3, 4, 5].map(k => ({ status: ['peasant', 'serf', 'artisan', 'merchant', 'noble', 'royal'][k], startAge: 0, sex: k % 2 ? 'F' : 'M', realm: ['POL-01', 'POL-05', 'POL-07', 'POL-09', 'POL-03', 'POL-02'][k] }));
     const big = await playWorlds(page, extra, WORLDS, 30, LIFE, 8100);
     const small = await playWorlds(page, extra, nursery, 6, LIFE, 8600);
-    const all = [...big, ...small];
+    // standby lives (H-082): the cards read away from home come mostly from a soldier's campaigns, so their count reads
+    // whether a soldier's realm went to war (ci-fix-21, H-166: on 135632b7 seed 8134's peasant of POL-06, who gave 125 of
+    // them, saw no war in thirty years and was never mustered, while wars over the six worlds measured stayed as many,
+    // 105 against 104). While the count falls short, the three soldier worlds are played again from other seeds, at most
+    // three rounds; the guard's rule is held on every card of every life played
+    const SOLDIERS = WORLDS.filter(x => x.enlist), standby = [];
+    for (let k = 0; k < 3 && [...big, ...small, ...standby].reduce((n, r) => n + r.away, 0) < 20; k++) standby.push(...await playWorlds(page, extra, SOLDIERS, 30, LIFE, 8900 + k * 100));
+    const all = [...big, ...small, ...standby];
     const sum = k => all.reduce((n, r) => n + r[k], 0);
     const bad = k => all.flatMap(r => r[k]);
     const drop = all.reduce((o, r) => { o.place += r.dropped.place; o.child += r.dropped.child; o.counsel += r.dropped.counsel; o.seen += r.dropped.seen; for (const k in r.dropped.station) o.station += r.dropped.station[k]; return o; }, { station: 0, place: 0, child: 0, counsel: 0, seen: 0 });
