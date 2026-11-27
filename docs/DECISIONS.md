@@ -3377,3 +3377,15 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
   a lab takes a decider's best reason where the test is not about the draw, and an election's rule is held as the broken
   promise's weight; the summons' bar is half or more in full (129 of 258, with the larger hosts across the borders); the
   court's tests measure against `A.MIL.normal`.
+
+### D-208x · Agents read the knowledge base as repo markdown; Notion receives it by script (2026-11-27; orders 101, 102; the owner's "do what you think is most beneficial")
+The world's broken-down information (realms, peoples, legends, figures, creatures, titles, classes, skills, systems) is
+written first as small linked markdown notes in the repo (an Obsidian-compatible folder the owner may open for free),
+because agents read local files at the cost of the content once, with no tool echo, and the clone restores them after
+every wipe; a Notion MCP write costs about 900 tokens a row (L-013). A sync script copies the notes into the owner's Notion
+tree through the Notion API once the owner's key is in the environment (he is adding it in the environment settings), so
+Notion still holds the information for him, fully broken down (order 102). Rejected: graphify and code-graph tools (little
+gain, re-indexing every wipe, telemetry); claude-mem (its own model spends tokens and sends session content out; memory
+lost on wipe); 9router (stores the owner's Claude login behind a default password, syncs to its servers, can swap models,
+and routing a subscription through it breaks Anthropic's terms). Sources: `.claude/skills/agent-token-economy/references/tools-verdicts.md`.
+

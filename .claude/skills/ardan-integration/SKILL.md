@@ -37,6 +37,8 @@ A builder knows only its brief. Each brief carries:
 - **Proof:** the private build path (`/tmp/ardan/<name>/x.html`), the tests by name, the lints, the bench if balance can
   move, world-robust tests (H-082), and "do not lower a bar; if a bar reads one world's luck, make it robust and write the
   readings in a comment".
+- **Lean output (Ponytail's idea, adapted):** "Make the smallest change that fully solves it; no unrequested refactors,
+  comments or files; report in under 300 words."
 - **Report shape (a handoff):** done, evidence (tests with results, numbers), open, next, files and commit shas, decisions.
   Short enough that a fresh agent can continue from it alone; no narration of the process.
 
