@@ -51,6 +51,9 @@ The rules are the owner's: `docs/MASTER_PROMPT.md` §2 (standing rules), §4.5 (
   `tools/release/identity-probe.mjs` before and after.
 - A stopgap is marked `STOPGAP: replaced by <item>` in the code and recorded in DECISIONS.
 
+- **A failed approach is rewound, not patched around** (`git restore` to the last good state). **Three failed fixes in a
+  row: the design is wrong;** stop and find the root cause.
+
 ## 5. Check (evidence, not belief)
 Build privately, never to `index.html`: `node tools/build.mjs --out=/tmp/ardan/<name>/x.html` (add `--only=<wip>` for a
 `.wip` feature). Then, as the size demands:

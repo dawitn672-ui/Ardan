@@ -37,7 +37,8 @@ A builder knows only its brief. Each brief carries:
 - **Proof:** the private build path (`/tmp/ardan/<name>/x.html`), the tests by name, the lints, the bench if balance can
   move, world-robust tests (H-082), and "do not lower a bar; if a bar reads one world's luck, make it robust and write the
   readings in a comment".
-- **Report shape:** root cause with numbers, decisions, tests with results, commit shas, what is left.
+- **Report shape (a handoff):** done, evidence (tests with results, numbers), open, next, files and commit shas, decisions.
+  Short enough that a fresh agent can continue from it alone; no narration of the process.
 
 Model and effort follow D-009/D-010: the strongest model at max effort for the big designs (a map, a system's shape),
 Opus high for systems, Sonnet for interface and data work. Seven builders at once is workable; more makes merges and the
