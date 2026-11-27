@@ -99,3 +99,18 @@ here before reporting success.
 - **Rule now:** before any bulk job, estimate size × route cost and pick the route that does not pass bulk data through a
   model: a script with an API key (asked for through the secure credential form), file uploads, or generated batches.
   Model-routed tools are for structure and small edits.
+
+### L-013 · 2026-11-27 · "Small rows" through the Notion tool still cost 400K tokens
+- **What went wrong:** a Haiku agent wrote 438 one-line Chronicle rows through the Notion tool and used about 400,000
+  tokens (about 900 a row), because every row is written out by the model and echoed back by the tool.
+- **Root cause:** L-012 was applied to page bodies but not to rows; the per-call overhead (schema, echoes, retries) was
+  not priced.
+- **Rule now:** price row jobs too (rows × about 900 tokens); prefer fewer, richer pages and attached files over hundreds
+  of rows; batch the largest calls the tool accepts; and ask whether a row is needed at all before creating it.
+
+### L-014 · 2026-11-27 · Ten unrelated skills listed on every turn of every agent
+- **What went wrong:** office-document, browser and computer-use skills (docx, pptx, xlsx, pdf, Google Workspace, Chrome,
+  the built-in browser, computer use, memory import, docs) were listed with their long descriptions in every turn of every
+  Ardan agent, though Ardan never uses them.
+- **Root cause:** the account's synced skills apply to every project; nobody pruned them for this one.
+- **Rule now:** the project's `.claude/settings.json` turns them off (`skillOverrides`); review the listing each wave.
