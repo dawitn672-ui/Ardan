@@ -27,7 +27,7 @@ export const HELPERS = () => {
       UI.ov = null; UI.tab = 'life'; UI.render();
     },
     raw: /\{[A-Za-z0-9_.]+\}/,
-    // World-robust tests (H-082; CLAUDE.md, "The net"). A test that needs a situation one world may lack (a war, a
+    // World-robust tests (H-082; ardan-dev-process references/testing-and-tools.md, "The net"). A test that needs a situation one world may lack (a war, a
     // living priest, a council seat to empty) tries worlds in turn: fn(seed) returns a falsy value when that world does
     // not have it, else its result. Returns { seed, res, tried }; seed and res are null when no world of the list had
     // it, and the test then fails or skips saying so, naming the worlds tried.

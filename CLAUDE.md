@@ -100,7 +100,7 @@ when the stage comes: `.claude/skills/ios-capacitor-release`. **The build rules 
 | `docs/` | Only the reference set (order 76): `README.md` (the index), `MASTER_PROMPT.md` (the source of truth), `prompts/`, `OWNER_ORDERS.md`, `STATUS.md`, `ROADMAP.md`, `HISTORY.md`, `DECISIONS.md`, `VERSIONS.md`, `TOOLING.md`, `IDEAS.md`, `NAMES.md`, `V2_SPEC.md`, `V3_SPEC.md`; `design/` (notes of systems in play), `research/` (data the tools read). No plans, reports or scratch |
 | `archive/` | Retired features and code (`x1-patch-layer/`: the old patches.mjs files), each with a note on what it was and why it was replaced. Never built. |
 | `CHANGELOG.md` | Player-facing changes in plain words, one section per version |
-| `.claude/skills/` | `ardan-dev-process`, `ardan-integration`, `ardan-prompt-intake`, `ardan-ui-review`, `ardan-world-data`, `life-sim-systems`, `rpg-progression-design`, `cold-reader-naming`, `realistic-continent-maps`, `game-ux-playtest-loop`, `ios-capacitor-release` (keep them true to the code, and update them as each wave lands: order 100) |
+| `.claude/skills/` | `ardan-dev-process`, `ardan-integration`, `ardan-prompt-intake`, `ardan-ui-review`, `ardan-world-data`, `ardan-event-writing`, `life-sim-systems`, `rpg-progression-design`, `cold-reader-naming`, `realistic-continent-maps`, `game-ux-playtest-loop`, `ios-capacitor-release` (keep them true to the code, and update them as each wave lands: order 100) |
 
 **Systems** (`src/<system>/`): `core` (engine fixes, saves, time, scale, replay, mods, pacing), `map` (the continent,
 terrain, journeys, the map view), `world` (realms, cultures, names, lore, the world record, beliefs), `people` (the
@@ -116,102 +116,29 @@ all systems (`00-security` first, `999999-one-redraw` last: its redraw wrappers 
 node tools/build.mjs                                      # everything -> index.html (not committed, D-109; open it in a browser to play)
 node tools/build.mjs --out=/tmp/me.html --only=my-feature # the default build plus a work-in-progress feature, somewhere private
 node tools/show.mjs --where A.fightWorth                  # which src/core/release/ file and line defines a release function
-node --stack-size=65500 tools/release/verify.mjs a.html b.html   # two builds are the same program (for a neutral refactor)
-node tools/release/identity-probe.mjs a.html b.html       # ...and give the same event classes and fixed-seed lives
-node tools/build.mjs --unpack && node tools/show.mjs A.fightWorth UI.refresh       # the shared .build/ (read only)
-node tools/build.mjs --out=/tmp/ardan/me/x.html --only=me --unpack=/tmp/ardan/me/blobs
-node tools/show.mjs --dir=/tmp/ardan/me/blobs A.fightWorth                         # your own build, privately
-node tools/build-v2.mjs                                   # rebundle the v2 engine (src/*/engine) after editing it
-node docs/design/demo-2d/c8c/sheet.mjs                    # the dress sheets (stations x peoples, soldiers, occasions, the 24 cultures) from the figure library
 node --test tests/v2/*.test.js                            # the engine's unit tests
 node tools/lint-events.mjs --feature=my-feature --html=/tmp/me.html
 node tools/lint-choices.mjs --feature=my-feature --html=/tmp/me.html   # no obviously best choice
-node tools/lint-kin.mjs                                   # no event mints kin or names one it did not take from the tree (C6)
-node tools/lint-docs-index.mjs                            # docs/README.md lists every doc under docs/ and links nothing that is gone: add a line when you add a doc
-node tools/lint-skills.mjs                                # S1: no proficiency a player reads, the skills data whole, older code's skill writes only falling
 node tools/lint-reasons.mjs [--list]                      # no new bare-dice decision in AI code (R1, W1-2): the count may only fall
-node tools/lint-titles.mjs                                # data/titles/ whole and within budget, every hidden condition declared, no screen reading one (D-183)
 node tests/run.mjs /tmp/me.html --features=my-feature     # core suites + that feature's tests
 node tests/run.mjs --only=testA,testB --workers=4         # some tests by name
-node tests/run.mjs --tier=quick --shard=0/8 --plan        # T1: the tier split and each shard's estimated time, runs nothing
-node tests/run.mjs --check-tiers                          # a test over the threshold on CI must be in tests/long-tests.json
-node tests/run.mjs                                        # everything (both tiers) against index.html (961 tests on 2026-11-19: 898 quick, 63 long)
 node tools/bench/balance.mjs /tmp/me.html                 # each path's numbers within tools/bench/targets.mjs
-node tools/bench/next-month-speed.mjs /tmp/me.html --save=tests/saves/press/y50-noble.ardan [--death] [--throttle=4]   # real Next month presses, in CPU time
-node tools/bench/press-gate.mjs /tmp/me.html [--report]   # the A1 gate (CI): year 0 and 50, fresh and after a death, held to budgets
-node tools/bench/style-probe.mjs /tmp/me.html             # one <span> insert's style time after a hint and a death (< 1 ms)
-node tools/bench/phone-load.mjs /tmp/me.html --runs=3 --profile --out=/tmp/ardan/me   # X7: as a Pixel 7 at 1x/4x/6x CPU: load, title, first Life screen, Next month, and where the boot's time goes
-node tools/bench/clutter.mjs /tmp/me.html --out=/tmp/c.json --shots=/tmp/s   # B5: words, controls, elements, scroll and width share of every page, for three lives at 1366x768 and 420x900
-node tools/bench/long-life-audit.mjs /tmp/me.html --seed=7 --years=60    # a long bot life with the one-holder audit and error counts
-node tools/bench/state-size.mjs /tmp/me.html --years=100 [--dump=dir]    # X5: the state's size by key and field at year 0 to 100 (what grows)
 node tools/check.mjs                                      # everything CI runs
-node tools/lint-stages.mjs                                # the named stages and the count of names defined more than once (X2)
 node tools/coherency.mjs --quick                          # the coherency checks over a few lives (src/core/08-coherency-checks)
-node tools/coherency.mjs --baseline=quick                 # the same run CI holds to tests/coherency-baseline.json
-node tools/version.mjs get v2.0.0-beta.1                  # any version, playable: versions/ardan-<v>.html
-git gc --prune=now                                        # after every integration round (see below)
 ```
 
-**Two test tiers (T1, D-063).** `tests/long-tests.json` lists the long tests (bot lives and replays of 200 to 1,500 s: 63 of
-961 on 2026-11-19, about 60% of the suite's CPU time; `node tests/run.mjs --tier=long --plan` gives today's count); `tests/test-times.json` holds each test's seconds on CI. **Quick** (everything not
-listed) runs on every push and pull request (`check.yml`, `--tier=quick --shard=k/8`, about 13 minutes of tests a shard);
-**long** runs in `long.yml`: every night, by hand (workflow_dispatch), on a push whose commit message has `[full ci]`, on
-`release/*`, and from other workflows. **A version needs both tiers green on the commit** (`check.yml` and `long.yml`) before
-`tools/version.mjs new`. Shards are split by measured time, longest first, not by count. A new test with no time is planned at
-30 s; if a test takes over the threshold (200 s) add it to `tests/long-tests.json` (`--check-tiers`, run by `tools/check.mjs`,
-fails until you do). The long run's `test-times` artifact (`tools/test-times.mjs` merges the shards' `--times-out=` files;
-it is already merged onto the file as it stood at that commit, so it can replace `tests/test-times.json` whole) is committed
-back now and then so the plan stays true (last: long run 74, 2026-11-19). A local `node tests/run.mjs` still runs both tiers; `[skip ci]` skips both workflows.
+The full command list, the two test tiers, the net (any console error fails a test), **world-robust tests** (seed
+fallback, pooled numbers, bars from measured spread, poll never sleep; H-082), CI-only failures and the bench conventions:
+`.claude/skills/ardan-dev-process/references/testing-and-tools.md`. Read it before writing or fixing a test.
+Browser tests use the container's Playwright (`PLAYWRIGHT_PATH=/opt/node-tools/node_modules/playwright`). **Models:** the
+biggest model only for real design; Sonnet for systems, data and test fixing; Haiku for bulk and mechanical work.
 
-**The net (round 2 A3a).** A test, bench, soak or coherency run fails on any uncaught error *and any `console.error`*
-(the few messages that are not the game's faults are listed with reasons in `tools/lib/page-errors.mjs`; a test that
-provokes an error on purpose calls `expectError(/.../)`). A test that cannot run in a build returns `{ ok: true, skip:
-'why' }` and shows as SKIP. Each test has a time limit (`--limit=`, default 1800 s) and the runner relaunches a crashed
-browser. Time with the runner's `cpu()` (main-thread CPU), never the wall clock. Known contradictions are counted in
-`tests/coherency-baseline.json`, which may only shrink.
+## Versions
 
-**World-robust tests (H-082).** Any change to the game moves the random stream, and every seeded world with it. A test
-must test the rule, not one world's luck:
-- **Seed fallback.** When a test needs a situation (a war, a living priest, a councillor to kill), try worlds in turn
-  with a cap: `T.trySeeds(T.seedRun(9711, 6), seed => { ...; return found; })` gives `{ seed, res, tried }`. Name the
-  world read in the detail. If none has it: SKIP with the reason when the situation is rare by design; FAIL, naming the
-  worlds tried, when its absence across the cap is itself a fault (no war in eighty crown-years).
-- **Pooled numbers, bars from measured spread.** Pool over several worlds or lives until the count is enough (a bar on
-  12 lives or 100 fights reads the world, not the rule). Measure the spread on several seeds, write the readings in a
-  comment, and set the bar outside it but where a broken rule still fails.
-- **Standby lives.** A life that ends early is followed by the next seed's; play standbys only while the count falls short.
-- **Poll, never sleep for a state.** `waitForFunction` with a timeout, not `waitForTimeout`, for anything that should come
-  to pass; a fixed wait is only for proving that nothing happens.
-- **Try it on a shifted world:** a scratch build whose `A.newState` draws one extra `A.rand()` after `A.seed(seed)` (never
-  committed) moves every world at once.
-
-The browser tests use the container's Playwright (`/opt/node-tools/node_modules/playwright`): if `npm ci` installs
-the pinned one, delete `node_modules/playwright*` or point `PLAYWRIGHT_PATH` at the container's copy.
-**A failure only CI sees** (layout off by a few px, a font metric): CI runs Playwright 1.56.1's Chromium 141, the
-container a newer one. Reproduce with CI's browser: `cd /tmp/x && npm i playwright@1.56.1 && PLAYWRIGHT_BROWSERS_PATH=/tmp/x/b
-npx playwright install chromium`, then `PLAYWRIGHT_BROWSERS_PATH=/tmp/x/b NODE_PATH=/tmp/x/node_modules node tests/run.mjs ...`.
-
-## Versions and milestones
-
-Every foundational or significant change is a version (`docs/VERSIONS.md`, `tools/version.mjs`):
-
-- **Major:** the nature of the game changes (D-175, `docs/VERSIONS.md` "The basis"): v2 = the realistic medieval life
-  (`docs/V2_SPEC.md`); **v3 = the world of levels and monsters** (the level ladder, bestiary and legends, the locked map,
-  skills in levels); **v4 = the high-fantasy world** (magic, new races, the canon rewrite, professions); **v5 = the phone
-  release** (the store's 1.0).
-- **Minor:** a round, cycle or step that adds or replaces a system. **Patch:** fixes only.
-- **Pre-release** (`-alpha.N`, `-beta.N`, `-rc.N`) while a major is being built.
-- **How a version is cut (D-134, order 65), one way only.** A version is the commit CI tested green on both tiers
-  (`check.yml` and `long.yml`). `node tools/version.mjs new vX.Y.Z "what changed" --at=<that sha>` writes its row in
-  `docs/VERSIONS.md`, moves the changelog bullets that came with it under its heading, and saves a sample game in
-  `tests/saves/`; push `release/<version>` at exactly that commit, then commit the records on the trunk, `main` (`[skip ci]`
-  unless a later batch needs its run). `node tools/version.mjs check` (run by `tools/check.mjs`) fails when the rows,
-  release branches, changelog headings and sample saves disagree.
-- **Batches.** Merge features in a batch with one `[full ci]` push; the next batch waits on its pushed branches until
-  this one is green or every red test is owned by a fix branch (fix branches merge any time). Cut a version from each green
-  batch, and tell the owner what the batch holds, not what may land later.
-- **Milestones** also get a named release branch, `release/<name>` (for example `release/v2.1-foundations`): this
-  session's git proxy refuses tag pushes, so the branch is the restorable record on GitHub.
+Major = the nature of the game (v2 realistic, v3 levels and monsters, v4 high fantasy, v5 the phone release); minor = a
+round or system; patch = fixes; pre-release `-alpha.N` while a major is built. A version is a commit CI tested green on
+both tiers, cut only with `tools/version.mjs new` (D-134). Details: `.claude/skills/ardan-integration/references/versions.md`
+and the `ardan-integration` skill.
 
 ## The v2 engine
 
@@ -229,11 +156,8 @@ test shards, the press gate, the long tier and the nightly runs as an artifact. 
 version from its commit's own source (checking the build hash its row records). A release branch points at exactly the
 version's commit (D-134), so it holds no built file either. Never `git add -f index.html`.
 
-**Repack after each round.** The last step of an integration round, after the push, is `git gc --prune=now`: it packs the
-loose objects a round leaves (cheap, safe on a pushed branch, touches no history). It cannot shrink what history already
-holds: until X5 every round committed a rebuilt `index.html` of about 3.7 MB, and those old builds make the pack about
-470 MB (`git count-objects -vH`, 2026-11-19), so a fresh clone is large (`git clone --depth=1` or `--filter=blob:none`
-avoids it). Only a history rewrite would shrink it; that is the owner's decision (docs/BRANCHES.md), not a thing to do in a round.
+**Repack after each round:** `git gc --prune=now` after the push (history holds old builds; a fresh clone is large; use
+`--depth=1` or `--filter=blob:none`).
 
 **Parallel safety.** When several agents work at once, each owns **only its own `src/<system>/NN-name/` folder** (or its own `data/` files).
 
@@ -294,85 +218,8 @@ build without your feature still runs).
 - New fields on people or realms must tolerate old saves where the field is missing.
 - `SAVES.clean` strips `<`, `>` and `"` from loaded non-prose strings, so don't store markup in state.
 
-## Writing events (`*.events.js`)
+## Writing events
 
-Each file calls `A.defEvents([...])`. Plain readable JS is fine.
-
-```js
-A.defEvents([{
-  id: "mt_first_love_letter",          // unique, lowercase; prefix with your feature's short code
-  title: "A letter in an old hand",
-  cond: (p, C) => C.adult(p) && C.flag(p, "ch_first_love") && C.age(p) >= 25,  // ALWAYS (p, C) => using C.* helpers
-  w: 1, cool: 10,                       // weight; cooldown in years (default 6); once: true to fire once ever
-  setup: (p, ctx) => { /* fill ctx tokens; ctx.pid = someone's id makes {them}, {khe}/{khim}/{khis} work; ctx.skip = true to drop */ },
-  text: "Years ago, {them} ...",        // <= 80 words once rendered; may be (p, ctx) => string
-  choices: [                            // 2 to 4 choices, each label <= 12 words
-    { t: "Write back", r: "Result text.", fx: { happy: 4, flag: "mt_wrote_back" } },
-    { t: "Burn it unread", check: { s: "wil", s2: "int", d: 45 },
-      win: { r: "...", fx: { wil: 1 } }, lose: { r: "...", fx: { happy: -3 } } },
-  ],
-}]);
-```
-
-**Condition helpers.** `C.` age, adult, child, teen, young, old, ageAdj, noble, rich, poor, unfree, soldier, atWar, ruler, married, hasKids, job(p,k), race(p,...), realm(p,"POL-01",...), cult, faith, terr(p,"hills",...), coast, town, blood, trait(p,t), flag(p,f), prison, male, female, stat(p,s), skill(p,k), hasRel(p,"friend",...), parentsAlive, fame, literate, lvl(p,k,min), talent(p,k,letter), ready(p,k), stuck(p,k), gear, family, famKind, famHead, atSchool, jobRank, rep, ownShop, myRealm, faction, allies, office, superior, favors, owes, sworn, letter, ambition (what the player seeks of his own will: his plan's aim, his chosen training, his post; `A.SEEK`, 9989-what-you-seek; nothing is handed, order 54).
-
-Using these helpers matters, because `A.CX_RX` classifies events by matching them in the source (`C.ruler(`, `C.noble(`, `C.poor(`, `C.soldier(`, `C.child(`, `.job`). The text classifiers in `A.EV_RX` (tavern, street, master/overseer, favour asked by a lord) can hide an event from the wrong class.
-
-**Effect keys** (`fx`): str spd ins sta int wil health happy looks fame honor piety coin coinPct family skill rep masterwork promote style styleXp apt trait untrait wound flag unflag rel them newRel lover die prison punish free merit patronOp rulerOp realmStab realmGold armyXp secret epithet deed ach job perf lang literate gear asset duel beast event stability treasury legit realmRel favor mission cause why infamy authority houseOp factionDisc owed oweThem letter bossOp sworn claim pact ally warOn proof grasp talent specialism.
-
-- `fx` may be a function `(p, ctx) => "extra result text"`.
-- `skill: { persuasion: 2 }` is **experience** (S1, D-072, D-077): n × `A.SK.SHIM` (0.5) of a month's effort, a stretch when
-  the choice had a check or stakes, else practice (so 2 is about eight experience: half of D Lv 1's bar, a fiftieth of an
-  A-rank level's). It never buys a rank: a new rank also asks its concepts and, from rank B, a deed.
-- **A level is printed only by `A.SK2.label`** and its kin (`labelValue`, `labelAtLeast`, `nextLabel`): "Basic
-  Swordsmanship · C · Lv 3". The rungs (`src/people/37-skills2`) hold the level since the skills rebuild's switch; S1's
-  seven words and Roman steps are gone from everything a player reads (orders 78 and 83; `tools/lint-skills.mjs`).
-- `proof: "sword"` (or `"ctx"` for `ctx.sk`) is a deed for the next rank (the key's name is S1's); `grasp: { k, sure }` a breakthrough's
-  moment (the engine's chance, or sure); `talent: { sword: "B" }` raises a talent letter (the old `apt` is read as a
-  letter); `specialism: { sword: "the-knife" }` takes one. `deed` stays the release's record of a deed.
-- Skills: `C.lvl(p, k, min)` (min a number, as a check reads it; k `"any"` is the best skill),
-  `C.talent(p, k, letter)`, `C.ready(p, k?)` (at an edge, wanting a deed), `C.stuck(p, k?)` (at an edge, behind a
-  concept). `C.prof` and `C.apt` are gone. Experience moves only through `A.gainXp(p, k, effort, cause)` (`A.trainSkill`
-  is a shim for older code); a level only through `A.SK.set`. Never write `p.skills[k]`: it is the level's mirror.
-- `flag: "x"` sets `p.flags.x = year`.
-- `them: { op: 10 }` changes opinion with `ctx.pid`.
-- `event: "id"` queues another event right after this one.
-- `need: { rest, company, purpose, comfort }` meets the four needs of 35-moods.
-- A deed a title watches (a duel won, a bribe refused, a siege held) goes through one door, `A.deedDone(p, kind, ctx)`
-  (the kinds are `data/titles/vocab.json`'s deeds; D-183); a title is never granted by a card directly.
-- A feature that adds an effect key declares it in its core code: `(A.FX_EXTRA = A.FX_EXTRA || []).push('key')`. The linter reads that declaration.
-
-**Checks.** `check: { s, s2, d }` takes a skill or stat (`GD.SKILLS` keys: the 28 skills and the 10 legacy keys, which read their skill with that specialism; or str spd ins sta int wil). `d` is a level's value: even odds for someone whose skill reads `d` (45 is C Lv 6, 55 is B Lv 1), and each point is worth 1.6% of odds. A check trains its skill as a stretch against `d`, and one at the next rank's value or above, succeeded, is the deed for a person standing at that edge.
-
-**Memory.**
-
-- `p.flags[name]` holds the year a flag was set.
-- `p.flags.ev[eventId]` holds the year the player last saw each event.
-- Use `A.schedule({ type: "event", ev: "id", ctx: {...} }, days)` to bring something back years later.
-
-**Scene.** Every event has a scene tag (`src/events/26-scene-tags`: court, home, church, market, field, workshop, road, sea, wild, war, fight, tavern, street, sickbed, school, prison, grave, feast), read from its words, shape and audience; the event's print follows it and the people on the card dress for it. When the reader would get it wrong, say it: `scene: "field"` on the event.
-
-**Tokens.** `{name}` `{home}` `{realm}` `{realmShort}` `{capital}` `{ruler}` `{faith}` `{father}` `{mother}` `{spouse}` `{rival}` `{friend}` `{enemy}` `{year}` `{age}`, plus any `ctx` key. Digits are allowed (`{mate2}`). An unfilled token makes the engine drop the event.
-
-**Kin come from the tree** (C6, D-057). The family tree holds every relative; `pc.rel` holds only the people met. Never make
-a relative for a scene: take one with `A.KIN.take(p, ["cousin"], { sex, adj })` (met then; it throws, dropping the card,
-when the tree has none), name one with `A.KIN.nameOf`, and write a story's secret into the tree with `A.KIN.reveal`.
-`tools/lint-kin.mjs` fails a scene that links a person it made under a blood word, or says "your cousin {x}" with no kin source.
-
-**Voice.** Dry, concrete, period. Second person, present tense. Short sentences. No modern idiom. Avoid the existing tics ("looks at you a long time", "for the rest of your life", a five-word punchline after every outcome).
-
-**Before you finish:**
-
-- `tools/lint-events.mjs` must pass.
-- `tools/lint-choices.mjs --feature=<name>` must find no obviously best choice. It flags a choice that beats the others on every count and is no riskier, so give the other side a reason or the favourite a cost.
-- `tests/run.mjs` must pass for your feature.
-- CI (the long tier, `long.yml`) also runs `tools/bench/balance.mjs`, which holds each starting path to the bands in `tools/bench/targets.mjs`. Widen a band only with a reason in the file.
-
-## Measurement conventions (`tools/bench/`)
-
-`node tools/bench/run.mjs <built.html> --label=x` writes `tools/bench/reports/x.json`. `node tools/bench/compare.mjs release fixes x` writes `tools/bench/reports/scorecard.md` using `tools/bench/rubric.mjs`. Features make themselves measurable by following these conventions:
-
-- **NPC-started events** carry `npc: true` on the event, or `ctx.npcMove = true` on the queued item. The bot counts them as `npcMovesPerDecade`.
-- **After-action reports.** A battle object that got one carries it in `b.aar` (`{ causes: [{ label, pct }], text }`). The bot counts `afterActionShare`.
-- **Signature systems** register themselves: `A.SIGNATURE = Object.assign(A.SIGNATURE || {}, { chronicle: true })`. The other keys are `beliefTruth` and `bothScales`.
-- **Memory.** Events that read another event's flag, or `p.flags.ev`, count as memory events. Prefer `C.flag(p, "x")` in `cond`, so the static analyzer sees the link.
+Use the `ardan-event-writing` skill (the event shape, `C.*` helpers, `fx` keys, checks, tokens, kin from the tree, the
+voice, the lints). Events are read as text by classifiers: never reformat one in `src/core/release/content/` without
+`tools/release/identity-probe.mjs` before and after.

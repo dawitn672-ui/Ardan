@@ -19,8 +19,8 @@ shows a gap. A skill that teaches a retired rule misleads every builder who read
 
 ## 1. Brief builders
 
-Before any brief, read `docs/LESSONS.md` (order 101). The rules it holds for briefs: **at most five agents at once**
-(L-001; start more only as others land; builders commit in their worktree after each step so a usage stop loses
+Before any brief, read `docs/LESSONS.md` (order 101). The rules it holds for briefs: **at most five heavy agents at once**, plus one light helper (Haiku or Sonnet) for system work, which takes precedence over
+game work (order 102 follow-up) (L-001; start more only as others land; builders commit in their worktree after each step so a usage stop loses
 nothing); **check every path with `ls`** before sending (L-006); **name the owner's own terms as fixed** (L-003);
 **skill writers get a worktree and branch too** (L-008).
 

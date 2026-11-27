@@ -25,7 +25,7 @@
 //                                                    tests/saves/README.md for each.
 //                                                    tools/check.mjs runs it. Exit 1 on a disagreement.
 //
-// Rules (CLAUDE.md, "Versions", "How a version is cut"): a version is the commit CI tested green on both tiers.
+// Rules (.claude/skills/ardan-integration/references/versions.md): a version is the commit CI tested green on both tiers.
 // Major = a new design the owner set (v1: the shipped release and its rounds; v2: the owner's v2 spec). Minor = a
 // round, cycle or step that adds or replaces a system. Patch = fixes only. Pre-release (-alpha.N, -beta.N) while a
 // major is being built.
