@@ -335,7 +335,6 @@
    ],
    "holders": [
     "ashgar",
-    "galeheart",
     "rimewing"
    ],
    "born": true,
@@ -367,11 +366,11 @@
     "power": 0.12
    },
    "req": "hidden",
-   "text": "First of the three who serve the King of Dragons."
+   "text": "Lord of the inferno, who keeps the King's hall."
   },
   {
    "id": "the-kings-winter",
-   "name": "the King's Winter",
+   "name": "the King's Tide",
    "rarity": "legendary",
    "weight": "X",
    "unique": true,
@@ -389,29 +388,7 @@
     "power": 0.12
    },
    "req": "hidden",
-   "text": "Second of the three who serve the King of Dragons."
-  },
-  {
-   "id": "the-kings-thunder",
-   "name": "the King's Thunder",
-   "rarity": "legendary",
-   "weight": "X",
-   "unique": true,
-   "kind": "world",
-   "beings": [
-    "monster"
-   ],
-   "holders": [
-    "galeheart"
-   ],
-   "born": false,
-   "honour": 30,
-   "buffs": {
-    "spd": 1,
-    "power": 0.12
-   },
-   "req": "hidden",
-   "text": "Third of the three who serve the King of Dragons."
+   "text": "Lord of the water, who keeps the King's hall."
   },
   {
    "id": "elder-of-the-mountains",

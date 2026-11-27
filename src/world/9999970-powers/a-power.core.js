@@ -139,6 +139,8 @@
         int: x.int || s.int, titles: x.titles || [], temper: t, ranged: s.prof.flight >= 6 || s.prof.magic >= 6, hardy: s.prof.regen };
     }
     const id = typeof x === 'string' ? x : x.id;
+    // a kind that is one legend (the Ancient Storm Dragon is Vaskareth, order 97, D-198) is read as her sheet
+    if (SP.has(id) && SP.get(id).legend && LEG.has(SP.get(id).legend)) return PW.being(SP.get(id).legend);
     if (SP.has(id)) {   // a kind may be born with a title (the oldest dragons, the gate-born demons): its buffs count
       const s = SP.get(id), w = PW.withTitles(s.prof, s.level, s.titles), m = s.titles ? PW.mightOf(w.level) : s.might;
       return { kind: 'species', id, sp: id, n: s.n, level: clamp(w.level, 1, LV.max), t: PW.tOf(m * PW.titleMult(s.titles)), might: m, power: m * PW.titleMult(s.titles), prof: w.prof, int: s.int, titles: s.titles || [], ranged: s.prof.flight >= 6 || s.prof.magic >= 6, hardy: s.prof.regen };

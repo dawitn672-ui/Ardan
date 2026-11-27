@@ -87,7 +87,7 @@
       id: f.id, cat: f.cat, type: 'being', name: f.name, style: f.style || null, nature: sp.tier, kindName: sp.n, race: sp.fam, level: b ? b.level : f.level,
       cls: null, skills: BEING.get(f.id).skills, arts: f.arts || [], titles: titlesOf(BEING.get(f.id).titles), items: f.items || [],
       temper: f.temper, traits: f.traits, goals: f.goals, grudges: withNames(f.grudges), home: f.home, fame: f.fame,
-      story: f.story, secret: { story: (f.secret && f.secret.story) || [] }, liege: f.liege || null, power: b ? b.power : 0,
+      story: f.story, secret: { story: (f.secret && f.secret.story) || [] }, liege: f.liege || null, power: b ? b.power : 0, dominion: f.dominion || null,
     };
   };
   const LGF = FIG.FILES.get('legends') || { groups: [], secret: [] };
@@ -105,7 +105,7 @@
       temper: L.temper || {}, traits: (L.traits || []).slice(), freeTraits: true,
       goals: L.century ? [{ kind: 'ambition', w: 1.5, why: L.century }] : [], grudges: withNames((L.grudges || []).map(g => Object.assign({}, g, { kind: g.kind === 'being' ? 'legend' : g.kind }))),
       home: { name: (L.home && L.home.place) || '', domain: (L.home && L.home.what) || '', known: true }, fame: 'known',
-      story: [L.d, L.history].filter(Boolean), secret: { story: sec }, liege: null, power: b ? b.power : 0,
+      story: [L.d, L.history].filter(Boolean), secret: { story: sec }, liege: null, power: b ? b.power : 0, dominion: L.dominion || null,
     };
   };
   const RMF = FIG.FILES.get('race-masters') || { figures: [] }, RMO = new Map((RMF.figures || []).map(f => [f.id, f]));
@@ -279,7 +279,12 @@
   const linked = () => ({ legends: PW.LD.legends.map(legendProfile), 'race-masters': PW.D.masters.map(masterProfile) });
   FIG.list = function (cid) {
     const c = FIG.CATS.find(x => x.id === cid); if (!c) return [];
-    if (c.kind === 'fixed') return fixedAll().filter(p => p.cat === cid).map(p => Object.assign({}, p, { level: levelOf(p.id) }));
+    // a fixed category may also list legends whose sheets belong to it (the storm ancient is Vaskareth, D-198)
+    if (c.kind === 'fixed') {
+      const fx = fixedAll().filter(p => p.cat === cid).map(p => Object.assign({}, p, { level: levelOf(p.id) }));
+      if (!(c.legends || []).length) return fx;
+      return c.legends.map(id => PW.LEG.get(id)).filter(Boolean).map(legendProfile).concat(fx);
+    }
     if (c.kind === 'link') { const L = linked()[cid] || []; return cid === 'legends' ? L.sort((a, b) => b.power - a.power || byId(a.id, b.id)) : L.sort((a, b) => b.level - a.level); }
     return FIG.generated()[cid] || [];
   };

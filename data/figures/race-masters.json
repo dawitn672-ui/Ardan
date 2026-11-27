@@ -22,7 +22,7 @@
    "temper": { "pride": 0.6, "wrath": 0.2, "caution": 0.7, "patience": 0.9, "honor": 0.8, "greed": 0.4, "warmth": 0.2, "zeal": 0.3, "social": -0.2, "ambition": 0 },
    "traits": ["stubborn", "honest", "patient"],
    "goals": [{ "kind": "duty", "w": 1.8, "why": "that the Ninth Gate of Irondeep is never opened from below again" }],
-   "grudges": [{ "at": "vaskareth", "kind": "legend", "w": 1.0, "why": "the Ash-Crowned has burned three dwarf halls for one stolen scale" }],
+   "grudges": [{ "at": "vaskareth", "kind": "legend", "w": 1.0, "why": "the Storm-Crowned has burned three dwarf halls for one stolen scale" }],
    "home": { "name": "Irondeep", "domain": "the dwarf holds", "known": true },
    "fame": "known",
    "story": ["The warden of the Ninth Gate of Irondeep, who held it alone for a night and a day when something came up out of the deep roads."],

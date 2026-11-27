@@ -158,8 +158,13 @@ if (dem) {
   }
 }
 if (anc) {
-  const want = BD.species.filter(x => x.tier === 'ancient dragon').map(s => s.id).sort(), got = (anc.figures || []).map(f => f.kind).sort();
+  // the three dominions (order 97, D-198): each ancient kind held once, by a figure here or, for the storm, by the legend
+  // its kind points at (Vaskareth), whom the category lists (category.legends)
+  const want = BD.species.filter(x => x.tier === 'ancient dragon').map(s => s.id).sort();
+  const got = (anc.figures || []).map(f => f.kind).concat(BD.species.filter(s => s.tier === 'ancient dragon' && s.legend && (anc.category.legends || []).includes(s.legend) && LEG.has(s.legend)).map(s => s.id)).sort();
   if (want.join() !== got.join() || got.length !== 3) fail('ancient-dragons', `kinds ${got.join(', ')}; the bestiary's three are ${want.join(', ')}`);
+  for (const s of BD.species.filter(x => x.tier === 'ancient dragon')) if (!s.dominion) fail('ancient-dragons', `${s.id} rules no dominion`);
+  for (const f of anc.figures || []) if (!f.dominion) fail(`ancient-dragons/${f.id}`, 'rules no dominion');
   for (const f of anc.figures || []) if (f.liege !== 'sarnavoth') fail(`ancient-dragons/${f.id}`, 'serves the King of Dragons');
 }
 if (eld) {

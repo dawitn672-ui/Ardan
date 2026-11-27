@@ -1,19 +1,23 @@
 {
- "about": "The three ancient dragons who serve the King of Dragons (order 95: only three; D-193): Ash, Frost and Storm, hand-written, each a full profile, one of a kind in the bestiary. Validated by tools/lint-figures.mjs.",
+ "about": "The ancient dragons who serve the King of Dragons (order 95: only three; D-193; order 97, D-198: each the lord of a dominion): Ashgar of the inferno and Rimewing of the water, hand-written, each a full profile, one of a kind in the bestiary. The third, the storm, is Vaskareth, the King's eldest, a legend (data/legends.json): the category lists her sheet (legends) and the bestiary's storm kind points at her. Validated by tools/lint-figures.mjs.",
  "category": {
   "id": "ancient-dragons",
   "name": "The Ancient Dragons",
   "group": "beyond",
   "order": 2,
   "kind": "fixed",
-  "note": "Only three ancient dragons live: Ash, Frost and Storm, who serve the King of Dragons and keep his hall while he sleeps."
+  "note": "Only three ancient dragons live, each lord of a dominion: Vaskareth of the storm, the King's eldest and his regent, far the strongest of the three (her sheet stands among the Legends); Ashgar of the inferno and Rimewing of the water, who keep the King's hall while he sleeps.",
+  "legends": [
+   "vaskareth"
+  ]
  },
  "figures": [
   {
    "id": "ashgar",
    "name": "Ashgar",
    "style": "the King's Fire",
-   "kind": "ancient-ash-dragon",
+   "kind": "ancient-inferno-dragon",
+   "dominion": "inferno",
    "level": 772,
    "class": null,
    "liege": "sarnavoth",
@@ -96,7 +100,7 @@
      "at": "vaskareth",
      "kind": "legend",
      "w": 0.8,
-     "why": "Vaskareth, the King's eldest, gives herself airs above his servants"
+     "why": "Vaskareth gives the King's word as if it were her own"
     }
    ],
    "home": {
@@ -106,7 +110,7 @@
    },
    "fame": "known",
    "story": [
-    "The Ancient Ash Dragon, eldest of the three who serve the King of Dragons. It keeps the King's hall under the Wyrmcrown while he sleeps.",
+    "The Ancient Inferno Dragon, lord of the fire under the mountains, and the elder of the two who keep the King's hall under the Wyrmcrown while he sleeps.",
     "The lesser dragons keep out of its sky."
    ],
    "secret": {
@@ -118,8 +122,9 @@
   {
    "id": "rimewing",
    "name": "Rimewing",
-   "style": "the King's Winter",
-   "kind": "ancient-frost-dragon",
+   "style": "the King's Tide",
+   "kind": "ancient-water-dragon",
+   "dominion": "water",
    "level": 776,
    "class": null,
    "liege": "sarnavoth",
@@ -135,22 +140,25 @@
      "fight": true
     },
     {
-     "id": "frost_veil",
+     "n": "Tidewall",
+     "rank": "B",
      "lvl": 10,
-     "fight": false
+     "kind": "buff",
+     "fight": false,
+     "does": "A wall of black water stands up around it; arrows and fire die in it."
     },
     {
-     "n": "The King's Winter",
+     "n": "The King's Tide",
      "rank": "A",
      "lvl": 9,
      "kind": "aura",
      "fight": true,
-     "does": "A winter that comes in a day, over a whole valley."
+     "does": "A flood that comes in an hour, over a whole valley."
     }
    ],
    "arts": [
     "wyrmfire",
-    "frost_veil"
+    "Tidewall"
    ],
    "titles": [
     "old-blood",
@@ -158,10 +166,10 @@
    ],
    "items": [
     {
-     "n": "The oldest ice",
+     "n": "Water of the Black Tarn",
      "kind": "relic",
      "quality": "legendary",
-     "does": "A shard of the glacier the King sleeps under; it never melts.",
+     "does": "A flask from the tarn under the King's hall; it is never warm, and never runs dry.",
      "gives": {
       "ward": 1
      }
@@ -188,7 +196,7 @@
     {
      "kind": "loyalty",
      "w": 1.8,
-     "why": "to keep the ice over the King's hall whole"
+     "why": "to keep the Black Tarn over the King's hall still"
     },
     {
      "kind": "duty",
@@ -201,131 +209,21 @@
      "at": "hrimgala",
      "kind": "legend",
      "w": 1,
-     "why": "the White Winter's ice creeps toward the King's"
+     "why": "the White Winter freezes the rivers that are Rimewing's roads"
     }
    ],
    "home": {
-    "name": "the Wyrmcrown",
+    "name": "the Black Tarn",
     "domain": "the Dragon Mountains",
-    "known": true
+    "known": false
    },
    "fame": "known",
    "story": [
-    "The Ancient Frost Dragon, the second of the three who serve the King. It sleeps in the ice where the King sleeps under the stone."
+    "The Ancient Water Dragon, lord of the water, the second of the two who keep the King's hall. It lies in the Black Tarn under the stone where the King sleeps, and every river out of the Dragon Mountains is its road."
    ],
    "secret": {
     "story": [
      "It knows the elder dragons are counting the years, and that some of them hope the King never wakes."
-    ]
-   }
-  },
-  {
-   "id": "galeheart",
-   "name": "Galeheart",
-   "style": "the King's Thunder",
-   "kind": "ancient-storm-dragon",
-   "level": 780,
-   "class": null,
-   "liege": "sarnavoth",
-   "skills": [
-    {
-     "id": "wyrmfire",
-     "lvl": 9,
-     "fight": true
-    },
-    {
-     "id": "ancient_hide",
-     "lvl": 8,
-     "fight": true
-    },
-    {
-     "id": "dread_gaze",
-     "lvl": 9,
-     "fight": true
-    },
-    {
-     "n": "The King's Thunder",
-     "rank": "A",
-     "lvl": 10,
-     "kind": "active",
-     "fight": true,
-     "does": "A storm called down on one place and held there."
-    }
-   ],
-   "arts": [
-    "wyrmfire",
-    "dread_gaze"
-   ],
-   "titles": [
-    "old-blood",
-    "the-kings-thunder"
-   ],
-   "items": [
-    {
-     "n": "A crown of hail",
-     "kind": "crown",
-     "quality": "legendary",
-     "does": "Stones of hail that circle its head and never fall.",
-     "gives": {
-      "spd": 1
-     }
-    }
-   ],
-   "temper": {
-    "pride": 0.9,
-    "wrath": 0.6,
-    "caution": 0.3,
-    "patience": 0.8,
-    "honor": 0.5,
-    "greed": 0.5,
-    "warmth": -0.3,
-    "zeal": 0.3,
-    "social": 0.2,
-    "ambition": 0.3
-   },
-   "traits": [
-    "proud",
-    "brave",
-    "wrathful"
-   ],
-   "goals": [
-    {
-     "kind": "duty",
-     "w": 1.6,
-     "why": "to keep the other dragons to their own skies"
-    },
-    {
-     "kind": "ambition",
-     "w": 0.8,
-     "why": "to be the one who finishes the fight on the Saint's Stair, if the King cannot"
-    }
-   ],
-   "grudges": [
-    {
-     "at": "thunderhide",
-     "kind": "figure",
-     "w": 1,
-     "why": "Thunderhide wants its place"
-    },
-    {
-     "at": "kethra",
-     "kind": "legend",
-     "w": 0.9,
-     "why": "Stormwing will not keep to the skies the King gave her"
-    }
-   ],
-   "home": {
-    "name": "the Wyrmcrown",
-    "domain": "the Dragon Mountains",
-    "known": true
-   },
-   "fame": "known",
-   "story": [
-    "The Ancient Storm Dragon, the strongest of the three who serve the King. It keeps the roads of the sky and the other dragons to their own."
-   ],
-   "secret": {
-    "story": [
-     "It has climbed the Saint's Stair at night and watched the old man sleep. It did not strike."
     ]
    }
   }

@@ -31,9 +31,10 @@
     "terr": [
      "mountains"
     ],
-    "what": "a split peak of the Dragon Mountains whose snow never stays, over a hall of melted coin",
+    "what": "a split peak of the Dragon Mountains where the storms are born, over a hall of melted coin",
     "place": "the Dragon Mountains"
    },
+   "dominion": "storm",
    "temper": {
     "pride": 0.9,
     "wrath": 0.6,
@@ -46,7 +47,7 @@
     "social": -0.6,
     "ambition": 0.5
    },
-   "history": "Hatched in the first age, when the western realms were still tribes around fires. She took tribute from the first kings of Aldmark eighteen centuries ago and burned the ninth town that stopped paying; the chronicles of four realms begin their years from that fire. She has outlived every dynasty that ever paid her.",
+   "history": "The King's eldest, hatched in the first age when the western realms were still tribes around fires, and the Ancient Storm Dragon: lord of the storm, the greatest of the three dominions, and far stronger than the lords of the inferno and the water. She took tribute from the first kings of Aldmark eighteen centuries ago and burned the ninth town that stopped paying with her lightning; the chronicles of four realms begin their years from that fire. Since the Sword Saint threw her father under the mountain sixty years ago she has ruled the dragons as his regent: she keeps the roads of the sky, holds every dragon to its own, and gives the King's word as if he had spoken it.",
    "traits": [
     "vain",
     "patient in hate",
@@ -86,6 +87,12 @@
      "kind": "race",
      "w": 0.8,
      "why": "a dwarf king once cut a scale from her flank while she slept"
+    },
+    {
+     "at": "kethra",
+     "kind": "being",
+     "w": 0.9,
+     "why": "Stormwing will not keep to the skies the King gave her"
     }
    ],
    "speech": "Slow, ornate, every sentence a reminder of a debt. Calls men 'little tithe'.",
@@ -120,22 +127,22 @@
     },
     "attacked": {
      "a": "rage",
-     "line": "She does not hurry. She burns the hill you stand on."
+     "line": "She does not hurry. She calls the lightning down on the hill you stand on."
     },
     "ignored": {
      "a": "demand",
      "line": "An insult. A tithe is owed by whoever passes her shadow."
     }
    },
-   "d": "The oldest dragon of the Dragon Mountains, grey-gold and long as a church. Nine towns are ash because their lords thought a tithe could be skipped.",
+   "d": "The King's eldest and the Ancient Storm Dragon, grey-gold and long as a church, who rules the dragons as his regent while he sleeps. Nine towns are ash because their lords thought a tithe could be skipped.",
    "skills": [
     {
-     "n": "Ash Breath",
+     "n": "Storm Breath",
      "rank": "S",
      "lvl": 10,
      "kind": "active",
      "fight": true,
-     "does": "A breath that burns a town in a pass.",
+     "does": "Lightning breathed down a pass, enough to burn the town in it.",
      "cap": {
       "fire": 2
      }
@@ -154,7 +161,7 @@
      "lvl": 10,
      "kind": "active",
      "fight": true,
-     "does": "A downbeat that flattens a camp."
+     "does": "A downbeat that flattens a camp and brings the storm in behind it."
     },
     {
      "n": "Tithe-Fear",
@@ -1981,6 +1988,7 @@
     "what": "a hall under the highest peak of the Dragon Mountains, sealed by his own fallen roof",
     "place": "the Dragon Mountains"
    },
+   "dominion": "the King's sky: every sky a dragon flies in, and every dragon in it",
    "sleeper": true,
    "wake": [
     "his children slain",
@@ -1999,7 +2007,7 @@
     "social": -0.2,
     "ambition": 0.9
    },
-   "history": "The first dragon hatched of the first clutch, who gathered every dragon of the age under one crown and ruled the skies of the north for two thousand years. Sixty years ago he met the Sword Saint on the ridge now called the Saint's Stair. The fight lasted three days. The Saint struck the last blow and the King fell into the mountain, roof and all; he has slept there wounded ever since, healing. Every dragon alive is his subject or his grandchild, and Vaskareth his eldest.",
+   "history": "The first dragon hatched of the first clutch, who gathered every dragon of the age under one crown and ruled the skies of the north for two thousand years. Sixty years ago he met the Sword Saint on the ridge now called the Saint's Stair. The fight lasted three days. The Saint struck the last blow and the King fell into the mountain, roof and all; he has slept there wounded ever since, healing, and reigns still: his Royal Will holds every dragon from under the mountain, and Vaskareth, his eldest, rules in his name until he wakes. Every dragon alive is his subject or his grandchild, and Vaskareth his eldest.",
    "traits": [
     "regal",
     "proud past measure",
@@ -2079,7 +2087,7 @@
      "line": "He is asleep. You are lucky."
     }
    },
-   "d": "The King of Dragons, by far the strongest being in the world, who ruled the north sky for two thousand years until the Sword Saint threw him under the Dragon Mountains sixty years ago. He sleeps there, healing. Every dragon alive is his subject.",
+   "d": "The King of Dragons, by far the strongest being in the world, who ruled the north sky for two thousand years until the Sword Saint threw him under the Dragon Mountains sixty years ago. He sleeps there, healing, and reigns still through his eldest, Vaskareth, his regent. Every dragon alive is his subject.",
    "skills": [
     {
      "n": "Sovereign Breath",
