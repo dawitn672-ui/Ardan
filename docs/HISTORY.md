@@ -3910,3 +3910,9 @@ cores): `rarityOneLadder`, `lvClassOne`, `lvClassParts`, `lvClass`, `lvWalls`, `
 did in the same hour (a new game's main-thread CPU is the same on both builds, 1.8 to 3.0 s against 1.8 to 2.4 s).
 `node --test tests/v2` 166 of 166; the skills, titles, figures, reasons (41), stages, docs-index lints; `version.mjs check`;
 `--check-tiers`. A class's one-holder test is read from a set made at load (`CL.one`), not the ladder at each call.
+
+### H-NEW · 2026-11-27 · Three outside design skills vetted and adapted (docs-only)
+
+The owner offered five (Impeccable, taste-skill, Emil Kowalski's skills, brand-identity, oil-ui). Read and scanned with SkillSpector 2.13.7 (static): adapted `emil-motion` (MIT, vendored markdown), `ardan-design-critique` (from Impeccable, Apache-2.0, three reference files) and `ardan-brand-identity` (MIT, eight reference cards); skipped taste-skill (web landing builder, Stop hook, network photo search, hover motion) and oil-ui (Chinese-language, update check, paid image service, 112 code-execution findings). `ardan-ui-review` section 1c says when each runs; `ardan-integration` section 7 is the vetting recipe. No code changed.
+
+**Undo.** Revert the commit.
