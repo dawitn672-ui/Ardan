@@ -66,7 +66,7 @@ two cards (`level.events.js`), tests.
 - **Legendary and mythical classes** (orders 97 and 98, D-201): one living holder each (the census `A.S.lvc.u`, written by
   `CL.take`, freed at the holder's death by `CL.year`; a great being whose road holds one keeps it while he lives), and
   never advanced (`CL.open` refuses every class after one). None is on a road a person's skills would give (the profile,
-  a seeded life). Three legendaries (the Wyrm Blade, Spear and Bow: a true dragon slain and five beasts above him), the
+  a seeded life). Three legendaries (the Dragonslayer Blade, Spear and Bow, once the Wyrm Blade, Spear and Bow: a true dragon slain and five beasts above him), the
   Sword Saint's class mythical. Save step `classOne` (version 24) builds the census from the roads. Test `lvClassOne`.
 - **Orders 95 and 96** (D-184 addendum): the level before one is earned is the computed one held in the band of the
   person's life (`LV.band`: commoner, noble by upbringing, service by rank and years, posts by kind, kills), bent softly

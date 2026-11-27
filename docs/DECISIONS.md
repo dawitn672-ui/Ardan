@@ -3422,6 +3422,11 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
   template's technique and passive are the three's.
 - **Saves** (version 24, step `classOne`): the census is built from everyone's road (the earliest living taker, by year
   then id); a road's class the tree no longer makes (the six cut legendaries) is struck from it. No sample save holds one.
+- **Plain names** (the owner's standing rule on naming, given during this work: plain words a newcomer reads cold, not
+  "wyrm"): the three are the **Dragonslayer Blade, Spear and Bow** (`dragonslayer-*`; the template's passive *Bane of
+  Beasts*, once Wyrmsbane); the save step `classOne` moves a road's `wyrm-blade`, `wyrm-spear`, `wyrm-bow` to the new ids
+  (`CL.RENAMED`) before it builds the census, and the elf master's road names the new one. The release's own Wyrm Spears
+  (the Spear Yard of Aming's hunters) are left to the whole-game naming pass.
 - **Not chosen.** Keeping nine with one holder each (order 97: very few); a separate `one` flag on the class (the rarity
   already says it, and a flag could disagree with it); letting a legendary class lead to a later one (order 97).
 

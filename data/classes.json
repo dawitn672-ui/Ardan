@@ -2490,8 +2490,8 @@
     "text": "A {noun} of a great house: arts no common master teaches, and the young of the great to teach in turn."
    },
    {
-    "key": "wyrm",
-    "prefix": "Wyrm",
+    "key": "dragonslayer",
+    "prefix": "Dragonslayer",
     "rarity": "legendary",
     "roads": [
      "sword",
@@ -2526,7 +2526,7 @@
     },
     "passive": {
      "on": "beast",
-     "name": "Wyrmsbane",
+     "name": "Bane of Beasts",
      "edge": 5
     },
     "hook": "a blow through scale, and a bane to every beast",

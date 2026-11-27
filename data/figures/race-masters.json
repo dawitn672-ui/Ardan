@@ -30,7 +30,7 @@
   },
   {
    "id": "m-elf-blade",
-   "road": ["swordsman", "blade-dancer", "wyrm-blade"],
+   "road": ["swordsman", "blade-dancer", "dragonslayer-blade"],
    "arts": ["Moon-Cut"],
    "temper": { "pride": 0.5, "wrath": -0.3, "caution": 0.4, "patience": 1, "honor": 0.5, "greed": -0.4, "warmth": 0, "zeal": 0, "social": -0.4, "ambition": -0.2 },
    "traits": ["patient", "calm", "proud"],

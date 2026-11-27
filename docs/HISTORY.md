@@ -3752,3 +3752,12 @@ to buff, flaw to debuff and adding spell is a design step of the skills library,
 sheet skills sit in files another builder is rewriting.
 
 **Undo.** Revert the commit (the `titleIds` step then has nothing to move; `SV.VER` stays 24 with H-172).
+
+### H-173 addendum · 2026-11-27 · Plain names for the three legendary classes (D-201)
+
+The owner's standing rule on naming (plain words a newcomer reads cold), applied to what this branch touched: the `wyrm`
+template is `dragonslayer` (the Dragonslayer Blade, Spear and Bow; the passive Bane of Beasts); `CL.RENAMED` moves an old
+save's `wyrm-*` class ids in the `classOne` step; `data/figures/race-masters.json` (the elf master's road, the class id only)
+and `lvClassOne` follow. The title is the Dragon Slayer (H-173).
+
+**Undo.** Revert the commit.

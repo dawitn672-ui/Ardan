@@ -9,8 +9,8 @@ What changed for the player, in plain words, one section per version (newest fir
   mythical titles, and their own arts are mythical; every other legend's, and the ancient dragons' and demons', are
   legendary. A great being's profile says so beside its skills. Wyrm-Slayer is now the **Dragon Slayer**; whoever held it
   in an old save still does.
-- **Legendary classes are one man's.** A legendary class (now only three: the Wyrm Blade, the Wyrm Spear and the Wyrm
-  Bow, for one who has killed a true dragon and five beasts stronger than himself) has one living holder at a time, and
+- **Legendary classes are one man's.** A legendary class (now only three: the Dragonslayer Blade, the Dragonslayer
+  Spear and the Dragonslayer Bow, once the Wyrm Blade, Spear and Bow, for one who has killed a true dragon and five beasts stronger than himself) has one living holder at a time, and
   nothing follows it: at later walls its holder takes the breakthrough's strength instead. When he dies, the next may
   take it. The Sword Saint's class is mythical, and his alone while he lives.
 - **One rarity for everything.** Skills, titles, classes and the arms of the great now share one ladder: basic, rare,

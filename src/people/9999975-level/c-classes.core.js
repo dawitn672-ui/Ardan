@@ -376,13 +376,16 @@
   };
   (A.onYear = A.onYear || []).push(function () { try { CL.year(); } catch (e) { console.error('[level] classes year', e); } });
   // save version 24 (D-201): the census of the one-holder classes from everyone's road, the earliest living taker of each
-  // (by year, then id); a road's class the tree no longer makes (the six legendaries D-201 cut) is struck from it, so
-  // what follows on his road and his class read as the tree has them
+  // (by year, then id); a class renamed keeps its holder (the Wyrm Blade, Spear and Bow are the Dragonslayer's: plain
+  // words, D-201), and a road's class the tree no longer makes (the six legendaries D-201 cut) is struck from it, so what
+  // follows on his road and his class read as the tree has them
+  CL.RENAMED = { 'wyrm-blade': 'dragonslayer-blade', 'wyrm-spear': 'dragonslayer-spear', 'wyrm-bow': 'dragonslayer-bow' };
   CL.migrateOne = function (S) {
     S = S || A.S; if (!S || !S.people) return 0;
     const best = {}; let cut = 0;
     for (const pid of Object.keys(S.people).sort()) {
       const p = S.people[pid], r = p && p.lv && p.lv.cr; if (!Array.isArray(r)) continue;
+      for (const x of r) if (Array.isArray(x) && CL.RENAMED[x[0]]) x[0] = CL.RENAMED[x[0]];
       const kept = r.filter(x => Array.isArray(x) && CL.BY.has(x[0])); if (kept.length !== r.length) { cut += r.length - kept.length; p.lv.cr = kept; }
       if (p.alive === false) continue;
       for (const x of kept) if (ONE(CL.BY.get(x[0])) && x[2]) { const b = best[x[0]]; if (!b || x[1] < b[1]) best[x[0]] = [p.id, x[1]]; }
