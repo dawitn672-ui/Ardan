@@ -631,6 +631,11 @@ order is replaced, strike it through and say by what.
     - **Follow-up, 02:25 ET: plain language over buzzwords.** Cold-reader naming must far exceed what the game has
       today: plain English most of the time ("dragon", not "wyrm"; "young dragon", not "wyrmling"), invented or archaic
       words only where they earn their place. A standing rule for every builder from now on; wave 5 sweeps the rest.
+    - **Follow-up, 03:10 ET: skills.** Review and build as many skills as needed throughout, and **update skills as you
+      go**: each wave updates the skills it made stale. The owner's own finished skills `ai-build-hygiene`,
+      `ux-laws-review` and `app-abuse-checklist` (installed; their eval reviews were shared) are used, not copied: linked
+      from `ardan-integration`, `ardan-ui-review` and `ios-capacitor-release`. The records are mirrored to Notion (a tree
+      of pages and a dated Chronicle database); the repo stays the source of truth.
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**

@@ -117,6 +117,12 @@ Reviewer notes: single-player, offline, no sign-in, all content in the app. Guar
 selection, zoom or callouts; splash and status bar; system Share for export), 2.1 (no crash, no placeholder), 2.3.3
 (screenshots in play), 2.5.2 (no downloaded code; mods stay data), 5.1.1 (privacy policy).
 
+## 8. Before any online piece
+
+Ardan is offline today. The day anything talks to a server (a leaderboard, cloud saves, a shop, accounts, an upload),
+run the installed `app-abuse-checklist` skill on it before shipping: a score sent from an offline client can be any
+number, a display name can carry script, a replay file is an upload. Saves stay inside `SAVES` either way.
+
 ## Pitfalls
 
 - Capacitor's iOS page and Codemagic's Capacitor guide still show CocoaPods and `App.xcworkspace`: ignore for SPM.

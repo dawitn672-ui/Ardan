@@ -23,6 +23,13 @@ the states it can be in (empty, busy, a peasant, a noble, a ruler, a child) at *
 - Does it look and behave like the screens beside it? Find the nearest existing screen of the same kind and reuse its
   parts and tokens; a new pattern needs a reason.
 
+## 1b. The UX laws pass
+
+Run the installed `ux-laws-review` skill (Hick, Fitts, Doherty, peak-end and the rest) on the screen and fold its
+findings into this report: it is tested and catches what the house rules don't (risky choices stacked beside safe ones, a
+choice count past four, a slow first response). This skill adds Ardan's own rules on top; where the two disagree, the
+house rule wins (e.g. descriptions open on click, never on hover).
+
 ## 2. House rules (each one is a finding if broken)
 - **Descriptions open on click, tap or Enter, never on hover.** A description is `data-note="..."` on a button or an
   info glyph; no `title=` of more than three words; nothing on `mouseover`/`mouseenter`. Evidence:

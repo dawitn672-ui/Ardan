@@ -92,7 +92,7 @@ when the stage comes: `.claude/skills/ios-capacitor-release`. **The build rules 
 | `docs/` | Only the reference set (order 76): `README.md` (the index), `MASTER_PROMPT.md` (the source of truth), `prompts/`, `OWNER_ORDERS.md`, `STATUS.md`, `ROADMAP.md`, `HISTORY.md`, `DECISIONS.md`, `VERSIONS.md`, `TOOLING.md`, `IDEAS.md`, `NAMES.md`, `V2_SPEC.md`, `V3_SPEC.md`; `design/` (notes of systems in play), `research/` (data the tools read). No plans, reports or scratch |
 | `archive/` | Retired features and code (`x1-patch-layer/`: the old patches.mjs files), each with a note on what it was and why it was replaced. Never built. |
 | `CHANGELOG.md` | Player-facing changes in plain words, one section per version |
-| `.claude/skills/` | `life-sim-systems`, `realistic-continent-maps`, `game-ux-playtest-loop`, `ios-capacitor-release` (keep them true to the code) |
+| `.claude/skills/` | `ardan-dev-process`, `ardan-integration`, `ardan-prompt-intake`, `ardan-ui-review`, `ardan-world-data`, `life-sim-systems`, `rpg-progression-design`, `cold-reader-naming`, `realistic-continent-maps`, `game-ux-playtest-loop`, `ios-capacitor-release` (keep them true to the code, and update them as each wave lands: order 100) |
 
 **Systems** (`src/<system>/`): `core` (engine fixes, saves, time, scale, replay, mods, pacing), `map` (the continent,
 terrain, journeys, the map view), `world` (realms, cultures, names, lore, the world record, beliefs), `people` (the

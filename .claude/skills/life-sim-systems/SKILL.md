@@ -19,36 +19,30 @@ Use this when building or reviewing character, family, politics or war systems f
   - Strength maturity is about 0.03 at birth, 0.34 at 10, 0.86 at 18 and 1.0 from 25 to 32, then falls to about 0.7 by 60.
   - Stretch the curves per race with `ageScale` (orc 0.78, dwarf 1.65, elf 2.1, giant 1.9).
 - Conditioning moves toward a **natural ceiling** (lift ×3.8 for an untrained adult; Earth's record is about ×3.8 too). Gains shrink near the top, and idle months lose a little.
-- **Body breakthroughs (past a stat ceiling) are rare, costly and budgeted** (`docs/MASTER_PROMPT.md` §6.2, §8 A0 and A2).
-  They are not a road to giant class; treating them as one is the exploit. Today's release code is that exploit:
-  `A.breakthrough` (`src/core/release/core/04-realms-and-war-years-b.js`, called from the duel's close in `07-duels.js`)
-  fires on any fight won against a foe more than 8 above you, raises `pot` by 70% of each gain (up to 200) and has no
-  budget, no cooldown and no cost, and sparring is not excluded. The rule any change must meet:
-  - **A lifetime budget** of about three to five true breakthroughs (the A0 stopgap: at most three).
-  - **Years apart:** a cooldown of years (the A0 stopgap: at least two in-game years).
+- **Body breakthroughs (past a stat ceiling) are rare, costly and budgeted** (`docs/MASTER_PROMPT.md` §6.2). The
+  release's old duel leap (`A.breakthrough`, fired by any win over a foe more than 8 above you) was the exploit; order 95
+  retired it and H-164 removed its call from `07-duels.js`. Ardan's breakthroughs now live in two reasoned places: the
+  **level walls** (`A.LV`, every hundredth level: points, a skill may jump a rank, a class branch; see the
+  `rpg-progression-design` skill) and the **skills' grasp of a concept** (below). Any new body breakthrough must still meet:
+  - **A lifetime budget** of a few true breakthroughs, **years apart**.
   - **Never from sparring,** practice, drill or a bout with nothing at stake: only a real-stakes deed against long odds.
   - **A real risk** of crippling injury or death that grows with the gap overcome.
-  - **A hard ceiling from the body model:** a breakthrough lifts the person's own ceiling a little (about an eighth,
-    `docs/design/growth-standard.md` §3.11) and never past his people's limit.
-  - **No unlimited rise in potential:** no rise in `pot`, or a small capped one; never one that compounds.
-  - Anchor the outcome to `GD.TIERS` (§8 A1): Master is one or two in a realm, Legend about five alive in Ardan.
-  Mark stopgap code `STOPGAP: replaced by A2`, record it in `docs/DECISIONS.md`, and measure it with the balance harness
-  before and after.
-- **Skills are levels and experience, not a number** (Ardan S1, owner order 63, D-072, built in `src/people/36-skills` on
-  the engine `src/people/engine/skills.js`). Seven words of five steps (Beginner I to Legend V; Myth for the dead); a
-  level is exactly what a check reads, and experience fills a bar toward the next step at the growth standard's price
-  (ten a month of plain drill; a Master's step years). **A new word is not bought with experience:** its named concepts
-  (nine a skill) must be grasped. A person's need for each is a hash (some come at once, some take ten years, a few never:
-  a blind spot); each month of real work is a chance of insight; at the edge experience is stored at half and lands as
-  a leap when the concept comes. From Expert up the word must also be **proved** (a stretch at the next word, succeeded).
-  **Concept-grasp breakthroughs** (S1; owner orders 59 and 61, `docs/design/growth-standard.md` §3.16) are a different,
-  wanted thing from the body breakthroughs above: they cross a skill's concept and release its stored effort, and never
-  raise a stat ceiling or `pot`. They are sudden grasps at named moments (a defeat by a better hand, a near death, a rival, a new land, a
-  master's word, a quiet season). Discipline (unbroken months), a rival, a new place, needs, kin skills, hours shared,
-  specialisms (two steps up inside, one down in a sibling, ×0.85 outside) and pride move what a month is worth, and every
-  one is written in the ledger beside the gain it changed. Other people keep one number (the value of their level) and
-  grow by the same rules in closed form once a year. No percentages, no bare numbers: the page says "Expert II", "about
-  half way", "held: the measure".
+  - **A hard ceiling from the body model:** a little (about an eighth, `docs/design/growth-standard.md` §3.11), never past
+    the person's people's limit; no compounding rise in `pot`.
+  - Measure it with the balance harness before and after, and record it in `docs/DECISIONS.md`.
+- **Skills are rungs with levels, and experience** (S1, D-072, then the skills rebuild: `src/people/37-skills2` over the
+  engine `src/people/engine/skills2.js`; design `docs/design/skills-v2.md`). The player reads a rung, a rank and a level
+  ("Basic Swordsmanship · C · Lv 3"), printed only by `A.SK2.label` and its kin; S1's seven words ("Beginner I" to
+  "Legend V") are gone from everything a player reads (orders 78, 83; `tools/lint-skills.mjs` fails them). Experience moves
+  only through `A.gainXp(p, k, effort, cause)` and a level only through `A.SK.set`; never write `p.skills[k]`.
+  **A new rank is not bought with experience:** its named concepts must be grasped (a person's need for each is a hash:
+  some come at once, some take ten years, a few never), and from rank B a **deed** proves it (a check at the next rank's
+  value, succeeded, or a deed through `A.deedDone`). **Concept-grasp breakthroughs** are sudden grasps at named moments (a
+  defeat by a better hand, a near death, a rival, a new land, a master's word) that release stored effort; they never raise
+  a stat ceiling. Discipline, a rival, a new place, needs, teachers and specialisms move what a month is worth, and every
+  one is written in the ledger beside the gain it changed. Other people grow in closed form once a year (`SK.npcGrowYear`).
+  Skill kinds (actives, passives, buffs), evolution, merging and arts: `rpg-progression-design`. No percentages, no bare
+  numbers on the page.
 - **Growth must not be linear, and every change needs a cause** (Ardan's G0 standard, `docs/design/growth-standard.md`, D-067;
   S1 builds it for skills; stats follow in G1/G2). Gain = effort × quality (routine work stops teaching once you can do it; a task above you
   under stakes teaches most) × teacher (by the gap in words, never past one word under him) × talent × age by kind
@@ -73,9 +67,12 @@ Humans are the yardstick. Square-cube law: a 5.6 m giant has about 10× human st
   | Knight | 5 to 7 |
   | Elite order member | 12 to 32 |
   | Ordinary adult giant | 12 to 30 |
-  | Legend | 50 to 80 |
+  | The great swords of the age (the release's old top fighter tier) | 50 to 80 |
 
-- **What it takes for a human to stand equal to a giant:** Master tier, lift around 500 kg (at most one body breakthrough, inside the budget of §1), and order-grade gear. Rare by design.
+  These tiers are the release's fighting-worth scale (`GD.TIERS`); since order 98 their words ("Master", "Legend") leave
+  player text, and "legend" means only the beings of levels 800 to 1000 (`data/legends.json`, `A.POWER`). The person's
+  level and the power ladder (log10 of might from the level) are the scale a player reads now (`rpg-progression-design`).
+- **What it takes for a human to stand equal to a giant:** the top of the human fighting tiers, lift around 500 kg (at most one body breakthrough, inside the budget of §1), and order-grade gear. Rare by design. (Orcs are no longer a playable people since order 98: demonic creatures; their body numbers above still serve the bestiary.)
 
 ## 3. Odds without percentages, and outcomes beyond dice
 `attempt()` decides every test from three forces:

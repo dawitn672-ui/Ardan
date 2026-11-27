@@ -6,9 +6,15 @@ description: "Simplify and judge a game's UI/UX for immersion (life-sims, strate
 # Game UX for immersion, plus the playtest loop
 
 ## The core loop (taken from BitLife and adapted)
-- **Two buttons move time: Next month and Next year** (owner's order, `docs/DECISIONS.md` D-008 and D-019; round 2 B6). They sit in fixed places, the largest controls, in the thumb zone above the tab bar (month on the left, year beside it; the year is the main button while the player is a child). There is no play/pause/speed and no "sim a week".
-  - **Neither ever becomes a stop control.** While time passes the running button keeps its label, disabled, with a thin progress bar; Esc ends a year at the end of its month. A control that changes meaning mid-press gets mis-pressed.
-  - **A year runs month by month and ends with one redraw and one digest** of its quiet happenings. It stops early, and says why in one line, only for what is notable: a card that needs a real answer, a battle or a call to war, an illness or a wound, a death or a birth in the household, coming of age, a deadline. Talk, errands and the day's small happenings never stop it; they wait for the end of the step and come one at a time.
+- **One button moves time: Next year below age 12, Next month from 12** (D-160, replacing the two buttons of D-008,
+  D-019, D-026; `src/ui/999995-next-year/README.md`). It sits in one fixed place, the largest control, in the thumb zone
+  above the tab bar. There is no play/pause/speed and no "sim a week".
+  - **It never becomes a stop control.** While time passes it keeps its label, disabled, with a thin progress bar. Only
+    Esc, death or being put on campaign end a step early. A control that changes meaning mid-press gets mis-pressed.
+  - **Only notable things stop a step midway:** a card that needs a real answer, a battle, a duel, a call to arms, a
+    deadline. Once the card (or chain of cards) is answered, **the same step carries on to its end** (order 54, D-062). A
+    wound, an illness, a death or birth in the household and coming of age go into the step's digest. Talk and the day's
+    small happenings wait for the end of the step and come one at a time.
   - **No initiative pool or cap** (D-019): let the player do as much as fits; overtraining has its own consequences (weariness, health, a strain), and that is on the player.
 - Each press brings the happenings back as **cards shown one at a time**: a notable card when it falls, small ones at the end of the step. A quiet month brings none.
   - Quiet months pass with a 2-second toast and a feed line, never a card you must dismiss. In Ardan's first playtest, 70% of cards were filler and players hated it.
