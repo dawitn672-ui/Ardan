@@ -3296,3 +3296,52 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
 - **Not chosen.** Storing generated profiles (save growth, and they would go stale as people age and die); profiling the
   counts (201 at the start: a page of noise); adding the fixed beings to `PW.great()` (its tale draws from that list, so
   every world's tales would move; a door for later).
+
+### D-194 · A realm's standing military by its size, wealth and kind: tens to hundreds of thousands of regulars, 50 to 3,000 knights, a few of the elite (2026-11-26; order 95, with orders 13, 93 and 97's wording and elite; D-064, D-069, D-081, D-086, D-184)
+- **The regulars are the war map's men, sized by data** (`data/military/standing.json`, `A.MIL.normal`): people x a kind's
+  rate, a floor of 10,000 for a realm of 300,000 people, a ceiling of what its purse keeps (income x the kind's pay share
+  over the release's upkeep of 3.2 a man) and 400,000. At the world's birth the release's realm maker takes it in place of
+  the lore's figure (from 1.25 million soldiers in all to about 1.9 million; Zanara 140,000 to 275,000, Varenna
+  156,000 to 216,000, Northreach 10,000 to 14,400; the purse holds Aldmark at 183,000 and the Abbey at 3,900). The
+  release's divisions carry them (209 to 309 at the start), not new objects. **Not chosen:** a separate garrison count off
+  the map (every reader of `r.army` would have to learn it, and battles would not see it); bigger divisions for the great
+  realms (the templates are the player's and the release's, and the measured cost did not call for it).
+- **The crown decides its host once a year through `A.WHY`** (kind `standing`): raise toward the normal host, keep, or
+  cut, from named reasons (the shortfall against its size and purse, war, a rival's larger host, the treasury, unrest,
+  an excess it cannot pay). The release's recruiting (`A.forcesAI`, four regiments a year at most, from the roll) fills
+  the host chosen, so an old save's realms grow toward the new hosts over a few years, and the roll still bounds them.
+  The court's sellswords measure against the same normal host. A rebel host keeps the release's rule.
+- **Knights are a count, read from the houses** (order 13): 50 to 3,000 by people and the square root of wealth a head
+  (a giant hold 10 to 200), never fewer than the orders' brethren and fifty; the orders their members, the crown a share
+  by kind, the houses by rung weight, largest remainder. Heavy horse battalions stay what they were: lances and
+  heavy foot, not knights. The reading by command (crown and each tenant-in-chief) is kept as `r.kn` at the year's turn,
+  the world's birth and a save's load (**save version 23**, step `standing`), because a reading cached by readers would let
+  a drawn page change what a later battle reads.
+- **Knights count far above soldiers in battle, by A.POWER's host rule:** a division's knights (its command's, shared by
+  men, the lances and the guard taking three shares) multiply its blows and break by ((men - k + k x w_k / w_s) / men)^1.35
+  and its defence by the square root, at most x1.6, w the worth (square root of the ladder's might) at the realm's levels:
+  a knight is worth about 2.7 soldiers, so 1% of knights in a division adds about 2.5% and a crown's lances about 7%.
+  Order divisions and conscript foot take no share (an order's own multipliers already carry its brethren). This is
+  honest Lanchester arithmetic: knights are few. `PW.hostOf` counts a host's knights at their worth the same way.
+- **Levels follow the counts through A.POWER, no second scale:** each band of order 93 (soldiers 80-180, knights 230-299
+  with a few past 300, the elite 300-420) by the realm's quality (base, troops' quality, drill, wealth, people), and a
+  giant hold in bands of its own (420-600: a grown giant is worth 12 to 30 conscripts).
+- **The elite are seeds, not people:** the realm's own people at the elite's level (a Grand Master, a General, the player),
+  filled to the realm's count (order 97: not a fixed ten; 1.5 x the square root of its people in hundreds of thousands,
+  3 to 20: the great empires 14 to 16) by champions named from the realm's culture by hash, with a role and a level
+  spread down from the realm's best. **Not chosen:** making 350 new people (a third more people to save and age each
+  month) or setting real people's levels from data (`LV.fromData` stays unused: a noble at 96 does not become 340).
+- **The player reads round figures in words, as far as he may know** (`A.V2DIP.seen`): "about 216,000 soldiers, some
+  3,000 knights" (order 97: soldiers, never "men under arms"; by kind in the note: infantry, archers, cavalry), or by
+  hearsay "said to keep some 200,000 soldiers and a few thousand knights"; the elite behind a
+  click-to-open note. No percentages; no war screen.
+- **What the larger hosts showed, fixed where it lives:** a contingent's division still in a fight on the day of a muster
+  stayed in another army for the war (`A.CMD.keepWhole` now runs weekly for every realm at war, and the audit leaves a
+  division in a fight where it is, as `keepWhole` does); a realm raised whole lacks nothing, so a muster could offer a
+  branch with no reason at all (the muster now reads the bulk of the command's host as a reason, `MU.mix`, and a uniform
+  "the muster takes every able man" that moves no choice). Ten tests read one world's luck and were made world-robust
+  (H-082; listed in H-161): a war Aldmark's host ends in months is taken up again where a test needs months of war, a
+  support company or a battle ended at its first step is passed over, rumours are counted as they come, lives are pooled,
+  a lab takes a decider's best reason where the test is not about the draw, and an election's rule is held as the broken
+  promise's weight; the summons' bar is half or more in full (129 of 258, with the larger hosts across the borders); the
+  court's tests measure against `A.MIL.normal`.

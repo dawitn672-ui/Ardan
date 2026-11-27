@@ -13,8 +13,12 @@ const findFight = `
     const w = A.startWar('POL-01', enemy, null, 'conquest'); A.enlist(pc, false, { branch: 'spears' });
     pc.mil.rank = rank;
     for (let day = 0; day < 500; day++) {
+      // (D-194: Aldmark's host of 180,000 ends a war with its small neighbour within months, often before his division
+      // meets the enemy; the war is taken up again and he serves on, so the 500 days are days of war)
+      if (!A.atWar('POL-01').length && A.neighbors('POL-01')[0]) A.startWar('POL-01', A.neighbors('POL-01')[0], null, 'conquest');
+      if (!pc.mil && pc.alive) { A.enlist(pc, false, { branch: 'spears' }); if (pc.mil) pc.mil.rank = rank; }
       A.advance(1); let h, k = 0; while ((h = A.headReady()) && k++ < 50) { if (h.type === 'event') A.eventAuto(); else A.S.queue.shift(); }
-      if (!pc.mil) return null; // the war ended in peace before he saw a field and he went home: try the next seed
+      if (!pc.mil) return null; // he left the army or fell: try the next seed
       const d = A.divById(pc.mil.div);
       if (!d) continue;
       for (const pid in A.S.fights) { const f = A.S.fights[pid]; if ((f.aIds.includes(d.id) || f.dIds.includes(d.id)) && (d.atk === +pid || d.loc === +pid)) { A.CO.place(pc); return { F: f, pc, w }; } }
@@ -124,11 +128,14 @@ export default {
         payLines = lines.filter(t => /^Pay day in the /.test(t)).length;
         // two costly fights won in one year by the soldier's battalion, in a fresh life (one whose soldier has a company
         // within two years: the next seed when he has none)
+        // (D-194: the muster may write him into a support company, the scouts or the engineers, which carries no colours;
+        // such a world is passed over like one where he has no company)
         let M = null;
-        for (const seed of [9743, 9747, 9748]) {
+        for (const seed of [9743, 9747, 9748, 9751, 9752, 9753]) {
           A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
           A.startWar('POL-01', A.neighbors('POL-01')[0], null, 'conquest'); A.enlist(A.pc());
           for (let g = 0; g < 24 && !M; g++) { A.S.queue = []; A.advance(30); M = A.pc().alive && A.pc().mil ? CO.mine(A.pc()) : null; }
+          if (M && !GD.BN[M.d.bs[M.b].c] && GD.SUP[M.d.bs[M.b].c]) M = null;
           if (M) break;
         }
         if (M) {

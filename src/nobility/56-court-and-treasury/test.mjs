@@ -166,11 +166,12 @@ export default {
       const RI = A.RI, x = RIT.ai().filter(o => o.forces && o.army > 20000 && !A.atWar(o.id).length).sort((a, b) => a.id < b.id ? -1 : 1)[0];
       const F = x.forces, main = Object.keys(F.tpl).filter(id => F.tpl[id].kind !== 'garrison' && !F.tpl[id].order)[0];
       const men0 = A.tplS(x.id, main).men, bns0 = F.tpl[main].bns.length;
-      // the realm loses nine tenths of its people and its whole host
-      const pop0 = x.provPop; x.provPop = Math.round(x.basePop * .08);
+      // the realm loses nearly all its people and its whole host (D-194: its normal host is A.MIL.normal's, which keeps a
+      // floor of 10,000 for a realm of 300,000 people, so it falls to a fiftieth, under that, not to a twelfth)
+      const pop0 = x.provPop; x.provPop = Math.round(x.basePop * .02);
       for (const d of F.divs.slice()) A.divRemove(d);
       A.forcesSync(x); F.queue = [];
-      const normal = (LORE.realms[x.id] ? LORE.realms[x.id].army : x.army0 || x.army) * x.provPop / x.basePop;
+      const normal = A.MIL && A.MIL.has(x) ? A.MIL.normal(x) : (LORE.realms[x.id] ? LORE.realms[x.id].army : x.army0 || x.army) * x.provPop / x.basePop;
       x.roll = Math.max(x.roll || 0, Math.round(normal * 2)); x.treasury = Math.max(x.treasury, x.income * 2);
       const rng0 = JSON.stringify(A.rngState);
       RI.fitHost(x);
@@ -210,7 +211,8 @@ export default {
               o.ry++; tot.inc += B.inc; tot.up += B.up; tot.int += B.int; tot.debt += Math.max(0, B.d0 - B.d1);
               for (const k in B.cats) tot.cats[k] = (tot.cats[k] || 0) + B.cats[k];
               const q = x.treasury / Math.max(1, x.income); o.tre.push(q); if (q > 6) o.hoard++;
-              const L = LORE.realms[x.id], base = (L ? L.army : x.army0 || x.army) * (x.provPop || 1) / (x.basePop || 1);
+              // (D-194: a realm's normal host is its standing military's, A.MIL.normal, where that feature is built)
+              const L = LORE.realms[x.id], base = A.MIL && A.MIL.has(x) ? A.MIL.normal(x) : (L ? L.army : x.army0 || x.army) * (x.provPop || 1) / (x.basePop || 1);
               o.army.push(x.army / Math.max(1, base)); o.stab.push(x.stability);
             }
           }, () => { for (const w of A.S.wars) if (!ids.has(w.id)) { ids.add(w.id); o.wars++; } });
@@ -356,8 +358,11 @@ export default {
       RI.fillCouncil(x); pc.ruler = null; RI.fillCouncil(x); pc.ruler = x.id;
       x.treasury = x.income * .1; x.debt = x.income * 2; x.laws.tax = 1;
       A.S.queue = [];
-      const ch = A.chance; A.chance = () => true;
-      try { RI.session(x); } finally { A.chance = ch; }
+      // (since W1-6 the loudest voice's choice to press is A.WHY's, a draw among close options, no longer A.chance; the
+      // world's stream moved under D-194 and this world drew "wait". The lab takes his best reason: band 0, no draw)
+      const ch = A.chance, wd = A.WHY.decide; A.chance = () => true;
+      A.WHY.decide = function (who, kind, o, c) { return wd.call(this, who, kind, o, kind === 'press' ? Object.assign({}, c, { band: 0 }) : c); };
+      try { RI.session(x); } finally { A.chance = ch; A.WHY.decide = wd; }
       const q = A.S.queue.find(e => e.ev === 'ri_court_push'), k = q && q.ctx.riK, t0 = x.laws.tax, a0 = x.laws.authority;
       const res = RIT.choose('ri_court_push', 0);
       return { k, t0, t1: x.laws.tax, a0, a1: x.laws.authority, text: res && res.view.text, log: (x.riCourt || [])[0] };

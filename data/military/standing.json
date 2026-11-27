@@ -1,0 +1,57 @@
+{
+  "about": "A realm's standing military by its size, wealth and kind (the owner's order 95, D-194; order 13's feudal armies; order 93's level anchors). Read by src/war/9999978-standing (A.MIL). Regular soldiers: the realm's people x its kind's rate, never under the floor for a realm of floorPop people or more, and never more than its purse keeps: its income x the kind's pay share / upkeep (the release's 3.2 suns a man a year), held to cap. Knights: people / perKnight x the realm's wealth (its income a head against wealthMid, as a square root, held to wealthClamp), held between the kind's least and most, and never fewer than its orders' brethren and a household; dealt to the crown (crownShare), the elite orders (their members) and the houses by rung (rungs), largest remainder first. Levels: data/power.json's ladder, read through A.POWER: soldiers in 80-180, knights 230-299 with pastShare of them past 300, the elite 300-420, each set inside its band by the realm's quality (its troops' quality, its drill, its wealth). The elite are the realm's few best fighters (order 97: not a fixed ten; a great empire may hold ten to twenty): the people of the realm who stand at 300 or more (an order's master, a General), filled to the realm's count by named champions kept as seeds (no person is made for them).",
+  "upkeep": 3.2,
+  "floor": 10000,
+  "floorPop": 300000,
+  "cap": 400000,
+  "wealthMid": 0.2,
+  "wealthClamp": [0.6, 1.5],
+  "kinds": {
+    "empire":                 { "rate": 0.025, "pay": 0.45, "perKnight": 3800, "kMin": 50, "kMax": 3000, "crownShare": 0.35, "why": "an empire keeps its frontier hosts and the emperor's own legions" },
+    "kingdom":                { "rate": 0.018, "pay": 0.4,  "perKnight": 4000, "kMin": 50, "kMax": 3000, "crownShare": 0.3,  "why": "a kingdom keeps the crown's regiments and its lords' companies" },
+    "collapsing kingdom":     { "rate": 0.02,  "pay": 0.5,  "perKnight": 4000, "kMin": 50, "kMax": 3000, "crownShare": 0.2,  "why": "a kingdom at war with itself keeps every man it can pay" },
+    "theocracy":              { "rate": 0.012, "pay": 0.3,  "perKnight": 4500, "kMin": 50, "kMax": 3000, "crownShare": 0.5,  "why": "a church keeps temple guards and the knights of its faith, and few regiments" },
+    "sultanate":              { "rate": 0.018, "pay": 0.4,  "perKnight": 4000, "kMin": 50, "kMax": 3000, "crownShare": 0.4,  "why": "a sultan keeps his household slaves-at-arms and his emirs' horse" },
+    "emirate":                { "rate": 0.018, "pay": 0.4,  "perKnight": 4000, "kMin": 50, "kMax": 3000, "crownShare": 0.4,  "why": "an emir keeps his household and his sheikhs' riders" },
+    "merchant republic":      { "rate": 0.012, "pay": 0.25, "perKnight": 5000, "kMin": 50, "kMax": 1500, "crownShare": 0.5,  "why": "a republic of merchants keeps a city watch and hires the rest" },
+    "city-state":             { "rate": 0.011, "pay": 0.25, "perKnight": 5000, "kMin": 50, "kMax": 1500, "crownShare": 0.5,  "why": "a free city keeps its walls manned and its guilds drilled" },
+    "city league":            { "rate": 0.011, "pay": 0.25, "perKnight": 5000, "kMin": 50, "kMax": 1500, "crownShare": 0.5,  "why": "a league of cities keeps each city's watch" },
+    "mountain confederation": { "rate": 0.015, "pay": 0.4,  "perKnight": 6000, "kMin": 50, "kMax": 1500, "crownShare": 0.2,  "why": "the valleys keep their own companies, bound by oath to one another" },
+    "nomad confederation":    { "rate": 0.03,  "pay": 1.2,  "perKnight": 7000, "kMin": 50, "kMax": 2000, "crownShare": 0.4,  "why": "every man of the tents rides and the herds feed the host" },
+    "orc horde":              { "rate": 0.03,  "pay": 1.2,  "perKnight": 7000, "kMin": 50, "kMax": 2000, "crownShare": 0.4,  "why": "every grown orc fights and the host lives off what it takes" },
+    "orc clans":              { "rate": 0.03,  "pay": 1.2,  "perKnight": 7000, "kMin": 50, "kMax": 2000, "crownShare": 0.3,  "why": "every grown orc fights for his clan" },
+    "elven realm":            { "rate": 0.016, "pay": 0.5,  "perKnight": 3000, "kMin": 50, "kMax": 2000, "crownShare": 0.4,  "why": "the elves are few and long-lived, and every one of them keeps a bow" },
+    "dwarven hold":           { "rate": 0.03,  "pay": 0.4,  "perKnight": 2000, "kMin": 50, "kMax": 2000, "crownShare": 0.35, "why": "a hold arms every clan for its gates and its deeps" },
+    "giant territory":        { "rate": 0.016, "pay": 0.6,  "perKnight": 400,  "kMin": 10, "kMax": 200,  "crownShare": 0.4,  "why": "the giants are few; one in sixty of them is a warrior, and each is worth a company" },
+    "pirate haven":           { "rate": 0.03,  "pay": 0.5,  "perKnight": 6000, "kMin": 20, "kMax": 500,  "crownShare": 0.5,  "why": "every man of the port can hold a blade, and the prize money pays them" }
+  },
+  "fallback": "kingdom",
+  "rungs": { "N01": 60, "N02": 35, "N03": 15, "N04": 6, "N05": 3, "N06": 1.5, "N07": 1 },
+  "horseShare": 3,
+  "levels": {
+    "soldier": [80, 180],
+    "knight": [230, 299],
+    "knightPast": 330,
+    "pastShare": 0.05,
+    "elite": [300, 420],
+    "eliteLowFloor": 300
+  },
+  "raceBands": {
+    "about": "A giant's body is another scale (an ordinary grown giant is worth 12 to 30 conscripts: levels about 430 to 540 on A.POWER's ladder), so a giant hold's warriors, its picked ones and its champions stand in bands of their own.",
+    "giant": { "soldier": [420, 480], "knight": [480, 520], "knightPast": 540, "elite": [520, 600] }
+  },
+  "quality": {
+    "about": "The realm's quality, 0 to 1, that sets each level inside its band: a base, its troops' quality (armyQ, the release's: most realms 0.9 to 1.1, the elven, dwarven and giant hosts above), the drill of its forces (forces.xp, 0 to 200), its wealth a head (against wealthMid) and its people (a dwarf's or an elf's body and years). Each part [from, to, weight], summed and held to 0..1: a common realm stands near the middle of each band, a rich and drilled one near the top (its elite near 420).",
+    "base": 0.2,
+    "armyQ": [0.85, 1.15, 0.3],
+    "xp": [0, 100, 0.15],
+    "wealth": [0.3, 1.5, 0.3],
+    "race": { "dwarf": 0.1, "elf": 0.1, "orc": 0.05 }
+  },
+  "elite": { "about": "Order 97: the elite are not a fixed top ten: they stand in a kingdom's top ten only because nobody is stronger, and a great empire may hold ten to twenty. A realm's count: perRoot x the square root of its people in hundreds of thousands, between least and most (about four for a small kingdom, fifteen for the great empires); its own people at the elite's level count first.", "perRoot": 1.5, "least": 3, "most": 20 },
+  "roles": ["the king's champion", "the master-at-arms of the royal guard", "a captain of the household knights", "a knight of the tourney lists", "a sword-master of the capital", "a banneret of the marches", "the champion of a great house", "a captain of the crown's lances", "a free lance in the crown's pay", "a hedge knight of great name"],
+  "decide": {
+    "about": "Each AI crown, once a year, weighs raising regiments toward its normal host, keeping what it has, or cutting regiments (A.WHY, kind 'standing'). The reasons are log-odds weights; the decision sets the host the release's recruiting fills (A.forcesAI).",
+    "short": 2.2, "over": 2.0, "war": 1.6, "threat": 1.2, "poor": 1.6, "rich": 0.6, "unrest": 0.8, "keep": 0.6, "cutTo": 0.8
+  }
+}

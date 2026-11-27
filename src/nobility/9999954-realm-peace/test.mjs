@@ -141,15 +141,17 @@ export default {
       const why = f && f.why;
       // the grievance gone: the crown makes amends
       a.op = 75; b.op = 75; R.legit = 70; R.stability = 70;
-      A.S.year++;
-      A.factionsYear(R);
-      const gone = !A.factionsOf(R.id).some(x => x.members.includes(a.id) || x.members.includes(b.id));
+      // (D-194: each house's choice to leave is A.WHY's, a draw among close options, about seven in ten each; the world's
+      // stream moved and this world's one year drew "stay" twice. Two years are read: a broken rule still keeps them sworn)
+      const isGone = () => !A.factionsOf(R.id).some(x => x.members.includes(a.id) || x.members.includes(b.id));
+      for (let k = 0; k < 2 && !(k && isGone()); k++) { A.S.year++; A.factionsYear(R); }
+      const gone = isGone();
       A.PAX.housesYear = hy;
       // a small house with no tie never leads one alone
       return { seed: found.seed, formed, kind: f && f.kind, why, gone, tie: A.PAX.tieOf(a, b), n: houses.length };
     });
     if (r.skip) return { ok: true, skip: r.skip };
-    return { ok: r.formed && r.gone, detail: `seed ${r.seed}: two great houses tied by ${r.tie}, both sore: a league ${r.formed ? 'formed (' + r.kind + ')' : 'did not form'}; its reasons "${r.why || ''}"; the grievance mended: dissolved within the year ${r.gone}` };
+    return { ok: r.formed && r.gone, detail: `seed ${r.seed}: two great houses tied by ${r.tie}, both sore: a league ${r.formed ? 'formed (' + r.kind + ')' : 'did not form'}; its reasons "${r.why || ''}"; the grievance mended: dissolved within two years ${r.gone}` };
   },
 
   // war.md §13.5: a coup needs an opening, access and a motive; without an opening nobody is asked; every plot is led

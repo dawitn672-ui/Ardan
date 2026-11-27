@@ -175,13 +175,14 @@ A.wsDay = function () {
       w.raised = true;
       A.wsRaise(w);
     } else if (S.warClock % 7 === 1)
-      for (const rid of w.att.concat(w.def))
-        if (!A.armiesOf(rid).length || A.divsOf(rid).some(d => !d.army)) {
-          A.wsMobilize(rid);
-          // [W1-3, D-081 point 4; w16-ci] hosts raised after the war's start (a lord's conscripts formed at his seat, W1-4)
-          // join their lord's contingent, which is kept whole, as at the raise
-          if (A.CMD && A.CMD.keepWhole) A.CMD.keepWhole(rid);
-        }
+      for (const rid of w.att.concat(w.def)) {
+        if (!A.armiesOf(rid).length || A.divsOf(rid).some(d => !d.army)) A.wsMobilize(rid);
+        // [W1-3, D-081 point 4; w16-ci] hosts raised after the war's start (a lord's conscripts formed at his seat, W1-4)
+        // join their lord's contingent, which is kept whole, as at the raise. [D-194] Every week, not only after a muster:
+        // a host still in a fight on the day of the raise was left in another army, and with the larger hosts of order 95
+        // that happened often enough to keep a contingent split for a whole war
+        if (A.CMD && A.CMD.keepWhole) A.CMD.keepWhole(rid);
+      }
   for (const a of S.armies.slice()) {
     const r = A.realm(a.realm);
     if (!r || !r.alive || !A.atWar(a.realm).length) {

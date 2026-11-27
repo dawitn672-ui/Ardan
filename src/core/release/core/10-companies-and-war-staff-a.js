@@ -2992,6 +2992,18 @@ A.divCombat = function (d) {
     c.def *= (1 + (fx.def || 0)) * (home ? 1.25 : 1);
     c.home = home;
   }
+  // [D-194, order 95] the knights riding in it count far above its soldiers: the host rule (N^1.35) on its men counted at
+  // their worth (src/war/9999978-standing, A.MIL.divFactor; an order's brethren carry their own above)
+  if (A.MIL && A.MIL.divFactor) {
+    const kf = A.MIL.divFactor(d);
+    if (kf > 1) {
+      c.soft *= kf;
+      c.hard *= kf;
+      c.brk *= kf;
+      c.def *= Math.sqrt(kf);
+      c.kf = kf;
+    }
+  }
   return c;
 };
 

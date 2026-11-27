@@ -130,6 +130,10 @@ export default {
         A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 19 });
         A.startWar('POL-01', A.neighbors('POL-01')[0], null, 'conquest'); A.enlist(A.pc());
         for (let m = 0; m < 30 && A.pc().alive && !seen; m++) {
+          // (D-194: Aldmark's host of 180,000 ends a war with its small neighbour in a few months, so most of the thirty were
+          // peace; the war is taken up again when it ends, so they are months of war, as the test means)
+          if (!A.atWar('POL-01').length && A.realm(A.neighbors('POL-01')[0])) A.startWar('POL-01', A.neighbors('POL-01')[0], null, 'conquest');
+          if (!A.pc().mil) A.enlist(A.pc());
           A.advance(30); months++;
           let g = 0, h;
           while ((h = A.headReady()) && g++ < 300) {
