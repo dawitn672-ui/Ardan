@@ -8,7 +8,8 @@ built on top of it: **features** that add code and events, the **v2 engine** (pl
 
 ## Every session, first
 
-1. Read this file, `docs/OWNER_ORDERS.md` (every standing order of the owner's), `docs/PROGRESS.md` (the checklist of what is done and what is next), the end of `docs/HISTORY.md` (what was done last and how to undo it), `docs/DECISIONS.md` (do not
+1. Read this file, `docs/LESSONS.md` (every mistake made so far and the rule that stops it: order 101, never the same
+   mistake twice), `docs/OWNER_ORDERS.md` (every standing order of the owner's), `docs/PROGRESS.md` (the checklist of what is done and what is next), the end of `docs/HISTORY.md` (what was done last and how to undo it), `docs/DECISIONS.md` (do not
    undo a recorded decision without a new record), `docs/V2_SPEC.md` (the owner's design rules) and the skills in
    `.claude/skills/`.
 2. Work on a branch, one step per commit. After each step: tests, the coherency checks, a playtest pass
@@ -21,6 +22,10 @@ built on top of it: **features** that add code and events, the **v2 engine** (pl
 
 > **The owner's newest instruction always wins** over every older construct here, in `docs/`, in a skill or in the code's
 > design (order 76, D-158). The living source of truth is `docs/MASTER_PROMPT.md`; where this file disagrees with it, it wins.
+
+> **Constant, harsh self-critique (order 101).** Criticise every piece of our own work as harshly as possible before
+> calling it done; write each mistake, its root cause and the rule that stops it in `docs/LESSONS.md` (mirrored to
+> Notion's Lessons database) and move the rule into a gate (a lint, a test, a skill) where possible.
 
 > ### ⚑ NOT A SINGLE THING IN THIS WORLD HAPPENS OUTSIDE OF REASON.
 > Things may come down to chance, luck, reasoned or calculated action, even petty and emotional reasons, but **never to

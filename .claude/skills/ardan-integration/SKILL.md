@@ -19,6 +19,11 @@ shows a gap. A skill that teaches a retired rule misleads every builder who read
 
 ## 1. Brief builders
 
+Before any brief, read `docs/LESSONS.md` (order 101). The rules it holds for briefs: **at most five agents at once**
+(L-001; start more only as others land; builders commit in their worktree after each step so a usage stop loses
+nothing); **check every path with `ls`** before sending (L-006); **name the owner's own terms as fixed** (L-003);
+**skill writers get a worktree and branch too** (L-008).
+
 A builder knows only its brief. Each brief carries:
 
 - **Base:** the trunk sha it starts from, `isolation: "worktree"`, a local branch name, "do not push".
@@ -90,7 +95,13 @@ git add -A && git commit -m "vX.Y.Z-alpha.N: records (row, changelog, sample sav
 
 If `version.mjs new` ran in another worktree, check that `CHANGELOG.md` got its heading. Then `git gc --prune=now`.
 
-## 6. Tell the owner
+## 6. Critique, then tell the owner
+
+First the harsh pass (order 101): what went wrong this wave, what was assumed unchecked, what the owner will find that
+we didn't. Each mistake becomes an `L-` entry in `docs/LESSONS.md` with its root cause and rule, moved into a gate where
+possible, and the Notion Lessons database is updated to match.
+
+
 
 After each landed wave: what changed in player words, what to try when playing, what is next, a padded ETA in New York
 time, and anything decided on his behalf. Keep the tracker in `docs/PROGRESS.md` ticked with the commit.

@@ -637,6 +637,14 @@ order is replaced, strike it through and say by what.
       from `ardan-integration`, `ardan-ui-review` and `ios-capacitor-release`. The records are mirrored to Notion (a tree
       of pages and a dated Chronicle database); the repo stays the source of truth.
 
+101. **Constant, harsh self-critique; never the same mistake twice** · recorded 2026-11-27 04:15 ET. Kept unchanged in
+    `docs/prompts/2026-11-27-self-critique-and-notion.md`. A **standing rule**: criticise our own work constantly and as
+    harshly as possible, and let the improvements compound. Every mistake, its root cause and the rule that prevents it
+    is written down (`docs/LESSONS.md`, mirrored to the Notion "Lessons" database) so **no mistake is ever repeated**; read
+    it at the start of every session and before every brief. **Priority:** study every way to integrate Notion and its
+    agents for efficiency. **Search the internet for the best skills and abilities** suited to this project's scope, read
+    them, and integrate them ourselves (adapted into our own skills; nothing installed unread, as the standing rule says).
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,

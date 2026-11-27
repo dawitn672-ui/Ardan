@@ -1,6 +1,6 @@
 # Ardan's world data: the full map
 
-Surveyed on the trunk at `d0d793d3` (2026-11-27, orders 98 to 100 recorded, wave 1 builders running). Counts are today's:
+Surveyed on the trunk at `d0d793d3` (2026-11-27, orders 98 to 100 recorded, wave 1 builders running; the data unchanged through `571da188`). Counts are today's:
 re-count with the one-liners at the end before you quote one. Paths are from the repo root.
 
 ## Contents
