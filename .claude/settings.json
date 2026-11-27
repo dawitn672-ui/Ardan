@@ -47,6 +47,16 @@
     "anthropic-skills:chrome-browser": "off",
     "anthropic-skills:built-in-browser": "off",
     "anthropic-skills:import-memory": "off",
-    "anthropic-skills:docs": "off"
+    "anthropic-skills:docs": "off",
+    "claude-api": "name-only",
+    "workflow-authoring": "name-only",
+    "plugin-authoring": "name-only",
+    "session-start-hook": "name-only",
+    "keybindings-help": "name-only",
+    "anthropic-skills:deep-research": "name-only",
+    "anthropic-skills:skill-creator": "name-only"
+  },
+  "env": {
+    "MAX_MCP_OUTPUT_TOKENS": "15000"
   }
 }
