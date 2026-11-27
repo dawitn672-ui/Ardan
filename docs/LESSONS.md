@@ -131,3 +131,10 @@ here before reporting success.
   records.
 - **Rule now:** the script touches only HISTORY, DECISIONS and CHANGELOG by default; skills, design notes and other docs
   are merged by hand, taking the newer text and adding the branch's new facts.
+
+### L-017 · 2026-11-27 · One session carried 635K tokens of history
+- **What went wrong:** the owner's `/context` showed this integrator session at 744K of 1M tokens, 635K of it message
+  history (85% of the load), re-read on every turn; CLAUDE.md was still the 36 KB version loaded at the morning's start.
+- **Root cause:** the session ran from yesterday through orders 97 to 102 without a handoff; no rule bounded a session.
+- **Rule now:** move to a fresh session at each wave boundary or when `/context` shows history past about 40% (integration
+  skill §5c); builders' branches are merged and pushed first, since a new session runs in a fresh container.
