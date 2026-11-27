@@ -33,6 +33,9 @@ The rules are the owner's: `docs/MASTER_PROMPT.md` §2 (standing rules), §4.5 (
 - Independent tasks can go to parallel subagents, one folder each (CLAUDE.md, parallel safety), each in its own local worktree.
 
 ## 4. Work
+
+- Library or tool behaviour (Playwright, Node, Capacitor, a CLI): check it in **Context7** before writing code against it;
+  a wrong guess about an API costs a CI cycle.
 - One step per commit on the trunk `main` (or a local worktree for a helper; push no working branch: order 76, D-162).
 - **Test first** where the rule can be tested: write the failing test (a feature's `test.mjs`, or `tests/v2/*.test.js`
   for the engine) with calibration targets, see it fail, then make it pass. Tests must be world-robust (CLAUDE.md:

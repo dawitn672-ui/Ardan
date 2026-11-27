@@ -66,7 +66,7 @@ npm i @capacitor/core@^8.6 @capacitor/ios@^8.6 @capacitor/app @capacitor/filesys
       @capacitor/splash-screen @capacitor/status-bar @capacitor/haptics @capacitor/share
 npx cap init Ardan <bundle id> --web-dir=www
 node ../tools/build.mjs --out=www/index.html
-npx cap add ios          # SPM: ios/App/App.xcodeproj + ios/App/CapApp-SPM/Package.swift; no Podfile, no App.xcworkspace
+npx cap add ios --packagemanager SPM   # explicit (Capacitor 8 defaults to SPM, but its SPM page still says the flag is required; Context7, 2026-11-27). SPM: ios/App/App.xcodeproj + ios/App/CapApp-SPM/Package.swift; no Podfile, no App.xcworkspace
 npx cap sync ios         # after a plugin change; `npx cap copy ios` after a web change
 ```
 Then, as text edits (no Xcode):
@@ -122,6 +122,12 @@ selection, zoom or callouts; splash and status bar; system Share for export), 2.
 Ardan is offline today. The day anything talks to a server (a leaderboard, cloud saves, a shop, accounts, an upload),
 run the installed `app-abuse-checklist` skill on it before shipping: a score sent from an offline client can be any
 number, a display name can carry script, a replay file is an upload. Saves stay inside `SAVES` either way.
+
+## Checking facts
+
+Look up Capacitor, Codemagic, Xcode and App Store tooling in **Context7** first (`resolve-library-id`, then `query-docs`;
+Capacitor is `/websites/capacitorjs`), then the official page; never from memory. Context7's docs are community-indexed:
+treat a surprising answer as a lead and confirm it on the official page.
 
 ## Pitfalls
 

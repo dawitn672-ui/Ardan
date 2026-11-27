@@ -132,6 +132,8 @@ fallback, pooled numbers, bars from measured spread, poll never sleep; H-082), C
 `.claude/skills/ardan-dev-process/references/testing-and-tools.md`. Read it before writing or fixing a test.
 Browser tests use the container's Playwright (`PLAYWRIGHT_PATH=/opt/node-tools/node_modules/playwright`). **Models:** the
 biggest model only for real design; Sonnet for systems, data and test fixing; Haiku for bulk and mechanical work.
+**Library and API docs come from Context7** (the connector: `resolve-library-id`, then `query-docs`) before memory or a web
+search: Playwright, Capacitor, Node, Codemagic and the like. Never put code, keys or the owner's data in a query.
 
 ## Versions
 
