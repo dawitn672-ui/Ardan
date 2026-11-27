@@ -101,7 +101,7 @@ export default {
   },
 
   // one living holder of a unique title: of six NPCs who slay a dragon in one pass only the first in id order is the
-  // Wyrm-Slayer; when he dies the next to slay one is; the Sword of a realm is one man's in his realm while he lives, and
+  // the Dragon Slayer; when he dies the next to slay one is; the Sword of a realm is one man's in his realm while he lives, and
   // can be another realm's man's at once; First of the Age is given once an age and never again, even when its holder
   // dies; the Sword Saint's title is Cael Vardan's while he lives, and free once he is slain. Then a bot life of forty
   // years, its census audited each year: never two living holders of one key
@@ -113,11 +113,11 @@ export default {
       A.S.queue = [];
       const men = Object.values(A.S.people).filter(p => p.alive && p.st && A.age(p) >= 20 && A.age(p) < 50 && p.id !== A.S.pc).sort((a, b) => (String(a.id) < String(b.id) ? -1 : 1)).slice(0, 6);
       for (const p of men) A.deedDone(p, 'dragon_slain', { v: 450 });
-      out.slayers = men.filter(p => TT.holds(p, 'wyrm-slayer')).map(p => p.id);
+      out.slayers = men.filter(p => TT.holds(p, 'dragon-slayer')).map(p => p.id);
       out.first = men[0].id;
       A.kill(men[0], 'old wounds');
       A.deedDone(men[1], 'dragon_slain', { v: 450 });
-      out.next = TT.holds(men[1], 'wyrm-slayer');
+      out.next = TT.holds(men[1], 'dragon-slayer');
       // First of the Age: once an age
       const sk = SK2 => SK2;
       out.firstAge = [];
@@ -155,7 +155,7 @@ export default {
     });
     const ok = r.slayers.length === 1 && r.slayers[0] === r.first && r.next && r.faAgain === 0 && r.saintHeld === 'sword-saint' && r.saintTaken === 0 &&
       r.saintFree === null && r.saintNow === 1 && r.saintClass === 'Sword Saint' && r.perRealm.length === 2 && r.perRealm.every(x => x.join() === '1,0') && r.twoNow === 0 && r.lifeTwos === 0 && r.firstTwice && r.faStart === 0;
-    return { ok, detail: `six slay a dragon in one pass: ${r.slayers.length} Wyrm-Slayer (the first in id order ${r.slayers[0] === r.first}); he dies, the next one's ${r.next}; First of the Age again after its holder died: ${r.faAgain}; the Saint's title held by ${r.saintHeld}, taken while he lives ${r.saintTaken}, free once he is slain ${r.saintFree === null}, then taken ${r.saintNow} (class ${r.saintClass}); the Sword of a realm, two men in each of two realms: ${JSON.stringify(r.perRealm)}; keys with two living holders now ${r.twoNow}, over ${r.lifeYears} audited years ${r.lifeTwos}; at the age's start ${r.preAge} old masters written down, First of the Age given ${r.faStart}` };
+    return { ok, detail: `six slay a dragon in one pass: ${r.slayers.length} the Dragon Slayer (the first in id order ${r.slayers[0] === r.first}); he dies, the next one's ${r.next}; First of the Age again after its holder died: ${r.faAgain}; the Saint's title held by ${r.saintHeld}, taken while he lives ${r.saintTaken}, free once he is slain ${r.saintFree === null}, then taken ${r.saintNow} (class ${r.saintClass}); the Sword of a realm, two men in each of two realms: ${JSON.stringify(r.perRealm)}; keys with two living holders now ${r.twoNow}, over ${r.lifeYears} audited years ${r.lifeTwos}; at the age's start ${r.preAge} old masters written down, First of the Age given ${r.faStart}` };
   },
 
   // order 95 (D-192): titles can be game changers. A title's share boost to fighting worth sits in a pool of its own,
@@ -163,7 +163,7 @@ export default {
   // mythical 0.4; one holder at a time lifts no cap), apart from
   // the skills' 15%. Over pairs of grown men of the world whose honest duel odds stand near even (seed fallback, pooled
   // over worlds 9891-9894), the same man is given a basic title (Blooded), a rare one (the Undefeated), and a legendary
-  // one (Wyrm-Slayer): the basic one moves his odds a little (more than nothing, under 8 points on average), the
+  // one (the Dragon Slayer): the basic one moves his odds a little (more than nothing, under 8 points on average), the
   // legendary markedly (20 points or more on average), the rare one between. The caps hold: every title at once and a
   // planted boost far past any cap give at most the cap of the rarest title held to a fight and to a check, and a
   // basic title alone, planted far past its cap, its tier's 0.02. Income and experience read their boosts too. Nothing
@@ -171,7 +171,7 @@ export default {
   async ttGameChanger(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     const r = await pg.evaluate(() => {
-      const TT = A.TT, SK2 = A.SK2, E = SK2.E(), out = { pairs: 0, d: { blooded: [], undefeated: [], 'wyrm-slayer': [] }, bad: [], worlds: [] };
+      const TT = A.TT, SK2 = A.SK2, E = SK2.E(), out = { pairs: 0, d: { blooded: [], undefeated: [], 'dragon-slayer': [] }, bad: [], worlds: [] };
       const bad = s => { if (out.bad.length < 10) out.bad.push(s); };
       const reset = () => { SK2.capsReset(); if (A.cacheResetAll) A.cacheResetAll(); };
       const give = (p, ids) => { p.tt = { h: {} }; for (const id of ids) p.tt.h[id] = { y: A.S.year, w: '' }; reset(); };
@@ -229,7 +229,7 @@ export default {
       return out;
     });
     const m = r.mean || {};
-    const ok = !r.bad.length && r.pairs >= 12 && m.blooded > 0 && m.blooded < 8 && m['wyrm-slayer'] >= 20 && m.undefeated > m.blooded && m.undefeated < m['wyrm-slayer'] && r.min.blooded >= 0;
+    const ok = !r.bad.length && r.pairs >= 12 && m.blooded > 0 && m.blooded < 8 && m['dragon-slayer'] >= 20 && m.undefeated > m.blooded && m.undefeated < m['dragon-slayer'] && r.min.blooded >= 0;
     return { ok, detail: `${r.pairs} pairs near even odds (worlds ${r.worlds.join(', ')}): the odds moved on average by ${JSON.stringify(r.mean)} points (least ${JSON.stringify(r.min)}); ` +
       `caps with every title and a planted boost ${JSON.stringify(r.caps)}; ${r.bad.length} faults${r.bad.length ? ': ' + r.bad.join('; ') : ''}` };
   },
@@ -411,6 +411,45 @@ export default {
     });
     const ok = r.resolved && r.king >= 0.40 && r.king <= 0.45 && r.one.every(p => p >= 0.45 && p <= 0.55) && Math.abs(r.sea - 0.77) <= 0.03 && r.cls && r.person && r.born && r.fire && r.inData;
     return { ok, detail: `every sheet's titles resolve from data/titles/ ${r.resolved}; Sarnavoth against the three ${r.king.toFixed(3)}; the Saint against each archdemon ${r.one.map(x => x.toFixed(3)).join(', ')}; over the Lord of the Sea ${r.sea.toFixed(3)}; the Sword Saint a title and a class ${r.cls}, a person may earn it ${r.person}; archdemons born to their title ${r.born}; firepower in the Dragon King's and archdemons' titles ${r.fire}` };
+  },
+
+  // the top of the ladder (order 97, D-202): the Primordials, the Dragon King and the Sword Saint hold mythical titles and
+  // their own arts are a mythical set; every other legend, the ancient dragons and the ancient demons hold legendary arts
+  // (an ancient dragon a legendary title of its own); the mythical titles are a handful. Wyrm-Slayer is the Dragon Slayer
+  // (order 98): an old save's holder, census, once-record and borne title move to the new id, and nothing else does
+  async ttMythical(pg) {
+    if (!(await pg.evaluate(GATE))) return NO;
+    const r = await pg.evaluate(() => {
+      const TT = A.TT, R = A.RARITY, PW = A.POWER, out = {};
+      const myth = TT.LIST.filter(t => t.rarity === 'mythical');
+      out.mythTitles = myth.map(t => t.id).sort();
+      const holders = new Set(myth.flatMap(t => t.holders || []));
+      out.mythHolders = [...holders].sort();
+      // the arts: each legend's set, and the fixed beings' by category
+      out.sets = {};
+      for (const L of PW.LEG.values()) out.sets[L.id] = R.setOf(L, 'legends');
+      const cat = k => ((A.DATA['figures/' + k] || {}).figures || []).map(f => R.setOf(PW.being(f.id) || f, k));
+      out.demons = cat('ancient-demons'); out.dragons = cat('ancient-dragons');
+      out.ancientOwn = ((A.DATA['figures/ancient-dragons'] || {}).figures || []).map(f => (f.titles || []).filter(id => { const t = TT.BY.get(id); return t && t.rarity === 'legendary' && t.unique; }).length);
+      // the rename on an old save's state
+      T.enter({ seed: 9881, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 });
+      const S = JSON.parse(JSON.stringify(A.S)), pc = S.people[S.pc];
+      pc.tt = { h: { 'wyrm-slayer': { y: 1100, w: 'x' }, blooded: { y: 1099, w: 'y' } }, b: 'wyrm-slayer', x: {} };
+      S.tt = { u: { 'wyrm-slayer': pc.id }, first: { 'wyrm-slayer': [pc.id, 1100] }, pre: {} };
+      out.moved = TT.migrateIds(S);
+      out.after = { h: Object.keys(pc.tt.h).sort().join(), b: pc.tt.b, u: Object.keys(S.tt.u).join(), first: Object.keys(S.tt.first).join(), again: TT.migrateIds(S) };
+      out.name = (TT.BY.get('dragon-slayer') || {}).name; out.old = TT.BY.has('wyrm-slayer');
+      return out;
+    });
+    const s = r.sets, a = r.after;
+    // five mythical beings (the three Primordials, the Dragon King, the Sword Saint: read from the titles, so a renamed id
+    // still counts), their sets mythical and every other legend's legendary
+    const mythOk = r.mythHolders.length === 5 && r.mythHolders.includes('sword-saint') && r.mythHolders.every(id => s[id] === 'mythical') &&
+      Object.entries(s).every(([id, v]) => (r.mythHolders.includes(id) ? v === 'mythical' : v === 'legendary')) && r.mythTitles.length >= 4 && r.mythTitles.length <= 8;
+    const ok = mythOk && r.demons.length >= 30 && r.demons.every(v => v === 'legendary') && r.dragons.length === 3 && r.dragons.every(v => v === 'legendary') && r.ancientOwn.every(n => n >= 1) &&
+      r.moved >= 4 && a.h === 'blooded,dragon-slayer' && a.b === 'dragon-slayer' && a.u === 'dragon-slayer' && a.first === 'dragon-slayer' && a.again === 0 && r.name === 'Dragon Slayer' && !r.old;
+    return { ok, detail: `mythical titles ${r.mythTitles.join(', ')} (held by ${r.mythHolders.join(', ')}); arts: ${Object.entries(s).map(([k, v]) => k + ' ' + v).join(', ')}; ancient demons ${[...new Set(r.demons)].join('/')} (${r.demons.length}), ancient dragons ${[...new Set(r.dragons)].join('/')}, each with a legendary title of its own ${r.ancientOwn.join(',')}; ` +
+      `the rename: ${r.moved} moved, then ${JSON.stringify(a)}; ${r.name}, the old id gone ${!r.old}` };
   },
 
   // no hints (order 92, "no hints throughout the games on titles"; D-185): no rumour card and no reader of one, no title

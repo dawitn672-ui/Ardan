@@ -40,7 +40,10 @@
     if (p.looks) h += `<div class="small muted">${e(p.looks)}</div>`;
     for (const s of p.story || []) h += `<p class="small fig-story">${e(s)}</p>`;
     if (k.arts) {
-      if (p.skills && p.skills.length) h += `<div class="small"><b>Skills</b></div><ul class="fig-list small">${p.skills.map(skillBit).join('')}</ul>`;
+      // a great being's own arts are one set of one rarity (order 97, D-202): the Primordials', the Dragon King's and the
+      // Sword Saint's mythical, the ancients' legendary
+      const set = p.type !== 'person' && A.RARITY ? A.RARITY.setOf(p, p.cat) : null;
+      if (p.skills && p.skills.length) h += `<div class="small"><b>Skills</b>${set ? ` <span class="muted">${e(A.RARITY.word(set))} arts</span>` : ''}</div><ul class="fig-list small">${p.skills.map(skillBit).join('')}</ul>`;
       if (p.arts && p.arts.length) h += `<div class="small"><b>Arts readied:</b> ${e(p.arts.join(', '))}</div>`;
       if (p.items && p.items.length) h += `<div class="small"><b>Carries</b></div><ul class="fig-list small">${p.items.map(itemBit).join('')}</ul>`;
     } else h += `<div class="small muted">What ${p.type === 'person' ? 'this one' : 'it'} can do, and what ${p.type === 'person' ? 'they carry' : 'it carries'}, you would learn only by meeting ${p.type === 'person' ? 'them' : 'it'}.</div>`;

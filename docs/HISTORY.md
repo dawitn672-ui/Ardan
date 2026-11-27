@@ -3736,3 +3736,19 @@ to 149). `tools/lint-figures.mjs` makes the tree as the game does (`roads`) and 
 
 **Undo.** Revert the commit (a version-24 save then loads in the older build only if `SV.VER` goes back with it; the
 census key `lvc` is read by nothing else).
+
+### H-173 · 2026-11-27 · Mythical titles and arts; the Dragon Slayer (order 98, D-202)
+
+Audits C-06, C-25. `data/titles/legends.json`: six titles' rarity mythical (the rarity lines only). `A.RARITY.setOf` reads
+title objects as well as ids; the figures' profile (`src/world/9999977-figures/b-view.core.js`) and the codex's great
+beings (`src/world/9999970-powers/d-view.core.js`) say a being's arts' rarity. `data/titles/people.json`: Wyrm-Slayer is
+`dragon-slayer`, "Dragon Slayer"; `vocab.json`'s `dragon_slain` says dragons only. `a-titles.core.js`: `TT.RENAMED`,
+`TT.migrateIds` (save step `titleIds`, version 24). Tests: `ttMythical` (new), the titles' tests renamed.
+
+Not done, and why: **C-26** (no class past the third wall) needs steps 4 to 6 of the tree and order 97's 300-plus classes:
+content to design, not a fix. **C-27** (skill kinds): the kinds carry engine rules (check 4 lets a blessing or flaw carry a
+stat, check 11 holds a buff to an art riding a duel move, a flaw must spend its whole budget), so mapping aura and blessing
+to buff, flaw to debuff and adding spell is a design step of the skills library, and the great beings' 26 aura and flaw
+sheet skills sit in files another builder is rewriting.
+
+**Undo.** Revert the commit (the `titleIds` step then has nothing to move; `SV.VER` stays 24 with H-172).

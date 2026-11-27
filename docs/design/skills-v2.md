@@ -863,7 +863,7 @@ requirements that need to be met that can't be seen."
 ### 11.1 What a title is
 
 A **title** is a name the world gives a person for what he has done or become: *Undefeated*, *the Hundred-Day Wall*,
-*Wyrm-Slayer*. It is its own system beside skills:
+*the Dragon Slayer* (Wyrm-Slayer until order 98). It is its own system beside skills:
 - **Earned, never bought, never trained.** No experience, no levels, no shop, no card choice that grants one directly.
 - **Very hard to get.** An ordinary life ends with none; a remarkable one with one or two; the great with four or five.
 - **Hidden requirements.** The player never sees a title's conditions or his progress toward it. At most a **hint**,

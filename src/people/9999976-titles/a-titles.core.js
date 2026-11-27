@@ -311,7 +311,7 @@
     if (L > mine) TT.deedDone(p, 'beast_above', { v: L });
     const fam = sp && sp.fam;
     // a true dragon only: a drake or wyvern of the wyrm family is no dragon (H-164; a level-60 Sand Dragon of that family
-    // earned the Wyrm-Slayer before)
+    // earned the Dragon Slayer, then Wyrm-Slayer, before)
     if (fam === 'dragons' || (typeof beast === 'string' && DRAGON_CRE.has(beast))) TT.deedDone(p, 'dragon_slain', { v: L });
   };
   // a realm's champion: one who holds a fighting title, has won a tourney, or commands a host of his realm
@@ -429,6 +429,27 @@
     if (S && (!S.tt || typeof S.tt !== 'object')) S.tt = { u: {}, first: {} };
     return S ? Object.keys(S.tt.u || {}).length : 0;
   };
+
+  // save version 24 (D-202): a title renamed keeps what was held under its old id (Wyrm-Slayer is the Dragon Slayer, order
+  // 98): the held, the lost, the borne, a refused grant, the census, the once-an-age record and the age's first list
+  TT.RENAMED = { 'wyrm-slayer': 'dragon-slayer' };
+  TT.migrateIds = function (S) {
+    S = S || A.S; if (!S || !S.people) return 0;
+    let n = 0;
+    const move = (o, from, to) => { if (o && typeof o === 'object' && Object.prototype.hasOwnProperty.call(o, from)) { if (!(to in o)) o[to] = o[from]; delete o[from]; n++; } };
+    for (const pid of Object.keys(S.people)) {
+      const tt = S.people[pid] && S.people[pid].tt; if (!tt || typeof tt !== 'object') continue;
+      for (const [from, to] of Object.entries(TT.RENAMED)) { move(tt.h, from, to); move(tt.x, from, to); move(tt.gw, from, to); if (tt.b === from) { tt.b = to; n++; } }
+    }
+    const st = S.tt;
+    if (st && typeof st === 'object') for (const [from, to] of Object.entries(TT.RENAMED)) {
+      move(st.first, from, to); move(st.pre, from, to);
+      if (st.u && typeof st.u === 'object') for (const k of Object.keys(st.u)) if (k === from || k.startsWith(from + ':')) move(st.u, k, to + k.slice(from.length));
+    }
+    return n;
+  };
+  const SVt = A.V2SAVE;
+  if (SVt && Array.isArray(SVt.STEPS) && !SVt.STEPS.some(x => x[0] === 'titleIds')) SVt.STEPS.push(['titleIds', S => TT.migrateIds(S)]);
 
   A.onMonth = A.onMonth || [];
   A.onMonth.push(pc => { try { TT.month(pc); } catch (e) { console.error('[titles] month', e); } });

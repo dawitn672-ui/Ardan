@@ -6,7 +6,7 @@
 ## What it does
 
 - **A title is earned, never bought, trained or rolled for.** It is a name the world gives a person (or a being) for
-  what he did or became: *the Undefeated*, *the Hundred-Day Wall*, *Wyrm-Slayer*. Not a noble title: land and offices
+  what he did or became: *the Undefeated*, *the Hundred-Day Wall*, *the Dragon Slayer* (Wyrm-Slayer until order 98). Not a noble title: land and offices
   stay posts (`999990-posts`, one holder a post).
 - **Hidden requirements.** `requires` and `watch` are read only by this folder and the validator; no screen prints a
   condition or a count (the validator fails any `src/ui/` or `*view*.core.js` file reading them; `ttHidden` and `ttPhone`
@@ -21,6 +21,11 @@
   the titles watched by `month`: a state such as age and a skill's rank); once a year for everyone else who matters
   (rulers, the holders of posts, anyone with a ledger), in id order. Nothing draws on `A.rand`: a title someone grants
   (the Sword of a realm, named by its ruler) is decided by `A.WHY.decide` on a seeded stream of its own.
+- **The top of the ladder** (order 97, D-202): the Primordials, the Dragon King and the Sword Saint hold mythical titles
+  (`primordial-archdemon`, each Primordial's own, `king-of-dragons`, `sword-saint`), and a great being's own arts are a
+  set of the rarest title it holds (`A.RARITY.setOf`: theirs mythical, every other legend's and the ancients' legendary).
+  A renamed title keeps what an old save held (`TT.RENAMED`, the save step `titleIds`, version 24: Wyrm-Slayer is the
+  Dragon Slayer, order 98).
 - **One living holder** of a unique title: the census `A.S.tt.u` (key: the title, or the title and the realm for one
   `per: "realm"`); the first in id order holds it; free on his death. A great being whose sheet names the title holds
   it while it lives (Cael Vardan holds *the Sword Saint* until he is slain). A title given `once` an age is never given
@@ -42,7 +47,7 @@
   pool of their own, stacked 1, 1/2, 1/4, 1/8, at most the cap of the rarest title among the sources: **basic 0.02,
   rare 0.05, epic 0.1, legendary 0.25, mythical 0.4** (`vocab.json` boost.cap, under the engine's ceiling `E.CAP_BOOST`); a
   title's own boosts of one kind at most its cap (validator). Measured (`ttGameChanger`, pairs at near-even odds): Blooded
-  moves a duel's odds about 5 points, the Undefeated about 21, Wyrm-Slayer about 45. Only titles boost: a skill's source
+  moves a duel's odds about 5 points, the Undefeated about 21, the Dragon Slayer about 45. Only titles boost: a skill's source
   has no boost cap.
 - **The great beings.** The legends' and masters' titles moved here (`data/titles/legends.json`); their sheets name
   them by id and `A.POWER` reads each as the object it always was, with the same buffs: every level, power, profile and
@@ -115,13 +120,14 @@ deed after it.
 `ttEarned` (19 wins none, the 20th the Undefeated with its notable card and honour paid once, a loss takes it; five
 bribes refused through the real card make the Unbought, one taken loses it for good; the choice table true to the cards;
 a foe who beats the player counts it), `ttDeterministic` (two worlds, each life twice: the same ledgers, titles and
-census; a world pass draws nothing), `ttUnique` (one Wyrm-Slayer of six slayers, the next on his death; First of the Age
+census; a world pass draws nothing), `ttUnique` (one Dragon Slayer of six slayers, the next on his death; First of the Age
 once an age and never to the old masters; the Saint's title Cael's while he lives; the Sword of a realm one in each
 realm; forty audited years, no key with two living holders), `ttCaps` (75 people with every title and a planted one past
 any budget: +12, 15% and the titles' boosts 25% more, +10 and potential + 5, 3, 3; every read back once gone),
 `ttGameChanger` (a basic title moves a near-even duel's odds a little, a legendary one markedly, a rare one
 between; every boost at the rarest held title's cap with every title and a planted one, a basic one at 0.02; income and experience read
-theirs), `ttNpc` (an NPC earns the Undefeated in a
+theirs), `ttMythical` (the five mythical beings read from the titles, their arts mythical, every other legend's, the ancient
+demons' and dragons' legendary; an old save's Wyrm-Slayer moved to the Dragon Slayer's id), `ttNpc` (an NPC earns the Undefeated in a
 real duel and loses it in one), `ttSave` (every sample save: no title, no ledger, an empty census, version 19; the first
 deed starts the ledger), `ttPhone` (375 x 667: chips and Bear buttons 44 points, a press opens, a hover does not, no
 condition, no percentage, nothing sideways), `ttLegends` (every sheet's titles from data; the three matchups),

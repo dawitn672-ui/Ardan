@@ -10,7 +10,8 @@
 //   R.word(w)                the word a player reads ('' for none)
 //   R.rarest(list)           the rarest of a list of words (null for none)
 //   R.oneHolder(w)           a class of this rarity has one living holder and cannot be advanced (legendary, mythical)
-//   R.setOf(sheet, cat)      a great being's own arts, as one set: the rarest title it holds, at least its category's
+//   R.setOf(sheet, cat)      a great being's own arts, as one set: the rarest title it holds (ids or { id }), at least its
+//                            category's (data/rarity.json beings); null for none
 //   R.itemWords(i)           an item's make and rarity in words: 'masterwork', 'legendary', 'plain' (the make, then the
 //                            rarity above basic; '' for a basic thing of no make)
 // Nothing here draws on A.rand or writes A.S.
@@ -26,7 +27,7 @@
   R.oneHolder = w => (D.oneHolder || []).includes(R.of(w));
   R.setOf = function (sheet, cat) {
     const TT = A.TT, ws = [(D.beings || {})[cat] || null];
-    for (const id of (sheet && sheet.titles) || []) { const t = TT && TT.BY ? TT.BY.get(id) : null; if (t) ws.push(t.rarity); }
+    for (const x of (sheet && sheet.titles) || []) { const id = x && typeof x === 'object' ? x.id : x, t = TT && TT.BY ? TT.BY.get(id) : null; if (t) ws.push(t.rarity); }
     return R.rarest(ws);
   };
   R.itemWords = function (i) {

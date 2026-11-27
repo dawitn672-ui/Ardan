@@ -27,7 +27,7 @@
   "champion_beaten": { "src": "A.duelConsequences: a duel won against a realm's champion (a holder of a fighting title or a tourney's winner, or a commander of its host); key: his realm" },
   "beast_slain": { "src": "A.duelConsequences (a beast killed in a hunt or a fight), PW.resolve (a beast killed outright); value: its level" },
   "beast_above": { "src": "as beast_slain, when the beast's level stood above the slayer's" },
-  "dragon_slain": { "src": "as beast_slain, for a beast of dragon kind (the bestiary's dragons and wyrms, the release's two dragons)" },
+  "dragon_slain": { "src": "as beast_slain, for a true dragon (the bestiary's dragons and the release's two; a drake or wyvern of the wyrms is none, H-164)" },
   "wound_serious": { "src": "A.addWound: a lasting wound (perm, or two years and more to heal), anyone" },
   "battle": { "src": "the three places a soldier's battles are counted (the line, the company, the division)" },
   "battle_wounded": { "src": "as battle, when a serious wound came in the same month" },

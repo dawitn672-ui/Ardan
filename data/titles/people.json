@@ -223,8 +223,8 @@
    "reasons": { "appoint": { "kind": "merit", "weight": 0.25, "label": "the crown's own sword" } }
   },
   {
-   "id": "wyrm-slayer",
-   "name": "Wyrm-Slayer",
+   "id": "dragon-slayer",
+   "name": "Dragon Slayer",
    "rarity": "legendary",
    "weight": "S",
    "unique": true,
@@ -234,9 +234,9 @@
    "watch": ["dragon_slain"],
    "effects": [ { "type": "stat", "stat": "str", "v": 5 }, { "type": "resist", "of": "fear", "v": 3 }, { "type": "social", "group": "all", "v": 10 }, { "type": "boost", "of": "fight", "v": 0.25 } ],
    "honour": 10, "renown": 25,
-   "earned": "A dragon is dead, and you killed it. They are already singing it, and in every song you are Wyrm-Slayer.",
-   "style": "{name} Wyrm-Slayer",
-   "text": "A beast of dragon kind slain. One of a kind: one living holder; the next must wait for your grave.",
+   "earned": "A dragon is dead, and you killed it. They are already singing it, and in every song you are the Dragon Slayer.",
+   "style": "{name} the Dragon Slayer",
+   "text": "A true dragon slain. One of a kind: one living holder; the next must wait for your grave.",
    "reasons": { "appoint": { "kind": "merit", "weight": 0.3, "label": "who would not follow one who killed a dragon" } }
   },
   {

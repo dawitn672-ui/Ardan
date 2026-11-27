@@ -297,7 +297,7 @@
   {
    "id": "primordial-archdemon",
    "name": "Primordial Archdemon",
-   "rarity": "legendary",
+   "rarity": "mythical",
    "weight": "X",
    "unique": false,
    "kind": "born",
@@ -322,7 +322,7 @@
   {
    "id": "prince-of-the-seventh-gate",
    "name": "Prince of the Seventh Gate",
-   "rarity": "legendary",
+   "rarity": "mythical",
    "weight": "X",
    "unique": true,
    "kind": "world",
@@ -411,7 +411,7 @@
   {
    "id": "king-of-dragons",
    "name": "King of Dragons",
-   "rarity": "legendary",
+   "rarity": "mythical",
    "weight": "X",
    "unique": true,
    "kind": "world",
@@ -455,7 +455,7 @@
   {
    "id": "unmaker",
    "name": "the Unmaker",
-   "rarity": "legendary",
+   "rarity": "mythical",
    "weight": "X",
    "unique": true,
    "kind": "world",
@@ -478,7 +478,7 @@
   {
    "id": "sword-saint",
    "name": "the Sword Saint",
-   "rarity": "legendary",
+   "rarity": "mythical",
    "weight": "S",
    "unique": true,
    "kind": "mastery",
@@ -559,7 +559,7 @@
   {
    "id": "hollow-choir",
    "name": "the Hollow Choir",
-   "rarity": "legendary",
+   "rarity": "mythical",
    "weight": "X",
    "unique": true,
    "kind": "world",

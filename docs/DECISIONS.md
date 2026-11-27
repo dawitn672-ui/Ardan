@@ -3424,3 +3424,25 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
   then id); a road's class the tree no longer makes (the six cut legendaries) is struck from it. No sample save holds one.
 - **Not chosen.** Keeping nine with one holder each (order 97: very few); a separate `one` flag on the class (the rarity
   already says it, and a flag could disagree with it); letting a legendary class lead to a later one (order 97).
+
+### D-202 · Mythical titles and arts for the Primordials, the Dragon King and the Sword Saint; Wyrm-Slayer is the Dragon Slayer (2026-11-27; orders 97 and 98; audit C-06, C-25; H-173; D-183, D-200)
+- **Mythical titles.** The rarity line only (the names, texts and looks are the other builder's, order 98's renaming):
+  `primordial-archdemon` (the three Primordials), each Primordial's own (`prince-of-the-seventh-gate`, `unmaker`,
+  `hollow-choir`), `king-of-dragons` and `sword-saint`. Their second titles (the Dragon King's first clutch, the Saint's
+  Dragon-Feller and Binder) stay legendary: mythical is for what each of them *is*. The Sword Saint's title is one a person
+  may take after him: mythical, its figures (D-200: boost cap 0.4, +8 on a stat, budget x2) allow more than its effects
+  spend, and they are unchanged.
+- **A great being's own arts are one set** of one rarity (`A.RARITY.setOf`): the rarest title it holds, at least its
+  category's (`data/rarity.json` beings: the legends, the ancient demons and the ancient dragons legendary). The five are
+  mythical, every other legend, ancient demon and ancient dragon legendary; the profile says it beside the arts ("mythical
+  arts"; the codex "Its arts are mythical"). A rarity on each sheet skill was not chosen: those lines are being rewritten
+  (the Primordials' powers, order 97) on another branch, and a set read from the titles cannot disagree with them. Ranks
+  are untouched (the legends' skills top out at S 10; SS to X for their arts, C-28, is the skills library's next wave), so
+  no being's power moves.
+- **Ancient demons' own legendaries** (order 97: "legendaries of their own") are not written here: six of the 33 hold one
+  (`first-marquis` ...), and order 98's demons-by-rank rework, with each demon's own title, is the other builder's. Their
+  arts read legendary by their category.
+- **The Dragon Slayer.** The title's id, name, style and earned line (`dragon-slayer`; "the Dragon Slayer"); a true dragon
+  only (H-164). An old save's holder keeps it: save step `titleIds` (version 24) moves the held, lost, borne, refused-grant,
+  census, once and the age's first records from the old id (`TT.RENAMED`). The release's "Dragonslayer" epithet stays
+  apart (it fires for the release's two dragons only). `docs/MASTER_PROMPT.md` and the owner's prompts keep their words.
