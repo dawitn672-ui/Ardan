@@ -2781,24 +2781,24 @@ A.orderMaster = function (r, id) {
     for (const s of ["weapon", "ranged", "armor", "shield", "helm", "mount"])
       if (L.gear[s] && !GD.GEAR[L.gear[s]]) L.gear[s] = null;
     L.gearQ = {
-      weapon: legend ? "master" : "fine",
+      weapon: peerless ? "master" : "fine",
       armor: "fine",
       ranged: "fine",
     };
     const set = (s, lo, hi) => {
       L.st[s] = A.ri(lo, hi);
     };
-    set("spd", legend ? 62 : 48, legend ? 76 : 62);
-    set("ins", legend ? 62 : 48, legend ? 76 : 62);
-    set("wil", legend ? 66 : 52, legend ? 80 : 66);
-    set("str", legend ? 70 : 56, legend ? 84 : 68);
-    set("sta", legend ? 86 : 66, legend ? 96 : 78);
+    set("spd", peerless ? 62 : 48, peerless ? 76 : 62);
+    set("ins", peerless ? 62 : 48, peerless ? 76 : 62);
+    set("wil", peerless ? 66 : 52, peerless ? 80 : 66);
+    set("str", peerless ? 70 : 56, peerless ? 84 : 68);
+    set("sta", peerless ? 86 : 66, peerless ? 96 : 78);
     if ((GD.RACES[L.race] || {}).burst) L.st.sta += 6;
-    const want = legend ? A.ri(120, 134) : A.ri(96, 106),
+    const want = peerless ? A.ri(120, 134) : A.ri(96, 106),
       wk = Object.keys(L.skills).filter(k => G.sk.includes(k) || k === "melee");
     for (let i = 0; i < 80; i++) {
       const w = A.fightWorth(L),
-        floor = w > (legend ? 138 : 110) ? 52 : legend ? 80 : 66;
+        floor = w > (peerless ? 138 : 110) ? 52 : peerless ? 80 : 66;
       if (w > want + 1) {
         if (L.st.spd > 42 || L.st.ins > 42) {
           L.st.spd = Math.max(40, L.st.spd - 1);
