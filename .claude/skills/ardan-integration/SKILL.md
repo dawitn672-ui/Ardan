@@ -95,6 +95,21 @@ git add -A && git commit -m "vX.Y.Z-alpha.N: records (row, changelog, sample sav
 
 If `version.mjs new` ran in another worktree, check that `CHANGELOG.md` got its heading. Then `git gc --prune=now`.
 
+## 5b. Refresh the Notion mirror (after each version)
+
+The owner's Notion tree (top page "Ardan", private; ids in `/tmp/ardan/notion/ids.json` while the container lives, and
+in the Notion page itself) mirrors the repo, which stays the source of truth. The owner is on Notion's free plan and
+gave no API key, so **never push bulk text through the Notion chat tool** (L-012). The cheap route that works:
+
+1. `notion-create-file-upload` with the filename (e.g. `HISTORY-2026-11-27.md`): it returns a one-file `upload_url` and
+   a short-lived header.
+2. `curl -s -X POST "<upload_url>" -H "authorization: <header>" -F "file=@<path>;type=text/markdown"` from the
+   container: the file goes straight to Notion (free plan: 5 MiB a file; split bigger ones).
+3. Attach it with `notion-update-page` (`insert_content`, `<file source="file-upload://<id>" />`) or put it in a new page.
+   An upload not attached within the hour expires.
+
+Model-routed calls are kept to structure and short summaries: a row's title, date, kind and one line.
+
 ## 6. Critique, then tell the owner
 
 First the harsh pass (order 101): what went wrong this wave, what was assumed unchecked, what the owner will find that
