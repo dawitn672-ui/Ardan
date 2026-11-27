@@ -56,3 +56,14 @@ https://www.notion.com/help/custom-agent-pricing; live check with `notion-get-to
 4. Skills in Notion (`notion-upload-skill`, `convert-page-to-skill`) exist but our skills live in the repo and load
    free of tool calls; do not duplicate.
 5. Re-check plan features when the owner upgrades: Business adds unlimited SQL, multi-source queries and agent credits.
+
+## The bulk route exists now: `tools/notion-sync.mjs` (2026-11-27, order 102)
+The owner's key is injected by the session's proxy for `api.notion.com` (no Authorization header, nothing stored); route 1
+above is live and the "declined" note is superseded. Notion-Version `2026-03-11` (data sources: `POST /v1/data_sources/{id}/query`;
+pages created with `parent.data_source_id`). The script builds blocks itself (headings, paragraphs with bold/italic/code/links,
+lists nested one level, code, tables, rules; text split at 2,000 chars, at most 100 blocks a request) and updates a page by
+deleting its children and appending new ones.
+- `node tools/notion-sync.mjs whoami | chronicle [--kind= --match= --limit= --dry --manifest=] | page <md> <parent-id> [--title=]`.
+- `tools/notion-sync.manifest.json` holds page id and content hash per source: a re-run writes only changed records.
+- Free plan: block capacity may be limited and never comes back; the run prints blocks created and stops on 403 `restricted_resource`.
+- Use the MCP tool only for small edits and reads; never for bulk text or rows (L-012, L-013).

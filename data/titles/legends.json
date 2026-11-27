@@ -3,7 +3,7 @@
  "titles": [
   {
    "id": "ash-crowned",
-   "name": "the Ash-Crowned",
+   "name": "the Storm-Crowned",
    "rarity": "legendary",
    "weight": "X",
    "unique": true,
@@ -321,7 +321,7 @@
   },
   {
    "id": "prince-of-the-seventh-gate",
-   "name": "Prince of the Seventh Gate",
+   "name": "Prince of Hell's Seventh Gate",
    "rarity": "mythical",
    "weight": "X",
    "unique": true,
@@ -558,7 +558,7 @@
   },
   {
    "id": "hollow-choir",
-   "name": "the Hollow Choir",
+   "name": "Lady of the Red Tithe",
    "rarity": "mythical",
    "weight": "X",
    "unique": true,

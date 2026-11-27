@@ -13,7 +13,7 @@ const HUNK = /^<<<<<<< [^\n]*\n([\s\S]*?)^=======\n([\s\S]*?)^>>>>>>> [^\n]*\n/g
 function entries(text) {
   // split at "### X-NNN" headings; a leading part without a heading is kept as is
   const parts = text.split(/(?=^### [HD]-\d+)/m);
-  return parts.map(p => { const m = /^### ([HD])-(\d+)/.exec(p); return { key: m ? m[1] + m[2] : null, n: m ? +m[2] : -1, text: p }; });
+  return parts.map(p => { const m = /^### ([HD])-(\d+)((?: [a-z]+)*)/.exec(p); return { key: m ? m[1] + m[2] + (m[3] || '') : null, n: m ? +m[2] : -1, text: p }; });
 }
 function mergeEntries(a, b) {
   const seen = new Map(), lead = [];

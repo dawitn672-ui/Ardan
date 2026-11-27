@@ -35,6 +35,7 @@
     h += `<div class="small">${e(kind)} · ${levelBit(p)}${p.cls ? ' · ' + note(`Class: ${p.cls.name}.${p.cls.road && p.cls.road.length > 1 ? ' The road: ' + p.cls.road.join(', then ') + '.' : ''} A class adds things to do: a technique, a gift that fires when its moment comes, a way to earn.`, p.cls.name) : ''}${p.age != null ? ' · ' + e(p.age) + ' years' : ''}</div>`;
     if (p.titles && p.titles.length) h += `<div class="small"><b>Titles:</b> ${p.titles.map(titleBit).join(', ')}</div>`;
     h += `<div class="small"><b>Home:</b> ${p.home && p.home.name && (p.home.known || k.secret) ? e(p.home.name) + (p.home.domain ? ', ' + e(p.home.domain) : '') : '<span class="muted">not known</span>'}</div>`;
+    if (p.dominion) h += `<div class="small"><b>Dominion:</b> ${e(p.dominion)}</div>`;
     const tw = FIG.temperWords(p.temper), tr = p.freeTraits ? (p.traits || []) : (p.traits || []).map(FIG.traitName);
     if (tw.length || tr.length) h += `<div class="small"><b>Known as:</b> ${e(tw.concat(tr.map(x => String(x).toLowerCase())).filter((x, i, a) => a.indexOf(x) === i).join(', '))}</div>`;
     if (p.looks) h += `<div class="small muted">${e(p.looks)}</div>`;

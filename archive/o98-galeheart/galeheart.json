@@ -1,0 +1,110 @@
+{
+ "id": "galeheart",
+ "name": "Galeheart",
+ "style": "the King's Thunder",
+ "kind": "ancient-storm-dragon",
+ "level": 780,
+ "class": null,
+ "liege": "sarnavoth",
+ "skills": [
+  {
+   "id": "wyrmfire",
+   "lvl": 9,
+   "fight": true
+  },
+  {
+   "id": "ancient_hide",
+   "lvl": 8,
+   "fight": true
+  },
+  {
+   "id": "dread_gaze",
+   "lvl": 9,
+   "fight": true
+  },
+  {
+   "n": "The King's Thunder",
+   "rank": "A",
+   "lvl": 10,
+   "kind": "active",
+   "fight": true,
+   "does": "A storm called down on one place and held there."
+  }
+ ],
+ "arts": [
+  "wyrmfire",
+  "dread_gaze"
+ ],
+ "titles": [
+  "old-blood",
+  "the-kings-thunder"
+ ],
+ "items": [
+  {
+   "n": "A crown of hail",
+   "kind": "crown",
+   "quality": "legendary",
+   "does": "Stones of hail that circle its head and never fall.",
+   "gives": {
+    "spd": 1
+   }
+  }
+ ],
+ "temper": {
+  "pride": 0.9,
+  "wrath": 0.6,
+  "caution": 0.3,
+  "patience": 0.8,
+  "honor": 0.5,
+  "greed": 0.5,
+  "warmth": -0.3,
+  "zeal": 0.3,
+  "social": 0.2,
+  "ambition": 0.3
+ },
+ "traits": [
+  "proud",
+  "brave",
+  "wrathful"
+ ],
+ "goals": [
+  {
+   "kind": "duty",
+   "w": 1.6,
+   "why": "to keep the other dragons to their own skies"
+  },
+  {
+   "kind": "ambition",
+   "w": 0.8,
+   "why": "to be the one who finishes the fight on the Saint's Stair, if the King cannot"
+  }
+ ],
+ "grudges": [
+  {
+   "at": "thunderhide",
+   "kind": "figure",
+   "w": 1,
+   "why": "Thunderhide wants its place"
+  },
+  {
+   "at": "kethra",
+   "kind": "legend",
+   "w": 0.9,
+   "why": "Stormwing will not keep to the skies the King gave her"
+  }
+ ],
+ "home": {
+  "name": "the Wyrmcrown",
+  "domain": "the Dragon Mountains",
+  "known": true
+ },
+ "fame": "known",
+ "story": [
+  "The Ancient Storm Dragon, the strongest of the three who serve the King. It keeps the roads of the sky and the other dragons to their own."
+ ],
+ "secret": {
+  "story": [
+   "It has climbed the Saint's Stair at night and watched the old man sleep. It did not strike."
+  ]
+ }
+}

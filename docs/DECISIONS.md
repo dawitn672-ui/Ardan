@@ -3389,6 +3389,100 @@ gain, re-indexing every wipe, telemetry); claude-mem (its own model spends token
 lost on wipe); 9router (stores the owner's Claude login behind a default password, syncs to its servers, can swap models,
 and routing a subscription through it breaks Anthropic's terms). Sources: `.claude/skills/agent-token-economy/references/tools-verdicts.md`.
 
+### D-197 · The Primordials are Noir, Red and Blanc under their old ids; demons by rank, not species, all in Hell (2026-11-27; orders 97 and 98; audit C-01, C-07, C-08, C-18, C-21, C-32; D-191, D-193)
+- **The mapping (fixed for every builder):** Ghazrul is **Red** (hellfire: dark crimson skin, black horns, black wings
+  wide enough to shade a village; the one the Sword Saint drove back into Hell and sealed behind the Glass Seal in the
+  Burning Waste; she), Vethrael is **Blanc** (made female: a white-haired albino with pale horns who drinks blood and
+  works blood magic; the old collector of voices is the collector of blood, her choir the tithe of a hundred thousand
+  souls in her veins), Morvane is **Noir** (the eldest: ash-grey skin, eyes black from lid to lid, a dragon's shape and
+  the greatest horns in Hell; darkness and shadow; he holds the Seventh Gate, and his shadow, not a face, walks the
+  towns of men). Red keeps her sex (the owner named only Blanc's; the lore written around Ghazrul is hers), so the three
+  are a brother and two sisters. Their levels, skills' ranks and caps, titles' buffs and desires are unchanged: only
+  names, looks, powers in words and titles' names move, so every balance the legends hold (D-176, D-177, D-185) holds.
+- **The ids stay as internal keys** (`ghazrul`, `morvane`, `vethrael`, and the sworn titles' `ember-sworn`, `debt-sworn`,
+  `choir-sworn`, now named Sworn to Red, Sworn to Noir, Sworn to Blanc; Hell-Born reads Born in Hell; Prince of Hell's
+  Seventh Gate). The orc clans' word `ghazrul` (a deed-name, realm customs) is `brakkan` now, so the id names one thing. The save stores them in `A.S.pw.leg`, `metLeg`, `known`, A.WHY's `legend:<id>` records, queued cards'
+  `ctx.lg` and the titles' census; a rename would need a save step over all of them for no change a player can see.
+  **Not chosen:** new ids with a step in A.V2SAVE (more risk to every old save than the clarity is worth; the data's
+  `about` and the code name the mapping where an id is read).
+- **All three seat in Hell** (C-18): the Cinderlands (Red), the Gatelands (Noir), the Hush (Blanc); the Sword Saint's
+  sheet says he drove Red back into Hell and cut the shadow from Noir's heels.
+- **Demons by rank** (order 97: "no demon species; known by rank, each unique, all horned"; plain words, the owner's
+  naming rule and `.claude/skills/cold-reader-naming`: no imp or fiend): the bestiary's demon family is one ladder of
+  ranks, Minor Demon, Lesser Demon, Demon Soldier, Demon Knight (the first three keep the old ids `imp`, `fiend`,
+  `greater-fiend`, so a save's record of one still reads; the lower, 300-500, beasts and cunning things: none reasons through A.WHY), Baron of Hell, Count of Hell, Demon Lord
+  (the great, about 650, speaking), and three ancient ranks of its own: Marquis of Hell (20), Duke of Hell (9: the six
+  Pit-Mothers and three Ledger-Keepers, their office now their style) and Prince of Hell (4: the old Pit Wyrms, now Pit
+  Dragons). The old sixteen species are kept, commented, in the generator. Each demon is one of a kind: its look is
+  rolled from its id (`A.POWER.demonLook`, a hash: horns always, skin, eyes and a mark), shown on its profile; the four
+  Princes carry their dragon shapes by hand. The wilds drop a wild demon an old save still tracks at its next spring.
+- **Every demon lives in Hell** (`hell: true` on the family and kind; no terrain of the continent): the wilds and the
+  hunt never draw one (`terrOk`), and an old save's wild demon of a retired kind is dropped at the next spring's tally
+  (its kind is gone; the wilds already skipped an unknown kind). Ossa watches the Ashen Marches, Hell's northern shore,
+  not the world's side; every ancient demon's home domain is "of Hell" (`tools/lint-figures.mjs` holds it).
+- **The ancient demons ten levels lower** (order 97): the 33 profiles fall by ten each (mean 749.5 to 739.5) and the ranks
+  sit at 735, 742 and 755; they still rival the elder dragons (`pwBands`, `figRegistry`).
+- **Off-theme arts** (C-21): the library's Frost Veil on demons is replaced by a buff of the liege's colour (Heat-Shimmer
+  for Red's, Veil of Shadow for Noir's, Pale Veil for Blanc's). The `aura` kind stays until the skill kinds are settled
+  (C-27, not this step).
+- **Demonic creatures** (order 97: "ogres, orcs and most monsters are demonic creatures"): a tier of the bestiary.
+  Trolls leave the giants for a family of their own; trolls and ogres stand 230-270, their leaders higher (Troll
+  Grandsire 340, Ogre Hetman 330, Ogre Hedge-Witch 320). Wild giants and titans carry world counts (6, 4, 3, 1; ettins 8,
+  2; titans 2, 1, 1), and an encounter weighs a kind the world holds few of by `min(1, world / 40)`, so a giant is seldom
+  met (this also makes the counted dragons rarer on the road, as few in a continent should be).
+- **The band words** (C-32) name kinds of their band: F a hill wolf, a lynx, a pit viper; C a troll grandsire and an ogre
+  hetman; SS the ancient demons under the Primordials and the inferno and water ancients; SSS Vaskareth and the three
+  Primordials by name.
+- **The canon's dragons** (C-24): the release lore's Great Ash Dragon and the Red Widow are sized as the bestiary's grown
+  and elder dragons (wingspan 40-52 m, 50-80 tonnes, nothing one man can use against one). Metric, as the rest of that
+  table, until the units pass.
+
+### D-198 · Vaskareth is the storm ancient, far above the inferno and the water; the King reigns through her while he sleeps (2026-11-27; orders 97 and 98; audit C-02, C-35; D-191, D-193)
+- **One dragon:** Galeheart, the Ancient Storm Dragon of D-193 (780), is folded into Vaskareth (archived in
+  `archive/o98-galeheart/`): its post (the roads of the sky, every dragon to its own) and its quarrel with Stormwing are
+  hers. She keeps her sheet among the legends (865, unchanged, so every legends balance holds) and is recast from ash to
+  storm (the Storm-Crowned, Storm Breath, lightning). The bestiary's `ancient-storm-dragon` points at her (`legend:
+  "vaskareth"`) and A.POWER reads the kind as her sheet. The gap is wide: 865 against the inferno's 782 and the water's
+  786 with their Old Blood.
+- **The other two:** Ashgar is the **Ancient Inferno Dragon** (`ancient-inferno-dragon`), Rimewing the **Ancient Water
+  Dragon** (`ancient-water-dragon`; the name kept, her frost recast as the Black Tarn and the rivers out of the Dragon
+  Mountains, the King's Tide). Each ancient has a `dominion` (storm, inferno, water); the figures registry lists the two
+  fixed ancients and Vaskareth's sheet (`category.legends`) and shows the dominion.
+- **The King's dominion:** "the King's sky: every sky a dragon flies in, and every dragon in it."
+- **Who rules while the King sleeps** (C-35): **he does, through Vaskareth, his eldest, as regent.** The King still
+  sleeps under the Dragon Mountains, healing the wound of the Saint's Stair (his sleeper mind, his waking and the ridge
+  are unchanged; his waking news names the Dragon Mountains and sixty years, as his sheet does), but his Royal Will holds every dragon and she gives his word as if he had spoken it. Order 97 implies
+  a reigning king; a regency keeps him reigning without waking him in every world at once, which would rewrite the
+  Sword Saint's story another builder is writing. **Not chosen:** waking the King for good (a change to the legends'
+  lives and the Saint's lore that is the owner's to order). Ashgar's grudge is the regent's airs; Rimewing's secret
+  (some elders hope the King never wakes) stands.
+
+### D-199 · Orcs are demonic creatures and no longer playable; Gorath and Ughrak are half-orc realms (2026-11-27; orders 97, 98 answer 2, and 99; audit C-07, C-20)
+- **The size, measured first:** orcs were a playable people (the creation screen and the random start), two realms of 2
+  million (the Horde of Gorath, the Ughrak Clans), 30 people of the cast, two cultures, a faith, an orc master in
+  `data/power.json`, about 150 lines of family lore and some 300 references in the event packs (most gated on the
+  player's race or realm).
+- **The least breaking coherent version:** orcs leave the player's choices (`GD.PLAYABLE_RACES`: the creation screen,
+  `UI.crRandomize`, `crSet` refuses one; `A.newGame` asked for an orc makes a half-orc, the nearest blood). Orcs become a
+  kind of the bestiary, demonic creatures (Wild Orc 140, Orc Raider 175, Orc Brute 230, Orc War-Boss 290) roaming the
+  steppe, the plains and the hills in bands. A world made since has no orc people: the state carries `noOrcs` from
+  `A.newState`, and `A.newPerson` asked for an orc in such a world makes a half-orc (every path at once: an event's
+  stranger, a mercenary, a duel's foe, a parent of a half-orc).
+- **Gorath and Ughrak stay realms** (order 99: 34 realms, five forms) and become **half-orc realms**: the **Kingdom of
+  Gorath** (King Vrag of the Line of Gorath; the shamans confirm a king and the Grey Mothers can overrule him) and the
+  **Principality of Ughrak** (Princess Urza Ironhide, still the War-Mother on the grass, chosen by the clan-mothers).
+  Their people are half-orcs and humans (1,440,000 and 160,000; 651,000 and 49,000), the realm's race `halforc`, their
+  houses half-orc (`A.housesFor`, `A.famRaceOk`, house members), their clans' cultures (CUL-22, CUL-23) and faith kept
+  (`A.cultureFor`); a half-orc noble or royal there is born to his house, not a bastard, and a half-orc born there has half-orc parents of the clans (`A.parentRaces`), so the clans' naming law runs through them. The thirty orc people of the
+  cast are half-orcs, in the same words. The wild orc bands on their grass are what the clans break to the spear and
+  hunt: the old Horde Wars' "orcs" in the family lore read true of them.
+- **The orc master** (C-20) is the Champion of Urgol, a half-orc, the King of Gorath's war-champion, not a second
+  ruler.
+- **Old saves:** the realms' names follow by the names step (`N.OLD`: Horde of Gorath, Ughrak Clans); "orc" stays a race of the code (stats, looks, portraits, events), and a save without `noOrcs` keeps its
+  orcs, its orc player and his events; only the lore of the two realms reads as today's.
+- **Not changed here:** the other realms' counts of orcs in `00-lore.json` (another builder's entries under order 99; no
+  code makes a person from them in a new world), the event packs' orc texts (dead for a new world's player, kept for old
+  saves), and half-orcs stay playable (the owner's answer named orcs).
 ### D-200 · One rarity ladder: basic, rare, epic, legendary, mythical, for skills, titles, classes and items; make apart from rarity (2026-11-27; orders 97 and 98, the owner's answer 1; audit C-04; H-171)
 - **The conflict.** Four ladders, none order 97's: skills common, uncommon, rare, *unique*, legendary (unique below
   legendary); titles uncommon, rare, legendary with a `unique` flag worth more than legendary; classes common, uncommon,

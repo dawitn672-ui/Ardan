@@ -100,6 +100,17 @@ If `version.mjs new` ran in another worktree, check that `CHANGELOG.md` got its 
 
 ## 5b. Refresh the Notion mirror (after each version)
 
+**Bulk route now (order 102): `tools/notion-sync.mjs`.** The environment's proxy adds the owner's Notion token to any
+HTTPS request to `api.notion.com` (the script sends none, never prints or stores one; it re-runs itself with
+`NODE_USE_ENV_PROXY=1` so Node's fetch uses the proxy). After a version: `node tools/notion-sync.mjs chronicle --dry`
+(what would change), then `chronicle` (every Order, Rule, Decision, History, Version and Prompt row: properties, a
+one-sentence Summary, full text as the page body; `--kind=`, `--match=REGEX`, `--limit=N` for stages) and
+`page <md-path> <parent-page-id>` for one doc. `tools/notion-sync.manifest.json` (source to page id and content hash,
+no secrets) makes a re-run touch only changed records; for a long run use `--manifest=/tmp/ardan/notion/notion-sync.manifest.json`
+and copy it over the tracked file once at the end. Free-plan guard: every block written counts and deleting gives no
+capacity back; the script prints the blocks created, and stops at a 403 `restricted_resource`. The MCP tool and the
+file-upload steps below remain for small edits only.
+
 The owner's Notion tree (top page "Ardan", private; ids in `/tmp/ardan/notion/ids.json` while the container lives, and
 in the Notion page itself) mirrors the repo, which stays the source of truth. The owner is on Notion's free plan and
 gave no API key, so **never push bulk text through the Notion chat tool** (L-012). The cheap route that works:

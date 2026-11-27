@@ -18,6 +18,25 @@ What changed for the player, in plain words, one section per version (newest fir
   by one person at a time says so beside its rarity ("legendary, one of a kind"). A thing's make (plain, fine, masterwork)
   is the smith's care, told apart from how rare it is: "a masterwork sabre", "a legendary relic". The shop's ordinary make
   reads "Plain".
+- **Noir, Red and Blanc.** The three Primordials of Hell have their true names and faces: Noir, the eldest, ash-grey
+  and black-eyed in a dragon's shape, with the greatest horns in Hell, lord of darkness and shadow at the Seventh Gate;
+  Red, crimson-skinned with black horns and wings, all hellfire, sealed in Hell by the Sword Saint; and Blanc, a
+  white-haired albino with pale horns, who drinks blood and works with it. Their sworn demons, titles and stories
+  follow, and all three rule from Hell.
+- **Vaskareth of the storm.** The King of Dragons' eldest daughter is the Ancient Storm Dragon, far stronger than the
+  other two ancients, Ashgar of the inferno and Rimewing of the water. While the King sleeps under the mountain, he
+  still reigns, and she rules the dragons in his name. Each ancient's page shows its dominion.
+- **Demons by rank.** There are no kinds of demon any more, only ranks: minor and lesser demons up to the demon lords,
+  and the Marquises, Dukes and Princes of Hell. Every demon is one of a kind and horned, the lower ones are
+  little more than beasts, and every one of them lives in Hell: you will not meet a demon on the roads of the
+  continent. The thirty-three ancient demons stand a little lower than before.
+- **Trolls, ogres and orcs** are demonic creatures, too weak in that power to be demons. Trolls and ogres are a
+  knight's match, their chiefs stronger; wild giants are few, and seldom met.
+- **Orcs are no longer a people you can play.** They roam the grass of the south and the east in bands. Gorath is now
+  a kingdom and Ughrak a principality, both of the half-orc clans who rule there, and a half-orc born to their royal
+  or noble houses is a true son or daughter of the house. A saved game with an orc goes on as it was.
+- **The great dragons of the old tales** are written at their true size: a grown ash dragon is a calamity, not a
+  beast a few bowmen can bring down.
 - **Armies of their true size.** Every realm now keeps a standing host by its people, its wealth and its kind: from
   about ten thousand soldiers in a small kingdom to more than a quarter of a million in the greatest empire, while a poor
   abbey or a pirate port keeps what it can pay. Knights are few and strong: from about fifty to three thousand in a
@@ -35,7 +54,7 @@ What changed for the player, in plain words, one section per version (newest fir
   merchants rise to Merchant prince and Banker, and a great house of trade can grow richer than a noble house.
 - **Figures of the Age.** A new page of the codex lists the great of the continent by kind: the rulers, the great
   houses, the Generals, the masters of the knightly orders and of the peoples, the legends, the three ancient dragons,
-  the nine elder dragons and the thirty-three ancient demons sworn to the three Archdemons. Each has a full profile:
+  the nine elder dragons and the thirty-three ancient demons sworn to the three Primordials. Each has a full profile:
   level, class, skills, arts, titles, arms, temper, home and story. You read only what you would know: a name you have
   heard, the arts and arms of those you have met, and what drives them only once you are close or have learned it.
   Demons whose names have not reached you are only a count.

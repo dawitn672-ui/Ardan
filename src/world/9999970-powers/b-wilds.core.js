@@ -49,7 +49,8 @@
   const realmOf = P => (P && P.owner ? A.realm(P.owner) : null);
   const short = rid => { try { return A.realmShort(rid); } catch (e) { return String(rid); } };
   const isWild = P => P && (!P.town || P.town < 3000);
-  const terrOk = (s, P) => P && ((s.terr || []).includes(P.terr) || (s.coast && P.coast) || (P.terr === 'steppe' && s.terr.includes('plains')));
+  // every demon lives in Hell (order 97, D-197): a kind of Hell is never met on the continent's ground
+  const terrOk = (s, P) => P && !s.hell && ((s.terr || []).includes(P.terr) || (s.coast && P.coast) || (P.terr === 'steppe' && s.terr.includes('plains')));
 
   // ---------------------------------------------------------------- state
   PW.state = function () {
@@ -246,8 +247,9 @@
   };
 
   // ---------------------------------------------------------------- the sleepers at the summit
-  // Two of the legends sleep: the King of Dragons wounded under the Crown Range since the Sword Saint threw him there, and
-  // the Archdemon Ghazrul bound under the Burning Waste. Once a year each weighs sleep against waking,
+  // Two of the legends sleep: the King of Dragons wounded under the Dragon Mountains since the Sword Saint threw him there
+  // sixty years ago (he reigns still, through Vaskareth his regent: D-198), and
+  // the Primordial Red (id ghazrul, D-197) behind the Glass Seal. Once a year each weighs sleep against waking,
   // through A.WHY: what would wake it is on its sheet (wake), read from the world as it is. Its nature weighs hard for sleep,
   // and one that woke within a generation sleeps on. A waking lasts a few years (wakeYears); while awake it lives by
   // legendSeason like the others. If the King wakes while the old Saint lives, they meet on the ridge again.
@@ -258,14 +260,14 @@
     'his children slain': () => { const g = legOf('vaskareth'); return { w: g && g.slain ? 3 : 0, label: 'his eldest daughter is slain' }; },
     'the old fight unfinished': () => ({ w: awake('sword-saint') ? 0.6 : 0, label: 'the old man who threw him down still lives' }),
     'the King wakes': () => ({ w: awake('sarnavoth') ? 4 : 0, label: 'the King of Dragons is awake' }),
-    'archdemons walk': () => { const g = legOf('morvane'); return { w: (awake('ghazrul') ? 4 : 0) + Math.min(1.5, ((g && g.raids) || 0) * 0.2), label: 'the Archdemons are loose in the world' }; },
+    'archdemons walk': () => { const g = legOf('morvane'); return { w: (awake('ghazrul') ? 4 : 0) + Math.min(1.5, ((g && g.raids) || 0) * 0.2), label: 'the Primordials are loose in the world' }; },
     'the seal weakens': () => ({ w: Math.min(1.5, ((A.S.wars || []).length) * 0.12), label: 'the blood spilled in the wars soaks down to the seal' }),
     'souls spilled': () => ({ w: Math.min(1.5, ((A.S.wars || []).length) * 0.2), label: 'souls spilled in the wars above her' }),
-    'her brother calls': () => { const g = legOf('morvane'); return { w: Math.min(1.5, ((g && g.raids) || 0) * 0.3), label: 'her brother hunts the world above' }; },
+    'her brother calls': () => { const g = legOf('morvane'); return { w: Math.min(1.5, ((g && g.raids) || 0) * 0.3), label: 'her brother\'s shadow hunts the world above' }; },
   };
   const WOKE = {
-    sarnavoth: 'The roof of the Crown Range has fallen in. Sarnavoth, King of Dragons, is awake after nine hundred years, and every dragon in the sky has turned north.',
-    ghazrul: 'The glass seal in the Burning Waste has cracked. Ghazrul the Unmaker is loose. Caravans turn back; the sand is burning.',
+    sarnavoth: 'The mountain over the King\'s hall in the Dragon Mountains has broken open. Sarnavoth, King of Dragons, is awake after sixty years asleep; Vaskareth his regent has given the sky back to him, and every dragon in it has turned north.',
+    ghazrul: 'The glass seal in the Burning Waste has cracked. Red the Unmaker is loose, her black wings over the sand. Caravans turn back; the desert is burning.',
   };
   PW.sleeperYear = function (L, g, rng) {
     if (awake(L.id)) return null;
@@ -332,7 +334,8 @@
     const keep = [];
     for (const w of st.wild) {
       const s = PW.species(w.sp), P = P_(w.at);
-      if (!s || !P) continue;
+      // a kind gone from the bestiary, or a demon (they live in Hell since order 97, D-197), leaves the continent's wilds
+      if (!s || !P || s.hell) continue;
       w.yrs++;
       // instinct: it feeds where there is prey (the herds of a settled province if it raids stock, else the wild game)
       for (let k = 0; k < 4; k++) if (rng.chance(P.town && s.beh.stock === 'raids' ? 0.65 : 0.5)) { w.fed++; w.ate = P.town && s.beh.stock === 'raids' ? `the herds of ${P.name}` : `the game of the ${P.terr} around ${P.name}`; }
@@ -413,7 +416,10 @@
     opts = opts || {};
     const se = PW.season();
     const cands = PW.BD.species.filter(s => !s.unique && terrOk(s, P) && (s.seasons || []).includes(se) && (!opts.max || s.t <= opts.max));
-    return wpick(rng, cands, s => Math.exp(-Math.pow(s.t - target, 2) / (2 * 49)) / (s.beh.people === 'avoids' && !opts.hunt ? 2 : 1));
+    // a kind the world holds few of (world: the giants, the dragons) is met as rarely: a handful in all the continent are
+    // seldom where a traveller is (order 97: giants very few)
+    const few = s => (s.world != null ? Math.min(1, s.world / 40) : 1);
+    return wpick(rng, cands, s => few(s) * Math.exp(-Math.pow(s.t - target, 2) / (2 * 49)) / (s.beh.people === 'avoids' && !opts.hunt ? 2 : 1));
   };
   PW.exposure = function (pc, P, doing) {
     let x = (T.terr[P.terr] || 0.004) * (P.town >= 20000 ? T.city : P.town >= 3000 ? T.town : T.wild);

@@ -12,7 +12,7 @@ export default {
   // day 0 of every kind of life: no check fails (P22: the v2 stores were missing until the first tick; the heir of Kesh
   // sat as Chancellor at 2), and running the checks twice changes nothing and draws nothing
   async coherencyDay0(page) {
-    const starts = STARTS.concat([{ status: 'peasant', startAge: 20, sex: 'F', realm: 'POL-03', race: 'elf' }, { status: 'peasant', startAge: 16, sex: 'M', realm: 'POL-11', race: 'orc' }]);
+    const starts = STARTS.concat([{ status: 'peasant', startAge: 20, sex: 'F', realm: 'POL-03', race: 'elf' }, { status: 'peasant', startAge: 16, sex: 'M', realm: 'POL-11', race: 'halforc' }]);
     const r = await page.evaluate(starts => {
       const out = { checks: A.COHERENCY.checks.length, fails: [], impure: [] };
       starts.forEach((o, i) => {

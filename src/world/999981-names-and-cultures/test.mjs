@@ -36,7 +36,7 @@ export default {
     const r = await page.evaluate(() => {
       T.enter({ seed: 3, realm: 'POL-01', status: 'noble', sex: 'M', startAge: 16 });
       const want = { 'POL-12': ['Khanate of Ulun', 'Ulun', 'Khan'], 'POL-13': ['League of Brannoch', 'Brannoch', 'First Speaker'], 'POL-33': ['Free Port of Corvasse', 'Corvasse', 'Captain-General'],
-        'POL-34': ['Ughrak Clans', 'Ughrak', 'War-Mother'], 'POL-32': ['Sultanate of Ambrel', 'Ambrel', 'Sultan'], 'POL-21': ['Kesh', 'Kesh', 'Prince'], 'POL-19': ['Sahrim Confederacy', 'Sahrim', 'Speaker'], 'POL-11': ['Horde of Gorath', 'Gorath', 'War-Chief'] };
+        'POL-34': ['Principality of Ughrak', 'Ughrak', 'Prince'], 'POL-32': ['Sultanate of Ambrel', 'Ambrel', 'Sultan'], 'POL-21': ['Kesh', 'Kesh', 'Prince'], 'POL-19': ['Sahrim Confederacy', 'Sahrim', 'Speaker'], 'POL-11': ['Kingdom of Gorath', 'Gorath', 'King'] };
       const bad = [];
       for (const [id, [name, short, title]] of Object.entries(want)) {
         const R = A.S.realms[id];
@@ -47,12 +47,13 @@ export default {
       fit('POL-12', /^Khanate of /, /nomad|confederacy|tribes/i);
       fit('POL-13', /^League of /, /league|confederation/i);
       fit('POL-33', /^Free Port of /, /pirate|brotherhood/i);
-      fit('POL-34', /Clans$/, /clans|league/i);
+      // order 99 (D-199): Gorath and Ughrak are half-orc crowns of the five forms, a kingdom and a principality
+      for (const [id, rx, ty] of [['POL-11', /^Kingdom of /, 'kingdom'], ['POL-34', /^Principality of /, 'principality']]) { const R = A.S.realms[id]; if (!rx.test(R.name) || R.type !== ty || R.race !== 'halforc') bad.push(`${id} ${R.name} (${R.type}, ${R.race}) is not a half-orc ${ty}`); }
       // the capital that shared the old name is the realm's name now, in the realm and on the map
       if (A.S.prov.filter((p) => p.name === 'Corvasse').length !== 1 || A.S.realms['POL-33'].capital !== 'Corvasse') bad.push('the capital of POL-33 is not Corvasse');
       return bad;
     });
-    return { ok: r.length === 0, detail: r.length ? r.join('; ') : 'Khanate of Ulun, League of Brannoch, Free Port of Corvasse, Ughrak Clans read like their governments; Ambrel, Kesh, Sahrim, Gorath unchanged' };
+    return { ok: r.length === 0, detail: r.length ? r.join('; ') : 'Khanate of Ulun, League of Brannoch, Free Port of Corvasse read like their governments, the Kingdom of Gorath and the Principality of Ughrak are half-orc crowns; Ambrel, Kesh, Sahrim unchanged' };
   },
 
   // CRITIQUE N1: where the people of a province come from. 35 realms (the continent's 34 and Prince Andros's Tessaria).

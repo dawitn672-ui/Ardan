@@ -661,7 +661,8 @@ UI.crFix = function () {
   if (c.house && !hs.some(h => h.id === c.house)) c.house = null;
   if (needHouse && !c.house && hs.length) c.house = hs[0].id;
   if (!hs.length) c.house = null;
-  if ((c.race === "halfelf" || c.race === "halforc") && (c.status === "noble" || c.status === "royal"))
+  // a half-blood noble is a bastard of a house, except where his own blood rules (the half-orc crowns of Gorath and Ughrak, D-199)
+  if ((c.race === "halfelf" || c.race === "halforc") && (c.status === "noble" || c.status === "royal") && (LORE.realms[c.realm] || {}).race !== c.race)
     c.order = "bastard";
   const R2 = GD.RACES[c.race],
     skins = GD.SKIN[c.race];
@@ -905,7 +906,7 @@ UI.crStepBirth = function () {
       halfelf: "Of two peoples and neither. Live 175 years.",
       halforc: "Strong, mistrusted, often mercenaries.",
     };
-  let h = `<div class="field"><label>People</label><div class="opt-grid">${GD.RACE_LIST.map(r => UI.opt(c.race === r, "crSet", "race:" + r, R2[r].name, raceDesc[r] + ` <span class="muted">(adult at ${R2[r].adult}, lives ~${R2[r].life})</span>`)).join("")}</div></div>`;
+  let h = `<div class="field"><label>People</label><div class="opt-grid">${GD.PLAYABLE_RACES.map(r => UI.opt(c.race === r, "crSet", "race:" + r, R2[r].name, raceDesc[r] + ` <span class="muted">(adult at ${R2[r].adult}, lives ~${R2[r].life})</span>`)).join("")}</div></div>`;
   const realms = Object.keys(LORE.realms).filter(r => A.raceAllowed(c.race, r));
   h += `<div class="field"><label>Realm of birth</label><select data-c="crRealm" style="width:100%" aria-label="Realm of birth">${realms
     .map(r => {
@@ -1146,7 +1147,7 @@ UI.crRandomize = function () {
   A.seed(Date.now() % 1e9);
   const c = UI.crDefaults();
   c.race = A.wpick(
-    GD.RACE_LIST,
+    GD.PLAYABLE_RACES,
     r =>
       ({
         human: 10,
@@ -1839,6 +1840,7 @@ UI.A = {
       k = v.slice(0, i);
     let val = v.slice(i + 1);
     if (k === "startAge") val = +val;
+    if (k === "race" && !GD.PLAYABLE_RACES.includes(val)) return; // orcs are not playable (order 98, D-199)
     if (k === "house" && !val) val = null;
     UI.cr[k] = val;
     if (k === "race" || k === "realm" || k === "status") {

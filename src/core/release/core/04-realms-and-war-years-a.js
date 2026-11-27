@@ -890,6 +890,7 @@ A.famRaceOk = function (h, race) {
           dwarf: "dwarf",
           orc: "orc",
           giant: "giant",
+          halforc: "halforc", // the half-orc crowns of Gorath and Ughrak (D-199)
         }[R2.race]) ||
       "human";
   return (
@@ -930,6 +931,7 @@ A.famMembers = function (hid) {
           dwarf: "dwarf",
           orc: "orc",
           giant: "giant",
+          halforc: "halforc",
         }[R2.race]) ||
       "human",
     cult = A.cultureFor(race, F.realm),
@@ -1037,6 +1039,7 @@ A.housesFor = function (realm, status, race) {
           dwarf: "dwarf",
           orc: "orc",
           giant: "giant",
+          halforc: "halforc",
         }[R2.race] || "human";
       return (
         race === hr ||
@@ -1049,7 +1052,9 @@ A.housesFor = function (realm, status, race) {
 
 A.houseBloodline = hid => Object.values(LORE.bloodlines).find(b => b.fam === hid) || null;
 
-A.parentRaces = function (race) {
+A.parentRaces = function (race, realm) {
+  // a half-orc of the half-orc crowns (Gorath, Ughrak: D-199) is born of half-orc parents, of the clans
+  if (race === "halforc" && realm && LORE.realms[realm] && LORE.realms[realm].race === "halforc") return ["halforc", "halforc"];
   return race === "halfelf"
     ? A.chance(0.5)
       ? ["human", "elf"]
@@ -1138,6 +1143,7 @@ A.newGame = function (o) {
     },
     o || {},
   );
+  if (!GD.PLAYABLE_RACES.includes(o.race)) o.race = "halforc"; // orcs are not playable (order 98, D-199): the nearest blood
   A.newState(o.seed);
   const S = A.S;
   if (((S.settings.diff = o.diff), A.initWorld(), !A.raceAllowed(o.race, o.realm))) {
@@ -1145,7 +1151,7 @@ A.newGame = function (o) {
     o.realm = ok.length ? A.pick(ok) : "POL-01";
   }
   if (!A.statusAllowed(o.status, o.race, o.realm)) o.status = "peasant";
-  if ((o.race === "halfelf" || o.race === "halforc") && (o.status === "noble" || o.status === "royal"))
+  if ((o.race === "halfelf" || o.race === "halforc") && (o.status === "noble" || o.status === "royal") && (LORE.realms[o.realm] || {}).race !== o.race)
     o.order = "bastard";
   const realm = A.realm(o.realm) || A.realm("POL-01"),
     R2 = GD.RACES[o.race],
@@ -1184,7 +1190,7 @@ A.newGame = function (o) {
   }
   const famRec = house ? A.house(house) : null,
     isFx = famRec && famRec.great === false,
-    [fr, mr] = A.parentRaces(o.race);
+    [fr, mr] = A.parentRaces(o.race, o.realm);
   let father = null,
     mother = null;
   const mkParent = (race, sex2, status, hs) => {

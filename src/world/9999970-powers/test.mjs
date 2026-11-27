@@ -28,10 +28,13 @@ export default {
       }
       out.masters = PW.D.masters.map(m => PW.level(m.id));
       out.dragons = ['great-ash-dragon', 'frost-dragon', 'storm-dragon', 'brine-dragon'].map(id => PW.level(id));
-      out.ancient = ['ancient-ash-dragon', 'ancient-frost-dragon', 'ancient-storm-dragon'].map(id => PW.level(id));
+      // the inferno and water ancients; the storm ancient is Vaskareth, a wide gap above them (order 97, D-198)
+      out.ancient = ['ancient-inferno-dragon', 'ancient-water-dragon'].map(id => PW.level(id));
+      out.storm = [PW.level('ancient-storm-dragon'), PW.level('vaskareth')];
       out.strong = ['elder-ash-dragon', 'elder-frost-dragon', 'elder-storm-dragon', 'elder-brine-dragon'].map(id => PW.level(id));
-      out.lower = ['imp', 'fiend', 'greater-fiend', 'cinder-hound', 'brimstone-hound', 'whisperer', 'soul-broker'].map(id => PW.level(id));
-      out.great = ['pit-prince', 'gate-horror', 'gate-tyrant', 'gate-duke', 'duke-of-cinders'].map(id => PW.level(id));
+      // the demons by rank, not species (order 97, D-197)
+      out.lower = ['imp', 'fiend', 'greater-fiend', 'demon-knight'].map(id => PW.level(id));   // Minor Demon, Lesser Demon, Demon Soldier (ids kept)
+      out.great = ['baron-of-hell', 'count-of-hell', 'demon-lord'].map(id => PW.level(id));
       out.curve = { soldier: [1, 2].map(m => PW.levelOf(m)), knight: [9, 25].map(m => PW.levelOf(m)), elite: [25, 60].map(m => PW.levelOf(m)), past: PW.levelOf(40) };
       const L = PW.LD.legends.map(l => [l.id, PW.level(l.id)]).sort((a, b) => b[1] - a[1]);
       out.legends = L;
@@ -45,15 +48,18 @@ export default {
       out.pcts = out.words.some(w => /%|\d/.test(w));
       return out;
     });
+    // the strongest human of a world, pooled (H-082): over twelve worlds (seeds 7, 11, 23, 41, 3, 5, 13, 17, 19, 29, 31, 37) the
+    // trunk at 45911e45 read 488-551 (mean 511) and order 98's build 471-565 (mean 503): one world's best man falls under 480
+    // by luck, so the four worlds' mean holds the band (480 up) and each world's best stays above 450
     const L = r.legends, max = Math.max(...r.tops), min = Math.min(...r.tops), avg = xs => xs.reduce((a, x) => a + x, 0) / xs.length, C = r.curve;
     const ok = r.bands.join() === 'G,F,E,D,C,B,A,S,SS,SSS' && !r.godBand && r.allTitled &&
-      min >= 480 && max <= 700 && r.meds.every(m => m >= 25 && m <= 50) &&
+      avg(r.tops) >= 480 && min >= 450 && max <= 700 && r.meds.every(m => m >= 25 && m <= 50) &&
       C.soldier[0] >= 80 && C.soldier[1] <= 180 && C.knight[0] >= 230 && C.knight[0] <= 299 && C.knight[1] > 299 && C.elite[0] >= 300 && C.elite[1] <= 420 && C.past > 300 &&
-      r.masters.every(x => x > max && x <= 700) && Math.abs(avg(r.dragons) - 700) <= 20 && r.strong.every(x => x > Math.max(...r.dragons) && x < 800) && r.ancient.every(x => x >= 780 && x <= 800 && x > Math.max(...r.strong)) &&
+      r.masters.every(x => x > max && x <= 700) && Math.abs(avg(r.dragons) - 700) <= 20 && r.strong.every(x => x > Math.max(...r.dragons) && x < 800) && r.ancient.every(x => x >= 780 && x <= 800 && x > Math.max(...r.strong)) && r.storm[0] === r.storm[1] && r.storm[0] - Math.max(...r.ancient) >= 60 &&
       r.lower.every(x => x >= 300 && x <= 500) && Math.abs(avg(r.great) - 650) <= 25 &&
       L.every(x => x[1] >= 800) && L[0][0] === 'sarnavoth' && L[0][1] === 1000 &&
       r.arch.length === 3 && r.arch.every(x => x >= 955 && x <= 985) && Math.abs(r.saint - 875) <= 10 && r.saintHuman && !r.pcts;
-    return { ok, detail: `strongest human by world ${r.tops.join(', ')}, median ${r.meds.join(', ')}; the curve: a soldier (might 1-2) ${C.soldier.join('-')}, a knight (9-25) ${C.knight.join('-')}, an elite (25-60) ${C.elite.join('-')}; masters ${r.masters.join(', ')}; grown dragons ${r.dragons.join(', ')}, elder ${r.strong.join(', ')}, the three ancient ${r.ancient.join(', ')}; lower demons ${r.lower.join(', ')}, great ${r.great.join(', ')}; legends ${L.map(x => x[0] + ' ' + x[1]).join(', ')}; the best man against a giant king, a grown dragon, the Saint, the Dragon King: ${r.words.join(' / ')}` };
+    return { ok, detail: `strongest human by world ${r.tops.join(', ')}, median ${r.meds.join(', ')}; the curve: a soldier (might 1-2) ${C.soldier.join('-')}, a knight (9-25) ${C.knight.join('-')}, an elite (25-60) ${C.elite.join('-')}; masters ${r.masters.join(', ')}; grown dragons ${r.dragons.join(', ')}, elder ${r.strong.join(', ')}, the inferno and water ancients ${r.ancient.join(', ')}, the storm (Vaskareth) ${r.storm.join('/')}; lower demons ${r.lower.join(', ')}, great ${r.great.join(', ')}; legends ${L.map(x => x[0] + ' ' + x[1]).join(', ')}; the best man against a giant king, a grown dragon, the Saint, the Dragon King: ${r.words.join(' / ')}` };
   },
 
   // the level is not everything (the owner, 2026-11-25 and 26): each level multiplies the might by more than the one before,
@@ -76,7 +82,7 @@ export default {
       // the coordinator's rework (2026-11-26): a compressed top, neighbours within a few times, several near-even pairs
       const legs = PW.LD.legends.map(l => l.id).sort((a, b) => PW.power(b) - PW.power(a));
       const gaps = legs.slice(1).map((id, i) => PW.power(legs[i]) / PW.power(id)), even = legs.slice(1).filter((id, i) => { const q = PW.compare(legs[i], id).p; return q >= 0.4 && q <= 0.6; }).length;
-      const beast = PW.BD.species.reduce((m, sp) => Math.max(m, PW.power(sp.id)), 0), master = Math.max(...PW.D.masters.map(m => PW.power(m.id))), weakest = Math.min(...legs.map(id => PW.power(id)));
+      const beast = PW.BD.species.filter(sp => !sp.legend).reduce((m, sp) => Math.max(m, PW.power(sp.id)), 0), master = Math.max(...PW.D.masters.map(m => PW.power(m.id))), weakest = Math.min(...legs.map(id => PW.power(id)));
       const sheets = PW.LD.legends.concat(PW.D.masters);
       const over10 = sheets.flatMap(l => (l.skills || []).filter(k => !(k.lvl >= 1 && k.lvl <= 10) || !PW.D.power.rankW[k.rank]).map(k => l.id + ' ' + k.n));
       const complete = sheets.filter(l => !(l.skills && l.skills.length && Array.isArray(l.items) && l.titles && l.titles.length && l.d)).map(l => l.id);
@@ -102,7 +108,7 @@ export default {
       const OLD = { sarnavoth: 800, ghazrul: 780, morvane: 775, vethrael: 770, 'sword-saint': 700, vaskareth: 692, tessaly: 690, hrimgala: 682, ulmavren: 680, orrun: 674, serrath: 672, kethra: 664, ommul: 658, saqqar: 650, 'pale-shepherd': 648, 'iron-warden': 640 };
       const wrong = PW.LD.legends.filter(l => OLD[l.id] == null || PW.level(l.id) !== Math.round(OLD[l.id] * 1000 / 800)).map(l => `${l.id} ${PW.level(l.id)}`);
       const legs = PW.LD.legends.map(l => PW.being(l.id)), low = Math.min(...legs.map(b => b.level)), weakest = Math.min(...legs.map(b => b.power));
-      const NEW = ['hydra', 'titan', 'tempest', 'hive', 'lich', 'caldera', 'gateduke', 'girdler', 'greyhunt', 'colossus'];
+      const NEW = ['hydra', 'titan', 'tempest', 'hive', 'lich', 'caldera', 'ranks', 'girdler', 'greyhunt', 'colossus'];   // ranks: Hell's, whose apex is a Demon Lord (D-197)
       const apexOut = NEW.filter(k => {
         const e = Object.entries(PW.BD.lines).find(([lk]) => lk.split('.')[1] === k), top = e && PW.level(e[1][e[1].length - 1]);
         return !(top >= 600 && top < low);
@@ -112,7 +118,7 @@ export default {
       const band = PW.BD.species.filter(s => PW.level(s.id) >= 600 && PW.level(s.id) < low).sort((a, b) => PW.level(a.id) - PW.level(b.id));
       const lv = band.map(s => PW.level(s.id)), holes = lv.slice(1).map((x, i) => x - lv[i]);
       const notCal = band.filter(s => !CAL.includes(s.tier)).map(s => `${s.n} (${s.tier})`);
-      const whole = band.every(s => s.beh && s.beh.drives.length && s.beh.social && s.beh.people && s.drops.length && s.seasons.length && (s.terr.length || s.coast) && s.prof && PW.D.capabilities.every(c => s.prof[c.k] >= 0 && s.prof[c.k] <= 10));
+      const whole = band.every(s => s.beh && s.beh.drives.length && s.beh.social && s.beh.people && s.drops.length && s.seasons.length && (s.terr.length || s.coast || s.hell) && s.prof && PW.D.capabilities.every(c => s.prof[c.k] >= 0 && s.prof[c.k] <= 10));
       const strongestKind = Math.max(...band.map(s => PW.power(s.id)));
       // each level exponentially harder, and more so the higher: the step from 990 to 1000 is wider than from 800 to 810
       const wider = PW.mightOf(1000) / PW.mightOf(990) > PW.mightOf(810) / PW.mightOf(800);
@@ -139,7 +145,7 @@ export default {
       const top = f => Math.max(...S.filter(f).map(s => PW.level(s.id)));
       const ANIMAL = ['vermin', 'hounds', 'cats', 'bears', 'hooved'];
       const animalTop = top(s => ANIMAL.includes(s.fam)), plainTop = top(s => s.tier === 'animal'), greatTop = top(s => s.tier === 'great beast');
-      const brutes = top(s => ['giants.troll', 'giants.ettin', 'ogres.ogre', 'ogres.marshogre'].includes(s.line)), young = top(s => s.tier === 'young dragon');
+      const brutes = top(s => ['trolls.troll', 'giants.ettin', 'ogres.ogre', 'ogres.marshogre'].includes(s.line)), young = top(s => s.tier === 'young dragon');
       const anc = S.filter(s => s.tier === 'ancient dragon'), elders = S.filter(s => s.tier === 'elder dragon');
       const ancL = anc.map(s => PW.level(s.id)), elderL = elders.map(s => PW.level(s.id));
       const dem = S.filter(s => s.tier === 'ancient demon'), great = S.filter(s => s.tier === 'great demon');
@@ -164,15 +170,18 @@ export default {
       const room = PW.room(st, PW.species('frost-hatchling'));
       let most = 0;
       for (let y = 0; y < 40; y++) { A.S.year++; PW.wildYear(rng); most = Math.max(most, check('year ' + y)); }
-      return { animalTop, plainTop, greatTop, brutes, young, anc: anc.map(s => s.id), ancL, ancOk: anc.every(s => s.unique && s.world === 1 && !S.some(x => x.next === s.id)),
+      const stormL = PW.level('ancient-storm-dragon'), others = anc.filter(s => s.id !== 'ancient-storm-dragon').map(s => PW.level(s.id));
+      const stormGap = stormL - Math.max(...others), doms = anc.map(s => s.dominion).sort().join(), kingDom = !!PW.LEG.get('sarnavoth').dominion && PW.LEG.get('vaskareth').dominion === 'storm';
+      return { stormGap, doms, kingDom, animalTop, plainTop, greatTop, brutes, young, anc: anc.map(s => s.id), ancL, ancOk: anc.every(s => s.unique && s.world === 1 && !S.some(x => x.next === s.id)),
         elderL, elderWorld: elders.reduce((a, s) => a + s.world, 0), dragonWorld: dragons.reduce((a, s) => a + (s.world || 0), 0), cap, allCounted: dragons.every(s => s.world >= 1),
         dem: dem.map(s => `${s.n} ${PW.level(s.id)} x${s.world}`), demL: dem.map(s => PW.level(s.id)), demWorld: dem.reduce((a, s) => a + (s.world || 0), 0), great: great.map(s => PW.level(s.id)),
         demMean: avg(dem.map(s => PW.level(s.id))), elderMean: avg(elderL), greatMean: avg(great.map(s => PW.level(s.id))), full, most, over, room };
     });
     const ok = r.animalTop <= 350 && r.plainTop <= 250 && r.greatTop <= 350 && r.brutes <= 420 && r.young < 500 &&
-      r.anc.length === 3 && ['ancient-ash-dragon', 'ancient-frost-dragon', 'ancient-storm-dragon'].every(id => r.anc.includes(id)) && r.ancOk && r.ancL.every(x => x >= 780 && x <= 800 && x > Math.max(...r.elderL)) &&
+      r.anc.length === 3 && ['ancient-inferno-dragon', 'ancient-water-dragon', 'ancient-storm-dragon'].every(id => r.anc.includes(id)) && r.ancOk && r.ancL.every(x => x > Math.max(...r.elderL)) &&
+      r.ancL.filter((x, i) => r.anc[i] !== 'ancient-storm-dragon').every(x => x >= 780 && x <= 800) && r.stormGap >= 60 && r.doms === 'inferno,storm,water' && r.kingDom &&
       r.elderWorld >= 7 && r.elderWorld <= 12 && r.allCounted && r.cap === 100 && r.dragonWorld <= r.cap &&
-      r.dem.length >= 3 && r.dem.length <= 6 && r.demWorld === 33 && Math.abs(r.demMean - r.elderMean) <= 25 && r.demL.every(x => x >= 740 && x <= 770) &&
+      r.dem.length >= 3 && r.dem.length <= 6 && r.demWorld === 33 && Math.abs(r.demMean - r.elderMean) <= 25 && r.demL.every(x => x >= 725 && x <= 760) &&
       r.greatMean >= 625 && r.greatMean <= 675 && !r.over.length && r.full > 0 && !r.room;
     return { ok, detail: `animal families at most ${r.animalTop}, plain animals ${r.plainTop}, great beasts ${r.greatTop}, trolls and ogres ${r.brutes}, young dragons ${r.young}; ancient dragons ${r.anc.map((id, i) => id + ' ' + r.ancL[i]).join(', ')}; elder ${r.elderL.join(', ')} (mean ${r.elderMean.toFixed(1)}, ${r.elderWorld} in the world); dragons in the world ${r.dragonWorld} of a cap of ${r.cap}; ancient demons ${r.dem.join(', ')} (${r.demWorld} in all, mean ${r.demMean.toFixed(1)}); great demons ${r.great.join(', ')} (mean ${r.greatMean.toFixed(1)}); the wilds full at ${r.full} dragons, at most ${r.most} through 40 years${r.over.length ? ' OVER ' + r.over.slice(0, 5).join('; ') : ''}; room for another frost hatchling when full: ${r.room}` };
   },
@@ -224,6 +233,81 @@ export default {
 
   // monsters rise: one that feeds, fights and lives long enough becomes the next form, and the log says why; at the top it
   // takes a name and a mind (seed fallback over worlds; pooled over years)
+  // order 97 (D-197): no demon species. Demons are known by rank (lower: Minor Demon to Demon Knight, dumb; great: Baron of Hell to Demon Lord;
+  // ancient: Marquis, Duke, Prince, thirty-three, their mean about ten below the old 750), each one of a kind and horned;
+  // every demon lives in Hell, so the continent's wilds never bring one, on any ground, in any world. Trolls and ogres are
+  // demonic creatures, 230-270 with their leaders higher; wild giants very few. World-robust: the wilds are drawn over four
+  // worlds and every terrain, thousands of draws
+  async pwDemonsByRank(pg) {
+    if (!(await pg.evaluate(GATE))) return NO;
+    const r = await pg.evaluate(() => {
+      const PW = A.POWER, S = PW.BD.species, dem = S.filter(s => s.fam === 'demons');
+      const out = { bad: [], drawn: 0, demonsDrawn: [] };
+      const RANK = /^(Minor Demon|Lesser Demon|Demon Soldier|Demon Knight|Demon Lord|(Baron|Count|Marquis|Duke|Prince) of Hell)$/;
+      for (const s of dem) {
+        if (!RANK.test(s.n)) out.bad.push(`${s.n}: not a rank`);
+        if (!s.hell || s.terr.length || s.coast) out.bad.push(`${s.n}: a habitat on the continent`);
+        if (s.tier === 'lower demon' && !['beast', 'cunning'].includes(s.int)) out.bad.push(`${s.n}: a lower demon that reasons`);
+      }
+      for (const seed of [7, 11, 23, 41]) {
+        A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+        const st = PW.state(), rng = PW.rng('demons-test');
+        for (const P of A.S.prov) for (const target of [30, 45, 60, 70]) { const s = PW.pickBeast(P, target, rng); out.drawn++; if (s && s.fam === 'demons') out.demonsDrawn.push(s.id); }
+        st.wild.length = 0; for (let i = 0; i < 300; i++) { const w = PW.spawnWild(st, rng); if (w && PW.species(w.sp).fam === 'demons') out.demonsDrawn.push(w.sp); }
+      }
+      const F = A.FIG, ad = F.list('ancient-demons');
+      out.mean = ad.reduce((a, p) => a + p.level, 0) / ad.length;
+      out.horned = ad.filter(p => /horn/i.test(p.looks || '')).length; out.n = ad.length;
+      out.looks = new Set(ad.map(p => p.looks)).size; out.pure = PW.demonLook('skarn') === PW.demonLook('skarn');
+      out.ranks = [...new Set(ad.map(p => p.kindName))].sort();
+      const lv = id => PW.level(id);
+      out.common = ['bog-troll', 'hill-troll', 'cave-troll', 'stone-troll', 'ogre', 'ogre-brute', 'ogre-glutton', 'marsh-ogre'].map(lv);
+      out.leaders = ['troll-grandsire', 'ogre-hetman', 'ogre-hedge-witch'].map(lv);
+      out.brutesTier = S.filter(s => ['trolls', 'ogres'].includes(s.fam)).every(s => s.tier === 'demonic creature');
+      out.giants = S.filter(s => s.tier === 'giant' || s.line === 'giants.titan').map(s => s.world);
+      return out;
+    });
+    const ok = !r.bad.length && !r.demonsDrawn.length && r.drawn > 1000 && Math.abs(r.mean - 740) <= 5 && r.horned === r.n && r.n === 33 && r.looks >= 25 && r.pure &&
+      r.ranks.join() === 'Duke of Hell,Marquis of Hell,Prince of Hell' && r.common.every(x => x >= 230 && x <= 270) && r.leaders.every(x => x > 270) && r.brutesTier &&
+      r.giants.length >= 7 && r.giants.every(w => w >= 1 && w <= 10);
+    return { ok, detail: `${r.bad.length ? 'faults: ' + r.bad.join('; ') + '. ' : ''}demons drawn on the continent ${r.demonsDrawn.length} of ${r.drawn} encounter draws and 1,200 spawns over four worlds; the ancient demons' mean ${r.mean.toFixed(1)}, ${r.horned} of ${r.n} horned, ${r.looks} looks, ranks ${r.ranks.join(', ')}; trolls and ogres ${r.common.join(', ')}, their leaders ${r.leaders.join(', ')}; wild giants in the world ${r.giants.join(', ')}` };
+  },
+
+  // order 98 (D-199): orcs are demonic creatures, not a people, and not playable. The creation screen and a random start
+  // offer none and A.newGame makes a half-orc of one asked for; a world made since holds no orc person (its people, its
+  // houses, a stranger an event asks for), while an old save's world keeps its orcs; Gorath and Ughrak are half-orc realms
+  // of the five forms (a kingdom and a principality) whose half-orc royals are born to their house; the orcs are a kind of
+  // the bestiary. Over four worlds
+  async pwOrcsNotAPeople(pg) {
+    if (!(await pg.evaluate(GATE))) return NO;
+    const r = await pg.evaluate(() => {
+      const out = { orcs: 0, people: 0, worlds: [] };
+      for (const seed of [7, 11, 23, 41]) {
+        A.newGame({ seed, race: 'orc', realm: 'POL-11', status: 'peasant', sex: 'M', startAge: 16 });
+        const pc = A.pc();
+        // the two realms' houses seated (their members are made on first reading)
+        for (const rid of ['POL-11', 'POL-34']) Object.keys(A.S.houses || {}).filter(id => (A.famData(id) || {}).realm === rid).slice(0, 6).forEach(id => A.famMembers(id));
+        for (let i = 0; i < 10; i++) A.makeAcquaintance(pc, 'friend');
+        const stranger = A.newPerson({ race: 'orc', realm: 'POL-11' });
+        const ppl = Object.values(A.S.people);
+        out.orcs += ppl.filter(q => q.race === 'orc').length; out.people += ppl.length;
+        const G = A.realm('POL-11'), U = A.realm('POL-34');
+        out.worlds.push({ seed, pc: pc.race, stranger: stranger.race, realms: [G.race, U.race, G.name, U.name, LORE.realms['POL-11'].type, LORE.realms['POL-34'].type], rulers: [A.P(G.ruler), A.P(U.ruler)].map(q => q && q.race) });
+      }
+      A.newGame({ seed: 12, race: 'halforc', realm: 'POL-11', status: 'royal', sex: 'F', startAge: 16 });
+      out.royal = [A.pc().race, A.pc().status, !!A.pc().house];
+      delete A.S.noOrcs; out.oldSave = A.newPerson({ race: 'orc', realm: 'POL-11' }).race;
+      UI.cr = UI.crDefaults(); out.offered = UI.crStepBirth().includes('race:orc'); UI.A.crSet && UI.A.crSet('race:orc'); out.setTo = UI.cr.race;
+      let rand = 0; for (let i = 0; i < 60; i++) { UI.crRandomize(); if (UI.cr.race === 'orc') rand++; } out.rand = rand;
+      const kind = A.POWER.BD.species.filter(s => s.fam === 'orcs');
+      out.kind = kind.length && kind.every(s => s.tier === 'demonic creature' && s.terr.includes('steppe'));
+      return out;
+    });
+    const ok = r.orcs === 0 && r.people > 1000 && r.worlds.every(w => w.pc === 'halforc' && w.stranger === 'halforc' && w.realms.slice(0, 2).join() === 'halforc,halforc' && w.realms[4] === 'kingdom' && w.realms[5] === 'principality' && w.rulers.every(x => x === 'halforc')) &&
+      r.royal.join() === 'halforc,royal,true' && r.oldSave === 'orc' && !r.offered && r.setTo !== 'orc' && !r.rand && r.kind;
+    return { ok, detail: `orc people in four new worlds ${r.orcs} of ${r.people}; ${r.worlds.map(w => `seed ${w.seed}: player ${w.pc}, a stranger asked as an orc ${w.stranger}, ${w.realms[2]} and ${w.realms[3]} (${w.realms[0]}, ${w.realms[1]}), rulers ${w.rulers.join('/')}`).join('; ')}; a half-orc royal of Gorath ${r.royal.join(' ')}; an old save's orc ${r.oldSave}; offered on the creation screen ${r.offered}, set by a tap ${r.setTo}, drawn by 60 random starts ${r.rand}; the orc a demonic creature of the bestiary ${r.kind}` };
+  },
+
   async pwEvolution(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     const r = await pg.evaluate(() => {

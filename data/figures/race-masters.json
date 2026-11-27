@@ -1,6 +1,6 @@
 {
  "about": "The masters of the playable races (order 96, D-193): linked, never copied. Their sheets (level, capabilities, titles, skills, items, story) are data/power.json's masters, which A.POWER reads; this file adds only what a full profile needs that those sheets lack: the class road (data/classes.json, step by step from a first class), the arts readied (names of their own active skills), a temper and traits, goals and grudges A.WHY can read, the home's name and whether it is known, and the secret. Validated by tools/lint-figures.mjs.",
- "category": { "id": "race-masters", "name": "Masters of the Peoples", "group": "realms", "order": 5, "kind": "link", "link": "power.masters", "note": "The strongest of the giants, the dwarves, the elves and the orcs: each the best of a people, and very few on the whole continent stand near them." },
+ "category": { "id": "race-masters", "name": "Masters of the Peoples", "group": "realms", "order": 5, "kind": "link", "link": "power.masters", "note": "The strongest of the giants, the dwarves, the elves and the half-orc clans of Gorath: each the best of a people, and very few on the whole continent stand near them." },
  "figures": [
   {
    "id": "m-giant-king",
@@ -22,7 +22,7 @@
    "temper": { "pride": 0.6, "wrath": 0.2, "caution": 0.7, "patience": 0.9, "honor": 0.8, "greed": 0.4, "warmth": 0.2, "zeal": 0.3, "social": -0.2, "ambition": 0 },
    "traits": ["stubborn", "honest", "patient"],
    "goals": [{ "kind": "duty", "w": 1.8, "why": "that the Ninth Gate of Irondeep is never opened from below again" }],
-   "grudges": [{ "at": "vaskareth", "kind": "legend", "w": 1.0, "why": "the Ash-Crowned has burned three dwarf halls for one stolen scale" }],
+   "grudges": [{ "at": "vaskareth", "kind": "legend", "w": 1.0, "why": "the Storm-Crowned has burned three dwarf halls for one stolen scale" }],
    "home": { "name": "Irondeep", "domain": "the dwarf holds", "known": true },
    "fame": "known",
    "story": ["The warden of the Ninth Gate of Irondeep, who held it alone for a night and a day when something came up out of the deep roads."],
@@ -35,7 +35,7 @@
    "temper": { "pride": 0.5, "wrath": -0.3, "caution": 0.4, "patience": 1, "honor": 0.5, "greed": -0.4, "warmth": 0, "zeal": 0, "social": -0.4, "ambition": -0.2 },
    "traits": ["patient", "calm", "proud"],
    "goals": [{ "kind": "want", "w": 1.4, "why": "one more bout with the Sword Saint before one of them dies" }],
-   "grudges": [{ "at": "vethrael", "kind": "legend", "w": 1.0, "why": "the Archdemon sang at his sister's funeral and took her voice" }],
+   "grudges": [{ "at": "vethrael", "kind": "legend", "w": 1.0, "why": "the Primordial Blanc came to his sister's funeral, and the body was bled white" }],
    "home": { "name": "Evenglade", "domain": "the Evenwood", "known": true },
    "fame": "known",
    "story": ["The eldest blade of the elves of Evenglade, who has never once hurried a cut in nine hundred years. He fought the Sword Saint once, when both were younger, and lost by a hair."],
@@ -51,8 +51,8 @@
    "grudges": [{ "at": "m-giant-king", "kind": "figure", "w": 0.7, "why": "the giants laughed at his father's embassy" }],
    "home": { "name": "Urgol", "domain": "the Grass Sea", "known": true },
    "fame": "known",
-   "story": ["The Skull-Khan of Urgol, who ate at the Iron Feast and rose from it khan of nine clans. He wears the skulls of the eight khans who did not."],
-   "secret": { "story": ["One of the eight is still alive, in a pit under Urgol. The khan visits him on feast days and asks him how it feels to lose."] }
+   "story": ["The Champion of Urgol, who ate at the Iron Feast and rose from it the champion of the nine clans of Gorath; he fights the King's fights, and wears the skulls of the eight champions who did not."],
+   "secret": { "story": ["One of the eight is still alive, in a pit under Urgol. The champion visits him on feast days and asks him how it feels to lose."] }
   }
  ]
 }

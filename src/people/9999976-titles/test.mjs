@@ -447,7 +447,7 @@ export default {
     // still counts), their sets mythical and every other legend's legendary
     const mythOk = r.mythHolders.length === 5 && r.mythHolders.includes('sword-saint') && r.mythHolders.every(id => s[id] === 'mythical') &&
       Object.entries(s).every(([id, v]) => (r.mythHolders.includes(id) ? v === 'mythical' : v === 'legendary')) && r.mythTitles.length >= 4 && r.mythTitles.length <= 8;
-    const ok = mythOk && r.demons.length >= 30 && r.demons.every(v => v === 'legendary') && r.dragons.length === 3 && r.dragons.every(v => v === 'legendary') && r.ancientOwn.every(n => n >= 1) &&
+    const ok = mythOk && r.demons.length >= 30 && r.demons.every(v => v === 'legendary') && r.dragons.length === 2 && r.dragons.every(v => v === 'legendary') && s.vaskareth === 'legendary' /* D-198: the storm ancient is Vaskareth, a legend sheet; the two others stay figures */ && r.ancientOwn.every(n => n >= 1) &&
       r.moved >= 4 && a.h === 'blooded,dragon-slayer' && a.b === 'dragon-slayer' && a.u === 'dragon-slayer' && a.first === 'dragon-slayer' && a.again === 0 && r.name === 'Dragon Slayer' && !r.old;
     return { ok, detail: `mythical titles ${r.mythTitles.join(', ')} (held by ${r.mythHolders.join(', ')}); arts: ${Object.entries(s).map(([k, v]) => k + ' ' + v).join(', ')}; ancient demons ${[...new Set(r.demons)].join('/')} (${r.demons.length}), ancient dragons ${[...new Set(r.dragons)].join('/')}, each with a legendary title of its own ${r.ancientOwn.join(',')}; ` +
       `the rename: ${r.moved} moved, then ${JSON.stringify(a)}; ${r.name}, the old id gone ${!r.old}` };

@@ -32,7 +32,11 @@ export default {
       if (out.lieges.some(n => n < 8) || out.lieges.reduce((a, b) => a + b, 0) !== 33) bad.push('lieges ' + out.lieges);
       const full = p => ['name', 'level', 'skills', 'arts', 'titles', 'items', 'temper', 'traits', 'goals', 'grudges', 'home', 'story', 'secret'].every(k => p[k] != null) &&
         p.skills.length >= 2 && p.titles.length >= 1 && p.items.length >= 1 && p.goals.length >= 1 && p.grudges.length >= 1 && p.story.length >= 1 && p.secret.story.length >= 1 && p.home.name;
-      for (const p of dem.concat(anc, eld)) {
+      // the storm ancient is the legend Vaskareth (D-198): her sheet is a legend's, listed with the two fixed ancients
+      const ancFix = anc.filter(p => p.type === 'being');
+      if (anc.filter(p => p.type === 'legend').map(p => p.id).join() !== 'vaskareth') bad.push('the storm ancient is not Vaskareth');
+      if (!anc.every(p => p.dominion)) bad.push('an ancient dragon without a dominion');
+      for (const p of dem.concat(ancFix, eld)) {
         if (!full(p)) bad.push('not full: ' + p.id);
         for (const t of p.titles) { const T = TDEF(t.id); if (!T || !T.n) bad.push(p.id + ' title ' + t.id); }
         for (const k of p.skills) { if (!RANKS.includes(k.rank) || !(k.lvl >= 1 && k.lvl <= 10)) bad.push(p.id + ' skill ' + k.n); if (k.id && !IX.BY[k.id]) bad.push(p.id + ' no skill ' + k.id); }
@@ -44,7 +48,7 @@ export default {
       }
       for (const t of Object.keys(A.DATA['figures/vocab'].traits)) if (!GD.TRAITS[A.DATA['figures/vocab'].traits[t]]) bad.push('trait ' + A.DATA['figures/vocab'].traits[t]);
       const pw = ps => ps.map(p => PW.power(p.id));
-      const legMin = Math.min(...PW.LD.legends.map(l => PW.power(l.id))), figMax = Math.max(...pw(dem.concat(anc, eld)));
+      const legMin = Math.min(...PW.LD.legends.map(l => PW.power(l.id))), figMax = Math.max(...pw(dem.concat(ancFix, eld)));
       out.power = { legMin: Math.log10(legMin), figMax: Math.log10(figMax), anc: Math.log10(avg(pw(anc))), eld: Math.log10(avg(pw(eld))), dem: Math.log10(avg(pw(dem))), mas: Math.log10(Math.max(...PW.D.masters.map(m => PW.power(m.id)))) };
       if (!(figMax < legMin)) bad.push('a figure above a legend');
       if (!(Math.min(...pw(anc)) > avg(pw(eld)))) bad.push('the ancient dragons not above the elders');
@@ -110,9 +114,9 @@ export default {
       pc.flags.fig_skarn = A.S.year;
       const after = F.profileHtml(pc, sk);
       delete pc.flags.fig_skarn;
-      const st = A.POWER.state ? A.POWER.state() : A.S.pw; st.metLeg = st.metLeg || {}; st.metLeg.galeheart = A.S.year;
-      const met = F.knows(pc, F.profile('galeheart'));
-      delete st.metLeg.galeheart;
+      const st = A.POWER.state ? A.POWER.state() : A.S.pw; st.metLeg = st.metLeg || {}; st.metLeg.rimewing = A.S.year;
+      const met = F.knows(pc, F.profile('rimewing'));
+      delete st.metLeg.rimewing;
       const wh = F.profile('vesh');
       out.control = { hidden: !before.includes(UI.esc(sk.secret.story[0])), shown: after.includes(UI.esc(sk.secret.story[0])), met: met.arts && met.secret, whisperedHidden: !F.knows(pc, wh).listed };
       return { leaks: leaks.slice(0, 10), out };

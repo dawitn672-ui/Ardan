@@ -1,10 +1,925 @@
 {
  "version": 1,
  "records": {
+  "Decision:001": {
+   "pageId": "425d84dd-d9e3-81eb-9462-f08134f6ba3d",
+   "hash": "a12de06266bb51c6",
+   "name": "D-001 · Repo layout: features live with their system"
+  },
+  "Decision:002": {
+   "pageId": "425d84dd-d9e3-81dc-b7f6-f62c1b6f6218",
+   "hash": "3e49f13b94fa4b4e",
+   "name": "D-002 · Events stay as code, next to their system"
+  },
+  "Decision:003": {
+   "pageId": "425d84dd-d9e3-8107-ae6d-fae34311a5cf",
+   "hash": "6f3c63b8a314bb47",
+   "name": "D-003 · The v2 engine modules live in their systems"
+  },
+  "Decision:004": {
+   "pageId": "425d84dd-d9e3-8166-883d-e2a2a7099862",
+   "hash": "63ee7279e965d478",
+   "name": "D-004 · Measurement harnesses are tools"
+  },
+  "Decision:005": {
+   "pageId": "425d84dd-d9e3-81b0-9a30-c275ac81b953",
+   "hash": "6ec2ac27b2aa2fa5",
+   "name": "D-005 · Working branch and milestones"
+  },
+  "Decision:006": {
+   "pageId": "425d84dd-d9e3-81c8-9926-e45b5fa7a5ac",
+   "hash": "583238c8721345d9",
+   "name": "D-006 · Tests use the container's Playwright"
+  },
+  "Decision:007": {
+   "pageId": "425d84dd-d9e3-8134-9af1-d92ced4874b4",
+   "hash": "8f9e1f75bb0433da",
+   "name": "D-007 · Descriptions open on click"
+  },
+  "Decision:008": {
+   "pageId": "425d84dd-d9e3-81d7-87fa-f85264091e8d",
+   "hash": "5216f8457ee5e5f1",
+   "name": "D-008 · Time moves by Next month or Next year"
+  },
+  "Decision:009": {
+   "pageId": "425d84dd-d9e3-81dd-a834-c116ae3cf41d",
+   "hash": "ef64a047d3e3b959",
+   "name": "D-009 · Which model does which part"
+  },
+  "Decision:010": {
+   "pageId": "425d84dd-d9e3-813d-a686-eb7de8e8e728",
+   "hash": "051430aab3ff6669",
+   "name": "D-010 · Token efficiency first; model and effort at the sess"
+  },
+  "Decision:011": {
+   "pageId": "425d84dd-d9e3-8151-9e3d-ead48547182f",
+   "hash": "91ade97552a8d7da",
+   "name": "D-011 · ~~Art register: detailed anime~~ (superseded by D-01"
+  },
+  "Decision:012": {
+   "pageId": "425d84dd-d9e3-813d-b199-c4de33bf14e4",
+   "hash": "31fea091369d3f14",
+   "name": "D-012 · The crown picks the Marshal; feudal armies (Marshal "
+  },
+  "Decision:013": {
+   "pageId": "425d84dd-d9e3-8158-818b-ffb36b10bbc4",
+   "hash": "f3e38a0eaeece697",
+   "name": "D-013 · One language, many cultures"
+  },
+  "Decision:014": {
+   "pageId": "425d84dd-d9e3-8145-977b-c4b62a18c4db",
+   "hash": "757e20281f36d0e2",
+   "name": "D-014 · The open critique decisions the owner left to the pl"
+  },
+  "Decision:015": {
+   "pageId": "425d84dd-d9e3-81a5-b752-e9141158f052",
+   "hash": "5d523b9326d97a6f",
+   "name": "D-015 · Characters: as realistic as possible; anime optional"
+  },
+  "Decision:016": {
+   "pageId": "425d84dd-d9e3-8118-bfc1-d703004e27bd",
+   "hash": "6972ac63e230fe9f",
+   "name": "D-016 · The map: inked, rich in detail; war as a creeping bu"
+  },
+  "Decision:017": {
+   "pageId": "425d84dd-d9e3-81ea-a22b-c988b3266bca",
+   "hash": "8f334b5ec5dde9a5",
+   "name": "D-017 · The Marshal: usually vacant; a General leads day to "
+  },
+  "Decision:018": {
+   "pageId": "425d84dd-d9e3-81ae-85c5-de7b773ce83d",
+   "hash": "cd7f142a1343d346",
+   "name": "D-018 · X1 and X5, the long-term call"
+  },
+  "Decision:019": {
+   "pageId": "425d84dd-d9e3-817e-ae8a-d28d6b452d6a",
+   "hash": "a93b1d637e74cb3a",
+   "name": "D-019 · Time: no initiative cap; only notable things stop ti"
+  },
+  "Decision:020": {
+   "pageId": "425d84dd-d9e3-813a-b230-c7d6ead417ea",
+   "hash": "244c90e161e43212",
+   "name": "D-020 · Characters: the owner's detailed answers"
+  },
+  "Decision:021": {
+   "pageId": "425d84dd-d9e3-8196-9fb7-c278d477e96c",
+   "hash": "16dec76b7ca23b68",
+   "name": "D-021 · What the coherency net counts, and the day-0 fixes"
+  },
+  "Decision:022": {
+   "pageId": "425d84dd-d9e3-8145-acb5-ddde95d5d806",
+   "hash": "dc9479d7820bb33b",
+   "name": "D-022 · Character demos built on MakeHuman's CC0 base mesh"
+  },
+  "Decision:023": {
+   "pageId": "425d84dd-d9e3-8106-9cd9-c51e831c8d40",
+   "hash": "df72e4fa0a9034dc",
+   "name": "D-023 · The press gate reports, and does not block, until th"
+  },
+  "Decision:024": {
+   "pageId": "425d84dd-d9e3-8100-9f30-fdf78c3e9497",
+   "hash": "63937e3586879865",
+   "name": "D-024 · Characters: a detailed 2D illustrated style"
+  },
+  "Decision:025": {
+   "pageId": "425d84dd-d9e3-8131-bedf-c3d844fe4965",
+   "hash": "b7a4be046970694b",
+   "name": "D-025 · The 2D character plan's own calls"
+  },
+  "Decision:026": {
+   "pageId": "425d84dd-d9e3-81d6-8da8-e8ee9ad20551",
+   "hash": "91215f22453127f5",
+   "name": "D-026 · B6: how Next month and Next year work"
+  },
+  "Decision:027": {
+   "pageId": "425d84dd-d9e3-8159-9845-c042dc08ea25",
+   "hash": "5c598924c93275b3",
+   "name": "D-027 · Two bot-life test bars follow the no-pool game"
+  },
+  "Decision:028": {
+   "pageId": "425d84dd-d9e3-81fe-b38e-f08d902925f8",
+   "hash": "190318f8df17f663",
+   "name": "D-028 · X1: the release is readable source; the patch layer "
+  },
+  "Decision:029": {
+   "pageId": "425d84dd-d9e3-813b-8143-ee2525a6745d",
+   "hash": "33b6a988c42354bb",
+   "name": "D-029 · Character art: tone-led, after the look of Pick Me U"
+  },
+  "Decision:030": {
+   "pageId": "425d84dd-d9e3-8148-9cc1-ec5510aad966",
+   "hash": "cc32db54cbe951a4",
+   "name": "D-030 · Where the owner's new orders 27-30 go in the work or"
+  },
+  "Decision:031": {
+   "pageId": "425d84dd-d9e3-8185-83ce-d1a77f5c9815",
+   "hash": "9542b3485df15265",
+   "name": "D-031 · A2 stage 1: one registry of posts; the Marshal's sea"
+  },
+  "Decision:032": {
+   "pageId": "425d84dd-d9e3-8198-8eb1-c3bc1afe5ad3",
+   "hash": "86b31d918cf01cc9",
+   "name": "D-032 · E1/E2: the owner's answers to the design's eight cho"
+  },
+  "Decision:033": {
+   "pageId": "425d84dd-d9e3-8105-afbf-dbc0052d9a57",
+   "hash": "07bdaf499cea91f4",
+   "name": "D-033 · B5 part 1: the open page gets the width; budgets are"
+  },
+  "Decision:034": {
+   "pageId": "425d84dd-d9e3-818b-aea8-c291fbd5346e",
+   "hash": "2f7154a2e1b363be",
+   "name": "D-034 · Growth in depth: more stats, thousands of skills, hu"
+  },
+  "Decision:035": {
+   "pageId": "425d84dd-d9e3-8154-99ec-f6d85ae587a9",
+   "hash": "9bbc98dd25a5be50",
+   "name": "D-035 · Gate 2 approved: code-drawn characters, refined; a P"
+  },
+  "Decision:036": {
+   "pageId": "425d84dd-d9e3-815c-ab77-c2f83da09ad2",
+   "hash": "16202e531efc1214",
+   "name": "D-036 · C8b: how the figure library lives in the game"
+  },
+  "Decision:037": {
+   "pageId": "425d84dd-d9e3-81bd-b6a8-f8481b3b091a",
+   "hash": "74b5ed0a84037dbf",
+   "name": "D-037 · v3 is the living world; the repo's order on GitHub"
+  },
+  "Decision:038": {
+   "pageId": "425d84dd-d9e3-8137-8a4b-f5d941763654",
+   "hash": "5d19c38da42ebf4d",
+   "name": "D-038 · The Profile page lives first in the You place"
+  },
+  "Decision:039": {
+   "pageId": "425d84dd-d9e3-813b-ae09-ed31fea29100",
+   "hash": "8864e29fb8213c53",
+   "name": "D-039 · Owner order 34: arts, talent, real bodies, a cleaner"
+  },
+  "Decision:040": {
+   "pageId": "425d84dd-d9e3-8172-a11a-fa084cdaf387",
+   "hash": "e09fafca8315dda4",
+   "name": "D-040 · C9: bodies that make sense, a skill's baseline, long"
+  },
+  "Decision:041": {
+   "pageId": "425d84dd-d9e3-810c-adac-ca35f89d7dba",
+   "hash": "03a9beba70956298",
+   "name": "D-041 · The Profile page is clean; the past lives in Records"
+  },
+  "Decision:042": {
+   "pageId": "425d84dd-d9e3-8179-98a1-f7f121bff84b",
+   "hash": "b0fb9eb994a8467f",
+   "name": "D-042 · Baselines, then any build"
+  },
+  "Decision:043": {
+   "pageId": "425d84dd-d9e3-8108-9ffc-c761f93e0e5d",
+   "hash": "1d00b31c77bce299",
+   "name": "D-043 · Owner order 36: combat ranks, talents at birth, arts"
+  },
+  "Decision:044": {
+   "pageId": "425d84dd-d9e3-812e-a7fb-f3ff4e1aa8c7",
+   "hash": "296200dbc433402d",
+   "name": "D-044 · Talents by budget, no count limit"
+  },
+  "Decision:045": {
+   "pageId": "425d84dd-d9e3-81a7-804d-cdd171fd53ad",
+   "hash": "1a6520f8805d3596",
+   "name": "D-045 · Legendaries look like the owner's example and live i"
+  },
+  "Decision:046": {
+   "pageId": "425d84dd-d9e3-81f1-8ca8-df1986eb3d78",
+   "hash": "0f9a8651010782a3",
+   "name": "D-046 · Stats, \"Swordsmanship\", one art at a time (owner ord"
+  },
+  "Decision:047": {
+   "pageId": "425d84dd-d9e3-8166-b442-e0ba12879e32",
+   "hash": "d0a9714d4dc30656",
+   "name": "D-047 · War is a visual simulation with a close tactical vie"
+  },
+  "Decision:048": {
+   "pageId": "425d84dd-d9e3-814f-9a1d-d814a9f6f519",
+   "hash": "339c3ef4f0657355",
+   "name": "D-048 · Markets where players are, 100+ goods, balance with "
+  },
+  "Decision:049": {
+   "pageId": "425d84dd-d9e3-8106-8efa-ea6dbce78f85",
+   "hash": "ca4a4dfa5f0c7921",
+   "name": "D-049 · The Marshal's seat is optional"
+  },
+  "Decision:050": {
+   "pageId": "425d84dd-d9e3-811c-bd4a-c884dbe696da",
+   "hash": "74fca228efb7a49e",
+   "name": "D-050 · Names worth saying; ordinary arms with craft; a new "
+  },
+  "Decision:051": {
+   "pageId": "425d84dd-d9e3-8152-8feb-db88fe328275",
+   "hash": "e9af16d43881bf1f",
+   "name": "D-051 · X3: how the initiative words, the calendar and the u"
+  },
+  "Decision:052": {
+   "pageId": "425d84dd-d9e3-816d-b705-ee2df30b4ba5",
+   "hash": "5f75de2a17fb8dfa",
+   "name": "D-052 · W0 and D10: no war score, no army templates; war scr"
+  },
+  "Decision:053": {
+   "pageId": "425d84dd-d9e3-81e0-b36c-c6d41ff8b66b",
+   "hash": "ffda9e21e886d2aa",
+   "name": "D-053 · A2 stage 2: an optional Marshal; eleven kinds of pos"
+  },
+  "Decision:054": {
+   "pageId": "425d84dd-d9e3-81df-8c1c-f8ed46c6bc40",
+   "hash": "c48cd3dd07580186",
+   "name": "D-054 · X7 part 1: phone speed at load; a worker builds the "
+  },
+  "Decision:055": {
+   "pageId": "425d84dd-d9e3-812e-96ff-ec84f641c0d2",
+   "hash": "c97224e5ca85afb3",
+   "name": "D-055 · B5 part 2: one `UI.scope(pc)`, hidden is not refused"
+  },
+  "Decision:056": {
+   "pageId": "425d84dd-d9e3-81e9-9c4b-d4bc69fb2fa2",
+   "hash": "4c2ada18dd9c4f54",
+   "name": "D-056 · X2: named stages for the seven hot functions; a mani"
+  },
+  "Decision:057": {
+   "pageId": "425d84dd-d9e3-8152-9ee1-c640ed2b7588",
+   "hash": "e96223c42068745f",
+   "name": "D-057 · C6: the tree knows your kin, relationships know whom"
+  },
+  "Decision:058": {
+   "pageId": "425d84dd-d9e3-81fe-b8b1-d05fb859b53c",
+   "hash": "c97c123d9aa18759",
+   "name": "D-058 · C7: names are data, flavour is a weighting, people c"
+  },
+  "Decision:059": {
+   "pageId": "425d84dd-d9e3-81c6-8642-d35b9457dc38",
+   "hash": "bf635fd1c779f114",
+   "name": "D-059 · X3 part 2: a card is held to the life it is dealt to"
+  },
+  "Decision:060": {
+   "pageId": "425d84dd-d9e3-81a7-9659-ef0ee68a04bd",
+   "hash": "efa7dd2c6a098f01",
+   "name": "D-060 · C8c: dress is by station, people, occasion and place"
+  },
+  "Decision:061": {
+   "pageId": "425d84dd-d9e3-819d-8382-c312e92e817c",
+   "hash": "dca3aa8b2eafab85",
+   "name": "D-061 · D9: the ground the game can read; roads in two ranks"
+  },
+  "Decision:062": {
+   "pageId": "425d84dd-d9e3-81d3-9b5a-e4e439b90c0f",
+   "hash": "1fd8ba19c6b6b9f8",
+   "name": "D-062 · Order 54: nothing without reason; the owner's war an"
+  },
+  "Decision:063": {
+   "pageId": "425d84dd-d9e3-812c-9f5b-e644151cfc42",
+   "hash": "0b6958a7f24d02f7",
+   "name": "D-063 · T1: the push check is the quick tier; the long bot-l"
+  },
+  "Decision:064": {
+   "pageId": "425d84dd-d9e3-81ac-ae05-e530d9b994aa",
+   "hash": "662732c006dacb89",
+   "name": "D-064 · D12a-2: the war design revised with the owner's ten "
+  },
+  "Decision:065": {
+   "pageId": "425d84dd-d9e3-8110-ac86-eeb549e1e8cd",
+   "hash": "70802b426cd0db8c",
+   "name": "D-065 · Order 55: every relationship needs a base"
+  },
+  "Decision:066": {
+   "pageId": "425d84dd-d9e3-814a-9bbb-f30f92af362e",
+   "hash": "c026de743739dfce",
+   "name": "D-066 · W1-1: the war map's division is a host, its commande"
+  },
+  "Decision:067": {
+   "pageId": "425d84dd-d9e3-8149-b095-dd7ffe6b30f2",
+   "hash": "4df59f45a8554b01",
+   "name": "D-067 · G0: the growth standard; trials at Expert and Master"
+  },
+  "Decision:068": {
+   "pageId": "425d84dd-d9e3-813b-aa10-c52850dc08ba",
+   "hash": "7c28df1ef6db9542",
+   "name": "D-068 · C8d gate 1: the manhwa card is a second render layer"
+  },
+  "Decision:069": {
+   "pageId": "425d84dd-d9e3-8174-ae1a-e8b8ce151e4b",
+   "hash": "4f95a63747e3952d",
+   "name": "D-069 · W1-2: minds; one way of deciding, where it lives, ho"
+  },
+  "Decision:070": {
+   "pageId": "425d84dd-d9e3-813d-8ce2-fe9aa1ccaf6e",
+   "hash": "5a0255c92652b1b8",
+   "name": "D-070 · Order 59: growth has no timetable; concepts, grasp, "
+  },
+  "Decision:071": {
+   "pageId": "425d84dd-d9e3-81c4-8381-ffa2648b1908",
+   "hash": "545aa9bba7942d87",
+   "name": "D-071 · Order 62: the route to the App Store is Capacitor 8 "
+  },
+  "Decision:072": {
+   "pageId": "425d84dd-d9e3-8125-b21b-d1e40432be65",
+   "hash": "bbd16eac32caf28d",
+   "name": "D-072 · S1a: proficiencies retired; skills with levels, expe"
+  },
+  "Decision:074": {
+   "pageId": "425d84dd-d9e3-818a-a247-ceecae53b184",
+   "hash": "222a8c64d0873af3",
+   "name": "D-074 · S1b: how the skills design was built, and where the "
+  },
+  "Decision:075": {
+   "pageId": "425d84dd-d9e3-81d9-a166-fe0d346afb3b",
+   "hash": "9806e497998ebe9d",
+   "name": "D-075 · The iPhone build's shape"
+  },
+  "Decision:076": {
+   "pageId": "425d84dd-d9e3-8162-bed3-ce21b9d4f421",
+   "hash": "657a451ac6315e62",
+   "name": "D-076 · The build rules read against the code"
+  },
+  "Decision:077": {
+   "pageId": "425d84dd-d9e3-818d-909e-e154b2cb5545",
+   "hash": "0919e2e959c10f5e",
+   "name": "D-077 · S1b after CI 137: the walls a life met at Advanced V"
+  },
+  "Decision:080": {
+   "pageId": "425d84dd-d9e3-81ce-a6b5-d91f53d7380b",
+   "hash": "b8333dcf8232951b",
+   "name": "D-080 · R2: every relationship needs a base, as a decision o"
+  },
+  "Decision:081": {
+   "pageId": "425d84dd-d9e3-8132-860e-c00fb5aba082",
+   "hash": "2724b13bd9776f3e",
+   "name": "D-081 · W1-3: a command is a reading of the houses; the one "
+  },
+  "Decision:082": {
+   "pageId": "425d84dd-d9e3-816e-b14c-c404a9944e34",
+   "hash": "5abc6e19496513aa",
+   "name": "D-082 · W1-3: the summons, its six answers, the excuse and t"
+  },
+  "Decision:083": {
+   "pageId": "425d84dd-d9e3-8172-8fbf-ef646fe96f6c",
+   "hash": "676354c4094cc465",
+   "name": "D-083 · W1-3: the king's three ways of command are a field o"
+  },
+  "Decision:084": {
+   "pageId": "425d84dd-d9e3-8165-bb7c-e529462493a5",
+   "hash": "616ec3fc64fff4e6",
+   "name": "D-084 · W1-3: the refused summons' ladder; the other three d"
+  },
+  "Decision:085": {
+   "pageId": "425d84dd-d9e3-81ae-81e5-e1ba58af176f",
+   "hash": "c2bb23386845b3b8",
+   "name": "D-085 · W1-3: a lord who rides to the muster is in the war"
+  },
+  "Decision:086": {
+   "pageId": "425d84dd-d9e3-817e-964a-ddfc0974254c",
+   "hash": "5fbb37e67dcbda1f",
+   "name": "D-086 · W1-4: the levy is retired as a word and a field; old"
+  },
+  "Decision:087": {
+   "pageId": "425d84dd-d9e3-8144-8a4b-c056c7fe26e4",
+   "hash": "e124d7859919c2d9",
+   "name": "D-087 · W1-4: three kinds of men, and the roll at one in a h"
+  },
+  "Decision:088": {
+   "pageId": "425d84dd-d9e3-810b-97dd-d37474941f2f",
+   "hash": "f139e5714d13d72b",
+   "name": "D-088 · W1-4: conscription by proclamation"
+  },
+  "Decision:089": {
+   "pageId": "425d84dd-d9e3-81d6-bddb-c67725a126e1",
+   "hash": "8068c1b826e40af0",
+   "name": "D-089 · W1-4: following, desertion and mutiny from a ledger,"
+  },
+  "Decision:090": {
+   "pageId": "425d84dd-d9e3-81f7-a230-c81ad0259d1c",
+   "hash": "585f29b4a305547f",
+   "name": "D-090 · W1-4: the player's lot, proclamation and ledger"
+  },
+  "Decision:091": {
+   "pageId": "425d84dd-d9e3-8154-a869-f4665b446b8a",
+   "hash": "cba021407796b6c9",
+   "name": "D-091 · W1-5: a war ends only by surrender or defeat; the sc"
+  },
+  "Decision:092": {
+   "pageId": "425d84dd-d9e3-810e-8899-fe87ceb21b8c",
+   "hash": "ce04a20870ee71d7",
+   "name": "D-092 · W1-5: the will to fight, weighed and calibrated"
+  },
+  "Decision:093": {
+   "pageId": "425d84dd-d9e3-8193-9ccf-f3d1998fb7a6",
+   "hash": "1a27a8eb7eb7f2aa",
+   "name": "D-093 · W1-5: envoys, terms named, counters; a truce is not "
+  },
+  "Decision:094": {
+   "pageId": "425d84dd-d9e3-810f-b293-f9fc4c4c1741",
+   "hash": "bba9c4ee6d310896",
+   "name": "D-094 · W1-5: terms are real things, and they hand over for "
+  },
+  "Decision:095": {
+   "pageId": "425d84dd-d9e3-817e-898f-f33e16f48fbb",
+   "hash": "287cbe230cb4bd34",
+   "name": "D-095 · W1-5: the player's part is a ruler's, and only throu"
+  },
+  "Decision:096": {
+   "pageId": "425d84dd-d9e3-812a-989c-dbd5a2881ffb",
+   "hash": "6cc254f69ca0120d",
+   "name": "D-096 · W1-5: the record of an ending, news by rank, blows, "
+  },
+  "Decision:097": {
+   "pageId": "425d84dd-d9e3-8148-a87c-e4d92d57e204",
+   "hash": "2bb629ecc37e069c",
+   "name": "D-097 · W1-6: stability is a reading of named pressures; a h"
+  },
+  "Decision:098": {
+   "pageId": "425d84dd-d9e3-814f-b542-d9b01915b08a",
+   "hash": "d2c6bf759fc40db9",
+   "name": "D-098 · W1-6: factions by §13.3's test and a ladder of decis"
+  },
+  "Decision:099": {
+   "pageId": "425d84dd-d9e3-814a-8635-d49986e5940b",
+   "hash": "918b6a9401949335",
+   "name": "D-099 · W1-6: risings are decisions of named people; the cla"
+  },
+  "Decision:100": {
+   "pageId": "425d84dd-d9e3-8127-8ddd-e38fde08ae6a",
+   "hash": "61afeec92d119125",
+   "name": "D-100 · W1-6: coups, with an opening, access and a motive, s"
+  },
+  "Decision:101": {
+   "pageId": "425d84dd-d9e3-81b0-8a30-c141186a80e6",
+   "hash": "4aec271313ef121d",
+   "name": "D-101 · W1-6: the three disputes' ladders"
+  },
+  "Decision:102": {
+   "pageId": "425d84dd-d9e3-815f-9239-c47facd6309c",
+   "hash": "86fdd5e5671ce4bc",
+   "name": "D-102 · W1-6: the council's counsel, a ruler made to yield, "
+  },
+  "Decision:103": {
+   "pageId": "425d84dd-d9e3-8174-bfab-f7656e71629e",
+   "hash": "6c5a228bb3537d2d",
+   "name": "D-103 · W1-6: the player's part, news by rank, and the check"
+  },
+  "Decision:104": {
+   "pageId": "425d84dd-d9e3-811b-8c01-cfaa57ffbb78",
+   "hash": "627208345fc4098d",
+   "name": "D-104 · X5: the state diet: what grows, what is cut, what is"
+  },
+  "Decision:105": {
+   "pageId": "425d84dd-d9e3-8120-8c9a-c2a52792fc9e",
+   "hash": "b18ad5487a43d869",
+   "name": "D-105 · X5: the save held by bars; an older save compacted o"
+  },
+  "Decision:106": {
+   "pageId": "425d84dd-d9e3-8115-95f8-f0a1ab035459",
+   "hash": "7f55206b2ef7139a",
+   "name": "D-106 · X5 found: the unknown never die; a proposal, not bui"
+  },
+  "Decision:107": {
+   "pageId": "425d84dd-d9e3-81d1-a376-fc2fe4e91e8d",
+   "hash": "55610e5c6bfa4c2d",
+   "name": "D-107 · The unknown die"
+  },
+  "Decision:108": {
+   "pageId": "425d84dd-d9e3-81f0-8802-ddd8bd3b5764",
+   "hash": "136ce70eb0d8ff3f",
+   "name": "D-108 · The houses go on: marriages and children for the wor"
+  },
+  "Decision:109": {
+   "pageId": "425d84dd-d9e3-81fd-84e9-cd1d4e1edc58",
+   "hash": "4638d80eaa6fed20",
+   "name": "D-109 · X5: the built game is not committed; CI builds it on"
+  },
+  "Decision:110": {
+   "pageId": "425d84dd-d9e3-8112-854c-e2dd501dc49c",
+   "hash": "84b68f150185c065",
+   "name": "D-110 · D11-1: the muster; branches as data; the branch fixe"
+  },
+  "Decision:111": {
+   "pageId": "425d84dd-d9e3-810d-b8a4-f7688ccfe481",
+   "hash": "33a34e81b4610d0a",
+   "name": "D-111 · D11-1: the muster-master is the command's decision t"
+  },
+  "Decision:112": {
+   "pageId": "425d84dd-d9e3-8135-9ca6-ebc63744259b",
+   "hash": "bc14709d12762aa1",
+   "name": "D-112 · D11-1: roles beside rank"
+  },
+  "Decision:113": {
+   "pageId": "425d84dd-d9e3-8132-b7c4-e2aa454fa76c",
+   "hash": "3a83666d525ddaef",
+   "name": "D-113 · D11-1: support branches stand on a battalion's roll "
+  },
+  "Decision:114": {
+   "pageId": "425d84dd-d9e3-81b5-9b64-ea581abaa4ae",
+   "hash": "9ddfc9b471b7f4dc",
+   "name": "D-114 · D11-1: one glossary of rank and unit words (R14)"
+  },
+  "Decision:115": {
+   "pageId": "425d84dd-d9e3-8161-a26d-d1b5dbefc272",
+   "hash": "fa3b31b8d46764f2",
+   "name": "D-115 · D11-1: what is not built, and why"
+  },
+  "Decision:116": {
+   "pageId": "425d84dd-d9e3-81ab-a582-e9bfb3060e3b",
+   "hash": "4d9a198c16c0b1f0",
+   "name": "D-116 · D11-2: a company is its make-up, abilities and tende"
+  },
+  "Decision:117": {
+   "pageId": "425d84dd-d9e3-818c-a0a3-cbd84b9b0889",
+   "hash": "b543f739b33a5c3a",
+   "name": "D-117 · D11-2: support branches stand in the support company"
+  },
+  "Decision:118": {
+   "pageId": "425d84dd-d9e3-8193-b7a7-c1795acbc250",
+   "hash": "6b7d71365885583d",
+   "name": "D-118 · D11-2: the syllabus is worked out with reasons; the "
+  },
+  "Decision:119": {
+   "pageId": "425d84dd-d9e3-81e4-9da7-d1bdc385ad56",
+   "hash": "70efcc5b078e6995",
+   "name": "D-119 · D11-2: a duty in peace, always"
+  },
+  "Decision:120": {
+   "pageId": "425d84dd-d9e3-8119-bd1d-e79470a348f3",
+   "hash": "b7885a370d926a5f",
+   "name": "D-120 · D11-2: what a role changes, and where"
+  },
+  "Decision:121": {
+   "pageId": "425d84dd-d9e3-81ce-b7cc-ea3720c9cd3b",
+   "hash": "4505554e64a1967f",
+   "name": "D-121 · D11-2: transfers, and what is left"
+  },
+  "Decision:122": {
+   "pageId": "425d84dd-d9e3-81d8-b22f-e60f66917d12",
+   "hash": "beebcd01b561693b",
+   "name": "D-122 · D11-3: each branch's ladder, and a promotion that we"
+  },
+  "Decision:123": {
+   "pageId": "425d84dd-d9e3-8137-a84b-cc9a508fe4e3",
+   "hash": "ad53627c9a4cd994",
+   "name": "D-123 · D11-3: a branch's missions are its commander's choic"
+  },
+  "Decision:124": {
+   "pageId": "425d84dd-d9e3-8167-bb8e-dfb4148c7383",
+   "hash": "a7046224831f20bc",
+   "name": "D-124 · D11-3: peace service counts"
+  },
+  "Decision:125": {
+   "pageId": "425d84dd-d9e3-8198-bb01-edcf88397a10",
+   "hash": "5e011454472fd48a",
+   "name": "D-125 · D11-3: a role's line"
+  },
+  "Decision:126": {
+   "pageId": "425d84dd-d9e3-811c-a89f-df87a671efad",
+   "hash": "a37c66c67c530253",
+   "name": "D-126 · D11-3: the world's companies have role-holders and d"
+  },
+  "Decision:127": {
+   "pageId": "425d84dd-d9e3-816f-99a9-e608b4ff3529",
+   "hash": "99bb92a238376a6a",
+   "name": "D-127 · D11-3: pay rebased"
+  },
+  "Decision:128": {
+   "pageId": "425d84dd-d9e3-819e-8ac3-fc73f4ff7fd0",
+   "hash": "4229d815c54ec49a",
+   "name": "D-128 · D11+: each branch has a road through the ranks, as d"
+  },
+  "Decision:129": {
+   "pageId": "425d84dd-d9e3-81ef-84e8-eadde584c580",
+   "hash": "40e4085f369f42cf",
+   "name": "D-129 · D11+: the road trains through S1's one door, bent by"
+  },
+  "Decision:130": {
+   "pageId": "425d84dd-d9e3-811d-a715-c7bee9fda53c",
+   "hash": "911f271876f9b20d",
+   "name": "D-130 · D11+: a rung's trial is S1's proof"
+  },
+  "Decision:131": {
+   "pageId": "425d84dd-d9e3-8180-82ec-ef9841727470",
+   "hash": "2caaa71afdb0d65e",
+   "name": "D-131 · D11+: the road's specialism and the role a rung open"
+  },
+  "Decision:132": {
+   "pageId": "425d84dd-d9e3-81f5-939c-fe6bdcbe2f6d",
+   "hash": "629733be7b77eeaf",
+   "name": "D-132 · D11+: the board weighs the road's next rung"
+  },
+  "Decision:133": {
+   "pageId": "425d84dd-d9e3-8182-aefd-cb158b2cc16a",
+   "hash": "d9a430469a063e06",
+   "name": "D-133 · Working branches: `work/<item>`, merged whole, then "
+  },
+  "Decision:134": {
+   "pageId": "425d84dd-d9e3-8183-a359-e39b22cf55a1",
+   "hash": "2b18b419075e765b",
+   "name": "D-134 · How a version is cut, one way only; batches cleared "
+  },
+  "Decision:135": {
+   "pageId": "425d84dd-d9e3-811f-88f2-c92bc3d2fe97",
+   "hash": "646f3e918bfc36dd",
+   "name": "D-135 · Honest odds with room for upsets from will, circumst"
+  },
+  "Decision:136": {
+   "pageId": "425d84dd-d9e3-81d8-9c31-d77eefae99e5",
+   "hash": "754c360222ea4658",
+   "name": "D-136 · The world's masters brought down to what their years"
+  },
+  "Decision:137": {
+   "pageId": "425d84dd-d9e3-8117-aa97-f210033c180c",
+   "hash": "2f46aae2c43f8fd9",
+   "name": "D-137 · Every trial says what the deed is"
+  },
+  "Decision:138": {
+   "pageId": "425d84dd-d9e3-817d-a03e-d5c2545002ef",
+   "hash": "18619b35af83d0fa",
+   "name": "D-138 · Legends and crowns as hard as the world makes them"
+  },
+  "Decision:139": {
+   "pageId": "425d84dd-d9e3-814e-b0ff-c5b9e3b4002a",
+   "hash": "9b70c6e1765510f9",
+   "name": "D-139 · One economy, every figure set against the others"
+  },
+  "Decision:140": {
+   "pageId": "425d84dd-d9e3-81ca-abdc-ea92cee9c1b5",
+   "hash": "9824af5276d0ef1a",
+   "name": "D-140 · Everyone ages and grows by the player's rules; no fr"
+  },
+  "Decision:141": {
+   "pageId": "425d84dd-d9e3-81a9-adb6-e4b2bf7da629",
+   "hash": "1a75c1fd6b7b1577",
+   "name": "D-141 · Clear before building; a sample game in every versio"
+  },
+  "Decision:142": {
+   "pageId": "425d84dd-d9e3-8180-b1cb-e74aed0ed990",
+   "hash": "1e9f972138d18521",
+   "name": "D-142 · One fixed continent for every life"
+  },
+  "Decision:143": {
+   "pageId": "425d84dd-d9e3-813f-9006-f89ff8bdbe8e",
+   "hash": "fafbe1fb5d9d765d",
+   "name": "D-143 · The map in depth, after the one continent"
+  },
+  "Decision:144": {
+   "pageId": "425d84dd-d9e3-815a-a468-cc56ffbd1ed5",
+   "hash": "ae2b15938639adb6",
+   "name": "D-144 · d11-ci: an officer's pay restored toward the release"
+  },
+  "Decision:145": {
+   "pageId": "425d84dd-d9e3-81a3-89d7-eb16796b70e9",
+   "hash": "8ae9a147640783ba",
+   "name": "D-145 · d11-ci: the balance league plays 24 lives for the ar"
+  },
+  "Decision:146": {
+   "pageId": "425d84dd-d9e3-8192-8291-d4db46f9db9d",
+   "hash": "8b4ff1510365a9e9",
+   "name": "D-146 · w18-ci: every standing realm has one ruler; a crown "
+  },
+  "Decision:147": {
+   "pageId": "425d84dd-d9e3-8113-a386-e0b4cbdd1f41",
+   "hash": "bd880af5b1f47205",
+   "name": "D-147 · X5 CI: the skills sweep finds new people by id; the "
+  },
+  "Decision:151": {
+   "pageId": "425d84dd-d9e3-8119-8054-d08e8afd3c0e",
+   "hash": "e6020ee404512e9c",
+   "name": "D-151 · M1 finished whole: a map-maker that serves the lore,"
+  },
+  "Decision:152": {
+   "pageId": "425d84dd-d9e3-819c-b6e7-fad8b2c3c45c",
+   "hash": "210786aab51f8bb7",
+   "name": "D-152 · The one continent is designed, not chosen from seeds"
+  },
+  "Decision:157": {
+   "pageId": "425d84dd-d9e3-8190-a1bc-c981bf427d2d",
+   "hash": "057187295976d3a6",
+   "name": "D-157 · The tooling review: method and proposed verdicts, pe"
+  },
+  "Decision:158": {
+   "pageId": "425d84dd-d9e3-81a0-9eec-d279ed08bd25",
+   "hash": "dd8b4dd70a475882",
+   "name": "D-158 · The newest instruction wins, everywhere"
+  },
+  "Decision:159": {
+   "pageId": "425d84dd-d9e3-8141-acd7-fbd7ab444539",
+   "hash": "eb9b5b1ccfa6ae8f",
+   "name": "D-159 · Skills rebuilt on section 9's model; S1 retires; sta"
+  },
+  "Decision:160": {
+   "pageId": "425d84dd-d9e3-8131-a663-fb5a66a28421",
+   "hash": "a0bf9b0d1dfa2d81",
+   "name": "D-160 · Next year below twelve, Next month from twelve"
+  },
+  "Decision:161": {
+   "pageId": "425d84dd-d9e3-812e-84b5-f879865907ca",
+   "hash": "5b0a9e1c92acfbea",
+   "name": "D-161 · Magic, races, monsters and legendary beings: Phase 3"
+  },
+  "Decision:162": {
+   "pageId": "425d84dd-d9e3-81b2-8ccc-c65ec504f488",
+   "hash": "5b9d22aae27ebe14",
+   "name": "D-162 · The order of work by effect on today's game; one tru"
+  },
+  "Decision:163": {
+   "pageId": "425d84dd-d9e3-819a-ab8c-e8ba53ac5717",
+   "hash": "5a05b94909358c92",
+   "name": "D-163 · Breakthroughs budgeted: a stopgap until A2"
+  },
+  "Decision:164": {
+   "pageId": "425d84dd-d9e3-8190-95eb-fd4852619ab6",
+   "hash": "956b12ea8554cd50",
+   "name": "D-164 · The throne plot: once in five years, odds to 40%, in"
+  },
+  "Decision:165": {
+   "pageId": "425d84dd-d9e3-813e-b50d-cc5c6b1dbc0c",
+   "hash": "caaefa8a7d1debc8",
+   "name": "D-165 · Duel foes on demand: no breakthrough on call"
+  },
+  "Decision:166": {
+   "pageId": "425d84dd-d9e3-81b3-90c1-d66d3d5b5f5c",
+   "hash": "05007a9d5821c4c4",
+   "name": "D-166 · The developer switch: seed, save export and import, "
+  },
+  "Decision:167": {
+   "pageId": "425d84dd-d9e3-8158-a106-d7478a1e0737",
+   "hash": "bbf3a08c934ba225",
+   "name": "D-167 · The power scale and bestiary now, before the skills "
+  },
+  "Decision:168": {
+   "pageId": "425d84dd-d9e3-81d0-8f13-d66e8da7d757",
+   "hash": "23360057d344e468",
+   "name": "D-168 · Levels replace tier words; capability profiles; mind"
+  },
+  "Decision:169": {
+   "pageId": "425d84dd-d9e3-81f0-ac33-f35ba4d9a693",
+   "hash": "68c9afd38055511f",
+   "name": "D-169 · Titles: stackable, buffs, hidden requirements"
+  },
+  "Decision:170": {
+   "pageId": "425d84dd-d9e3-814a-bc8c-e9cecb6aab2f",
+   "hash": "c87c8e1a96d65492",
+   "name": "D-170 · Stat points per level and skill training in the skil"
+  },
+  "Decision:171": {
+   "pageId": "425d84dd-d9e3-8114-96de-daf48f23b853",
+   "hash": "6fad719f83f22410",
+   "name": "D-171 · The owner's answers on skills, titles, paths and cre"
+  },
+  "Decision:172": {
+   "pageId": "425d84dd-d9e3-8164-9480-d519a01ac507",
+   "hash": "abd8fda7a66d1c0c",
+   "name": "D-172 · Legends hold the summit, not gods; the Sword Saint; "
+  },
+  "Decision:173": {
+   "pageId": "425d84dd-d9e3-8115-a70c-cd7f706d0296",
+   "hash": "bb1c527fb50e9b1d",
+   "name": "D-173 · The ladder's anchors; the map redesigned from M1 and"
+  },
+  "Decision:174": {
+   "pageId": "425d84dd-d9e3-8126-8dc7-ebc0682dab87",
+   "hash": "68fddde4a1c4c222",
+   "name": "D-174 · The skills rebuild, steps 1 to 4: where the design's"
+  },
+  "Decision:175": {
+   "pageId": "425d84dd-d9e3-81ac-b88c-d67b358a5398",
+   "hash": "b68998ed30a4209a",
+   "name": "D-175 · The basis for versions; what v3, v4 and v5 are"
+  },
+  "Decision:176": {
+   "pageId": "425d84dd-d9e3-81f0-8c01-ee5da1e3f693",
+   "hash": "4de1be563037ad66",
+   "name": "D-176 · 2026-11-25 · Powers: might is conscripts squared; le"
+  },
+  "Decision:177": {
+   "pageId": "425d84dd-d9e3-8127-be92-c3b2f577fdeb",
+   "hash": "9e8818ad29c03b76",
+   "name": "D-177 · The legends' balance; skills capped at 10; full prof"
+  },
+  "Decision:178": {
+   "pageId": "425d84dd-d9e3-8124-8a2b-dbfa78b64165",
+   "hash": "1735ce6eb26a20ff",
+   "name": "D-178 · Skill experience from use; a person's level from def"
+  },
+  "Decision:179": {
+   "pageId": "425d84dd-d9e3-81b6-9713-e6d618a2df06",
+   "hash": "75c8d6da07d6854b",
+   "name": "D-179 · The skills rebuild, step 5 (the switch): where the d"
+  },
+  "Decision:180": {
+   "pageId": "425d84dd-d9e3-8193-bdc9-f3efee96f072",
+   "hash": "69b7f6195d23230f",
+   "name": "D-180 · The skills rebuild, step 6 (effects on): where each "
+  },
+  "Decision:181": {
+   "pageId": "425d84dd-d9e3-81b5-a80c-e82c2899a9e6",
+   "hash": "fea7d4edb3e7ff7a",
+   "name": "D-181 · A person's level is the ladder's, earned by defeats;"
+  },
+  "Decision:182": {
+   "pageId": "425d84dd-d9e3-816e-9a25-f8777ee1384b",
+   "hash": "82a517015644e46b",
+   "name": "D-182 · The skills rebuild, steps 7 and 8: evolution, mergin"
+  },
+  "Decision:183": {
+   "pageId": "425d84dd-d9e3-81b3-9112-f2d56a6f0768",
+   "hash": "6a8c1695b693e671",
+   "name": "D-183 · Titles: earned by hidden conditions, stacked under t"
+  },
+  "Decision:184": {
+   "pageId": "425d84dd-d9e3-81de-b957-c21fc5ab0fbc",
+   "hash": "d4cf5988363ae9df",
+   "name": "D-184 · Experience from anyone, walls at each hundredth leve"
+  },
+  "Decision:185": {
+   "pageId": "425d84dd-d9e3-819b-9077-fa61f4d8a99d",
+   "hash": "90dc04875e9b25aa",
+   "name": "D-185 · The scale stretched (orders 92, 93, 94): Sarnavoth a"
+  },
+  "Decision:186": {
+   "pageId": "425d84dd-d9e3-81b0-aad1-ec440bc6c764",
+   "hash": "820cb44992fd06b7",
+   "name": "D-186 · The three kinds of skill: arts (active, passive, buf"
+  },
+  "Decision:191": {
+   "pageId": "425d84dd-d9e3-81fc-b953-d6b713a4c81b",
+   "hash": "7e229637da27c72b",
+   "name": "D-191 · The bestiary's bands by nature: three ancient dragon"
+  },
+  "Decision:192": {
+   "pageId": "425d84dd-d9e3-81a9-86b0-f7b017aea146",
+   "hash": "8ca31966cedcbee6",
+   "name": "D-192 · Evolution replaces; a rank's jump at a breakthrough,"
+  },
+  "Decision:193": {
+   "pageId": "425d84dd-d9e3-81a4-9f04-e7ace52695cc",
+   "hash": "10737bc80f98d44e",
+   "name": "D-193 · The figures registry: full profiles of the great, by"
+  },
+  "Decision:194": {
+   "pageId": "425d84dd-d9e3-819e-ad89-da95458df9cc",
+   "hash": "e2d0d698c74ab833",
+   "name": "D-194 · A realm's standing military by its size, wealth and "
+  },
+  "Decision:195": {
+   "pageId": "425d84dd-d9e3-816c-9f33-fff3117cc42e",
+   "hash": "2bf258b38b2ce966",
+   "name": "D-195 · A merchant's ledger is his deed: a year at the head "
+  },
   "Decision:200": {
    "pageId": "425d84dd-d9e3-810d-b4ed-e2d3f36c730d",
    "hash": "5672aa5cb58c135e",
    "name": "D-200 · One rarity ladder: basic, rare, epic, legendary, myt"
+  },
+  "Decision:201": {
+   "pageId": "425d84dd-d9e3-8153-9604-efac9632f7e8",
+   "hash": "2badc4aebab9633a",
+   "name": "D-201 · Legendary and mythical classes: one living holder ea"
+  },
+  "Decision:202": {
+   "pageId": "425d84dd-d9e3-8108-ac83-db7932fa688d",
+   "hash": "2c914c7097df820f",
+   "name": "D-202 · Mythical titles and arts for the Primordials, the Dr"
   },
   "History:001": {
    "pageId": "425d84dd-d9e3-81ec-b51e-ddef4f7a25de",
@@ -536,10 +1451,280 @@
    "hash": "947246eb63399897",
    "name": "H-113 · Emilio findings E4 to E10 checked; E5, E6, E8, E9 fi"
   },
+  "History:114": {
+   "pageId": "425d84dd-d9e3-8178-b84e-f2c3de8f7257",
+   "hash": "43039c2235e4bb55",
+   "name": "H-114 · One time button: Next year below 12, Next month from"
+  },
+  "History:115": {
+   "pageId": "425d84dd-d9e3-8126-ad58-f2b9dab9ac7c",
+   "hash": "809e37126169af48",
+   "name": "H-115 · Tests held to the new world and the one button"
+  },
+  "History:116": {
+   "pageId": "425d84dd-d9e3-811e-b319-dfe4a9f4a831",
+   "hash": "1905380040f2a453",
+   "name": "H-116 · E9 narrowed: a former superior is set aside only whe"
+  },
+  "History:117": {
+   "pageId": "425d84dd-d9e3-81bf-bc4e-c54833813b60",
+   "hash": "2c343fe166374cc4",
+   "name": "H-117 · modsFireInLives plays standby lives (H-082)"
+  },
+  "History:118": {
+   "pageId": "425d84dd-d9e3-8197-a07c-c0abbd9bf7b2",
+   "hash": "fd47b5d923117ed3",
+   "name": "H-118 · E10 and E5b closed; breakthroughs budgeted (D-163)"
+  },
+  "History:119": {
+   "pageId": "425d84dd-d9e3-81fa-a6b5-d4d713f8a0d6",
+   "hash": "ff4b7b1e28e11c66",
+   "name": "H-119 · The throne plot stopgap (D-164)"
+  },
+  "History:120": {
+   "pageId": "425d84dd-d9e3-8195-956a-f17fceeee9d3",
+   "hash": "59ace56bb692d345",
+   "name": "H-120 · A dropped card is never answered (Phase 0, the sync'"
+  },
+  "History:121": {
+   "pageId": "425d84dd-d9e3-81a4-983d-e9a6a8db0a03",
+   "hash": "7bc5c477dfce9e8b",
+   "name": "H-121 · Duel foes on demand narrowed (D-165)"
+  },
+  "History:122": {
+   "pageId": "425d84dd-d9e3-8136-85e3-f3c233f648d6",
+   "hash": "ac298a185079d6f5",
+   "name": "H-122 · The developer switch (D-166)"
+  },
+  "History:123": {
+   "pageId": "425d84dd-d9e3-819b-b6bd-ff9cbf34bc50",
+   "hash": "6c481befd34377e0",
+   "name": "H-123 · The wrapper and patch gate (master prompt 4.6, Phase"
+  },
+  "History:124": {
+   "pageId": "425d84dd-d9e3-819c-95c0-fabc978ff51b",
+   "hash": "8adce6239f724f19",
+   "name": "H-124 · Order 77 merged: the power scale first"
+  },
+  "History:125": {
+   "pageId": "425d84dd-d9e3-8157-a3a4-e48fa531daa3",
+   "hash": "993d1ea9b47a9519",
+   "name": "H-125 · Order 78 merged (levels, capability profiles, minds,"
+  },
+  "History:126": {
+   "pageId": "425d84dd-d9e3-812b-b76d-ee2594303678",
+   "hash": "058e27ea96405841",
+   "name": "H-126 · Order 79 merged (titles)"
+  },
+  "History:127": {
+   "pageId": "425d84dd-d9e3-810c-aab2-e8df80c665af",
+   "hash": "747a2429ef3178d1",
+   "name": "H-127 · Order 80 merged (stat points, training, professions "
+  },
+  "History:128": {
+   "pageId": "425d84dd-d9e3-817a-a9e5-e5f596430d6c",
+   "hash": "06eb985c1cef9dc2",
+   "name": "H-128 · The skills design merged; order 82 (the owner's answ"
+  },
+  "History:129": {
+   "pageId": "425d84dd-d9e3-8109-96e7-d41f6af2260b",
+   "hash": "a41c1dbf32183ae0",
+   "name": "H-129 · Order 83 recorded; balance measures levels, not word"
+  },
+  "History:130": {
+   "pageId": "425d84dd-d9e3-8188-9895-e06be3eed286",
+   "hash": "665b076f9d6c7b53",
+   "name": "H-130 · Order 84 recorded (the anchors, legends, the map loc"
+  },
+  "History:131": {
+   "pageId": "425d84dd-d9e3-81e9-b97d-e53522e7542d",
+   "hash": "060d47ca16cd873d",
+   "name": "H-131 · The skills rebuild, steps 1 to 4 (nothing a player s"
+  },
+  "History:132": {
+   "pageId": "425d84dd-d9e3-8183-b809-ce0fda0748d3",
+   "hash": "864907b9e3158a5b",
+   "name": "H-132 · The skills rebuild, steps 1 to 4, integrated; the ra"
+  },
+  "History:133": {
+   "pageId": "425d84dd-d9e3-816c-bbf8-fb0b0f0eabce",
+   "hash": "4c3ecb37529ffb28",
+   "name": "H-133 · CI 170 on the skills merge: a retired rank word; a s"
+  },
+  "History:134": {
+   "pageId": "425d84dd-d9e3-813a-b99f-f72bbede723e",
+   "hash": "eb013787ee9e2ff6",
+   "name": "H-134 · Powers wave 1: one level scale for every being (the "
+  },
+  "History:135": {
+   "pageId": "425d84dd-d9e3-81e7-8ed9-ee95298077ed",
+   "hash": "284817ab91f2df86",
+   "name": "H-135 · The power scale and bestiary merged"
+  },
+  "History:136": {
+   "pageId": "425d84dd-d9e3-818d-b75d-cadd968aa620",
+   "hash": "cd446226871da129",
+   "name": "H-136 · Order 87 recorded (the legends' balance, skills capp"
+  },
+  "History:137": {
+   "pageId": "425d84dd-d9e3-8167-af59-ee984f395b81",
+   "hash": "07948b38fbf60ed8",
+   "name": "H-137 · Powers: CI fixes on 8f28cb67 and the owner's orders "
+  },
+  "History:138": {
+   "pageId": "425d84dd-d9e3-815c-93e7-e7fa12f80f81",
+   "hash": "ee061a3461d2011f",
+   "name": "H-138 · The skills rebuild, step 5: the switch (the rungs ho"
+  },
+  "History:139": {
+   "pageId": "425d84dd-d9e3-819a-8a5b-d9ce2e2fc2d6",
+   "hash": "19ed7663b773c848",
+   "name": "H-139 · Powers: a near-linear sum for a few great beings, a "
+  },
+  "History:140": {
+   "pageId": "425d84dd-d9e3-8104-98d4-db79b8347942",
+   "hash": "09d37fc3d2f71227",
+   "name": "H-140 · CI on 4df64284: four failures, three fixed here or b"
+  },
+  "History:141": {
+   "pageId": "425d84dd-d9e3-819b-9fb4-c4e9bfff4825",
+   "hash": "baa397f4c9fc87e3",
+   "name": "H-141 · The profile's level labels fixed (pfNumbers, pfFits)"
+  },
+  "History:142": {
+   "pageId": "425d84dd-d9e3-812e-9f79-d75a199893e2",
+   "hash": "83526bfdda0504a7",
+   "name": "H-142 · The skills rebuild, step 6: effects on, with the cap"
+  },
+  "History:143": {
+   "pageId": "425d84dd-d9e3-8150-bdf6-d942ed3b0cf0",
+   "hash": "0c9b9328abf41526",
+   "name": "H-143 · A person's level and its stat points (skills-v2 §12."
+  },
+  "History:144": {
+   "pageId": "425d84dd-d9e3-812c-9b1c-c3b0ef3d844a",
+   "hash": "358bd48d5065f2f2",
+   "name": "H-144 · A game born on the rungs loads without the hold-back"
+  },
+  "History:145": {
+   "pageId": "425d84dd-d9e3-8133-8544-dca555d57b55",
+   "hash": "8055b82035ed9270",
+   "name": "H-145 · CI on e6c4a348: three quick failures fixed (v2svRoun"
+  },
+  "History:146": {
+   "pageId": "425d84dd-d9e3-819f-88ff-d4b794fafd16",
+   "hash": "8e5db894e2c9137d",
+   "name": "H-146 · The skills rebuild, steps 7 and 8: evolution at Lv 1"
+  },
+  "History:147": {
+   "pageId": "425d84dd-d9e3-813b-aa8c-da104e262bf4",
+   "hash": "4a6bbad73dce8c3f",
+   "name": "H-147 · Titles (skills-v2 §11, D-183)"
+  },
+  "History:148": {
+   "pageId": "425d84dd-d9e3-8190-830f-f305c72eae99",
+   "hash": "1b1baa0d86ab99cf",
+   "name": "H-148 · Experience from anyone, walls at each hundredth leve"
+  },
+  "History:149": {
+   "pageId": "425d84dd-d9e3-8145-bc17-e7a1e0da2aa5",
+   "hash": "54dc22e3cda5b2a7",
+   "name": "H-149 · The scale stretched (orders 92, 93, 94) and no hints"
+  },
+  "History:150": {
+   "pageId": "425d84dd-d9e3-8169-a627-c6ca3e33590e",
+   "hash": "37287b775f3a8250",
+   "name": "H-150 · The three kinds of skill: actives, passives and buff"
+  },
+  "History:153": {
+   "pageId": "425d84dd-d9e3-8145-929b-c2f0c6de4123",
+   "hash": "4dd8672f1ad0afd3",
+   "name": "H-153 · The month's skill pass fast again (s1Cost on d02e03f"
+  },
+  "History:154": {
+   "pageId": "425d84dd-d9e3-8132-adb1-fa5fb37b2e52",
+   "hash": "c638ecd3092e5d2e",
+   "name": "H-154 · lfRepeats' bar from its measured spread (CI long 142"
+  },
+  "History:155": {
+   "pageId": "425d84dd-d9e3-81a8-ab1c-d04938a192c2",
+   "hash": "b75ee488be72c23b",
+   "name": "H-155 · The bestiary's bands by nature: three ancient dragon"
+  },
+  "History:156": {
+   "pageId": "425d84dd-d9e3-8132-9753-c882cf3743a0",
+   "hash": "ced18f4807f981ce",
+   "name": "H-156 · Order 95's skills and titles: evolution replaces, a "
+  },
+  "History:157": {
+   "pageId": "425d84dd-d9e3-81fe-9069-fd7a0a26fedf",
+   "hash": "ddb387666588de66",
+   "name": "H-157 · The arts' four quick-tier failures on a58eae53, and "
+  },
+  "History:158": {
+   "pageId": "425d84dd-d9e3-8191-81c6-e1fe3cf8b213",
+   "hash": "1a351955caac7a73",
+   "name": "H-158 · CI on a58eae53 (the three kinds of skill): five quic"
+  },
+  "History:159": {
+   "pageId": "425d84dd-d9e3-81ef-8008-c57088500500",
+   "hash": "e6347e90b1fbacbc",
+   "name": "H-159 · The figures registry: \"Figures of the Age\" (order 96"
+  },
+  "History:160": {
+   "pageId": "425d84dd-d9e3-8105-bdce-c3e725089795",
+   "hash": "b38fcab563b738f1",
+   "name": "H-160 · CI on 37bc448a (orders 91-96 with the figures): six "
+  },
+  "History:161": {
+   "pageId": "425d84dd-d9e3-815b-9dff-fe922591dca0",
+   "hash": "9d96d05ae4085861",
+   "name": "H-161 · The standing military: armies of their true size, kn"
+  },
+  "History:162": {
+   "pageId": "425d84dd-d9e3-810e-8cb9-ee6edf3cf927",
+   "hash": "09c9dfdc5ffc541c",
+   "name": "H-162 · The merchant's coin: no regression in orders 91-96; "
+  },
+  "History:163": {
+   "pageId": "425d84dd-d9e3-81d0-b767-d45c74d0903b",
+   "hash": "1c8f6c34a8b7bc29",
+   "name": "H-163 · s1Cost again (1.202 ms on CI on 0163f899)"
+  },
   "History:164": {
    "pageId": "425d84dd-d9e3-818e-9f60-e0377bc16044",
    "hash": "b45fdd7964e67568",
    "name": "H-164 · Two contradictions from the audit closed (order 97's"
+  },
+  "History:165": {
+   "pageId": "425d84dd-d9e3-81ef-a37d-e3a90e3c7514",
+   "hash": "3e5a7e3973876a1f",
+   "name": "H-165 · Integration: army sizes, the elite count, merchants'"
+  },
+  "History:166": {
+   "pageId": "425d84dd-d9e3-8136-9b82-efc4e48aa745",
+   "hash": "bb14ff0702d963d7",
+   "name": "H-166 · CI fixes on 135632b7 (ci-fix-21)"
+  },
+  "History:171": {
+   "pageId": "425d84dd-d9e3-8135-8310-cd3701339f1c",
+   "hash": "f938c6399ede1cf1",
+   "name": "H-171 · One rarity ladder for skills, titles, classes and it"
+  },
+  "History:172": {
+   "pageId": "425d84dd-d9e3-8151-99fd-c7ee157302f5",
+   "hash": "0c55ec51b49fc9af",
+   "name": "H-172 · Legendary classes: one holder each, never advanced, "
+  },
+  "History:173": {
+   "pageId": "425d84dd-d9e3-818a-a303-ce37f978fa8e",
+   "hash": "17f084dd0364a7fd",
+   "name": "H-173 · Mythical titles and arts; the Dragon Slayer (order 9"
+  },
+  "History:173-addendum": {
+   "pageId": "425d84dd-d9e3-816e-a9c6-d54bb26058ea",
+   "hash": "0d7637c3a42815a2",
+   "name": "H-173 addendum · Plain names for the three legendary classes"
   },
   "Order:1": {
    "pageId": "425d84dd-d9e3-8104-914d-f3df0fedec52",
@@ -1048,7 +2233,7 @@
   },
   "Order:102": {
    "pageId": "425d84dd-d9e3-81ab-83af-c00f505c6bdd",
-   "hash": "eb3bcf0d842f1198",
+   "hash": "e232a1da05ae7563",
    "name": "Order 102 · Three homes: GitHub, Notion, Claude"
   },
   "Prompt:2026-11-25-answers-and-direction.md": {
@@ -1168,7 +2353,7 @@
   },
   "Prompt:2026-11-27-github-notion-claude.md": {
    "pageId": "425d84dd-d9e3-81a2-8994-ec9b29e8ef31",
-   "hash": "837faa154f9fe307",
+   "hash": "fc3196f9619a5f8c",
    "name": "Prompt · Github notion claude"
   },
   "Prompt:2026-11-27-self-critique-and-notion.md": {
@@ -1285,6 +2470,196 @@
    "pageId": "425d84dd-d9e3-8140-bf17-f1a57fefac0d",
    "hash": "34aca66d0cb599d3",
    "name": "Rule 21 · Built for the iPhone App Store from today"
+  },
+  "Version:v1.0.0": {
+   "pageId": "425d84dd-d9e3-81c9-a9ca-f21f60566152",
+   "hash": "10d25da9ba2af1b7",
+   "name": "v1.0.0 · The shipped release"
+  },
+  "Version:v1.1.0": {
+   "pageId": "425d84dd-d9e3-81d9-a749-e9513366ecc5",
+   "hash": "5e6f526a9621615e",
+   "name": "v1.1.0 · The build system"
+  },
+  "Version:v1.2.0": {
+   "pageId": "425d84dd-d9e3-81e6-adc7-d1b7f58cf1ab",
+   "hash": "d38952961eb3bbd5",
+   "name": "v1.2.0 · Road to Ten round 6"
+  },
+  "Version:v1.3.0": {
+   "pageId": "425d84dd-d9e3-81f9-a04b-ce3c3fa2b058",
+   "hash": "e03bbc8e97c9f19d",
+   "name": "v1.3.0 · Road to Ten round 7"
+  },
+  "Version:v1.4.0": {
+   "pageId": "425d84dd-d9e3-81d1-bc8d-d75da1065bb0",
+   "hash": "1eb577cbb2c5bf1c",
+   "name": "v1.4.0 · Redesign and the Great Continent"
+  },
+  "Version:v1.5.0": {
+   "pageId": "425d84dd-d9e3-8102-8a4b-c7998cde1ce3",
+   "hash": "d66269ab67e43220",
+   "name": "v1.5.0 · Cycle 1"
+  },
+  "Version:v1.6.0": {
+   "pageId": "425d84dd-d9e3-814b-836a-d0381fbc4786",
+   "hash": "c39ce5014d6d4e3c",
+   "name": "v1.6.0 · Cycle 2"
+  },
+  "Version:v2.0.0-alpha.1": {
+   "pageId": "425d84dd-d9e3-816d-9677-f5fda3a09119",
+   "hash": "b764dd5e675c59c0",
+   "name": "v2.0.0-alpha.1 · v2 step 1"
+  },
+  "Version:v2.0.0-alpha.2": {
+   "pageId": "425d84dd-d9e3-8187-a06a-eab4b024708e",
+   "hash": "5870a992bed7c36c",
+   "name": "v2.0.0-alpha.2 · v2 step 2"
+  },
+  "Version:v2.0.0-alpha.3": {
+   "pageId": "425d84dd-d9e3-817a-bb13-c03236e87b15",
+   "hash": "57a118fd654a11e1",
+   "name": "v2.0.0-alpha.3 · v2 step 3"
+  },
+  "Version:v2.0.0-alpha.4": {
+   "pageId": "425d84dd-d9e3-8191-bac1-f0d310f13b2d",
+   "hash": "b034d2beffe34103",
+   "name": "v2.0.0-alpha.4 · v2 step 4"
+  },
+  "Version:v2.0.0-alpha.5": {
+   "pageId": "425d84dd-d9e3-8147-bd37-d3d9f1504b38",
+   "hash": "0182cb360e3baaba",
+   "name": "v2.0.0-alpha.5 · v2 step 5"
+  },
+  "Version:v2.0.0-alpha.6": {
+   "pageId": "425d84dd-d9e3-810f-ac71-f0a7586457b7",
+   "hash": "7b44707468ba70f5",
+   "name": "v2.0.0-alpha.6 · v2 step 6"
+  },
+  "Version:v2.0.0-alpha.7": {
+   "pageId": "425d84dd-d9e3-8172-b495-fc4d3e4cf748",
+   "hash": "16bd8b4b10cc5202",
+   "name": "v2.0.0-alpha.7 · v2 step 7"
+  },
+  "Version:v2.0.0-alpha.8": {
+   "pageId": "425d84dd-d9e3-813c-bdb0-c2c89321da11",
+   "hash": "165a08db06d560b2",
+   "name": "v2.0.0-alpha.8 · v2 step 8"
+  },
+  "Version:v2.0.0-alpha.9": {
+   "pageId": "425d84dd-d9e3-816f-a44a-da7618af6b70",
+   "hash": "5b7303948149429b",
+   "name": "v2.0.0-alpha.9 · v2 step 9"
+  },
+  "Version:v2.0.0-alpha.10": {
+   "pageId": "425d84dd-d9e3-81fb-a73b-fb6da5ab31d8",
+   "hash": "15d8f8e4bb92b929",
+   "name": "v2.0.0-alpha.10 · v2 playtest 1, fixes round 1"
+  },
+  "Version:v2.0.0-beta.1": {
+   "pageId": "425d84dd-d9e3-815d-a4d8-e50cf36d4889",
+   "hash": "4576c0acdd9bf2da",
+   "name": "v2.0.0-beta.1 · Playtest 2 and CI round 2 fixed"
+  },
+  "Version:v2.1.0-alpha.1": {
+   "pageId": "425d84dd-d9e3-81f3-a3a3-ee8305bfa3b1",
+   "hash": "2507cdcbc6ad2cc6",
+   "name": "v2.1.0-alpha.1 · Round 2 begins"
+  },
+  "Version:v2.1.0-alpha.2": {
+   "pageId": "425d84dd-d9e3-81f6-92fc-e387b80bb365",
+   "hash": "5be66c94fda72570",
+   "name": "v2.1.0-alpha.2 · Foundations"
+  },
+  "Version:v2.1.0-alpha.3": {
+   "pageId": "425d84dd-d9e3-810f-a31a-ffa3e2c74d81",
+   "hash": "49672a08a38738df",
+   "name": "v2.1.0-alpha.3 · X1"
+  },
+  "Version:v2.1.0-alpha.4": {
+   "pageId": "425d84dd-d9e3-8188-b4ab-d3b8e5c4c4b3",
+   "hash": "189eff49e517b4e7",
+   "name": "v2.1.0-alpha.4 · C8b"
+  },
+  "Version:v2.1.0-alpha.5": {
+   "pageId": "425d84dd-d9e3-81bf-a708-c023b7a49210",
+   "hash": "68e9715fcd861f43",
+   "name": "v2.1.0-alpha.5 · v2.1 foundations"
+  },
+  "Version:v2.1.0-alpha.6": {
+   "pageId": "425d84dd-d9e3-81c8-9f6b-d3af207c7ebb",
+   "hash": "b8d4480be79bf1b3",
+   "name": "v2.1.0-alpha.6 · A2 stage 2"
+  },
+  "Version:v2.1.0-alpha.7": {
+   "pageId": "425d84dd-d9e3-81ee-87a0-c07d8665169a",
+   "hash": "d7b2cd4bcb5b98ed",
+   "name": "v2.1.0-alpha.7 · C6"
+  },
+  "Version:v2.1.0-alpha.8": {
+   "pageId": "425d84dd-d9e3-811f-b5d8-cf78eee43fa7",
+   "hash": "4504d98a922f807c",
+   "name": "v2.1.0-alpha.8 · C7"
+  },
+  "Version:v2.1.0-alpha.9": {
+   "pageId": "425d84dd-d9e3-8103-8616-f6a81a0296f4",
+   "hash": "349af44e0dee8d04",
+   "name": "v2.1.0-alpha.9 · C8c dress, class and regalia; X3 part 2 hon"
+  },
+  "Version:v2.1.0-alpha.10": {
+   "pageId": "425d84dd-d9e3-8164-9f6b-d681e4655751",
+   "hash": "758f0e95d100d49f",
+   "name": "v2.1.0-alpha.10 · W1-1 no Marshal"
+  },
+  "Version:v2.1.0-alpha.11": {
+   "pageId": "425d84dd-d9e3-811c-aa01-f02505591104",
+   "hash": "fe64abfa3196298a",
+   "name": "v2.1.0-alpha.11 · I1-2 iPhone readiness"
+  },
+  "Version:v2.1.0-alpha.12": {
+   "pageId": "425d84dd-d9e3-8132-9c04-d224aab4e18a",
+   "hash": "9fbc9c54b5079248",
+   "name": "v2.1.0-alpha.12 · Lords with their own armies"
+  },
+  "Version:v2.1.0-alpha.13": {
+   "pageId": "425d84dd-d9e3-8142-8e54-dfc178c7c7a8",
+   "hash": "63b3b240a0eb6283",
+   "name": "v2.1.0-alpha.13 · Wars end only by surrender or defeat"
+  },
+  "Version:v2.1.0-alpha.14": {
+   "pageId": "425d84dd-d9e3-81f8-a3e9-e9ff8b5a3298",
+   "hash": "9b7559b48c69d5ee",
+   "name": "v2.1.0-alpha.14 · The realm's peace"
+  },
+  "Version:v2.1.0-alpha.15": {
+   "pageId": "425d84dd-d9e3-81e8-b1d1-fbf685286973",
+   "hash": "d3789ddfa6ef2760",
+   "name": "v2.1.0-alpha.15 · Everyone ages and the houses go on; the ga"
+  },
+  "Version:v2.1.0-alpha.16": {
+   "pageId": "425d84dd-d9e3-8178-b4bc-fb17b24c3634",
+   "hash": "cf7f8ec602e3e9b3",
+   "name": "v2.1.0-alpha.16 · Phase 1"
+  },
+  "Version:v2.1.0-alpha.17": {
+   "pageId": "425d84dd-d9e3-8184-976a-c1337d0b15c6",
+   "hash": "d26876007c515191",
+   "name": "v2.1.0-alpha.17 · The world grows"
+  },
+  "Version:v2.1.0-alpha.18": {
+   "pageId": "425d84dd-d9e3-815e-8ae0-cf713b0e99ae",
+   "hash": "b8c89fc1e0cf090e",
+   "name": "v2.1.0-alpha.18 · Skills that do things"
+  },
+  "Version:v2.1.0-alpha.19": {
+   "pageId": "425d84dd-d9e3-81d5-8d22-de3a14640891",
+   "hash": "0d3d09e403ef54bd",
+   "name": "v2.1.0-alpha.19 · Skills evolve at level 10, two can merge, "
+  },
+  "Version:v2.1.0-alpha.20": {
+   "pageId": "425d84dd-d9e3-81de-aa8d-c7edb264c134",
+   "hash": "7594072667b23a74",
+   "name": "v2.1.0-alpha.20 · Three kinds of skill"
   }
  }
 }

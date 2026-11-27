@@ -147,7 +147,7 @@ export default {
       const odds = A.checkOdds, chance0 = A.chance;
       const BLOOD = {}; for (const [k, v] of Object.entries(GD.BLOOD)) BLOOD[v.tag] = k;
       const BREALM = { falcon: 'POL-15', taster: 'POL-04', bull: 'POL-01', laughing: 'POL-03', longwind: 'POL-11', quickened: 'POL-06', lightfoot: 'POL-06' };
-      const BRACE = { falcon: 'human', taster: 'human', bull: 'human', laughing: 'human', longwind: 'orc', quickened: 'elf', lightfoot: 'elf' };
+      const BRACE = { falcon: 'human', taster: 'human', bull: 'human', laughing: 'human', longwind: 'halforc', quickened: 'elf', lightfoot: 'elf' };   // Gorath's people are half-orcs (D-199)
       const bases = {};
       const ageFor = (race, stage) => { const R = GD.RACES[race]; return stage === 'old' ? R.old + Math.ceil(R.adult / 3) : stage === 'teen' ? Math.round(R.adult * 0.9) : stage === 'young' ? Math.round(R.adult * 0.5) : Math.round(R.adult + (R.old - R.adult) * 0.3); };
       const baseFor = (realm, race, sex, stage) => {
@@ -221,7 +221,8 @@ export default {
         if (faith) worlds.push({ realm: 'POL-01', faith }); // the faith side of a realm-or-faith gate, outside the realm
         for (const w of worlds) {
           let races = w.races || (raceArg ? [...raceArg[1].matchAll(/"(\w+)"/g)].map(m => m[1]) : ['human']);
-          if (!w.races && !raceArg) { const alt = GD.RACE_LIST.find(x => x !== 'human' && A.raceAllowed(x, w.realm)); if (alt) races = races.concat(alt); }
+          if (!w.races && !raceArg) { const alt = (GD.PLAYABLE_RACES || GD.RACE_LIST).find(x => x !== 'human' && A.raceAllowed(x, w.realm)); if (alt) races = races.concat(alt); }   // playable races only (D-199)
+          if (GD.PLAYABLE_RACES) { const pl = races.filter(x => GD.PLAYABLE_RACES.includes(x)); if (pl.length) races = pl; }   // an orc probe would start as a half-orc
           const stages = [stage];
           if (/C\.teen\(p\)/.test(cs) && stage !== 'old') stages.push('teen');
           if (/C\.young\(p\)/.test(cs) && stage !== 'old') stages.push('young');

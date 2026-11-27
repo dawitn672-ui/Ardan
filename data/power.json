@@ -28,7 +28,7 @@
       "from": 20,
       "r": "F",
       "w": "common folk",
-      "d": "Most people: farmers, clerks, lords who never drilled (an average person stands at 20 to 50). A fox, a hedge cat, an imp of the lanes."
+      "d": "Most people: farmers, clerks, lords who never drilled (an average person stands at 20 to 50). A hill wolf, a lynx, a pit viper."
     },
     {
       "from": 80,
@@ -46,13 +46,13 @@
       "from": 300,
       "r": "C",
       "w": "an elite's match",
-      "d": "The elite of a realm (300 to 420, higher in a strong realm), the monstrous apex beasts (a boar-king, the mountain father: none past 350), a stone troll, an ogre hetman, a dragon's hatchling, the lower demons (300 to 500). A lord sends hunters with spears and dogs."
+      "d": "The elite of a realm (300 to 420, higher in a strong realm), the monstrous apex beasts (a boar-king, the mountain father: none past 350), a troll grandsire, an ogre hetman, a dragon's hatchling, the lower demons of Hell (300 to 500). A lord sends hunters with spears and dogs."
     },
     {
       "from": 420,
       "r": "B",
       "w": "a kingdom's champion",
-      "d": "The champions of the kingdoms, a frost-fell giant, a dragonet, the greater fiends, the amber elder. The heroes of the songs stand here."
+      "d": "The champions of the kingdoms, a frost-fell giant, a dragonet, the demon soldiers of Hell, the amber elder. The heroes of the songs stand here."
     },
     {
       "from": 500,
@@ -70,13 +70,13 @@
       "from": 740,
       "r": "SS",
       "w": "a calamity",
-      "d": "The elder dragons (few: nine in all the world), the thirty-three ancient demons under the three Archdemons, the three ancient dragons who serve the King, and the calamities up to the legends: the first titans, the deathless king, the serpents that girdle the sea, the colossus of the first forge. Kingdoms make their peace with them, or move out of their way."
+      "d": "The elder dragons (few: nine in all the world), the thirty-three ancient demons under the three Primordials (about 740), the ancient dragons of the inferno and the water who serve the King, and the calamities up to the legends: the first titans, the deathless king, the serpents that girdle the sea, the colossus of the first forge. Kingdoms make their peace with them, or move out of their way."
     },
     {
       "from": 800,
       "r": "SSS",
       "w": "a legend",
-      "d": "The legends: each one of a kind, each with a title, the strongest beings on the continent, a threat to nations and, in the end, to the world. They stand from 800 up: the Sword Saint, the strongest man alive, about 875; the three Primordial Archdemons 963 to 975; the Dragon King at 1000, by far the strongest of all."
+      "d": "The legends: each one of a kind, each with a title, the strongest beings on the continent, a threat to nations and, in the end, to the world. They stand from 800 up: the Sword Saint, the strongest man alive, about 875; Vaskareth, the King's eldest and the ancient of the storm, 865; the three Primordials, Noir, Red and Blanc, 963 to 975; the Dragon King at 1000, by far the strongest of all."
     }
   ],
   "capabilities": [
@@ -385,8 +385,8 @@
     },
     {
       "id": "m-orc-khan",
-      "n": "The Skull-Khan of Urgol",
-      "race": "orc",
+      "n": "The Champion of Urgol",
+      "race": "halforc",
       "level": 615,
       "int": "speaking",
       "homeName": "Urgol",
@@ -407,7 +407,7 @@
       "titles": [
         "who-ate-the-iron-feast"
       ],
-      "d": "Took his seat over the bodies of forty challengers. No man of the west has lasted a minute with him.",
+      "d": "The King of Gorath's war-champion, a half-orc who took his place over the bodies of forty challengers. No man of the west has lasted a minute with him.",
       "skills": [
         {
           "n": "Iron Feast",
@@ -431,7 +431,7 @@
           "lvl": 10,
           "kind": "aura",
           "fight": true,
-          "does": "The horde follows him anywhere."
+          "does": "The clans follow him anywhere."
         }
       ],
       "items": [

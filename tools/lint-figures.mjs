@@ -152,7 +152,14 @@ if (dem) {
   const list = dem.figures || [];
   if (list.length !== 33) fail('ancient-demons', `${list.length} profiles, not 33`);
   for (const s of BD.species.filter(x => x.tier === 'ancient demon')) { const n = list.filter(f => f.kind === s.id).length; if (n !== s.world) fail('ancient-demons', `${n} of ${s.id}, the bestiary counts ${s.world}`); }
-  const AR = ['ghazrul', 'morvane', 'vethrael'];
+  // order 97 (D-197): demons by rank, every one in Hell and horned
+  for (const f of list) {
+    const s = SP.get(f.kind);
+    if (s && !s.hell) fail(`ancient-demons/${f.id}`, `kind ${f.kind} is not a rank of Hell`);
+    if (!/ of Hell$/.test((f.home && f.home.domain) || '')) fail(`ancient-demons/${f.id}`, `home ${(f.home || {}).domain}: every demon lives in Hell`);
+    if (f.looks && !/horn/i.test(f.looks)) fail(`ancient-demons/${f.id}`, 'a demon without horns');
+  }
+  const AR = ['ghazrul', 'morvane', 'vethrael'];   // Red, Noir and Blanc (ids kept, D-197)
   for (const f of list) if (!AR.includes(f.liege)) fail(`ancient-demons/${f.id}`, `liege ${f.liege}: one of the three Primordial Archdemons`);
   for (const a of AR) {
     const mine = list.filter(f => f.liege === a);
@@ -162,8 +169,13 @@ if (dem) {
   }
 }
 if (anc) {
-  const want = BD.species.filter(x => x.tier === 'ancient dragon').map(s => s.id).sort(), got = (anc.figures || []).map(f => f.kind).sort();
+  // the three dominions (order 97, D-198): each ancient kind held once, by a figure here or, for the storm, by the legend
+  // its kind points at (Vaskareth), whom the category lists (category.legends)
+  const want = BD.species.filter(x => x.tier === 'ancient dragon').map(s => s.id).sort();
+  const got = (anc.figures || []).map(f => f.kind).concat(BD.species.filter(s => s.tier === 'ancient dragon' && s.legend && (anc.category.legends || []).includes(s.legend) && LEG.has(s.legend)).map(s => s.id)).sort();
   if (want.join() !== got.join() || got.length !== 3) fail('ancient-dragons', `kinds ${got.join(', ')}; the bestiary's three are ${want.join(', ')}`);
+  for (const s of BD.species.filter(x => x.tier === 'ancient dragon')) if (!s.dominion) fail('ancient-dragons', `${s.id} rules no dominion`);
+  for (const f of anc.figures || []) if (!f.dominion) fail(`ancient-dragons/${f.id}`, 'rules no dominion');
   for (const f of anc.figures || []) if (f.liege !== 'sarnavoth') fail(`ancient-dragons/${f.id}`, 'serves the King of Dragons');
 }
 if (eld) {

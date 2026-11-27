@@ -3,7 +3,7 @@
  "category": { "id": "legends", "name": "The Legends", "group": "beyond", "order": 1, "kind": "link", "link": "legends", "note": "The legends stand above every other being: each one of a kind, each with a title, each a threat to nations. The King of Dragons is the strongest of all; below him the three Primordial Archdemons, then the Sword Saint, the strongest man alive." },
  "groups": [
   { "name": "The King of Dragons", "ids": ["sarnavoth"] },
-  { "name": "The Primordial Archdemons", "ids": ["ghazrul", "morvane", "vethrael"] },
+  { "name": "The Primordials: Noir, Red and Blanc", "ids": ["ghazrul", "morvane", "vethrael"] },
   { "name": "The Sword Saint", "ids": ["sword-saint"] },
   { "name": "The great beasts and spirits", "ids": ["vaskareth", "tessaly", "ulmavren", "hrimgala", "serrath", "orrun", "pale-shepherd", "ommul", "kethra", "saqqar", "iron-warden"] }
  ],

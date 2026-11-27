@@ -25,7 +25,9 @@ if ((process.env.HTTPS_PROXY || process.env.https_proxy) && !process.env.NODE_US
 }
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const MANIFEST = path.join(ROOT, 'tools/notion-sync.manifest.json');
+const DEFAULT_MANIFEST = path.join(ROOT, 'tools/notion-sync.manifest.json');
+// --manifest=<path> (or NOTION_SYNC_MANIFEST) keeps a bulk run's writes off the tracked file: copy it over at the end of the run
+const MANIFEST = path.resolve(process.env.NOTION_SYNC_MANIFEST || (process.argv.find(a => a.startsWith('--manifest=')) || '').slice(11) || DEFAULT_MANIFEST);
 const NOTION_VERSION = '2026-03-11'; // data sources + markdown API era; checked against developers.notion.com 2026-11-27
 const CHRONICLE_DS = '425d84dd-d9e3-81a9-add3-000bae552746';
 const MIN_GAP_MS = 360; // about 2.8 requests a second (limit: about 3)
@@ -163,6 +165,15 @@ export function mdToBlocks(md) {
     para.push(l.trim()); i++;
   }
   flush();
+  // a rich_text array holds at most 100 elements: a very long paragraph becomes several blocks
+  const fit = arr => arr.flatMap(b => {
+    const c = b[b.type];
+    if (c.children && b.type !== 'table') c.children = fit(c.children);
+    if (!c.rich_text || c.rich_text.length <= 100) return [b];
+    const parts = []; for (let k = 0; k < c.rich_text.length; k += 100) parts.push(c.rich_text.slice(k, k + 100));
+    return parts.map((rtp, k) => ({ object: 'block', type: b.type, [b.type]: { ...c, rich_text: rtp, ...(k && c.children ? { children: undefined } : {}) } }));
+  });
+  blocks.splice(0, blocks.length, ...fit(blocks));
   const clean = b => { delete b._last; const c = b[b.type]?.children; if (c) c.forEach(clean); };
   blocks.forEach(clean);
   return blocks;
@@ -199,7 +210,7 @@ async function createPage(parent, properties, blocks) {
 async function replaceBody(pageId, blocks) { await clearChildren(pageId); await appendBlocks(pageId, blocks); }
 
 // ---------- manifest ----------
-const loadManifest = () => { try { return JSON.parse(fs.readFileSync(MANIFEST, 'utf8')); } catch { return { version: 1, records: {} }; } };
+const loadManifest = () => { for (const f of [MANIFEST, DEFAULT_MANIFEST]) { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch {} } return { version: 1, records: {} }; };
 const saveManifest = m => { const sorted = Object.fromEntries(Object.entries(m.records).sort(([a], [b]) => a.localeCompare(b, 'en', { numeric: true }))); fs.writeFileSync(MANIFEST, JSON.stringify({ version: 1, records: sorted }, null, 1) + '\n'); };
 const sha = s => crypto.createHash('sha1').update(s).digest('hex').slice(0, 16);
 

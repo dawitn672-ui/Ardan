@@ -1,0 +1,22 @@
+{
+ "id": "the-kings-thunder",
+ "name": "the King's Thunder",
+ "rarity": "legendary",
+ "weight": "X",
+ "unique": true,
+ "kind": "world",
+ "beings": [
+  "monster"
+ ],
+ "holders": [
+  "galeheart"
+ ],
+ "born": false,
+ "honour": 30,
+ "buffs": {
+  "spd": 1,
+  "power": 0.12
+ },
+ "req": "hidden",
+ "text": "Third of the three who serve the King of Dragons."
+}
