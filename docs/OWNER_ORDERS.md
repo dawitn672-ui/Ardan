@@ -657,6 +657,10 @@ order is replaced, strike it through and say by what.
     - **Follow-up, 05:40 ET: Notion is ours to manage.** No asking before changes in Notion: create, edit, rename, move and
       reorganise freely. Archive (move to an Archive page) instead of deleting; a true delete still needs the owner to
       confirm the exact pages, as Notion's delete tool requires.
+    - **Follow-up, 06:00 ET: fresh sessions and playtests.** The integrator moves to a **fresh session at each wave boundary**
+      (or when a session grows long), with a handoff, as it sees fit, from now on. The owner plays each build he is sent for
+      about ten minutes and reacts. The repo is public (unlimited standard CI minutes). He may raise his Claude plan soon,
+      and may give a design skill.
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**

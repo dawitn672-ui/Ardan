@@ -113,6 +113,15 @@ gave no API key, so **never push bulk text through the Notion chat tool** (L-012
 
 Model-routed calls are kept to structure and short summaries: a row's title, date, kind and one line.
 
+## 5c. Move to a fresh session at each wave boundary (standing, order 102 follow-up)
+
+A long session re-reads its whole history every turn and breaks tools (the key form failed for length, L-015). At each
+wave boundary, or sooner when a session grows long: commit and push everything, write a handoff (orders since the last
+handoff, the wave's state, agents running and what each owns, open failures, next steps) into `docs/PROGRESS.md`, then
+start a new session with `create_session` (same environment, same repo) whose prompt says "read CLAUDE.md, then the
+handoff in docs/PROGRESS.md, then continue", and tell the owner its link. Running agents keep reporting to the old
+session, so let them finish first or re-brief them from the new one.
+
 ## 6. Critique, then tell the owner
 
 First the harsh pass (order 101): what went wrong this wave, what was assumed unchecked, what the owner will find that

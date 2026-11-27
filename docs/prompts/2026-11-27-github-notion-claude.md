@@ -9,3 +9,7 @@
 ## Follow-up · 2026-11-27 05:40 ET · kept unchanged
 
 > remove the ask before making changes in notion you are free to manage it as you please
+
+## Follow-up · 2026-11-27 06:00 ET · kept unchanged (answers to the efficiency list)
+
+> 1. yes you can do that as you please from now on. 2. ok /context /skill-doctor 3. sure 4. its on my computer so thats impossible. 5. ok will do from now on 6. the repo is public. 7. i will do that soon 8. i could give you a design skill?
