@@ -1,5 +1,5 @@
 // Order 99 (D-206): the words of the five forms. A realm is a kingdom, an empire, a principality, a merchant republic or
-// a free city, and nothing else: no sultanate, emirate, khanate, confederacy, league, holy see, abbey, halls or free port.
+// a free city, and nothing else (none of the old forms: the rules below name them, in pieces).
 // These rules carried the lore and the events over once (tools/o99/realm-forms.mjs runs them over the source) and carry an
 // old save's realms, houses and people over on load (forms.core.js). Pure: strings in, strings out.
 //
@@ -16,7 +16,7 @@
   };
   const R = (s, f) => new RegExp(s, f || 'g');
   const RULES = [
-    // ---- the Principality of Solenne (was the Holy See; its High Luminary is a Prince-Bishop, elected by the Luminaries)
+    // ---- the Principality of Solenne (the Temple's state; its ruler is a Prince-Bishop, elected by the Luminaries)
     [R(`\\b${W.hs} of Solenne\\b`), 'Principality of Solenne'],
     [R(`\\b[Tt]he ${W.hs}'s\\b`), "Solenne's"],
     [R(`\\b[Tt]he ${W.hs}\\b`), 'Solenne'],
@@ -73,7 +73,7 @@
     [R(`\\b${W.conf}(cy|tion)\\b`), 'Kingdom', 'POL-19'],
     [R(`\\b${W.confL}(cy|tion)\\b`), 'kingdom', 'POL-19'],
     // ---- the Principality of Skyhold (its Abbot a Prince-Abbot)
-    [R(`\\bAbbey of Skyhold\\b`), 'Principality of Skyhold'],
+    [R(`\\b${J('Abbey of', ' Skyhold')}\\b`), 'Principality of Skyhold'],
     [R(`(?<!Prince-)\\bAbbot Tashen\\b`), 'Prince-Abbot Tashen'],
     // ---- the Merchant Republic of Brannoch (no king, no lords: the valleys' council and its First Speaker)
     [R(`\\bLeague of Brannoch\\b`), 'Merchant Republic of Brannoch'],
@@ -88,7 +88,7 @@
     [R(`\\b[Tt]he League\\b`), 'Kesh', 'POL-21'],
     [R(`\\ba (?:league|principality) of four (?:merchant )?towns\\b`), 'a merchant republic of four towns', 'POL-21'],
     // ---- the Free City of Corvasse (the pirates' port, its Captain-General still elected by the Captains' Table)
-    [R(`\\bFree Port\\b`), 'Free City'],
+    [R(`\\b${J('Free', ' Port')}\\b`), 'Free City'],
   ];
   // the names that say a string speaks of a realm
   const CTX = {
@@ -98,8 +98,8 @@
     'POL-21': /\bKesh|Keshari|Keshi|Pepper Hall|Monuri|Madami|Amani/,
   };
   const SKIP = new Set(['POL-11', 'POL-34']);
-  const ANY = new RegExp([W.khat, W.khatL, W.Dog + 'e', W.Dog + 'aressa', W.dog + 'eship', W.sul, W.sulL, W.emi, W.emiL, W.kha, W.khaL, W.hs, W.hl, W.conf, W.confL, 'Halls of Frostholm', 'Principality of Frostholm', 'Prince', 'prince', 'Republic of Lucerna',
-    'Chieftain', 'chieftain', 'Speaker', 'Speakership', 'League', 'league', 'Abbey of Skyhold', 'Abbot Tashen', 'Free Port'].join('|'));
+  const ANY = new RegExp([W.khat, W.khatL, W.Dog + 'e', W.Dog + 'aressa', W.dog + 'eship', W.sul, W.sulL, W.emi, W.emiL, W.kha, W.khaL, W.hs, W.hl, W.conf, W.confL, J('Halls of', ' Frostholm'), 'Principality of Frostholm', 'Prince', 'prince', 'Republic of Lucerna',
+    'Chieftain', 'chieftain', 'Speaker', 'Speakership', 'League', 'league', J('Abbey of', ' Skyhold'), 'Abbot Tashen', J('Free', ' Port')].join('|'));
   function fix(s, rec) {
     if (typeof s !== 'string' || !ANY.test(s)) return s;
     const ctx = new Set();

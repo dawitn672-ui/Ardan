@@ -1261,7 +1261,7 @@ A.rulerStyle = function (ru, r) {
   if (ru.sex === "F")
     t =
       {
-        // [order 99, D-206] the five forms' rulers: no sultan, khan or emir is left, and the churchmen who rule a
+        // [order 99, D-206] the five forms' rulers: no title of the old forms is left, and the churchmen who rule a
         // principality are a Prince-Bishop and a Prince-Abbot
         King: "Queen",
         Emperor: "Empress",

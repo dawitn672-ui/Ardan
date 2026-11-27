@@ -3377,3 +3377,58 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
   a lab takes a decider's best reason where the test is not about the draw, and an election's rule is held as the broken
   promise's weight; the summons' bar is half or more in full (129 of 258, with the larger hosts across the borders); the
   court's tests measure against `A.MIL.normal`.
+
+### D-206 · Thirty-four realms of five forms: kingdom, empire, principality, merchant republic, free city (2026-11-27; order 99, with order 97's naming and the owner's plain-words rule; H-177; D-058)
+- **The order:** "change the amount of realms down to 34 with larger kingdoms and empire and get rid of the emirates and
+  sultanates. Other than kingdoms and empires there should only be a principality, merchant, or free city." Today's world
+  has 34 realms already; the larger map waits for the rebuild. Applied now: every realm's form, its name, its ruler's
+  title and the words of the lore, the events and the code that named the old forms.
+- **The mapping, each for its lore** (the other twenty were a kingdom, an empire or a free city already):
+
+  | Realm | Was | Now | Ruler, and the custom kept | Why |
+  | --- | --- | --- | --- | --- |
+  | POL-02 Solenne | Holy See | Principality of Solenne | Prince-Bishop, elected for life by the Luminaries (succession: chosen by the clergy) | the Temple's own state; a church that rules land is a prince-bishopric |
+  | POL-04 Lucerna | Republic, a Doge | Merchant Republic of Lucerna | First Merchant, elected for life by the Great Council | it lives by the Grain Staple and sea insurance; "Doge" is the owner's example of a word to avoid |
+  | POL-09 Frostholm | Halls of Frostholm (giants), a Chieftain | Kingdom of Frostholm | King, chosen at the Thing (elective) | a people's realm, as the other giants' Hrimfell is a kingdom |
+  | POL-12 Ulun | Khanate | Kingdom of Ulun | King, raised by the nine chiefs; the kurultai may still force him out | nine tribes under one hereditary line; Khatun reads Queen |
+  | POL-13 Brannoch | League | Merchant Republic of Brannoch | First Speaker, elected for life by the Council of Valleys | "no one may be king" under its Charter; it lives by silver, cheese and hired crossbows sold to every realm |
+  | POL-17 Qadir | Sultanate | Kingdom of Qadir | King, weighed against the Book of Wells; its great lords (the old emirs) are princes | a hereditary crown of wide lands |
+  | POL-19 Sahrim | Confederacy, a Speaker | Kingdom of Sahrim | King, acclaimed for life by the clan chiefs (elective); a clan may still walk away from what it did not swear to | the largest realm on the map: order 99's larger kingdoms |
+  | POL-21 Kesh | Kesh (a league of four towns) | Merchant Republic of Kesh | the Prince of Kesh, elected by the council of merchant houses (council) | its government is its merchant houses (the naming study; order 97's "Kingdom of Kesh" was the example of a name with its descriptor, which this keeps) |
+  | POL-24 Sabra | Emirate | Principality of Sabra | Prince, father to son | a small realm that broke from Qadir |
+  | POL-27 Skyhold | Abbey | Principality of Skyhold | Prince-Abbot of the White Stair (chosen by the clergy) | the monastery-state of the Roof of the World |
+  | POL-32 Ambrel | Sultanate | Kingdom of Ambrel | King | a hereditary crown of the spice isles |
+  | POL-33 Corvasse | Free Port (pirates) | Free City of Corvasse | Captain-General, elected by the Captains' Table | a port that rules itself |
+
+  POL-11 (Horde of Gorath) and POL-34 (Ughrak Clans) are the orcs' (order 98) and another builder's: untouched here.
+  Forms of the 32: 22 kingdoms, 2 empires, 3 principalities, 3 merchant republics, 2 free cities.
+- **Where the naming study differs** (`.claude/skills/cold-reader-naming/references/ardan-offenders.md`): it suggests a
+  principality for Brannoch and Sahrim. Brannoch's Charter forbids a king and lords, and its head is elected for life
+  (a republic's); Sahrim is the largest realm on the map, and order 99 asks for larger kingdoms. Either is one line of
+  `00-lore.json` and two of `a-rules.core.js` to change.
+- **The form is a field, the way of rule is kept.** `LORE.realms[id].form` and `r.form` (new realms carry theirs;
+  `A.realmForm(r)` reads one from the name where none is kept). The realm's kind (`type`) keeps every number and word the
+  engine reads, under names that no longer name a form: theocracy is "temple principality", sultanate and emirate one
+  "well realm" (their rows were the same), the nomad confederations "nomad clans", the mountain confederation "mountain
+  valleys", the city-state "free city", the city league "merchant towns" (`data/military/standing.json`,
+  `src/nobility/9996-polity`). Succession (`A.GOV`: elective, council, theocracy) is unchanged; the law's position reads
+  "Chosen by the clergy", not "Theocracy". `A.polSeed` reads the lore's government words for crown authority: the old
+  sultanates and emirate read "absolute" (2, as before), the confederacies "clans" and "compact" (0, as before).
+- **New realms.** A breakaway (70-fresh-realms-and-tensions) is a Principality under a Prince (a duchy, a march, a hold, a
+  priory, a clan, a khanate or an emirate before), or a Free City under a First Burgher where towns bought their freedom;
+  lords who break away (a faction) found a Principality (it was "the X League", a Lord); a realm founded small is a
+  Principality (a Lordship before), and its Prince may proclaim himself King (the decision's show no longer hides it from
+  a prince; a churchman's principality stays the Temple's). Proclaiming a kingdom or an empire sets the form.
+- **The words.** `tools/o99/realm-forms.mjs` ran the rules of `src/world/9999940-realm-forms/a-rules.core.js` once over
+  every string of the lore and every string and template of the source (1,277 strings, as c7's rename did): Sultan, Emir,
+  Khan, Khatun, High Luminary, Doge, Chieftain (Frostholm), Speaker (Sahrim) and the old forms' names become the plain
+  words, the realm-only ones only where a string speaks of that realm. `A.rulerStyle` and the voices' word pairs know the
+  Princess-Bishop and Princess-Abbess. People's given names (Emir and Sultan are names in the steppe and desert pools)
+  are not titles and stay.
+- **Old saves** carry over on load (`A.REALM_FORMS.carry`, idempotent): realms' names, titles, kinds and primers; old
+  breakaways; houses' and people's lore strings. The prose a life has kept (log, news, the world record) keeps its words.
+- **Left for the rebuild (the larger map):** the free cities are large for the form (Ostra 2.4 million on 187,600 km²,
+  Corvasse 101,275 km²); Kesh (2.2 million, four towns) and Brannoch (1.4 million) are large republics; Sabra (392,225 km²)
+  and Skyhold (402,425 km²) are wide principalities, mostly waste and mountain; Lucerna (60,125 km², one province) is
+  right for a merchant republic. Names that stand too close (Kesh and the demon Vesh, Abara and Sabra, Qadir and Qadira)
+  are the naming pass's (wave 5).
