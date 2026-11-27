@@ -32,7 +32,9 @@ shared CPU (timing tests) the bottleneck. Don't start a timing-sensitive job (sp
 
 ## 2. Merge
 
-1. `git merge --no-edit <branch>` from the builder's worktree branch (it shares the repo's refs).
+1. `git merge --no-edit <branch>`. Worktrees share the repo's refs, but a builder's commits may sit on the branch it was
+   told to make or on the harness's `worktree-agent-<id>` branch: check the shas its report names
+   (`git branch --contains <sha>`) and merge the branch that holds them all.
 2. Record files conflict almost every time. Run `node .claude/skills/ardan-integration/scripts/merge-records.mjs`: it
    keeps both sides of `docs/HISTORY.md` and `docs/DECISIONS.md` ordered by number, and both sides of `CHANGELOG.md` and
    other docs line by line. Read the result once. Code conflicts are resolved by hand, by reading both intents.
@@ -57,8 +59,8 @@ Before calling anything noise, put numbers on it:
 
 - **A timing test** (scaleTiming, d9OneMap, press-gate, s1Cost) red on one shard: run it locally on the same commit's
   build. If it passes with a wide margin, and the failing shard was slower overall (its duration against the other
-  shards, every number in its detail scaled alike), it is the runner. The next batch's run re-checks it; never re-run a
-  run just to get green, and never widen the bar for it. If it is tight locally too, it is real: profile it.
+  shards, every number in its detail scaled alike), it is the runner. Re-run at most once, to confirm, and say so; or
+  let the next batch's run re-check it. Never widen the bar for it. If it is tight locally too, it is real: profile it.
 - **A test that read one world's luck** (a seed that no longer has a war, a shrine, a blind player): any change moves
   every world's random stream. Make it robust with `T.trySeeds` and pooled numbers, never by lowering the bar.
 - **A real bug** shows up as a broken rule (two holders of one post, an error in the console, a number outside a design
@@ -70,10 +72,10 @@ Before calling anything noise, put numbers on it:
 
 ## 5. Cut the version (D-134)
 
-Only on a commit both tiers tested green:
+Only on a commit both tiers tested green (the run ids are the numbers in the runs' URLs):
 
 ```sh
-node tools/version.mjs new vX.Y.Z-alpha.N "what changed" --at=<sha> --ci=<check run>,<long run> --sample=noble-life
+node tools/version.mjs new vX.Y.Z-alpha.N "what changed" --at=<sha> --ci=<check run id>,<long run id> --sample=noble-life
 git push origin <sha>:refs/heads/release/vX.Y.Z-alpha.N
 git add -A && git commit -m "vX.Y.Z-alpha.N: records (row, changelog, sample save) [skip ci]" && git push origin HEAD:main HEAD:v2-integration
 ```
