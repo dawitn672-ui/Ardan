@@ -19,9 +19,11 @@
     "person": 35
   },
   "legends": {
-    "about": "Order 95: the great mostly grow by refining their skills and techniques (and titles and arms): every year each living legend and master refines a little, its power multiplied by 1 + perYear x the years refined, up to max. All refine alike, so their matchups hold; a fresh world reads them as the data writes them. Levels from defeats come besides (LV.legendDefeat), slowly.",
+    "about": "Order 95: the great mostly grow by refining their skills and techniques (and titles and arms): every year each living legend and master refines a little, its power multiplied by 1 + perYear x the years refined, up to max. All refine alike, so their matchups hold; a fresh world reads them as the data writes them. The figures registry's fixed beings (the ancient dragons and demons, PW.FIG) refine and gain as the legends do (C-30, order 98). Levels from defeats come besides (LV.legendDefeat): order 97 asks that an archdemon who beats an equal a hundred times gains twenty levels (and that surviving it be near impossible), so among the great a defeat of a foe at most peerWithin levels below (an equal, or stronger) pays peerMul times the peers it would (at 950, a hundred such defeats give 20 levels; a man far below pays as before).",
     "perYear": 0.004,
-    "max": 0.25
+    "max": 0.25,
+    "peerMul": 21,
+    "peerWithin": 10
   },
   "floor": {
     "about": "Growing up: a person stands at least at floor(age) = grown x (age / the race's grown age)^pow, where grown = 30 + (mean potential - 42) / 3, held to 20..40 (the owner's average people 20-50, order 93; 24 and 20-30 before). After the grown age only defeats raise the level.",
@@ -42,7 +44,22 @@
     "posts": { "order": [300, 700], "army": [230, 420], "div": [230, 299], "bn": [150, 299], "coy": [120, 250], "free": [120, 250], "seat": [50, 299], "staff": [50, 180], "office": [50, 99], "title": [50, 99], "house": [50, 99] },
     "full": 20,
     "knee": 0.6,
-    "maxKills": 60
+    "maxKills": 60,
+    "rule": {
+      "about": "A ruler's level is his own (order 97; order 98, answer 3: 'countless other factors, shown mainly in the kings who do not do much themselves'; D-205; src/people/9999975-level/d-rulers.core.js). Each year (and at the world's birth) every ruler but the player chooses his way of rule through A.WHY.decide, from his traits and temper, his age and health, his skills, his realm's wars and kind (a war-chief leads; a council's elect sits at the table), what the lore writes of him, and the habit of the way he already keeps. The way stands in for his upbringing and his crown's own posts (ownPosts) in LV.band: his level moves from where it stood when the way began (L0) toward the way's 'to' over 'full' years (each year counting 'years' of one where a way sets it: a field king's drill alone takes him half way; each of his years at war counts warYear more: his wars fought), from at least 'from' where a way sets one; a ruler the lore says won his wars at the head of his host comes to the world with loreWars years of war; 'cap' is how far a strong body's might can carry him above it (none for a ruler at ease: his level is what his life has left him). A field king reaches the elite (order 93's 300-420) only after long years of war; an idle or sick one sinks to the level of ordinary grown folk. 'w' is each way's base weight, 'band' the A.WHY band (options this close to the best go to a seeded draw of the ruler's own stream).",
+      "ways": {
+        "field": { "from": 100, "to": 320, "cap": 360, "years": 0.5, "w": -0.6, "label": "leads his hosts and drills with his guard" },
+        "drill": { "from": 75, "to": 160, "cap": 200, "w": 1.0, "label": "keeps the arms-practice of his upbringing" },
+        "council": { "to": 50, "cap": 99, "w": 0.2, "label": "rules from the council table" },
+        "ease": { "to": 30, "cap": 0, "w": -0.4, "label": "does little himself" }
+      },
+      "full": 20,
+      "warYear": 2,
+      "loreWars": 5,
+      "habit": 1.0,
+      "band": 1.0,
+      "ownPosts": ["title", "office", "house", "seat", "staff"]
+    }
   },
   "points": {
     "about": "Each level brings points (a race may set its own with GD.RACES[r].points), and one more at every bonusEvery-th level. A stat's ceiling is the person's potential x capMul (as A.train's); the body's room at an age is the ceiling x (roomChild + (1 - roomChild) x age / grown) below the grown age, the whole ceiling after; old age, wounds and illness lower what is read, not what is placed. A point costs 1 below half the ceiling, 2 to three quarters, 3 above. Placed points never move.",

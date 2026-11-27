@@ -3916,3 +3916,102 @@ did in the same hour (a new game's main-thread CPU is the same on both builds, 1
 The owner offered five (Impeccable, taste-skill, Emil Kowalski's skills, brand-identity, oil-ui). Read and scanned with SkillSpector 2.13.7 (static): adapted `emil-motion` (MIT, vendored markdown), `ardan-design-critique` (from Impeccable, Apache-2.0, three reference files) and `ardan-brand-identity` (MIT, eight reference cards); skipped taste-skill (web landing builder, Stop hook, network photo search, hover motion) and oil-ui (Chinese-language, update check, paid image service, 112 code-execution findings). `ardan-ui-review` section 1c says when each runs; `ardan-integration` section 7 is the vetting recipe. No code changed.
 
 **Undo.** Revert the commit.
+### H-174 · 2026-11-27 · "Legend" kept for the legends: the fighter tiers read Formidable and Peerless (order 98, C-23)
+
+**What and why.** Order 98: "Legend" means one thing, the level 800-1000 legends; orders 78 and 83: Master and Legend are
+no measures. The release's fighter tiers t5 and t6 (`GD.TIERS`: "Master" worth 91, "Legend" worth 118) are **Formidable**
+and **Peerless**; the hoax beasts' scale "Legend" is **Tale**; the 90-renown achievement "Legend" is **Known to All**
+(D-203). With them: `GD.LEGEND_CAP` -> `GD.PEERLESS_CAP`, `GD.MASTER_CAP` -> `GD.FORMIDABLE_CAP`, `A.legendCount` ->
+`A.peerlessCount`, `A.ladderCensus()` `{ legends, masters }` -> `{ peerless, formidable }`, `CAR.LEGEND_W` ->
+`CAR.PEERLESS_W`, the census notes `legends`/`masters` -> `peerless`/`formidable` (the note `tier` now opens `t6`, where
+it named a key that did not exist), and the folder `src/people/32-legend-and-master-caps` -> `src/people/32-fighter-ladder`
+(`git mv`; `docs/NAMES.md`). Every text a player reads: the codex Power page (the ladder of fighters, one against many,
+the living ladder, the beasts' scales), the help, the tier notes, the challengers' log line and deed, the chronicle's
+"death of a peerless fighter", the grave scene `wc_legend_grave`. Ids a save holds keep their spelling (`cr_legend`, the
+chronicle kind `legend`, the beast tier key `legend`, the achievement key `legend`); the 99993-v2-stats number rules
+know the new words. Plain words, after the owner's naming rule of the same day.
+
+**Not done here (another builder owns the folder).** `src/people/36-skills/f-people.core.js` `SK.census` still calls a
+best skill of 96+ "legend": rename the array and `S.top.legend` (for example to `peak`; `S.top` is rewritten each year,
+so old saves need nothing), the comment "Grandmaster (88) or Legend (96)", and `test.mjs` `s1Census`'s "0 to 2
+Legends" and its detail.
+
+**Files.** `src/core/release/core/18-event-view-a.js` (`GD.TIERS`, `A.orderMaster`), `18-event-view-b.js`
+(`GD.TIER_INFO`, `GD.PEERLESS_CAP`, `A.peerlessCount`, `A.POWER_CODEX`), `23-ui-f.js` (one against many, help),
+`02-game-data-a.js` (the achievement); `src/people/32-fighter-ladder/*`; `src/ui/59-descriptions/descriptions.more-realm`,
+`descriptions.wire2`; `src/events/994-careers/*`; `src/world/57-world-chronicle/*`; `src/world/64-npc-beliefs` (comments);
+`src/people/99993-v2-stats` (two number rules); `src/ui/92-scene-card` (the tale's chip); READMEs; `docs/NAMES.md`.
+
+**Tests.** See H-176's checks (one build of the three steps).
+
+**Undo.** Revert the commit (the folder rename reverts with it).
+
+### H-175 · 2026-11-27 · The Sword Saint enters the lore; the legends' dates and places agree with it (order 98, C-33, C-34)
+
+**What and why.** Order 83 makes the Sword Saint the best-known figure of history, told differently by every people;
+order 98: he enters the lore's history, wars and chronicles; order 97 asks why he lives where he does and does not rule
+or fight the Dragon King. The release lore (`src/core/release/core/00-lore.json`, edited by a script and written in
+its own layout, `tools/release/format.mjs`'s `prettyJson`) gains (D-204):
+- **wars** WAR-44 *The Red War* (1023-1025, placed after the Qadir-Sabra War, whose line now says the Red War ended it)
+  and WAR-45 *The Valley Burnings* (1044-1045, ended by the Fight on the Stair);
+- **figures** FIG-101 Cael Vardan, the Sword Saint (born 986, living) and FIG-102 Ossery the Black (1041-1089);
+- **chronicle** five entries 1085-1104 (the fourth kettle, Ossery's ninth challenge and his grave below the Stair, the
+  elven blades, the fifty-ninth autumn), appended so the canon ids of `57-world-chronicle`'s citations keep their places;
+- **songs** six, one for each people's telling (Aldmark, the south, the dwarves, the elves, the orc clans, the giants),
+  and **sayings** five ("Go home. Your mother is waiting." among them; the culture-matched ones reach `15-lf`'s sayings);
+- **secret** SEC-72 *The terms on the Stair*: why he watches and will not finish the King (the King's crown holds three
+  hundred dragons to their dominions; "Wait for me").
+The Primordials are written by order 98's names: Red (Ghazrul), Noir (Morvane), Blanc (Vethrael).
+
+**C-34 and the legends' sheets (`data/legends.json`; four history sentences, the Primordials' builder owns the rest of
+the file this round).** Vaskareth's tribute is dated against the reckoning (some seven hundred years before the Return,
+seventeen centuries before Aldmark's founding in 951 AR; the north's oldest songs count from the fire, not four realms'
+chronicles). Sarnavoth's grudge against Skyhold (POL-27) is the Stair House, a daughter-house of the order built on the
+ridge in 1048, not a monastery two thousand kilometres from the Dragon Mountains. Ghazrul's (Red's) history no longer
+makes the Burning Waste in 1025 (the lore has Zahir cross it in 790): the Saint met her at its green edge, the wells and
+groves between Qadir and Sabra. The Sword Saint's history gets its dates in AR, Vardan's Ford, the Red War, the terms of
+the Fight on the Stair and his reasons for the ridge and against a crown (the new names, Red and Noir, in that sentence;
+his `grudges` and `rivals` still name `ghazrul` and `morvane` for the Primordials' builder to rename).
+
+**For the merge.** Lines of `data/legends.json` touched: Vaskareth `history`; Sarnavoth `grudges[POL-27].why`; Ghazrul
+`history` (its second sentence); sword-saint `history`. If the Primordials' builder rewrote the same sentences, keep their
+names and ids and these dates and places.
+
+**Tests.** See H-176's checks (one build of the three steps).
+
+**Undo.** Revert the commit.
+
+### H-176 · 2026-11-27 · A ruler's level is his own; stat points never forgotten; the fixed figures grow; the level README's anchors (order 98: C-16, C-29, C-30, C-31)
+
+**C-16, kings' levels are personal** (order 97; order 98's answer 3, "countless other factors, mainly shown through
+the ones that don't do much themselves"; D-205). New `src/people/9999975-level/d-rulers.core.js`: each ruler but the
+player keeps a way of rule (`p.rway`: field, drill, council, ease), chosen at the world's birth (`worldInit`) and each
+year (`A.onYear`) through `A.WHY.decide` on a stream of its own (seed, ruler, year), with sourced reasons: his traits
+and temper, his age read as a man's and his health, his best skills, his realm at war and its kind, what the lore's
+primer writes of him (read once at the birth: "won the Nagora Pass", "bedridden", "signs whatever the banker reads him",
+"elected"), and the habit of his way. `LV.band` (a-level) takes the way's band in place of his upbringing and his
+crown's own posts (`seed.rule.ownPosts`); service and posts in arms still count. Numbers in `data/level.json`
+`seed.rule`: the level moves from where it stood when the way began toward the way's end over twenty years (field 100
+toward 320, his drill alone half way and each year at war two more; drill 75 toward 160; council toward 50; ease toward
+30, and a strong body carries an idle king no higher). A change of way is kept in `A.S.why` (kind `rule`); an old save's
+rulers read their old band until the year's turn.
+
+**C-29, stat points dropped from the queue.** `LV.npcYear` also gathers everyone alive with points waiting, so the
+people `LV.queue` drops past 400 are placed at the year's turn (before: never again). Regression test `lvQueueNoDrop`
+(fails on the old rule by construction: the 60 dropped keep their points).
+
+**C-30, the fixed figures grow** (orders 92, 95, 97). `LV.legendYear` refines and `LV.legendDefeat` pays `PW.FIG` (the
+ancient dragons and demons) as the legends; among the great a defeat of an equal (a foe at most 10 levels below, or
+stronger) pays 21 times (`legends.peerMul`, `peerWithin`), so a hundred such defeats give an archdemon about twenty
+levels (order 97; before, under a level: order 95's "a level or two" is replaced); a man far below pays as before.
+
+**C-31.** The level README's anchors are order 93's (D-185), its readings paragraph says how nobles are seeded since
+order 96; the new rules and tests are listed there.
+
+**Files.** `src/people/9999975-level/` (`a-level.core.js`: `LV.band`, `LV.npcYear`, `LV.legendYear`,
+`LV.legendDefeat`; `d-rulers.core.js` new; `test.mjs`: `lvRulers`, `lvQueueNoDrop` new, `lvLegends` to order 97;
+`README.md`), `data/level.json` (`seed.rule`, `legends.peerMul`, `peerWithin`, the about texts).
+
+**Checks** (`/tmp/ardan/o98l/`, one build of H-174 to H-176): the feature tests lvRulers (210 rulers in six worlds: council 96 at a mean of 65, drill 62 at 158, ease 37 at 35, field 15 at 228; the lore's infirm rulers at ease 8 of 12; twenty years in the field with ten at war 320, with none 210; at ease 33), lvQueueNoDrop (60 dropped, 60 placed), lvLegends (an archdemon at 975: 20 levels from a hundred equal defeats; the fixed figure refines x1.040 with the legends), lvClass, lvSeed, statNpc, statMigrate (27 saves), ladderCap, ladderPage, ladderCensus, ladderOrderMerit, carLegend, wcScenesRender, figRegistry, figDeterministic, btSecrets, whyRecordsKept, pwLegends, pwPureAndOldSave, msEliteEmerges, msDeterministic, ttCoverage, ttCov2Realm, ttPure2, renderRng, replayWithRender, v2svRoundTrip, uiSmoke: all pass (uiSmoke timed out on its first click twice with five heavy tests beside it on a machine at load 35-90, and passes alone, as main's build does); node --test tests/v2 166 of 166; lint-reasons 41 (baseline 41), lint-stages, lint-docs-index, lint-events for 57-world-chronicle and 994-careers clean; coherency against the quick baseline: no contradiction, no check rose. Found and fixed on the way: the rename missed eight uses of A.orderMaster's local flag (every order raised threw; 4a8e9bed). Not completed: wcCitesShare (long tier, 964 s on CI) timed out at 1,800 and 4,000 s on this machine at load 20-90 (every test ran about ten times its CI time); a direct read of the chronicle canon in a fresh world finds the Red War (realms Aldmark, Qadir, Tamar, Sahrim, Sabra) and the fourth kettle (Stonehold) among 176 entries, the codex songs page shows the new songs, and SEC-72 is in the bible, with no page error. Not run: balance.mjs (the player's level and the starting paths are untouched: the ways are for NPC rulers only) and the long-tier bot lives (lvAnchors).
+
+**Undo.** Revert the commit; `p.rway` on people in a save is then ignored.

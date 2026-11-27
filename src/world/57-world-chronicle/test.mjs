@@ -425,7 +425,7 @@ export default {
       return { ids: ids.length, shown, bad: bad.slice(0, 5), nBad: bad.length };
     });
     const n = Object.keys(r.shown).length;
-    // some scenes need what only other features make (a famine needs 45-economy, a Legend 32-legend-and-master-caps) or a rare event
+    // some scenes need what only other features make (a famine needs 45-economy, a peerless fighter 32-fighter-ladder) or a rare event
     return { ok: !r.nBad && n >= 8, detail: `${n} of ${r.ids} scenes drawn from lives 30 years in (${Object.entries(r.shown).map(([k, v]) => `${k.replace('wc_', '')} ${v}`).join(', ')}); problems ${r.nBad}${r.bad.length ? ': ' + r.bad.join('; ') : ''}` };
   },
   async wcRecallLinesRead(pg) {

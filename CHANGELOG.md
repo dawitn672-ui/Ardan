@@ -41,6 +41,25 @@ What changed for the player, in plain words, one section per version (newest fir
   heads now get better at what their posts ask of them over the years, and a master at the top of his art keeps working
   at it while he is not too old: new Grandmasters rise as the old ones die, so the world keeps a few of them through
   your life instead of losing them one by one.
+- **Every king his own level.** A ruler's level now follows how he rules: one who leads his hosts in person climbs
+  toward the realm's best fighters over years of war, one who keeps up his arms-practice stays a capable fighter, one who
+  rules from the council table slips back, and one who does little himself (the idle, the indulgent, the sick and the
+  very old) sinks to the level of ordinary folk. Each king chooses his way for his own reasons (his nature, age, health,
+  his realm's wars and what kind of crown he wears) and can change it as his life changes. A warrior king can now be
+  among his realm's named best.
+- **Points no longer forgotten.** People who had stat points waiting could lose track of them in a busy world; now
+  everyone places theirs at the turn of the year. The ancient dragons and demons now grow over the years as the legends
+  do, and one of the great who beats an equal again and again rises far faster than before.
+- **The Sword Saint in the history books.** Cael Vardan's deeds are now part of the world's past: the Red War of 1023
+  to 1025, when he bound the Primordial Red under the Burning Waste; the Valley Burnings and his three-day fight with the
+  King of Dragons on the Saint's Stair in 1045; the challenger who lost to him nine times. The codex's wars, songs and
+  sayings tell it, and each people tells it its own way: the north as a shepherd's triumph, the south as help that came
+  late, the dwarves as a promise kept. Why he still lives on that ridge, and why he will not wear a crown or finish the
+  sleeping King, is in his story, and part of it is a secret you can learn.
+- **"Legend" means the legends.** The word now belongs only to the great beings of the world's top, such as the King of
+  Dragons and the Sword Saint. The two highest tiers of ordinary fighters are now called Formidable and Peerless (there
+  are still perhaps five Peerless fighters alive), the beasts nobody has ever seen are Tales, and the achievement for
+  90 renown is Known to All.
 - **Armies of their true size.** Every realm now keeps a standing host by its people, its wealth and its kind: from
   about ten thousand soldiers in a small kingdom to more than a quarter of a million in the greatest empire, while a poor
   abbey or a pirate port keeps what it can pay. Knights are few and strong: from about fifty to three thousand in a

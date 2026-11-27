@@ -115,7 +115,7 @@
   SC.chosen = new WeakMap(); // q -> { vi, label, odds, band } of the choice made (part 2 writes it)
   const el = (doc, tag, cls, html) => { const x = doc.createElement(tag); if (cls) x.className = cls; if (html != null) x.innerHTML = html; return x; };
 
-  SC.BEAST_TIER = { great: ['rare', '◆◆', 'great beast'], titan: ['legendary', '★', 'legendary beast'], legend: ['mythical', '✦', 'a legend'] };
+  SC.BEAST_TIER = { great: ['rare', '◆◆', 'great beast'], titan: ['legendary', '★', 'legendary beast'], legend: ['mythical', '✦', 'a tale'] };   // the tier key 'legend' reads "a tale" (D-203); rarity words from the one ladder (D-200)
   SC.beastTier = function (q) {
     const id = q && q.ctx && typeof q.ctx.beast === 'string' ? q.ctx.beast : null;
     if (!id) return null;

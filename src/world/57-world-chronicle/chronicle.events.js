@@ -1,6 +1,6 @@
 // Scenes that look back on the world record (57-world-chronicle): an old soldier's siege, the price of bread since the
 // famine, the bells for a dead ruler, children playing at a war, a sickness in the street (queued by the epidemic),
-// refugees of a burned town, a song about a battle, a sergeant's war, a grave of a Legend, a coin of a fallen realm, a
+// refugees of a burned town, a song about a battle, a sergeant's war, a grave of a peerless fighter, a coin of a fallen realm, a
 // lord's table, a monk writing the annals, the burnt end of a town. Each setup picks an entry the character could know
 // of (A.WC.pickFor: their realm or a neighbour's, after their birth, or the realm's canon) and backs out if none fits.
 (function () {
@@ -114,11 +114,11 @@ A.defEvents([
     cond: (p, C) => C.adult(p) && C.chron(p, 'legend', 'run'),
     w: 2, cool: 12,
     setup: pick('legend', { id: 'wc_legend_grave', mode: 'run' }),
-    text: 'Pilgrims crowd the grave of {wcWho}, dead since {wcYear} and already half a saint. A man sells splinters from a spear shaft he swears was the Legend\'s own. Young men with new swords kneel and touch the stone.',
+    text: 'Pilgrims crowd the grave of {wcWho}, dead since {wcYear} and already half a saint. A man sells splinters from a spear shaft he swears was the great fighter\'s own. Young men with new swords kneel and touch the stone.',
     choices: [
       { t: 'Kneel and touch the stone', r: 'It is only stone, cold and worn smooth. You feel braver anyway, for a day or two.', fx: { wil: 1, piety: 1 } },
       { t: 'Buy a splinter', r: 'You will keep it in your purse for years and never quite believe in it.', fx: { coin: -3, happy: 2 } },
-      { t: 'Ask the old men how the Legend really fought', check: { s: 'persuasion', s2: 'int', d: 45 },
+      { t: 'Ask the old men how the great fighter really fought', check: { s: 'persuasion', s2: 'int', d: 45 },
         win: { r: 'One of them fought beside {wcWho}. He shows you a cut that is better than any you knew.', fx: { skill: { melee: 2 } } },
         lose: { r: 'They tell you it was all in the eyes, and laugh at your face.', fx: { happy: -1 } } },
     ] },

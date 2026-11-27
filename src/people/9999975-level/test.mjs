@@ -486,10 +486,11 @@ export default {
       `earning: ${r.earn.msg}; profile at 375: "${r.prof.cls}", a note of ${r.prof.note.length} characters, opened by a press ${open}, right edge ${Math.round(r.prof.width)} of ${r.prof.vw}` };
   },
 
-  // the legends grow too (orders 92 and 95): a great being's level is its data's plus what it has gained; a hundred
-  // defeats of its equal give an archdemon one or two levels, a thousand of soldiers nothing to speak of; a fresh world
-  // reads every legend at the data's level; and the yearly refinement of their arts raises them all alike, so a matchup
-  // reads as before
+  // the legends grow too (orders 92, 95 and 97): a great being's level is its data's plus what it has gained; a hundred
+  // defeats of an equal (a foe at its own level each time) give an archdemon about twenty levels (order 97, C-30: 17 to
+  // 23), a thousand of soldiers nothing to speak of; a fresh world reads every legend at the data's level; the yearly
+  // refinement of their arts raises them all alike, so a matchup reads as before; and the figures registry's fixed beings
+  // (PW.FIG: the ancient dragons and demons) refine and gain as the legends do
   async lvLegends(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     const r = await pg.evaluate(() => {
@@ -497,7 +498,7 @@ export default {
       T.enter({ seed: 9821, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 24 });
       const ids = [...PW.LEG.keys()].sort(), fresh = ids.every(id => LV.legendGain(id) === 0);
       const id = ids[0], L0 = PW.being(id).level;
-      let n = 0; for (let i = 0; i < 100; i++) n += LV.legendDefeat(id, L0, 'kill');
+      let n = 0; for (let i = 0; i < 100; i++) n += LV.legendDefeat(id, PW.being(id).level, 'defeat');
       const g1 = A.S.pw.leg[id].lg.slice(), L1 = PW.being(id).level;
       for (let i = 0; i < 1000; i++) LV.legendDefeat(id, LV.D.foes.soldier, 'kill');
       const g2 = A.S.pw.leg[id].lg.slice();
@@ -507,10 +508,15 @@ export default {
       const p0 = PW.compare('sarnavoth', arch).p, w0 = PW.being('sarnavoth').power;
       for (let y = 0; y < 10; y++) LV.legendYear();
       const p1 = PW.compare('sarnavoth', arch).p, w1 = PW.being('sarnavoth').power, rf = ids.map(x => LV.legendRefine(x));
-      return { id, fresh, L0, L1, n, g1, g2, p0, p1, w0, w1, rf: [Math.min(...rf), Math.max(...rf)] };
+      // C-30: a fixed figure (an ancient dragon or demon) refined with them, and gains by a defeat of its equal
+      const fig = PW.FIG && PW.FIG.size ? [...PW.FIG.keys()].sort()[0] : null, figRf = fig ? LV.legendRefine(fig) : null;
+      if (fig) LV.legendDefeat(fig, PW.being(fig).level, 'defeat');
+      const figG = fig && A.S.pw.leg && A.S.pw.leg[fig] ? A.S.pw.leg[fig].lg.slice() : null;
+      return { id, fresh, L0, L1, n, g1, g2, p0, p1, w0, w1, rf: [Math.min(...rf), Math.max(...rf)], fig, figRf, figG };
     });
-    const ok = r.fresh && r.n >= 1 && r.n <= 2 && r.L1 === r.L0 + r.n && r.g2[0] === r.g1[0] && r.g2[1] - r.g1[1] < 0.001 && r.w1 > r.w0 && Math.abs(r.p1 - r.p0) < 0.02 && r.rf[0] === r.rf[1] && r.rf[0] > 1;
-    return { ok, detail: `a fresh world: every legend at its data's level ${r.fresh}; ${r.id} at ${r.L0}: a hundred defeats of its equal give ${r.n} levels and ${r.g1[1]} of the next; a thousand soldiers then add ${(r.g2[1] - r.g1[1]).toFixed(6)} of a level; ten years of refinement: Sarnavoth's power ${Math.round(r.w0)} -> ${Math.round(r.w1)}, every legend x${r.rf[0].toFixed(3)}, against an archdemon ${r.p0.toFixed(3)} -> ${r.p1.toFixed(3)}` };
+    const figOk = !r.fig || (r.figRf === r.rf[0] && !!r.figG && (r.figG[0] > 0 || r.figG[1] > 0));
+    const ok = figOk && r.fresh && r.n >= 17 && r.n <= 23 && r.L1 === r.L0 + r.n && r.g2[0] === r.g1[0] && r.g2[1] - r.g1[1] < 0.001 && r.w1 > r.w0 && Math.abs(r.p1 - r.p0) < 0.02 && r.rf[0] === r.rf[1] && r.rf[0] > 1;
+    return { ok, detail: `a fresh world: every legend at its data's level ${r.fresh}; ${r.id} at ${r.L0}: a hundred defeats of its equal give ${r.n} levels and ${r.g1[1]} of the next; a thousand soldiers then add ${(r.g2[1] - r.g1[1]).toFixed(6)} of a level; ten years of refinement: Sarnavoth's power ${Math.round(r.w0)} -> ${Math.round(r.w1)}, every legend x${r.rf[0].toFixed(3)}, against an archdemon ${r.p0.toFixed(3)} -> ${r.p1.toFixed(3)}; the fixed figure ${r.fig}: refined x${r.figRf == null ? '-' : r.figRf.toFixed(3)}, one defeat of its equal gives ${JSON.stringify(r.figG)}` };
   },
   // the owner's anchors as the typical outcome of ordinary lives (orders 91-94, D-184; long tier): pooled bot lives, half
   // born peasants and half nobles, played 35 years. A life that never fought (three kills or fewer, at most one duel won)
@@ -543,6 +549,72 @@ export default {
   // worth would read (readings, 2026-11-26: commoners 21-48, nobles 58-81, royals 68-96, their computed levels 10-131); a
   // veteran is seeded in his rank's band (the band's low end a floor: his life); kills outside service count from the floor; a stored level stays; a named
   // figure's level from data wins
+  // C-29 (order 98): the queue of NPCs with points waiting keeps at most 400 and drops its oldest; a person dropped kept
+  // his points for ever. Now the year gathers everyone with points waiting: 460 people granted points at once (the first
+  // 60 fall out of the queue) all place theirs at the year's turn, where their body has room
+  async lvQueueNoDrop(pg) {
+    if (!(await pg.evaluate(GATE))) return NO;
+    const r = await pg.evaluate(() => {
+      const LV = A.LV;
+      A.newGame({ seed: 9871, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      const ids = Object.values(A.S.people).filter(p => p && p.alive && p.st && p.id !== A.S.pc && A.age(p) >= 16).map(p => p.id).sort((a, b) => (String(a) < String(b) ? -1 : 1)).slice(0, 460);
+      for (const id of ids) LV.grant(A.P(id), 3, 'a test of the queue');
+      const queued = new Set(A.S.lvq), dropped = ids.filter(id => !queued.has(id));
+      const room = id => GD.STATS.some(s => LV.canPlace(A.P(id), s));
+      const able = dropped.filter(room);
+      LV.npcYear();
+      const left = ids.filter(id => A.P(id).lv.pts === 3 && room(id));
+      return { n: ids.length, dropped: dropped.length, able: able.length, placedDropped: able.filter(id => A.P(id).lv.pts < 3).length, left: left.length, q: A.S.lvq.length };
+    });
+    const ok = r.n >= 420 && r.dropped > 0 && r.able > 0 && r.placedDropped === r.able && r.left === 0 && r.q === 0;
+    return { ok, detail: `${r.n} people granted points: ${r.dropped} fell out of the queue (${r.able} with room), ${r.placedDropped} of them placed theirs at the year's turn; ${r.left} with room left unplaced; the queue after: ${r.q}` };
+  },
+  // C-16 (order 97, order 98 answer 3; D-205): a ruler's level is his own. At the world's birth every NPC ruler keeps a
+  // way of rule chosen through A.WHY with its reasons; pooled over six worlds the ways differ and order the levels (those
+  // who do little themselves lowest, the field kings highest); what the lore writes of a ruler counts (Qadir's bedridden
+  // sultan, Stonehold's king who signs what his banker reads him: at ease in most worlds); twenty years in the field with ten at war put a
+  // king among the elite (300 and up; none at war, not), twenty at ease among ordinary grown folk; the same seed gives the same ways; the
+  // choice never moves the main stream; a state with no ways (an old save) reads as before and chooses at the year's turn
+  async lvRulers(pg) {
+    if (!(await pg.evaluate(GATE))) return NO;
+    const r = await pg.evaluate(() => {
+      const LV = A.LV, out = { by: {}, lore: { ease: 0, of: 0 }, worlds: 0, why: 0, rulers: 0 };
+      const rulers = () => Object.values(A.S.realms).filter(x => x && x.alive !== false && x.ruler != null).map(x => [x, A.P(x.ruler)]).filter(([x, p]) => p && p.alive && p.st && p.id !== A.S.pc);
+      for (const seed of T.seedRun(9911, 6)) {
+        A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+        out.worlds++;
+        for (const [x, p] of rulers()) {
+          out.rulers++;
+          const k = LV.ruleWay(p); if (!k) continue;
+          (out.by[k] = out.by[k] || []).push(LV.level(p));
+          if (LV.ruleReasons(p, x).every(o => o.reasons.length > 0)) out.why++;
+          if (['POL-17', 'POL-28'].includes(x.id) && (p.rway.lr || []).includes('ease')) { out.lore.of++; if (k === 'ease') out.lore.ease++; }
+        }
+      }
+      // the years: a field king after twenty years, an ease king after twenty
+      const pick = k => rulers().find(([, p]) => LV.ruleWay(p) === k);
+      const at = (k, yrs, wy) => { const e = pick(k); if (!e) return null; const p = e[1], keep = [p.rway.y0, p.rway.wy]; p.rway.y0 = A.S.year - yrs; p.rway.wy = wy; const L = LV.level(p); [p.rway.y0, p.rway.wy] = keep; return L; };
+      out.field20 = at('field', 20, 10); out.field20peace = at('field', 20, 0); out.ease20 = at('ease', 20, 0);
+      // the same seed, the same ways; the main stream unmoved by a year's choice
+      const ways = () => rulers().map(([x, p]) => x.id + ':' + LV.ruleWay(p)).join(',');
+      A.newGame({ seed: 9911, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 }); const w1 = ways();
+      A.newGame({ seed: 9911, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 }); const w2 = ways();
+      const rng0 = JSON.stringify(A.S.rng); LV.ruleYear(false); out.rngSame = JSON.stringify(A.S.rng) === rng0;
+      out.same = w1 === w2;
+      // an old save: no ways; the levels read the band of before, and the year's turn chooses them
+      for (const [, p] of rulers()) delete p.rway;
+      out.oldOk = rulers().every(([, p]) => LV.level(p) >= 1 && !LV.ruleWay(p));
+      LV.ruleYear(false); out.oldChosen = rulers().every(([, p]) => !!LV.ruleWay(p));
+      return out;
+    });
+    const mean = a => (a && a.length ? a.reduce((x, y) => x + y, 0) / a.length : NaN), B = r.by, M = k => mean(B[k]);
+    const kinds = Object.keys(B).filter(k => B[k].length >= 3);
+    const order = ['ease', 'council', 'drill', 'field'].filter(k => B[k] && B[k].length).map(M);
+    const ok = r.rulers >= 100 && kinds.length >= 3 && order.every((v, i) => i === 0 || v > order[i - 1]) && (B.ease || []).every(L => L <= 70) && (B.field || []).every(L => L >= 100) &&
+      r.why === Object.values(B).reduce((a, b) => a + b.length, 0) && (r.lore.of === 0 || r.lore.ease * 2 > r.lore.of) &&
+      (r.field20 == null || (r.field20 >= 300 && r.field20peace < 300)) && (r.ease20 == null || r.ease20 <= 40) && r.same && r.rngSame && r.oldOk && r.oldChosen;
+    return { ok, detail: `${r.rulers} rulers in ${r.worlds} worlds; by way (count, mean level): ${Object.entries(B).map(([k, v]) => `${k} ${v.length} at ${Math.round(mean(v))} (${Math.min(...v)}-${Math.max(...v)})`).join('; ')}; the lore's infirm rulers at ease ${r.lore.ease} of ${r.lore.of}; after twenty years a field king ${r.field20} (ten of them at war; ${r.field20peace} with none), an ease king ${r.ease20}; same seed same ways ${r.same}; main stream unmoved ${r.rngSame}; an old save reads ${r.oldOk} and chooses at the year's turn ${r.oldChosen}` };
+  },
   async lvSeed(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     const r = await pg.evaluate(() => {

@@ -126,7 +126,7 @@ The deadly outcomes that stay behind plain checks in fight scenes are not fights
 
 ## Limits
 
-- **The plan's "3 Trained beat 1 Elite two times in three" is false in this game, by design.** `GD.TIERS` says an Elite "can take 7–10 regulars", and `GD.STR_CURVE` makes an Elite worth 8.2 Trained. The resolver keeps the game's ladder (26.7%), as 32-legend-and-master-caps kept the lore's Legend count. A human should change the plan's sentence (for example: "13 Trained beat an Elite two times in three; 3 Veterans hold one about even").
+- **The plan's "3 Trained beat 1 Elite two times in three" is false in this game, by design.** `GD.TIERS` says an Elite "can take 7–10 regulars", and `GD.STR_CURVE` makes an Elite worth 8.2 Trained. The resolver keeps the game's ladder (26.7%), as 32-fighter-ladder kept the lore's Legend count. A human should change the plan's sentence (for example: "13 Trained beat an Elite two times in three; 3 Veterans hold one about even").
 - **The tagger reads words.** It is regexes over labels and text, and the report lists every converted choice with its spec for review. Some tiers are guesses from a check's difficulty when the text names no foe. Children's scuffles with each other are left on plain checks.
 - **Beast lore rewritten.** The animal and great-beast lines of `GD.TIER_INFO` now carry measured numbers. A writer may prefer other words, or may prefer to make party hunts stronger instead, which is a balance call.
 - **The retags make the Roc and the Forest Men harder.** A great beast's duel stats come from its tier.

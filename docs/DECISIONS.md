@@ -3591,3 +3591,72 @@ and routing a subscription through it breaks Anthropic's terms). Sources: `.clau
   only (H-164). An old save's holder keeps it: save step `titleIds` (version 24) moves the held, lost, borne, refused-grant,
   census, once and the age's first records from the old id (`TT.RENAMED`). The release's "Dragonslayer" epithet stays
   apart (it fires for the release's two dragons only). `docs/MASTER_PROMPT.md` and the owner's prompts keep their words.
+### D-203 · "Legend" means the level 800-1000 legends only: the fighter tiers read Formidable and Peerless (2026-11-27; order 98, with orders 78 and 83; audit C-23; H-174)
+- **The contradiction.** The release's fighter tiers (`GD.TIERS`, a reading of fighting worth) named t5 "Master" (worth
+  91) and t6 "Legend" (worth 118, "perhaps five alive"), capped by `GD.LEGEND_CAP`, counted by
+  `32-legend-and-master-caps` ("Legends alive in Ardan: N of a possible 5") and named by 994-careers ("You are a Legend
+  now"), on the same codex page as the powers' legends at level 800-1000; the beast scale "Legend: only a story" and the
+  achievement "Legend" (90 renown) were two more meanings. Order 98: "Legend" means one thing; order 83: Master and
+  Legend do not exist as measures.
+- **Chosen: plain words, the measure kept.** t5 reads **Formidable**, t6 **Peerless** (the owner's naming rule of the same
+  day: plain English, no invented words). The worths, the cap of five, the census and the challengers' card stay: they are
+  a reading of steel and body that the duels, the odds and the orders still use, not a rank (a person's standing is his
+  level). The beast scale for hoaxes reads **Tale**, the 90-renown achievement **Known to All**. Code names follow
+  (`GD.PEERLESS_CAP`, `GD.FORMIDABLE_CAP`, `A.peerlessCount`, `A.ladderCensus()` `{ peerless, formidable }`,
+  `CAR.PEERLESS_W`; the folder `32-fighter-ladder`; `docs/NAMES.md`). Keys a save holds keep their spelling: the flag and
+  card `cr_legend`, the chronicle kind `legend`, the beast tier key `legend`, the achievement key `legend`.
+- **Not chosen.** Dropping the tiers for levels everywhere a fight is read (the war and duel screens, the odds notes,
+  the codex ladder): the right end of orders 78 and 83, but it belongs to the war rebuild (master prompt section 10), and
+  levels and worth are not yet one scale in a duel. Dropping the cap: the lore's "perhaps five" still describes the world.
+- **Left to the skills builder** (not edited here, another agent owns `src/people/36-skills`): `SK.census` still files a
+  best skill of 96 or more as "legend" (`S.top.legend`, the comment "Legend (96)", `s1Census`'s detail "Legends"); the
+  report of H-174 lists the exact change.
+
+
+### D-204 · The Sword Saint in the lore: dated deeds, the terms on the Stair, each people's telling (2026-11-27; orders 83, 97 and 98; audit C-33, C-34; H-175)
+- **Dates** (AR, the Common Reckoning; the game opens in 1105): Cael Vardan born 986 at Oat Hill in the western hills
+  of Aldmark; taught by a deserter of the Gold Road War (996-1004); Vardan's Ford on the Glenwash held alone (1017); **the
+  Red War** (1023-1025, WAR-44): the Primordial Red burns towns of Qadir, Sabra, Tamar and the Sahrim and ends the
+  Qadir-Sabra War (WAR-28) with both sides spent; he binds her under the Burning Waste with the Glass Seal and cuts the
+  first face from Noir (1025); **the Valley Burnings** (1044-1045, WAR-45) end in **the Fight on the Stair** (autumn
+  1045); Aldmark offers him a crown, the first he refuses (1046); Skyhold's monks build the Stair House on the ridge (1048); the dwarves' kettle
+  every tenth year from 1055; Ossery the Black's nine challenges (1062-1088) and grave (1089). These agree with
+  `data/legends.json` (a hundred and nineteen in 1105; thirty-nine at the Glass Seal; fifty-nine on the Stair; "sixty
+  years ago"). The order's new names are written: Red, Noir, Blanc (order 98).
+- **Why he lives on the ridge, and does not rule or finish the King** (order 97's example of depth). Public: the terms
+  of the fight (one against one; while the King lies under the mountain no dragon of his burns the valleys below it), so
+  he keeps the watch, and he will not kill a beaten foe in his sleep; he refused every crown because "a king must send
+  other men to die and cannot sit on a ridge waiting for a dragon". The secret (SEC-72, *The terms on the Stair*,
+  learnable as the others are): the King's crown is what holds three hundred dragons to their dominions, and his last
+  words were "Wait for me"; the Saint promised.
+- **Each people tells it its own way** (order 83): six songs (Aldmark's hall-singers, the south's "came too late", the
+  dwarves' kettle, the elves' short life long, the orc clans' Grey Brother, the giants' mountain that sat down) and five
+  sayings, beside the legends' `tellings`.
+- **C-34.** Vaskareth's tribute is dated against the reckoning (some seven hundred years before the Return, seventeen
+  centuries before Aldmark's founding in 951 AR; the north's oldest songs, not four realms' chronicles, count from the
+  fire). Sarnavoth's grudge against Skyhold is the Stair House, a daughter-house on the ridge, not the abbey two thousand
+  kilometres away. Red's history no longer makes the Burning Waste in 1025 (Zahir crossed it in 790): she burned its
+  green edge, the wells and groves between Qadir and Sabra.
+- **Shared file.** `data/legends.json` belongs to the Primordials' builder this round; the edits there are four history
+  sentences only (Vaskareth, Sarnavoth's grudge, Red's, the Saint's), listed in H-175 for the merge.
+
+
+### D-205 · A ruler's level is his own: a way of rule chosen through A.WHY (2026-11-27; order 97, order 98's answer 3; audit C-16; H-176)
+- **The contradiction.** An untrained ruler stood where his upbringing and his crown's posts put him (`seed.noble`,
+  `posts.title/office/house` 50-99), so every peaceful king read alike, and no data said a ruler fought. The owner: levels
+  are personal, "countless other factors", shown "mainly through the ones that don't do much themselves".
+- **Chosen.** Each ruler but the player keeps a way of rule (`p.rway`): field, drill, council or ease, chosen at the
+  world's birth and each year through `A.WHY.decide` (a stream of its own; a change kept in `A.S.why`, kind `rule`). The
+  reasons: traits and temper, age (as a man's) and health, best skills, the realm at war and its kind, the lore's word of
+  him (the realm primer, read once at the world's birth), the habit of his way. In `LV.band` the way replaces upbringing
+  and the crown's own posts; service and posts in arms still count. The level moves from where it stood when the way
+  began toward the way's end over twenty years: field from 100 toward 320 (his drill alone takes him half way, to
+  the knights; each year at war counts two more, so only long wars bring the elite; a ruler the lore says won his wars
+  starts with five), drill from 75 toward 160, council toward 50, ease toward 30. Numbers: `data/level.json`
+  `seed.rule`.
+- **Not chosen.** A fixed "trained" trait (the audit's sketch): a king's habits change with age, war and health, and a
+  yearly choice with the habit as a reason keeps them steady without freezing them. A save version step: the rulers of an
+  old save read their old band until the next year's turn chooses (no version bump, so no clash with the other builders).
+- **What it touches.** Unseeded levels only (a ruler who has fought a recorded fight holds his level). The odds of a fight
+  read might, not level; a warrior king at the elite's level now shows in his realm's list of its best (`MIL.elite`).
+  The player's level and the starting paths are unchanged.

@@ -99,17 +99,18 @@
     }
     return n;
   };
-  // the census: everyone alive whose best skill reads Grandmaster (88) or Legend (96)
+  // the census: everyone alive whose best skill reads Grandmaster (88) or the peak above it (96); "Legend" now names only
+  // the beings of levels 800-1000 (order 98, D-203), so the field is `peak`
   SK.census = function (S) {
     S = S || A.S; if (!S || !S.people) return null;
-    const gm = [], legend = [];
+    const gm = [], peak = [];
     for (const id in S.people) {
       const p = S.people[id]; if (!p || !p.alive || !p.skills) continue;
       let best = 0; for (const k in p.skills) if (SK.BY[k] && p.skills[k] > best) best = p.skills[k];
-      if (best >= 96) legend.push(id); else if (best >= 88) gm.push(id);
+      if (best >= 96) peak.push(id); else if (best >= 88) gm.push(id);
     }
     // a count, never a cap; the ids kept are bounded (rule 21), the counts are whole
-    S.top = { y: S.year, gm: gm.slice(0, 24), legend: legend.slice(0, 8), n: [gm.length, legend.length] };
+    S.top = { y: S.year, gm: gm.slice(0, 24), peak: peak.slice(0, 8), n: [gm.length, peak.length] };
     return S.top;
   };
   SK.npcGrowYear = function (S) {

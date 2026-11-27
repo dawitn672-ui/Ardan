@@ -123,3 +123,17 @@ Not written by `tools/rename-pass.mjs`: the levy retired (order 54, answer 5). O
 | court `levyUp`/`levyDown`, doctrine `levy`, custom kind `levy` | `conscriptUp`/`conscriptDown`, `nation`, `call` | 2026-11-16 |
 | events `pp_dw_levy`, `ww_ald_levy`, `wr_hf_levy`, `ss_rp_levy`, `rk_cmd_levy_lord`, `pl_heavy_levy`, `dr_new_levy`, `sc_wc_levies`; arc mark `aw_bandit_levy` | `pp_dw_muster`, `ww_ald_muster`, `wr_hf_lot`, `ss_rp_muster`, `rk_cmd_muster_lord`, `pl_heavy_call`, `dr_new_conscripts`, `sc_wc_conscripts`; `aw_bandit_muster` | 2026-11-16 |
 | test `v2sLevyScale` | `v2sConscriptScale` | 2026-11-16 |
+
+## "Legend" kept for the legends (order 98, D-203)
+
+The fighter tiers t5 and t6 and what counted them took plain words; "Legend" means only the level 800-1000 legends.
+Internal keys that saves hold stay as they were (the flag and card `cr_legend`, the chronicle kind `legend`, the beast
+tier key `legend`, the achievement key `legend`).
+
+| Old | New | Renamed |
+| --- | --- | --- |
+| `src/people/32-legend-and-master-caps` | `src/people/32-fighter-ladder` | 2026-11-27 |
+| tiers "Master", "Legend" (`GD.TIERS` t5, t6) | "Formidable", "Peerless" | 2026-11-27 |
+| `GD.LEGEND_CAP`, `GD.MASTER_CAP`, `A.legendCount`, `CAR.LEGEND_W` | `GD.PEERLESS_CAP`, `GD.FORMIDABLE_CAP`, `A.peerlessCount`, `CAR.PEERLESS_W` | 2026-11-27 |
+| `A.ladderCensus()` `{ legends, masters }`; the census notes `legends`, `masters` | `{ peerless, formidable }`; `peerless`, `formidable` | 2026-11-27 |
+| beast scale "Legend", achievement "Legend" (90 renown) | "Tale", "Known to All" | 2026-11-27 |

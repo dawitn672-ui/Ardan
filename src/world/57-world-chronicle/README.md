@@ -29,7 +29,7 @@ In the release the world remembers two kinds of thing (`S.history`: war ends and
    - famine (45-economy's failed harvest);
    - an epidemic;
    - a royal marriage; an alliance; tribute bound or thrown off;
-   - an elite order destroyed; the death of a Legend (32-legend-and-master-caps's top tier).
+   - an elite order destroyed; the death of a peerless fighter (32-fighter-ladder's top fighter tier; "Legend" until D-203).
 
    Each entry is `[kind, year, day, province, realm, other realm, [people], number, extra]`. People are ids, and their names go into a table when the entry is made, because the release prunes the dead from `S.people` after 30 years. Nothing is ever removed. Wars already being fought when the world opens are entered with their real start (the Tessarian Civil War, 1061).
 2. **It observes; it does not act.** Every hook calls the original first. It draws no random numbers, and it changes no realm, person or province. The exception is the **epidemic**, because the release simulates no sickness in the world. Each month each realm rolls for one: 3.5% a year, plus 5 points after a failed harvest, 2 points under siege and 1 point for a large realm, capped at 10%. A sickness takes 4 stability, adds unrest where it strikes, spreads to up to three neighbouring provinces, and makes the news. If it reaches the player's town it brings a scene, "Chalk on the doors". `A.WC.EPIDEMIC = false` turns it off for a later world-events feature that brings its own.
@@ -53,7 +53,7 @@ In the release the world remembers two kinds of thing (`S.history`: war ends and
    - **The Annals.** A new view in the World tab lists every entry in prose, newest first, 40 to a page. It can filter by kind (wars, battles and sieges, lands, thrones, hunger and sickness, marriages and alliances) and by place ("near you").
    - **"The world in your time"** closes the Chronicle, on the Book page and in its text export. It wraps 22-chronicle's `A.chronicleText` and `UI.TAB.book`, so 22 is unchanged. The run's great entries are written in prose by decade:
      - every war, with how it ended and what passed;
-     - every realm fallen or founded, every rising, and every Legend's death;
+     - every realm fallen or founded, every rising, and every peerless fighter's death;
      - the rulers, famines, plagues, marriages and treaties of the realms the lives lived among;
      - the two largest battles of each decade, and any the lives were part of;
      - the sacked towns;
@@ -94,7 +94,7 @@ In the release the world remembers two kinds of thing (`S.history`: war ends and
 - **One record, one truth.** The Annals show what happened. The far news is still hearsay (26-belief-versus-truth), but the record does not keep conflicting accounts (W10). The monk's scene gestures at it, nothing more.
 - **Lines are templates.** 1 to 4 lines a kind (35 in all) and 13 scenes, so a long life hears the same frame with different places and years. More lines per kind, and per culture, is writing work.
 - **Subjects are guessed from words.** A recalled line is matched to a scene by regex on its id, title and text. A scene about a lady's wedding can get the old ruler's death, which fits but is not chosen with care.
-- **Kinds that seldom happen.** Realm foundings, falls and Legend deaths are rare in this simulation (1 to 3, 0 to 2 and 0 in the 60-year test worlds). The record keeps them when they happen. It does not make them happen.
+- **Kinds that seldom happen.** Realm foundings, falls and peerless fighters' deaths are rare in this simulation (1 to 3, 0 to 2 and 0 in the 60-year test worlds). The record keeps them when they happen. It does not make them happen.
 - **The epidemic is light.** It takes stability and adds unrest. It kills nobody in the world simulation and does not reduce population, so as not to move the economy.
 - **The first W6 run** flagged 9 citations as out of time. The only citation that can carry the scene's own date is the sickness at the door, which cites an epidemic as it happens; every other one waits 60 days. The check now accepts the same day, and that scene now names the player's town rather than the province where the sickness began. Since then: 0.
 - **Not run here: the balance bench.** By the coordinator's instruction it runs once on the integrated build. This feature touches money and health only lightly: 13 scenes with coin from -8 to +8 and health from -1 to -12 on a failed check, plus the epidemic's scene.
@@ -139,7 +139,7 @@ ask for extra lines to be rare, to fit the scene, and one at most on a card.
 the scene is about:
 - **a person**: someone in the scene's context (`ctx.pid` or another person id) or named in its words is in the entry;
   or the player was there (fought the battle, was in the town taken) and the scene is a soldier's, or at that place;
-- **a place**: a battle, siege, sack, sickness, cession, order's fall or Legend's death in the player's home province, or
+- **a place**: a battle, siege, sack, sickness, cession, order's fall or a peerless fighter's death in the player's home province, or
   in a province the scene names (a war, a peace, a throne or a famine is set down at a capital, so its province is not
   where a scene in that town is);
 - **a realm**: the scene names a realm (or carries one in its context) that the entry is about;

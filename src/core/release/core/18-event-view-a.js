@@ -956,6 +956,8 @@ A.migrateV10 = function (S) {
   S.dyn = S.dyn || [];
 };
 
+// O98 (D-203): "Legend" means one thing, the level 800-1000 legends (order 98), and Master and Legend are no measures
+// (order 83): the fighter tiers t5 and t6 read Formidable and Peerless. Keys (t0-t6) and worths are the release's.
 GD.TIERS = [
   {
     k: "t0",
@@ -989,13 +991,13 @@ GD.TIERS = [
   },
   {
     k: "t5",
-    n: "Master",
+    n: "Formidable",
     min: 91,
     d: "Takes 20–30 regulars or 8–10 veterans at once, with the body to match. One or two in a realm, often the head of its order; most realms have none.",
   },
   {
     k: "t6",
-    n: "Legend",
+    n: "Peerless",
     min: 118,
     d: "Takes 50–100 regulars, and needs a body like no one else's to keep it up. Perhaps five alive in all of Ardan. Still mortal: a crossbow bolt does not care.",
   },
@@ -2761,11 +2763,12 @@ A.orderMaster = function (r, id) {
       A.chance(0.8) ? "M" : "F",
     );
     const G = GD.ORDER_GEAR[o.gear] || GD.ORDER_GEAR.knight,
-      legend = A.chance(0.1) && (A.legendCount ? A.legendCount() : 0) < (GD.LEGEND_CAP || 5) - 1;
+      // now and then a peerless fighter (the top fighter tier, t6; D-203), while the world has room for one
+      peerless = A.chance(0.1) && (A.peerlessCount ? A.peerlessCount() : 0) < (GD.PEERLESS_CAP || 5) - 1;
     L.skills.command = A.ri(62, 84);
     L.skills.tactics = A.ri(55, 80);
-    L.skills.melee = legend ? A.ri(80, 92) : A.ri(62, 74);
-    for (const k of G.sk) if (GD.SKILLS[k]) L.skills[k] = legend ? A.ri(86, 96) : A.ri(74, 84);
+    L.skills.melee = peerless ? A.ri(80, 92) : A.ri(62, 74);
+    for (const k of G.sk) if (GD.SKILLS[k]) L.skills[k] = peerless ? A.ri(86, 96) : A.ri(74, 84);
     L.gear = {
       weapon: G.weapon,
       ranged: G.ranged,
@@ -2778,24 +2781,24 @@ A.orderMaster = function (r, id) {
     for (const s of ["weapon", "ranged", "armor", "shield", "helm", "mount"])
       if (L.gear[s] && !GD.GEAR[L.gear[s]]) L.gear[s] = null;
     L.gearQ = {
-      weapon: legend ? "master" : "fine",
+      weapon: peerless ? "master" : "fine",
       armor: "fine",
       ranged: "fine",
     };
     const set = (s, lo, hi) => {
       L.st[s] = A.ri(lo, hi);
     };
-    set("spd", legend ? 62 : 48, legend ? 76 : 62);
-    set("ins", legend ? 62 : 48, legend ? 76 : 62);
-    set("wil", legend ? 66 : 52, legend ? 80 : 66);
-    set("str", legend ? 70 : 56, legend ? 84 : 68);
-    set("sta", legend ? 86 : 66, legend ? 96 : 78);
+    set("spd", peerless ? 62 : 48, peerless ? 76 : 62);
+    set("ins", peerless ? 62 : 48, peerless ? 76 : 62);
+    set("wil", peerless ? 66 : 52, peerless ? 80 : 66);
+    set("str", peerless ? 70 : 56, peerless ? 84 : 68);
+    set("sta", peerless ? 86 : 66, peerless ? 96 : 78);
     if ((GD.RACES[L.race] || {}).burst) L.st.sta += 6;
-    const want = legend ? A.ri(120, 134) : A.ri(96, 106),
+    const want = peerless ? A.ri(120, 134) : A.ri(96, 106),
       wk = Object.keys(L.skills).filter(k => G.sk.includes(k) || k === "melee");
     for (let i = 0; i < 80; i++) {
       const w = A.fightWorth(L),
-        floor = w > (legend ? 138 : 110) ? 52 : legend ? 80 : 66;
+        floor = w > (peerless ? 138 : 110) ? 52 : peerless ? 80 : 66;
       if (w > want + 1) {
         if (L.st.spd > 42 || L.st.ins > 42) {
           L.st.spd = Math.max(40, L.st.spd - 1);

@@ -2,7 +2,7 @@
 // believe; and how the player's own picture of the world can be wrong and set right.
 //
 //   1. What is said here. Every realm keeps a few tellings of the great entries of 57-world-chronicle's record (a battle,
-//      the end of a war, a ruler's death, a town taken, a sickness, a Legend's death). Each telling is a claim, true or
+//      the end of a war, a ruler's death, a town taken, a sickness, a peerless fighter's death). Each telling is a claim, true or
 //      not. Which version a realm tells depends on its side and its distance: the winners count the dead high, the
 //      losers say they held the field, the victims of a sack say the town was burned, the far hear it inflated or
 //      garbled. Tellings drift with the years towards what flatters the realm, faster under a ruler with legitimacy and
@@ -42,7 +42,7 @@
   // the entries worth telling, and how great each is
   const KIND = { battle: 'B', peace: 'Q', ruler: 'R', fall: 'X', plague: 'Y', legend: 'G' };
   NB.KIND_W = KIND;
-  // a realm's place in an entry: own (the winner, the taker, the realm whose ruler or Legend died), other (the loser),
+  // a realm's place in an entry: own (the winner, the taker, the realm whose ruler or peerless fighter died), other (the loser),
   // near (a neighbour of either side), far (pure)
   NB.role = function (rid, e) {
     if (!e) return 'far';
@@ -191,7 +191,7 @@
     }
     st.ww = R.e.length;
     const realms = live();
-    // the greatest of the year, heard everywhere: the largest battle, the worst sack, a Legend, a war won with land
+    // the greatest of the year, heard everywhere: the largest battle, the worst sack, a peerless fighter, a war won with land
     const great = fresh.map(i => W.ent(i)).filter(e => e.k === 'legend' || (e.k === 'peace' && Array.isArray(e.x) && e.x[1] !== 'white' && (e.x[2] || []).length) || (e.k === 'fall' && +e.x >= 2) || e.k === 'battle')
       .sort((a, b) => (b.k === 'legend') - (a.k === 'legend') || ((b.k === 'battle' ? (b.x || [0])[0] : 20000 * (+b.x || 1)) - (a.k === 'battle' ? (a.x || [0])[0] : 20000 * (+a.x || 1))) || a.i - b.i).slice(0, 2).map(e => e.i);
     for (const rid of realms) {

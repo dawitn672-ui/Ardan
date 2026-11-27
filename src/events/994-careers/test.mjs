@@ -80,7 +80,7 @@ export default {
     const r = await pg.evaluate(() => ({ bandits: A.missionSize('bandits', 7, null), banditsLow: A.missionSize('bandits', 0, null), patrolPeace: A.missionSize('patrol', 7, null), patrolWar: A.missionSize('patrol', 7, { id: 'w' }), generalLeads: GD.MIL[7].leads }));
     return { ok: r.bandits <= 300 && r.banditsLow >= 10 && r.patrolPeace <= 400 && r.patrolWar === r.generalLeads, detail: `a General's bandit hunt ${r.bandits} men (12,800 before), a soldier's ${r.banditsLow}; a patrol in peace ${r.patrolPeace}, in war ${r.patrolWar}` };
   },
-  // I5: a life reached Knife fighting 100 and stayed at renown 24; the PC was never a Legend
+  // I5: a life reached Knife fighting 100 and stayed at renown 24; the PC was never named peerless (the top fighter tier, D-203)
   async carLegend(pg) {
     const r = await pg.evaluate(() => {
       // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent
@@ -93,6 +93,6 @@ export default {
       pc.car = {}; A.CAR.month(pc);
       return { w, named: pc.flags.cr_legend != null, q: A.S.queue.some(q => q.ev === 'cr_legend'), fame: (pc.fame || 0) - f0 };
     });
-    return { ok: r.w >= 118 && r.named && r.q && r.fame >= 15, detail: `worth ${r.w}: named a Legend ${r.named}, the challengers' scene ${r.q}, renown +${r.fame}` };
+    return { ok: r.w >= 118 && r.named && r.q && r.fame >= 15, detail: `worth ${r.w}: named among the peerless ${r.named}, the challengers' scene ${r.q}, renown +${r.fame}` };
   },
 };

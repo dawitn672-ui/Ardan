@@ -3404,7 +3404,7 @@ GD.ACH = {
   conqueror: ["Conqueror", "Win a war as commander or ruler."],
   hundred_kills: ["Widowmaker", "Kill a hundred foes."],
   polyglot: ["Many Tongues", "Speak four languages."],
-  legend: ["Legend", "Reach 90 renown."],
+  legend: ["Known to All", "Reach 90 renown."], // was "Legend": the word is the level 800-1000 legends' alone (D-203)
 };
 
 GD.LANG = {

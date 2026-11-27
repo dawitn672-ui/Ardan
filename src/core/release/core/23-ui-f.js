@@ -286,8 +286,8 @@ UI.powerPage = function (pc) {
         ["Trained", 50, 60],
         ["Veteran", 63, 74],
         ["Elite", 77, 88],
-        ["Master", 91, 115],
-        ["Legend", 118, 140],
+        ["Formidable", 91, 115], // the names follow GD.TIERS (t5, t6: D-203)
+        ["Peerless", 118, 140],
       ],
       staFor = R2 => Math.max(0, Math.round(Math.log(R2 / 0.672) / 0.054 / 5) * 5),
       rng = (a, b) => {
@@ -661,7 +661,7 @@ UI.helpModal = function () {
         "<b>People you choose.</b> You do not know everyone you serve with. The People page (under Family) shows who is <i>around you</i> — above you, under you, beside you — by name and post. Getting to know someone costs an evening and is your choice; bonds you never tend fade back to acquaintances, and nobody keeps more close friends than they have evenings for. Every face has a full profile: who they are, what they do, what they can do, and whether they would beat you in a fight.",
       ) +
       P(
-        "<b>Strength you can read.</b> Every fighter has a tier — Untrained, Brawler, Trained, Veteran, Elite, Master, Legend — from body, skill and steel. A tier up wins about three fights in four. An Elite can take 7–10 regular soldiers at once, a Master 20–30, a Legend 50–100 — if the body keeps up. Beasts come in scales: animals one person can fight, great beasts that need a hunting party, titans that need an expedition, and legends that are only stories. The Codex page <i>Power &amp; scale</i> explains it all.",
+        "<b>Strength you can read.</b> Every fighter has a tier — Untrained, Brawler, Trained, Veteran, Elite, Formidable, Peerless — from body, skill and steel. A tier up wins about three fights in four. An Elite can take 7–10 regular soldiers at once, a Formidable fighter 20–30, a Peerless fighter 50–100 — if the body keeps up. Beasts come in scales: animals one person can fight, great beasts that need a hunting party, titans that need an expedition, and tales that are only stories. The Codex page <i>Power &amp; scale</i> explains it all.",
       ) +
       P(
         "<b>Your staff and your drill.</b> Lead men and you choose who stands under you — sergeants, a lieutenant, a sergeant-major, a chief of staff, the commander of every division — or delegate the choice to the officer above that post. Their skill is what the post does. The drill yard sets what your men practice and how hard; the edge you build shows in battle.",

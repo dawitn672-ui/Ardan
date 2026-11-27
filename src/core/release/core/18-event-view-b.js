@@ -6,7 +6,7 @@
 // A.buyTransport, A.buyGood, A.sellGood, A.capDist, A.runPlan, A.tradeRun, A.bestRuns, GD.QUAL, GD.MASTERS,
 // A.qualOf, A.gearPrice, A.qualAvail, A.buyGearQ, GD.GEAR (+), GD.SHOP, GD.BEAST_TIER, GD.BEAST_FLYER, GD.TIER_INFO,
 // A.beastTier, A.beastName, A.beastShort, A.canReachFlyer, A.armFor, GD.STR_CURVE, GD.REG_W, GD.VET_W,
-// GD.LEGEND_CAP, A.strengthOf, A.vetS, A.bodyCapOf, A.bodyCap, A.takeK, A.canTake, A.crowdN, A.canTakeText, and 51
+// GD.PEERLESS_CAP, A.strengthOf, A.vetS, A.bodyCapOf, A.bodyCap, A.takeK, A.canTake, A.crowdN, A.canTakeText, and 51
 // more.
 
 A.orderReqs = function (pc, id) {
@@ -1392,7 +1392,7 @@ GD.TIER_INFO = {
   },
   great: {
     name: "Great beast",
-    who: "A hunting party's work: six to twelve people with spears, dogs and bows. Alone, even a master usually dies.",
+    who: "A hunting party's work: six to twelve people with spears, dogs and bows. Alone, even a fine fighter usually dies.",
     n: 8,
   },
   titan: {
@@ -1400,9 +1400,11 @@ GD.TIER_INFO = {
     who: "Over a tonne. Never fought alone. Brought down by expeditions with pits, ropes, fire and twenty or more spears — or by fleets of boats at sea.",
     n: 25,
   },
+  // O98 (D-203): "Legend" means only the level 800-1000 legends; the scale of beasts nobody has seen reads "Tale" (the
+  // key stays "legend": other features and old saves read it)
   legend: {
-    name: "Legend",
-    who: "Only a story. Nobody has ever seen one; scholars say it is a hoax or a mistake.",
+    name: "Tale",
+    who: "Only a tale. Nobody has ever seen one; scholars say it is a hoax or a mistake.",
     n: 0,
   },
 };
@@ -1521,7 +1523,8 @@ GD.REG_W = 56;
 
 GD.VET_W = 68;
 
-GD.LEGEND_CAP = 5;
+// the most peerless fighters (fighting worth 118+, the top fighter tier) alive at once; was GD.LEGEND_CAP (D-203)
+GD.PEERLESS_CAP = 5;
 
 A.strengthOf = function (w) {
   const C = GD.STR_CURVE;
@@ -1793,7 +1796,8 @@ A.groupFightPC = function (pc, spec, ctx) {
   };
 };
 
-A.legendCount = function () {
+// the peerless fighters alive (fighting worth 118+, GD.TIERS t6); was A.legendCount (D-203)
+A.peerlessCount = function () {
   let n = 0;
   const S = A.S;
   if (!S) return 0;
@@ -1815,23 +1819,23 @@ A.POWER_CODEX = [
   },
   {
     h: "The tiers of fighters",
-    t: 'Untrained → Brawler → Trained (the "regular" soldier every number is measured against) → Veteran (2–3 regulars) → Elite (7–10 regulars, or about 4 veterans) → Master (20–30 regulars, or 8–10 veterans) → Legend (50–100 regulars). One on one, a tier up wins about three fights in four, two tiers up about nine in ten. The higher you go, the fewer there are: one soldier in several hundred is Elite, a realm has one or two Masters at most, and perhaps five Legends live in all of Ardan.',
+    t: 'Untrained → Brawler → Trained (the "regular" soldier every number is measured against) → Veteran (2–3 regulars) → Elite (7–10 regulars, or about 4 veterans) → Formidable (20–30 regulars, or 8–10 veterans) → Peerless (50–100 regulars). One on one, a tier up wins about three fights in four, two tiers up about nine in ten. The higher you go, the fewer there are: one soldier in several hundred is Elite, a realm has one or two Formidable fighters at most, and perhaps five peerless fighters live in all of Ardan. A tier is a reading of steel and body, not a rank: the legends of the old tales stand far above any of it.',
   },
   {
     h: "One against many",
-    t: `"Can take 8" means: against 8 at once it is a coin toss; against 4 they nearly always win; against 16 they die. These numbers are for steel at arm's length in the open. A door, a bridge or a stair helps the one, because only two or three can reach you at a time. Bows and crossbows help the many: in the open, a Legend is just a big target.`,
+    t: `"Can take 8" means: against 8 at once it is a coin toss; against 4 they nearly always win; against 16 they die. These numbers are for steel at arm's length in the open. A door, a bridge or a stair helps the one, because only two or three can reach you at a time. Bows and crossbows help the many: in the open, a peerless fighter is just a big target.`,
   },
   {
     h: "The body has to keep up",
-    t: "Skill says how fast you can kill; the body says for how long. Every man you fight costs wind. Stamina sets how much fighting you can keep up, strength decides whether your armor wears you down, and will keeps you on your feet. A Master with a ploughman's lungs fights like a Master for a minute, then like a tired man. Every profile shows both: what the skill could take, and what the body allows.",
+    t: "Skill says how fast you can kill; the body says for how long. Every man you fight costs wind. Stamina sets how much fighting you can keep up, strength decides whether your armor wears you down, and will keeps you on your feet. A Formidable fighter with a ploughman's lungs fights like one for a minute, then like a tired man. Every profile shows both: what the skill could take, and what the body allows.",
   },
   {
     h: "Armies beat heroes",
-    t: "In a real battle a Master is one more man in the line: the man beside him dies, arrows fall, the line moves. Battles are won by numbers, supply, drill, morale and generals, not by champions. The eight orders of Ardan — the Knights of the Iron Wolf, the Knights of the Sun, the Greyfeathers, the Shadow Guard, the Last Door, the Stormriders, the Tenth Wind and the Gold Masks — are 200 to 300 each, because no kingdom has more people good enough. A few hundred of them hit like one or two thousand line soldiers, more on their own ground; but they die like anyone else, and an order that loses half its members takes years to fill the gaps.",
+    t: "In a real battle a Formidable fighter is one more man in the line: the man beside him dies, arrows fall, the line moves. Battles are won by numbers, supply, drill, morale and generals, not by champions. The eight orders of Ardan — the Knights of the Iron Wolf, the Knights of the Sun, the Greyfeathers, the Shadow Guard, the Last Door, the Stormriders, the Tenth Wind and the Gold Masks — are 200 to 300 each, because no kingdom has more people good enough. A few hundred of them hit like one or two thousand line soldiers, more on their own ground; but they die like anyone else, and an order that loses half its members takes years to fill the gaps.",
   },
   {
-    h: "Beasts: animals, great beasts, titans, legends",
-    t: "Animals (wolves, hyenas, wyverns, basilisks; up to about 100 kg) — one trained fighter can win. Great beasts (cave bears, tigers, hell boars, snow apes, the Great Ash Dragon; 200–700 kg) — a hunting party's work; alone, even a Master usually dies. Titans (mammoths, woolly rhinos, river horses, amber wyrms, great crocodiles; over a tonne) — never fought alone: expeditions with pits, ropes, fire and twenty spears. Leviathans (50–70 tonnes) are hunted only by fleets of harpoon boats. Legends (the hill-sized Black Dragon, the 60-metre Dragon of Corvasse) are stories — hoaxes and misunderstandings.",
+    h: "Beasts: animals, great beasts, titans, tales",
+    t: "Animals (wolves, hyenas, wyverns, basilisks; up to about 100 kg) — one trained fighter can win. Great beasts (cave bears, tigers, hell boars, snow apes, the Great Ash Dragon; 200–700 kg) — a hunting party's work; alone, even a Formidable fighter usually dies. Titans (mammoths, woolly rhinos, river horses, amber wyrms, great crocodiles; over a tonne) — never fought alone: expeditions with pits, ropes, fire and twenty spears. Leviathans (50–70 tonnes) are hunted only by fleets of harpoon boats. Tales (the hill-sized Black Dragon, the 60-metre Dragon of Corvasse) are stories — hoaxes and misunderstandings.",
   },
   {
     h: "Why a swordsman cannot kill a dragon",

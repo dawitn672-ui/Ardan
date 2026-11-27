@@ -339,11 +339,11 @@ export default {
   },
 
   // the census of the top: a count, never a cap (order 36, D-043, D-072). The design asks 5 seeds x 200 years (long tier);
-  // a life is played as far as it goes, the world's census read each year: 1 to 12 Grandmasters, 0 to 2 Legends.
-  // Readings (H-167, 40-year lives; Grandmasters min..max, Legends max). Before (d8e16ef0), the count only fell: 8181
+  // a life is played as far as it goes, the world's census read each year: 1 to 12 Grandmasters, 0 to 2 at the peak above them.
+  // Readings (H-167, 40-year lives; Grandmasters min..max, peak max). Before (d8e16ef0), the count only fell: 8181
   // 3..10, 8282 2..5, 8383 0..5 (0 from year 33), 8484 2..8, 8585 9..10 (a 7-year life), 7101 0..5, 4242 1..7, 9711 1..2,
   // 1234 4..11, 5501 5..15 (15 in its starting world). With posts read from the registry, a master's own art and the
-  // gift a made number shows: 8181 4..10, 8282 2..5, 8383 2..5, 8484 3..11, 8585 3..11, Legends at most 2; 7101 1..5,
+  // gift a made number shows: 8181 4..10, 8282 2..5, 8383 2..5, 8484 3..11, 8585 3..11, peak at most 2; 7101 1..5,
   // 9711 1..4, 1234 2..11, 5501 6..15. On a shifted world (one more draw after A.seed): 8181 5..10, 8282 2..5, 8383
   // 3..6, 8484 6..10, 8585 8..11. The starting masters still pass: counts fall in the last decade in most worlds (no
   // NPC has a talent of his own below Master; D-196)
@@ -360,7 +360,7 @@ export default {
       return out;
     });
     const ok = r.every(x => x.gm[0] >= 1 && x.gm[1] <= 12 && x.legend[1] <= 2);
-    return { ok, detail: r.map(x => `seed ${x.seed}, ${x.years} years: Grandmasters ${x.gm[0]} to ${x.gm[1]}, Legends ${x.legend[0]} to ${x.legend[1]}`).join('; ') };
+    return { ok, detail: r.map(x => `seed ${x.seed}, ${x.years} years: Grandmasters ${x.gm[0]} to ${x.gm[1]}, peak ${x.legend[0]} to ${x.legend[1]}`).join('; ') };
   },
 
   // the mirror: p.skills[k] is the value of the level, for everyone, after twenty bot years
