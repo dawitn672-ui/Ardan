@@ -113,7 +113,9 @@
     return true;
   };
   // one holder (D-201): a legendary or mythical class; its living holder (a person, by the census), or null. Pure
-  const ONE = CL.one = cls => !!cls && (A.RARITY ? A.RARITY.oneHolder(cls.rarity) : cls.rarity === 'legendary' || cls.rarity === 'mythical');
+  // (read once at load: CL.open runs for every class at every wall of every seeded life)
+  const ONESET = new Set(ALL.filter(c => (A.RARITY ? A.RARITY.oneHolder(c.rarity) : c.rarity === 'legendary' || c.rarity === 'mythical')).map(c => c.id));
+  const ONE = CL.one = cls => !!cls && ONESET.has(cls.id);
   // a great being whose road (data/figures/, a master's overlay) holds the class holds it while he lives (the elf's Wyrm
   // Blade), as a title's sheet holder does (A.TT.holder)
   const BEING = new Map();

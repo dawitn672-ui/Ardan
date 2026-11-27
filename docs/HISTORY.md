@@ -3761,3 +3761,14 @@ save's `wyrm-*` class ids in the `classOne` step; `data/figures/race-masters.jso
 and `lvClassOne` follow. The title is the Dragon Slayer (H-173).
 
 **Undo.** Revert the commit.
+
+**H-173 checks** (branch head, `/tmp/ardan/o98r/x4.html` and `x5.html`; the container shared at a load of 30 to 80 on four
+cores): `rarityOneLadder`, `lvClassOne`, `lvClassParts`, `lvClass`, `lvWalls`, `lvLegends`, `lvSeed`, `lvPhone`, `lvBreak`,
+`ttEarned`, `ttUnique`, `ttGameChanger` (its cap read per kind, for boosts that reach everyone), `ttCaps`, `ttNpc`,
+`ttSave`, `ttPhone`, `ttLegends`, `ttHidden`, `ttMythical`, `figRegistry`, `figKnown`, `figPhone`, `figDeterministic`,
+`pwProfiles`, `pwLegends`, `pwPureAndOldSave`, `pwBestiary`, `scBeastTier`, `lookRows`, `tokensContrast`, `sk2Caps`,
+`sk2ArtsView`, `renderRng`, `replayWithRender`, `v2svRoundTrip`, `savesStillLoad` (25 saves), `saveRoundTrip` pass;
+`uiSmoke` passes when the machine gives it the CPU and times out on its 30-second click otherwise, as the trunk's build
+did in the same hour (a new game's main-thread CPU is the same on both builds, 1.8 to 3.0 s against 1.8 to 2.4 s).
+`node --test tests/v2` 166 of 166; the skills, titles, figures, reasons (41), stages, docs-index lints; `version.mjs check`;
+`--check-tiers`. A class's one-holder test is read from a set made at load (`CL.one`), not the ladder at each call.
