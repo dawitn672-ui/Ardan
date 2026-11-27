@@ -8,7 +8,7 @@ const ROOT = path.join(HERE, '..', '..', '..');
 const SAVES = path.join(ROOT, 'tests', 'saves');
 
 export default {
-  // order 95: regular soldiers in the tens to hundreds of thousands by the kingdom, knights 50 to 3,000, the elite ten;
+  // order 95: regular soldiers in the tens to hundreds of thousands by the kingdom, knights 50 to 3,000, the elite as many as the level's difficulty lets rise;
   // order 93: soldiers 80-180, knights 230-299, the elite 300-420 by the realm. Three worlds at their birth.
   async msSizes(pg) {
     const r = await pg.evaluate(() => {
@@ -32,21 +32,55 @@ export default {
             if (lv.knight < 230 || lv.knight > 299) bad.push(`${seed} ${r.id}: knights at ${lv.knight}`);
             if (lv.elite[0] < 300 || lv.elite[1] > 420) bad.push(`${seed} ${r.id}: the elite at ${lv.elite}`);
           }
-          if (E.length !== M.eliteCount(r)) bad.push(`${seed} ${r.id}: ${E.length} of the elite`);
+          // the realm's own people at the elite's level first, then named champions up to the drawn count
+          const real = E.filter(x => x.pid).length;
+          if (E.length !== Math.max(real, M.eliteCount(r))) bad.push(`${seed} ${r.id}: ${E.length} of the elite (${real} real, ${M.eliteCount(r)} drawn)`);
           for (const x of E) if (x.level < lv.elite[0] || (!x.pid && x.level > lv.elite[1])) bad.push(`${seed} ${r.id}: ${x.name} at ${x.level}`);
           if (E.some(x => !x.name || /undefined|null/.test(x.name))) bad.push(`${seed} ${r.id}: an elite with no name`);
           big = Math.max(big, r.army); if (pop >= M.D.floorPop && r.race === 'human') small = Math.min(small, r.army);
         }
-        // order 97: the elite are not a fixed ten: a few in a small kingdom, ten to twenty in a great empire
-        const ec = Object.values(A.S.realms).filter(r => r.alive && !r.isRebel).map(r => [A.MIL.pop(r), A.MIL.eliteCount(r)]).sort((a, b) => b[0] - a[0]);
-        if (ec[0][1] < 10 || ec[0][1] > 20) bad.push(`${seed}: the greatest realm's elite ${ec[0][1]}`);
-        if (ec[ec.length - 1][1] > 6) bad.push(`${seed}: the smallest realm's elite ${ec[ec.length - 1][1]}`);
-        out.push({ seed, big, small, elite: [ec[0][1], ec[ec.length - 1][1]] });
+        out.push({ seed, big, small });
         if (big < 150000 || big > 400000) bad.push(`${seed}: the greatest host ${big}`);
       }
       return { out, bad };
     });
     return { ok: !r.bad.length, detail: JSON.stringify(r.out) + (r.bad.length ? ' bad: ' + r.bad.slice(0, 6).join('; ') : '') };
+  },
+
+  // the owner's correction to order 97: the elite have no set number. The count emerges from how hard the level is to reach
+  // in the realm (its people, make, great houses, wealth, schools of war, orders, veterans), a seeded draw with a heavy tail
+  // and no cap: pooled over 2,000 worlds' seeds a realm's count spreads wide (an empire can have 2, or 30, or 72), and each
+  // factor moves the mean. (Measured on seed 9810's world, 2,000 seeds each: Aldmark expects 17.9, p5 5, p50 16, p95 37,
+  // the most 91; Zanara 29.5, the most 133; Lucerna 0.7, Northreach 1.0; the bars are set outside that spread.)
+  async msEliteEmerges(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 9810, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 20 });
+      const M = A.MIL, s0 = A.S.seed, bad = [], N = 2000;
+      const pool = (r, n) => { const c = []; for (let s = 1; s <= n; s++) { A.S.seed = s; c.push(M.eliteCount(r)); } A.S.seed = s0; return c.sort((a, b) => a - b); };
+      const mean = c => c.reduce((a, x) => a + x, 0) / c.length;
+      const AL = A.realm('POL-01'), NR = A.realm('POL-08'), ZA = A.realm('POL-20');
+      const al = pool(AL, N), nr = pool(NR, N), za = pool(ZA, N);
+      const few = al.filter(x => x <= 3).length, many = al.filter(x => x >= 40).length, top = Math.max(al[N - 1], za[N - 1]);
+      if (!(few >= 5)) bad.push(`an empire with three or fewer in ${few} of ${N} worlds`);
+      if (!(many >= 20)) bad.push(`an empire with forty or more in ${many} of ${N} worlds`);
+      if (!(top >= 70)) bad.push(`the most in any world ${top}: a cap?`);
+      if (!(mean(al) > 4 * mean(nr))) bad.push(`Aldmark ${mean(al)} against Northreach ${mean(nr)}`);
+      if (Math.abs(mean(al) - M.eliteMean(AL).mean) > M.eliteMean(AL).mean * 0.1) bad.push(`the draw's mean ${mean(al)} against the expected ${M.eliteMean(AL).mean}`);
+      // each factor moves the mean (and the pooled draw follows): its make, its veterans, its wealth
+      const keep = { type: AL.type, xp: AL.forces.xp, bi: AL.baseIncome }, base = M.eliteMean(AL).mean;
+      AL.type = 'merchant republic'; const trade = M.eliteMean(AL).mean, tradeC = mean(pool(AL, 600)); AL.type = keep.type;
+      AL.forces.xp = 180; const vet = M.eliteMean(AL).mean, vetC = mean(pool(AL, 600)); AL.forces.xp = keep.xp;
+      AL.baseIncome = keep.bi * 3; const rich = M.eliteMean(AL).mean; AL.baseIncome = keep.bi;
+      if (!(trade < base * 0.8 && tradeC < mean(al) * 0.85)) bad.push(`a merchants' make ${trade} (${tradeC}) against ${base}`);
+      if (!(vet > base * 1.3 && vetC > mean(al) * 1.2)) bad.push(`veterans ${vet} (${vetC}) against ${base}`);
+      if (!(rich > base * 1.1)) bad.push(`wealth ${rich} against ${base}`);
+      const why = M.eliteMean(AL).why;
+      if (!why.length || why.some(x => !x[0] || !(x[1] > 0))) bad.push('no reasons: ' + JSON.stringify(why));
+      A.S.seed = 77; const d1 = M.eliteCount(AL), d2 = M.eliteCount(AL); A.S.seed = s0;
+      if (d1 !== d2) bad.push('the draw is not deterministic');
+      return { bad, al: [al[100], al[1000], al[1900], al[N - 1]], za: [za[100], za[1000], za[1900], za[N - 1]], nr: mean(nr).toFixed(2), few, many, base: base.toFixed(1), trade: trade.toFixed(1), vet: vet.toFixed(1), rich: rich.toFixed(1), why: why.slice(0, 3).map(x => x[0] + ' x' + x[1]).join('; ') };
+    });
+    return { ok: !r.bad.length, detail: `Aldmark p5/50/95/most ${r.al.join('/')}, Zanara ${r.za.join('/')}, Northreach mean ${r.nr}; three or fewer ${r.few}, forty or more ${r.many} of 2000; expected ${r.base}, as merchants ${r.trade}, with veterans ${r.vet}, three times as rich ${r.rich}; because ${r.why}` + (r.bad.length ? ' bad: ' + r.bad.join('; ') : '') };
   },
 
   // the knights count far above soldiers in a fight (the host rule on men counted at their worth), more in the lances

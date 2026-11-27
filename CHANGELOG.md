@@ -6,10 +6,11 @@ What changed for the player, in plain words, one section per version (newest fir
 ## Unreleased
 
 - **Armies of their true size.** Every realm now keeps a standing host by its people, its wealth and its kind: from
-  about ten thousand men in a small kingdom to more than a quarter of a million in the greatest empire, while a poor
+  about ten thousand soldiers in a small kingdom to more than a quarter of a million in the greatest empire, while a poor
   abbey or a pirate port keeps what it can pay. Knights are few and strong: from about fifty to three thousand in a
   realm, held by the crown and the lords by rank, and they hit far harder than their numbers in battle. Each realm also
-  has its few best fighters, known by name (a handful in a small kingdom, up to fifteen or so in a great empire). A
+  has its best fighters, known by name: as many as its people, wealth, schools, great families and wars can raise,
+  with no set number (most kingdoms a handful, a great empire often twenty or thirty, now and then far fewer or more). A
   realm's card says its might in round words ("about 216,000 soldiers, some 3,000 knights"), as well as you would know
   it, and *its best* tells its infantry, archers and cavalry and names its champions. A crown raises or cuts regiments each
   year for reasons of its own: a war, a rival's larger host, an empty treasury.
