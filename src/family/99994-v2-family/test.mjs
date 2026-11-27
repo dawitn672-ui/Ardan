@@ -275,10 +275,10 @@ export default {
   async v2fClanByLaw(pg) {
     const r = await pg.evaluate(() => {
       const bad = [], rows = [], clan = q => (/^of Clan (.+)$/.exec(q.sur || '') || [])[1] || null;
-      for (const [seed, realm] of [[4242, 'POL-01'], [4243, 'POL-11'], [4244, 'POL-34'], [4245, 'POL-34']]) {
-        T.enter({ seed, race: 'orc', realm, status: 'artisan', sex: seed % 2 ? 'F' : 'M', startAge: 18 });
+      for (const [seed, realm] of [[4242, 'POL-11'], [4243, 'POL-11'], [4244, 'POL-34'], [4245, 'POL-34']]) {
+        T.enter({ seed, race: 'halforc', realm, status: 'artisan', sex: seed % 2 ? 'F' : 'M', startAge: 18 });   // the clans are half-orcs since order 98 (D-199)
         const pc = A.pc(), fa = A.AKIN ? A.AKIN.parent(pc, 'M') : A.P(pc.parents[0]), mo = A.AKIN ? A.AKIN.parent(pc, 'F') : A.P(pc.parents[1]);
-        if (pc.surMode !== 'deed') { bad.push(`${seed}: an orc artisan named in ${pc.surMode} mode`); continue; }
+        if (pc.surMode !== 'deed') { bad.push(`${seed}: a half-orc artisan of the clans named in ${pc.surMode} mode`); continue; }
         const female = A.realm(pc.realm).law === 'female', want = clan(female ? mo : fa);
         // two brothers or sisters born now, by the game's own birth
         const n0 = mo.children.length;
@@ -299,7 +299,7 @@ export default {
         rows.push(`${realm} (${female ? 'through the mother' : 'through the father'}): father ${fa.sur}, mother ${mo.sur}, you and ${sibs.length} siblings (${born} born now) ${want}`);
       }
       // the release's draw is still made: the stream after a name is the same as before the fix
-      T.enter({ seed: 4250, race: 'orc', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 18 });
+      T.enter({ seed: 4250, race: 'halforc', realm: 'POL-11', status: 'artisan', sex: 'M', startAge: 18 });
       const pc = A.pc(), s0 = A.rngState;
       const a = A.familyName({ cult: pc.cult, realm: pc.realm, status: 'artisan', father: A.P(pc.parents[0]), mother: A.P(pc.parents[1]), sex: 'M' });
       const s1 = A.rngState; A.rngState = s0;

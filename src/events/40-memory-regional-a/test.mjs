@@ -125,7 +125,8 @@ export default {
         const male = /C\.male\(p\)/.test(cs), old = /(^|[^!])C\.old\(p\)/.test(cs);
         const raceArg = cs.match(/C\.race\(p,\s*([^)]*)\)/);
         let races = raceArg ? [...raceArg[1].matchAll(/"(\w+)"/g)].map(m => m[1]) : ['human'];
-        if (!raceArg) { const alt = GD.RACE_LIST.find(x => x !== 'human' && A.raceAllowed(x, realm)); if (alt) races.push(alt); }
+        if (!raceArg) { const alt = (GD.PLAYABLE_RACES || GD.RACE_LIST).find(x => x !== 'human' && A.raceAllowed(x, realm)); if (alt) races.push(alt); }   // a race a player may be (orcs are not, D-199)
+        if (GD.PLAYABLE_RACES) { const pl = races.filter(x => GD.PLAYABLE_RACES.includes(x)); if (pl.length) races = pl; }   // an orc probe would start as a half-orc
         const flagsRead = [...new Set([...cs.matchAll(/C\.flag\(p,\s*"(\w+)"\)/g)].map(m => m[1]))];
         const orGroup = cs.match(/\(C\.flag\(p,\s*"(\w+)"\)\s*\|\|\s*C\.flag\(p,\s*"(\w+)"\)\)/);
         const delay = f => { const m = cs.match(new RegExp(`p\\.flags\\.${f}[^>]*?>=\\s*(\\d+)`)) || cs.match(/>=\s*(\d+)/); return m ? +m[1] : 3; };

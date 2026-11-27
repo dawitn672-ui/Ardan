@@ -1052,7 +1052,9 @@ A.housesFor = function (realm, status, race) {
 
 A.houseBloodline = hid => Object.values(LORE.bloodlines).find(b => b.fam === hid) || null;
 
-A.parentRaces = function (race) {
+A.parentRaces = function (race, realm) {
+  // a half-orc of the half-orc crowns (Gorath, Ughrak: D-199) is born of half-orc parents, of the clans
+  if (race === "halforc" && realm && LORE.realms[realm] && LORE.realms[realm].race === "halforc") return ["halforc", "halforc"];
   return race === "halfelf"
     ? A.chance(0.5)
       ? ["human", "elf"]
@@ -1188,7 +1190,7 @@ A.newGame = function (o) {
   }
   const famRec = house ? A.house(house) : null,
     isFx = famRec && famRec.great === false,
-    [fr, mr] = A.parentRaces(o.race);
+    [fr, mr] = A.parentRaces(o.race, o.realm);
   let father = null,
     mother = null;
   const mkParent = (race, sex2, status, hs) => {
