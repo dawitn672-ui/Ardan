@@ -3378,7 +3378,7 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
   promise's weight; the summons' bar is half or more in full (129 of 258, with the larger hosts across the borders); the
   court's tests measure against `A.MIL.normal`.
 
-### D-208x · Agents read the knowledge base as repo markdown; Notion receives it by script (2026-11-27; orders 101, 102; the owner's "do what you think is most beneficial")
+### D-NEW-1 · Agents read the knowledge base as repo markdown; Notion receives it by script (2026-11-27; orders 101, 102; the owner's "do what you think is most beneficial")
 The world's broken-down information (realms, peoples, legends, figures, creatures, titles, classes, skills, systems) is
 written first as small linked markdown notes in the repo (an Obsidian-compatible folder the owner may open for free),
 because agents read local files at the cost of the content once, with no tool echo, and the clone restores them after
