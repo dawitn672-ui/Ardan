@@ -601,6 +601,21 @@ order is replaced, strike it through and say by what.
       royals; the economy is detailed enough that one could come to dominate a market, even across the continent, but a
       monopoly is never a status or a label the game writes (a follow-up). **An Archmage** may join the legends.
 
+98. **Fix the diagnostic's contradictions, as order 97 directs** · recorded 2026-11-27 01:20 ET. Kept unchanged in
+    `docs/prompts/2026-11-27-fix-the-contradictions.md`. The owner read the diagnostic and lifts the pause for these:
+    - **The Primordials become Noir, Blanc and Red** (order 97's looks and powers), and **Vaskareth becomes the storm
+      ancient** (one dragon, a wide gap above the inferno and water ancients).
+    - **One rarity ladder** for skills, titles, classes and items: basic, rare, epic, legendary, mythical. Uncommon (and
+      common) read as **basic** (answer 1).
+    - **Legendary classes have one holder each** and cannot be advanced.
+    - **"Legend" means one thing:** the level 800-1000 legends; the old fighter tier loses the word.
+    - **The Sword Saint enters the lore:** its history, wars and chronicles.
+    - **Demons by rank, not species;** lower demons are dumb; **orcs are demonic creatures and no longer playable**
+      (answer 2).
+    - **Wyrm-Slayer is renamed Dragon Slayer.**
+    - **Kings' levels are personal** (answer 3): countless factors, shown mainly in the kings who do little themselves.
+    - Troubleshoot anything else that contradicts or confuses, in whatever way seems best.
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
