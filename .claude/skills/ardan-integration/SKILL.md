@@ -143,3 +143,21 @@ possible, and the Notion Lessons database is updated to match.
 
 After each landed wave: what changed in player words, what to try when playing, what is next, a padded ETA in New York
 time, and anything decided on his behalf. Keep the tracker in `docs/PROGRESS.md` ticked with the commit.
+
+## 7. Vetting an outside skill (the owner's rule: never install one unread)
+
+1. **Scan.** Clone it into `/tmp/ardan/skills-src/<name>`, install NVIDIA SkillSpector (`github.com/NVIDIA/skillspector`,
+   version 2.5 or later) in a venv under `/tmp`, never in the repo, and run `skillspector scan <skill-dir> --no-llm
+   --format json --output <file>` (static stage only, no keys). Record the risk score and each finding class. "SAFE" is
+   not a guarantee (older versions have known bypasses) and a high score on a whole repo can be false positives; the
+   reading below decides.
+2. **Read every file** you will keep (SKILL.md, scripts, hooks, references) and the launcher or installer of the rest.
+   Note scripts and hooks and what they run, network calls (APIs, CDNs, fonts, binary downloads), and anything that steers
+   the agent (approvals off, other agents, memory or config writes).
+3. **Licence.** Keep only MIT, Apache, BSD or similar; copy the LICENSE; Apache needs a prominent note of changes.
+4. **Adapt into our own skill**, not a mirror: our SKILL.md with an "In Ardan" section (house rules win; no web fonts,
+   CDN or network; only `transform` and `opacity`; 44 pt; the brief's tokens), a `SOURCE.md` (repo, commit sha, date, what
+   was taken and changed), description under 1,024 characters with a "when NOT to use". Drop scripts and hooks unless
+   Ardan needs one and you have read it line by line.
+5. **Tell the owner** in plain words what it does, what we took, what we left and why, and where `ardan-ui-review` calls it.
+

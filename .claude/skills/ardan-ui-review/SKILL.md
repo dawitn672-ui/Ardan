@@ -30,6 +30,13 @@ findings into this report: it is tested and catches what the house rules don't (
 choice count past four, a slow first response). This skill adds Ardan's own rules on top; where the two disagree, the
 house rule wins (e.g. descriptions open on click, never on hover).
 
+## 1c. Adopted design skills: which to run when
+
+Run `ardan-design-critique` (craft floor, AI-default refusals, heuristics, personas) after this review's house-rule pass on
+any visible change and before it ships; run `emil-motion` (`review-animations.md`) for any diff that adds or edits an
+animation, transition or gesture, and `mobile-native.md` before an iPhone build; run `ardan-brand-identity` only for the App
+Store icon, launch screen, a logo or store art. The house rules below win over all three; none of their scripts is used.
+
 ## 2. House rules (each one is a finding if broken)
 - **Descriptions open on click, tap or Enter, never on hover.** A description is `data-note="..."` on a button or an
   info glyph; no `title=` of more than three words; nothing on `mouseover`/`mouseenter`. Evidence:
