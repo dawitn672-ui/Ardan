@@ -33,6 +33,7 @@ a batch, runs both CI tiers and is cut as a version. A line is ticked with its c
 - [ ] Titles reworked after *Overgeared*; classes as many as are worth having (300+ if sensible)
 
 **Wave 4 · depth**
+- [ ] **NPC talent letters for every person** (owed: D-NEW-2), then restore s1Census's every-year, every-world floor
 - [ ] Skills in the thousands: kinds and subkinds, level by training, quality by evolution, heredity or race, merging can raise rarity, family arts never merge and may reject, skill against use
 - [ ] Profiles of every notable person down to merchants and people of promise; noteworthy houses playable
 - [ ] Merchants from comfortable to richer than kings; markets deep enough for one to dominate (never a label)

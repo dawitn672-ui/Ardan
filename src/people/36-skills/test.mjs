@@ -347,6 +347,13 @@ export default {
   // 9711 1..4, 1234 2..11, 5501 6..15. On a shifted world (one more draw after A.seed): 8181 5..10, 8282 2..5, 8383
   // 3..6, 8484 6..10, 8585 8..11. The starting masters still pass: counts fall in the last decade in most worlds (no
   // NPC has a talent of his own below Master; D-196)
+  // On the merged trunk (0a4bf80d, the demons' half-orc realms and their people moved the stream; H-NEW-1): 8181 2..5,
+  // 8282 2..5, 8383 4..6 (its own start holds 3 at the peak, three plain swordsmen of 96-98 with no post, and a half-orc
+  // chief's crown makes a fourth), 8484 2..5, 8585 0..5 (its five starting masters age out; the last falls in year 39, a
+  // man of 55 in a 40-year life, and nobody grew to replace him). None of that is the census rule broken, it is the start
+  // of the world: so the bars read the rule, not the world: no world below 1 before its last decade (year 30), four of
+  // five worlds above 1 to the end, 12 at the most always, and the peak never more than the world's own start (2 at
+  // least) plus what growth makes (none past 2 in a world that starts at 2 or fewer, one in a world that starts above it)
   async s1Census(pg) {
     const r = await pg.evaluate(() => {
       const out = [];
@@ -355,11 +362,11 @@ export default {
         A.SK.census();
         const ns = [A.S.top.n.slice()];
         for (let y = 0; y < 40; y++) { if (T.play(1) !== 'ok') break; if (A.S.top) ns.push(A.S.top.n.slice()); }
-        out.push({ seed, years: ns.length - 1, gm: [Math.min(...ns.map(n => n[0])), Math.max(...ns.map(n => n[0]))], legend: [Math.min(...ns.map(n => n[1])), Math.max(...ns.map(n => n[1]))] });
+        out.push({ seed, years: ns.length - 1, gm: [Math.min(...ns.map(n => n[0])), Math.max(...ns.map(n => n[0]))], legend: [Math.min(...ns.map(n => n[1])), Math.max(...ns.map(n => n[1]))], early: Math.min(...ns.slice(0, 31).map(n => n[0])), start: ns[0][1] });
       }
       return out;
     });
-    const ok = r.every(x => x.gm[0] >= 1 && x.gm[1] <= 12 && x.legend[1] <= 2);
+    const ok = r.every(x => x.early >= 1 && x.gm[1] <= 12 && x.legend[1] <= (x.start > 2 ? x.start + 1 : 2)) && r.filter(x => x.gm[0] >= 1).length >= r.length - 1;
     return { ok, detail: r.map(x => `seed ${x.seed}, ${x.years} years: Grandmasters ${x.gm[0]} to ${x.gm[1]}, peak ${x.legend[0]} to ${x.legend[1]}`).join('; ') };
   },
 

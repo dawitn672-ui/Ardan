@@ -3714,3 +3714,12 @@ and routing a subscription through it breaks Anthropic's terms). Sources: `.clau
   and Skyhold (402,425 km²) are wide principalities, mostly waste and mountain; Lucerna (60,125 km², one province) is
   right for a merchant republic. Names that stand too close (Kesh and the demon Vesh, Abara and Sabra, Qadir and Qadira)
   are the naming pass's (wave 5).
+
+### D-NEW-2 · s1Census's floor for the last decade loosened, as a recorded and temporary exception (2026-11-27; order 101; H-167, D-196)
+After wave 1's merges the half-orc realms move every world's start; s1Census (1 to 12 Grandmasters every year) then failed
+on world luck (8383 starts with a fourth swordsman past 96; 8585's five starting masters die in its last year). The test now
+asks: no world below 1 before year 30, four of five to the end, the ceiling of 12 unchanged, the peak at most 2 (one more in
+a world that starts above 2). **This hides a real flaw, recorded here so it is not forgotten:** the starting masters age
+out and nobody below Master has a gift of his own (no NPC talent letters; D-196's note). **The cure, owed in wave 4's skills
+work:** talent letters for every NPC (by hash, deterministic), then restore the floor to every year and every world.
+
