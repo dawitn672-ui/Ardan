@@ -18,9 +18,9 @@ Decision: D-193.
 | | Masters of the Orders | generated | each elite order's Grand Master (8) |
 | | Masters of the Peoples | link | `data/power.json`'s four masters, with an overlay (class road, temper, goals, grudges, secret) |
 | Beyond the realms | The Legends | link | `data/legends.json`'s sixteen, in groups (the King of Dragons, the Primordial Archdemons, the Sword Saint, the rest) |
-| | The Ancient Dragons | fixed | Ash, Frost and Storm (Ashgar, Rimewing, Galeheart), who serve the King |
+| | The Ancient Dragons | fixed | Inferno and Water (Ashgar, Rimewing), with the storm ancient Vaskareth's legend sheet (`category.legends`, D-198), each with a dominion |
 | | The Elder Dragons | fixed | nine, at the bestiary's counts (Elder Ash x3, Frost x2, Storm x2, Brine, the Red Widow) |
-| | The Ancient Demons | fixed | thirty-three, at the bestiary's counts (Marquis of the Burning Court x20, Pit-Mother x6, Ledger-Keeper x3, Pit Wyrm x4), sworn 12 / 11 / 10 to Ghazrul, Morvane and Vethrael |
+| | The Ancient Demons | fixed | thirty-three, by rank at the bestiary's counts (Marquis of Hell x20, Duke of Hell x9: Pit-Mothers and Ledger-Keepers, Prince of Hell x4: the Pit Dragons; D-197), sworn 12 / 11 / 10 to Red, Noir and Blanc (ids ghazrul, morvane, vethrael), every one in Hell and horned |
 
 **A profile** (`A.FIG.profile(id)`): name, style, kind or race, level, class, skills with rank and level, arts readied,
 titles, items, temper and traits, goals and grudges (the reasons `A.WHY` reads), home, fame, story, and a secret.

@@ -113,6 +113,18 @@
   ];
   PW.TEMPERS = TEMPERS;
   PW.individual = (sp, key) => TEMPERS[hash(`${sp && sp.id}|${key}`) % TEMPERS.length];
+  // no demon species (order 97, D-197): every demon is one of a kind, its look rolled from its own seed (its id), and every
+  // one horned. Pure: a hash, no draw
+  const D_HORNS = ['two ram\'s horns curled back to its jaw', 'a crown of short black horns', 'long horns swept back like a goat\'s', 'four horns, two great and two small',
+    'one horn broken at the root and the other long and ridged', 'horns of black bone branched like antlers', 'horns that curve forward like a bull\'s', 'horns of red glass that smoke'];
+  const D_SKIN = ['ash-grey', 'crimson', 'charcoal', 'bone-white', 'brass-yellow', 'bruise-blue', 'oxblood', 'soot-black', 'cinder-red', 'the grey-green of a drowned man'];
+  const D_EYES = ['eyes like live coals', 'white eyes without pupils', 'gold eyes slit like a goat\'s', 'eyes black from lid to lid', 'a third eye in its brow', 'eyes that weep smoke'];
+  const D_MARK = ['bat\'s wings folded at its back', 'a long barbed tail', 'hooves where its feet should be', 'spines down the length of its back', 'a mouth too wide for its face',
+    'skin cracked like cooling lava', 'chains it cannot take off', 'a smell of struck flint about it', 'too many joints in its fingers', 'a voice that comes from behind you'];
+  PW.demonLook = function (key) {
+    const h = hash(`demon|${key}`), pick = (a, s) => a[(h >>> s) % a.length];
+    return `Horned: ${pick(D_HORNS, 0)}; ${pick(D_SKIN, 5)} of skin, with ${pick(D_EYES, 11)} and ${pick(D_MARK, 17)}.`;
+  };
 
   // ---------------------------------------------------------------- beings
   PW.species = id => SP.get(id) || null;

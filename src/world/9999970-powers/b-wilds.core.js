@@ -49,7 +49,8 @@
   const realmOf = P => (P && P.owner ? A.realm(P.owner) : null);
   const short = rid => { try { return A.realmShort(rid); } catch (e) { return String(rid); } };
   const isWild = P => P && (!P.town || P.town < 3000);
-  const terrOk = (s, P) => P && ((s.terr || []).includes(P.terr) || (s.coast && P.coast) || (P.terr === 'steppe' && s.terr.includes('plains')));
+  // every demon lives in Hell (order 97, D-197): a kind of Hell is never met on the continent's ground
+  const terrOk = (s, P) => P && !s.hell && ((s.terr || []).includes(P.terr) || (s.coast && P.coast) || (P.terr === 'steppe' && s.terr.includes('plains')));
 
   // ---------------------------------------------------------------- state
   PW.state = function () {
@@ -413,7 +414,10 @@
     opts = opts || {};
     const se = PW.season();
     const cands = PW.BD.species.filter(s => !s.unique && terrOk(s, P) && (s.seasons || []).includes(se) && (!opts.max || s.t <= opts.max));
-    return wpick(rng, cands, s => Math.exp(-Math.pow(s.t - target, 2) / (2 * 49)) / (s.beh.people === 'avoids' && !opts.hunt ? 2 : 1));
+    // a kind the world holds few of (world: the giants, the dragons) is met as rarely: a handful in all the continent are
+    // seldom where a traveller is (order 97: giants very few)
+    const few = s => (s.world != null ? Math.min(1, s.world / 40) : 1);
+    return wpick(rng, cands, s => few(s) * Math.exp(-Math.pow(s.t - target, 2) / (2 * 49)) / (s.beh.people === 'avoids' && !opts.hunt ? 2 : 1));
   };
   PW.exposure = function (pc, P, doing) {
     let x = (T.terr[P.terr] || 0.004) * (P.town >= 20000 ? T.city : P.town >= 3000 ? T.town : T.wild);

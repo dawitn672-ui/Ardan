@@ -85,6 +85,7 @@
     const sp = PW.species(f.kind), b = PW.being(f.id);
     return {
       id: f.id, cat: f.cat, type: 'being', name: f.name, style: f.style || null, nature: sp.tier, kindName: sp.n, race: sp.fam, level: b ? b.level : f.level,
+      looks: f.looks || (sp.fam === 'demons' && PW.demonLook ? PW.demonLook(f.id) : null),   // each demon one of a kind, horned (D-197)
       cls: null, skills: BEING.get(f.id).skills, arts: f.arts || [], titles: titlesOf(BEING.get(f.id).titles), items: f.items || [],
       temper: f.temper, traits: f.traits, goals: f.goals, grudges: withNames(f.grudges), home: f.home, fame: f.fame,
       story: f.story, secret: { story: (f.secret && f.secret.story) || [] }, liege: f.liege || null, power: b ? b.power : 0, dominion: f.dominion || null,

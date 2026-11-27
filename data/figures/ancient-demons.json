@@ -1,12 +1,12 @@
 {
- "about": "The thirty-three ancient demons below the three Primordial Archdemons (order 96, D-193): hand-written, each a full profile. kind: its bestiary species (Marquis of the Burning Court x20, Pit-Mother x6, Ledger-Keeper x3, Pit Wyrm x4: data/bestiary.json world counts); liege: the Archdemon it is sworn to (Ghazrul 12, Morvane 11, Vethrael 10; their disputes are its grudges); home: a place of Hell by name (the domains of map version 5: the Cinderlands, the Gatelands, the Hush, the disputed Scorched March, and the Ashen Marches where the lower demons cross), so this file does not depend on the map. Validated by tools/lint-figures.mjs.",
+ "about": "The thirty-three ancient demons below the three Primordials, Noir, Red and Blanc (order 96, D-193; order 97, D-197): hand-written, each a full profile and each one of a kind, all horned (their looks are rolled from their ids, A.POWER.demonLook). kind: its rank in Hell's peerage, the bestiary's ancient ranks (Marquis of Hell x20, Duke of Hell x9: six Pit-Mothers and three Ledger-Keepers, Prince of Hell x4: the Pit Dragons; data/bestiary.json world counts), ten levels below the old kinds; its office in Hell is its style; liege: the Primordial it is sworn to (ids kept: ghazrul is Red 12, morvane is Noir 11, vethrael is Blanc 10; their disputes are its grudges); home: a place of Hell by name (the Cinderlands, the Gatelands, the Hush, the disputed Scorched March, and the Ashen Marches, Hell's northern shore), every one of Hell (order 97: every demon lives there). Validated by tools/lint-figures.mjs.",
  "category": {
   "id": "ancient-demons",
   "name": "The Ancient Demons",
   "group": "beyond",
   "order": 4,
   "kind": "fixed",
-  "note": "Thirty-three ancient demons stand below the three Primordial Archdemons, each sworn to one of them: twenty Marquises of the Burning Court, six Pit-Mothers, three Ledger-Keepers and four Pit Wyrms. They rival the elder dragons.",
+  "note": "Thirty-three ancient demons stand below the three Primordials, each sworn to one of them and each one of a kind: twenty Marquises of Hell, nine Dukes (six Pit-Mothers and three Ledger-Keepers) and four Princes (the Pit Dragons). They rival the elder dragons.",
   "groupBy": "liege"
  },
  "figures": [
@@ -14,8 +14,8 @@
    "id": "skarn",
    "name": "Skarn",
    "style": "the Kiln-Lord",
-   "kind": "marquis-of-the-burning-court",
-   "level": 752,
+   "kind": "marquis-of-hell",
+   "level": 742,
    "class": null,
    "liege": "ghazrul",
    "skills": [
@@ -30,9 +30,12 @@
      "fight": true
     },
     {
-     "id": "frost_veil",
+     "n": "Heat-Shimmer",
+     "rank": "B",
      "lvl": 7,
-     "fight": false
+     "kind": "buff",
+     "fight": false,
+     "does": "The air about it shakes with heat; blades and arrows slide off the shimmer."
     },
     {
      "n": "Court of Cinders",
@@ -40,7 +43,7 @@
      "lvl": 8,
      "kind": "aura",
      "fight": true,
-     "does": "Every fiend of his court fights as if she were watching."
+     "does": "Every lesser demon of his court fights as if she were watching."
     }
    ],
    "arts": [
@@ -109,17 +112,17 @@
    ],
    "home": {
     "name": "the Kiln",
-    "domain": "the Cinderlands",
+    "domain": "the Cinderlands of Hell",
     "known": true
    },
    "fame": "known",
    "story": [
-    "The first of the Marquises of the Burning Court, and the oldest of Red's servants. He keeps her court at the Kiln, and her gate under the Burning Waste is still sealed.",
+    "The first of the Marquises of Hell, and the oldest of Red's servants. He keeps her court at the Kiln, and her gate under the Burning Waste is still sealed.",
     "The other Marquises bow to him in her name, and the lower demons of the Cinderlands come when he calls."
    ],
    "secret": {
     "story": [
-     "He has sent three hosts of fiends against the Glass Seal in eighty years. Each burned itself out against the glass. He means to send a fourth."
+     "He has sent three hosts of lesser demons against the Glass Seal in eighty years. Each burned itself out against the glass. He means to send a fourth."
     ]
    }
   },
@@ -127,8 +130,8 @@
    "id": "vesh",
    "name": "Vesh",
    "style": "of Brimstone",
-   "kind": "marquis-of-the-burning-court",
-   "level": 746,
+   "kind": "marquis-of-hell",
+   "level": 736,
    "class": null,
    "liege": "ghazrul",
    "skills": [
@@ -209,12 +212,12 @@
    ],
    "home": {
     "name": "Brimstone",
-    "domain": "the Cinderlands",
+    "domain": "the Cinderlands of Hell",
     "known": false
    },
    "fame": "whispered",
    "story": [
-    "A Marquis of the Burning Court who holds the yellow hills of Brimstone for Red."
+    "A Marquis of Hell who holds the yellow hills of Brimstone for Red."
    ],
    "secret": {
     "story": [
@@ -226,8 +229,8 @@
    "id": "mag",
    "name": "Mag",
    "style": "of the Red Steps",
-   "kind": "marquis-of-the-burning-court",
-   "level": 744,
+   "kind": "marquis-of-hell",
+   "level": 734,
    "class": null,
    "liege": "ghazrul",
    "skills": [
@@ -302,12 +305,12 @@
    ],
    "home": {
     "name": "the Red Steps",
-    "domain": "the Cinderlands",
+    "domain": "the Cinderlands of Hell",
     "known": false
    },
    "fame": "whispered",
    "story": [
-    "A Marquis of the Burning Court who holds the Red Steps, the burnt stair of hills where the Cinderlands meet the Hush."
+    "A Marquis of Hell who holds the Red Steps, the burnt stair of hills where the Cinderlands meet the Hush."
    ],
    "secret": {
     "story": [
@@ -319,8 +322,8 @@
    "id": "harrak",
    "name": "Harrak",
    "style": "of the Burnt Reach",
-   "kind": "marquis-of-the-burning-court",
-   "level": 749,
+   "kind": "marquis-of-hell",
+   "level": 739,
    "class": null,
    "liege": "ghazrul",
    "skills": [
@@ -398,17 +401,17 @@
      "at": "dirge",
      "kind": "figure",
      "w": 0.9,
-     "why": "Dirge sings at Cinder Ford, and his fiends will not cross it"
+     "why": "Dirge sings at Cinder Ford, and his lesser demons will not cross it"
     }
    ],
    "home": {
     "name": "the Burnt Reach",
-    "domain": "the Scorched March",
+    "domain": "the Scorched March of Hell",
     "known": true
    },
    "fame": "known",
    "story": [
-    "A Marquis of the Burning Court who camps on the Burnt Reach, the disputed ground all three Primordials claim. He has fought Noir's and Blanc's servants there for three hundred years."
+    "A Marquis of Hell who camps on the Burnt Reach, the disputed ground all three Primordials claim. He has fought Noir's and Blanc's servants there for three hundred years."
    ],
    "secret": {
     "story": [
@@ -420,8 +423,8 @@
    "id": "ossa",
    "name": "Ossa",
    "style": "the Gate-Keeper",
-   "kind": "marquis-of-the-burning-court",
-   "level": 741,
+   "kind": "marquis-of-hell",
+   "level": 731,
    "class": null,
    "liege": "ghazrul",
    "skills": [
@@ -497,18 +500,18 @@
      "at": "human",
      "kind": "race",
      "w": 0.8,
-     "why": "the wardens of the Sundering burn every fiend she sends across"
+     "why": "the wardens of the Sundering burn every lesser demon she sends across"
     }
    ],
    "home": {
     "name": "the Ashen Marches",
-    "domain": "the Ashen Marches",
+    "domain": "the Ashen Marches of Hell",
     "known": true
    },
    "fame": "known",
    "story": [
-    "A Marquis of the Burning Court who watches the Ashen Marches, the burned borderland where the lower demons cross into the world of men.",
-    "The border lords know her name. They light fires on the Sundering when her fiends are seen."
+    "A Marquis of Hell who watches the Ashen Marches, the burned northern shore of Hell that looks across the water to the world of men, where the lower demons gather whenever a gate opens.",
+    "The lords of the southern coast know her name. They light fires on the headlands when her lesser demons are seen on the far shore."
    ],
    "secret": {
     "story": [
@@ -520,8 +523,8 @@
    "id": "brann",
    "name": "Brann",
    "style": "the Glassmaker",
-   "kind": "marquis-of-the-burning-court",
-   "level": 747,
+   "kind": "marquis-of-hell",
+   "level": 737,
    "class": null,
    "liege": "ghazrul",
    "skills": [
@@ -536,9 +539,12 @@
      "fight": true
     },
     {
-     "id": "frost_veil",
+     "n": "Heat-Shimmer",
+     "rank": "B",
      "lvl": 6,
-     "fight": false
+     "kind": "buff",
+     "fight": false,
+     "does": "The air about it shakes with heat; blades and arrows slide off the shimmer."
     },
     {
      "n": "Glass Hand",
@@ -603,12 +609,12 @@
    ],
    "home": {
     "name": "Black Glass",
-    "domain": "the Cinderlands",
+    "domain": "the Cinderlands of Hell",
     "known": false
    },
    "fame": "whispered",
    "story": [
-    "A Marquis of the Burning Court who works the black glass of Black Glass, where the sand runs to glass in the heat."
+    "A Marquis of Hell who works the black glass of Black Glass, where the sand runs to glass in the heat."
    ],
    "secret": {
     "story": [
@@ -620,8 +626,8 @@
    "id": "ruk",
    "name": "Ruk",
    "style": "of Emberfall",
-   "kind": "marquis-of-the-burning-court",
-   "level": 743,
+   "kind": "marquis-of-hell",
+   "level": 733,
    "class": null,
    "liege": "ghazrul",
    "skills": [
@@ -689,17 +695,17 @@
      "at": "scathe",
      "kind": "figure",
      "w": 1,
-     "why": "Scathe the Pit Wyrm hunts in Emberfall and takes the best of his souls"
+     "why": "Scathe the Pit Dragon hunts in Emberfall and takes the best of his souls"
     }
    ],
    "home": {
     "name": "Emberfall",
-    "domain": "the Cinderlands",
+    "domain": "the Cinderlands of Hell",
     "known": false
    },
    "fame": "whispered",
    "story": [
-    "A Marquis of the Burning Court who holds Emberfall, where it rains cinders."
+    "A Marquis of Hell who holds Emberfall, where it rains cinders."
    ],
    "secret": {
     "story": [
@@ -710,8 +716,8 @@
   {
    "id": "old-smoke",
    "name": "Old Smoke",
-   "kind": "pit-mother",
-   "level": 754,
+   "kind": "duke-of-hell",
+   "level": 744,
    "class": null,
    "liege": "ghazrul",
    "skills": [
@@ -726,9 +732,12 @@
      "fight": true
     },
     {
-     "id": "frost_veil",
+     "n": "Heat-Shimmer",
+     "rank": "B",
      "lvl": 8,
-     "fight": false
+     "kind": "buff",
+     "fight": false,
+     "does": "The air about it shakes with heat; blades and arrows slide off the shimmer."
     },
     {
      "n": "Brood-Call",
@@ -736,7 +745,7 @@
      "lvl": 9,
      "kind": "aura",
      "fight": true,
-     "does": "She calls, and the imps and fiends of her pits come up out of the ground."
+     "does": "She calls, and the imps and lesser demons of her pits come up out of the ground."
     }
    ],
    "arts": [
@@ -793,7 +802,7 @@
    ],
    "home": {
     "name": "Smokehollow",
-    "domain": "the Cinderlands",
+    "domain": "the Cinderlands of Hell",
     "known": true
    },
    "fame": "known",
@@ -804,13 +813,14 @@
     "story": [
      "Her pits have been cold for twenty years: fewer of her young come up each spring, and she does not know why."
     ]
-   }
+   },
+   "style": "Pit-Mother of Smokehollow"
   },
   {
    "id": "grisel",
    "name": "Grisel",
-   "kind": "pit-mother",
-   "level": 748,
+   "kind": "duke-of-hell",
+   "level": 738,
    "class": null,
    "liege": "ghazrul",
    "skills": [
@@ -883,7 +893,7 @@
    ],
    "home": {
     "name": "the Cinder Flats",
-    "domain": "the Cinderlands",
+    "domain": "the Cinderlands of Hell",
     "known": false
    },
    "fame": "whispered",
@@ -894,13 +904,14 @@
     "story": [
      "She has been stealing Old Smoke's young out of the pits of Smokehollow, one by one."
     ]
-   }
+   },
+   "style": "Pit-Mother of the Cinder Flats"
   },
   {
    "id": "quill",
    "name": "Quill",
-   "kind": "ledger-keeper",
-   "level": 752,
+   "kind": "duke-of-hell",
+   "level": 742,
    "class": null,
    "liege": "ghazrul",
    "skills": [
@@ -915,9 +926,12 @@
      "fight": true
     },
     {
-     "id": "frost_veil",
+     "n": "Heat-Shimmer",
+     "rank": "B",
      "lvl": 9,
-     "fight": false
+     "kind": "buff",
+     "fight": false,
+     "does": "The air about it shakes with heat; blades and arrows slide off the shimmer."
     },
     {
      "n": "The Ember Ledger",
@@ -982,7 +996,7 @@
    ],
    "home": {
     "name": "Glasswaste",
-    "domain": "the Cinderlands",
+    "domain": "the Cinderlands of Hell",
     "known": false
    },
    "fame": "whispered",
@@ -993,14 +1007,16 @@
     "story": [
      "Quill's books show that Red owes Noir a debt from the day the seventh gate opened. Quill has told no one, because no one has asked."
     ]
-   }
+   },
+   "style": "Ledger-Keeper of Glasswaste"
   },
   {
    "id": "gorm",
    "name": "Gorm",
    "style": "the Dragon-Eater",
-   "kind": "pit-wyrm",
-   "level": 770,
+   "looks": "Horned: a dragon's shape of black glass and brimstone, with a ridge of horns from brow to tail and the scars of two dragons' teeth on its throat.",
+   "kind": "prince-of-hell",
+   "level": 760,
    "class": null,
    "liege": "ghazrul",
    "skills": [
@@ -1088,12 +1104,12 @@
    ],
    "home": {
     "name": "Glasswaste",
-    "domain": "the Cinderlands",
+    "domain": "the Cinderlands of Hell",
     "known": true
    },
    "fame": "known",
    "story": [
-    "A Pit Wyrm, a demon in a dragon's shape, that lairs in the mountains of Glasswaste. The old songs say one of the four has eaten two dragons. This is the one."
+    "A Pit Dragon, a demon in a dragon's shape, that lairs in the mountains of Glasswaste. The old songs say one of the four has eaten two dragons. This is the one."
    ],
    "secret": {
     "story": [
@@ -1104,8 +1120,8 @@
   {
    "id": "scathe",
    "name": "Scathe",
-   "kind": "pit-wyrm",
-   "level": 762,
+   "kind": "prince-of-hell",
+   "level": 752,
    "class": null,
    "liege": "ghazrul",
    "skills": [
@@ -1178,25 +1194,27 @@
    ],
    "home": {
     "name": "the Broken Ground",
-    "domain": "the Scorched March",
+    "domain": "the Scorched March of Hell",
     "known": false
    },
    "fame": "whispered",
    "story": [
-    "A Pit Wyrm that hunts the Broken Ground of the Scorched March, in Red's name when it remembers to be."
+    "A Pit Dragon that hunts the Broken Ground of the Scorched March, in Red's name when it remembers to be."
    ],
    "secret": {
     "story": [
      "It answers to no Marquis. Skarn has given up sending for it."
     ]
-   }
+   },
+   "style": "Pit Dragon of the Broken Ground",
+   "looks": "Horned: a dragon's shape gone wrong, long and wingless, its horns grown through its own jaw, its scales the colour of old burns."
   },
   {
    "id": "silk",
    "name": "Silk",
    "style": "the Toll-Taker",
-   "kind": "marquis-of-the-burning-court",
-   "level": 751,
+   "kind": "marquis-of-hell",
+   "level": 741,
    "class": null,
    "liege": "morvane",
    "skills": [
@@ -1283,7 +1301,7 @@
    ],
    "home": {
     "name": "the Toll Road",
-    "domain": "the Gatelands",
+    "domain": "the Gatelands of Hell",
     "known": true
    },
    "fame": "known",
@@ -1301,8 +1319,8 @@
    "id": "varo",
    "name": "Varo",
    "style": "of Tollbridge",
-   "kind": "marquis-of-the-burning-court",
-   "level": 745,
+   "kind": "marquis-of-hell",
+   "level": 735,
    "class": null,
    "liege": "morvane",
    "skills": [
@@ -1375,7 +1393,7 @@
    ],
    "home": {
     "name": "Tollbridge",
-    "domain": "the Gatelands",
+    "domain": "the Gatelands of Hell",
     "known": false
    },
    "fame": "whispered",
@@ -1392,8 +1410,8 @@
    "id": "dross",
    "name": "Dross",
    "style": "of Ironsoul",
-   "kind": "marquis-of-the-burning-court",
-   "level": 742,
+   "kind": "marquis-of-hell",
+   "level": 732,
    "class": null,
    "liege": "morvane",
    "skills": [
@@ -1468,7 +1486,7 @@
    ],
    "home": {
     "name": "Ironsoul",
-    "domain": "the Gatelands",
+    "domain": "the Gatelands of Hell",
     "known": false
    },
    "fame": "whispered",
@@ -1485,8 +1503,8 @@
    "id": "sallow",
    "name": "Sallow",
    "style": "of Soulmarket",
-   "kind": "marquis-of-the-burning-court",
-   "level": 748,
+   "kind": "marquis-of-hell",
+   "level": 738,
    "class": null,
    "liege": "morvane",
    "skills": [
@@ -1562,7 +1580,7 @@
    ],
    "home": {
     "name": "Soulmarket",
-    "domain": "the Gatelands",
+    "domain": "the Gatelands of Hell",
     "known": true
    },
    "fame": "known",
@@ -1580,8 +1598,8 @@
    "id": "grael",
    "name": "Grael",
    "style": "of Bonefield",
-   "kind": "marquis-of-the-burning-court",
-   "level": 750,
+   "kind": "marquis-of-hell",
+   "level": 740,
    "class": null,
    "liege": "morvane",
    "skills": [
@@ -1622,7 +1640,7 @@
      "n": "The Bonefield banner",
      "kind": "banner",
      "quality": "masterwork",
-     "does": "Sewn from the cloaks of Red's fiends.",
+     "does": "Sewn from the cloaks of Red's lesser demons.",
      "gives": {
       "ward": 1
      }
@@ -1662,12 +1680,12 @@
    ],
    "home": {
     "name": "Bonefield",
-    "domain": "the Scorched March",
+    "domain": "the Scorched March of Hell",
     "known": true
    },
    "fame": "known",
    "story": [
-    "Noir's Marquis on the Scorched March, who holds Bonefield against Red's fiends and Blanc's blood-sworn."
+    "Noir's Marquis on the Scorched March, who holds Bonefield against Red's lesser demons and Blanc's blood-sworn."
    ],
    "secret": {
     "story": [
@@ -1679,8 +1697,8 @@
    "id": "ansel",
    "name": "Ansel",
    "style": "of Pale Harbour",
-   "kind": "marquis-of-the-burning-court",
-   "level": 739,
+   "kind": "marquis-of-hell",
+   "level": 729,
    "class": null,
    "liege": "morvane",
    "skills": [
@@ -1695,9 +1713,12 @@
      "fight": true
     },
     {
-     "id": "frost_veil",
+     "n": "Veil of Shadow",
+     "rank": "B",
      "lvl": 7,
-     "fight": false
+     "kind": "buff",
+     "fight": false,
+     "does": "It stands in a shadow of its own, and the eye slides off it."
     },
     {
      "n": "Grey Tide",
@@ -1760,7 +1781,7 @@
    ],
    "home": {
     "name": "Pale Harbour",
-    "domain": "the Gatelands",
+    "domain": "the Gatelands of Hell",
     "known": false
    },
    "fame": "whispered",
@@ -1777,8 +1798,8 @@
    "id": "mott",
    "name": "Mott",
    "style": "of the Grey Spires",
-   "kind": "marquis-of-the-burning-court",
-   "level": 744,
+   "kind": "marquis-of-hell",
+   "level": 734,
    "class": null,
    "liege": "morvane",
    "skills": [
@@ -1852,7 +1873,7 @@
    ],
    "home": {
     "name": "the Grey Spires",
-    "domain": "the Gatelands",
+    "domain": "the Gatelands of Hell",
     "known": false
    },
    "fame": "whispered",
@@ -1868,8 +1889,8 @@
   {
    "id": "mother-mire",
    "name": "Mother Mire",
-   "kind": "pit-mother",
-   "level": 751,
+   "kind": "duke-of-hell",
+   "level": 741,
    "class": null,
    "liege": "morvane",
    "skills": [
@@ -1889,7 +1910,7 @@
      "lvl": 8,
      "kind": "aura",
      "fight": true,
-     "does": "She calls, and the imps and fiends of her pits come up out of the ground."
+     "does": "She calls, and the imps and lesser demons of her pits come up out of the ground."
     }
    ],
    "arts": [
@@ -1945,7 +1966,7 @@
    ],
    "home": {
     "name": "the Debt Fields",
-    "domain": "the Gatelands",
+    "domain": "the Gatelands of Hell",
     "known": true
    },
    "fame": "known",
@@ -1956,13 +1977,14 @@
     "story": [
      "She lets some of her young go over the Sundering unbound, owing nothing. Noir's Marquises would call it theft."
     ]
-   }
+   },
+   "style": "Pit-Mother of the Debt Fields"
   },
   {
    "id": "wenna",
    "name": "Wenna",
-   "kind": "pit-mother",
-   "level": 745,
+   "kind": "duke-of-hell",
+   "level": 735,
    "class": null,
    "liege": "morvane",
    "skills": [
@@ -2035,7 +2057,7 @@
    ],
    "home": {
     "name": "Gallowsgate",
-    "domain": "the Gatelands",
+    "domain": "the Gatelands of Hell",
     "known": false
    },
    "fame": "whispered",
@@ -2046,13 +2068,14 @@
     "story": [
      "She has been feeding on Noir's debtors before they are written down. Nil has noticed."
     ]
-   }
+   },
+   "style": "Pit-Mother of Gallowsgate"
   },
   {
    "id": "nil",
    "name": "Nil",
-   "kind": "ledger-keeper",
-   "level": 758,
+   "kind": "duke-of-hell",
+   "level": 748,
    "class": null,
    "liege": "morvane",
    "skills": [
@@ -2067,9 +2090,12 @@
      "fight": true
     },
     {
-     "id": "frost_veil",
+     "n": "Veil of Shadow",
+     "rank": "B",
      "lvl": 10,
-     "fight": false
+     "kind": "buff",
+     "fight": false,
+     "does": "It stands in a shadow of its own, and the eye slides off it."
     },
     {
      "n": "The First Ledger",
@@ -2137,7 +2163,7 @@
    ],
    "home": {
     "name": "the Ledger",
-    "domain": "the Gatelands",
+    "domain": "the Gatelands of Hell",
     "known": true
    },
    "fame": "known",
@@ -2149,13 +2175,14 @@
     "story": [
      "The First Ledger says Noir's debt from the Seventh Gate was never paid: the sorcerer-prince who opened it is owed something still. Nil is waiting for his heir to claim it."
     ]
-   }
+   },
+   "style": "Ledger-Keeper of the Ledger"
   },
   {
    "id": "rook",
    "name": "Rook",
-   "kind": "pit-wyrm",
-   "level": 766,
+   "kind": "prince-of-hell",
+   "level": 756,
    "class": null,
    "liege": "morvane",
    "skills": [
@@ -2228,25 +2255,27 @@
    ],
    "home": {
     "name": "the Grey Spires",
-    "domain": "the Gatelands",
+    "domain": "the Gatelands of Hell",
     "known": false
    },
    "fame": "whispered",
    "story": [
-    "A Pit Wyrm that nests among the Grey Spires and guards the road to the Counting House."
+    "A Pit Dragon that nests among the Grey Spires and guards the road to the Counting House."
    ],
    "secret": {
     "story": [
      "It is the only demon of the Gatelands that ever saw Noir without his shadow. It will not describe it."
     ]
-   }
+   },
+   "style": "Pit Dragon of the Grey Spires",
+   "looks": "Horned: a grey dragon's shape coiled about a spire, with horns like a crown of iron spikes and eyes black from lid to lid."
   },
   {
    "id": "lark",
    "name": "Lark",
    "style": "of Bellmoor",
-   "kind": "marquis-of-the-burning-court",
-   "level": 750,
+   "kind": "marquis-of-hell",
+   "level": 740,
    "class": null,
    "liege": "vethrael",
    "skills": [
@@ -2261,9 +2290,12 @@
      "fight": true
     },
     {
-     "id": "frost_veil",
+     "n": "Pale Veil",
+     "rank": "B",
      "lvl": 7,
-     "fight": false
+     "kind": "buff",
+     "fight": false,
+     "does": "A mist of thinned blood hangs about it; what is struck through it bleeds the striker."
     },
     {
      "n": "Bell-Song",
@@ -2333,7 +2365,7 @@
    ],
    "home": {
     "name": "Bellmoor",
-    "domain": "the Hush",
+    "domain": "the Hush of Hell",
     "known": true
    },
    "fame": "known",
@@ -2350,8 +2382,8 @@
    "id": "dirge",
    "name": "Dirge",
    "style": "of Cinder Ford",
-   "kind": "marquis-of-the-burning-court",
-   "level": 747,
+   "kind": "marquis-of-hell",
+   "level": 737,
    "class": null,
    "liege": "vethrael",
    "skills": [
@@ -2371,7 +2403,7 @@
      "lvl": 10,
      "kind": "aura",
      "fight": true,
-     "does": "No fiend crosses the ford while he sings; most turn and go home."
+     "does": "No lesser demon crosses the ford while he sings; most turn and go home."
     }
    ],
    "arts": [
@@ -2424,7 +2456,7 @@
    ],
    "home": {
     "name": "Cinder Ford",
-    "domain": "the Scorched March",
+    "domain": "the Scorched March of Hell",
     "known": true
    },
    "fame": "known",
@@ -2441,8 +2473,8 @@
    "id": "velvet",
    "name": "Velvet",
    "style": "of Stillwater",
-   "kind": "marquis-of-the-burning-court",
-   "level": 742,
+   "kind": "marquis-of-hell",
+   "level": 732,
    "class": null,
    "liege": "vethrael",
    "skills": [
@@ -2452,9 +2484,12 @@
      "fight": true
     },
     {
-     "id": "frost_veil",
+     "n": "Pale Veil",
+     "rank": "B",
      "lvl": 8,
-     "fight": false
+     "kind": "buff",
+     "fight": false,
+     "does": "A mist of thinned blood hangs about it; what is struck through it bleeds the striker."
     },
     {
      "id": "ember_breath",
@@ -2522,7 +2557,7 @@
    ],
    "home": {
     "name": "Stillwater",
-    "domain": "the Hush",
+    "domain": "the Hush of Hell",
     "known": false
    },
    "fame": "whispered",
@@ -2539,8 +2574,8 @@
    "id": "cantor",
    "name": "Cantor",
    "style": "of the Long Quiet",
-   "kind": "marquis-of-the-burning-court",
-   "level": 745,
+   "kind": "marquis-of-hell",
+   "level": 735,
    "class": null,
    "liege": "vethrael",
    "skills": [
@@ -2616,7 +2651,7 @@
    ],
    "home": {
     "name": "the Long Quiet",
-    "domain": "the Hush",
+    "domain": "the Hush of Hell",
     "known": false
    },
    "fame": "whispered",
@@ -2633,8 +2668,8 @@
    "id": "wren",
    "name": "Wren",
    "style": "of Ashmeadow",
-   "kind": "marquis-of-the-burning-court",
-   "level": 740,
+   "kind": "marquis-of-hell",
+   "level": 730,
    "class": null,
    "liege": "vethrael",
    "skills": [
@@ -2707,7 +2742,7 @@
    ],
    "home": {
     "name": "Ashmeadow",
-    "domain": "the Hush",
+    "domain": "the Hush of Hell",
     "known": false
    },
    "fame": "whispered",
@@ -2724,8 +2759,8 @@
    "id": "mute",
    "name": "Mute",
    "style": "of the Silent Water",
-   "kind": "marquis-of-the-burning-court",
-   "level": 746,
+   "kind": "marquis-of-hell",
+   "level": 736,
    "class": null,
    "liege": "vethrael",
    "skills": [
@@ -2740,9 +2775,12 @@
      "fight": true
     },
     {
-     "id": "frost_veil",
+     "n": "Pale Veil",
+     "rank": "B",
      "lvl": 6,
-     "fight": false
+     "kind": "buff",
+     "fight": false,
+     "does": "A mist of thinned blood hangs about it; what is struck through it bleeds the striker."
     },
     {
      "n": "Silence",
@@ -2806,7 +2844,7 @@
    ],
    "home": {
     "name": "the Silent Water",
-    "domain": "the Hush",
+    "domain": "the Hush of Hell",
     "known": false
    },
    "fame": "whispered",
@@ -2822,8 +2860,8 @@
   {
    "id": "mother-grey",
    "name": "Mother Grey",
-   "kind": "pit-mother",
-   "level": 756,
+   "kind": "duke-of-hell",
+   "level": 746,
    "class": null,
    "liege": "vethrael",
    "skills": [
@@ -2838,9 +2876,12 @@
      "fight": true
     },
     {
-     "id": "frost_veil",
+     "n": "Pale Veil",
+     "rank": "B",
      "lvl": 9,
-     "fight": false
+     "kind": "buff",
+     "fight": false,
+     "does": "A mist of thinned blood hangs about it; what is struck through it bleeds the striker."
     },
     {
      "n": "Brood-Call",
@@ -2848,7 +2889,7 @@
      "lvl": 9,
      "kind": "aura",
      "fight": true,
-     "does": "She calls, and the imps and fiends of her pits come up out of the ground."
+     "does": "She calls, and the imps and lesser demons of her pits come up out of the ground."
     }
    ],
    "arts": [
@@ -2905,7 +2946,7 @@
    ],
    "home": {
     "name": "the Grey Fields",
-    "domain": "the Hush",
+    "domain": "the Hush of Hell",
     "known": true
    },
    "fame": "known",
@@ -2916,13 +2957,14 @@
     "story": [
      "Her youngest was born with white hair. She hides it from Blanc, who would want it."
     ]
-   }
+   },
+   "style": "Pit-Mother of the Grey Fields"
   },
   {
    "id": "lull",
    "name": "Lull",
-   "kind": "pit-mother",
-   "level": 744,
+   "kind": "duke-of-hell",
+   "level": 734,
    "class": null,
    "liege": "vethrael",
    "skills": [
@@ -2995,7 +3037,7 @@
    ],
    "home": {
     "name": "the Hollow Downs",
-    "domain": "the Hush",
+    "domain": "the Hush of Hell",
     "known": false
    },
    "fame": "whispered",
@@ -3006,13 +3048,14 @@
     "story": [
      "Three children of men grew up in her pits. One of them is still alive, and grown."
     ]
-   }
+   },
+   "style": "Pit-Mother of the Hollow Downs"
   },
   {
    "id": "vesper",
    "name": "Vesper",
-   "kind": "ledger-keeper",
-   "level": 755,
+   "kind": "duke-of-hell",
+   "level": 745,
    "class": null,
    "liege": "vethrael",
    "skills": [
@@ -3089,7 +3132,7 @@
    ],
    "home": {
     "name": "Lastlight",
-    "domain": "the Hush",
+    "domain": "the Hush of Hell",
     "known": false
    },
    "fame": "whispered",
@@ -3100,13 +3143,14 @@
     "story": [
      "Vesper's ledger shows blood owed to the tithe that was never taken: a king's, promised long ago."
     ]
-   }
+   },
+   "style": "Ledger-Keeper of Lastlight"
   },
   {
    "id": "knell",
    "name": "Knell",
-   "kind": "pit-wyrm",
-   "level": 760,
+   "kind": "prince-of-hell",
+   "level": 750,
    "class": null,
    "liege": "vethrael",
    "skills": [
@@ -3180,18 +3224,20 @@
    ],
    "home": {
     "name": "Graveside",
-    "domain": "the Hush",
+    "domain": "the Hush of Hell",
     "known": false
    },
    "fame": "whispered",
    "story": [
-    "A Pit Wyrm that coils among the graves of Graveside in the Hush."
+    "A Pit Dragon that coils among the graves of Graveside in the Hush."
    ],
    "secret": {
     "story": [
      "It sleeps on the grave of the sorcerer-prince who opened the Seventh Gate. It does not know whose grave it is."
     ]
-   }
+   },
+   "style": "Pit Dragon of Graveside",
+   "looks": "Horned: a pale dragon's shape among the graves, its horns cracked like old bells, a chapel bell hung from its tail."
   }
  ]
 }

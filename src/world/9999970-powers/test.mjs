@@ -32,8 +32,9 @@ export default {
       out.ancient = ['ancient-inferno-dragon', 'ancient-water-dragon'].map(id => PW.level(id));
       out.storm = [PW.level('ancient-storm-dragon'), PW.level('vaskareth')];
       out.strong = ['elder-ash-dragon', 'elder-frost-dragon', 'elder-storm-dragon', 'elder-brine-dragon'].map(id => PW.level(id));
-      out.lower = ['imp', 'fiend', 'greater-fiend', 'cinder-hound', 'brimstone-hound', 'whisperer', 'soul-broker'].map(id => PW.level(id));
-      out.great = ['pit-prince', 'gate-horror', 'gate-tyrant', 'gate-duke', 'duke-of-cinders'].map(id => PW.level(id));
+      // the demons by rank, not species (order 97, D-197)
+      out.lower = ['imp', 'lesser-demon', 'demon-soldier', 'demon-knight'].map(id => PW.level(id));
+      out.great = ['baron-of-hell', 'count-of-hell', 'demon-lord'].map(id => PW.level(id));
       out.curve = { soldier: [1, 2].map(m => PW.levelOf(m)), knight: [9, 25].map(m => PW.levelOf(m)), elite: [25, 60].map(m => PW.levelOf(m)), past: PW.levelOf(40) };
       const L = PW.LD.legends.map(l => [l.id, PW.level(l.id)]).sort((a, b) => b[1] - a[1]);
       out.legends = L;
@@ -104,7 +105,7 @@ export default {
       const OLD = { sarnavoth: 800, ghazrul: 780, morvane: 775, vethrael: 770, 'sword-saint': 700, vaskareth: 692, tessaly: 690, hrimgala: 682, ulmavren: 680, orrun: 674, serrath: 672, kethra: 664, ommul: 658, saqqar: 650, 'pale-shepherd': 648, 'iron-warden': 640 };
       const wrong = PW.LD.legends.filter(l => OLD[l.id] == null || PW.level(l.id) !== Math.round(OLD[l.id] * 1000 / 800)).map(l => `${l.id} ${PW.level(l.id)}`);
       const legs = PW.LD.legends.map(l => PW.being(l.id)), low = Math.min(...legs.map(b => b.level)), weakest = Math.min(...legs.map(b => b.power));
-      const NEW = ['hydra', 'titan', 'tempest', 'hive', 'lich', 'caldera', 'gateduke', 'girdler', 'greyhunt', 'colossus'];
+      const NEW = ['hydra', 'titan', 'tempest', 'hive', 'lich', 'caldera', 'ranks', 'girdler', 'greyhunt', 'colossus'];   // ranks: Hell's, whose apex is a Demon Lord (D-197)
       const apexOut = NEW.filter(k => {
         const e = Object.entries(PW.BD.lines).find(([lk]) => lk.split('.')[1] === k), top = e && PW.level(e[1][e[1].length - 1]);
         return !(top >= 600 && top < low);
@@ -141,7 +142,7 @@ export default {
       const top = f => Math.max(...S.filter(f).map(s => PW.level(s.id)));
       const ANIMAL = ['vermin', 'hounds', 'cats', 'bears', 'hooved'];
       const animalTop = top(s => ANIMAL.includes(s.fam)), plainTop = top(s => s.tier === 'animal'), greatTop = top(s => s.tier === 'great beast');
-      const brutes = top(s => ['giants.troll', 'giants.ettin', 'ogres.ogre', 'ogres.marshogre'].includes(s.line)), young = top(s => s.tier === 'young dragon');
+      const brutes = top(s => ['trolls.troll', 'giants.ettin', 'ogres.ogre', 'ogres.marshogre'].includes(s.line)), young = top(s => s.tier === 'young dragon');
       const anc = S.filter(s => s.tier === 'ancient dragon'), elders = S.filter(s => s.tier === 'elder dragon');
       const ancL = anc.map(s => PW.level(s.id)), elderL = elders.map(s => PW.level(s.id));
       const dem = S.filter(s => s.tier === 'ancient demon'), great = S.filter(s => s.tier === 'great demon');
@@ -177,7 +178,7 @@ export default {
       r.anc.length === 3 && ['ancient-inferno-dragon', 'ancient-water-dragon', 'ancient-storm-dragon'].every(id => r.anc.includes(id)) && r.ancOk && r.ancL.every(x => x > Math.max(...r.elderL)) &&
       r.ancL.filter((x, i) => r.anc[i] !== 'ancient-storm-dragon').every(x => x >= 780 && x <= 800) && r.stormGap >= 60 && r.doms === 'inferno,storm,water' && r.kingDom &&
       r.elderWorld >= 7 && r.elderWorld <= 12 && r.allCounted && r.cap === 100 && r.dragonWorld <= r.cap &&
-      r.dem.length >= 3 && r.dem.length <= 6 && r.demWorld === 33 && Math.abs(r.demMean - r.elderMean) <= 25 && r.demL.every(x => x >= 740 && x <= 770) &&
+      r.dem.length >= 3 && r.dem.length <= 6 && r.demWorld === 33 && Math.abs(r.demMean - r.elderMean) <= 25 && r.demL.every(x => x >= 725 && x <= 760) &&
       r.greatMean >= 625 && r.greatMean <= 675 && !r.over.length && r.full > 0 && !r.room;
     return { ok, detail: `animal families at most ${r.animalTop}, plain animals ${r.plainTop}, great beasts ${r.greatTop}, trolls and ogres ${r.brutes}, young dragons ${r.young}; ancient dragons ${r.anc.map((id, i) => id + ' ' + r.ancL[i]).join(', ')}; elder ${r.elderL.join(', ')} (mean ${r.elderMean.toFixed(1)}, ${r.elderWorld} in the world); dragons in the world ${r.dragonWorld} of a cap of ${r.cap}; ancient demons ${r.dem.join(', ')} (${r.demWorld} in all, mean ${r.demMean.toFixed(1)}); great demons ${r.great.join(', ')} (mean ${r.greatMean.toFixed(1)}); the wilds full at ${r.full} dragons, at most ${r.most} through 40 years${r.over.length ? ' OVER ' + r.over.slice(0, 5).join('; ') : ''}; room for another frost hatchling when full: ${r.room}` };
   },
@@ -229,6 +230,46 @@ export default {
 
   // monsters rise: one that feeds, fights and lives long enough becomes the next form, and the log says why; at the top it
   // takes a name and a mind (seed fallback over worlds; pooled over years)
+  // order 97 (D-197): no demon species. Demons are known by rank (lower: Imp to Demon Knight, dumb; great: Baron of Hell to Demon Lord;
+  // ancient: Marquis, Duke, Prince, thirty-three, their mean about ten below the old 750), each one of a kind and horned;
+  // every demon lives in Hell, so the continent's wilds never bring one, on any ground, in any world. Trolls and ogres are
+  // demonic creatures, 230-270 with their leaders higher; wild giants very few. World-robust: the wilds are drawn over four
+  // worlds and every terrain, thousands of draws
+  async pwDemonsByRank(pg) {
+    if (!(await pg.evaluate(GATE))) return NO;
+    const r = await pg.evaluate(() => {
+      const PW = A.POWER, S = PW.BD.species, dem = S.filter(s => s.fam === 'demons');
+      const out = { bad: [], drawn: 0, demonsDrawn: [] };
+      const RANK = /^(Imp|Lesser Demon|Demon Soldier|Demon Knight|Demon Lord|(Baron|Count|Marquis|Duke|Prince) of Hell)$/;
+      for (const s of dem) {
+        if (!RANK.test(s.n)) out.bad.push(`${s.n}: not a rank`);
+        if (!s.hell || s.terr.length || s.coast) out.bad.push(`${s.n}: a habitat on the continent`);
+        if (s.tier === 'lower demon' && !['beast', 'cunning'].includes(s.int)) out.bad.push(`${s.n}: a lower demon that reasons`);
+      }
+      for (const seed of [7, 11, 23, 41]) {
+        A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+        const st = PW.state(), rng = PW.rng('demons-test');
+        for (const P of A.S.prov) for (const target of [30, 45, 60, 70]) { const s = PW.pickBeast(P, target, rng); out.drawn++; if (s && s.fam === 'demons') out.demonsDrawn.push(s.id); }
+        st.wild.length = 0; for (let i = 0; i < 300; i++) { const w = PW.spawnWild(st, rng); if (w && PW.species(w.sp).fam === 'demons') out.demonsDrawn.push(w.sp); }
+      }
+      const F = A.FIG, ad = F.list('ancient-demons');
+      out.mean = ad.reduce((a, p) => a + p.level, 0) / ad.length;
+      out.horned = ad.filter(p => /horn/i.test(p.looks || '')).length; out.n = ad.length;
+      out.looks = new Set(ad.map(p => p.looks)).size; out.pure = PW.demonLook('skarn') === PW.demonLook('skarn');
+      out.ranks = [...new Set(ad.map(p => p.kindName))].sort();
+      const lv = id => PW.level(id);
+      out.common = ['bog-troll', 'hill-troll', 'cave-troll', 'stone-troll', 'ogre', 'ogre-brute', 'ogre-glutton', 'marsh-ogre'].map(lv);
+      out.leaders = ['troll-grandsire', 'ogre-hetman', 'ogre-hedge-witch'].map(lv);
+      out.brutesTier = S.filter(s => ['trolls', 'ogres'].includes(s.fam)).every(s => s.tier === 'demonic creature');
+      out.giants = S.filter(s => s.tier === 'giant' || s.line === 'giants.titan').map(s => s.world);
+      return out;
+    });
+    const ok = !r.bad.length && !r.demonsDrawn.length && r.drawn > 1000 && Math.abs(r.mean - 740) <= 5 && r.horned === r.n && r.n === 33 && r.looks >= 25 && r.pure &&
+      r.ranks.join() === 'Duke of Hell,Marquis of Hell,Prince of Hell' && r.common.every(x => x >= 230 && x <= 270) && r.leaders.every(x => x > 270) && r.brutesTier &&
+      r.giants.length >= 7 && r.giants.every(w => w >= 1 && w <= 10);
+    return { ok, detail: `${r.bad.length ? 'faults: ' + r.bad.join('; ') + '. ' : ''}demons drawn on the continent ${r.demonsDrawn.length} of ${r.drawn} encounter draws and 1,200 spawns over four worlds; the ancient demons' mean ${r.mean.toFixed(1)}, ${r.horned} of ${r.n} horned, ${r.looks} looks, ranks ${r.ranks.join(', ')}; trolls and ogres ${r.common.join(', ')}, their leaders ${r.leaders.join(', ')}; wild giants in the world ${r.giants.join(', ')}` };
+  },
+
   async pwEvolution(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
     const r = await pg.evaluate(() => {

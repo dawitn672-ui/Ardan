@@ -135,16 +135,25 @@ const FAMILIES = {
     { k: 'ancientwater', forms: [{ n: 'Ancient Water Dragon', born: OLD }], lv: [776], world: [1], tier: 'ancient dragon', dominion: 'water', terr: ['mountains', 'marsh'], coast: true, unique: true, places: ['the Dragon Mountains', 'the coasts below them'] },
     { k: 'ancientstorm', forms: [{ n: 'Ancient Storm Dragon', legend: 'vaskareth' }], lv: [865], world: [1], tier: 'ancient dragon', dominion: 'storm', terr: ['mountains', 'hills', 'steppe'], unique: true, places: ['the Dragon Mountains'] },
   ] },
-  giants: { n: 'Wild giants and trolls', diet: 'omnivore', seasons: ALL, int: 'cunning', apexInt: 'speaking', tier: 'monster', drops: ['bone', 'tooth', 'hide'], prof: P(9, 3, 5, 0, 0, 6, 2, 1, 3, 0), lines: [
-    { k: 'troll', forms: ['Bog Troll', 'Hill Troll', 'Cave Troll', 'Stone Troll', 'Troll Grandsire'], lv: [130, 180, 240, 300, 380], terr: ['marsh', 'hills', 'mountains', 'forest'], prof: { regen: 9 } },
-    { k: 'fellgiant', forms: [{ n: 'Fell Giant', int: 'speaking' }, { n: 'Frost-Fell Giant', int: 'speaking' }, { n: 'Mountain Giant', int: 'speaking' }, 'Giant of the First Snows'], lv: [400, 460, 540, 640], tier: 'giant', terr: ['mountains', 'hills'], apexInt: 'wise', prof: { str: 10, hide: 6, cunning: 5 } },
-    { k: 'ettin', forms: ['Ettin', { n: 'Ettin Chieftain', int: 'speaking' }], lv: [260, 360], terr: ['hills', 'forest'], prof: { str: 9 } },
-    // the titans (D-185): primordial giants, calamities all
-    { k: 'titan', forms: [{ n: 'Hill Titan', int: 'speaking' }, { n: 'Storm Titan', int: 'speaking' }, 'Titan of the First Mountains'], lv: [600, 690, 775], tier: 'calamity', terr: ['mountains', 'hills'], apexInt: 'wise', prof: { str: 10, hide: 8, cunning: 5, magic: 4, regen: 6 }, drops: ['titan bone', 'heart-stone'] },
+  // order 97 (D-197): trolls and ogres are demonic creatures, without the demonic power to be demons: the common kinds
+  // 230-270, their leaders higher; wild giants very few (world: how many live, and the wilds and the encounters read it)
+  trolls: { n: 'Trolls', diet: 'omnivore', seasons: ALL, int: 'cunning', apexInt: 'speaking', tier: 'demonic creature', drops: ['bone', 'tooth', 'hide'], prof: P(9, 3, 5, 0, 0, 6, 2, 1, 3, 0), lines: [
+    { k: 'troll', forms: ['Bog Troll', 'Hill Troll', 'Cave Troll', 'Stone Troll', 'Troll Grandsire'], lv: [230, 245, 258, 270, 340], terr: ['marsh', 'hills', 'mountains', 'forest'], prof: { regen: 9 } },
   ] },
-  ogres: { n: 'Ogres', diet: 'omnivore', seasons: ALL, int: 'speaking', tier: 'monster', drops: ['hide', 'tusk'], prof: P(8, 4, 4, 0, 0, 3, 2, 2, 4, 0), lines: [
-    { k: 'ogre', forms: ['Ogre', 'Ogre Brute', 'Ogre Glutton', 'Ogre Hetman'], lv: [120, 180, 250, 330], terr: ['hills', 'forest', 'mountains'] },
-    { k: 'marshogre', forms: ['Marsh Ogre', 'Ogre Hedge-Witch'], lv: [140, 300], terr: ['marsh'], apexInt: 'wise', prof: { magic: 6 } },
+  giants: { n: 'Wild giants', diet: 'omnivore', seasons: ALL, int: 'cunning', apexInt: 'speaking', tier: 'monster', drops: ['bone', 'tooth', 'hide'], prof: P(9, 3, 5, 0, 0, 6, 2, 1, 3, 0), lines: [
+    { k: 'fellgiant', forms: [{ n: 'Fell Giant', int: 'speaking' }, { n: 'Frost-Fell Giant', int: 'speaking' }, { n: 'Mountain Giant', int: 'speaking' }, 'Giant of the First Snows'], lv: [400, 460, 540, 640], world: [6, 4, 3, 1], tier: 'giant', terr: ['mountains', 'hills'], apexInt: 'wise', prof: { str: 10, hide: 6, cunning: 5 } },
+    { k: 'ettin', forms: ['Ettin', { n: 'Ettin Chieftain', int: 'speaking' }], lv: [260, 360], world: [8, 2], terr: ['hills', 'forest'], prof: { str: 9 } },
+    // the titans (D-185): primordial giants, calamities all
+    { k: 'titan', forms: [{ n: 'Hill Titan', int: 'speaking' }, { n: 'Storm Titan', int: 'speaking' }, 'Titan of the First Mountains'], lv: [600, 690, 775], world: [2, 1, 1], tier: 'calamity', terr: ['mountains', 'hills'], apexInt: 'wise', prof: { str: 10, hide: 8, cunning: 5, magic: 4, regen: 6 }, drops: ['titan bone', 'heart-stone'] },
+  ] },
+  ogres: { n: 'Ogres', diet: 'omnivore', seasons: ALL, int: 'speaking', tier: 'demonic creature', drops: ['hide', 'tusk'], prof: P(8, 4, 4, 0, 0, 3, 2, 2, 4, 0), lines: [
+    { k: 'ogre', forms: ['Ogre', 'Ogre Brute', 'Ogre Glutton', 'Ogre Hetman'], lv: [230, 250, 270, 330], terr: ['hills', 'forest', 'mountains'] },
+    { k: 'marshogre', forms: ['Marsh Ogre', 'Ogre Hedge-Witch'], lv: [240, 320], terr: ['marsh'], apexInt: 'wise', prof: { magic: 6 } },
+  ] },
+  // the orcs (order 98, D-199): demonic creatures, not a people; bands on the Grass Sea and the Eastern Steppe, the old
+  // homes of the half-orc clans who break the strongest to the spear and hunt the rest
+  orcs: { n: 'Orcs', diet: 'hunter', seasons: ALL, int: 'cunning', apexInt: 'speaking', tier: 'demonic creature', drops: ['tusk', 'hide'], prof: P(7, 6, 3, 0, 0, 3, 1, 6, 3, 0), lines: [
+    { k: 'orc', forms: ['Wild Orc', 'Orc Raider', 'Orc Brute', 'Orc War-Boss'], lv: [140, 175, 230, 290], terr: ['steppe', 'plains', 'hills'], places: ['the Grass Sea', 'the Eastern Steppe'] },
   ] },
   skyborne: { n: 'Harpies, griffons and great birds', diet: 'hunter', seasons: ALL, int: 'beast', tier: 'monster', drops: ['feather', 'talon'], prof: P(4, 8, 2, 0, 9, 2, 1, 3, 4, 0), lines: [
     { k: 'harpy', forms: [{ n: 'Harpy', int: 'cunning' }, { n: 'Shrieking Harpy', int: 'cunning' }, { n: 'Harpy Matriarch', int: 'speaking' }], lv: [60, 110, 200], terr: ['mountains', 'hills'], coast: true, prof: { swarm: 6 } },
@@ -182,11 +191,20 @@ const FAMILIES = {
     // the caldera spirits (D-185): great spirits, the fire under the mountain
     { k: 'caldera', forms: [{ n: 'Caldera Spirit', int: 'speaking' }, { n: 'Mountain Wrath', int: 'speaking' }, 'Heart of the Burning Deep'], lv: [620, 700, 765], tier: 'calamity', terr: ['mountains', 'desert'], seasons: ['summer', 'autumn'], prof: { magic: 10, ward: 9, hide: 6, str: 6, flight: 0, swarm: 4 }, drops: ['fire core', 'obsidian'] },
   ] },
-  // the demons (orders 93, 95, 96): the lower 300-500, the great about 650, and the ancient, the oldest lords of Hell under
-  // the three Primordial Archdemons, about the elder dragons (740-770): four kinds and exactly thirty-three of them (world:
-  // 20 marquises, 6 pit-mothers, 3 ledger-keepers, 4 pit wyrms; each an individual of the figures registry to come); no
-  // demon of the wilds rises to one
-  demons: { n: 'Demons', diet: 'souls', seasons: ALL, int: 'speaking', apexInt: 'wise', tier: 'lower demon', drops: ['horn', 'brimstone core'], prof: P(6, 6, 5, 3, 3, 5, 7, 2, 8, 7), lines: [
+  // the demons (orders 93, 95, 96, 97; D-197): no species, only ranks. Every demon is one of a kind (its look rolled from
+  // its seed, A.POWER.demonLook: horned, always) and is known by its rank in Hell, in plain words: the lower (Imp, Lesser
+  // Demon, Demon Soldier, Demon Knight; 300-500, dumb: beasts and cunning things, none that reasons), the great (Baron of
+  // Hell, Count of Hell, Demon Lord; about 650, speaking) and the ancient under the three Primordials (Marquis, Duke, Prince; about 740, ten below the old
+  // 750: exactly thirty-three, 20 + 9 + 4, each an individual of the figures registry; no demon of the ranks rises to one).
+  // Every demon lives in Hell, off the southern coast (hell: true; no terrain of the continent): none is met in its wilds
+  demons: { n: 'Demons', hell: true, diet: 'souls', seasons: ALL, int: 'beast', apexInt: 'speaking', tier: 'lower demon', drops: ['horn', 'brimstone core'], prof: P(6, 6, 5, 3, 3, 5, 7, 2, 3, 7), lines: [
+    { k: 'ranks', forms: [{ n: 'Imp', int: 'beast' }, { n: 'Lesser Demon', int: 'beast' }, { n: 'Demon Soldier', int: 'cunning' }, { n: 'Demon Knight', int: 'cunning' }, { n: 'Baron of Hell', int: 'speaking' }, { n: 'Count of Hell', int: 'speaking' }, { n: 'Demon Lord', int: 'speaking' }], lv: [300, 360, 440, 500, 620, 650, 680], tiers: ['lower demon', 'lower demon', 'lower demon', 'lower demon', 'great demon', 'great demon', 'great demon'], terr: [], places: ['Hell'], prof: { str: 7, hide: 6, magic: 8 } },
+    { k: 'marquis', forms: [{ n: 'Marquis of Hell', int: 'wise', born: HELL }], lv: [735], world: [20], tier: 'ancient demon', terr: [], places: ['Hell'], prof: { str: 8, hide: 8, magic: 10, cunning: 10, swarm: 6 }, drops: ['horn', 'brimstone crown'] },
+    { k: 'duke', forms: [{ n: 'Duke of Hell', int: 'wise', born: HELL }], lv: [742], world: [9], tier: 'ancient demon', terr: [], places: ['Hell'], prof: { str: 6, hide: 9, regen: 9, swarm: 8, magic: 9, cunning: 10, ward: 9 }, drops: ['horn', 'brimstone core'] },
+    { k: 'prince', forms: [{ n: 'Prince of Hell', int: 'wise', born: HELL }], lv: [755], world: [4], tier: 'ancient demon', terr: [], places: ['Hell'], prof: { str: 10, hide: 10, flight: 8, magic: 10, regen: 7 }, drops: ['horn', 'brimstone core'] },
+  ] },
+  // the old demon species (D-191, D-193), retired by order 97 (D-197); kept here, never generated
+  /* demonsOld: [
     { k: 'imp', forms: [{ n: 'Imp', int: 'cunning' }, 'Fiend', 'Greater Fiend', { n: 'Pit Prince', born: { n: 'Pit-Born', honour: 0, buffs: { ward: 1 }, born: true, req: 'born' } }], lv: [300, 360, 450, 640], apexTier: 'great demon', terr: ['desert', 'mountains', 'marsh'] },
     { k: 'cinderhound', forms: [{ n: 'Cinder Hound', int: 'beast' }, { n: 'Brimstone Hound', int: 'cunning' }], lv: [310, 400], terr: ['desert', 'hills', 'mountains'], prof: { spd: 8, swarm: 5, magic: 5 } },
     { k: 'tempter', forms: ['Whisperer', 'Soul Broker'], lv: [330, 480], terr: ['plains', 'forest', 'hills'], prof: { str: 2, cunning: 10, magic: 8 } },
@@ -196,7 +214,7 @@ const FAMILIES = {
     { k: 'broodmother', forms: [{ n: 'Pit-Mother', int: 'wise', born: HELL }], lv: [750], world: [6], tier: 'ancient demon', terr: ['desert', 'marsh'], places: ['Hell'], prof: { str: 7, hide: 9, regen: 10, swarm: 10, magic: 8, venom: 6 }, drops: ['brood-heart', 'brimstone core'] },
     { k: 'judge', forms: [{ n: 'Ledger-Keeper', int: 'wise', born: HELL }], lv: [755], world: [3], tier: 'ancient demon', terr: ['plains', 'mountains'], places: ['Hell'], prof: { str: 4, spd: 7, ward: 10, magic: 10, cunning: 10 }, drops: ['ledger leaf', 'brimstone core'] },
     { k: 'pitwyrm', forms: [{ n: 'Pit Wyrm', int: 'wise', born: HELL }], lv: [765], world: [4], tier: 'ancient demon', terr: ['desert', 'mountains'], places: ['Hell'], prof: { str: 10, hide: 10, flight: 8, magic: 10, regen: 7 }, drops: ['pit-scale', 'brimstone core'] },
-  ] },
+  ], */
   deep: { n: 'Monsters of the sea and the deep', diet: 'hunter', seasons: ALL, int: 'beast', tier: 'animal', drops: ['oil', 'bone', 'shell'], prof: P(7, 5, 6, 1, 0, 4, 2, 2, 3, 1), lines: [
     { k: 'crab', forms: [{ n: 'Giant Spider Crab', cre: 'CRE-15' }, 'Reef Crusher'], lv: [19, 80], terr: [], coast: true, prof: { hide: 9 } },
     { k: 'seal', forms: [{ n: 'Salt Sea Seals', cre: 'CRE-63' }, 'Bull Seal'], lv: [10, 40], terr: [], coast: true },
@@ -257,12 +275,14 @@ const BEH_FAM = {
   wyrms: { drives: ['hunger', 'territory', 'hoarding'], social: 'solitary', hunt: 'ambush', time: 'any', mating: 'summer', guards: 'lair', provoked: ['its lair', 'its hoard', 'a wound'], calmed: ['an offering', 'retreat', 'cold'], people: 'hunts', stock: 'raids', others: 'drives off every rival from its ground', day: 'sleeps long after feeding', year: 'hunts hard before the cold; lays up in a deep place' },
   dragons: { drives: ['hoarding', 'territory', 'hunger', 'pride'], social: 'solitary', hunt: 'chase', time: 'any', mating: 'summer', guards: 'hoard', provoked: ['its hoard touched', 'its name mocked', 'its lair entered'], calmed: ['tribute', 'courtesy', 'a riddle'], people: 'bargains', stock: 'raids', others: 'tolerates no other dragon on its ground', day: 'sleeps for days after feeding, then flies its bounds', year: 'hunts in spring and autumn; sleeps on the hoard in winter' },
   giants: { drives: ['hunger', 'territory'], social: 'pair', hunt: 'crush', time: 'night', mating: 'autumn', guards: 'lair', provoked: ['its bridge or cave', 'mockery', 'fire'], calmed: ['food', 'a riddle', 'sunrise'], people: 'hunts', stock: 'raids', others: 'eats what it catches, bears included', day: 'sleeps under stone by day', year: 'comes down to the farms in the hungry months' },
+  trolls: { drives: ['hunger', 'territory'], social: 'pair', hunt: 'crush', time: 'night', mating: 'autumn', guards: 'lair', provoked: ['its bridge or cave', 'mockery', 'fire'], calmed: ['food', 'a riddle', 'sunrise'], people: 'hunts', stock: 'raids', others: 'eats what it catches, bears included; a demonic creature, the Church says, kin to the ogres', day: 'sleeps under stone by day', year: 'comes down to the farms in the hungry months' },
   ogres: { drives: ['hunger', 'greed'], social: 'pack', hunt: 'crush', time: 'dusk', mating: 'spring', guards: 'hoard', provoked: ['its food', 'insult', 'a weak-looking man'], calmed: ['food and drink', 'coin', 'a stronger foe'], people: 'bargains', stock: 'raids', others: 'bullies goblin-sized things, avoids trolls', day: 'drinks, sleeps, raids at dusk', year: 'gathers in war-bands in late summer' },
+  orcs: { drives: ['hunger', 'cruelty', 'territory'], social: 'pack', hunt: 'chase', time: 'dusk', mating: 'spring', guards: 'its band', provoked: ['a lone rider', 'its kill approached', 'a man who looks weak'], calmed: ['a stronger band', 'fire', 'the clans\' war-drums'], people: 'hunts', stock: 'raids', others: 'demonic creatures without the power to be demons; the half-orc clans break the strongest to the spear and hunt the rest', day: 'lies up in the long grass by day and raids at dusk', year: 'runs in bands through the summer; starves and grows bold in winter' },
   skyborne: { drives: ['hunger', 'territory', 'young'], social: 'pair', hunt: 'chase', time: 'day', mating: 'spring', guards: 'nest', provoked: ['its nest', 'a lamb it has marked', 'climbing near'], calmed: ['cover', 'a lure', 'distance'], people: 'avoids', stock: 'raids', others: 'takes lambs, goats and smaller fliers', day: 'rides the warm air at midday', year: 'nests on the heights in spring; follows the herds in autumn' },
   crawlers: { drives: ['hunger', 'young'], social: 'solitary', hunt: 'ambush', time: 'night', mating: 'summer', guards: 'eggs', provoked: ['its web', 'its brood', 'vibration'], calmed: ['fire', 'smoke', 'cold'], people: 'hunts', stock: 'raids', others: 'eats anything caught in reach', day: 'waits in the dark for something to touch the threads', year: 'swarms in the warm months, sleeps in the cold' },
   undead: { drives: ['devotion', 'hunger'], social: 'host', hunt: 'drain', time: 'night', mating: 'none', guards: 'mound', provoked: ['its grave disturbed', 'its name spoken', 'the living'], calmed: ['holy rites', 'salt and iron', 'dawn'], people: 'hates', stock: 'ignores', others: 'beasts flee it; dogs howl', day: 'lies in the earth by day', year: 'walks on the long nights of autumn and winter' },
   spirits: { drives: ['curiosity', 'territory'], social: 'solitary', hunt: 'drain', time: 'any', mating: 'none', guards: 'place', provoked: ['its place defiled', 'iron', 'disrespect'], calmed: ['an offering', 'courtesy', 'leaving its place'], people: 'curious', stock: 'ignores', others: 'feeds on the strength of its element', day: 'is its element: the flame, the stream, the wind', year: 'strongest in its season, weak out of it' },
-  demons: { drives: ['ambition', 'hunger', 'cruelty'], social: 'court', hunt: 'lure', time: 'night', mating: 'none', guards: 'bargains', provoked: ['holy things', 'refusal', 'a broken bargain'], calmed: ['a bargain', 'holy ground', 'its true name'], people: 'bargains', stock: 'ignores', others: 'binds lesser things to serve it', day: 'hides in plain sight', year: 'strongest in the dark of the year' },
+  demons: { drives: ['hunger', 'cruelty', 'fear'], social: 'host', hunt: 'crush', time: 'any', mating: 'none', guards: 'its master\'s ground', provoked: ['holy things', 'anything alive', 'its master\'s call'], calmed: ['holy ground', 'a greater demon\'s word'], people: 'hates', stock: 'ignores', others: 'obeys whatever outranks it in Hell, and eats what does not', day: 'swarms the burning country under its betters', year: 'strongest in the dark of the year' },
   deep: { drives: ['hunger', 'wander'], social: 'solitary', hunt: 'ambush', time: 'any', mating: 'spring', guards: 'young', provoked: ['nets and hooks', 'blood in the water', 'its young'], calmed: ['deep water', 'distance', 'stillness'], people: 'ignores', stock: 'ignores', others: 'eats seals, fish and boats alike', day: 'rises at night to the warm water', year: 'follows the shoals' },
   fey: { drives: ['play', 'curiosity', 'territory'], social: 'court', hunt: 'lure', time: 'dusk', mating: 'midsummer', guards: 'place', provoked: ['iron', 'rudeness', 'a bargain broken', 'thanks spoken'], calmed: ['courtesy', 'milk and bread left out', 'a gift'], people: 'curious', stock: 'raids', others: 'rides deer, steals foals', day: 'dances at dusk, vanishes at dawn', year: 'strongest at midsummer and the turn of the year' },
   oozes: { drives: ['hunger', 'growth'], social: 'solitary', hunt: 'drain', time: 'any', mating: 'none', guards: 'none', provoked: ['touch', 'heat', 'food nearby'], calmed: ['fire', 'salt', 'nothing to eat'], people: 'ignores', stock: 'raids', others: 'eats everything that stays still', day: 'creeps toward warmth and food', year: 'grows in the warm months, thickens in the cold' },
@@ -299,7 +319,7 @@ const BEH_LINE = {
   'dragons.stormdragon': { drives: ['territory', 'pride', 'hunger'], time: 'day', provoked: ['bells', 'a tower on its ridge'], calmed: ['a storm passing', 'courtesy'], others: 'fights other dragons for the sky' },
   'dragons.brinedragon': { drives: ['hunger', 'hoarding'], guards: 'wrecks', provoked: ['salvage taken from its wrecks'], calmed: ['a ship\'s share thrown over'], others: 'gathers wrecks like a hoard' },
   'dragons.redwidow': { drives: ['grief', 'territory'], provoked: ['anyone near her mate\'s bones'], calmed: ['leaving at once'], people: 'hates', others: 'killed her own mate, the songs say, or mourns him' },
-  'giants.troll': { provoked: ['crossing its bridge', 'sunlight on it'], calmed: ['a toll paid', 'dawn'], where: { marsh: 'grey-green, sleeps under the water', mountains: 'stone-skinned, sleeps in the scree' } },
+  'trolls.troll': { provoked: ['crossing its bridge', 'sunlight on it'], calmed: ['a toll paid', 'dawn'], where: { marsh: 'grey-green, sleeps under the water', mountains: 'stone-skinned, sleeps in the scree' } },
   'giants.fellgiant': { social: 'pair', people: 'bargains', drives: ['territory', 'pride'], provoked: ['its goats', 'a lie'], calmed: ['a fair trade', 'a contest won'], others: 'hunts bears for their fur' },
   'giants.ettin': { drives: ['hunger', 'quarrel'], people: 'hunts', provoked: ['either head insulted'], calmed: ['setting its heads to argue'], others: 'its two heads disagree about everything' },
   'ogres.marshogre': { drives: ['hunger', 'curiosity'], hunt: 'lure', provoked: ['its herbs taken'], calmed: ['gossip', 'a cooking pot'], others: 'brews from what it catches' },
@@ -320,9 +340,9 @@ const BEH_LINE = {
   'spirits.earth': { drives: ['territory'], provoked: ['a mine', 'a quarry'], calmed: ['an offering of salt', 'the hole filled'], people: 'tolerates' },
   'spirits.frost': { provoked: ['a fire lit in its valley'], calmed: ['the fire put out'], people: 'avoids' },
   'spirits.grove': { drives: ['play', 'territory'], provoked: ['an axe', 'a broken branch'], calmed: ['planting a tree', 'singing'] },
-  'demons.cinderhound': { social: 'pack', hunt: 'chase', people: 'hunts', drives: ['hunger', 'cruelty'], calmed: ['holy water', 'its master called'], others: 'hunts for whoever summoned it' },
-  'demons.tempter': { drives: ['ambition', 'curiosity'], social: 'solitary', hunt: 'lure', people: 'bargains', provoked: ['a bargain refused rudely'], calmed: ['a counter-offer', 'prayer'], others: 'buys the souls of lesser things too' },
-  'demons.horror': { drives: ['hunger', 'cruelty'], people: 'hates', hunt: 'crush', provoked: ['anything alive'], calmed: ['the gate closed'], others: 'eats demons too' },
+  'demons.cinderhoundOld': { social: 'pack', hunt: 'chase', people: 'hunts', drives: ['hunger', 'cruelty'], calmed: ['holy water', 'its master called'], others: 'hunts for whoever summoned it' },
+  'demons.tempterOld': { drives: ['ambition', 'curiosity'], social: 'solitary', hunt: 'lure', people: 'bargains', provoked: ['a bargain refused rudely'], calmed: ['a counter-offer', 'prayer'], others: 'buys the souls of lesser things too' },
+  'demons.horrorOld': { drives: ['hunger', 'cruelty'], people: 'hates', hunt: 'crush', provoked: ['anything alive'], calmed: ['the gate closed'], others: 'eats demons too' },
   'deep.crab': { social: 'swarm', hunt: 'scavenge', people: 'ignores', provoked: ['a hand in its rocks'], calmed: ['bait thrown'] },
   'deep.seal': { social: 'herd', people: 'curious', hunt: 'chase', provoked: ['its pup'], calmed: ['stillness'], others: 'eaten by the wolves of the sea' },
   'deep.orca': { social: 'pack', drives: ['hunger', 'play'], people: 'curious', provoked: ['a harpoon'], calmed: ['fish thrown'], others: 'hunts whales together; plays with seals before eating them' },
@@ -346,17 +366,19 @@ const BEH_LINE = {
   'dragons.ancientinferno': { drives: ['pride', 'hoarding', 'memory'], social: 'court', time: 'any', people: 'bargains', guards: 'the King\'s hoard', provoked: ['the King named without honour', 'its hoard touched'], calmed: ['tribute', 'a bowed head', 'news of its King'], others: 'lord of the inferno under the King of Dragons; the fire under the mountains is its own, and the lesser dragons keep out of its sky' },
   'dragons.ancientwater': { drives: ['pride', 'territory', 'memory'], social: 'court', time: 'any', people: 'bargains', guards: 'the Black Tarn', provoked: ['a dam on its rivers', 'the King named without honour'], calmed: ['silence', 'tribute of meat', 'news of its King'], others: 'lord of the water under the King of Dragons; every river out of the Dragon Mountains is its road', where: { mountains: 'lies in the Black Tarn under the King\'s hall', marsh: 'rises where the rivers spread' } },
   'dragons.ancientstorm': { drives: ['pride', 'territory', 'hunger'], social: 'court', time: 'day', people: 'bargains', guards: 'the roads of the sky', provoked: ['bells', 'a tower on its ridge', 'the King named without honour'], calmed: ['a storm passing', 'courtesy', 'news of its King'], others: 'lord of the storm and the King\'s regent while he sleeps; keeps the other dragons to their own skies' },
-  // the ancient demons (order 95, D-191): the oldest lords of Hell, under the three Primordial Archdemons, each sworn to one
+  // the great demons of the ranks speak, and bargain; the lower ones are beasts
+  'demons.ranks': { where: {} },
+  // the ancient demons (orders 95, 97; D-191, D-197): the oldest lords of Hell, under the three Primordials, each sworn to one
   'demons.marquis': { drives: ['ambition', 'pride', 'cruelty'], social: 'court', hunt: 'lure', time: 'any', people: 'bargains', guards: 'a court of Hell', provoked: ['its court mocked', 'a bargain broken', 'holy ground'], calmed: ['a counter-offer', 'flattery that costs something', 'its true name'], others: 'one of the twenty lords of Hell\'s courts; commands legions of fiends and gate-dukes, and plays the three Archdemons against one another' },
-  'demons.broodmother': { drives: ['young', 'hunger', 'territory'], social: 'host', hunt: 'crush', time: 'any', people: 'hates', guards: 'the brood-pits', provoked: ['its brood harmed', 'anything alive in the pits'], calmed: ['the pits left alone'], others: 'the imps and fiends of Hell crawl out of the pits of the six mothers; they come when she calls' },
-  'demons.judge': { drives: ['ambition', 'curiosity', 'memory'], social: 'solitary', hunt: 'lure', time: 'night', people: 'bargains', guards: 'the ledger of every soul sold', provoked: ['a debt denied', 'a lie in its hearing'], calmed: ['a debt paid', 'a bargain kept to the letter'], others: 'one of the three who keep the account of every bargain made through the gates; even the Archdemons are in its books' },
-  'demons.pitwyrm': { drives: ['hunger', 'pride', 'cruelty'], social: 'solitary', hunt: 'chase', time: 'any', people: 'hates', guards: 'its pit', provoked: ['a dragon named', 'its pit entered'], calmed: ['a dragon\'s bones thrown down'], others: 'a demon in a dragon\'s shape that hates dragons; four of them in all of Hell, and one has eaten two dragons, the old songs say' },
+  'demons.duke': { drives: ['young', 'hunger', 'territory'], social: 'host', hunt: 'crush', time: 'any', people: 'hates', guards: 'the brood-pits', provoked: ['its brood harmed', 'anything alive in the pits'], calmed: ['the pits left alone'], others: 'nine Dukes of Hell: six keep the brood-pits the imps and lesser demons crawl out of, three keep the ledgers of every bargain made through the gates' },
+  'demons.judgeOld': { drives: ['ambition', 'curiosity', 'memory'], social: 'solitary', hunt: 'lure', time: 'night', people: 'bargains', guards: 'the ledger of every soul sold', provoked: ['a debt denied', 'a lie in its hearing'], calmed: ['a debt paid', 'a bargain kept to the letter'], others: 'one of the three who keep the account of every bargain made through the gates; even the Archdemons are in its books' },
+  'demons.prince': { drives: ['hunger', 'pride', 'cruelty'], social: 'solitary', hunt: 'chase', time: 'any', people: 'hates', guards: 'its pit', provoked: ['a dragon named', 'its pit entered'], calmed: ['a dragon\'s bones thrown down'], others: 'four Princes of Hell, each in a dragon\'s shape and each hating dragons; one has eaten two, the old songs say' },
   'giants.titan': { drives: ['territory', 'pride', 'memory'], social: 'solitary', time: 'day', people: 'tolerates', guards: 'the old roads of the giants', provoked: ['a quarry cut into its mountain', 'a lie'], calmed: ['a fair word', 'a song of the giants\' age'], others: 'the giant kings send it gifts; trolls flee its valley', where: { mountains: 'sleeps standing, and is taken for a peak', hills: 'walks the old roads once in a generation' } },
   'skyborne.tempest': { drives: ['hunger', 'territory'], social: 'pair', hunt: 'chase', time: 'day', people: 'ignores', provoked: ['its eyrie', 'a bell rung in a storm'], calmed: ['the storm passing', 'a herd left in the open'], others: 'carries off whole herds; the storms follow it', where: { steppe: 'hunts the horse herds in the thunder season' } },
   'crawlers.hive': { drives: ['hunger', 'young'], social: 'swarm', hunt: 'crush', time: 'any', people: 'hunts', stock: 'raids', provoked: ['anything in its province'], calmed: [], others: 'eats every other kind out of its land, then sends a swarm to the next' },
   'undead.lich': { drives: ['memory', 'ambition', 'hunger'], social: 'host', hunt: 'drain', time: 'night', people: 'bargains', guards: 'its phylactery', provoked: ['its tomb opened', 'its name spoken'], calmed: ['a grave left sealed', 'a bargain kept'], others: 'raises the dead of every battle near it into its host' },
   'spirits.caldera': { drives: ['territory', 'wrath'], social: 'solitary', time: 'any', people: 'tolerates', guards: 'the fire under the mountain', provoked: ['a mine dug into its mountain', 'water poured into its fire'], calmed: ['an offering of gold thrown in', 'the mine abandoned'], others: 'the fire spirits gather to it like moths' },
-  'demons.gateduke': { drives: ['ambition', 'cruelty'], social: 'court', hunt: 'lure', people: 'bargains', guards: 'a gate half-open', provoked: ['a bargain broken', 'holy ground'], calmed: ['a counter-offer', 'a sealed gate'], others: 'commands lesser demons, and buys what it cannot command' },
+  'demons.gatedukeOld': { drives: ['ambition', 'cruelty'], social: 'court', hunt: 'lure', people: 'bargains', guards: 'a gate half-open', provoked: ['a bargain broken', 'holy ground'], calmed: ['a counter-offer', 'a sealed gate'], others: 'commands lesser demons, and buys what it cannot command' },
   'deep.girdler': { drives: ['hunger', 'wander'], social: 'solitary', hunt: 'crush', migrates: true, people: 'ignores', provoked: ['a fleet over its trench', 'a harpoon'], calmed: ['a ship\'s cargo thrown over', 'the fleet turning back'], others: 'eats the leviathans; the krakens flee its trench' },
   'fey.greyhunt': { drives: ['play', 'cruelty', 'pride'], social: 'host', hunt: 'chase', time: 'night', people: 'hunts', provoked: ['being out of doors on the hunting nights', 'a horn answered'], calmed: ['iron on the door', 'a bowl of milk and salt'], others: 'rides with hounds no kennel bred; the fey of the hills keep out of its way' },
   'constructs.colossus': { drives: ['duty'], social: 'solitary', hunt: 'crush', people: 'hates', guards: 'a door of the first age', provoked: ['the door approached', 'the old words spoken wrongly'], calmed: ['the old words spoken rightly'], others: 'nothing living comes near it' },
@@ -366,8 +388,8 @@ const BEH_LINE = {
 // choice); the spec says how it acts, so rule 18 holds through its nature. `limit` is the one thing that ends it, if any.
 const NATURE = {
   'hounds.hound': { k: 'bloodthirsty', spec: 'kills past hunger and leaves the meat; cannot be bargained with or turned; the pack runs until the quarry or the pack is dead', limit: 'running water' },
-  'demons.cinderhound': { k: 'bloodthirsty', spec: 'bred to the hunt by whatever summoned it; tracks one scent across a realm; stops only when its master calls or it dies', limit: null },
-  'demons.horror': { k: 'cruel', spec: 'kills slowly, for the pleasure of it; plays with what it catches; nothing it wants can be given', limit: null },
+  'demons.ranksLow': { k: 'bloodthirsty', spec: 'bred to the hunt by whatever summoned it; tracks one scent across a realm; stops only when its master calls or it dies', limit: null },
+  'demons.horrorOld': { k: 'cruel', spec: 'kills slowly, for the pleasure of it; plays with what it catches; nothing it wants can be given', limit: null },
   'undead.dead': { k: 'relentless', spec: 'walks toward the living without rest, hunger or fear; does not tire, does not flee, does not hear words', limit: 'dawn' },
   'undead.ghoul': { k: 'hungry', spec: 'hungry beyond reason: eats until it bursts and eats again; flees only fire', limit: 'fire' },
   'crawlers.swarm': { k: 'mindless', spec: 'a hunger with a million mouths; it does not see you, only what you stand in; it ends when the grass ends or the frost comes', limit: 'frost' },
@@ -387,7 +409,7 @@ const behOf = (fk, lk, apex, int) => {
 
 const INT = ['beast', 'cunning', 'speaking', 'wise'];
 const TIERS = ['animal', 'great beast', 'monster', 'drake', 'giant', 'undead', 'spirit', 'fey', 'construct', 'young dragon', 'grown dragon',
-  'elder dragon', 'ancient dragon', 'lower demon', 'great demon', 'ancient demon', 'calamity'];
+  'elder dragon', 'ancient dragon', 'lower demon', 'great demon', 'ancient demon', 'demonic creature', 'calamity'];
 const slug = s => s.toLowerCase().replace(/^the /, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 
@@ -395,7 +417,8 @@ export function generate() {
   const species = [], fam = {}, lines = {};
   for (const [fk, Fm] of Object.entries(FAMILIES)) {
     fam[fk] = { n: Fm.n, lines: [] };
-    if (Fm.cap) fam[fk].cap = Fm.cap;   // the most of this family the world holds, every age and kind (order 96)
+    if (Fm.cap) fam[fk].cap = Fm.cap;
+    if (Fm.hell) fam[fk].hell = true;   // lives only in Hell (order 97, D-197)   // the most of this family the world holds, every age and kind (order 96)
     for (const L of Fm.lines) {
       const lk = `${fk}.${L.k}`;
       const ids = [];
@@ -436,7 +459,8 @@ export function generate() {
         // how many the world holds, where the canon counts them (order 96): the dragons, the ancient demons
         const world = f.world != null ? f.world : L.world && L.world[i];
         if (world != null) sp.world = world;
-        if (L.places) sp.places = L.places.slice();   // named places, so the final map can place them in one pass
+        if (L.places) sp.places = L.places.slice();
+        if (Fm.hell) sp.hell = true;   // every demon lives in Hell: never met in the continent's wilds   // named places, so the final map can place them in one pass
         if (f.born) sp.titles = [f.born];
         if (L.dominion) sp.dominion = L.dominion;   // the ancient dragons' dominions (order 97, D-198)
         if (f.legend) sp.legend = f.legend;           // this kind is one legend: A.POWER reads it as her sheet
@@ -461,7 +485,9 @@ export function validate(B) {
     ids.add(s.id);
     if (!INT.includes(s.int)) errs.push(`${s.id}: intelligence ${s.int}`);
     for (const t of s.terr) if (!terrs.has(t)) errs.push(`${s.id}: terrain ${t}`);
-    if (!s.terr.length && !s.coast) errs.push(`${s.id}: no habitat`);
+    if (!s.terr.length && !s.coast && !s.hell) errs.push(`${s.id}: no habitat`);
+    if (s.hell && (s.terr.length || s.coast)) errs.push(`${s.id}: a demon of Hell with a habitat on the continent`);
+    if (s.fam === 'demons' && ['lower demon'].includes(s.tier) && !['beast', 'cunning'].includes(s.int)) errs.push(`${s.id}: a lower demon that reasons (${s.int})`);
     if (s.level < 1 || s.level > POWER.levels.max) errs.push(`${s.id}: level ${s.level}`);
     for (const k of POWER.capabilities.map(c => c.k)) if (!(s.prof[k] >= 0 && s.prof[k] <= 10)) errs.push(`${s.id}: capability ${k}`);
     if (s.world != null && !(Number.isInteger(s.world) && s.world >= 1)) errs.push(`${s.id}: world count ${s.world}`);

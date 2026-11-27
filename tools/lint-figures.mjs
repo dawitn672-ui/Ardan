@@ -148,7 +148,14 @@ if (dem) {
   const list = dem.figures || [];
   if (list.length !== 33) fail('ancient-demons', `${list.length} profiles, not 33`);
   for (const s of BD.species.filter(x => x.tier === 'ancient demon')) { const n = list.filter(f => f.kind === s.id).length; if (n !== s.world) fail('ancient-demons', `${n} of ${s.id}, the bestiary counts ${s.world}`); }
-  const AR = ['ghazrul', 'morvane', 'vethrael'];
+  // order 97 (D-197): demons by rank, every one in Hell and horned
+  for (const f of list) {
+    const s = SP.get(f.kind);
+    if (s && !s.hell) fail(`ancient-demons/${f.id}`, `kind ${f.kind} is not a rank of Hell`);
+    if (!/ of Hell$/.test((f.home && f.home.domain) || '')) fail(`ancient-demons/${f.id}`, `home ${(f.home || {}).domain}: every demon lives in Hell`);
+    if (f.looks && !/horn/i.test(f.looks)) fail(`ancient-demons/${f.id}`, 'a demon without horns');
+  }
+  const AR = ['ghazrul', 'morvane', 'vethrael'];   // Red, Noir and Blanc (ids kept, D-197)
   for (const f of list) if (!AR.includes(f.liege)) fail(`ancient-demons/${f.id}`, `liege ${f.liege}: one of the three Primordial Archdemons`);
   for (const a of AR) {
     const mine = list.filter(f => f.liege === a);
