@@ -90,3 +90,12 @@ here before reporting success.
   path from the runner's output, never from a grep of the message.**
 - An accidental `git stash` (restored at once): **never run stash in a shared trunk with agents' work about.**
 - Overwrote a scratch profiling script: **new scratch files get new names.**
+
+### L-012 · 2026-11-27 · A bulk upload briefed without pricing it first
+- **What went wrong:** a Notion agent was briefed to mirror "every piece" of the records (about 3 MB) through the Notion
+  chat tool, where every character passes through the model twice. It stopped at 83 of 521 entries, summaries only, after
+  about 225K tokens, and said so (rightly).
+- **Root cause:** the brief chose the tool before estimating the cost of the volume through it.
+- **Rule now:** before any bulk job, estimate size × route cost and pick the route that does not pass bulk data through a
+  model: a script with an API key (asked for through the secure credential form), file uploads, or generated batches.
+  Model-routed tools are for structure and small edits.
