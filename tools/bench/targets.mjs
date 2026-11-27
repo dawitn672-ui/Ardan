@@ -49,6 +49,14 @@ export const TARGETS = {
       // 24 lives, as the artisan and the noble (H-096): long 156 on 37bc448a read median peak coin 49,121 from 12 lives,
       // under the floor by 2%, in a batch that touched no trade (levels, classes, the bestiary, titles); a median of 12
       // lands in whichever hump holds the 7th life (H-160)
+      // H-162: not a regression. The same 48 seeds on b748817f and 0163f899 read medians of 74,004 and 49,935 (24 lives:
+      // 97,632 and 49,935; Mann-Whitney z 0.34, a permutation of the medians p 0.50): the two humps (a Merchant held at
+      // rank 2 under trade's B-rank deed, about 700 suns a year; a Merchant prince or Banker at 3,000-9,000) with the
+      // median in the gap between them, so a league of 24 fell under 50,000 one time in five even on b748817f. Order 97
+      // (merchants from decently well off to past the royal houses) and D-195: a Merchant's year at the head of his trade
+      // is trade's deed, which lifts the upper hump: 139,387 over the 24 seeds (10 lives proved by their books; 10 of 24
+      // past 150,000, the best 583,454), still two humps (bootstrapped, a league of 24 under 50,000 about one time in
+      // four). The top stays above the royal's, so a great house of trade has room past a crown's purse
       lives: 24,
       bands: { medianDeathAge: [30, 85], medianPeakCoin: [50000, 900000], medianPeakFame: [20, 100], notableSharePct: [40, 100] },
     },

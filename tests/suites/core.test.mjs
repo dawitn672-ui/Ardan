@@ -107,4 +107,35 @@ export default {
     const st = await pg.evaluate(() => ({ screen: UI.screen, year: A.S.year, fonts: [...document.fonts].filter(f => f.status === 'loaded').map(f => f.family).filter((v, i, a) => a.indexOf(v) === i) }));
     return { ok: st.screen === 'game' && (!exp || download), detail: `${new Set(seen).size} tabs visited, export ${exp ? (download ? 'downloaded' : 'FAILED') : 'button not found'}, fonts loaded: ${st.fonts.join(', ') || 'none (offline?)'}` };
   },
+
+  // order 97 (D-195, H-162): a merchant's ledger is his deed. A Merchant at trade's edge with only the deed wanting, after
+  // a year at the head of his trade with the next post's merit earned, is proved (A.careerYear); a poor year, too little
+  // merit, or another trade at the same edge is not
+  async merchantLedgerProof(pg) {
+    const r = await pg.evaluate(() => {
+      const SK = A.SK, Eng = SK.E();
+      const run = (c, perf, merit) => {
+        A.newGame({ seed: 16201, race: 'human', realm: 'POL-04', status: 'merchant', sex: 'M', startAge: 30 });
+        const pc = A.pc(); A.S.queue = [];
+        // trade at the top step of a word from which the next asks a deed (rank C's Lv 10 under rank B), its bar full and
+        // the next word's concepts grasped: nothing but the deed wanting
+        let lv = 1; while (lv < SK.MAX_LV && !(SK.stepOf(lv) === SK.STEPS && SK.wordOf(lv) + 1 >= Eng.PROOF_FROM)) lv++;
+        SK.set(pc, 'trade', lv, 'test');
+        const s = pc.sk.trade; s.xp = Eng.cost(s.lv); s.proved = false;
+        for (const cn of Eng.conceptsOf('trade', SK.wordOf(lv) + 1)) s.got[cn.id] = 30;
+        const before = SK.edgeState(pc, 'trade');
+        pc.job = { c, r: 2, y: 8, perf, merit, rep: 70 }; pc.happy = 80;
+        let n = 0; const pf = SK.proof; SK.proof = function (p, k, why) { if (why === 'a year at the head of your trade') n++; return pf.apply(this, arguments); };
+        try { A.careerYear(pc); } finally { SK.proof = pf; }
+        SK.month(pc);
+        return { before, perf: pc.job.perf, proofs: n, after: SK.edgeState(pc, 'trade'), lv: pc.sk.trade.lv, from: lv };
+      };
+      return { good: run('merchant', 100, 2000), poor: run('merchant', 0, 2000), merit: run('merchant', 100, 10), smith: run('smith', 100, 2000) };
+    });
+    const g = r.good;
+    const ok = g.before === 'ready' && g.perf >= 80 && g.proofs === 1 && g.after !== 'ready' && r.poor.perf < 80 && r.poor.proofs === 0 &&
+      r.merit.proofs === 0 && r.smith.proofs === 0;
+    return { ok, detail: `merchant at Lv ${g.from} (${g.before}), performance ${g.perf}: ${g.proofs} proof, then Lv ${g.lv} (${g.after || 'past the edge'}); ` +
+      `a poor year (performance ${r.poor.perf}) ${r.poor.proofs}, too little merit ${r.merit.proofs}, a smith at the same edge ${r.smith.proofs}`, data: r };
+  },
 };

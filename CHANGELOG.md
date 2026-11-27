@@ -5,6 +5,9 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **A merchant's books prove him.** A Merchant who has run his trade at its best for a year, with the standing for the
+  next post, no longer waits on a lucky bargain to reach the next rank of the trade: his year's work is the proof. More
+  merchants rise to Merchant prince and Banker, and a great house of trade can grow richer than a noble house.
 - **Figures of the Age.** A new page of the codex lists the great of the continent by kind: the rulers, the great
   houses, the Generals, the masters of the knightly orders and of the peoples, the legends, the three ancient dragons,
   the nine elder dragons and the thirty-three ancient demons sworn to the three Archdemons. Each has a full profile:

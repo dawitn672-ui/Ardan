@@ -3475,3 +3475,55 @@ coherency and the balance harness (nothing here moves a world: no draw, no write
   trade; the merchant now plays 24 lives, as the artisan and the noble do (H-096).
 
 **Undo.** Revert this commit.
+
+### H-162 · 2026-11-27 · The merchant's coin: no regression in orders 91-96; a merchant's ledger is his deed (order 97, D-195)
+
+**The complaint.** The balance's merchant median peak coin read 114,768 at alpha 20 (`b748817f`, 12 lives) and 49,121 /
+49,935 (12 / 24 lives) on `37bc448a` / `0163f899`, under the floor of 50,000. Then order 97: merchants from decently well
+off to past the royal houses.
+
+**Root cause: none in the batch; the median of a two-humped path.** Bot lives of the merchant path (the balance's seeds,
+personalities and bot; a probe that attributes every change of `pc.coin` to its caller, reproducing CI's medians exactly
+on both builds):
+- **The same 48 seeds:** `b748817f` median 74,004 (24 lives: 97,632), `0163f899` 49,935 (24: 49,935). Mann-Whitney z 0.34,
+  a permutation of the medians p 0.50; lives past 80,000: 21 and 19 of 48. Bootstrapped from `b748817f`'s own 48 lives,
+  a league of 24 falls under 50,000 one time in five: alpha 20's 114,768 was a high draw. CI's 12-life readings since
+  Nov 19 ran 59,714-119,763.
+- **The mechanics read the same** (one merchant at fixed levels, and a merchant's 25 years of work, on both builds):
+  trade's read, perks and growth identical; intelligence within a tenth of a point (the +1s land whole); the perk rows
+  identical. Evolution replacing the old rung, `SK2.statOf`'s fast path, training's +1s and titles' income boost cut
+  nothing: a title's boost is 0 without a title, and the fast path came after `37bc448a` had already read 49,121.
+- **The humps:** a Merchant held at rank 2 (700 a year) against a Merchant prince or Banker (3,000-9,000). The prince's
+  post asks trade 54, one above the top of rank C, and rank B asks a deed that only a card's check at 53+ gave; a careful
+  life sat at trade 53 with merit 1,042 against 238 for decades. Coin by source over 24 lives: the post's pay 86,738 a
+  life on `b748817f`, 78,412 on `0163f899`; no source vanished.
+
+**The change (D-195, order 97).** `A.careerYear` (`src/core/release/core/04-realms-and-war-years-b.js`): a Merchant or
+better with a year's performance of 80 or more, the next post's merit earned, standing at trade's edge with only the deed
+wanting, is proved (`SK.proof`, "a year at the head of your trade"). No number drawn; no label or text of a monopoly.
+Test `merchantLedgerProof` (tests/suites/core): fails on `0163f899` (0 proofs), passes here (1 proof, Lv 15 -> 16; a poor
+year, too little merit, a smith: 0).
+
+**Balance** (24 merchant lives by the probe, the rest by `tools/bench/balance.mjs --paths=...`, workers 2), before
+(`0163f899`, CI long run 45895054091) -> after:
+
+| path | median peak coin | in band |
+| --- | --- | --- |
+| serf | 33,798 -> 33,798 | yes |
+| peasant | 52,970 -> 52,970 | yes |
+| artisan | 81,278 -> 81,278 | yes |
+| merchant | 49,935 -> **139,387** (10 of 24 lives proved by their books; past 150,000: 6 -> 10; best 583,454) | yes |
+| noble | 66,260 -> 66,260 | yes |
+| royal | 48,854 -> 48,854 | yes |
+
+The other paths' lives never met the condition, so they play exactly as before. Merchant median death age 66. Every
+other band and the global numbers in band (check win rate 52.3%, 12 arcs, 0 page errors). Coherency (quick baseline): no
+check rose. `lint-reasons` 41 (baseline 41), `lint-stages` ok, `lint-skills` ok; `boot`, `saveRoundTrip`, `lnHonestOdds`
+pass.
+
+**Left open.** The path is still two humps (about half the lives leave trade: the vows, a court post, an early death, a
+concept never grasped), so the median of 24 sits near the gap: bootstrapped from the 24 fixed lives, under 50,000 about
+one league in four. A steadier measure is the coordinator's call. The band is unchanged (50,000-900,000; the top above the
+royal's 700,000), its comment in `tools/bench/targets.mjs` updated with these readings.
+
+**Undo.** Revert this commit.

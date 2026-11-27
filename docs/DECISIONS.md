@@ -3296,3 +3296,35 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
 - **Not chosen.** Storing generated profiles (save growth, and they would go stale as people age and die); profiling the
   counts (201 at the start: a page of noise); adding the fixed beings to `PW.great()` (its tale draws from that list, so
   every world's tales would move; a door for later).
+
+### D-195 · A merchant's ledger is his deed: a year at the head of his trade proves trade's next rank (2026-11-27; order 97; H-162; D-072, D-077)
+- **The finding first: the batch of orders 91-96 cut no merchant wealth.** The balance's merchant median fell from
+  114,768 (alpha 20, 12 lives) to 49,935 (24 lives), but the same 48 seeds on `b748817f` and `0163f899` read medians of
+  74,004 and 49,935, indistinguishable (Mann-Whitney z 0.34; a permutation of the medians, p 0.50). Every merchant
+  mechanic the batch could have touched reads the same on both builds (trade's read and perks at each level, its growth
+  over 25 years of a merchant's work, the intelligence the post trains: within a tenth of a point, the +1s landing whole).
+  The path is two humps, and the median of 24 sits in the gap between them: on `b748817f` itself a league of 24 fell
+  under the floor of 50,000 about one time in five (bootstrapped from its 48 lives).
+- **What the humps are.** The upper hump holds the merchants who became a Merchant prince (3,000 suns a year) or a
+  Banker (9,000); the lower, the ones held at Merchant (700) for decades. The Merchant prince's post asks trade 54
+  (`A.jobBoard`: 12 + 14 a rank), one above the top of rank C (53), and rank B asks a deed (D-072), which for trade came
+  only from a card's check at 53 or more, and the cards hold few. A merchant with the post's merit four times over (a
+  life read 1,042 against 238) waited on that luck, or on a card that promotes outright.
+- **Order 97** ("merchants are anywhere between decently well off to matching and exceeding that of the royal family
+  and/or other noble houses"): the trade's own work is its deed. In `A.careerYear` (`src/core/release/core/04-...-b.js`),
+  a Merchant or better (rank 2 up) whose year's performance is 80 or more, with the next post's merit earned
+  (`A.JOB_MERIT`), standing at trade's edge with nothing but the deed wanting (`SK.edgeState === 'ready'`), is proved
+  (`SK.proof`, "a year at the head of your trade"). A concept not grasped still holds him (stuck is not ready); a poor
+  year, too little merit, or a smith at the same edge proves nothing (`merchantLedgerProof`). It draws no number: a life
+  that never meets the condition plays exactly as before.
+- **Measured** (the same 24 seeds): median peak coin 49,935 -> 139,387; 10 lives proved by their books; lives past
+  150,000: 6 -> 10; the best 583,454 (the royal band's top is 700,000, the merchant's 900,000: room for a great trading
+  house past a crown's purse). Median age at death 66. The other paths: H-162.
+- **Not chosen.** Lowering the post's skill gate (every career shares it, and the B-rank deed is D-072's rule for every
+  skill); a return on capital for merchants (a new system: the markets' anti-exploit bounds, `src/economy/66-markets`,
+  would have to be designed around it; a door for order 97's "that level of economic detail"); widening the band (the
+  owner wants merchants richer, not the check looser). **No monopoly label, status or text** anywhere (the owner, after
+  order 97): a great house's reach is a matter of its numbers.
+- **Still two humps.** About half the merchant lives leave trade (the vows, a post at court, an early death, a concept
+  never grasped), so the median of 24 still sits near the gap (bootstrapped from the 24 fixed lives, under 50,000 about one
+  league in four). A steadier measure (more lives, or a lower quantile) is the coordinator's to choose.
