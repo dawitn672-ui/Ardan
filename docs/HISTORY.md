@@ -3703,6 +3703,55 @@ stages, reasons, docs-index lints, `version.mjs check`, `--check-tiers`.
 
 **Undo.** Revert the step's commits on `ci-fix-21`.
 
+### H-167 · 2026-11-27 · The census of the top holds: NPCs work at their posts, a master at his art (s1Census; D-196)
+
+**The failure.** `s1Census` (long tier) fell to no Grandmaster in seed 8383 by year 33; on d8e16ef0 the count only fell
+(10 worlds, 40-year lives: 8181 3..10, 8282 2..5, 8383 0..5, 8484 2..8, 7101 0..5, 4242 1..7, 9711 1..2, 1234 4..11).
+
+**The root cause** (D-196 has the numbers). Who the near-Grandmasters were: in seed 8383 at year 10, fourteen people
+stood a step under Grandmaster, all from the lore cast or made at a high number: councillors (Spymasters, Treasurers,
+Chancellors, Chaplains), shire officers, a co-king, a captain. Every one held his post in the post registry
+(999990-posts), and the closed form read a post only from `p.job`, `p.mil` and `p.office`, the last only ever the
+player's mirror: no NPC in the starting world had any of the three (seed 8383: 0 of 989 grew in year 0, 11 of 1,452 in
+year 20, with 232 and 435 holding posts). So nobody was tried by his post at an edge (`SK2.npcGate`), and nobody grew.
+Counting the registry alone was not enough: no post asks past Master III (78.4), so past it work teaches at a sixth of
+its pace; and no NPC has a talent letter, so every starting master past 80 grew at a quarter of that.
+
+**The fix** (`src/people/36-skills/f-people.core.js`, `a-model.core.js`, `c-migrate.core.js`;
+`src/people/37-skills2/d-evolve.core.js`, `e-merge.core.js`).
+- `SK.postSkills` reads the registry (seats, shire offices, field commands, companies, orders) and a crown through
+  `SK.POST_WORK`; `SK.works` and `SK.highPost` are the one reading used by the year's growth, `SK.effortYears`,
+  `SK2.npcGate` and `SK2.jumpFacts`. A house or a court title works nothing.
+- A master keeps up his own art: best skill at Master or above, practice, `SK.MASTER_EU` 0.5 a month the year round,
+  under seventy in a human's years (`SK.masterArt`). Tuned on the census: 0.8 (with the carry and an A gift, both
+  below) put seed 8484 at 19 Grandmasters; 0.35 and 0.5 (with the carry) both held every test seed, 0.5 with more
+  margin at the bottom (8383, 9711).
+- A made number shows its gift: `SK.madeGift`, in `SK.quantize`, raises the letter of a number older code wrote past its
+  reach to the lowest that reaches it, up to B (`SK.GIFT_MAX`). The A gift, the Legend's, is never inferred: with it,
+  seed 8585 reached three Legends.
+- Tried and dropped: keeping the fraction of a made number as carry from Master up (8585 rose to 12 on both worlds).
+- `SK.npcGrowYear` now steps everyone alive (a post or a master's art; 278 people at year 0 in seed 8383, 473 at year 20):
+  10.7 ms of CPU at year 20 against 2.5 before, once a year; the body's cap is read only for a gain that would land.
+- The 37-skills2 tests that pick "an NPC with no post" now read `SK.works` (or no registry post).
+
+**Census after** (40-year lives; Grandmasters min..max, Legends at most 2 in all): 8181 4..10, 8282 2..5, 8383 2..5,
+8484 3..11, 8585 3..11; 7101 1..5, 4242 1..7, 9711 1..4, 1234 2..11, 5501 6..15 (15 in its starting world, before
+anything moves). On a shifted world (one more draw after `A.seed`): 8181 5..10, 8282 2..5, 8383 3..6, 8484 6..10, 8585
+8..11; the baseline there 4..10, 2..5, 2..6, 2..8, 4..11. **Still open:** the starting masters pass and none below Master
+has a gift of his own, so the count falls in the last decade of most lives (1234 11 to 2, 8484 11 to 3): NPC talent (G).
+
+**Checks** (`/tmp/ardan/census/x.html`): `s1Census` PASS (the readings above); `s1Cost` 0.53 to 0.76 ms (0.62 on the
+baseline); the 36-skills and 37-skills2 quick tests 23 of 23; `s1TwoLives`, `s1Reasons`, `lvSeed`, `uiSmoke`,
+`renderRng`, `replayWithRender`, `v2svRoundTrip` 7 of 7; `node --test tests/v2` 166 of 166; lint-reasons 41 (baseline
+41), lint-stages and lint-skills ok; coherency against the quick baseline: no check rose.
+**Not run to the end here:** `tools/bench/balance.mjs` (a page crashed after 46 minutes on a shared machine, the
+second run made 14 lives in 80 minutes at a load of 28 on 4 cores); the long tier's balance on CI is the reading.
+`tools/bench/press-gate.mjs` is over its budgets in this container on both builds alike (quiet month y0 221 ms here,
+232 on d8e16ef0; y50 233 and 235; full redraws 2 on both); the year's growth adds about 8 ms once a year, never a
+quiet month's median.
+
+**Undo.** Revert this commit (`SK.MASTER_EU = 0` and `SK.GIFT_MAX = 'C'` turn the two new rules off; the registry's
+posts are the bug fix).
 ### H-168 · 2026-11-27 · Order 98: the Primordials are Noir, Red and Blanc; Vaskareth the storm ancient (audit C-01, C-02, C-18, C-35)
 
 **What.** The three Primordials take order 97's names, looks and powers, their ids kept as internal keys (D-197):

@@ -122,3 +122,12 @@ here before reporting success.
   same way.
 - **Rule now:** when a credential request fails for length, start a short side session whose only job is to show the form
   (it saves to the same environment), instead of asking again here or sending the owner to settings first. It worked.
+
+### L-016 · 2026-11-27 · The record merger brought back a stale skill
+- **What went wrong:** `merge-records.mjs`, run with no file list, merged every conflicted `.md` line by line, including a
+  skill file; a branch made before this morning's skill rewrite brought the retired text (S1 words, GD.TIERS, "Legend
+  about five alive") back into `life-sim-systems`. Caught in review before the commit.
+- **Root cause:** the script's default took every markdown file, but "keep both sides" is only right for append-only
+  records.
+- **Rule now:** the script touches only HISTORY, DECISIONS and CHANGELOG by default; skills, design notes and other docs
+  are merged by hand, taking the newer text and adding the branch's new facts.

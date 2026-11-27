@@ -266,7 +266,9 @@
   // the gate: the rest of the rung's route at an edge, the concepts being the closed form's (37-skills2's d-evolve, D-182)
   SK.npcView = (p, a) => ({ id: p.id, seed: String(A.S ? A.S.seed : 'ardan'), talent: p.tal || {}, gate: A.SK2 && A.SK2.on && A.SK2.npcGate ? A.SK2.npcGate(p, a) : undefined });
   // years of work a person has put into a skill, for the closed form's grasp: from fourteen, a share by his post
-  SK.effortYears = (p, c) => Math.max(0, (A.age(p) - 14)) * (p.job || p.mil || p.office ? 0.8 : 0.5);
+  // (a post: SK.works, 36-skills' f-people, which reads the post registry and the crown too: H-167)
+  // (works: whether he does, when the caller has read it already)
+  SK.effortYears = (p, c, works) => Math.max(0, (A.age(p) - 14)) * ((works != null ? works : SK.works ? SK.works(p) : p.job || p.mil || p.office) ? 0.8 : 0.5);
   SK.npcGain = function (p, c, a) {
     const Eng = SK.E(), skills = p.skills || (p.skills = {});
     // fold a legacy key older code wrote on this person into its skill first

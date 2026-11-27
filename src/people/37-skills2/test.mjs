@@ -439,7 +439,8 @@ export default {
       if ((pc.btN || 0) !== bt0) bad('the breakthrough budget moved');
       if (pc.wounds.length !== w0) bad('a jump cost a wound');
       // anyone else: his number, by the closed form's facts (his post is his deed, his talent a letter)
-      const npc = Object.values(A.S.people).filter(p => p && p.alive && p.id !== pc.id && p.st && A.age(p) >= 30 && !p.sk && !p.ruler).sort((a, b) => (a.id < b.id ? -1 : 1))[0];
+      // (no post of the registry's either: a councillor's seat is his deed, H-167)
+      const npc = Object.values(A.S.people).filter(p => p && p.alive && p.id !== pc.id && p.st && A.age(p) >= 30 && !p.sk && !p.ruler && !(A.POSTS && A.POSTS.held(p.id).some(k => !/^(house|title):/.test(k)))).sort((a, b) => (a.id < b.id ? -1 : 1))[0];
       if (!npc) bad('no NPC');
       else {
         npc.skills = npc.skills || {}; npc.skills.sword = SK.VALUES[13]; npc.tal = Object.assign({}, npc.tal || {}, { sword: 'C' });
@@ -555,7 +556,7 @@ export default {
       out.youngStall = (SK2.gate(pc)('bow', 5, pc.sk.bow, 20) || {}).other || [];
       if (!out.youngStall.some(t => /30/.test(t))) bad('the S rung\'s age not named: ' + JSON.stringify(out.youngStall));
       // anyone else: at the B edge, no post and no stretch won, he stays; with a post he crosses, and gains a point
-      const npc = Object.values(A.S.people).filter(p => p && p.alive && p.id !== pc.id && p.st && A.age(p) >= 30 && !p.job && !p.mil && !p.office && !p.ruler).sort((a, b) => (a.id < b.id ? -1 : 1))[0];
+      const npc = Object.values(A.S.people).filter(p => p && p.alive && p.id !== pc.id && p.st && A.age(p) >= 30 && !SK.works(p)).sort((a, b) => (a.id < b.id ? -1 : 1))[0];
       if (!npc) bad('no NPC without a post');
       else {
         npc.skills = npc.skills || {}; npc.skills.sword = SK.VALUES[15]; npc.skx = { sword: SK.E().cost(15) - 1 };

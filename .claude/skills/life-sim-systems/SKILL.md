@@ -40,7 +40,8 @@ Use this when building or reviewing character, family, politics or war systems f
   value, succeeded, or a deed through `A.deedDone`). **Concept-grasp breakthroughs** are sudden grasps at named moments (a
   defeat by a better hand, a near death, a rival, a new land, a master's word) that release stored effort; they never raise
   a stat ceiling. Discipline, a rival, a new place, needs, teachers and specialisms move what a month is worth, and every
-  one is written in the ledger beside the gain it changed. Other people grow in closed form once a year (`SK.npcGrowYear`).
+  one is written in the ledger beside the gain it changed. Other people grow in closed form once a year (`SK.npcGrowYear`): at what their posts work (an NPC's posts are in the
+  post registry, never in the player's own fields; `SK.works`) and, a master, at his own best art (D-196).
   Skill kinds (actives, passives, buffs), evolution, merging and arts: `rpg-progression-design`. No percentages, no bare
   numbers on the page.
 - **Growth must not be linear, and every change needs a cause** (Ardan's G0 standard, `docs/design/growth-standard.md`, D-067;

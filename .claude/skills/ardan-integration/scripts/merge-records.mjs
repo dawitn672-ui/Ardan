@@ -7,7 +7,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 
 const files = process.argv.slice(2).length ? process.argv.slice(2)
-  : execSync('git diff --name-only --diff-filter=U', { encoding: 'utf8' }).split('\n').filter(f => f.endsWith('.md'));
+  : execSync('git diff --name-only --diff-filter=U', { encoding: 'utf8' }).split('\n').filter(f => /(^|\/)(HISTORY|DECISIONS|CHANGELOG)\.md$/.test(f)); // record files only: a skill, design note or other doc is merged by hand (L-016)
 const HUNK = /^<<<<<<< [^\n]*\n([\s\S]*?)^=======\n([\s\S]*?)^>>>>>>> [^\n]*\n/gm;
 
 function entries(text) {

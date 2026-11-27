@@ -37,6 +37,10 @@ What changed for the player, in plain words, one section per version (newest fir
   or noble houses is a true son or daughter of the house. A saved game with an orc goes on as it was.
 - **The great dragons of the old tales** are written at their true size: a grown ash dragon is a calamity, not a
   beast a few bowmen can bring down.
+- **The great of the world grow in their work.** Councillors, governors, magistrates, Generals, captains and crowned
+  heads now get better at what their posts ask of them over the years, and a master at the top of his art keeps working
+  at it while he is not too old: new Grandmasters rise as the old ones die, so the world keeps a few of them through
+  your life instead of losing them one by one.
 - **Armies of their true size.** Every realm now keeps a standing host by its people, its wealth and its kind: from
   about ten thousand soldiers in a small kingdom to more than a quarter of a million in the greatest empire, while a poor
   abbey or a pirate port keeps what it can pay. Knights are few and strong: from about fifty to three thousand in a
