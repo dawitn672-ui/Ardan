@@ -14,8 +14,9 @@ The owner's bar (order 97, and his addition of 2026-11-27: "cold reader naming n
 exists in the game, using plain language a lot of the time instead of random buzz words like wyrm") is **not near**.
 Today a newcomer meets, in plain sight:
 
-- **4,941 uses of fantasy buzzwords and archaisms** (wyrm, drake, thane, jarl, hird, reeve, liege, castellan, fey,
-  barrow, khan, sultan, emir, vizier, nome, yam, kremlin...) and **about 1,000 X-born / X-walker / X-breaker / X-hide /
+- **2,920 uses of unambiguous fantasy buzzwords and archaisms** (wyrm, drake, thane, jarl, hird, reeve, liege,
+  castellan, fey, barrow, khan, sultan, emir, vizier, nome, yam, kremlin...), plus 2,021 matches of words that are
+  offenders only in some uses (march, warden, fell, shade, marquis: 4,941 in all), and **about 1,000 X-born / X-walker / X-breaker / X-hide /
   X-mane compounds** (71 distinct -born words alone);
 - **66 pairs of near-identical proper nouns of different kinds** (a realm and a house, a house and a demon, a capital
   and a legend), several in triples: Corvasse / Corvane / Morvane / Corvan; Kesh / Vesh; Harrow / Harrak / Harrak;
@@ -264,7 +265,8 @@ dragonet, wyrmling, drakeling, drake, wyrm, wyvern, great, elder) and a tier lit
 
 ## 10. What to measure after the pass
 
-- `name-audit.mjs` buzzword uses: from 4,941 to under 500, all of them glossed set terms or noisy plain English.
+- `name-audit.mjs` buzzword uses: the unambiguous ones from 2,920 to near 0 (only glossed set terms kept); the noisy
+  ones (2,021) read by hand until each remaining use is plain English ("they march", "the gate warden" said of what).
 - `--near`: from 66 pairs to none a player can meet on one screen.
 - `--borrowed`: 0.
 - Every realm on the realm list, the map and the start screen reads "<Form> of <Name>" or carries its descriptor.

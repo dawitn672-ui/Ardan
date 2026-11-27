@@ -14,9 +14,10 @@ rules"): names basic and simple; one common English language, plain English name
 non-human peoples may sound different. Order 99: realms are only a **kingdom, empire, principality, merchant
 republic or free city**. Order 100 makes every naming call ours.
 
-**Today is far below the bar, not near it** (`references/ardan-offenders.md`): about 4,900 uses of buzzwords and
-archaisms on the page, about 1,000 X-born/X-walker/X-breaker compounds, 66 pairs of near-identical names of different
-kinds, Tolkien, Warcraft and D&D names and real cities in the name pools. Treat a name you did not check as wrong.
+**Today is far below the bar, not near it** (`references/ardan-offenders.md`): about 2,900 uses of unambiguous
+buzzwords and archaisms on the page (4,900 with the words that offend only in some uses), about 1,000
+X-born/X-walker/X-breaker compounds, 66 pairs of near-identical names of different kinds, 35 Tolkien, Warcraft and D&D
+names and real cities in the name pools. Treat a name you did not check as wrong.
 
 - `references/naming-study.md`: how history, Tolkien, Martin, Le Guin, Dark Souls, the Witcher, the Elder Scrolls,
   Solo Leveling and Overgeared name things, and what memory research says; with sources. Read it once.
@@ -26,14 +27,18 @@ kinds, Tolkien, Warcraft and D&D names and real cities in the name pools. Treat 
 
 ## The rules
 
+0. **The owner's own words win.** Names and terms the owner chose stay as he wrote them, glossed where a newcomer
+   needs it: Noir, Blanc, Red, the Primordials, archdemon, ancient demon, Vaskareth, the Dragon King, the Sword Saint,
+   Dragonoid Form, Dragon Slayer, Archmage. No rule below overrides an order; if one seems to, ask or record a decision.
 1. **Plain English is the default.** Use the word a reader already knows: dragon, young dragon, demon lord, ghost,
    fairy, earl, lord, headman, steward, castle keeper, chief minister, burial mound, marsh, valley, borderland, post
    station, fortress. An invented or archaic word is the rare exception and must pass the test below.
 2. **No buzzwords or archaisms.** Not wyrm, wyrmling, drake, drakeling, dragonet, thane, jarl, hird, reeve, liege,
-   castellan, seneschal, fey, eldritch, barrow, wight, revenant, lich, ettin, fiend, imp, archdemon, khan, khatun,
+   castellan, seneschal, fey, eldritch, barrow, wight, revenant, lich, ettin, fiend, imp, khan, khatun,
    sultan, emir, vizier, nome, yam, caravanserai, kremlin, veld, ere, nay, aye, unto; not the stock compounds
-   (X-born, X-sworn, X-kin, X-bane, X-slayer, X-walker, X-caller, X-breaker, X-weaver, X-singer, X-fang, X-hide,
-   X-mane) as titles or epithets. The plain word for each is in `references/ardan-offenders.md` §1. Real flavour comes
+   fused into one word or hyphen (X-born, X-sworn, X-kin, X-bane, X-slayer, X-walker, X-caller, X-breaker, X-weaver,
+   X-singer, X-fang, X-hide, X-mane: "Wyrmslayer", "Storm-born") as titles or epithets. Two plain words naming a deed
+   are fine and preferred: "Dragon Slayer" (the owner's own choice), "Born in Hell". The plain word for each is in `references/ardan-offenders.md` §1. Real flavour comes
    from people's names and customs (rule 11), never from untranslated office words.
 3. **Descriptor + name at first sight.** A proper name a player has not met carries what it is: "the Kingdom of Kesh",
    "Ashmere, the lake kingdom", "Morvane, a demon lord", "Noon Hall, the sword school of Varenna", "the Thing, the free
