@@ -1771,7 +1771,7 @@
         cond: (p,C)=>C.race(p,"dwarf")&&C.adult(p)&&(C.job(p,"smith")||C.lvl(p,"craft",35)),
         w: 1.1,
         cool: 12,
-        setup: (p,ctx)=>{ctx.buyer=A.pick(["a Varennan duke","an Aldmark marcher lord","a Sabran emir's steward","a Tessarian general"]),ctx.Buyer=A.cap(ctx.buyer)},
+        setup: (p,ctx)=>{ctx.buyer=A.pick(["a Varennan duke","an Aldmark marcher lord","a Sabran prince's steward","a Tessarian general"]),ctx.Buyer=A.cap(ctx.buyer)},
         text: "{Buyer} has paid two hundred suns in advance for a blade from your forge, and sent a man to wait at the gate until it is done. It is at the second quench now, the one no human knows, and the color of the steel is not quite right.",
         choices: [
           {
@@ -3970,7 +3970,7 @@
         cond: (p,C)=>C.race(p,"orc","halforc")&&C.adult(p)&&!C.old(p)&&!C.soldier(p)&&free(p),
         w: .9,
         cool: 8,
-        setup: (p,ctx)=>{ctx.lord=A.pick(["a Tessarian prince","a Sabran emir","the free companies of the Marches","a Varennan duke at war with his cousin"])},
+        setup: (p,ctx)=>{ctx.lord=A.pick(["a Tessarian prince","a Sabran prince","the free companies of the Marches","a Varennan duke at war with his cousin"])},
         text: 'A human recruiter rides into the camp with a mule loaded with silver. He is hiring for {lord}: orc riders at forty suns a month and double rations, three times what a human spearman gets. "The human princes all want orcs now," he says. "Two minutes of you is worth a day of them."',
         choices: [
           {
@@ -4961,7 +4961,7 @@
         cond: (p,C)=>early()&&C.realm(p,"POL-09")&&C.race(p,"giant")&&C.adult(p),
         w: 1.2,
         once: !0,
-        text: `A runner from Haugberg comes to your hall with Eldest Bergthor's greeting and a gift of mammoth wool. Chieftain Skarvi let an Aldmark cog load tin at Ragvik last August, against the Tin Compact. At the Thing of 1106 Bergthor will stand against Skarvi, and he wants your voice. "Aldmark pays in rye," says the runner. "Northreach pays in excuses."`,
+        text: `A runner from Haugberg comes to your hall with Eldest Bergthor's greeting and a gift of mammoth wool. King Skarvi let an Aldmark cog load tin at Ragvik last August, against the Tin Compact. At the Thing of 1106 Bergthor will stand against Skarvi, and he wants your voice. "Aldmark pays in rye," says the runner. "Northreach pays in excuses."`,
         choices: [
           {
             t: "Promise your voice to Bergthor",
@@ -5598,7 +5598,7 @@
         cond: (p,C)=>C.race(p,"giant")&&C.blood(p,"skarfell")&&C.ageAdj(p)>=10,
         w: 1.3,
         cool: 10,
-        text: "You are of the Skarfell line: small for a giant, three times a human's strength instead of five, always cold under twice the furs. The big Haugberg giants laugh at you at every gathering. But a small Skarfell can do what no other giant can: run. Word must go to the chieftain, at once, across the island.",
+        text: "You are of the Skarfell line: small for a giant, three times a human's strength instead of five, always cold under twice the furs. The big Haugberg giants laugh at you at every gathering. But a small Skarfell can do what no other giant can: run. Word must go to the king, at once, across the island.",
         choices: [
           {
             t: "Run it, as the Skarfell Runners do",
@@ -5623,7 +5623,7 @@
           },
           {
             t: "Wear the furs and keep your counsel",
-            r: "Skarvi the Small founded the chieftains' line. Size is not everything. You think it, and say nothing.",
+            r: "Skarvi the Small founded the kings' line. Size is not everything. You think it, and say nothing.",
             fx: {wil:1,trait:"patient"},
           },
         ],
@@ -5961,7 +5961,7 @@
         cond: (p,C)=>C.race(p,"halfelf")&&C.adult(p)&&!C.faith(p,"REL-04")&&(C.job(p,"clergy")||p.piety>=55),
         w: 1,
         cool: 20,
-        text: "You have served the faith longer and better than anyone in the chapter, and everyone knows it. When the senior seat falls vacant it goes to a human of thirty-two, the dean's nephew. The rule is not written anywhere you can find, but it is older than you: the Holy See will not raise a half-elf to the high priesthood.",
+        text: "You have served the faith longer and better than anyone in the chapter, and everyone knows it. When the senior seat falls vacant it goes to a human of thirty-two, the dean's nephew. The rule is not written anywhere you can find, but it is older than you: Solenne will not raise a half-elf to the high priesthood.",
         choices: [
           {
             t: "Serve under him, and serve well",
@@ -5969,7 +5969,7 @@
             fx: {piety:4,honor:3,wil:1.5,trait:"humble"},
           },
           {
-            t: "Petition the Holy See itself",
+            t: "Petition Solenne itself",
             check: {s:"learning",s2:"persuasion",d:54},
             win: {
               r: "A year later a letter comes: not the seat, but a dispensation to preach anywhere in the province. It is the first ever granted. People come from three towns to hear you.",

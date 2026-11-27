@@ -1264,17 +1264,15 @@ A.rulerStyle = function (ru, r) {
   if (ru.sex === "F")
     t =
       {
+        // [order 99, D-206] the five forms' rulers: no title of the old forms is left, and the churchmen who rule a
+        // principality are a Prince-Bishop and a Prince-Abbot
         King: "Queen",
         Emperor: "Empress",
-        Sultan: "Sultana",
         Prince: "Princess",
         Raja: "Rani",
-        Khan: "Khatun",
-        Emir: "Emira",
+        "Prince-Bishop": "Princess-Bishop",
+        "Prince-Abbot": "Princess-Abbess",
         Abbot: "Abbess",
-        "High Luminary": "High Luminary",
-        Doge: "Dogaressa",
-        Chieftain: "Chieftain",
       }[t] || t;
   else
     t =
@@ -1634,6 +1632,7 @@ A.createRealm = function (o) {
       short: o.short || o.name,
       title: o.title || "King",
       type: o.type || "kingdom",
+      form: o.form || null, // [order 99, D-206] kingdom, empire, principality, merchant republic or free city (A.realmForm)
       gov: o.gov || "hereditary",
       law: o.law || "male",
       race: o.race || "human",
@@ -1741,6 +1740,7 @@ A.initWorld = function () {
         short: L.short,
         title: L.title,
         type: L.type,
+        form: L.form || null, // [order 99, D-206] the realm's form (A.realmForm)
         gov: g.gov,
         law: g.law,
         race:

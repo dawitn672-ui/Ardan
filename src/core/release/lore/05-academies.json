@@ -65,7 +65,7 @@
  "POL-09": [
   {"type":"faith","name":"The Ice Shrine of Dagberg","seat":"Skarfell","note":"The Skalholm giants keep the cave of blue ice in the hills above Skarfell where the Mother Under the Ice hears her children, and they lead the Whale Thanking."},
   {"type":"arts","name":"The Mothers' Chant of Helstad","seat":"Helstad","note":"Keepers of the Mothers' Chant learn every mother of every hall a hundred generations deep; the chant judges each marriage at the Thing."},
-  {"type":"trade","name":"The Skarfell Tin Fair","seat":"Skarfell","note":"Each summer the chieftain sets the tin price with the Northreach Tin Reeves, and the Tinwash counters teach the weights, tallies and Northfolk letters of the Tin Compact."},
+  {"type":"trade","name":"The Skarfell Tin Fair","seat":"Skarfell","note":"Each summer the king sets the tin price with the Northreach Tin Reeves, and the Tinwash counters teach the weights, tallies and Northfolk letters of the Tin Compact."},
   {"type":"crafts","name":"The Whale Coves of Helstad","seat":"Helstad","note":"When a whale strands the giants thank the Mother and the Oilcrofts boil it; tribute-folk learn rendering, ivory work and the timber craft of the halls here."}
  ],
  "POL-10": [
@@ -83,7 +83,7 @@
   {"type":"crafts","name":"The Felt-Frames of the Urgol Clans","seat":"Urgol","note":"The felt-mothers teach the knots that only elders may pass on: tents, horse-blankets and the boiled-leather coats the war-bands fight in, each marked with the kin-band that rolled it."}
  ],
  "POL-12": [
-  {"type":"war","name":"The Tablet Tent of Kharsa","seat":"Kharsa","note":"Chiefs' sons ride a year with the Silver Tablet Guard and learn the khan's war: the hundred and the thousand, the led horses, the yam roads and the retreat that is not a retreat."},
+  {"type":"war","name":"The Tablet Tent of Kharsa","seat":"Kharsa","note":"Chiefs' sons ride a year with the Silver Tablet Guard and learn the king's war: the hundred and the thousand, the led horses, the yam roads and the retreat that is not a retreat."},
   {"type":"letters","name":"The Knot-Keepers' Tent of Kyztai","seat":"Sartobe Yam","note":"The Grey Wind's tally-keepers, counters since the Solen princess Galla, teach the knotted cords of herds, marriages, tribute and the yam riders, which is all the writing the steppe trusts."},
   {"type":"faith","name":"The Sky Cairn of Sibtu","seat":"Kharsa","note":"The Cairn-Binders teach young shamans of the Eternal Blue to tie the blue cloth, pour milk to the sky, read the omen bones at the Horse Feast and speak to the spirits of springs and hills."},
   {"type":"trade","name":"The Caviar Cellars of Kultau","seat":"Kultau","note":"In the second city of the steppe the Reed Wind's salters and the horse-dealers of the channel fairs teach the prices of sturgeon, salt and horses, and how to sell twenty thousand horses a year without selling the herd."},
@@ -120,7 +120,7 @@
   {"type":"sea","name":"The Galley School of Novice","seat":"Novice","note":"Venn admirals teach oar and sail to the marines of their own Novice coast, for a fleet the city would rather pay than use."}
  ],
  "POL-17": [
-  {"type":"faith","name":"The House of Water","seat":"Qarifa","note":"The well-schools on Water Hill in Qadira train Well-Keepers and the forty judges of the House, who may declare even a sultan's order against the Book."},
+  {"type":"faith","name":"The House of Water","seat":"Qarifa","note":"The well-schools on Water Hill in Qadira train Well-Keepers and the forty judges of the House, who may declare even a king's order against the Book."},
   {"type":"crafts","name":"The Mill Halls of Saman","seat":"Qarifa","note":"Millwrights, rag-sorters and stamper-smiths learn their trades in the outer halls; the vat and the wire screen are taught only to the 32 mill families, who are watched for life."},
   {"type":"sea","name":"The Pilots' House of Miruma","seat":"Miruma","note":"Pilots and captains of the merchant ships and the new galleys learn the Qadiri coast, the harbor lamps and the Bone Coast run toward Sabra."},
   {"type":"trade","name":"The Caravan Exchange of Ashah","seat":"Ashah","note":"Date, copper and paper merchants teach reckoning, the duty of one part in ten and the Zanari gold trade of the Scale Pact."},
@@ -154,10 +154,10 @@
   {"type":"arts","name":"The Talking-Drum House of Tefude","seat":"Tefude","note":"Drummers learn the drum speech that carries a full sentence 5 to 8 km, on the tower road the Mabundi drum-masters built in 989."}
  ],
  "POL-21": [
-  {"type":"sea","name":"The Pilots' House of Monuro","seat":"Monuro","note":"The Bahariya pilots, who brought Nuru's boats into Amberport by night in 1069, teach stars, charts, tides and night sailing to the League's mates, though the reef marks they keep for their own blood."},
+  {"type":"sea","name":"The Pilots' House of Monuro","seat":"Monuro","note":"The Bahariya pilots, who brought Nuru's boats into Amberport by night in 1069, teach stars, charts, tides and night sailing to Kesh's mates, though the reef marks they keep for their own blood."},
   {"type":"trade","name":"The Weighing Floor of the Pepper Hall","seat":"Kesh","note":"The weighers of the Pepper Hall teach the honest weight, the tax of one part in ten and the price of pepper from Kesh to Amberport."},
-  {"type":"crafts","name":"The Shipwrights' Yards of Monuro","seat":"Monuro","note":"The shipwrights teach hull, oar and mast inside the walled yards where Chande Monuri built the League's first war galleys."},
-  {"type":"faith","name":"The Kisiwani Shrine House","seat":"Kesh","note":"The Kisiwani, who sang the League's oath in 880, teach the rites of the Thousand Ancestors and the sung lines of the spice houses."},
+  {"type":"crafts","name":"The Shipwrights' Yards of Monuro","seat":"Monuro","note":"The shipwrights teach hull, oar and mast inside the walled yards where Chande Monuri built Kesh's first war galleys."},
+  {"type":"faith","name":"The Kisiwani Shrine House","seat":"Kesh","note":"The Kisiwani, who sang Kesh's oath in 880, teach the rites of the Thousand Ancestors and the sung lines of the spice houses."},
   {"type":"letters","name":"The Pembari Clerks' Hall","seat":"Kesh","note":"The clerks who have written the council's minutes since 884 teach letters, contracts and treaty papers, and every merchant house hires their pupils."}
  ],
  "POL-22": [
@@ -234,10 +234,10 @@
   {"type":"sea","name":"The Harbor Mole School of Tessar","seat":"Tessar","note":"Salvane captains teach oar and sail behind King Marcian's harbor mole, and every pupil rows a winter of grain runs to Morhaven and Ostra."}
  ],
  "POL-32": [
-  {"type":"war","name":"The Admiral's School of the Tekook Yard","seat":"Amberport","note":"Officers of the galleys and marines learn fleet signals, beach landings, the cyclone months and the terms of the Treaty of Madamo by heart, as Sultan Iskandar did at eight."},
+  {"type":"war","name":"The Admiral's School of the Tekook Yard","seat":"Amberport","note":"Officers of the galleys and marines learn fleet signals, beach landings, the cyclone months and the terms of the Treaty of Madamo by heart, as King Iskandar did at eight."},
   {"type":"faith","name":"The Well-House of Amberport","seat":"Amberport","note":"Well-Keepers teach the Book of Wells in Qadiri, the law of the Well courts and the audit of the market roll; the commoners' Thousand Names are taught at the beach shrines, not here."},
-  {"type":"trade","name":"The House of the Scales","seat":"Amberport","note":"Brokers learn to weigh every clove and nutmeg on the sultan's scales under the Law of 945, to take the fifth, and to tell an honest market roll from a cut one."},
-  {"type":"crafts","name":"The Kris-Smiths' Forge","seat":"Amberport","note":"The Pulau teach the folding of island iron with meteor nickel into the wavy blades of the sultans and the marines, and since 1102 quietly take apart smuggled Chanari steel."},
+  {"type":"trade","name":"The House of the Scales","seat":"Amberport","note":"Brokers learn to weigh every clove and nutmeg on the king's scales under the Law of 945, to take the fifth, and to tell an honest market roll from a cut one."},
+  {"type":"crafts","name":"The Kris-Smiths' Forge","seat":"Amberport","note":"The Pulau teach the folding of island iron with meteor nickel into the wavy blades of the kings and the marines, and since 1102 quietly take apart smuggled Chanari steel."},
   {"type":"sea","name":"The Reef Pilots of Ruhu Bay","seat":"Ruhu","note":"Teluk and Siput captains teach oar, sail, the reef channels and the diving banks by heart; the floating needle stays in Karang hands at Amberport and is never shown."}
  ],
  "POL-33": [

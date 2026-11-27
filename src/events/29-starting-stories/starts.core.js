@@ -51,7 +51,7 @@
       } },
     { id: 'ward', title: "The Queen's Ward", blurb: 'A child of the royal line of Drevna, sixteen, raised at court as the queen\'s ward. Everyone is very kind to you. Too kind.',
       cr: { race: 'human', realm: 'POL-26', status: 'royal', order: 'younger', startAge: 16 } },
-    { id: 'unpaid', title: 'The Company That Did Not Pay', blurb: 'A soldier of the League of Brannoch, twenty-one. Your company broke up owing you a year\'s pay, and the captain kept the chest.',
+    { id: 'unpaid', title: 'The Company That Did Not Pay', blurb: 'A soldier of the Merchant Republic of Brannoch, twenty-one. Your company broke up owing you a year\'s pay, and the captain kept the chest.',
       cr: { race: 'human', realm: 'POL-13', status: 'peasant', startAge: 21 }, setup: pc => { A.trainSkill(pc, 'spear', 12); A.trainSkill(pc, 'melee', 8); } },
   ];
   const byId = id => ST.find(s => s.id === id);

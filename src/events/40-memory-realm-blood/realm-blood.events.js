@@ -473,7 +473,7 @@
       ],
     },
 
-    // ================================================================== The Holy See (POL-02) and the Temple faith (REL-01)
+    // ================================================================== The Principality of Solenne (POL-02) and the Temple faith (REL-01)
 
     // rl_needle_doubt: counted the years (under the Needle, or with a Temple copyist) and found the Reckoning six short
     {
@@ -522,7 +522,7 @@
       title: "What to leave behind",
       cond: (p, C) => (C.realm(p, "POL-02") || C.faith(p, "REL-01")) && C.old(p) && C.flag(p, "rl_needle_doubt") && A.S.year - p.flags.rl_needle_doubt >= 10,
       w: 2, once: true,
-      text: "You are old, and the count of the years is still in your head: the reigns, the eclipses, the dates in the chronicles, six years short. You never wrote it down again. When you die it dies with you, unless you set it down somewhere. In the Holy See a heretic's family is watched for three generations. Two families on your street learned that the hard way.",
+      text: "You are old, and the count of the years is still in your head: the reigns, the eclipses, the dates in the chronicles, six years short. You never wrote it down again. When you die it dies with you, unless you set it down somewhere. In Solenne a heretic's family is watched for three generations. Two families on your street learned that the hard way.",
       choices: [
         { t: "Write it out and brick it into the chimney",
           r: "Two nights of careful copying, then a loose brick and fresh mortar. Some day a mason will find it, or a fire will. You will not be there either way.",
@@ -711,19 +711,19 @@
       setup: (p, ctx) => { if (!fresh(p, "mrb_sb_ship")) { ctx.skip = 1; return; } make(p, ctx, { sex: "M", age: 45, occ: "a captain of the Oil Shore Watch" }); },
       text: "A Sabran war galley burned off the Pearl Banks last month, burned on open water with a fire that water would not put out. It was not Sabra's fire. The Oil Shore Watch is asking who talked. {themFull}, a captain of the Watch, comes to your door with your name and the name of a Varennan ship.",
       choices: [
-        { t: "Confess, and beg the Emir's mercy",
-          r: "Mercy in Sabra is a branding iron. They burn the Emir's mark into your palm and let you live, so that every hand you shake will know.",
-          fx: { wound: "brand", health: -8, honor: 2, cause: "the Emir's brand", unflag: "rl_sb_oil" } },
+        { t: "Confess, and beg the Prince's mercy",
+          r: "Mercy in Sabra is a branding iron. They burn the Prince's mark into your palm and let you live, so that every hand you shake will know.",
+          fx: { wound: "brand", health: -8, honor: 2, cause: "the Prince's brand", unflag: "rl_sb_oil" } },
         { t: "Deny all of it", check: { s: "deception", s2: "wil", d: 58 },
           win: { r: "He has a name and a ship, and no third thing. He leaves. The Watch sits outside your door for a year, and you learn all their faces.",
             fx: { honor: -4, wil: 1, them: { type: "enemy", op: -30 } } },
           lose: { r: "The Varennan's mate is in the Watch's cells, and the mate has a good memory. You get three years in the cells at Zariya, close to the smoke.",
-            fx: { prison: 3, why: "selling the Emir's fire", honor: -8 } } },
+            fx: { prison: 3, why: "selling the Prince's fire", honor: -8 } } },
         { t: "Hide in the salt flats until it blows over", check: { s: "survival", s2: "sta", d: 50 },
           win: { r: "A season in the salt flats with a goatherd who asks no questions. The Watch finds a better name. You come back thinner, with a different beard.",
             fx: { health: -8, wil: 1.5, happy: -4, skill: { survival: 3 } } },
           lose: { r: "The Watch knows the salt flats better than you do. They find you on the eighth day, half mad with thirst.",
-            fx: { prison: 2, why: "selling the Emir's fire", health: -10 } } },
+            fx: { prison: 2, why: "selling the Prince's fire", health: -10 } } },
       ],
     },
     {
@@ -732,7 +732,7 @@
       cond: (p, C) => C.realm(p, "POL-24") && C.adult(p) && C.flag(p, "rl_sb_oil") && A.S.year - p.flags.rl_sb_oil >= 4,
       w: 2, once: true,
       setup: (p, ctx) => { make(p, ctx, { sex: "F", age: 30, occ: "a runaway boiler from Zariya" }); },
-      text: "A woman with burn-scarred forearms stops you in the fish market: {themFull}. She worked the boiling-sheds at Zariya, and she knows you from the season you held the Emir's token. She ran from the sheds two winters ago. The Oil Shore Watch pays 50 suns for a runaway, and hangs anyone who hides one. She needs a roof for one month, until a boat.",
+      text: "A woman with burn-scarred forearms stops you in the fish market: {themFull}. She worked the boiling-sheds at Zariya, and she knows you from the season you held the Prince's token. She ran from the sheds two winters ago. The Oil Shore Watch pays 50 suns for a runaway, and hangs anyone who hides one. She needs a roof for one month, until a boat.",
       choices: [
         { t: "Hide her in your storeroom",
           r: "A month of carrying bread after dark. Then a Varennan boat, and she is gone, one burnt hand raised from the stern. You keep the storeroom bolted for a year.",

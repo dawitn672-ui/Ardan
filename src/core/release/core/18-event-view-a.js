@@ -2183,7 +2183,7 @@ GD.ORDERS = {
     org: 0.35,
     lead: "Grand Master of the Knights of the Sun",
     ranks: ["Dawn Aspirant", "Knight of the Sun", "Sun-Captain", "Seneschal of the Sun"],
-    spec: "The Holy See's vowed knights in gilded plate, written in the Book of Noon as already dead. They do not rout: a knight who flees is struck from the light forever.",
+    spec: "Solenne's vowed knights in gilded plate, written in the Book of Noon as already dead. They do not rout: a knight who flees is struck from the light forever.",
     tac: "counter",
     terr: ["plains"],
     fx: {
@@ -2198,14 +2198,14 @@ GD.ORDERS = {
     lore: {
       name: "The Temple teaches that the righteous rise into the sun at noon after they die. A Knight of the Sun is given to the Light already: on the day they take their vows, their name is written in the Book of Noon as if they had died, and it is read out in the High Temple on the day they really do.",
       founded:
-        "Founded in 760, the year the Holy See was born, from the last of the emperor's guard. In 759 they had failed to save Emperor Constantine IX from his own generals. The first High Luminary, Benedict, gave the survivors a choice: the axe, or vows. Every one of them chose the vows.",
+        "Founded in 760, the year Solenne was born, from the last of the emperor's guard. In 759 they had failed to save Emperor Constantine IX from his own generals. The first Prince-Bishop, Benedict, gave the survivors a choice: the axe, or vows. Every one of them chose the vows.",
       oath: '"The sun does not turn back, and neither do I."',
       marks:
         "Plate washed with gold leaf that blinds in the noon light, a white surcoat with the twelve-rayed sun, and no family arms at all: a knight gives up their house when they kneel.",
       war: "They charge at noon when they can, with the sun at their backs and in the enemy's eyes. They are few, so they wait while the Temple's crowned allies do most of the fighting, and they go in where the line is breaking.",
       deeds: [
-        "760–762: they put down the last mutinous generals around Solenne and made the Holy See a state.",
-        "In the reign of Aurelius III (1033–1050) they rode into the Brannoch passes to collect the tribute the League never paid. They came home with their dead and without the silver; the Temple still reads out the debt every Return Day.",
+        "760–762: they put down the last mutinous generals around Solenne and made Solenne a state.",
+        "In the reign of Aurelius III (1033–1050) they rode into the Brannoch passes to collect the tribute the Republic never paid. They came home with their dead and without the silver; the Temple still reads out the debt every Return Day.",
         "They keep watch over the Shadow Needle, the great stone sundial that sets the Temple's calendar, and over the Needle-Keeper who tends it.",
       ],
       join: "The faith of the Returning Sun, a clean name, an honor nobody can question, and a fighting worth fit for the order. The aspirant keeps the Noon Vigil: kneeling in armor in the sun from dawn to dusk on Return Day, without water. Those who faint try again next year. Those who faint three times never may.",
@@ -2396,7 +2396,7 @@ GD.ORDERS = {
     gear: "horsearcher",
     lead: "Bearer of the Silver Tablet",
     ranks: ["Colt", "Rider of the Tenth Wind", "Arrow-Sergeant", "Second Bearer"],
-    spec: "The khan's horse archers: thirty-three from each of the nine tribes, three remounts each, an arrow storm that never stops moving. Nine winds blow over the steppe; they are the tenth.",
+    spec: "The king's horse archers: thirty-three from each of the nine tribes, three remounts each, an arrow storm that never stops moving. Nine winds blow over the steppe; they are the tenth.",
     tac: "flank",
     terr: ["steppe", "plains"],
     fx: {
@@ -2410,21 +2410,21 @@ GD.ORDERS = {
       stat: ["sta", 45],
     },
     lore: {
-      name: "Nine tribes, nine Winds: the Red Wind, the Sea Wind, the Morning Wind and the rest. The Tenth Wind belongs to no tribe. Its riders give up their Wind's colors when they join, and answer only to the khan and the kurultai.",
+      name: "Nine tribes, nine Winds: the Red Wind, the Sea Wind, the Morning Wind and the rest. The Tenth Wind belongs to no tribe. Its riders give up their Wind's colors when they join, and answer only to the king and the kurultai.",
       founded:
-        "Founded in 925 under the Compact by Berek Kharsan the Patient. Each Wind sends its thirty-three best riders, so no tribe can say the khan's riders were taken from it alone. Nine times thirty-three is 297, and there are never more.",
+        "Founded in 925 under the Compact by Berek Kharsan the Patient. Each Wind sends its thirty-three best riders, so no tribe can say the king's riders were taken from it alone. Nine times thirty-three is 297, and there are never more.",
       oath: '"No Wind of my own. Every Wind my brother."',
       marks:
-        "Lamellar lacquered sky-blue for the Eternal Blue, three remounts each, and a small silver tablet on a cord at the throat: the khan's sign, which opens every yam station on the steppe.",
+        "Lamellar lacquered sky-blue for the Eternal Blue, three remounts each, and a small silver tablet on a cord at the throat: the king's sign, which opens every yam station on the steppe.",
       war: "Horse archers who never close: six to ten arrows a minute from the gallop, then wheel away. They feign flight, draw a line out of order and empty it. Nothing on four legs catches them, and nothing on two gets near.",
       deeds: [
-        "1041, the Salt Shore: they covered the retreat after Gorath's storm charge and brought Khan Tulgar's body home.",
-        "1079: when the kurultai voted to put Khan Toghrul aside, it was the Tenth Wind that rode to his tent to tell him. He left without a fight.",
+        "1041, the Salt Shore: they covered the retreat after Gorath's storm charge and brought King Tulgar's body home.",
+        "1079: when the kurultai voted to put King Toghrul aside, it was the Tenth Wind that rode to his tent to tell him. He left without a fight.",
       ],
       join: "Chosen by your own Wind at the Horse Feast, then the Ring Hunt: riding a whole winter hunt as an outrider without once losing your place in the ring, and taking a running hare from the saddle at forty paces.",
-      rumor: "The Tenth Wind is the khan's sword.",
+      rumor: "The Tenth Wind is the king's sword.",
       truth:
-        "It is the kurultai's. The Compact says the Tenth Wind serves the khan only while the nine chiefs agree that he is khan. Khan Toghrul learned that in 1079.",
+        "It is the kurultai's. The Compact says the Tenth Wind serves the king only while the nine chiefs agree that he is king. King Toghrul learned that in 1079.",
     },
   },
   gold_masks: {

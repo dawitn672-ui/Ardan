@@ -4,7 +4,7 @@
 
   V['CUL-04'] = { // Qadiri: the garden coast, channels and sluices, the Book of Wells, rag paper
     lord: ['dassir', 'a lord of channels, who holds the upper sluices'],
-    ruler: ['Qassal', 'the Sultan, keeper of the first sluice'],
+    ruler: ['Qassal', 'the King, keeper of the first sluice'],
     council: ['ruwwah', 'the bench of Well-Keepers who read the Book of Wells'],
     year: 'the {n} water-year of {ru}',
     greet: 'Sweet water to your channel.',
@@ -78,8 +78,8 @@
 
   V['CUL-07'] = { // Sabrans: the pearl emirate, diving crews, the oil nobody names
     lord: ['tawwar', 'a lord of a pearl bank or a caravan town'],
-    ruler: ['Nefrad', 'the Emir, to whom the best pearl goes'],
-    council: ['bahhud', 'the Emir\'s council, where some words are not said'],
+    ruler: ['Nefrad', 'the Prince, to whom the best pearl goes'],
+    council: ['bahhud', 'the Prince\'s council, where some words are not said'],
     year: 'the {n} pearl season of {ru}',
     greet: 'A full basket and a short dive.',
     oath: 'On the best pearl, and on my breath.',
@@ -229,7 +229,7 @@
 
   V['CUL-14'] = { // Amberfolk: the spice isles, the Storm Watch, the needle, the father's name
     lord: ['sarimbo', 'a harbor lord, who keeps the spice weights'],
-    ruler: ['Ribalu', 'the Sultan, whose bones feel the storm before it comes'],
+    ruler: ['Ribalu', 'the King, whose bones feel the storm before it comes'],
     council: ['tolangga', 'the council of harbor lords at Amberport'],
     year: 'the {n} clove harvest of {ru}',
     greet: 'Fair wind and a dry hold.',
@@ -238,7 +238,7 @@
     who: ['the sailors', 'the clove growers', 'the pilots', 'the harbor women'],
     sayings: [
       ['A night alone at sea makes a sailor or a widow', 'sea death kin'],
-      ['The fifth to the Sultan, the rest to the storm', 'money power sea'],
+      ['The fifth to the King, the rest to the storm', 'money power sea'],
       ['Ask the pilot nothing', 'sea travel'],
       ['Cloves keep; promises rot', 'oath money'],
     ],
@@ -275,7 +275,7 @@
 
   V['CUL-17'] = { // Cloudfolk: the hill tribes of Great Amber, clan signs, the ridge mist
     lord: ['kedaru', 'a clan elder, whose sign is on the tallest post'],
-    ruler: ['Kambuli', 'the Sultan on the coast, whom the hills seldom see'],
+    ruler: ['Kambuli', 'the King on the coast, whom the hills seldom see'],
     council: ['pamang', 'the longhouse meeting of the clan signs'],
     year: 'the {n} mist season of {ru}',
     greet: 'Clear ridge to you.',

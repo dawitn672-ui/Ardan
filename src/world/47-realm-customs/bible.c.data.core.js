@@ -63,8 +63,8 @@
     place: { name: 'The Staple granaries', text: 'Stone granaries on the lagoon where every grain ship bound for the Middle Sea leaves one bushel in twenty. The price of bread in half the Sunlands is set here.' },
     customs: [
       { id: 'luc_gold_roll', name: 'The citizens\' gold', kind: 'year', m: 2, who: 'free',
-        rule: 'In March, when the Doge was chosen, every household on the citizens\' roll pays its tax in gold crowns, weighed on the Staple scale.',
-        text: 'March, the month the Great Council chose the Doge. Every household on the citizens\' roll pays its tax in gold crowns, never silver, weighed on the Staple scale. A clipped crown is cut in half on the spot and handed back to you in two pieces.',
+        rule: 'In March, when the First Merchant was chosen, every household on the citizens\' roll pays its tax in gold crowns, weighed on the Staple scale.',
+        text: 'March, the month the Great Council chose the First Merchant. Every household on the citizens\' roll pays its tax in gold crowns, never silver, weighed on the Staple scale. A clipped crown is cut in half on the spot and handed back to you in two pieces.',
         fx: { coin: -4 }, keepT: 'Pay in good gold', keep: 'Your crown weighs true. The clerk writes it in the {w3}, and you are a citizen for another year.',
         defy: { t: 'Pay in silver at the changer\'s rate', r: 'The clerk takes silver at a fifth over the gold, and writes beside your name that you had none.', fx: { coin: -5, fame: -1 } },
         log: 'You pay the citizens\' tax in gold, weighed on the Staple scale.' },

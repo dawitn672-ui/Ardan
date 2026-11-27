@@ -60,6 +60,14 @@ What changed for the player, in plain words, one section per version (newest fir
   Dragons and the Sword Saint. The two highest tiers of ordinary fighters are now called Formidable and Peerless (there
   are still perhaps five Peerless fighters alive), the beasts nobody has ever seen are Tales, and the achievement for
   90 renown is Known to All.
+- **Five kinds of realm, named plainly.** Every realm is now a kingdom, an empire, a principality, a merchant republic
+  or a free city, and says so in its name. Qadir and Ambrel are kingdoms with kings (no more sultans); Sabra is a
+  principality under a prince; Ulun and Sahrim are kingdoms whose chiefs still raise or acclaim their king; Frostholm is
+  a giants' kingdom; Solenne is a principality ruled by a Prince-Bishop and Skyhold one ruled by a Prince-Abbot, both
+  still chosen by the clergy; Lucerna, Brannoch and Kesh are merchant republics (Lucerna's head is now its First
+  Merchant); Corvasse is a free city of pirates. Each realm keeps its people, customs, faith and way of choosing its
+  ruler. Realms that break away become principalities, or free cities where towns bought their freedom, and a realm you
+  found small is a principality whose prince may proclaim himself king. Old saves show the new names.
 - **Armies of their true size.** Every realm now keeps a standing host by its people, its wealth and its kind: from
   about ten thousand soldiers in a small kingdom to more than a quarter of a million in the greatest empire, while a poor
   abbey or a pirate port keeps what it can pay. Knights are few and strong: from about fifty to three thousand in a

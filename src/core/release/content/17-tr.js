@@ -63,12 +63,12 @@
         "POL-09": ["Eldest"],
         "POL-10": ["Thane","Master-Smith"],
         "POL-11": ["Clan-Chief","Clan-Mother"],
-        "POL-12": ["Chief","Khatun"],
+        "POL-12": ["Chief","Queen"],
         "POL-13": ["Speaker","Elder"],
         "POL-14": ["Lord","Lady"],
         "POL-15": ["Lord","Dame"],
         "POL-16": ["Lord","Banker"],
-        "POL-17": ["Emir","Vizier"],
+        "POL-17": ["Prince","Vizier"],
         "POL-18": ["Nome lord","Vizier"],
         "POL-19": ["Chief","Well-Mother"],
         "POL-20": ["Governor","Lord"],
@@ -256,7 +256,7 @@
         ],
         bowyer: [
           "Ashmere, where every boy draws a bow from seven",
-          "Roseham in the League of Brannoch, where the crossbow-makers work",
+          "Roseham in the Merchant Republic of Brannoch, where the crossbow-makers work",
           "Silverbough, where the elves sell Keeper-marked yew on the Strangers' Shelf",
         ],
         carpenter: [

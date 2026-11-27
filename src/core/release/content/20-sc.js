@@ -75,7 +75,7 @@
           "the gem ledgers of the lower gates",
           "A leaked secret means a name carved on a stone turned to the wall.",
         ],
-        "POL-24": ["the Oil Shore, and the Emir's gate token","Entering the Oil Shore without the token is death."],
+        "POL-24": ["the Oil Shore, and the Prince's gate token","Entering the Oil Shore without the token is death."],
         "POL-32": ["the clove and nutmeg seedlings","Seedlings off the Isles mean death."],
         "POL-03": ["the Palella spinning wheel","Teaching the spinning wheel abroad hangs a man."],
         "POL-33": ["the dragon of the Strait","Telling the dragon's secret means drowning with a stone."],
@@ -844,7 +844,7 @@
         maxRank: 3,
         cool: 4,
         cond: (p,C)=>C.adult(p),
-        setup: (p,ctx)=>{const G={"POL-01":"amber, past the Kingsmere Amber Guild, which buys every piece by law","POL-08":"short tin bars for the Coldhaven boats, past the Tin Reeves","POL-09":"tin to Kingsmere by night boat","POL-02":"salt past the Temple's salt tax","POL-25":"graded pelts past the toll forts","POL-26":"furs and wax past the Velgradan toll forts","POL-29":"steel in grain sacks down the Shelf road","POL-28":"gems in boot-soles through the lower gates","POL-05":"war bows and yew south toward Varenna, which is treason","POL-20":"gold dust in hollow walking sticks past the Scale","POL-21":"pepper past the Pepper Hall scales","POL-32":"spice out of the Scales by night to Keshi ships","POL-24":"pearls past the Emir's best-pearl men","POL-03":"Palella cloth past the toll in fishing boats","POL-15":"lamp oil that is not lamp oil, landed by night"};ctx.goods=G[p.realm]||"wine and wax past the town gate tax"},
+        setup: (p,ctx)=>{const G={"POL-01":"amber, past the Kingsmere Amber Guild, which buys every piece by law","POL-08":"short tin bars for the Coldhaven boats, past the Tin Reeves","POL-09":"tin to Kingsmere by night boat","POL-02":"salt past the Temple's salt tax","POL-25":"graded pelts past the toll forts","POL-26":"furs and wax past the Velgradan toll forts","POL-29":"steel in grain sacks down the Shelf road","POL-28":"gems in boot-soles through the lower gates","POL-05":"war bows and yew south toward Varenna, which is treason","POL-20":"gold dust in hollow walking sticks past the Scale","POL-21":"pepper past the Pepper Hall scales","POL-32":"spice out of the Scales by night to Keshi ships","POL-24":"pearls past the Prince's best-pearl men","POL-03":"Palella cloth past the toll in fishing boats","POL-15":"lamp oil that is not lamp oil, landed by night"};ctx.goods=G[p.realm]||"wine and wax past the town gate tax"},
         title: "A run past the toll",
         text: "A smuggler needs a quiet pair of hands: {goods}. Thirty suns for one night's carrying.",
         choices: [
@@ -3678,7 +3678,7 @@
         cond: (p,C)=>fightSch(p,C)&&C.adult(p),
         w: .8,
         cool: 10,
-        setup: (p,ctx)=>{scx(p,ctx);const F2=[["an elf from the Sylvaran groves","Sylvari","the parry and the answer in one movement","POL-06","elf"],["a rider of Ulun","Wind Rider","the backward shot from the saddle","POL-12","human"],["a Zanari runner","Zanari","how to run a horseman down over a day of heat","POL-20","human"],["a Keshi climber from the Rope Hall","Keshi","how to fall without breaking","POL-21","human"],["a half-orc from Ughrak","Orcish","the rhino spear","POL-34","halforc"],["a pike-fighter from the League of Brannoch","Northfolk","how to stand in a pike block","POL-13","human"],["a Ranpuri from Chanari","Ranpuri","the draw and the first cut","POL-30","human"],["a Sabran from the camel school","Sabran","the lance from a camel in the heat","POL-24","human"]].filter(x=>x[3]!==p.realm),f=A.pick(F2);ctx.from=f[0],ctx.lng=f[1],ctx.knows=f[2];const q=who(p,ctx,"acquaint","a foreign student at "+ctx.school);try{const r2=A.realm(f[3]);if(r2&&r2.cult){q.realm=f[3],q.race=f[4],q.cult=r2.cult,q.born=A.S.year-(GD.RACES[f[4]].adult+A.ri(1,4)),q.given=A.givenName(q.cult,q.sex)||q.given;const fn=A.familyName({cult:q.cult,realm:f[3],status:q.status,sex:q.sex});q.sur=fn.sur,q.surMode=fn.mode}}catch{}ctx.They=A.cap(A.he(q)),ctx.they=A.he(q)},
+        setup: (p,ctx)=>{scx(p,ctx);const F2=[["an elf from the Sylvaran groves","Sylvari","the parry and the answer in one movement","POL-06","elf"],["a rider of Ulun","Wind Rider","the backward shot from the saddle","POL-12","human"],["a Zanari runner","Zanari","how to run a horseman down over a day of heat","POL-20","human"],["a Keshi climber from the Rope Hall","Keshi","how to fall without breaking","POL-21","human"],["a half-orc from Ughrak","Orcish","the rhino spear","POL-34","halforc"],["a pike-fighter from the Merchant Republic of Brannoch","Northfolk","how to stand in a pike block","POL-13","human"],["a Ranpuri from Chanari","Ranpuri","the draw and the first cut","POL-30","human"],["a Sabran from the camel school","Sabran","the lance from a camel in the heat","POL-24","human"]].filter(x=>x[3]!==p.realm),f=A.pick(F2);ctx.from=f[0],ctx.lng=f[1],ctx.knows=f[2];const q=who(p,ctx,"acquaint","a foreign student at "+ctx.school);try{const r2=A.realm(f[3]);if(r2&&r2.cult){q.realm=f[3],q.race=f[4],q.cult=r2.cult,q.born=A.S.year-(GD.RACES[f[4]].adult+A.ri(1,4)),q.given=A.givenName(q.cult,q.sex)||q.given;const fn=A.familyName({cult:q.cult,realm:f[3],status:q.status,sex:q.sex});q.sur=fn.sur,q.surMode=fn.mode}}catch{}ctx.They=A.cap(A.he(q)),ctx.they=A.he(q)},
         title: "A stranger in the yard",
         text: "A new student has come from very far: {themFull}, {from}. {They} fights like nobody you have seen, and speaks your language badly. In the yard the others call {themHim} names behind {their} back. {They} knows {knows}.",
         choices: [
@@ -5512,7 +5512,7 @@
         cool: 5,
         setup: (p,ctx)=>{scx(p,ctx)},
         title: "The forms of address",
-        text: "The examination in forms: how to address a duke, a Well-Keeper, a War-Mother, an elf of the Moot, the Captain-General of Corvasse and the High Luminary, in writing and in person, without causing a war.",
+        text: "The examination in forms: how to address a duke, a Well-Keeper, a War-Mother, an elf of the Moot, the Captain-General of Corvasse and the Prince-Bishop, in writing and in person, without causing a war.",
         choices: [
           {
             t: "Learn them all by heart",

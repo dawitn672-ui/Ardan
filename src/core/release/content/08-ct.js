@@ -39,7 +39,7 @@
       temple = p=>{const f=A.faith(p.faith);return f?f.name:"the faith"},
       CROWN = {
         "POL-01": "At the Oath Hall in Kingsmere you must swear on the iron ring before the lords, and every great lord must swear back to you on it.",
-        "POL-02": "The Luminaries crown their High Luminary on the Sunday after the vote, at noon, in the Needle Court.",
+        "POL-02": "The Luminaries crown their Prince-Bishop on the Sunday after the vote, at noon, in the Needle Court.",
         "POL-03": "No Varennese king is king until the Temple crowns him on Return Day, and the Luminary of Varenna expects his crowning gift.",
         "POL-15": "The Temple must crown the heir of Morhaven on Return Day. The Temple still remembers crowning gifts that were never paid.",
         "POL-05": "Ashmere crowns in the Temple chapel, but the villages swear on the iron ring. Both rites want to come first.",
@@ -53,7 +53,7 @@
         "POL-28": "You must carry an ingot from the First Hall to the Crown Shelf on Mount Bardun, 7,000 meters up, before the Eldest Carver cuts your name.",
         "POL-29": "At the Kindling you must lift the Anvil of Dagna, ninety kilos of iron, above your head and hold it while the hall counts to thirty.",
         "POL-30": "At your crowning the white elephant must kneel before you. Moon-Pearl is fifty-eight, slow and half blind.",
-        "POL-17": "You must stand before the Well-Keepers, who weigh every sultan against the Book of Wells before they confirm him.",
+        "POL-17": "You must stand before the Well-Keepers, who weigh every king against the Book of Wells before they confirm him.",
         "POL-24": "The Chief Well-Keeper must confirm you before the people of Sabra, and he takes his time about it.",
         "POL-32": "The Well-Keepers must confirm you, and since 1073 every heir must also pass the Storm Watch.",
         "POL-12": "The kurultai of the nine chiefs must raise you. Five votes are enough, as in 913, but every chief wants a gift for his.",
@@ -1394,7 +1394,7 @@
         cond: (p,C)=>RU(p,C)&&(p.faith==="REL-01"||RM(p)&&RM(p).faith==="REL-01")&&p.ruler!=="POL-02",
         setup: (p,ctx)=>{ctx.why=A.pick(["your tax on Temple lands","your refusal to pay the crowning gift","your marriage to a cousin without dispensation","your envoy to the Dawn Church at Velgrad"]),ctx.sum=F(inc(p,.05))},
         title: "The threat of unlighting",
-        text: ()=>"A Needle-Keeper arrives from Solenne with a letter from the High Luminary. Over {why}, the Temple threatens to unlight you: to put out your lamp before the Sun and free your subjects from their oaths. In 1063 the Temple unlit Prince Andros of Tessaria, and the war there has not ended since.",
+        text: ()=>"A Needle-Keeper arrives from Solenne with a letter from the Prince-Bishop. Over {why}, the Temple threatens to unlight you: to put out your lamp before the Sun and free your subjects from their oaths. In 1063 the Temple unlit Prince Andros of Tessaria, and the war there has not ended since.",
         choices: [
           {
             t: "Submit and pay the Temple {sum}",

@@ -36,12 +36,14 @@ POL.EST_SHORT = { nob: 'Nobility', cler: 'Clergy', burg: 'Guilds', comm: 'Common
 const EST_BASE = { nob: .3, cler: .15, burg: .15, comm: .15, army: .25 };
 // a far realm's own words for its estates, by kind (the nobility and the host take 990's powers where it names them)
 const EST_TYPE = {
-  'nomad confederation': { cler: 'the shamans', burg: 'the horse-traders', comm: 'the herders' },
-  'mountain confederation': { cler: 'the shrine-keepers', burg: 'the bridge-tollers', comm: 'the valley folk' },
-  'city-state': { nob: 'the old families', burg: 'the guilds', comm: 'the street' },
-  'city league': { nob: 'the patrician houses', burg: 'the weighers and guilds', comm: 'the dockside' },
+  // (the kinds are the lore's types; order 99, D-206, renamed the old confederacies, league, city-state and theocracy
+  // to the ways of rule they keep under the five forms: the same words, the same laws)
+  'nomad clans': { cler: 'the shamans', burg: 'the horse-traders', comm: 'the herders' },
+  'mountain valleys': { cler: 'the shrine-keepers', burg: 'the bridge-tollers', comm: 'the valley folk' },
+  'free city': { nob: 'the old families', burg: 'the guilds', comm: 'the street' },
+  'merchant towns': { nob: 'the patrician houses', burg: 'the weighers and guilds', comm: 'the dockside' },
   'merchant republic': { nob: 'the broker houses', burg: 'the counting houses', comm: 'the porters' },
-  theocracy: { nob: 'the lay lords', cler: 'the high temple', comm: 'the faithful' },
+  'temple principality': { nob: 'the lay lords', cler: 'the high temple', comm: 'the faithful' },
   empire: { nob: 'the princes and governors', burg: 'the merchant guilds', comm: 'the peasantry' },
   'orc clans': { nob: 'the clan-mothers', cler: 'the bone-readers', burg: 'the counters', comm: 'the clan folk', army: 'the two-spears' },
   'orc horde': { nob: 'the clan-mothers', cler: 'the bone-readers', burg: 'the counters', comm: 'the clan folk', army: 'the two-spears' },
@@ -70,7 +72,7 @@ GD.POL_LAWS = {
     ap: { nob: [3, 1, -1, -3], cler: [0, 1, 0, -1], burg: [-1, 1, 1, -1], comm: [-1, 0, 1, 0], army: [-2, 0, 2, 2] } },
   conscript: { n: 'Conscription', ord: true, pos: ['By the estates\' leave', 'The old custom', 'The crown\'s right'],
     ap: { nob: [1, 0, -1], cler: [0, 0, 0], burg: [1, 0, -1], comm: [2, 0, -2], army: [-2, 0, 2] } },
-  succ: { n: 'Succession', ord: false, fixed: true, pos: ['Heredity', 'Elective', 'Council', 'Theocracy'],
+  succ: { n: 'Succession', ord: false, fixed: true, pos: ['Heredity', 'Elective', 'Council', 'Chosen by the clergy'],
     ap: { nob: [1, 2, -1, -2], cler: [0, -1, -1, 3], burg: [0, 0, 3, -1], comm: [0, 0, 1, 0], army: [1, 1, -1, -1] } },
   obl: { n: 'Obligations', ord: true, pos: ['Low', 'Medium', 'High'],
     ap: { nob: [2, 0, -3], cler: [0, 0, 0], burg: [0, 0, 1], comm: [0, 0, -1], army: [-1, 0, 2] } },
@@ -108,10 +110,10 @@ POL.custom = function (r, g) {
 POL.start = function (r) {
   const o = { obl: 1, just: 1, comm: 1, trade: 0, faith: 0 }, ty = String(r.type || ''), gov = r.gov, h = k => hash(r.id, k);
   if (gov === 'council' || /merchant|city|league/.test(ty)) { o.trade = 2; o.just = 2; o.obl = 0; }
-  if (gov === 'theocracy' || ty === 'theocracy') { o.faith = 2; o.just = 0; }
+  if (gov === 'theocracy' || /^temple /.test(ty)) { o.faith = 2; o.just = 0; }
   if (/nomad|orc|giant/.test(ty)) { o.comm = 2; o.just = 0; o.obl = 0; }
   if (/mountain/.test(ty)) { o.comm = 2; o.obl = 0; }
-  if (/empire|sultan|emirate/.test(ty)) { o.just = 2; o.obl = 2; o.trade = 1; }
+  if (/empire|^well /.test(ty)) { o.just = 2; o.obl = 2; o.trade = 1; }
   if (/dwarven/.test(ty)) { o.just = 2; o.trade = 0; }
   if (/pirate/.test(ty)) { o.trade = 2; o.just = 0; o.comm = 2; }
   if (gov === 'hereditary' && /kingdom|^$/.test(ty)) {
@@ -318,14 +320,14 @@ GD.POL_OFFICES = {
 };
 // the office's name where the realm has its own (by its kind); pure
 const OFF_TYPE = {
-  'nomad confederation': { gov: 'Chief of a thousand', reeve: 'Fair-master', mag: 'Judge of the camp' },
-  'mountain confederation': { gov: 'Valley warden', reeve: 'Bridge-master' },
+  'nomad clans': { gov: 'Chief of a thousand', reeve: 'Fair-master', mag: 'Judge of the camp' },
+  'mountain valleys': { gov: 'Valley warden', reeve: 'Bridge-master' },
   empire: { gov: 'Prefect', mag: 'Examined magistrate' },
-  'city-state': { gov: 'Castellan', reeve: 'Mayor' }, 'city league': { gov: 'Castellan', reeve: 'Mayor' },
+  'free city': { gov: 'Castellan', reeve: 'Mayor' }, 'merchant towns': { gov: 'Castellan', reeve: 'Mayor' },
   'merchant republic': { gov: 'Castellan', reeve: 'Weigher of the market' },
   'dwarven hold': { gov: 'Hall-warden', reeve: 'Gate-reeve', mag: 'Law-speaker' },
   'orc clans': { gov: 'Camp chief', mag: 'Bone-judge' }, 'orc horde': { gov: 'Camp chief', mag: 'Bone-judge' },
-  theocracy: { gov: 'Temple steward', mag: 'Temple judge' },
+  'temple principality': { gov: 'Temple steward', mag: 'Temple judge' },
 };
 POL.offName = function (k, rid) {
   const r = A.realm(rid), T = r && OFF_TYPE[r.type];

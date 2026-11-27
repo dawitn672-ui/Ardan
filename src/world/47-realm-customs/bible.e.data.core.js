@@ -5,7 +5,7 @@
   W['CUL-21'] = [['durrik', 'a line of the Deep Law, cut in stone'], ['thangrel', 'a master of a craft, sworn before the Council'], ['ombrak', 'a dwarf\'s full name, carved at thirty']];
   W['CUL-22'] = [['brakkan', 'a deed-name, earned in youth'], ['urdrak', 'the clan herd, which no one rider owns'], ['shurrak', 'the king\'s share of a raid']];   // brakkan was ghazrul, the Primordial Red's id (D-199)
   W['CUL-23'] = [['ommakh', 'a mother\'s hearth: her tent, her herd'], ['tulvek', 'the marriage horses'], ['krenna', 'the council of clan-mothers']];
-  W['CUL-03'] = [['essar', 'the horn post-token of the Compact'], ['saghal', 'the spring count of horses owed the khan'], ['kauvel', 'a name handed down from a grandparent']];
+  W['CUL-03'] = [['essar', 'the horn post-token of the Compact'], ['saghal', 'the spring count of horses owed the king'], ['kauvel', 'a name handed down from a grandparent']];
   W['CUL-12'] = [['hemmal', 'the butter and wool owed to the monastery'], ['osselin', 'a name chosen by a monk'], ['auralt', 'the high ground where the dead are given to the birds']];
   W['CUL-13'] = [['kollamar', 'the Raja\'s sixth of the rice'], ['tirrasu', 'the temple\'s tenth of an estate'], ['kevvaram', 'a market tally-house']];
 
@@ -137,9 +137,9 @@
   };
 
   D['POL-12'] = {
-    want: 'To keep nine tribes under one Compact while a nearly blind khan sells fire-oil to Queen Livia, and to hold the Salt Shore against Gorath.',
-    fear: 'That the oil money, which goes to the khan alone, makes the other chiefs call a council and force him out, and the Compact of 925 ends with him.',
-    place: { name: 'The Compact Stone at Kharsa', text: 'A grey stone by the khan\'s tents where the nine chiefs cut their marks in 925. Each spring every tribe sends a rider to touch its mark and carry the news home.' },
+    want: 'To keep nine tribes under one Compact while a nearly blind king sells fire-oil to Queen Livia, and to hold the Salt Shore against Gorath.',
+    fear: 'That the oil money, which goes to the king alone, makes the other chiefs call a council and force him out, and the Compact of 925 ends with him.',
+    place: { name: 'The Compact Stone at Kharsa', text: 'A grey stone by the king\'s tents where the nine chiefs cut their marks in 925. Each spring every tribe sends a rider to touch its mark and carry the news home.' },
     customs: [
       { id: 'nwd_post_road', name: 'The post must ride', kind: 'ward', when: 'any', every: 2,
         rule: 'Every tent keeps a horse for the post, and must carry it one stage when the {w1} is shown, by the Compact of 925.',
@@ -148,11 +148,11 @@
         defy: { t: 'Say your horse is lame', r: 'The rider looks at your horse and cuts your tent\'s mark on his tally. Your chief will hear it at the spring gathering.', fx: { honor: -4 } },
         log: 'A post-rider shows you the {w1}; you carry the bag one stage.' },
       { id: 'nwd_horse_count', name: 'The spring count', kind: 'year', m: 3, who: 'adult',
-        rule: 'Each spring every tribe gives the khan one horse in thirty, called out family by family at the {w2}.',
-        text: 'Spring, and your tribe gathers to count horses before the grass comes up. The khan\'s men take one in thirty, as the Compact says, and the chief\'s crier calls the {w2} tent by tent. Your share comes to a foal, or its price in silver.',
-        fx: { coin: -5 }, keepT: 'Hand over a sound foal', keep: 'You lead out a foal. The khan\'s man feels its legs and takes it without a word.',
-        defy: { t: 'Hand over your oldest mare', r: 'The khan\'s man takes her and says aloud what she is. The whole gathering laughs, and they remind you of it next spring.', fx: { honor: -3, happy: -2 } },
-        log: 'The spring {w2}: one horse in thirty goes to the khan.' },
+        rule: 'Each spring every tribe gives the king one horse in thirty, called out family by family at the {w2}.',
+        text: 'Spring, and your tribe gathers to count horses before the grass comes up. The king\'s men take one in thirty, as the Compact says, and the chief\'s crier calls the {w2} tent by tent. Your share comes to a foal, or its price in silver.',
+        fx: { coin: -5 }, keepT: 'Hand over a sound foal', keep: 'You lead out a foal. The king\'s man feels its legs and takes it without a word.',
+        defy: { t: 'Hand over your oldest mare', r: 'The king\'s man takes her and says aloud what she is. The whole gathering laughs, and they remind you of it next spring.', fx: { honor: -3, happy: -2 } },
+        log: 'The spring {w2}: one horse in thirty goes to the king.' },
       { id: 'nwd_grandsire_name', name: 'A grandparent\'s name', kind: 'name', by: 'grandparent',
         rule: 'A child is named for a grandparent, a {w3}, so that the dead keep riding with the tribe.',
         text: 'Your child is born, and the women of the tent are already saying the name. Among the Wind Riders a child takes a {w3}, a grandparent\'s name, so the dead keep riding with the tribe. This one is {child}.',

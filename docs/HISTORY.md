@@ -4015,3 +4015,51 @@ order 96; the new rules and tests are listed there.
 **Checks** (`/tmp/ardan/o98l/`, one build of H-174 to H-176): the feature tests lvRulers (210 rulers in six worlds: council 96 at a mean of 65, drill 62 at 158, ease 37 at 35, field 15 at 228; the lore's infirm rulers at ease 8 of 12; twenty years in the field with ten at war 320, with none 210; at ease 33), lvQueueNoDrop (60 dropped, 60 placed), lvLegends (an archdemon at 975: 20 levels from a hundred equal defeats; the fixed figure refines x1.040 with the legends), lvClass, lvSeed, statNpc, statMigrate (27 saves), ladderCap, ladderPage, ladderCensus, ladderOrderMerit, carLegend, wcScenesRender, figRegistry, figDeterministic, btSecrets, whyRecordsKept, pwLegends, pwPureAndOldSave, msEliteEmerges, msDeterministic, ttCoverage, ttCov2Realm, ttPure2, renderRng, replayWithRender, v2svRoundTrip, uiSmoke: all pass (uiSmoke timed out on its first click twice with five heavy tests beside it on a machine at load 35-90, and passes alone, as main's build does); node --test tests/v2 166 of 166; lint-reasons 41 (baseline 41), lint-stages, lint-docs-index, lint-events for 57-world-chronicle and 994-careers clean; coherency against the quick baseline: no contradiction, no check rose. Found and fixed on the way: the rename missed eight uses of A.orderMaster's local flag (every order raised threw; 4a8e9bed). Not completed: wcCitesShare (long tier, 964 s on CI) timed out at 1,800 and 4,000 s on this machine at load 20-90 (every test ran about ten times its CI time); a direct read of the chronicle canon in a fresh world finds the Red War (realms Aldmark, Qadir, Tamar, Sahrim, Sabra) and the fourth kettle (Stonehold) among 176 entries, the codex songs page shows the new songs, and SEC-72 is in the bible, with no page error. Not run: balance.mjs (the player's level and the starting paths are untouched: the ways are for NPC rulers only) and the long-tier bot lives (lvAnchors).
 
 **Undo.** Revert the commit; `p.rway` on people in a save is then ignored.
+### H-177 · 2026-11-27 · Thirty-four realms of five forms (order 99, D-206; branch `o99-realms`)
+
+- **Every realm a kingdom, an empire, a principality, a merchant republic or a free city** (D-206's table): Solenne a
+  Principality under a Prince-Bishop, Lucerna a Merchant Republic under a First Merchant (no Doge), Frostholm a giants'
+  Kingdom, Ulun, Qadir, Sahrim and Ambrel Kingdoms with kings, Brannoch and Kesh Merchant Republics, Sabra a
+  Principality, Skyhold a Principality under a Prince-Abbot, Corvasse a Free City. POL-11 and POL-34 (orcs) untouched.
+  Each keeps its people, customs, faith and way of choosing its ruler (`A.GOV` unchanged; the law reads "Chosen by the
+  clergy").
+- **The form is a field:** `form` on each realm of `00-lore.json`, `r.form` in state (`A.newState`, `A.createRealm`, the
+  kingdom and empire decisions), `A.realmForm(r)` (`src/world/9999940-realm-forms`). Kinds renamed with their numbers and
+  words kept: theocracy to temple principality, sultanate and emirate to well realm, the nomad confederations to nomad
+  clans, the mountain confederation to mountain valleys, city-state to free city, city league to merchant towns
+  (`data/military/standing.json`, 9996-polity's estates, offices and starting laws; `A.polSeed` reads "absolute" where it
+  read sultan or emirate).
+- **New realms:** 70's breakaways are Principalities under a Prince or Free Cities under a First Burgher; a faction's
+  breakaway a Principality (it was "the X League"); a realm founded small a Principality (a Lordship before), whose Prince
+  may proclaim himself King.
+- **The words:** `tools/o99/realm-forms.mjs` ran `a-rules.core.js` over the lore and the source once: 1,277 strings in 40
+  files (the release's lore, cast, families, house lore, styles, academies; 14 event packs of the release; the realm
+  customs, voices, memory events, starting stories). `A.rulerStyle`, the voices' word pairs and the creation note's
+  female titles rewritten by hand (Princess-Bishop, Princess-Abbess; no sultan, khan or emir). Event functions changed
+  only inside strings: `identity-probe` reads every one of 5,039 events in the same audience class and fit.
+- **Old saves** are carried on load (`A.REALM_FORMS.carry`, idempotent): realms' names, titles, kinds and primers, old
+  breakaways and leagues, houses' and people's lore strings; people's names and a life's prose untouched.
+  `N.renameState` (999981) no longer counts Kingdom of Ulun as an old name (the lore has it again).
+- **The world as it is born is the same:** at the first day every realm's host, government, crown authority, starting
+  laws, normal host and knights read the same on both builds, and the random stream stands at the same place. Lives part
+  within months, because names are state and some picks hash the words (as every rename's do, H-082).
+- **For the rebuild (the larger map):** D-206's last point (the free cities and two merchant republics are large for
+  their form; Sabra and Skyhold wide principalities of waste and mountain).
+
+Checks (`/tmp/ardan/o99/x.html`, a host at load 25-35): this feature's `rfForms` (32 realms: 22 kingdoms, 2 empires,
+3 principalities, 3 merchant republics, 2 free cities), `rfNoOldWords` (11.8 MB of lore, events and a new game's realms,
+houses and people), `rfOldSave`; `nmRealms`, `nmOldNames`, `nmOldSaves` (renameState fixed, above), `nmCensus`, `nmFiefs`,
+`nmDeterministic`; `uiSmoke`, `renderRng`, `replayWithRender`, `v2svRoundTrip`, `savesStillLoad`, `newLifeAfterSave`,
+`saveRoundTrip`, `boot`; the fresh realms' seven, the polity's seven, the standing army's six, the voices' six (with
+`localEventsUseWords`), the realm customs' three, `lfFirstLife`, `lfWordsCycle1`, `lfFreshNames`, `endingsNamed`,
+`endingsDeathScreen`, `warNamesUnique`, `wcCitesShare`, `wcOldSave`, `wildsReadLand`, the starting stories' three,
+`csWorlds`, `csShownEverywhere`, `pfSacredThroneAsksYears`: 60 of 60 (four long ones timed out at 1,800 s under the
+host's load and passed on a rerun with `--limit=6000`). `identity-probe` against 7b847847: 5,039 events, 0 audience
+classes or fits moved; the lives differ (names are state). `lint-events` on the eight event features whose words changed:
+0 errors. `node --test tests/v2`: 166 of 166. `lint-stages`, `lint-reasons` (41, baseline 41), `lint-kin`, `lint-titles`,
+`lint-docs-index`: ok. `coherency --quick`: 8 lives, no contradiction. The built page's blobs hold the old forms' words only in the orcs' data (another builder's: the
+Skull-Khan of Urgol in `data/figures/race-masters.json`, two legends' "khan" in `data/legends.json`), in the steppe and
+desert name pools (Emir and Sultan are given names) and in code (a regex in 28-endings).
+
+**Undo.** Revert the step's commits on `o99-realms`; old saves loaded since keep the new words (harmless: the rules only
+rename).

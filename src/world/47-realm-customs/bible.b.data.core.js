@@ -32,7 +32,7 @@
   };
 
   D['POL-08'] = {
-    want: 'To keep the Free Halls free and the Ring above the king, and to sell Frostholm\'s tin dear enough to repay the League of Brannoch by 1111.',
+    want: 'To keep the Free Halls free and the Ring above the king, and to sell Frostholm\'s tin dear enough to repay the Merchant Republic of Brannoch by 1111.',
     fear: 'That Aldmark ends its ten years of silence early, or that the giants learn what the Tin Reeve\'s balance has been doing to them.',
     place: { name: 'The Ring at Wolfhaven', text: 'A circle of standing stones above the harbour where the jarls sit at the Thing, and the Lawspeaker says the law aloud from memory, a third of it each summer.' },
     customs: [
@@ -75,11 +75,11 @@
         defy: { t: 'Sell your share to a sibling for silver', r: 'You sell it for less than it is worth. Your name comes out of the valley book for that {w1}, and the moot takes note.', fx: { coin: 8, honor: -2, happy: -3 } },
         log: '{parent} is buried, and the farm is split equally among the children: you get {got}.' },
       { id: 'hil_mule_toll', name: 'The mule toll', kind: 'market', cut: 0.08,
-        rule: 'Every mule on the high roads pays the League a toll, taken at the bridge from what you sell at your valley market.',
-        text: 'Market day at the valley fair. Before you can sell, the toll-man at the bridge counts your mules and takes the League\'s toll for the high road you came down: {cut} of the day\'s takings. He notches it on a tally stick and splits it, half for you.',
+        rule: 'Every mule on the high roads pays the Republic a toll, taken at the bridge from what you sell at your valley market.',
+        text: 'Market day at the valley fair. Before you can sell, the toll-man at the bridge counts your mules and takes the Republic\'s toll for the high road you came down: {cut} of the day\'s takings. He notches it on a tally stick and splits it, half for you.',
         fx: { happy: -1 }, keepT: 'Pay, and keep your half of the stick', keep: 'You pay. The stick goes in your purse with the others, in case anyone tries to take the toll twice.',
         defy: { t: 'Take the goat path round the bridge', r: 'The goat path costs you a lame mule and half a day. You reach the fair late and sell to what buyers are left, cheap.', fx: { coin: -8, happy: -2 } },
-        log: 'The toll-man at the bridge takes the League\'s mule toll: {cut}.' },
+        log: 'The toll-man at the bridge takes the Republic\'s mule toll: {cut}.' },
     ],
   };
 

@@ -1284,7 +1284,7 @@ const interactNow = function (tid, key, arg) {
       msg: "You have done that enough this year.",
     };
   // E5 (order 76, the Emilio save): one attempt on a life a year, and none from a cell on someone outside it (he killed
-  // the High Luminary from prison, and tried twice a month on one man)
+  // the Prince-Bishop from prison, and tried twice a month on one man)
   if (key === "murder" && count >= 1)
     return {
       ok: false,

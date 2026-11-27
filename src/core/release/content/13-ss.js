@@ -232,7 +232,7 @@
             t: "Take his silver, then tell the Keepers of the Seeps",
             check: {s:"intrigue",s2:"ins",d:42},
             win: {
-              r: "The Keepers take him at dusk. He is never seen again, and the khan's men remember who pointed.",
+              r: "The Keepers take him at dusk. He is never seen again, and the king's men remember who pointed.",
               fx: {coin:40,favor:6,honor:-1,skill:{intrigue:2}},
             },
             lose: {
@@ -288,7 +288,7 @@
             t: "Take your herd to the channel fairs and sell well",
             check: {s:"trade",s2:"husbandry",d:40},
             win: {
-              r: "A Greyhaven buyer pays before the ship sails, as they always do. The khan takes his tenth. The rest is yours, and it is a lot.",
+              r: "A Greyhaven buyer pays before the ship sails, as they always do. The king takes his tenth. The rest is yours, and it is a lot.",
               fx: {coin:180,skill:{trade:3}},
             },
             lose: {
@@ -419,7 +419,7 @@
             t: 'Later, sell jars of "Whiskers roe" to Sunland traders as long-life medicine',
             check: {s:"deception",s2:"trade",d:40},
             win: {
-              r: "Ordinary roe in little jars. A Morhaven merchant buys six for his old father. The khan takes no tenth of lies.",
+              r: "Ordinary roe in little jars. A Morhaven merchant buys six for his old father. The king takes no tenth of lies.",
               fx: {coin:35,honor:-2,skill:{deception:2}},
             },
             lose: {
@@ -435,19 +435,19 @@
         cond: (p,C)=>C.realm(p,"POL-12")&&kid(p,C,7,13),
         w: .9,
         once: !0,
-        text: `A yam keeper's wife at the station teaches the children the tally cords: a knot for every horse, a twist for every rider, a color for every tribe. "A tally cord forgets nothing," she says. "That is why khans fear them."`,
+        text: `A yam keeper's wife at the station teaches the children the tally cords: a knot for every horse, a twist for every rider, a color for every tribe. "A tally cord forgets nothing," she says. "That is why kings fear them."`,
         choices: [
           {
             t: "Learn every knot",
             check: {s:"int",s2:"wil",d:22},
             win: {
-              r: "By winter you can read a cord of a hundred horses with your fingers in the dark. She says you could keep the khan's own tallies one day.",
+              r: "By winter you can read a cord of a hundred horses with your fingers in the dark. She says you could keep the king's own tallies one day.",
               fx: {skill:{learning:3,stewardship:2},int:.6},
             },
             lose: {r:"Your knots come out like birds' nests. You are better at untying them.",fx:{skill:{learning:1}}},
           },
           {
-            t: "Ask what the khans are afraid of",
+            t: "Ask what the kings are afraid of",
             r: 'She hums a few lines of "The Forty Silent Days" and stops. "Some cords are older than the songs about them," she says, and sends you to fetch dung for the fire.',
             fx: {int:.4,trait:"curious"},
           },
@@ -479,7 +479,7 @@
             },
           },
           {
-            t: "Ask him how a half-orc came to teach the khan's riders",
+            t: "Ask him how a half-orc came to teach the king's riders",
             r: `"My grandfather herded with the Blue Wind before Ozbek's grandfather was born," he says. "On the steppe we mixed long ago. Ride."`,
             fx: {skill:{mounted:1},int:.3,newRel:{type:"mentor",op:15}},
           },
@@ -570,7 +570,7 @@
         cond: (p,C)=>C.realm(p,"POL-12")&&C.adult(p)&&free(p),
         w: 1,
         cool: 6,
-        text: "At the channel fair at Ozlun Greyhaven buyers walk the horse lines with silver in their belts, and the khan's tally-men take a tenth of every horse sold. Your cousin has a better idea: walk six horses past the tally tent in the dust of a big herd, and sell them at the far end of the beach.",
+        text: "At the channel fair at Ozlun Greyhaven buyers walk the horse lines with silver in their belts, and the king's tally-men take a tenth of every horse sold. Your cousin has a better idea: walk six horses past the tally tent in the dust of a big herd, and sell them at the far end of the beach.",
         choices: [
           {
             t: "Sell honestly and pay the tenth",
@@ -589,12 +589,12 @@
               fx: {coin:60,skill:{stealth:2},honor:-2},
             },
             lose: {
-              r: "A tally-man counts by ear and catches it. The khan takes all six, and a fine besides.",
+              r: "A tally-man counts by ear and catches it. The king takes all six, and a fine besides.",
               fx: {coin:-60,favor:-3,honor:-3},
             },
           },
           {
-            t: "Tell your cousin the khan already has enough enemies",
+            t: "Tell your cousin the king already has enough enemies",
             r: "He sulks. Next year the tally-men catch his neighbor at it, and he buys you tea.",
             fx: {honor:2,rel:{who:"cousin",op:4}},
           },
@@ -638,7 +638,7 @@
         cond: (p,C)=>early()&&C.realm(p,"POL-12")&&C.adult(p)&&!C.old(p)&&free(p),
         w: .9,
         once: !0,
-        text: "A string of camels is being loaded at night near Bekar, each with two sealed jars packed in felt and straw. The camel master is hiring riders for the long road to Morhaven, good pay and no questions. Everyone in the Dust Wind knows what the jars are, and that the khan's heir wants the sale stopped.",
+        text: "A string of camels is being loaded at night near Bekar, each with two sealed jars packed in felt and straw. The camel master is hiring riders for the long road to Morhaven, good pay and no questions. Everyone in the Dust Wind knows what the jars are, and that the king's heir wants the sale stopped.",
         choices: [
           {
             t: "Ride with the camels for the pay",
@@ -665,7 +665,7 @@
             },
           },
           {
-            t: "Stay home. Fire is the khan's business",
+            t: "Stay home. Fire is the king's business",
             r: "You watch the dust of the camels go west. Some things are better heard about than seen.",
             fx: {trait:"content"},
           },
@@ -1214,7 +1214,7 @@
         cond: (p,C)=>early()&&C.realm(p,"POL-17")&&C.adult(p)&&(C.literate(p)||C.lvl(p,"medicine",30)),
         w: .8,
         once: !0,
-        text: 'A palace physician in a good robe finds you in the House of the First Cup and asks a strange question, very quietly: how would one test a cup of horn for poison, and does whale ivory sweat? The Sultan drinks only from a "unicorn horn" cup bought from Zanara.',
+        text: 'A palace physician in a good robe finds you in the House of the First Cup and asks a strange question, very quietly: how would one test a cup of horn for poison, and does whale ivory sweat? The King drinks only from a "unicorn horn" cup bought from Zanara.',
         choices: [
           {
             t: "Tell him what you know: the horn tale is a fraud",
@@ -1226,7 +1226,7 @@
             lose: {r:"You talk for an hour and he leaves no wiser than he came. Neither are you.",fx:{int:.2}},
           },
           {
-            t: "Say you know nothing about the Sultan's cups",
+            t: "Say you know nothing about the King's cups",
             r: "He nods, relieved, and pays for your water anyway. Some questions get people killed.",
             fx: {trait:"cautious"},
           },
@@ -4168,10 +4168,10 @@
         cond: (p,C)=>C.realm(p,"POL-24")&&C.adult(p)&&!C.noble(p),
         w: 1,
         cool: 6,
-        text: "The Emir takes the best pearl of every boat each week. This week your boat's best is a rose-colored pearl the size of a chickpea, the finest anyone has seen since spring. The Emir's weigher comes to the Pearl Quay at noon. The Ropewalk Brothers, harbor boys who speak Corsair cant, buy stolen pearls at a quarter of their worth.",
+        text: "The Prince takes the best pearl of every boat each week. This week your boat's best is a rose-colored pearl the size of a chickpea, the finest anyone has seen since spring. The Prince's weigher comes to the Pearl Quay at noon. The Ropewalk Brothers, harbor boys who speak Corsair cant, buy stolen pearls at a quarter of their worth.",
         choices: [
           {
-            t: "Hand the rose pearl to the Emir's weigher",
+            t: "Hand the rose pearl to the Prince's weigher",
             r: "He holds it to the light and whistles. Your boat is noted as a lucky one. Next week the Pearl-Master sends you to the richest bank.",
             fx: {honor:2,favor:3,coin:4},
           },
@@ -4243,13 +4243,13 @@
         cond: (p,C)=>C.realm(p,"POL-24")&&C.adult(p)&&!C.old(p)&&(C.soldier(p)||C.lvl(p,"riding",25)),
         w: .9,
         cool: 7,
-        text: p=>`At the Camel School of Hazim, Nuri Hazimi drills the Emir's camel riders to fight at noon, when the heat is a weapon. Sabrani officers, salt-skinned, outlast anyone in the heat, as long as they have salt and water. ${A.C.blood(p,"saltskin")?"You have that blood. The heat feels like a warm bath.":"You do not have their blood. You have a water skin."}`,
+        text: p=>`At the Camel School of Hazim, Nuri Hazimi drills the Prince's camel riders to fight at noon, when the heat is a weapon. Sabrani officers, salt-skinned, outlast anyone in the heat, as long as they have salt and water. ${A.C.blood(p,"saltskin")?"You have that blood. The heat feels like a warm bath.":"You do not have their blood. You have a water skin."}`,
         choices: [
           {
             t: "Ride the noon chase across the flats",
             check: {s:"sta",s2:"riding",d:48},
             win: {
-              r: "Two hours at a run, lance in hand, the white sun on your neck. Nuri says you would make a camel lancer of the Emir's guard.",
+              r: "Two hours at a run, lance in hand, the white sun on your neck. Nuri says you would make a camel lancer of the Prince's guard.",
               fx: {sta:.8,skill:{riding:3,lance:1},merit:2,gear:{mount:"camel"}},
             },
             lose: {
@@ -4282,12 +4282,12 @@
         cond: (p,C)=>C.realm(p,"POL-24")&&C.adult(p)&&(C.coast(p)||C.town(p)),
         w: .8,
         once: !0,
-        text: "Rima the Water-Seller, who carries the Well-Keepers' water to the pens, takes you aside. She has a dead cook's token that opens the Oil Shore gate, and she wants passage off the coast before anyone learns she has it. Entering the Oil Shore without the Emir's token is death. A Varennan sailor buys water from her every day.",
+        text: "Rima the Water-Seller, who carries the Well-Keepers' water to the pens, takes you aside. She has a dead cook's token that opens the Oil Shore gate, and she wants passage off the coast before anyone learns she has it. Entering the Oil Shore without the Prince's token is death. A Varennan sailor buys water from her every day.",
         choices: [
           {
             t: "Buy the token from her (20 suns)",
             req: p=>p.coin>=20,
-            r: "A small bronze tag with the Emir's flame. Rima is gone on the next dhow. You have a death sentence in your purse, and a key.",
+            r: "A small bronze tag with the Prince's flame. Rima is gone on the next dhow. You have a death sentence in your purse, and a key.",
             fx: {coin:-20,flag:"ss_sb_token"},
           },
           {
@@ -4297,11 +4297,11 @@
               r: "A Corvasse half-orc captain owes you a favor. Rima sails at dawn. She throws the token into the harbor from the deck.",
               fx: {honor:3,newRel:{type:"friend",op:20}},
             },
-            lose: {r:"No captain will take a woman the Emir's men might be looking for.",fx:{happy:-2}},
+            lose: {r:"No captain will take a woman the Prince's men might be looking for.",fx:{happy:-2}},
           },
           {
             t: "Tell the Oil Shore Watch",
-            r: "The Watch takes the token, and Rima. The Emir's men pay well for silence. You hear nothing of her again.",
+            r: "The Watch takes the token, and Rima. The Prince's men pay well for silence. You hear nothing of her again.",
             fx: {coin:25,favor:4,honor:-5},
           },
         ],
@@ -4318,13 +4318,13 @@
             t: "Take the packet and read it",
             check: {s:"stealth",s2:"int",d:42},
             win: {
-              r: "A notebook in Varennan: smoke at Zariya, jar marks, ship names, dates. It is a rope to hang a whole emirate. You hide it somewhere very safe.",
+              r: "A notebook in Varennan: smoke at Zariya, jar marks, ship names, dates. It is a rope to hang a whole principality. You hide it somewhere very safe.",
               fx: {flag:"ss_sb_notebook",int:.5,skill:{stealth:2}},
             },
             lose: {r:"Someone else is watching the stone. You walk past as if you were never interested.",fx:{wil:.5}},
           },
           {
-            t: "Take it to the Emir's house",
+            t: "Take it to the Prince's house",
             check: {s:"persuasion",s2:"etiquette",d:40},
             win: {
               r: 'A steward takes it without opening it and gives you a gold dinar. "You found nothing," he says. You agree.',
@@ -4385,7 +4385,7 @@
         cond: (p,C)=>early()&&C.realm(p,"POL-24")&&C.adult(p)&&free(p),
         w: .9,
         once: !0,
-        text: "Jamila Sabrani, the Pearl-Master and the Emir's sister, owns most of the slave divers. Before Well Day she is hiring guards to move forty divers out of the pens behind the Pearl Quay, before the Chief Well-Keeper can count them. They have converted, and Mahmud the Just would free them.",
+        text: "Jamila Sabrani, the Pearl-Master and the Prince's sister, owns most of the slave divers. Before Well Day she is hiring guards to move forty divers out of the pens behind the Pearl Quay, before the Chief Well-Keeper can count them. They have converted, and Mahmud the Just would free them.",
         choices: [
           {
             t: "Take her silver and guard the move",
@@ -4550,11 +4550,11 @@
             t: "Carry it north",
             check: {s:"stealth",s2:"survival",d:46},
             win: {
-              r: "Past the Camel Guard of the Emir, over the pass, into a Qadiri tent. You never learn what was in it. It was peace, or treason, or both.",
+              r: "Past the Camel Guard of the Prince, over the pass, into a Qadiri tent. You never learn what was in it. It was peace, or treason, or both.",
               fx: {coin:30,skill:{stealth:2,survival:1},flag:"ss_sb_hazimi"},
             },
             lose: {
-              r: "The Emir's camel guard catches you on the road. The letter is opened. You are not.",
+              r: "The Prince's camel guard catches you on the road. The letter is opened. You are not.",
               fx: {prison:2,why:"carrying letters to Qadir"},
             },
           },
@@ -4562,12 +4562,12 @@
             t: "Take it to Tahir Sabrani instead",
             check: {s:"intrigue",s2:"persuasion",d:42},
             win: {
-              r: "The Emir's son reads it, goes white with rage, and gives you a gold dinar. House Hazimi has a bad month.",
+              r: "The Prince's son reads it, goes white with rage, and gives you a gold dinar. House Hazimi has a bad month.",
               fx: {coin:27,favor:5,newRel:{type:"enemy",op:-30}},
             },
             lose: {
               r: "Tahir's men think you are part of it until you prove otherwise. It takes a while.",
-              fx: {health:-8,wil:1,cause:"questioning by the Emir's men"},
+              fx: {health:-8,wil:1,cause:"questioning by the Prince's men"},
             },
           },
           {

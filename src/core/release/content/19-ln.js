@@ -149,7 +149,7 @@
           priest: "dawnkeeper",
           prior: "prior",
           bishop: "Luminary",
-          head: "High Luminary",
+          head: "Prince-Bishop",
           see: "see",
           heretic: "Needle Heretic",
           heresy: "that the year count of the Needle is wrong",
@@ -274,7 +274,7 @@
           see: "tribe",
           heretic: "Well convert",
           heresy: "that the sky is not the highest power",
-          pen: "The khan's shamans deal with such things themselves.",
+          pen: "The king's shamans deal with such things themselves.",
           tithe: "milk and horses",
         },
       },
@@ -317,8 +317,8 @@
         {
           t: "The Miracle of Morhaven",
           r: ["POL-15"],
-          lie: "the noon sun struck the Khan's besiegers with fever",
-          truth: "King Tancred paid men to throw carcasses into the stream above the Khan's camp",
+          lie: "the noon sun struck the King's besiegers with fever",
+          truth: "King Tancred paid men to throw carcasses into the stream above the King's camp",
         },
         {
           t: "The Lay of the Winter Crossing",
@@ -353,14 +353,14 @@
         {
           t: "The Diver and the Chain",
           r: ["POL-14"],
-          lie: "Osric cut the Khan's harbor chain alone with a dwarf-steel knife",
-          truth: "five divers loosened the anchor stones, and a secret treaty then sold the Khan his crossing",
+          lie: "Osric cut the King's harbor chain alone with a dwarf-steel knife",
+          truth: "five divers loosened the anchor stones, and a secret treaty then sold the King his crossing",
         },
         {
           t: "The Forty Silent Days",
           r: ["POL-12"],
-          lie: "Khan Ulagan died in peace and the sky chose Berek",
-          truth: "Saran hid the dead Khan in ice for forty days and stole the succession",
+          lie: "King Ulagan died in peace and the sky chose Berek",
+          truth: "Saran hid the dead King in ice for forty days and stole the succession",
         },
         {
           t: "The Runner Who Never Tires",
@@ -1517,7 +1517,7 @@
         cool: 4,
         title: "Camp fever",
         cond: (p,C)=>C.atWar(p),
-        setup: (p,ctx)=>{setFee(p,ctx,.25),ctx.mem=A.pick(["A third of the army before Tessar died this way in 708.","Camp fever killed eight thousand of the Khan's men before Morhaven.","At Madara in 1003 the flux killed three thousand without a battle."])},
+        setup: (p,ctx)=>{setFee(p,ctx,.25),ctx.mem=A.pick(["A third of the army before Tessar died this way in 708.","Camp fever killed eight thousand of the King's men before Morhaven.","At Madara in 1003 the flux killed three thousand without a battle."])},
         text: "The army of {realmShort} has sat in the same meadow for six weeks. The latrines drain into the stream the cooks draw from, and men are dying of the flux faster than the enemy ever killed them. {mem}",
         choices: [
           {
@@ -1904,7 +1904,7 @@
         w: 1.2,
         cool: 8,
         title: "The great election",
-        setup: (p,ctx)=>{const f=fw(p);setFee(p,ctx,.25),ctx.how=p.faith==="REL-01"?"The High Luminary is dead. The Luminaries gather in the Needle Court at Solenne; two-thirds must agree, only celibate priests of forty or more may stand, and the new High Luminary is crowned on the next Sunday at noon.":p.faith==="REL-02"?"The Patriarch of Dawn is dead. The lesser patriarchs gather at Velgrad, under the cathedral where kings are crowned.":p.faith==="REL-06"?"The search monks have not found the reborn abbot, and the Stair needs a Steward to rule until they do.":"The eldest voice of "+(A.faith(p.faith)?/^The /.test(A.faith(p.faith).name)?A.faith(p.faith).name.replace(/^The /,"the "):"the "+A.faith(p.faith).name:"the faith")+" is silent, and those who speak for the faith in every realm gather to choose another.",ctx.head=p.faith==="REL-06"?"Steward of the White Stair":f.head||"head of the faith"},
+        setup: (p,ctx)=>{const f=fw(p);setFee(p,ctx,.25),ctx.how=p.faith==="REL-01"?"The Prince-Bishop is dead. The Luminaries gather in the Needle Court at Solenne; two-thirds must agree, only celibate priests of forty or more may stand, and the new Prince-Bishop is crowned on the next Sunday at noon.":p.faith==="REL-02"?"The Patriarch of Dawn is dead. The lesser patriarchs gather at Velgrad, under the cathedral where kings are crowned.":p.faith==="REL-06"?"The search monks have not found the reborn abbot, and the Stair needs a Steward to rule until they do.":"The eldest voice of "+(A.faith(p.faith)?/^The /.test(A.faith(p.faith).name)?A.faith(p.faith).name.replace(/^The /,"the "):"the "+A.faith(p.faith).name:"the faith")+" is silent, and those who speak for the faith in every realm gather to choose another.",ctx.head=p.faith==="REL-06"?"Steward of the White Stair":f.head||"head of the faith"},
         text: "{how} You are one of three names that matter.",
         choices: [
           {
@@ -4133,7 +4133,7 @@
         w: 1.1,
         cool: 8,
         title: "The girl at the window",
-        setup: (p,ctx)=>{who(p,ctx,"a scullery girl",{sex:"F",ageAdj:12,status:"peasant"}),ctx.law=C2r(p,"POL-02")?"In the Holy See the sun-sisters teach girls to read, but not scullery girls.":C2r(p,...WELL)?"Well-schools teach many girls, but not girls who scrub floors.":"Nobody here teaches girls letters, least of all girls who scrub floors."},
+        setup: (p,ctx)=>{who(p,ctx,"a scullery girl",{sex:"F",ageAdj:12,status:"peasant"}),ctx.law=C2r(p,"POL-02")?"In Solenne the sun-sisters teach girls to read, but not scullery girls.":C2r(p,...WELL)?"Well-schools teach many girls, but not girls who scrub floors.":"Nobody here teaches girls letters, least of all girls who scrub floors."},
         text: "Every lesson, {them} scrubs the same step outside the schoolroom window. Yesterday she wrote your Old Solen lesson in the dust with a stick, without a single mistake. {law}",
         choices: [
           {

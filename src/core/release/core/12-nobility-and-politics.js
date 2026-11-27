@@ -266,9 +266,9 @@ A.polInit = function (r) {
     (r.claims = r.claims || {}),
     (r.laws = r.laws || {}),
     r.laws.authority == null &&
-      (r.laws.authority = /empire|absolute|sultan|khan/i.test(r.gov || "")
+      (r.laws.authority = /empire|absolute/i.test(r.gov || "")
         ? 2
-        : /republic|league|confederacy|council|elect/i.test(r.gov || "")
+        : /republic|league|council|elect/i.test(r.gov || "")
           ? 0
           : 1),
     r.laws.conscript == null && (r.laws.conscript = 1),
@@ -283,9 +283,11 @@ A.polSeed = function () {
     const r = S.realms[id],
       L = LORE.realms[id],
       g = String((L && L.gov) || r.gov || "");
-    r.laws.authority = /empire|god-king|sultan|emirate|hold-monarchy|forge-monarchy|sacred/i.test(g)
+    // [order 99, D-206] the lore's government words: the old sultanates and emirate read "absolute" now, and the
+    // confederacies "clans" or "compact", so each realm keeps the crown authority it had
+    r.laws.authority = /empire|god-king|absolute|hold-monarchy|forge-monarchy|sacred/i.test(g)
       ? 2
-      : /republic|council|league|confedera|horde|clans|ring|brotherhood|charter|compact|eldest/i.test(g)
+      : /republic|council|league|horde|clans|ring|brotherhood|charter|compact|eldest/i.test(g)
         ? 0
         : 1;
   }

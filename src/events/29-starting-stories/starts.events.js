@@ -194,7 +194,7 @@ A.defEvents([
       { t: 'Catch a wild horse of your own', check: { s: 'riding', s2: 'sta', d: 55 },
         win: { r: 'It takes eleven days and most of your skin. She is ugly and fast and she bites everyone but you.', fx: { skill: { riding: 3 } } },
         lose: { r: 'The horse wins. You walk back with a broken finger and a great deal of dignity.', fx: { health: -6 } } },
-      { t: 'Ask the khan\'s steward why', r: 'He looks at a list, then at you, then at the list again. "Your father\'s debt," he says. You did not know you had a father with debts.', fx: {} },
+      { t: 'Ask the king\'s steward why', r: 'He looks at a list, then at you, then at the list again. "Your father\'s debt," he says. You did not know you had a father with debts.', fx: {} },
       { t: 'Walk, and let them watch you walk', r: 'You walk the whole migration. By the end, the ones who laughed have stopped.', fx: { sta: 2, wil: 1 } },
     ] },
   { id: 'st_horse_echo', title: 'A horse at the gathering', w: 4, once: true,
@@ -387,7 +387,7 @@ A.defEvents([
       { t: 'Send your blessing and no more', r: 'Some things, once known, cannot be put down again.', fx: { wil: 1 } },
     ] },
 
-  // ---- 20. The Company That Did Not Pay (League of Brannoch)
+  // ---- 20. The Company That Did Not Pay (Merchant Republic of Brannoch)
   { id: 'st_unpaid_open', title: 'The Company That Did Not Pay', trigger: true,
     cond: (p, C) => C.flag(p, 'st_unpaid'),
     text: 'The Red Valley company broke up at the end of the season owing every man a year\'s pay. Captain Orrin kept the chest, for safekeeping, and went home to his valley. Six of the lads are going after him. They want you to come.',

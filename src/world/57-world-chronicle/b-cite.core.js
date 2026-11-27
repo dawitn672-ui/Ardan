@@ -167,7 +167,7 @@
   WC.TOPICS = [
     { k: 'market', rx: /\b(market|bread|grain|flour|loaf|loaves|baker|price|prices|granary|stores|rent|tithe|merchant|stall|pedlar|haggle)\b/i, kinds: ['famine', 'plague', 'fall', 'war'] },
     { k: 'war', rx: /\b(soldier|soldiers|sergeant|veteran|army|camp|march|battle|war|conscripts?|muster|drill|captain|siege|banner|recruit|deserter|spearmen|archers|cavalry|the front|garrison)\b/i, kinds: ['battle', 'siege', 'fall', 'peace', 'war', 'order'] },
-    { k: 'court', rx: /\b(king|queen|ruler|throne|crown|court|prince|princess|heir|council|steward|duke|emperor|empress|jarl|khan|sultan|lord|lady|regent|herald)\b/i, kinds: ['ruler', 'crown', 'wedding', 'revolt', 'trib', 'alliance', 'founded', 'fallen'] },
+    { k: 'court', rx: /\b(king|queen|ruler|throne|crown|court|prince|princess|heir|council|steward|duke|emperor|empress|jarl|lord|lady|regent|herald)\b/i, kinds: ['ruler', 'crown', 'wedding', 'revolt', 'trib', 'alliance', 'founded', 'fallen'] },
     { k: 'temple', rx: /\b(priest|priests|temple|shrine|prayer|pray|prays|funeral|grave|graves|burial|monk|nun|chapel|sick|sickness|fever|healer|physician|cough|plague)\b/i, kinds: ['plague', 'famine', 'ruler', 'legend', 'battle'] },
     { k: 'tavern', rx: /\b(tavern|inn|ale|alehouse|song|songs|singer|minstrel|story|stories|tale|tales|feast|gossip)\b/i, kinds: ['legend', 'battle', 'fall', 'wedding', 'ruler', 'revolt', 'order'] },
     { k: 'road', rx: /\b(road|roads|travel|traveller|caravan|journey|bridge|ford|ferry|border|pilgrim|stranger|strangers|refugee|refugees|ruin|ruins|exile)\b/i, kinds: ['fall', 'fallen', 'war', 'revolt', 'founded', 'plague'] },

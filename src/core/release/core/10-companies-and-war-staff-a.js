@@ -229,9 +229,11 @@ A.foundRealm = function (pc, provIds, men) {
     founded: A.S.year,
   };
   const r = A.createRealm({
-    name: (big ? "Kingdom of " : "Lordship of ") + p0.name,
+    // [order 99, D-206] a realm founded small is a principality (it was a lordship)
+    name: (big ? "Kingdom of " : "Principality of ") + p0.name,
     short: p0.name,
-    title: big ? "King" : "Lord",
+    title: big ? "King" : "Prince",
+    form: big ? "kingdom" : "principality",
     race: pc.race,
     cult: pc.cult,
     faith: pc.faith,
