@@ -596,7 +596,8 @@ order is replaced, strike it through and say by what.
       the study saved in the knowledge base.
     - **Numbers are guides:** the owner's numbers may be raised or lowered by logic; never pad with useless entries.
     - **Kings:** levels personal (most trained by routine; a warrior king may reach the elite; a political one not).
-      **Elites** are not a fixed top ten (a great empire may hold 10-20). **Merchants:** from comfortable to richer than
+      **Elites** have no set number: the count follows how hard the level is to reach, from the realm's people, its make,
+      its families, wealth, schooling, events and circumstances (an empire may hold 2, 30, or even 72 however unlikely). **Merchants:** from comfortable to richer than
       royals; the economy is detailed enough that one could come to dominate a market, even across the continent, but a
       monopoly is never a status or a label the game writes (a follow-up). **An Archmage** may join the legends.
 

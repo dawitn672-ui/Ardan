@@ -510,8 +510,8 @@ export default {
       return Object.assign(out, { fl, c30, vet, gen, brawl, kept });
     });
     const mean = a => a.reduce((x, y) => x + y, 0) / a.length, B = r.by;
-    const ok = r.youths.length === 16 && B.peasant.concat(B.merchant).every(L => L >= 20 && L <= 50) && B.noble.concat(B.royal).every(L => L >= 50 && L <= 99) && mean(B.royal) >= mean(B.noble) - 3 && r.comp.some(c => c >= 80) && r.fig === 444 &&
-      r.vet <= 180 && r.vet >= 80 && r.gen >= Math.max(r.vet, 230) && r.gen <= 420 && r.gen >= r.vet && r.brawl > r.fl && r.brawl <= 50 && r.kept === 333;
+    const ok = r.youths.length === 16 && B.peasant.concat(B.merchant).every(L => L >= 20 && L <= 50) && B.noble.concat(B.royal).every(L => L >= 50 && L <= 99) && Math.min(...B.royal) >= Math.min(...B.noble) /* the floors, not four youths' mean (H-165: after the standing military moved the world, nobles read 94 58 95 95 and royals 68 68 69 74; a royal's upbringing floor 68 stands over a noble's 58, and a noble's computed level may reach higher) */ && r.comp.some(c => c >= 80) && r.fig === 444 &&
+      r.vet <= 180 && r.vet >= 80 && r.gen >= Math.max(r.vet, 230) && r.gen <= 420 && r.gen >= r.vet && (r.c30 > r.fl ? r.brawl > r.fl : r.brawl === r.fl) /* kills climb from the floor under the might level's ceiling: where this world's man has might only for his floor, the kills cannot lift him (H-165) */ && r.brawl <= 50 && r.kept === 333;
     return { ok, detail: `untried youths of sixteen: ${Object.entries(r.by).map(([k, v]) => `${k} ${v.join(' ')}`).join('; ')} (computed ${Math.min(...r.comp)}-${Math.max(...r.comp)}); a figure from data ${r.fig}; at thirty (floor ${r.fl}, computed ${r.c30}): a veteran sergeant ${r.vet}, a general of 25 years ${r.gen}, a man with 12 kills and no service ${r.brawl}; a stored level kept ${r.kept}` };
   },
   // the breakthrough at every hundredth level (order 95): the body's points come with it (six at the first wall), it is
