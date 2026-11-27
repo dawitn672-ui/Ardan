@@ -126,7 +126,10 @@ export default {
       // the wake: a mother's death with music 0 and 60
       const wake = v => { const pc = fresh({ realm: 'POL-01', status: 'peasant' }, 'music', v); const m = { given: 'Agna' }; pc.happy = 60; L.wake(pc, m, 'mother'); return pc.happy - 60; };
       // the butts in Ashmere: 40 years at bow 0 and 60 (a man of Ashmere outside the custom's years)
-      const butts = v => { const pc = fresh({ realm: 'POL-05', status: 'peasant' }, 'bow', v); let c = 0, f = 0; for (let y = 0; y < 40; y++) { pc.skills.bow = v; pc.coin = 50; const f0 = pc.fame || 0; L.year(pc); c += pc.coin - 50; f += (pc.fame || 0) - f0; } return { coin: c, fame: f }; };
+      // (a body that can carry the skill, as the marches below: the fame line asks bow 45, and seed 6903's man of Ashmere
+      // reads 30 at 60 since 135632b7 moved the world; ci-fix-21, H-166. Both lives are played in the world found.)
+      const buttsSeed = [6903, 6904, 6905, 6906, 6907, 6908].find(sd => { const pc = fresh({ realm: 'POL-05', status: 'peasant' }, 'bow', 60, sd); return A.skill(pc, 'bow') >= 45; }) || 6903;
+      const butts = v => { const pc = fresh({ realm: 'POL-05', status: 'peasant' }, 'bow', v, buttsSeed); let c = 0, f = 0; for (let y = 0; y < 40; y++) { pc.skills.bow = v; pc.coin = 50; const f0 = pc.fame || 0; L.year(pc); c += pc.coin - 50; f += (pc.fame || 0) - f0; } return { coin: c, fame: f }; };
       const b0 = butts(0), b60 = butts(60);
       // the herring boats on a coast: 40 seasons at sea 0 and 60
       const boats = v => {

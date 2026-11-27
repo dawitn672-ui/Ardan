@@ -4,7 +4,8 @@
 // bigger type:
 //   - a word that opens a description: a 44-point tall inline box whose margins cancel the extra height, so the line does not
 //     move; the underline is drawn as text-decoration (not a bottom border, which would drop 10 points below the word);
-//   - a chip: a transparent ::after hit box 44 points tall centred on it, so the pill keeps its look;
+//   - a chip: a transparent ::after hit box 44 points tall centred on it, so the pill keeps its look; a chip of one short
+//     word ("Shy", 41 points: ci-fix-21, H-166) is narrow too, so the box is also at least 44 points wide, centred;
 //   - a stat row: a minimum height of 44 points (a few points taller, in a list).
 // A description glyph inside a button is left alone: the button is the target (and the glyph takes no touch there, 71-phone).
 // Not touched here: the map canvases (D9). The skills rows (.skrow, the person view and the skills sheet) were 44 already; the profile's .pf-sk rows are covered above.
@@ -21,7 +22,7 @@ const TAP_CSS = `
     display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;margin-top:-10px;margin-bottom:-10px;
     border-bottom:0;text-decoration:underline dotted var(--accent-line);text-underline-offset:3px}
   ${IN(CHIP)}{position:relative}
-  ${IN(CHIP, '::after')}{content:"";position:absolute;left:0;right:0;top:calc(50% - 22px);height:44px}
+  ${IN(CHIP, '::after')}{content:"";position:absolute;left:min(0px,calc(50% - 22px));right:min(0px,calc(50% - 22px));top:calc(50% - 22px);height:44px}
   ${IN(['div.v2-row.tt', '.pf div[data-tt].pf-row.tt', '.pf li[data-tt].pf-sk.tt'])}{min-height:44px;align-content:center;align-items:center}
 }`;
 {

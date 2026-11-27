@@ -65,10 +65,17 @@ export default {
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
       MWT.defs();
+      // The rules add their points to the old chain's odds (b-weave's A.checkOdds wrap); 99993-v2-stats then shows the
+      // honest chance of those odds for this person (judgment, will, mood), whose rounding can move a shift by a point
+      // either way (ci-fix-21, H-166: seed 6702's player read 34 -> 39 on the old chain and 34 -> 38 honest, while +6 read
+      // 34 -> 40 on both). So the shifts are read on the old chain, where the rule is exact, as mwOddsAreTheOddsPlayed
+      // does; that test holds the honest card to the odds rolled. The scenes played below roll as in a life.
+      const VS = A.V2S, h0 = VS ? VS.HONEST : null;
+      const peek = (ev, ctx) => { if (VS) VS.HONEST = false; try { return MWT.peek(ev, ctx); } finally { if (VS) VS.HONEST = h0; } };
       // without memories: the same scenes, untouched
       let pc = MWT.adult(6702), t = MWT.stranger(pc);
-      const bare = { ask: MWT.peek('mwt_ask', { pid: t.id }).v, toll: MWT.peek('mwt_toll', {}).v, mark: MWT.peek('mwt_mark', {}).v, ford: MWT.peek('mwt_ford', { pid: t.id }).v };
-      const bareMw = [MWT.peek('mwt_ask', { pid: t.id }).q.ctx.mw, MWT.peek('mwt_toll', {}).q.ctx.mw];
+      const bare = { ask: peek('mwt_ask', { pid: t.id }).v, toll: peek('mwt_toll', {}).v, mark: peek('mwt_mark', {}).v, ford: peek('mwt_ford', { pid: t.id }).v };
+      const bareMw = [peek('mwt_ask', { pid: t.id }).q.ctx.mw, peek('mwt_toll', {}).q.ctx.mw];
       // with them
       pc = MWT.adult(6702); t = MWT.stranger(pc);
       const y0 = A.S.year;
@@ -80,8 +87,8 @@ export default {
       MWT.scene('mwt_mark', {}, 0, 0.999);                 // lost a trade check at market, the same year
       for (const k of ['persuasion', 'trade']) pc.skills[k] = sk0[k];
       A.S.year++;
-      const person = MWT.peek('mwt_ask', { pid: t.id });  // person rule: +6 on the check
-      const again = MWT.peek('mwt_toll', {});              // again rule: label (as in y0), +6 on the won check
+      const person = peek('mwt_ask', { pid: t.id });  // person rule: +6 on the check
+      const again = peek('mwt_toll', {});              // again rule: label (as in y0), +6 on the won check
       // again rule as well (the same scene), +3 on a lost check.
       // (9998-choice-stakes holds a lost white check back in its scene until the player is 5 better at it, so a year on, the
       // lost haggle is not on the card at all; 9998's stWhiteRetry tests that lock, and once it lifts, this rule is what
@@ -89,9 +96,9 @@ export default {
       const st = A.STAKES, stOff = st ? st.OFF : null;
       if (st) st.OFF = true;
       let s2;
-      try { s2 = MWT.peek('mwt_mark', {}); } finally { if (st) st.OFF = stOff; }
+      try { s2 = peek('mwt_mark', {}); } finally { if (st) st.OFF = stOff; }
       const t2 = MWT.stranger(pc);
-      const skill = MWT.peek('mwt_ford', { pid: t2.id }); // a stranger on the road: the skill rule, from the toll
+      const skill = peek('mwt_ford', { pid: t2.id }); // a stranger on the road: the skill rule, from the toll
       return { y0, bare, bareMw, person: person.v, pr: person.q.ctx.mw.r, again: again.v, ar: again.q.ctx.mw.r, s2: s2.v, skill: skill.v, sr: skill.q.ctx.mw && skill.q.ctx.mw.r, name: t.given };
     });
     const Y = String(r.y0);

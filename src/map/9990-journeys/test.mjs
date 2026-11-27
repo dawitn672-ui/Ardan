@@ -54,9 +54,20 @@ export default {
       // turning back mid-road
       pc = fresh(); A.travelTo(JT.farCap(pc, 1500).capitalProv); for (let g = 0; g < 40 && pc.journey && pc.journey.pi < 1; g++) { A.advance(3); JT.clear(); }
       out.turned = A.jrTurnBack().ok && pc.journey && pc.journey.k === 'return';
-      // the pilgrimage is a road to a shrine and back
-      pc = fresh(); A.S.time = 9; const pr = A.doActivity('pilgrimage');
-      out.pilgrim = pc.journey ? pc.journey.k : (pr && pr.msg);
+      // the pilgrimage is a road to a shrine and back. It needs a shrine: a capital of your faith far enough away, or your
+      // own realm's capital when you live elsewhere, at least JR.SHORT_KM off (nearer is a day's walk, not a road). Seed 33
+      // put this life in the Free Port of Corvasse after the batch of 135632b7 (ci-fix-21, H-166): its corsairs' faith has
+      // no other realm and you live in its capital, so there is no road to walk, rightly (seed 3301: its capital 114 km
+      // off). The rule is tested on the first world (from 33 on) that has a shrine a road away.
+      const far = (p, to) => { const a = A.S.prov[p.home], b = A.S.prov[to]; return a && b && Math.hypot(a.x - b.x, a.y - b.y) >= A.JR.SHORT_KM; };
+      const pw = T.trySeeds([33].concat(T.seedRun(3301, 7)), seed => {
+        A.newGame({ seed, race: 'human', realm: 'POL-101', status: 'peasant', startAge: 24 }); const p = A.pc(); p.coin = 900; JT.seen = [];
+        const to = A.JR.shrineFor(p);
+        return to != null && far(p, to) ? p : null;
+      });
+      pc = pw.res; out.pilgrimWorld = pw.seed;
+      if (pc) { A.S.time = 9; const pr = A.doActivity('pilgrimage'); out.pilgrim = pc.journey ? pc.journey.k : (pr && pr.msg); }
+      else out.pilgrim = 'no shrine in worlds ' + pw.tried.join(', ');
       // exile: the release moves you at once; the road out is told after, with its first scene
       pc = fresh(); const h0 = pc.home; A.exile(pc); A.advance(2);
       out.exile = pc.home !== h0 ? (pc.journey ? pc.journey.k + (pc.journey.applied ? '/told' : '') : 'short') : 'stayed';
@@ -72,7 +83,7 @@ export default {
       return out;
     });
     const ok = r.visit === 'visit' && r.there && r.back && r.turned && r.pilgrim === 'pilgrim' && /^(exile\/told|short)$/.test(r.exile) && r.cars > 0 && r.caravan === 'caravan' && r.old;
-    return { ok, detail: `visit ${r.visit}, reached the far end ${r.there}, home again ${r.back}; turned back ${r.turned}; pilgrimage ${r.pilgrim}; exile ${r.exile}; caravans this month ${r.cars}${r.cars ? ', joined ' + r.caravan : ''}; old save ${r.old}` };
+    return { ok, detail: `visit ${r.visit}, reached the far end ${r.there}, home again ${r.back}; turned back ${r.turned}; pilgrimage ${r.pilgrim} (world ${r.pilgrimWorld}); exile ${r.exile}; caravans this month ${r.cars}${r.cars ? ', joined ' + r.caravan : ''}; old save ${r.old}` };
   },
 
   async journeysPure(pg) {

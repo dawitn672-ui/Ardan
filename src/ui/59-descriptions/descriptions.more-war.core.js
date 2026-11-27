@@ -98,6 +98,9 @@
     } else if (k === 'hp') f.push([`Strength ${pct(A.divStr(d))}`, A.divStr(d)]);
     else return null;
     if (d.elite && ['soft', 'hard', 'def', 'brk'].includes(k)) { f.push(['Picked men', 1.15]); if (o) { const fx = o.fx || {}, P = A.S.prov[d.atk != null ? d.atk : d.loc], home = !!P && ((o.terr || []).includes(P.terr) || ((o.terr || []).includes('coast') && P.coast)); const m = k === 'def' ? (1 + (fx.def || 0)) * (home ? 1.25 : 1) : (1 + (fx[k] || 0)) * (home ? 1.35 : 1); if (m !== 1) f.push([`${L('orderTraits', d.elite, 'The order\'s own edge')}${home ? ', on its own ground' : ''}`, m]); } }
+    // the knights riding in it (D-194, A.MIL.divFactor): A.divCombat multiplies blows and breakthrough by it, the stand by
+    // its square root; the row keeps the breakdown's product equal to the figure (ttSums2; ci-fix-21, H-166)
+    if (c.kf > 1 && ['soft', 'hard', 'brk', 'def'].includes(k)) f.push([`Its knights, ${Math.round(A.MIL.divKnights(d))} of ${Math.round(d.men)} men`, k === 'def' ? Math.sqrt(c.kf) : c.kf]);
     return { start: s[k], f, total: c[k] };
   };
   const STAT = { soft: ['Soft attack', 'Attacks a day against men.'], hard: ['Hard attack', 'Attacks a day against armor and beasts.'], def: ['Defense', 'Attacks it can turn aside when it is attacked.'], brk: ['Breakthrough', 'Attacks it can turn aside when it attacks.'],
