@@ -28,14 +28,14 @@ Bot lives on the Great Continent showed careers that topped out by 30 and then w
 - **Something above the top.**
   - At the top of a ladder (General or above, or the last rank of a trade), an honour comes every seven years or so (`cr_honour`): the wardenship of the march, the guild's chain, a see. Each can be accepted, bargained for or declined.
   - `A.seatEligible` lets a General of renown 35 and command 50 be named the senior General (W1-1; the army's place at council). The release asked a grade above General, so no General ever sat on the council. A merchant prince with 50,000 suns can be named Treasurer.
-- **A Legend.** A fighter past the Legend line (worth 118, 48's t6) is named one while the world has room (`GD.LEGEND_CAP`): renown +15, a deed, and the challengers start coming (`cr_legend`: fight one in the yard, take him as a pupil, or send them all away). A life reached Knife fighting 100 and stayed at renown 24 before.
+- **A peerless fighter** (was "a Legend", D-203). A fighter past the Peerless line (worth 118, 48's t6) is named one while the world has room (`GD.PEERLESS_CAP`): renown +15, a deed, and the challengers start coming (`cr_legend`: fight one in the yard, take him as a pupil, or send them all away). A life reached Knife fighting 100 and stayed at renown 24 before.
 - **Promotion is slower above Senior Captain.** Merit bars are ×1.5 for ranks 5 and 6 and ×2 from General up, so General is 2,000 merit (1,000 before).
 - **Numbers that fit.** A bandit hunt is 20 to 300 men, and a mission away from any war is at most 400 (`A.missionSize`, patch `CAR-MISSION-SIZE`). A mission in a war keeps the rank's numbers.
 - **A quieter log.**
   - Conscripts called out log one line per realm a month (`A.musterLog`, patch `CAR-MUSTER-LOG`), not one per division.
   - "The X is held without you" is logged only for gatherings that had a place for you (patch `CAR-HELD-WITHOUT`).
 
-Other folders carry the rest of the late-game work: 97-first-life-fixes (ambitions after the top, What now, great works scaled to the fortune, gathering caps), 32-legend-and-master-caps (order entry by merit), 56-court-and-treasury (`ri_taken` and the council's pushes) and 81-pacing (the first-year ceiling).
+Other folders carry the rest of the late-game work: 97-first-life-fixes (ambitions after the top, What now, great works scaled to the fortune, gathering caps), 32-fighter-ladder (order entry by merit), 56-court-and-treasury (`ri_taken` and the council's pushes) and 81-pacing (the first-year ceiling).
 
 ## Measured by (`test.mjs`)
 

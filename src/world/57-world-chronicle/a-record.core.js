@@ -4,7 +4,7 @@
 //   war begun, war ended (with the victor), battle, siege laid, city taken (stormed, sacked or burned), province
 //   changing hands, ruler's death and succession, throne taken without a death, realm fallen, realm founded,
 //   rebellion, famine (a failed harvest), epidemic, royal marriage, alliance, tribute, elite order destroyed,
-//   death of a Legend.
+//   death of a peerless fighter (the top fighter tier; the kind's key stays 'legend' for old saves, D-203).
 // Each entry carries its year and day, a place (a province) and people (ids, with their names kept in a table, since
 // the dead are pruned from `S.people` after 30 years). Entries are compact arrays:
 //   [kind, year, day, province, realmA, realmB, [person ids], number, extra]
@@ -20,7 +20,7 @@
     cede: ['province changes hands', 1], ruler: ["ruler's death and succession", 2], crown: ['throne taken', 2],
     fallen: ['realm fallen', 3], founded: ['realm founded', 3], revolt: ['rebellion', 2], famine: ['famine', 2],
     plague: ['epidemic', 2], wedding: ['royal marriage', 1], alliance: ['alliance', 1], trib: ['tribute', 1],
-    order: ['elite order destroyed', 1], legend: ['death of a Legend', 2],
+    order: ['elite order destroyed', 1], legend: ['death of a peerless fighter', 2],
   };
   // a field battle is set down when 24,000 men meet, or 9,000 fight on for five days or more: about the largest
   // seventh of the front's fights, some 13 a year across Ardan (the front fights about 90 a year)
@@ -298,11 +298,11 @@
     }
   }
 
-  // ---- the death of a Legend (the top of the ladder, 32-legend-and-master-caps)
-  const isLegend = p => { try { return !!(p && p.st && A.fightWorth && A.tierOf && A.tierOf(A.fightWorth(p)).k === 't6'); } catch (e) { return false; } };
+  // ---- the death of a peerless fighter (the top fighter tier, 32-fighter-ladder; kind 'legend', its key before D-203)
+  const isPeerless = p => { try { return !!(p && p.st && A.fightWorth && A.tierOf && A.tierOf(A.fightWorth(p)).k === 't6'); } catch (e) { return false; } };
   const kill = A.kill;
   A.kill = function (p, cause) {
-    const was = p && p.alive && live() && p.id !== S_().pc && isLegend(p);
+    const was = p && p.alive && live() && p.id !== S_().pc && isPeerless(p);
     const r = kill.apply(this, arguments);
     try {
       if (was && !p.alive) {
@@ -447,7 +447,7 @@
       case 'alliance': return `the alliance of ${rs(e.a)} and ${rs(e.b)}${y}`;
       case 'trib': return e.x === 'free' ? `the year ${rs(e.a)} threw off ${rs(e.b)}'s tribute${y ? ', ' + e.y : ''}` : `the year ${rs(e.a)} bent the knee to ${rs(e.b)}${y ? ', ' + e.y : ''}`;
       case 'order': return `the destruction of ${the(WC.name(e.x) || 'an order of knights')}${y}`;
-      case 'legend': return `the death of ${nm(e.w[0]) || 'a Legend'}${y}`;
+      case 'legend': return `the death of ${nm(e.w[0]) || 'a peerless fighter'}${y}`;
     }
     return '';
   };
@@ -481,7 +481,7 @@
       case 'alliance': return `${when}, ${A1} and ${B1} swore an alliance.`;
       case 'trib': return e.x === 'free' ? `${when}, ${A1} threw off the tribute it paid ${B1}.` : `${when}, ${A1} became a tributary of ${B1}.`;
       case 'order': return `${when}, ${the(WC.name(e.x) || 'an order of knights')} of ${A1} were destroyed${P ? ` at ${P}` : ''}.`;
-      case 'legend': return `${when}, ${nm(e.w[0]) || 'a Legend'} of ${A1}, one of the great fighters of the age, died${e.x ? ` (${e.x})` : ''}${e.n ? `, aged ${e.n}` : ''}.`;
+      case 'legend': return `${when}, ${nm(e.w[0]) || 'a peerless fighter'} of ${A1}, one of the great fighters of the age, died${e.x ? ` (${e.x})` : ''}${e.n ? `, aged ${e.n}` : ''}.`;
     }
     return `${when}: ${WC.KINDS[e.k] ? WC.KINDS[e.k][0] : e.k}.`;
   };

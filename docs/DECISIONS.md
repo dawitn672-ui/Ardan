@@ -3377,3 +3377,25 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
   a lab takes a decider's best reason where the test is not about the draw, and an election's rule is held as the broken
   promise's weight; the summons' bar is half or more in full (129 of 258, with the larger hosts across the borders); the
   court's tests measure against `A.MIL.normal`.
+
+### D-203 · "Legend" means the level 800-1000 legends only: the fighter tiers read Formidable and Peerless (2026-11-27; order 98, with orders 78 and 83; audit C-23; H-174)
+- **The contradiction.** The release's fighter tiers (`GD.TIERS`, a reading of fighting worth) named t5 "Master" (worth
+  91) and t6 "Legend" (worth 118, "perhaps five alive"), capped by `GD.LEGEND_CAP`, counted by
+  `32-legend-and-master-caps` ("Legends alive in Ardan: N of a possible 5") and named by 994-careers ("You are a Legend
+  now"), on the same codex page as the powers' legends at level 800-1000; the beast scale "Legend: only a story" and the
+  achievement "Legend" (90 renown) were two more meanings. Order 98: "Legend" means one thing; order 83: Master and
+  Legend do not exist as measures.
+- **Chosen: plain words, the measure kept.** t5 reads **Formidable**, t6 **Peerless** (the owner's naming rule of the same
+  day: plain English, no invented words). The worths, the cap of five, the census and the challengers' card stay: they are
+  a reading of steel and body that the duels, the odds and the orders still use, not a rank (a person's standing is his
+  level). The beast scale for hoaxes reads **Tale**, the 90-renown achievement **Known to All**. Code names follow
+  (`GD.PEERLESS_CAP`, `GD.FORMIDABLE_CAP`, `A.peerlessCount`, `A.ladderCensus()` `{ peerless, formidable }`,
+  `CAR.PEERLESS_W`; the folder `32-fighter-ladder`; `docs/NAMES.md`). Keys a save holds keep their spelling: the flag and
+  card `cr_legend`, the chronicle kind `legend`, the beast tier key `legend`, the achievement key `legend`.
+- **Not chosen.** Dropping the tiers for levels everywhere a fight is read (the war and duel screens, the odds notes,
+  the codex ladder): the right end of orders 78 and 83, but it belongs to the war rebuild (master prompt section 10), and
+  levels and worth are not yet one scale in a duel. Dropping the cap: the lore's "perhaps five" still describes the world.
+- **Left to the skills builder** (not edited here, another agent owns `src/people/36-skills`): `SK.census` still files a
+  best skill of 96 or more as "legend" (`S.top.legend`, the comment "Legend (96)", `s1Census`'s detail "Legends"); the
+  report of H-174 lists the exact change.
+

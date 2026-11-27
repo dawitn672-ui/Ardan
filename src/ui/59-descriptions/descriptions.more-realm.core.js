@@ -2,7 +2,7 @@
 // of you; each faction's power (its houses' swords against the realm's) and discontent; the great lords' loyalty;
 // 56-court-and-treasury's court (the odds of what is before it, reason by reason) and the crown's purse; the ladder of
 // rungs; 47-realm-customs's customs as you have met them; 55-bonds' long memories between realms. The Codex's ladder
-// of fighters, one against many, 32-legend-and-master-caps's census of Legends and Masters; the Dynasty page.
+// of fighters, one against many, 32-fighter-ladder's census of Peerless fighters and Formidable fighters; the Dynasty page.
 (function () {
   const G = UI.TIPS = UI.TIPS || {}, TT = UI.TT, K = TT.K;
   const { esc, r0, r1, r2, sg, pct, H, R, D, F, L, coin } = K;
@@ -135,9 +135,9 @@
       R(L('age', ru.id, 'Their age'), A.age(ru), 'tt-sub') + F(`Above 50 the crown may invite you to its orders; above 30 your council word counts for more.`);
   };
 
-  // ---- the Codex: the ladder of fighters, one against many, the census (32-legend-and-master-caps) ----------------------------------------
+  // ---- the Codex: the ladder of fighters, one against many, the census (32-fighter-ladder) ----------------------------------------
   G.crowd = function (n) {
-    const band = { Trained: [50, 60], Veteran: [63, 74], Elite: [77, 88], Master: [91, 115], Legend: [118, 140] }[n]; if (!band) return '';
+    const band = { Trained: [50, 60], Veteran: [63, 74], Elite: [77, 88], Formidable: [91, 115], Peerless: [118, 140] }[n]; if (!band) return '';
     const a = A.strengthOf(band[0]), b = A.strengthOf(band[1]), v = A.vetS(), staFor = R2 => Math.max(0, Math.round(Math.log(R2 / 0.672) / 0.054 / 5) * 5);
     return H(esc(n), null, `worth ${band[0]}–${band[1]}`) + R('Strength at the low end', r2(a)) + R('At the high end', r2(b)) + R('A veteran\'s', r2(v), 'tt-sub') +
       R('Regulars at once', `${r1(a)}–${r1(b)}`, 'tt-sum') + (b / v >= 1 ? R('Veterans at once', `${r1(a / v)}–${r1(b / v)}`, 'tt-sub') : '') + (b > 3 ? R(`${L('stat', 'sta', 'Stamina')} to keep it up`, staFor(b) + '+', 'tt-sub') : '') +
@@ -152,11 +152,11 @@
   };
   G.census = function (k) {
     const p = pc(), C = A.ladderCensus ? A.ladderCensus() : null; if (!C) return '';
-    if (k === 'legends') return H('Legends alive', `${C.legends.length} of ${GD.LEGEND_CAP || 5}`) + D('No more than this live at once in all of Ardan; a new one rises only when one falls. Worth 118 and up.') +
-      R(L('tier', 'legend', 'The tier'), '118+', 'tt-sub');
-    const mine = (C.masters[p.realm] || []);
-    return H('Masters in ' + esc(A.realmShort(p.realm)), `${mine.length} of ${GD.MASTER_CAP}`) + D('No realm raises more than this: a master needs a master to teach.') +
-      Object.entries(C.masters).sort((a, b) => b[1].length - a[1].length).slice(0, 6).map(([rid, l]) => R(esc(A.realmShort(rid)), l.length, rid === p.realm ? 'tt-on-row' : 'tt-sub')).join('');
+    if (k === 'peerless') return H('Peerless fighters alive', `${C.peerless.length} of ${GD.PEERLESS_CAP || 5}`) + D('No more than this live at once in all of Ardan; a new one rises only when one falls. Worth 118 and up.') +
+      R(L('tier', 't6', 'The tier'), '118+', 'tt-sub');
+    const mine = (C.formidable[p.realm] || []);
+    return H('Formidable fighters in ' + esc(A.realmShort(p.realm)), `${mine.length} of ${GD.FORMIDABLE_CAP}`) + D('No realm raises more than this: a fighter of that class needs one to teach him.') +
+      Object.entries(C.formidable).sort((a, b) => b[1].length - a[1].length).slice(0, 6).map(([rid, l]) => R(esc(A.realmShort(rid)), l.length, rid === p.realm ? 'tt-on-row' : 'tt-sub')).join('');
   };
 
   // ---- the Dynasty page ---------------------------------------------------------------------------------------------------

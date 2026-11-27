@@ -5,6 +5,11 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **"Legend" means the legends.** The word now belongs only to the great beings of the world's top, such as the King of
+  Dragons and the Sword Saint. The two highest tiers of ordinary fighters are now called Formidable and Peerless (there
+  are still perhaps five Peerless fighters alive), the beasts nobody has ever seen are Tales, and the achievement for
+  90 renown is Known to All.
+
 - **Armies of their true size.** Every realm now keeps a standing host by its people, its wealth and its kind: from
   about ten thousand soldiers in a small kingdom to more than a quarter of a million in the greatest empire, while a poor
   abbey or a pirate port keeps what it can pay. Knights are few and strong: from about fifty to three thousand in a

@@ -110,7 +110,7 @@ A.addStage('A.eventView', 'v2-stats', view => function () {
 const VITAL_RE = /\b(Health|Happiness|Looks|Renown|Honou?r|Piety|Stability|Legitimacy|Blood|Wind|Infamy|War weariness)(\s*[:·—–-]?\s*)(\d{1,3})\b(?!\s*(?:suns?|years?|days?|months?|men|km|kg|cm|ms|hours?|conscripts|[/,.]\d|→))/gi;
 // (S1b: the retired skill tier words, Novice, Apprentice, Journeyman and Adept, are gone; Expert, Master, Grandmaster and Legend
 // are words of a skill's level as well as a fight's)
-const TIER = '(Untrained|Brawler|Trained|Veteran|Elite|Master|Champion|Legend|Hero|Expert|Grandmaster)';
+const TIER = '(Untrained|Brawler|Trained|Veteran|Elite|Formidable|Peerless|Master|Champion|Legend|Hero|Expert|Grandmaster)';   // Formidable, Peerless: the fighter tiers t5, t6 since D-203
 VS.NUMRULES = [
   [/\ball of it from doing, the rest from practice/g, () => 'all of it from doing'],
   [/\bnone of it from doing, the rest from practice/g, () => 'all of it from practice'],

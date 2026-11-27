@@ -100,7 +100,7 @@
       ],
     },
 
-    // ---- a Legend: the challengers come ---------------------------------------------------------------------------
+    // ---- a peerless fighter: the challengers come (id cr_legend kept for old saves; D-203) ------------------------------------
     {
       id: 'cr_legend', title: 'Every young blade knows your name', trigger: true,
       cond: (p, C) => C.adult(p) && C.flag(p, 'cr_legend'),

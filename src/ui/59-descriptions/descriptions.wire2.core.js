@@ -377,8 +377,8 @@
       .replace(/— you are here \((\d+)\)/, (m, w) => `— you are here (${N('worth', pc.id, w)})`));
     h = TT.within(h, '<div class="group-h">One against many</div>', '</table>', seg => seg.replace(/<tr><td><span class="chip tier (\w+)">([^<]*)<\/span><\/td>/g, (m, k, n) => `<tr${A_('crowd', n)}><td><span class="chip tier ${k}"${UI.ttAttrs('crowd', n)}>${n}</span></td>`));
     h = h.replace(/(<div class="small" style="margin-top:4px"><b>You:<\/b> )([\s\S]*?)(<\/div>)/, (m, a, body, c) => `${a}<span${UI.ttAttrs('takeLine', '')}>${body}</span>${c}`);
-    h = h.replace(/(Legends alive in Ardan: )(\d+ of a possible \d+)(\. Masters in [^:]*: )(\d+ \(no realm raises more than \d+\))/, (m, a, l, b, ms) => `${a}${N('census', 'legends', l, { focus: true })}${b}${N('census', 'masters', ms, { focus: true })}`)
-      .replace(/<div class="tiny muted">(\d+ more, whose names have not reached you\.)<\/div>/, (m, t) => `<div class="tiny muted">${N('census', 'legends', t)}</div>`);
+    h = h.replace(/(Peerless fighters alive in Ardan: )(\d+ of a possible \d+)(\. Formidable fighters in [^:]*: )(\d+ \(no realm raises more than \d+\))/, (m, a, l, b, ms) => `${a}${N('census', 'peerless', l, { focus: true })}${b}${N('census', 'formidable', ms, { focus: true })}`)
+      .replace(/<div class="tiny muted">(\d+ more, whose names have not reached you\.)<\/div>/, (m, t) => `<div class="tiny muted">${N('census', 'peerless', t)}</div>`);
     return h;
   };
   TT.wireLater(() => UI, 'powerPage', 'powerPage');

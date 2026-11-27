@@ -103,7 +103,7 @@
     return null;
   };
   CAR.honourable = p => !!(p && p.alive && !p.ruler && !p.prison && A.isAdult(p) && !p.flags.cr_traitor && CAR.atTop(p) && ruOf(p) && (p.fame || 0) >= 25);
-  CAR.LEGEND_W = 118;
+  CAR.PEERLESS_W = 118;
   CAR.month = function (pc) {
     if (CAR.OFF || !pc || !pc.alive || pc.id !== A.S.pc) return;
     const st = isObj(pc.car) ? pc.car : (pc.car = {});
@@ -115,11 +115,13 @@
     if (CAR.fiefable(pc) && ago(pc, 'cr_fief_ask') >= 8 && ago(pc, 'cr_knighted') >= 3 && !queued('cr_fief') && A.chance(0.3)) {
       pc.flags.cr_fief_ask = A.S.year; A.queue({ type: 'event', ev: 'cr_fief', ctx: { pid: ruOf(pc).id } }); return;
     }
-    // a fighter past the Legend line (worth 118, 48-event-fight-rules's t6) is named one, while the world has room (GD.LEGEND_CAP)
-    if (pc.flags.cr_legend == null && A.isAdult(pc) && !pc.prison && A.fightWorth && A.fightWorth(pc) >= CAR.LEGEND_W && !queued('cr_legend') &&
-      (!A.ladderCensus || A.ladderCensus().legends.length < (GD.LEGEND_CAP || 5))) {
-      pc.flags.cr_legend = A.S.year; A.fame(pc, 15); deed(pc, 'Named among the Legends of Ardan');
-      A.log('In the yards and the taverns they have started to say your name with the old ones. You are a Legend now, and every young blade knows it.', 'big');
+    // a fighter past the Peerless line (worth 118, 48-event-fight-rules's t6) is named one, while the world has room
+    // (GD.PEERLESS_CAP). The flag and the card keep their ids (cr_legend): old saves read them. D-203: "Legend" is the
+    // level 800-1000 legends' word alone
+    if (pc.flags.cr_legend == null && A.isAdult(pc) && !pc.prison && A.fightWorth && A.fightWorth(pc) >= CAR.PEERLESS_W && !queued('cr_legend') &&
+      (!A.ladderCensus || A.ladderCensus().peerless.length < (GD.PEERLESS_CAP || 5))) {
+      pc.flags.cr_legend = A.S.year; A.fame(pc, 15); deed(pc, 'Named among the peerless fighters of Ardan');
+      A.log('In the yards and the taverns they have started to say your name with the five. You are counted among the peerless now, the few fighters alive at the top of the ladder, and every young blade knows it.', 'big');
       A.queue({ type: 'event', ev: 'cr_legend', ctx: {} }); return;
     }
     if (CAR.honourable(pc) && ago(pc, 'cr_honour_ask') >= 7 && !queued('cr_honour') && A.chance(0.3)) {

@@ -326,7 +326,7 @@ VS.NUMRULES2 = [
   [/\b([A-Z][A-Za-z ]{2,20}): best (\d{1,3}) at (\d{1,3})\b/g, (all, n, v, a) => (statKey(n) || STAT_DIR[n.toLowerCase()] ? `${n}: at its best at ${a}` : all)],
   // 48-event-fight-rules's wound costs: "worth 42 to 41", "Elite 66 to Veteran 58", "(speed -7, stamina -3)"
   [/\bworth (\d{1,3}) to (\d{1,3})\b/g, (all, a, b) => (+a - +b >= 6 ? 'worth a good deal less' : +a > +b ? 'worth a little less' : 'worth no less')],
-  [/\b(Untrained|Brawler|Trained|Veteran|Elite|Master|Champion|Legend|Hero) (\d{1,3}) to (Untrained|Brawler|Trained|Veteran|Elite|Master|Champion|Legend|Hero) (\d{1,3})\b/g, (all, a, x, b) => `from ${a} to ${b}`],
+  [/\b(Untrained|Brawler|Trained|Veteran|Elite|Formidable|Peerless|Master|Champion|Legend|Hero) (\d{1,3}) to (Untrained|Brawler|Trained|Veteran|Elite|Formidable|Peerless|Master|Champion|Legend|Hero) (\d{1,3})\b/g, (all, a, x, b) => `from ${a} to ${b}`],
   [/\b(strength|speed|stamina|combat instincts|instincts|intelligence|wits|willpower|will) ([+−-])(\d{1,2})\b/gi, (all, n, s, v) => statDelta(n, s, +v) || all],
   // 49-body-mind's wounds: "−7 speed, −3 stamina, Athletics & climbing −10"
   [/([+−-])(\d{1,2}) (strength|speed|stamina|combat instincts|instincts|intelligence|wits|willpower|will)\b/gi, (all, s, v, n) => statDelta(n, s, +v) || all],

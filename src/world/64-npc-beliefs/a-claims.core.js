@@ -33,7 +33,7 @@
 //            and, for the other great events of the record (object: the entry; extra: [account, ...]; d-world.core.js):
 //            Q a war won (subject: the winner named, or none)   R a ruler's death (subject: the one blamed, or the dead)
 //            X a town taken (subject: the realm named; extra: [account, how: terms, storm, sack, burned])
-//            Y a sickness (subject: the one blamed, or none)    G a Legend's death (subject: the Legend)
+//            Y a sickness (subject: the one blamed, or none)    G a peerless fighter's death (subject: him)
 //   p.nb   = {claimId: 1 | -1}  on a person (at most MAX, of them MAXB battles)
 //   pc.nbk = {claimId: [stance, fromId, year]}  what the player believes (stance 2 / -2: knows it true / false)
 // Engine paths only (the month hook, A.kill, event choices, interactions) draw dice or write; everything a view reads
@@ -237,7 +237,7 @@
     } else if (h.rel && c.s != null && h.rel[c.s]) h.rel[c.s].op = clamp((h.rel[c.s].op || 0) + d * f * 0.6, -100, 100);
   };
   // keep a person's beliefs within MAX (and MAXB of battles): the oldest and lightest go first
-  NB.WORLD_K = 'QRXYG';   // the great events of the record other than battles: a peace, a ruler's death, a town taken, a sickness, a Legend's death
+  NB.WORLD_K = 'QRXYG';   // the great events of the record other than battles: a peace, a ruler's death, a town taken, a sickness, a peerless fighter's death
   const trim = function (m, keep, max, maxB, maxW) {
     const ids = Object.keys(m);
     const bat = ids.filter(id => { const c = NB.claim(id); return c && c.k === 'B'; });

@@ -3702,3 +3702,33 @@ journeys, memory weave, family, every-number and standing features' quick tests,
 stages, reasons, docs-index lints, `version.mjs check`, `--check-tiers`.
 
 **Undo.** Revert the step's commits on `ci-fix-21`.
+
+### H-174 · 2026-11-27 · "Legend" kept for the legends: the fighter tiers read Formidable and Peerless (order 98, C-23)
+
+**What and why.** Order 98: "Legend" means one thing, the level 800-1000 legends; orders 78 and 83: Master and Legend are
+no measures. The release's fighter tiers t5 and t6 (`GD.TIERS`: "Master" worth 91, "Legend" worth 118) are **Formidable**
+and **Peerless**; the hoax beasts' scale "Legend" is **Tale**; the 90-renown achievement "Legend" is **Known to All**
+(D-203). With them: `GD.LEGEND_CAP` -> `GD.PEERLESS_CAP`, `GD.MASTER_CAP` -> `GD.FORMIDABLE_CAP`, `A.legendCount` ->
+`A.peerlessCount`, `A.ladderCensus()` `{ legends, masters }` -> `{ peerless, formidable }`, `CAR.LEGEND_W` ->
+`CAR.PEERLESS_W`, the census notes `legends`/`masters` -> `peerless`/`formidable` (the note `tier` now opens `t6`, where
+it named a key that did not exist), and the folder `src/people/32-legend-and-master-caps` -> `src/people/32-fighter-ladder`
+(`git mv`; `docs/NAMES.md`). Every text a player reads: the codex Power page (the ladder of fighters, one against many,
+the living ladder, the beasts' scales), the help, the tier notes, the challengers' log line and deed, the chronicle's
+"death of a peerless fighter", the grave scene `wc_legend_grave`. Ids a save holds keep their spelling (`cr_legend`, the
+chronicle kind `legend`, the beast tier key `legend`, the achievement key `legend`); the 99993-v2-stats number rules
+know the new words. Plain words, after the owner's naming rule of the same day.
+
+**Not done here (another builder owns the folder).** `src/people/36-skills/f-people.core.js` `SK.census` still calls a
+best skill of 96+ "legend": rename the array and `S.top.legend` (for example to `peak`; `S.top` is rewritten each year,
+so old saves need nothing), the comment "Grandmaster (88) or Legend (96)", and `test.mjs` `s1Census`'s "0 to 2
+Legends" and its detail.
+
+**Files.** `src/core/release/core/18-event-view-a.js` (`GD.TIERS`, `A.orderMaster`), `18-event-view-b.js`
+(`GD.TIER_INFO`, `GD.PEERLESS_CAP`, `A.peerlessCount`, `A.POWER_CODEX`), `23-ui-f.js` (one against many, help),
+`02-game-data-a.js` (the achievement); `src/people/32-fighter-ladder/*`; `src/ui/59-descriptions/descriptions.more-realm`,
+`descriptions.wire2`; `src/events/994-careers/*`; `src/world/57-world-chronicle/*`; `src/world/64-npc-beliefs` (comments);
+`src/people/99993-v2-stats` (two number rules); `src/ui/92-scene-card` (the tale's chip); READMEs; `docs/NAMES.md`.
+
+**Tests.** See H-176's checks (one build of the three steps).
+
+**Undo.** Revert the commit (the folder rename reverts with it).
