@@ -8,6 +8,9 @@ built on top of it: **features** that add code and events, the **v2 engine** (pl
 
 ## Every session, first
 
+0. **You MUST start every session by fetching the owner's enabled skills in Notion via `notion-get-enabled-skills`** (Notion
+   MCP; Notion's setup guide, order 101's Notion integration). Load a Notion skill when it fits the task and say so. Then
+   read the Notion page "🤖 Agent Operating Guide" if the task touches Notion. The repo stays the source of truth.
 1. Read this file, `docs/LESSONS.md` (every mistake made so far and the rule that stops it: order 101, never the same
    mistake twice), `docs/OWNER_ORDERS.md` (every standing order of the owner's), `docs/PROGRESS.md` (the checklist of what is done and what is next), the end of `docs/HISTORY.md` (what was done last and how to undo it), `docs/DECISIONS.md` (do not
    undo a recorded decision without a new record), `docs/V2_SPEC.md` (the owner's design rules) and the skills in
