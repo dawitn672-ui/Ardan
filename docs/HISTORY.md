@@ -3702,3 +3702,93 @@ journeys, memory weave, family, every-number and standing features' quick tests,
 stages, reasons, docs-index lints, `version.mjs check`, `--check-tiers`.
 
 **Undo.** Revert the step's commits on `ci-fix-21`.
+
+### H-168 · 2026-11-27 · Order 98: the Primordials are Noir, Red and Blanc; Vaskareth the storm ancient (audit C-01, C-02, C-18, C-35)
+
+**What.** The three Primordials take order 97's names, looks and powers, their ids kept as internal keys (D-197):
+`morvane` is Noir (the eldest, ash-skinned, black-eyed, dragon-shaped, the greatest horns; darkness and shadow; the
+Seventh Gate, his shadow walking the towns of men), `ghazrul` is Red (hellfire, crimson skin, black wings and horns;
+sealed in Hell behind the Glass Seal), `vethrael` is Blanc (female, a white-haired albino with pale horns; blood magic,
+the tithe). All three seat in Hell. Their sheets keep every number; their sworn titles (Sworn to Red, Sworn to Noir,
+Sworn to Blanc, Born in Hell: cold-reader names, ids kept), the legend titles (Lady of the Red Tithe; Prince of Hell's Seventh Gate) and the 33 ancient demons' words follow (`data/legends.json`,
+`data/titles/`, `data/figures/`), as do the Sword Saint's sheet, the race master's grudge and the powers' wake news.
+Vaskareth becomes the Ancient Storm Dragon (D-198): Galeheart folds into her (archived in `archive/o98-galeheart/`),
+the bestiary's `ancient-storm-dragon` points at her sheet (`legend`), `PW.being` reads the kind as her; Ashgar is the
+Ancient Inferno Dragon, Rimewing the Ancient Water Dragon; every ancient and the King carry a `dominion`; the figures
+registry lists her with the two ancients (`category.legends`) and shows the dominion. The King reigns through her as
+regent while he sleeps (C-35); his waking news names the Dragon Mountains and sixty years, as his sheet does (it said
+the Crown Range and nine hundred).
+
+**Why.** Order 98 (the owner lifts the pause for order 97's contradictions); the mapping was fixed by the coordinator
+for every builder.
+
+**Checks.** `/tmp/ardan/o98d/x.html`: pwLadder, pwPowerNotLevel, pwStretched, pwBands, pwBestiary, pwProfiles,
+pwLegends, pwPureAndOldSave, figRegistry, figKnown, figDeterministic, figPhone, ttLegends, ttUnique 14 of 14 (the
+matchups unchanged: Sarnavoth against the three 0.41, the Saint against each 0.53 / 0.46 / 0.47); lint-figures (now
+checking the three dominions), lint-titles, the bestiary's `--check`.
+
+**Undo.** Revert 006705b4 and 2a5bcb5b (branch o98-demons); `archive/o98-galeheart/` holds Galeheart and its title.
+
+### H-169 · 2026-11-27 · Order 98: demons by rank, all in Hell; demonic creatures; the bands' words; the canon's dragons (audit C-07, C-08, C-09, C-21, C-24, C-32)
+
+**What.** `tools/powers/gen-bestiary.mjs` (D-197): the demon family is one ladder of ranks in plain words (Minor Demon, Lesser
+Demon, Demon Soldier, Demon Knight, Baron of Hell, Count of Hell, Demon Lord) and the ancient ranks Marquis (20), Duke
+(9) and Prince of Hell (4) at 735 / 742 / 755; the lower ranks are beasts and cunning things (the generator fails a lower
+demon that reasons); the family and every kind are `hell: true` with no terrain, and `terrOk` never draws one on the
+continent. The old species are kept, commented, in the generator. Trolls leave the giants for their own family; trolls,
+ogres (and the new orc kind, H-170) are `demonic creature`, trolls and ogres 230-270, their leaders 320-340; wild giants,
+ettins and titans carry world counts and `pickBeast` weighs a counted kind by `min(1, world / 40)`. The 33 ancient demons
+take their rank as kind, ten levels lower (mean 739.5), their office as style (Pit-Mother, Ledger-Keeper, Pit Dragon),
+each a look rolled from its id (`A.POWER.demonLook`, always horned; the four Princes' dragon shapes by hand), every home
+"of Hell" (Ossa on the Ashen Marches, Hell's northern shore), and a buff of their liege's colour for Frost Veil.
+`tools/lint-figures.mjs` holds rank, Hell and horns. `data/power.json`'s bands name kinds of their band; the release
+lore's Great Ash Dragon and Red Widow take the bestiary's size. New test `pwDemonsByRank` (four worlds, every province,
+thousands of draws: no demon met; ranks, dumb lower demons, horns, 33 at about 740, trolls and ogres, few giants);
+pwLadder, pwBands and pwStretched read the ranks.
+
+**Why.** Order 97/98: no demon species, known by rank, each unique, all horned, lower demons dumb, every demon in Hell,
+ancient demons about ten lower, ogres and orcs demonic creatures, trolls and ogres 230-270, giants very few; the owner's
+plain-language naming rule (no wyrms or fiends in what this step touches).
+
+**Checks** (with H-170; the container under a load of 40-90, so `--workers=2` or 3): on `/tmp/ardan/o98d/x4.html` and
+`x5.html`, pwDemonsByRank (0 demons in 4,896 encounter draws and 1,200 spawns over four worlds; mean 739.5; 33 of 33
+horned), pwBands, pwStretched (Hell's kinds counted whole), pwLadder (now pooled: the strongest human of four worlds
+read 478, 496, 483, 565; over twelve worlds the trunk read 488-551, mean 511, and this build 471-565, mean 503, so the
+bar is the mean 480 up and each 450 up), pwEncounter, pwEvolution, pwLegends, pwPureAndOldSave, figRegistry, figKnown,
+ttLegends, lvLegends pass; lint-figures (rank, Hell, horns), lint-titles, lint-reasons (41, unchanged), the bestiary's
+`--check`. The names this branch touched: buzzwords (imp, fiend, wyrm, X-sworn, X-born) in `data/figures/ancient-demons.json`
+94 -> 69 (the rest are title ids), `data/titles/figures.json` 13 -> 9 (ids), `data/bestiary.json` 97 -> 76 (kinds
+this step did not name).
+
+**Undo.** Revert 9792dfcb and 1a07abdb (the names); `node tools/powers/gen-bestiary.mjs` rewrites the bestiary.
+
+### H-170 · 2026-11-27 · Order 98: orcs are not playable; Gorath and Ughrak are half-orc realms (audit C-07, C-20; order 99)
+
+**What.** D-199. `GD.PLAYABLE_RACES` (every race but the orc) feeds the creation screen, `UI.crRandomize` and `crSet`;
+`A.newGame` asked for an orc makes a half-orc. A world made since carries `A.S.noOrcs` (`A.newState`), and `A.newPerson`
+in such a world makes a half-orc of any orc asked for. The Horde of Gorath is the **Kingdom of Gorath** (King Vrag) and
+the Ughrak Clans the **Principality of Ughrak** (Princess Urza Ironhide, the War-Mother), both of race `halforc` (state
+realms too, `A.initWorld`), their houses half-orc (`A.housesFor`, `A.famRaceOk`, house members), their clans' cultures
+and faith kept (`A.cultureFor`), their half-orc nobles born to the house; the 30 orc people of the cast are half-orcs; the
+race lore, the cultures' notes, REL-11's followers and the two realms' primers, pops, titles and styles say so. The orc
+master is the Champion of Urgol, the King's war-champion (C-20). Orcs are a bestiary kind of demonic creatures
+(Wild Orc 140 to Orc War-Boss 290) on the steppe, the plains and the hills. The starting story "Clanless" and the
+coherency suite's second start are half-orcs. A half-orc born in the two crowns has half-orc parents (`A.parentRaces`).
+Old saves rename the two realms by the names step (`N.OLD`). The clans' word `ghazrul` (realm customs), Red's id, is
+`brakkan`. Tests that probed with an orc player now probe with the playable races (`mraMemory`, `mrbMemory`), the
+clans' naming law is held on half-orcs of Gorath and Ughrak (`v2fClanByLaw`), and `nmRealms` holds the two crowns.
+
+**Why.** Order 98 (answer 2: orcs do not stay playable; order 97: orcs are demonic creatures) and order 99 (34 realms,
+five forms; the coordinator gave this step Gorath's and Ughrak's people, names, form and lore).
+
+**Checks.** `x4.html` / `x5.html`: pwOrcsNotAPeople (0 orc people of 4,123 in four new worlds; a stranger asked as an
+orc is a half-orc; both crowns and their rulers half-orc; a half-orc royal of Gorath born to the house; an old save's
+orc stays an orc; no orc on the creation screen, by a tap or in 60 random starts), nmRealms, nmOldNames, v2fClanByLaw,
+mraMemory, mrbMemory, mwfMemory, startsAll, startsQuick, coherencyDay0, savesStillLoad (25 saves), newLifeAfterSave,
+uiSmoke, renderRng, replayWithRender, v2svRoundTrip, tokens, cbFlagsRead, ecReadsReal, v2cPlaytest2Class, v2fPickerGone,
+scoreMood, lookNoCut, fgMaker, pfPhone, pfFigureSame, pfPosts, nbOpinionFollowsBelief pass; `node --test tests/v2` 166 of
+166; lint-reasons, lint-titles, lint-figures, lint-docs-index, lint-stages, lint-kin, lint-skills, `version.mjs check`.
+Not run here: the long tier and the balance bench (`tools/bench/run.mjs` and `event-audit.mjs` still ask for an orc
+start, which now starts a half-orc).
+
+**Undo.** Revert 32bc0e39 and 520122b3. An old save keeps its orcs either way (no `noOrcs`).
