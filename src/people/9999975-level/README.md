@@ -63,6 +63,11 @@ two cards (`level.events.js`), tests.
   - **Worn classes.** A person given his held level (the player at his first month or on load, anyone else at his first
     fight) has the walls he already stands past settled with the road his skills give: worn, with their parts and no
     effects, honour or points, so nothing a check reads moves. Someone never recorded is shown the class his road would give.
+- **Legendary and mythical classes** (orders 97 and 98, D-201): one living holder each (the census `A.S.lvc.u`, written by
+  `CL.take`, freed at the holder's death by `CL.year`; a great being whose road holds one keeps it while he lives), and
+  never advanced (`CL.open` refuses every class after one). None is on a road a person's skills would give (the profile,
+  a seeded life). Three legendaries (the Wyrm Blade, Spear and Bow: a true dragon slain and five beasts above him), the
+  Sword Saint's class mythical. Save step `classOne` (version 24) builds the census from the roads. Test `lvClassOne`.
 - **Orders 95 and 96** (D-184 addendum): the level before one is earned is the computed one held in the band of the
   person's life (`LV.band`: commoner, noble by upbringing, service by rank and years, posts by kind, kills), bent softly
   toward the band's top, with a hook for data (`LV.fromData`); every wall is a **breakthrough** (points, a skill's rank

@@ -5,6 +5,10 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Legendary classes are one man's.** A legendary class (now only three: the Wyrm Blade, the Wyrm Spear and the Wyrm
+  Bow, for one who has killed a true dragon and five beasts stronger than himself) has one living holder at a time, and
+  nothing follows it: at later walls its holder takes the breakthrough's strength instead. When he dies, the next may
+  take it. The Sword Saint's class is mythical, and his alone while he lives.
 - **One rarity for everything.** Skills, titles, classes and the arms of the great now share one ladder: basic, rare,
   epic, legendary, mythical. What was common or uncommon is basic; nothing is called "unique" any more, and a title held
   by one person at a time says so beside its rarity ("legendary, one of a kind"). A thing's make (plain, fine, masterwork)

@@ -3723,3 +3723,16 @@ Checks: `rarityOneLadder` (new), the lints (skills, titles, figures), `node --te
 
 **Undo.** Revert the commit; rebuild the engine bundle (`node tools/build-v2.mjs`) and the skills' rungs
 (`node tools/skills2/seed-data.mjs`).
+
+### H-172 · 2026-11-27 · Legendary classes: one holder each, never advanced, three of them (order 98, D-201)
+
+Audit C-05. `src/people/9999975-level/c-classes.core.js`: `CL.one`, `CL.holder` (the census `A.S.lvc.u`, and a great
+being's road), `CL.open` (one holder; nothing after a one-holder class; none on a shown road), `CL.take` (writes the
+census, refuses a held one), `CL.year` (the dead freed), `CL.migrateOne` (save step `classOne`; `SV.VER` 24 in
+`src/core/99998-v2-saves`); the generator reads a template's `roads` and `CL.reqMet` a list of deeds (`req.deeds`).
+`data/classes.json`: the `wyrm` template on the sword, spear and bow roads, asking a true dragon slain too (155 classes
+to 149). `tools/lint-figures.mjs` makes the tree as the game does (`roads`) and holds a sheet's road to the rule. New test
+`lvClassOne`.
+
+**Undo.** Revert the commit (a version-24 save then loads in the older build only if `SV.VER` goes back with it; the
+census key `lvc` is read by nothing else).

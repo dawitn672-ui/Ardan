@@ -3404,3 +3404,23 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
 - **Not chosen.** Keeping `rarities` lists in each vocabulary and checking them equal (two sources that can drift);
   dropping the craft grade into the ladder (a masterwork sabre is not an epic thing). Saves: no save holds a rarity word
   (titles, classes, skills are kept by id; checked on the sample saves), so the ladder itself needs no migration.
+
+### D-201 · Legendary and mythical classes: one living holder each, never advanced; three legendaries, one mythical (2026-11-27; orders 97 and 98; audit C-05; H-172; D-184, D-200)
+- **The conflict.** Order 97: "Legendary classes (one holder at a time; they cannot be advanced)"; legendaries "very few and
+  nearly impossible". The generator's `wyrm` template made a legendary class on all nine roads, open to anyone who killed
+  five beasts above him at his third wall, and `CL.open` only kept the Sword Saint's unique class off the shown road.
+- **The rule, by rarity** (`data/rarity.json` oneHolder): a legendary or mythical class has one living holder. The census
+  `A.S.lvc.u` (class -> holder id) is written when one is taken (`CL.take` refuses it while another lives), cleared of the
+  dead once a year (`CL.year`), and a great being whose road holds one (the elf master's Wyrm Blade, `data/figures/`) holds
+  it while he lives (`CL.holder`, as a title's sheet holder does). `CL.open` refuses it while another holds it, refuses
+  every class after a one-holder class (cannot be advanced: its holder takes the breakthrough's points at later walls), and
+  no road a person's skills would give (`CL.chain`: the profile's shown class, a seeded life's worn road) holds one.
+  `tools/lint-figures.mjs` fails a sheet's road that goes past one, or two sheets holding one.
+- **Few.** The `wyrm` template is made on three roads (`roads`: the sword, the spear and the bow, the arms the songs say
+  have killed dragons) and asks a true dragon slain as well as five beasts above him (`req.deeds`, every one). Three
+  legendary classes, the Sword Saint's class the one mythical (D-200). The others' parts are not lost from the game: the
+  template's technique and passive are the three's.
+- **Saves** (version 24, step `classOne`): the census is built from everyone's road (the earliest living taker, by year
+  then id); a road's class the tree no longer makes (the six cut legendaries) is struck from it. No sample save holds one.
+- **Not chosen.** Keeping nine with one holder each (order 97: very few); a separate `one` flag on the class (the rarity
+  already says it, and a flag could disagree with it); letting a legendary class lead to a later one (order 97).
