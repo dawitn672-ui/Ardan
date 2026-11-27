@@ -645,6 +645,13 @@ order is replaced, strike it through and say by what.
     agents for efficiency. **Search the internet for the best skills and abilities** suited to this project's scope, read
     them, and integrate them ourselves (adapted into our own skills; nothing installed unread, as the standing rule says).
 
+102. **Three homes: GitHub, Notion, Claude** · recorded 2026-11-27 04:40 ET. Kept unchanged in
+    `docs/prompts/2026-11-27-github-notion-claude.md`. **GitHub** is for version control and updates (the code, the game's
+    data, the builds, the record of every change). **Notion** holds the pure information, **fully broken down** (the
+    world, its systems, the orders, decisions, plans, lessons): the knowledge base agents read one small page at a time.
+    **Claude** codes. It replaces the earlier "the repo is the source of truth" for information: the repo keeps what the
+    code and the build need and the history of changes; Notion is where information lives and is looked up.
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
