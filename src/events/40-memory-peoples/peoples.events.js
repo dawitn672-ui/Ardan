@@ -1695,7 +1695,7 @@
           r: "The riders go, muttering. One of the Seekers stays behind and asks to see if the drums were right about you, with a blade.",
           fx: { trait: "humble", duel: { tier: 2, title: "a Seeker of the Rider", opts: { kind: "duel", place: "the trampled ground by your fire", lethal: false, toYield: true, title: "False rider" } } } },
         { t: "Lead them east to Ulun instead",
-          r: "You take them east, out of everyone's prophecy. The Ulun khan hires three hundred half-orc riders gladly and asks no questions about cords.",
+          r: "You take them east, out of everyone's prophecy. The Ulun king hires three hundred half-orc riders gladly and asks no questions about cords.",
           fx: { coin: 40, honor: 1, lang: "Wind Rider", deed: "Led three hundred half-orc riders east to Ulun" } },
       ],
     },
@@ -1774,7 +1774,7 @@
       cond: (p, C) => C.race(p, "halforc") && C.adult(p) && !C.realm(p, "POL-11", "POL-34", "POL-12") && C.flag(p, "pp_ho_east") && A.S.year - p.flags.pp_ho_east >= 4,
       w: 3, once: true,
       setup: (p, ctx) => { make(p, ctx, { race: "human", realm: "POL-12", sex: "M", age: 22, occ: "a horse-trader of Ulun" }); },
-      text: p => `You rode east with an Ulun horse-trader ${ago(p, "pp_ho_east")} ago and learned to ride properly in a country that looked at your horse, not your tusks. Then you came back west. Now {themFull}, the trader's grandson, rides into {home} with three steppe horses and an offer: the Khan's yam wants riders who speak the western tongues. In Ulun, people still look at the horse.`,
+      text: p => `You rode east with an Ulun horse-trader ${ago(p, "pp_ho_east")} ago and learned to ride properly in a country that looked at your horse, not your tusks. Then you came back west. Now {themFull}, the trader's grandson, rides into {home} with three steppe horses and an offer: the King's yam wants riders who speak the western tongues. In Ulun, people still look at the horse.`,
       choices: [
         { t: "Ride east with him for a season on the yam",
           r: "A season on the Salt Wind stages: a hundred and sixty kilometres a day, a silver tablet on a cord, and keepers who know your name by the third week. You come back west browner and slower to sit still.",

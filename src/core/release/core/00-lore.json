@@ -375,6 +375,7 @@
    "short": "Aldmark",
    "title": "Emperor",
    "type": "empire",
+   "form": "empire",
    "race": "human",
    "cult": "north",
    "capId": "PLC-0003",
@@ -407,21 +408,22 @@
    "comp": {"standing":110000,"heavyHorse":23200,"lightHorse":7400,"elephants":0,"heavyFoot":20000,"spear":13600,"missile":12300,"other":33500},
    "fleet": {"ships":"24 galleys","field":"About 40,000, as two hosts of 20,000"},
    "coin": {"coin":"Ironside mark","worth":1.5},
-   "primer": {"intro":"The iron-ringed empire of the northern plains: black-earth wheat, Millrun horses, Kingsmere amber and the heaviest cavalry in the Westland.","ruler":"Emperor Aldwin Ironside, crowned on Return Day 1081 as his father's son; the lords swear to him on the iron ring every New Year's Day. Capital Kingsmere.","people and land":"9,500,000 people on 1,056,400 km², nearly all human, with 114,000 half-orcs in the southern march and 66,500 dwarves. State faith: the Seven Halls, headed by the Emperor since 1002.","strength":"110,000 standing, 460,000 at full muster; built around stake lines, crossbows and iron-mailed lances. Fleet: 24 galleys and 16 cogs at Cold Bay.","three people to know":"Aldwin Ironside, the Emperor whose bones sink like stone. Ysolde Ravenscar, the spymaster who had a king poisoned without his leave. Garrick Harrow, the marcher lord who wants his war first.","ties":"Allied to Greyhaven and, from June, Ashmere; hostile to Gorath; tense peace with Northreach, cold peace with Sylvaran, rivalry with Varenna and the League of Brannoch; depends on Irondeep's iron."}
+   "primer": {"intro":"The iron-ringed empire of the northern plains: black-earth wheat, Millrun horses, Kingsmere amber and the heaviest cavalry in the Westland.","ruler":"Emperor Aldwin Ironside, crowned on Return Day 1081 as his father's son; the lords swear to him on the iron ring every New Year's Day. Capital Kingsmere.","people and land":"9,500,000 people on 1,056,400 km², nearly all human, with 114,000 half-orcs in the southern march and 66,500 dwarves. State faith: the Seven Halls, headed by the Emperor since 1002.","strength":"110,000 standing, 460,000 at full muster; built around stake lines, crossbows and iron-mailed lances. Fleet: 24 galleys and 16 cogs at Cold Bay.","three people to know":"Aldwin Ironside, the Emperor whose bones sink like stone. Ysolde Ravenscar, the spymaster who had a king poisoned without his leave. Garrick Harrow, the marcher lord who wants his war first.","ties":"Allied to Greyhaven and, from June, Ashmere; hostile to Gorath; tense peace with Northreach, cold peace with Sylvaran, rivalry with Varenna and the Merchant Republic of Brannoch; depends on Irondeep's iron."}
   },
   "POL-02": {
    "id": "POL-02",
-   "name": "Holy See of Solenne",
+   "name": "Principality of Solenne",
    "short": "Solenne",
-   "title": "High Luminary",
-   "type": "theocracy",
+   "title": "Prince-Bishop",
+   "type": "temple principality",
+   "form": "principality",
    "race": "human",
    "cult": "solen",
    "capId": "PLC-0001",
    "capital": "Solenne",
    "area": 282650,
    "color": "#f0b67f",
-   "gov": "theocracy",
+   "gov": "principality of the Temple, its Prince-Bishop elected for life by the Luminaries",
    "ruler": "CHR-0139",
    "pop": 6100000,
    "pops": {"human":6051200,"elf":0,"dwarf":18300,"orc":0,"giant":0,"half-elf":12200,"half-orc":18300},
@@ -447,7 +449,7 @@
    "comp": {"standing":68000,"heavyHorse":4293,"lightHorse":3200,"elephants":0,"heavyFoot":3094,"spear":39000,"missile":11093,"other":7320},
    "fleet": {"ships":"38 galleys","field":"About 18,000 for 30 days"},
    "coin": {"coin":"Solenne sun","worth":0.93},
-   "primer": {"intro":"The Temple of the Returning Sun's own state around the old sun-city, which crowns kings across the Sunlands and keeps the calendar at the Shadow Needle.","ruler":"High Luminary Severin III, elected by the Luminaries in August 1088 on a promise to back Queen Livia; ill since 1103, and the votes for his chair are already being counted. Capital Solenne.","people and land":"6,100,000 people on 282,650 km², almost all human, with 18,300 dwarves and 12,200 half-elves. State faith: the Temple of the Returning Sun; every high office is a priest's.","strength":"68,000 standing, 300,000 at full muster; built around wall-keepers, pilgrim guards and the vowed Knights of the Sun, while crowned allies do the fighting. Fleet: 38 galleys and 12 armed cogs.","three people to know":"Severin III, the dying High Luminary. Marius Quill, the Needle-Keeper who guards the calendar's secret. Crispin Dorn, the Treasurer who needs cheap bread and four votes.","ties":"Allied to Varenna and Morhaven; backs Queen Livia; banks through Ostra's House Lunetti at 8 in 100; rivalry of faith with Velgrad and Drevna; Eldergrove holds Serra's proof over it; the League of Brannoch never paid its tribute."}
+   "primer": {"intro":"The Temple of the Returning Sun's own state around the old sun-city, which crowns kings across the Sunlands and keeps the calendar at the Shadow Needle.","ruler":"Prince-Bishop Severin III, elected by the Luminaries in August 1088 on a promise to back Queen Livia; ill since 1103, and the votes for his chair are already being counted. Capital Solenne.","people and land":"6,100,000 people on 282,650 km², almost all human, with 18,300 dwarves and 12,200 half-elves. State faith: the Temple of the Returning Sun; every high office is a priest's.","strength":"68,000 standing, 300,000 at full muster; built around wall-keepers, pilgrim guards and the vowed Knights of the Sun, while crowned allies do the fighting. Fleet: 38 galleys and 12 armed cogs.","three people to know":"Severin III, the dying Prince-Bishop. Marius Quill, the Needle-Keeper who guards the calendar's secret. Crispin Dorn, the Treasurer who needs cheap bread and four votes.","ties":"Allied to Varenna and Morhaven; backs Queen Livia; banks through Ostra's House Lunetti at 8 in 100; rivalry of faith with Velgrad and Drevna; Eldergrove holds Serra's proof over it; the Merchant Republic of Brannoch never paid its tribute."}
   },
   "POL-03": {
    "id": "POL-03",
@@ -455,6 +457,7 @@
    "short": "Varenna",
    "title": "King",
    "type": "kingdom",
+   "form": "kingdom",
    "race": "human",
    "cult": "solen",
    "capId": "PLC-0008",
@@ -473,7 +476,7 @@
    "income": 2880000,
    "coinName": "Ostran sun (reference)",
    "taxes": "hearth tax;a penny in 20 on market sales;salt tax;tolls at the Crown Road passes",
-   "debts": "1100000 suns to House Lunetti;unpaid crowning gifts to the Holy See",
+   "debts": "1100000 suns to House Lunetti;unpaid crowning gifts to Solenne",
    "exports": "wheat;olive oil;wine;Palella blue woolen cloth;linen;marble;hides",
    "imports": "ship timber from Ashmere and the Highlands;copper;iron;horses from Ulun;rag paper;spices;tin",
    "food": "surplus",
@@ -491,17 +494,18 @@
   },
   "POL-04": {
    "id": "POL-04",
-   "name": "Republic of Lucerna",
+   "name": "Merchant Republic of Lucerna",
    "short": "Lucerna",
-   "title": "Doge",
+   "title": "First Merchant",
    "type": "merchant republic",
+   "form": "merchant republic",
    "race": "human",
    "cult": "solen",
    "capId": "PLC-0002",
    "capital": "Lucerna",
    "area": 60125,
    "color": "#e8d5a0",
-   "gov": "merchant republic",
+   "gov": "merchant republic, its First Merchant elected for life by the Great Council",
    "ruler": "CHR-0184",
    "pop": 750000,
    "pops": {"human":731250,"elf":3000,"dwarf":6000,"orc":0,"giant":0,"half-elf":2250,"half-orc":7500},
@@ -527,7 +531,7 @@
    "comp": {"standing":10000,"heavyHorse":0,"lightHorse":0,"elephants":0,"heavyFoot":1400,"spear":1200,"missile":3800,"other":3600},
    "fleet": {"ships":"About 60 galleys (20 manned)","field":"About 3,000 landed from the fleet"},
    "coin": {"coin":"Lucernan crown","worth":24},
-   "primer": {"intro":"A lagoon republic of 750,000 that feeds the Middle Sea: the Grain Staple, the most trusted gold coin, sea insurance, trained food-tasters and a secret fifth of the dragon toll.","ruler":"Doge Tiberio Doravelli, elected for life by the Great Council of about 300 families on 9 March 1096 and crowned by the High Luminary. Capital Lucerna.","people and land":"750,000 people on 60,125 km², the smallest realm by land, nearly all human, with 7,500 half-orcs and 6,000 dwarves. State faith: the Temple of the Returning Sun.","strength":"10,000 standing, 36,000 at full muster; built around citizen marines, hired swords, the Lagoon Chain and a secret oil cellar. Fleet: about 60 galleys, 20 manned, and 180 cogs.","three people to know":"Tiberio Doravelli, the Doge who knows where the fifth goes. Flavia Morello, who wants the ledger clean. Giulia Bassan, who holds a holy city's grain for a better price.","ties":"Secret partner of Corvasse and of Sabra, which sells it 400 jars of oil a year; partner of Ostra; public friend of Varenna; rival of Qadir; creditor of Ambrel and Greyhaven; buys Tamar's wheat under the Grain Staple."}
+   "primer": {"intro":"A lagoon republic of 750,000 that feeds the Middle Sea: the Grain Staple, the most trusted gold coin, sea insurance, trained food-tasters and a secret fifth of the dragon toll.","ruler":"First Merchant Tiberio Doravelli, elected for life by the Great Council of about 300 families on 9 March 1096 and crowned by the Prince-Bishop. Capital Lucerna.","people and land":"750,000 people on 60,125 km², the smallest realm by land, nearly all human, with 7,500 half-orcs and 6,000 dwarves. State faith: the Temple of the Returning Sun.","strength":"10,000 standing, 36,000 at full muster; built around citizen marines, hired swords, the Lagoon Chain and a secret oil cellar. Fleet: about 60 galleys, 20 manned, and 180 cogs.","three people to know":"Tiberio Doravelli, the First Merchant who knows where the fifth goes. Flavia Morello, who wants the ledger clean. Giulia Bassan, who holds a holy city's grain for a better price.","ties":"Secret partner of Corvasse and of Sabra, which sells it 400 jars of oil a year; partner of Ostra; public friend of Varenna; rival of Qadir; creditor of Ambrel and Greyhaven; buys Tamar's wheat under the Grain Staple."}
   },
   "POL-05": {
    "id": "POL-05",
@@ -535,6 +539,7 @@
    "short": "Ashmere",
    "title": "King",
    "type": "kingdom",
+   "form": "kingdom",
    "race": "human",
    "cult": "north",
    "capId": "PLC-0016",
@@ -575,6 +580,7 @@
    "short": "Sylvaran",
    "title": "Queen",
    "type": "elven realm",
+   "form": "kingdom",
    "race": "elf",
    "cult": "elf",
    "capId": "PLC-0015",
@@ -615,6 +621,7 @@
    "short": "Eldergrove",
    "title": "Queen",
    "type": "elven realm",
+   "form": "kingdom",
    "race": "elf",
    "cult": "elf",
    "capId": "PLC-0014",
@@ -643,7 +650,7 @@
    "rivals": ["POL-02","POL-06"],
    "atWar": [],
    "stability": "steady",
-   "deadline": "March: the Holy See's envoy comes to buy or steal Serra's proof from Queen Saelith",
+   "deadline": "March: Solenne's envoy comes to buy or steal Serra's proof from Queen Saelith",
    "comp": {"standing":5000,"heavyHorse":0,"lightHorse":0,"elephants":0,"heavyFoot":0,"spear":0,"missile":3100,"other":1900},
    "fleet": {"ships":"About 40 longships","field":"About 3,200"},
    "coin": {"coin":"sun","worth":1},
@@ -655,6 +662,7 @@
    "short": "Northreach",
    "title": "King",
    "type": "kingdom",
+   "form": "kingdom",
    "race": "human",
    "cult": "north",
    "capId": "PLC-0029",
@@ -673,7 +681,7 @@
    "income": 128000,
    "coinName": "Ostran sun (reference)",
    "taxes": "a tenth on all tin passing to Kingsmere;ship muster (a longship crew per district);fish tithes to the halls",
-   "debts": "40000 highland silver to the League of Brannoch",
+   "debts": "40000 highland silver to the Merchant Republic of Brannoch",
    "exports": "stockfish and herring;seal oil and furs;amber;walrus ivory and whale tusks;Frostholm tin (re-sold);pine timber and tar",
    "imports": "grain and malt;wine;salt;fine cloth;iron tools",
    "food": "deficit",
@@ -687,21 +695,22 @@
    "comp": {"standing":10000,"heavyHorse":0,"lightHorse":200,"elephants":0,"heavyFoot":3200,"spear":0,"missile":1200,"other":5400},
    "fleet": {"ships":"48 longships","field":"About 8,000 at home; 1,000–2,000 on skis in winter"},
    "coin": {"coin":"hacksilver","worth":0.71},
-   "primer": {"intro":"The small kingdom of fog, forest, ice and longships that beat an empire in the Northreach Rising; stockfish, amber and Frostholm tin re-sold.","ruler":"King Eirik III Winterborn, crowned on Lantern Night 1090 after his father Bjorn died; he swore on the Oathfather's ring to keep the Free Halls. Capital Wolfhaven.","people and land":"800,000 people on 159,550 km², almost all human. State faith: the Seven Halls, in the Free Hall form where villages choose their priests.","strength":"10,000 standing, 40,000 at full muster; built around ice-walkers, the king's hird and longship raids on the ebb. Fleet: 48 longships and 15 cogs.","three people to know":"Eirik III Winterborn, who promised Aldmark ten years of silence. Halvard Stagg, the jarl bringing a cook to the Thing. Oddny Tinmark, the Tin Reeve whose balance has cheated the giants for years.","ties":"Tense peace with Aldmark since Coldhaven (1093); the Tin Compact with Frostholm; allied to the League of Brannoch, which lent 40,000 silver due by 1111; secret trade in Hrimfell tusks sold as unicorn horn; secret bolts from Irondeep."}
+   "primer": {"intro":"The small kingdom of fog, forest, ice and longships that beat an empire in the Northreach Rising; stockfish, amber and Frostholm tin re-sold.","ruler":"King Eirik III Winterborn, crowned on Lantern Night 1090 after his father Bjorn died; he swore on the Oathfather's ring to keep the Free Halls. Capital Wolfhaven.","people and land":"800,000 people on 159,550 km², almost all human. State faith: the Seven Halls, in the Free Hall form where villages choose their priests.","strength":"10,000 standing, 40,000 at full muster; built around ice-walkers, the king's hird and longship raids on the ebb. Fleet: 48 longships and 15 cogs.","three people to know":"Eirik III Winterborn, who promised Aldmark ten years of silence. Halvard Stagg, the jarl bringing a cook to the Thing. Oddny Tinmark, the Tin Reeve whose balance has cheated the giants for years.","ties":"Tense peace with Aldmark since Coldhaven (1093); the Tin Compact with Frostholm; allied to the Merchant Republic of Brannoch, which lent 40,000 silver due by 1111; secret trade in Hrimfell tusks sold as unicorn horn; secret bolts from Irondeep."}
   },
   "POL-09": {
    "id": "POL-09",
-   "name": "Halls of Frostholm",
+   "name": "Kingdom of Frostholm",
    "short": "Frostholm",
-   "title": "Chieftain",
+   "title": "King",
    "type": "giant territory",
+   "form": "kingdom",
    "race": "giant",
    "cult": "giant",
    "capId": "PLC-0034",
    "capital": "Skarfell",
    "area": 122525,
    "color": "#c2a894",
-   "gov": "land of giant halls, each ruled by its eldest",
+   "gov": "kingdom of giant halls, each ruled by its eldest, under a king chosen at the Thing",
    "ruler": "CHR-0075",
    "pop": 18100,
    "pops": {"human":15000,"elf":0,"dwarf":0,"orc":0,"giant":3100,"half-elf":0,"half-orc":0},
@@ -727,7 +736,7 @@
    "comp": {"standing":300,"heavyHorse":0,"lightHorse":0,"elephants":0,"heavyFoot":0,"spear":100,"missile":0,"other":200},
    "fleet": {"ships":"None","field":"About 30 pairs and 300 tribute-folk for a few days"},
    "coin": {"coin":"tin bar","worth":2.5},
-   "primer": {"intro":"The giant halls of the far northern isle: 3,100 giants and the human tribute-folk who serve them, living on tin, walrus ivory, whale oil and mammoth wool.","ruler":"Chieftain Skarvi the Younger, chosen at the Thing of 1078 as his aunt's heir; each hall is ruled by its eldest, and the Skarfell chieftain speaks for all of them to humans. Capital Skarfell.","people and land":"18,100 people on 122,525 km²: 3,100 giants and 15,000 humans. Faith: the Mother Under the Ice, who sends seals and whales to her children.","strength":"300 standing (160 giants, 140 tribute-folk), 1,080 at full muster; built around giants fighting back to back in the winter dark with spearmen at their flanks. No fleet.","three people to know":"Skarvi the Younger, who sold tin he had sworn not to. Bergthor of Haugberg, the rival eldest who waits for 1106. Solvei of Torvik, the hunter with a harpoon head.","ties":"Tin for grain and ale with Northreach since 1002; kinship with Hrimfell, the other last giant people, last crossing 1019; Aldmark's wary interest in buying the tin direct; ivory and oil for Eldergrove's longships."}
+   "primer": {"intro":"The giant halls of the far northern isle: 3,100 giants and the human tribute-folk who serve them, living on tin, walrus ivory, whale oil and mammoth wool.","ruler":"King Skarvi the Younger, chosen at the Thing of 1078 as his aunt's heir; each hall is ruled by its eldest, and the Skarfell king speaks for all of them to humans. Capital Skarfell.","people and land":"18,100 people on 122,525 km²: 3,100 giants and 15,000 humans. Faith: the Mother Under the Ice, who sends seals and whales to her children.","strength":"300 standing (160 giants, 140 tribute-folk), 1,080 at full muster; built around giants fighting back to back in the winter dark with spearmen at their flanks. No fleet.","three people to know":"Skarvi the Younger, who sold tin he had sworn not to. Bergthor of Haugberg, the rival eldest who waits for 1106. Solvei of Torvik, the hunter with a harpoon head.","ties":"Tin for grain and ale with Northreach since 1002; kinship with Hrimfell, the other last giant people, last crossing 1019; Aldmark's wary interest in buying the tin direct; ivory and oil for Eldergrove's longships."}
   },
   "POL-10": {
    "id": "POL-10",
@@ -735,6 +744,7 @@
    "short": "Irondeep",
    "title": "Queen",
    "type": "dwarven hold",
+   "form": "kingdom",
    "race": "dwarf",
    "cult": "dwarf",
    "capId": "PLC-0021",
@@ -807,21 +817,22 @@
    "comp": {"standing":24000,"heavyHorse":2300,"lightHorse":15900,"elephants":0,"heavyFoot":1600,"spear":600,"missile":0,"other":3600},
    "fleet": {"ships":"None","field":"About 36,000 riders for 30 days; 20,000 for a summer"},
    "coin": {"coin":"horses and sheep","worth":40},
-   "primer": {"intro":"The orc clans of the southern grass, held together by the Line of Gorath: horses, felt and relay riders who win in ten minutes or not at all.","ruler":"War-Chief Vrag, grandson of Gorath, chosen at 26 in 1098 to stop the clans splitting; shamans confirm a war-chief and the Grey Mothers can overrule him. He has a weak heart. Capital Urgol.","people and land":"1,600,000 people on 1,345,050 km²: 1,312,000 orcs, 160,000 humans, 128,000 half-orcs. State faith: the Storm and the Mare, with a Drum Council of senior shamans.","strength":"24,000 standing, 90,000 at full muster, women riding as well as men; built around relay charges by riders who tire in ten minutes. No fleet.","three people to know":"Vrag, the war-chief with the weak heart. Tarn Halfblood, who may be the rider of two peoples. Harkun the Drum-Master, who must judge him.","ties":"Hostile to Aldmark; enemies of Ulun since the Salt Shore (1041); rivalry with the League of Brannoch and Ughrak; an old border with Sylvaran; its Nagoth clans sell wool and horses at Morhaven's and Ostra's market towns."}
+   "primer": {"intro":"The orc clans of the southern grass, held together by the Line of Gorath: horses, felt and relay riders who win in ten minutes or not at all.","ruler":"War-Chief Vrag, grandson of Gorath, chosen at 26 in 1098 to stop the clans splitting; shamans confirm a war-chief and the Grey Mothers can overrule him. He has a weak heart. Capital Urgol.","people and land":"1,600,000 people on 1,345,050 km²: 1,312,000 orcs, 160,000 humans, 128,000 half-orcs. State faith: the Storm and the Mare, with a Drum Council of senior shamans.","strength":"24,000 standing, 90,000 at full muster, women riding as well as men; built around relay charges by riders who tire in ten minutes. No fleet.","three people to know":"Vrag, the war-chief with the weak heart. Tarn Halfblood, who may be the rider of two peoples. Harkun the Drum-Master, who must judge him.","ties":"Hostile to Aldmark; enemies of Ulun since the Salt Shore (1041); rivalry with the Merchant Republic of Brannoch and Ughrak; an old border with Sylvaran; its Nagoth clans sell wool and horses at Morhaven's and Ostra's market towns."}
   },
   "POL-12": {
    "id": "POL-12",
-   "name": "Khanate of Ulun",
+   "name": "Kingdom of Ulun",
    "short": "Ulun",
-   "title": "Khan",
-   "type": "nomad confederation",
+   "title": "King",
+   "type": "nomad clans",
+   "form": "kingdom",
    "race": "human",
    "cult": "steppe",
    "capId": "PLC-0018",
    "capital": "Kharsa",
    "area": 407700,
    "color": "#e3c4e8",
-   "gov": "confederacy of nine tribes under the Compact of 925",
+   "gov": "kingdom of nine tribes under the Compact of 925, its king raised by the chiefs",
    "ruler": "CHR-0326",
    "pop": 1400000,
    "pops": {"human":1302000,"elf":0,"dwarf":0,"orc":28000,"giant":0,"half-elf":0,"half-orc":70000},
@@ -832,7 +843,7 @@
    "ships": 60,
    "income": 112000,
    "coinName": "Ostran sun (reference)",
-   "taxes": "one horse in thirty from each tribe;a tenth of every horse sold at the channel fairs;the oil money (to the khan alone)",
+   "taxes": "one horse in thirty from each tribe;a tenth of every horse sold at the channel fairs;the oil money (to the king alone)",
    "debts": "none",
    "exports": "horses (about 20,000 a year);camels;felt;caviar and dried sturgeon;salt;fire-oil (secret;to Queen Livia only)",
    "imports": "grain;cloth;iron and steel;wine;silver",
@@ -847,21 +858,22 @@
    "comp": {"standing":20000,"heavyHorse":1000,"lightHorse":16900,"elephants":0,"heavyFoot":0,"spear":0,"missile":0,"other":2100},
    "fleet": {"ships":"About 60 small boats (Salt Sea)","field":"About 32,000 riders with 120,000 horses for 40 days"},
    "coin": {"coin":"silver ingot","worth":143},
-   "primer": {"intro":"Nine horse tribes on the steppe by the Salt Sea, bound by the Compact of 925: 20,000 horses a year, the yam post, sturgeon and the only fire-oil north of Sabra.","ruler":"Khan Ozbek Kharsan, raised by the nine chiefs in 1079 as his uncle's heir and first among equals; their kurultai can force a khan out. He is nearly blind. Capital Kharsa.","people and land":"1,400,000 people on 407,700 km²: 1,302,000 humans, 70,000 half-orcs, 28,000 orcs. Faith: the Eternal Blue; two tribes follow the Path of the Well.","strength":"20,000 standing, 80,000 at full muster, every herder a rider and archer; built around horse archers who never close. Fleet: about 60 small boats on the Salt Sea.","three people to know":"Ozbek Kharsan, the blind khan who sells fire. Serik Kharsan, the heir who wants the oil stopped. Yesun of the Red Wind, who knows what lies in the Khatun's chest.","ties":"Enemies of Gorath; horses for grain and cloth with Greyhaven since 925; the Horse Road to Morhaven, which now carries the oil; a secret deal with Queen Livia; friendship with Ughrak."}
+   "primer": {"intro":"Nine horse tribes on the steppe by the Salt Sea, bound by the Compact of 925: 20,000 horses a year, the yam post, sturgeon and the only fire-oil north of Sabra.","ruler":"King Ozbek Kharsan, raised by the nine chiefs in 1079 as his uncle's heir and first among equals; their kurultai can force a king out. He is nearly blind. Capital Kharsa.","people and land":"1,400,000 people on 407,700 km²: 1,302,000 humans, 70,000 half-orcs, 28,000 orcs. Faith: the Eternal Blue; two tribes follow the Path of the Well.","strength":"20,000 standing, 80,000 at full muster, every herder a rider and archer; built around horse archers who never close. Fleet: about 60 small boats on the Salt Sea.","three people to know":"Ozbek Kharsan, the blind king who sells fire. Serik Kharsan, the heir who wants the oil stopped. Yesun of the Red Wind, who knows what lies in the Queen's chest.","ties":"Enemies of Gorath; horses for grain and cloth with Greyhaven since 925; the Horse Road to Morhaven, which now carries the oil; a secret deal with Queen Livia; friendship with Ughrak."}
   },
   "POL-13": {
    "id": "POL-13",
-   "name": "League of Brannoch",
+   "name": "Merchant Republic of Brannoch",
    "short": "Brannoch",
    "title": "First Speaker",
-   "type": "mountain confederation",
+   "type": "mountain valleys",
+   "form": "merchant republic",
    "race": "human",
    "cult": "north",
    "capId": "PLC-0032",
    "capital": "Highcastle",
    "area": 214050,
    "color": "#a8c5da",
-   "gov": "league of mountain valleys under the Charter of Highcastle",
+   "gov": "merchant republic of mountain valleys under the Charter of Highcastle",
    "ruler": "CHR-0057",
    "pop": 1400000,
    "pops": {"human":1386000,"elf":0,"dwarf":8400,"orc":0,"giant":0,"half-elf":0,"half-orc":5600},
@@ -887,7 +899,7 @@
    "comp": {"standing":18000,"heavyHorse":0,"lightHorse":0,"elephants":0,"heavyFoot":0,"spear":0,"missile":9200,"other":8800},
    "fleet": {"ships":"None","field":"About 12,000 in the passes; 4,000 abroad under one contract"},
    "coin": {"coin":"highland silver","worth":1.04},
-   "primer": {"intro":"A league of mountain valleys under the Charter of Highcastle (336), where no one may be king: silver mines, cheese and the heavy crossbows every realm hires.","ruler":"First Speaker Helga Stonefoot, elected for life by the Council of Valleys in July 1099 by a single vote; she once saved a child from a Crown Eagle. Capital Highcastle.","people and land":"1,400,000 people on 214,050 km², almost all human, with 8,400 dwarves. State faith: the Seven Halls, in the Free Hall form.","strength":"18,000 standing, 4,000 of them abroad on contract until April, 72,000 at full muster; built around heavy crossbows for hire and gorges that eat armies. No fleet.","three people to know":"Helga Stonefoot, whose middle course may please no one. Ulric Greycloak, the Captain-General who took Aldmark's silver early. Tomas Redford, the Speaker whose vote was bought and who wants Helga's seat.","ties":"Wary peace with Aldmark, whose Edict of the Halls it refused; allied to Northreach, which owes it 40,000 silver; guards its glens against Gorath with no treaty ever signed; sells Ashmere bolts; Greycloaks have served Ostra since 968; never paid the Holy See's tribute."}
+   "primer": {"intro":"A republic of mountain valleys under the Charter of Highcastle (336), where no one may be king: silver mines, cheese and the heavy crossbows every realm hires.","ruler":"First Speaker Helga Stonefoot, elected for life by the Council of Valleys in July 1099 by a single vote; she once saved a child from a Crown Eagle. Capital Highcastle.","people and land":"1,400,000 people on 214,050 km², almost all human, with 8,400 dwarves. State faith: the Seven Halls, in the Free Hall form.","strength":"18,000 standing, 4,000 of them abroad on contract until April, 72,000 at full muster; built around heavy crossbows for hire and gorges that eat armies. No fleet.","three people to know":"Helga Stonefoot, whose middle course may please no one. Ulric Greycloak, the Captain-General who took Aldmark's silver early. Tomas Redford, the Speaker whose vote was bought and who wants Helga's seat.","ties":"Wary peace with Aldmark, whose Edict of the Halls it refused; allied to Northreach, which owes it 40,000 silver; guards its glens against Gorath with no treaty ever signed; sells Ashmere bolts; Greycloaks have served Ostra since 968; never paid Solenne's tribute."}
   },
   "POL-14": {
    "id": "POL-14",
@@ -895,6 +907,7 @@
    "short": "Greyhaven",
    "title": "King",
    "type": "kingdom",
+   "form": "kingdom",
    "race": "human",
    "cult": "north",
    "capId": "PLC-0023",
@@ -935,6 +948,7 @@
    "short": "Morhaven",
    "title": "King",
    "type": "kingdom",
+   "form": "kingdom",
    "race": "human",
    "cult": "solen",
    "capId": "PLC-0025",
@@ -953,7 +967,7 @@
    "income": 572000,
    "coinName": "Ostran sun (reference)",
    "taxes": "toll on every horse and camel on the Horse Road;harbor dues at Felano and Morhaven;land tax",
-   "debts": "350000 suns to House Lunetti;unpaid crowning gifts to the Holy See",
+   "debts": "350000 suns to House Lunetti;unpaid crowning gifts to Solenne",
    "exports": "wheat;wine;timber;iron from the hills;horses resold west;salt fish",
    "imports": "steppe horses and camels;felt;caviar;spices;cloth;rag paper;fire-oil passing through to Tessar (secret)",
    "food": "surplus",
@@ -974,14 +988,15 @@
    "name": "Free City of Ostra",
    "short": "Ostra",
    "title": "First Banker",
-   "type": "city-state",
+   "type": "free city",
+   "form": "free city",
    "race": "human",
    "cult": "solen",
    "capId": "PLC-0009",
    "capital": "Ostra",
    "area": 187600,
    "color": "#b8b3e0",
-   "gov": "city-state run by the Council of Twelve",
+   "gov": "free city run by the Council of Twelve",
    "ruler": "CHR-0208",
    "pop": 2400000,
    "pops": {"human":2356800,"elf":4800,"dwarf":14400,"orc":0,"giant":0,"half-elf":4800,"half-orc":19200},
@@ -1011,17 +1026,18 @@
   },
   "POL-17": {
    "id": "POL-17",
-   "name": "Sultanate of Qadir",
+   "name": "Kingdom of Qadir",
    "short": "Qadir",
-   "title": "Sultan",
-   "type": "sultanate",
+   "title": "King",
+   "type": "well realm",
+   "form": "kingdom",
    "race": "human",
    "cult": "desert",
    "capId": "PLC-0007",
    "capital": "Qadira",
    "area": 390800,
    "color": "#d9c38c",
-   "gov": "sultanate",
+   "gov": "absolute kingdom, its king weighed against the Book of Wells",
    "ruler": "CHR-0479",
    "pop": 2100000,
    "pops": {"human":2089500,"elf":0,"dwarf":0,"orc":0,"giant":0,"half-elf":0,"half-orc":10500},
@@ -1047,7 +1063,7 @@
    "comp": {"standing":28000,"heavyHorse":2200,"lightHorse":3000,"elephants":0,"heavyFoot":600,"spear":6900,"missile":6300,"other":9000},
    "fleet": {"ships":"34 galleys (12 leaking; 8 more laid up)","field":"About 10,000 over the Sabun Pass; 15,000 on the coast"},
    "coin": {"coin":"silver qadr","worth":2.07},
-   "primer": {"intro":"The sultanate of passes and galleys on the desert coast: rag paper, which only Qadir makes, dates, copper, and the House of Water where the Book of Wells is judged.","ruler":"Sultan Zahir IV Zahiri, Guardian of the Water, crowned on 21 April 1092 as eldest son; bedridden with kidney stones since November 1104. Capital Qadira.","people and land":"2,100,000 people on 390,800 km², almost all human. State faith: the Path of the Well, whose Well-Keepers can declare a sultan's order against the Book.","strength":"28,000 standing, 100,000 at full muster; built around holding the Sunwall and never crossing open desert without guides. Fleet: 34 galleys, 12 of them leaking, and about 120 merchant ships.","three people to know":"Zahir IV Zahiri, the sick Sultan. Jalal Zahiri, his brother, who built the fleet and wants to use it. Rafiq the Quiet, the spymaster hunting journeymen and jars.","ties":"Rivalry with Sabra since its breakaway in 1025 and with Lucerna, which paid for it; hostility with Corvasse, whose toll Qadiri ships refuse; a secret water-contract with Sahrim; the Delta Wells quarrel with Tamar; the Scale Pact with Zanara; fellow Well realm with Ambrel."}
+   "primer": {"intro":"The kingdom of passes and galleys on the desert coast: rag paper, which only Qadir makes, dates, copper, and the House of Water where the Book of Wells is judged.","ruler":"King Zahir IV Zahiri, Guardian of the Water, crowned on 21 April 1092 as eldest son; bedridden with kidney stones since November 1104. Capital Qadira.","people and land":"2,100,000 people on 390,800 km², almost all human. State faith: the Path of the Well, whose Well-Keepers can declare a king's order against the Book.","strength":"28,000 standing, 100,000 at full muster; built around holding the Sunwall and never crossing open desert without guides. Fleet: 34 galleys, 12 of them leaking, and about 120 merchant ships.","three people to know":"Zahir IV Zahiri, the sick King. Jalal Zahiri, his brother, who built the fleet and wants to use it. Rafiq the Quiet, the spymaster hunting journeymen and jars.","ties":"Rivalry with Sabra since its breakaway in 1025 and with Lucerna, which paid for it; hostility with Corvasse, whose toll Qadiri ships refuse; a secret water-contract with Sahrim; the Delta Wells quarrel with Tamar; the Scale Pact with Zanara; fellow Well realm with Ambrel."}
   },
   "POL-18": {
    "id": "POL-18",
@@ -1055,6 +1071,7 @@
    "short": "Tamar",
    "title": "King",
    "type": "kingdom",
+   "form": "kingdom",
    "race": "human",
    "cult": "desert",
    "capId": "PLC-0004",
@@ -1091,17 +1108,18 @@
   },
   "POL-19": {
    "id": "POL-19",
-   "name": "Sahrim Confederacy",
+   "name": "Kingdom of Sahrim",
    "short": "Sahrim",
-   "title": "Speaker",
-   "type": "nomad confederation",
+   "title": "King",
+   "type": "nomad clans",
+   "form": "kingdom",
    "race": "human",
    "cult": "desert",
    "capId": "PLC-0027",
    "capital": "Zarak",
    "area": 2206625,
    "color": "#f4a6a6",
-   "gov": "confederation of 23 clans",
+   "gov": "kingdom of 23 clans, its king acclaimed for life by the clan chiefs",
    "ruler": "CHR-0517",
    "pop": 1300000,
    "pops": {"human":1287000,"elf":0,"dwarf":0,"orc":0,"giant":0,"half-elf":0,"half-orc":13000},
@@ -1127,7 +1145,7 @@
    "comp": {"standing":18000,"heavyHorse":0,"lightHorse":12600,"elephants":0,"heavyFoot":0,"spear":800,"missile":1900,"other":2700},
    "fleet": {"ships":"None","field":"About 20,000 in the Southern Hills; 5,000 at one well group"},
    "coin": {"coin":"salt slab","worth":6},
-   "primer": {"intro":"The largest realm on the map and nearly all of it Red Waste: 23 camel clans who hold the desert because nobody else can cross it, selling salt, guides and escort, and guarding the Well of Samar.","ruler":"Speaker Tariq Bahar, acclaimed for life by the clan chiefs at Zarak on 11 February 1087 as his uncle's heir; any clan may walk away from a decision it did not swear to. Capital Zarak.","people and land":"1,300,000 people on 2,206,625 km², almost all human. State faith: the Path of the Well, in the Riders' form; the Keeper of the First Well guards the Well of Samar with them.","strength":"18,000 standing, 72,000 at full muster, every grown man of the 23 clans; built around camel riders who never fight for ground and hold the desert by its wells. No fleet.","three people to know":"Tariq Bahar, the Speaker who sells silence to a Sultan. Harith Sayf, who would close the Salt Road. Salma Bahar, the Well-Mother asking about missing children.","ties":"An uneasy Treaty of the Salt Road with Zanara (1063); a secret water-contract with Qadir, which swore never to send soldiers to the Well; the Marad children quarrel with Sabra; natron, linen and grain across the Waste with Tamar."}
+   "primer": {"intro":"The largest realm on the map and nearly all of it Red Waste: 23 camel clans who hold the desert because nobody else can cross it, selling salt, guides and escort, and guarding the Well of Samar.","ruler":"King Tariq Bahar, acclaimed for life by the clan chiefs at Zarak on 11 February 1087 as his uncle's heir; any clan may walk away from a decision it did not swear to. Capital Zarak.","people and land":"1,300,000 people on 2,206,625 km², almost all human. State faith: the Path of the Well, in the Riders' form; the Keeper of the First Well guards the Well of Samar with them.","strength":"18,000 standing, 72,000 at full muster, every grown man of the 23 clans; built around camel riders who never fight for ground and hold the desert by its wells. No fleet.","three people to know":"Tariq Bahar, the King who sells silence to a King. Harith Sayf, who would close the Salt Road. Salma Bahar, the Well-Mother asking about missing children.","ties":"An uneasy Treaty of the Salt Road with Zanara (1063); a secret water-contract with Qadir, which swore never to send soldiers to the Well; the Marad children quarrel with Sabra; natron, linen and grain across the Waste with Tamar."}
   },
   "POL-20": {
    "id": "POL-20",
@@ -1135,6 +1153,7 @@
    "short": "Zanara",
    "title": "Emperor",
    "type": "empire",
+   "form": "empire",
    "race": "human",
    "cult": "zanara",
    "capId": "PLC-0005",
@@ -1171,17 +1190,18 @@
   },
   "POL-21": {
    "id": "POL-21",
-   "name": "Kesh",
+   "name": "Merchant Republic of Kesh",
    "short": "Kesh",
    "title": "Prince",
-   "type": "city league",
+   "type": "merchant towns",
+   "form": "merchant republic",
    "race": "human",
    "cult": "zanara",
    "capId": "PLC-0026",
    "capital": "Kesh",
    "area": 253750,
    "color": "#b8b3e0",
-   "gov": "league of four towns run by a council of merchant houses",
+   "gov": "merchant republic of four towns, its Prince elected by a council of merchant houses",
    "ruler": "CHR-0560",
    "pop": 2200000,
    "pops": {"human":2193400,"elf":2200,"dwarf":2200,"orc":0,"giant":0,"half-elf":2200,"half-orc":0},
@@ -1203,11 +1223,11 @@
    "rivals": ["POL-20","POL-30"],
    "atWar": [],
    "stability": "steady",
-   "deadline": "Fri 1 Apr: Sultan Iskandar's fleet sails for the Isle of Pearls with Keshi ships",
+   "deadline": "Fri 1 Apr: King Iskandar's fleet sails for the Isle of Pearls with Keshi ships",
    "comp": {"standing":22000,"heavyHorse":0,"lightHorse":0,"elephants":200,"heavyFoot":500,"spear":1500,"missile":5400,"other":14400},
    "fleet": {"ships":"About 45 fighting ships","field":"About 12,000 ashore; 4,000 overseas"},
    "coin": {"coin":"kesh","worth":0.86},
-   "primer": {"intro":"Four merchant towns on the pepper coast run by a council of houses: black pepper, cinnamon bark, hardwoods, pearls, and a fleet that fights by night and with fire.","ruler":"Prince Amani Keshari, elected by the council in 1092 as his father's heir; he married Laila Maruang of Ambrel in 1101, borrowed 200,000 suns from Ambrel merchants and secretly pawned the harbor dues of 1105. Capital Kesh.","people and land":"2,200,000 people on 253,750 km², almost all human. State faith: the Thousand Ancestors.","strength":"22,000 standing, 100,000 at full muster, the hill conscripts for defense only; built around fighting at sea by night and with fire, and ashore from the forest. Fleet: about 45 fighting ships and 150 merchantmen.","three people to know":"Amani Keshari, the prince who pawned his harbor. Laila Maruang, the princess between her brother and her husband's house. Hamisi Monuri, the merchant who would sell the princedom.","ties":"Allied to Ambrel by the marriage of 1101; trade rivalry with Ranpur, whose pepper undercuts Kesh by the Nagora road; a quarrel with Zanara over the eastern road; spice up the Monundi to Abara and up the Monuti through Tamar."}
+   "primer": {"intro":"Four merchant towns on the pepper coast run by a council of houses: black pepper, cinnamon bark, hardwoods, pearls, and a fleet that fights by night and with fire.","ruler":"Prince Amani Keshari, elected by the council in 1092 as his father's heir; he married Laila Maruang of Ambrel in 1101, borrowed 200,000 suns from Ambrel merchants and secretly pawned the harbor dues of 1105. Capital Kesh.","people and land":"2,200,000 people on 253,750 km², almost all human. State faith: the Thousand Ancestors.","strength":"22,000 standing, 100,000 at full muster, the hill conscripts for defense only; built around fighting at sea by night and with fire, and ashore from the forest. Fleet: about 45 fighting ships and 150 merchantmen.","three people to know":"Amani Keshari, the prince who pawned his harbor. Laila Maruang, the princess between her brother and her husband's house. Hamisi Monuri, the merchant who would sell the republic.","ties":"Allied to Ambrel by the marriage of 1101; trade rivalry with Ranpur, whose pepper undercuts Kesh by the Nagora road; a quarrel with Zanara over the eastern road; spice up the Monundi to Abara and up the Monuti through Tamar."}
   },
   "POL-22": {
    "id": "POL-22",
@@ -1215,6 +1235,7 @@
    "short": "Abara",
    "title": "King",
    "type": "kingdom",
+   "form": "kingdom",
    "race": "human",
    "cult": "zanara",
    "capId": "PLC-0010",
@@ -1255,6 +1276,7 @@
    "short": "Hrimfell",
    "title": "King",
    "type": "giant territory",
+   "form": "kingdom",
    "race": "giant",
    "cult": "giant",
    "capId": "PLC-0033",
@@ -1291,17 +1313,18 @@
   },
   "POL-24": {
    "id": "POL-24",
-   "name": "Emirate of Sabra",
+   "name": "Principality of Sabra",
    "short": "Sabra",
-   "title": "Emir",
-   "type": "emirate",
+   "title": "Prince",
+   "type": "well realm",
+   "form": "principality",
    "race": "human",
    "cult": "desert",
    "capId": "PLC-0030",
    "capital": "Sabra",
    "area": 392225,
    "color": "#a3d9c9",
-   "gov": "emirate",
+   "gov": "absolute principality, held from father to son",
    "ruler": "CHR-0529",
    "pop": 1200000,
    "pops": {"human":1195200,"elf":0,"dwarf":0,"orc":0,"giant":0,"half-elf":0,"half-orc":4800},
@@ -1327,7 +1350,7 @@
    "comp": {"standing":17000,"heavyHorse":0,"lightHorse":6000,"elephants":0,"heavyFoot":0,"spear":4500,"missile":1900,"other":4600},
    "fleet": {"ships":"14 galleys, 30 fire-boats","field":"About 8,000"},
    "coin": {"coin":"Sabran dinar","worth":27.4},
-   "primer": {"intro":"The pearl emirate that broke from Qadir in 1025, rich on pearls, dates and the \"lamp oil\" boiled on its oil shore, which burns fleets and feeds Corvasse's dragon.","ruler":"Emir Karim Sabrani, Emir since 2 October 1086 as his father's son; the oil trade is run from his own treasury and never discussed in council, and his chest has doubled to about 800,000 suns. Capital Sabra.","people and land":"1,200,000 people on 392,225 km², almost all human. State faith: the Path of the Well, in the Wells form.","strength":"17,000 standing, 60,000 at full muster; built around never meeting a fleet head-on but burning it, and camel riders who fight at noon. Fleet: 14 galleys, 30 fire-boats and about 400 pearling boats as scouts.","three people to know":"Karim Sabrani, the Emir who never says the word oil in council. Tahir Sabrani, the son who wants to strike first. Qasim Nafari, the oil-master who counts every returned empty.","ties":"Secret oil supplier to Corvasse since 1051 and to Lucerna, whose loans paid for the revolt; rivalry with Qadir; the Marad children quarrel with Sahrim; the Gold Road caravan from Zanara reaches it each spring."}
+   "primer": {"intro":"The pearl principality that broke from Qadir in 1025, rich on pearls, dates and the \"lamp oil\" boiled on its oil shore, which burns fleets and feeds Corvasse's dragon.","ruler":"Prince Karim Sabrani, Prince since 2 October 1086 as his father's son; the oil trade is run from his own treasury and never discussed in council, and his chest has doubled to about 800,000 suns. Capital Sabra.","people and land":"1,200,000 people on 392,225 km², almost all human. State faith: the Path of the Well, in the Wells form.","strength":"17,000 standing, 60,000 at full muster; built around never meeting a fleet head-on but burning it, and camel riders who fight at noon. Fleet: 14 galleys, 30 fire-boats and about 400 pearling boats as scouts.","three people to know":"Karim Sabrani, the Prince who never says the word oil in council. Tahir Sabrani, the son who wants to strike first. Qasim Nafari, the oil-master who counts every returned empty.","ties":"Secret oil supplier to Corvasse since 1051 and to Lucerna, whose loans paid for the revolt; rivalry with Qadir; the Marad children quarrel with Sahrim; the Gold Road caravan from Zanara reaches it each spring."}
   },
   "POL-25": {
    "id": "POL-25",
@@ -1335,6 +1358,7 @@
    "short": "Velgrad",
    "title": "King",
    "type": "kingdom",
+   "form": "kingdom",
    "race": "human",
    "cult": "eastnorth",
    "capId": "PLC-0011",
@@ -1375,6 +1399,7 @@
    "short": "Drevna",
    "title": "Queen",
    "type": "kingdom",
+   "form": "kingdom",
    "race": "human",
    "cult": "eastnorth",
    "capId": "PLC-0013",
@@ -1411,17 +1436,18 @@
   },
   "POL-27": {
    "id": "POL-27",
-   "name": "Abbey of Skyhold",
+   "name": "Principality of Skyhold",
    "short": "Skyhold",
-   "title": "Abbot",
-   "type": "theocracy",
+   "title": "Prince-Abbot",
+   "type": "temple principality",
+   "form": "principality",
    "race": "human",
    "cult": "sky",
    "capId": "PLC-0031",
    "capital": "Skyhold",
    "area": 402425,
    "color": "#a8c5da",
-   "gov": "monastic theocracy",
+   "gov": "principality of the White Stair, ruled by its Prince-Abbot",
    "ruler": "CHR-0403",
    "pop": 350000,
    "pops": {"human":348250,"elf":0,"dwarf":1750,"orc":0,"giant":0,"half-elf":0,"half-orc":0},
@@ -1443,11 +1469,11 @@
    "rivals": ["POL-29"],
    "atWar": [],
    "stability": "brittle",
-   "deadline": "May or June: Brother Pema's search diary is carried to the dying Abbot Tashen",
+   "deadline": "May or June: Brother Pema's search diary is carried to the dying Prince-Abbot Tashen",
    "comp": {"standing":3600,"heavyHorse":0,"lightHorse":0,"elephants":0,"heavyFoot":0,"spear":0,"missile":1260,"other":2340},
    "fleet": {"ships":"None","field":"About 5,000 on the Roof"},
    "coin": {"coin":"silver by weight","worth":0.71},
-   "primer": {"intro":"The monastery-state on the Roof of the World: the White Stair, sky burials, salt and borax from the dry lakes, yak wool, and guards who have sworn never to kill.","ruler":"Abbot Tashen, 13th Abbot of the White Stair, found as a child and named in September 1061 as the reborn abbot; the search is disputed. He coughs blood, and Steward Sonam runs the daily rule. Capital Skyhold.","people and land":"350,000 people on 402,425 km², almost all human. State faith: the Way of the Open Sky; the Red Stair sect of the High Wastes rejects the 13th Abbot.","strength":"3,600 standing (2,400 Stair Guard with staves and slings, 300 Snowborn Guides), 16,000 at full muster; built around thin air, which is the wall, and guards who do not kill. No fleet.","three people to know":"Tashen, the dying Abbot with a sealed letter for his rival. Norbu of the Red Stair, who says the search found the wrong child. Sonam of Skyhold, the Steward buying steel.","ties":"Salt trade with Drevna under the Salt Letters of Eaglespire; free passage for its salt through Stonehold's tolls since 650; a quarrel with Emberdeep over the dragon of Kardeep; the salt trail to Ranpur, run since 521."}
+   "primer": {"intro":"The monastery-state on the Roof of the World: the White Stair, sky burials, salt and borax from the dry lakes, yak wool, and guards who have sworn never to kill.","ruler":"Prince-Abbot Tashen, 13th Abbot of the White Stair, found as a child and named in September 1061 as the reborn abbot; the search is disputed. He coughs blood, and Steward Sonam runs the daily rule. Capital Skyhold.","people and land":"350,000 people on 402,425 km², almost all human. State faith: the Way of the Open Sky; the Red Stair sect of the High Wastes rejects the 13th Abbot.","strength":"3,600 standing (2,400 Stair Guard with staves and slings, 300 Snowborn Guides), 16,000 at full muster; built around thin air, which is the wall, and guards who do not kill. No fleet.","three people to know":"Tashen, the dying Abbot with a sealed letter for his rival. Norbu of the Red Stair, who says the search found the wrong child. Sonam of Skyhold, the Steward buying steel.","ties":"Salt trade with Drevna under the Salt Letters of Eaglespire; free passage for its salt through Stonehold's tolls since 650; a quarrel with Emberdeep over the dragon of Kardeep; the salt trail to Ranpur, run since 521."}
   },
   "POL-28": {
    "id": "POL-28",
@@ -1455,6 +1481,7 @@
    "short": "Stonehold",
    "title": "King",
    "type": "dwarven hold",
+   "form": "kingdom",
    "race": "dwarf",
    "cult": "dwarf",
    "capId": "PLC-0028",
@@ -1495,6 +1522,7 @@
    "short": "Emberdeep",
    "title": "Forge-Queen",
    "type": "dwarven hold",
+   "form": "kingdom",
    "race": "dwarf",
    "cult": "dwarf",
    "capId": "PLC-0020",
@@ -1535,6 +1563,7 @@
    "short": "Ranpur",
    "title": "Raja",
    "type": "kingdom",
+   "form": "kingdom",
    "race": "human",
    "cult": "eastsouth",
    "capId": "PLC-0006",
@@ -1575,6 +1604,7 @@
    "short": "Tessaria",
    "title": "Queen / Prince (two claimants)",
    "type": "collapsing kingdom",
+   "form": "kingdom",
    "race": "human",
    "cult": "solen",
    "capId": "PLC-0022",
@@ -1611,17 +1641,18 @@
   },
   "POL-32": {
    "id": "POL-32",
-   "name": "Sultanate of Ambrel",
+   "name": "Kingdom of Ambrel",
    "short": "Ambrel",
-   "title": "Sultan",
-   "type": "sultanate",
+   "title": "King",
+   "type": "well realm",
+   "form": "kingdom",
    "race": "human",
    "cult": "isle",
    "capId": "PLC-0012",
    "capital": "Amberport",
    "area": 170750,
    "color": "#e6b8a2",
-   "gov": "sultanate",
+   "gov": "absolute kingdom of the spice isles",
    "ruler": "CHR-0463",
    "pop": 1500000,
    "pops": {"human":1500000,"elf":0,"dwarf":0,"orc":0,"giant":0,"half-elf":0,"half-orc":0},
@@ -1643,25 +1674,26 @@
    "rivals": ["POL-30"],
    "atWar": [],
    "stability": "steady",
-   "deadline": "Fri 1 Apr: Sultan Iskandar's fleet of about 6,200 men sails for the Isle of Pearls",
+   "deadline": "Fri 1 Apr: King Iskandar's fleet of about 6,200 men sails for the Isle of Pearls",
    "comp": {"standing":18000,"heavyHorse":0,"lightHorse":0,"elephants":0,"heavyFoot":600,"spear":5600,"missile":3400,"other":8400},
    "fleet": {"ships":"About 55 galleys","field":"About 10,000 at home; 6,000 overseas"},
    "coin": {"coin":"amber dinar","worth":27.4},
-   "primer": {"intro":"The spice islands of the eastern gulf: cloves, nutmeg, amber-gum, pearls, about 55 galleys steered by a secret needle, and a royal line that aches before storms.","ruler":"Sultan Iskandar Maruang, Guardian of the Water, crowned in October 1099 as his father's son; he passed the Storm Watch at 12. Capital Amberport.","people and land":"1,500,000 people on 170,750 km², all human. State faith: the Path of the Well for the sultans and Well-Keepers; the commoners follow the Thousand Names.","strength":"18,000 standing, 72,000 at full muster; built around a galley sultanate steered by a secret needle and marines who land on beaches. Fleet: about 55 galleys and 140 armed spice ships.","three people to know":"Iskandar Maruang, the Sultan who plans to betray his ally. Jaya Rawang, the admiral who promised too much. Rahim Sulong, the Grand Vizier who buys toll farms and Keshi princes.","ties":"Allied to Kesh by the marriage of 1101; in debt to Lucerna's House Doravelli against the clove harvests; rivalry with Ranpur for the eastern cotton and spice ships; fellow Well realm with Qadir, through which its pilgrims sail."}
+   "primer": {"intro":"The spice islands of the eastern gulf: cloves, nutmeg, amber-gum, pearls, about 55 galleys steered by a secret needle, and a royal line that aches before storms.","ruler":"King Iskandar Maruang, Guardian of the Water, crowned in October 1099 as his father's son; he passed the Storm Watch at 12. Capital Amberport.","people and land":"1,500,000 people on 170,750 km², all human. State faith: the Path of the Well for the kings and Well-Keepers; the commoners follow the Thousand Names.","strength":"18,000 standing, 72,000 at full muster; built around a galley kingdom steered by a secret needle and marines who land on beaches. Fleet: about 55 galleys and 140 armed spice ships.","three people to know":"Iskandar Maruang, the King who plans to betray his ally. Jaya Rawang, the admiral who promised too much. Rahim Sulong, the Grand Vizier who buys toll farms and Keshi princes.","ties":"Allied to Kesh by the marriage of 1101; in debt to Lucerna's House Doravelli against the clove harvests; rivalry with Ranpur for the eastern cotton and spice ships; fellow Well realm with Qadir, through which its pilgrims sail."}
   },
   "POL-33": {
    "id": "POL-33",
-   "name": "Free Port of Corvasse",
+   "name": "Free City of Corvasse",
    "short": "Corvasse",
    "title": "Captain-General",
    "type": "pirate haven",
+   "form": "free city",
    "race": "human",
    "cult": "pirate",
    "capId": "PLC-0024",
    "capital": "Corvasse",
    "area": 101275,
    "color": "#b5c99a",
-   "gov": "brotherhood of pirates bound by the Articles",
+   "gov": "free city of the pirates' brotherhood, bound by the Articles",
    "ruler": "CHR-0241",
    "pop": 180000,
    "pops": {"human":167400,"elf":0,"dwarf":900,"orc":900,"giant":0,"half-elf":1800,"half-orc":9000},
@@ -1727,7 +1759,7 @@
    "comp": {"standing":10000,"heavyHorse":0,"lightHorse":8600,"elephants":0,"heavyFoot":0,"spear":800,"missile":0,"other":600},
    "fleet": {"ships":"None","field":"About 18,000 riders for a month; 10,000 for a summer"},
    "coin": {"coin":"horses and silver","worth":40},
-   "primer": {"intro":"The 31 orc clans of the eastern steppe who would not follow Gorath and call no living chief holy: horses, felt, turquoise, and the silk-road toll at Kraoth.","ruler":"War-Mother Urza Ironhide, chosen at 14 in 1080 as Grakka's hearth daughter; the council of clan-mothers ruled for her until 1082 and can still overrule her on grazing and law. Capital Grakmar.","people and land":"700,000 people on 644,850 km²: 602,000 orcs, 49,000 humans, 49,000 half-orcs. State faith: the Storm and the Mare, which here rejects any living chief as holy.","strength":"10,000 standing, 40,000 at full muster from 31 sworn clans; built around drums, relays and silk-road silver. No fleet.","three people to know":"Urza Ironhide, the War-Mother who must not faint in the sun. Hrok Whitehorn, whose riders burned the Sevmir farms. Gurz the Toll-Keeper, who holds the Silk Road's purse.","ties":"Hostile peace with Drevna since the Tusk War ended in 1066; rivalry with Gorath, which sent no help in that war; Velgrad pays its silk toll at Kraoth; friendship with Ulun, whose Khan fought Gorath and sends horses."}
+   "primer": {"intro":"The 31 orc clans of the eastern steppe who would not follow Gorath and call no living chief holy: horses, felt, turquoise, and the silk-road toll at Kraoth.","ruler":"War-Mother Urza Ironhide, chosen at 14 in 1080 as Grakka's hearth daughter; the council of clan-mothers ruled for her until 1082 and can still overrule her on grazing and law. Capital Grakmar.","people and land":"700,000 people on 644,850 km²: 602,000 orcs, 49,000 humans, 49,000 half-orcs. State faith: the Storm and the Mare, which here rejects any living chief as holy.","strength":"10,000 standing, 40,000 at full muster from 31 sworn clans; built around drums, relays and silk-road silver. No fleet.","three people to know":"Urza Ironhide, the War-Mother who must not faint in the sun. Hrok Whitehorn, whose riders burned the Sevmir farms. Gurz the Toll-Keeper, who holds the Silk Road's purse.","ties":"Hostile peace with Drevna since the Tusk War ended in 1066; rivalry with Gorath, which sent no help in that war; Velgrad pays its silk toll at Kraoth; friendship with Ulun, whose King fought Gorath and sends horses."}
   }
  },
  "relations": [
@@ -2311,7 +2343,7 @@
    "a": "POL-34",
    "b": "POL-12",
    "rel": "friendship",
-   "detail": "horses from the Khan"
+   "detail": "horses from the King"
   }
  ],
  "houses": {
@@ -2421,7 +2453,7 @@
    "people": 800,
    "men": 80,
    "since": "150",
-   "notes": "A count by the old Solen honor; its land is a knight's. Holds the only lay seat on the High Luminary's council."
+   "notes": "A count by the old Solen honor; its land is a knight's. Holds the only lay seat on the Prince-Bishop's council."
   },
   "FAM-102": {
    "id": "FAM-102",
@@ -2614,12 +2646,12 @@
    "headName": "Tiberio Doravelli",
    "rung": "S04",
    "title": "Head of State",
-   "local": "Doge of Lucerna (for life)",
-   "holding": "The Doravelli bank (about 2.5 million suns); the Grain Staple bank; the dogeship",
+   "local": "First Merchant of Lucerna (for life)",
+   "holding": "The Doravelli bank (about 2.5 million suns); the Grain Staple bank; the First Merchant's chair",
    "people": 0,
    "men": 0,
    "since": "709",
-   "notes": "No peerage. The Doge's house sits as a duke by courtesy (12.5); the rank is the office's, for the Doge's life."
+   "notes": "No peerage. The First Merchant's house sits as a duke by courtesy (12.5); the rank is the office's, for the First Merchant's life."
   },
   "FAM-121": {
    "id": "FAM-121",
@@ -3046,7 +3078,7 @@
    "headName": "Skarvi the Younger",
    "rung": "S04",
    "title": "Head of State",
-   "local": "Chieftain of Frostholm",
+   "local": "King of Frostholm",
    "holding": "The chieftainship; Skarfell hall-land; the Skarfell Tin Fair",
    "people": 18100,
    "men": 0,
@@ -3298,8 +3330,8 @@
    "headName": "Ozbek Kharsan",
    "rung": "S02",
    "title": "King",
-   "local": "Khan of Ulun",
-   "holding": "The khan's tent-chest at Kharsa; the Silver Tablet Guard; the yams",
+   "local": "King of Ulun",
+   "holding": "The king's tent-chest at Kharsa; the Silver Tablet Guard; the yams",
    "people": 1400000,
    "men": 0,
    "since": "790",
@@ -3424,12 +3456,12 @@
    "headName": "Helga Stonefoot",
    "rung": "S04",
    "title": "Head of State",
-   "local": "First Speaker of the League (for life)",
+   "local": "First Speaker of the Republic (for life)",
    "holding": "The First Speakership; the Highcastle summer pastures; the Stonefoot Cliff Runners",
    "people": 0,
    "men": 0,
    "since": "1099",
-   "notes": "No peerage in the League; the rank is the office's, held for the head's life."
+   "notes": "No peerage in the Republic; the rank is the office's, held for the head's life."
   },
   "FAM-032": {
    "id": "FAM-032",
@@ -3442,7 +3474,7 @@
    "headName": "Ulric Greycloak",
    "rung": "",
    "title": "none",
-   "local": "Captain-General of the League",
+   "local": "Captain-General of the Republic",
    "holding": "The Captain-Generalcy; the Greycloak Companies (8,000 crossbowmen)",
    "people": 0,
    "men": 0,
@@ -3784,7 +3816,7 @@
    "headName": "Zahir IV Zahiri",
    "rung": "S02",
    "title": "King",
-   "local": "Sultan of Qadir, Guardian of the Water",
+   "local": "King of Qadir, Guardian of the Water",
    "holding": "The crown gardens of Yasesh; the Saman water rights; the gold qadr mint",
    "people": 2100000,
    "men": 0,
@@ -3838,7 +3870,7 @@
    "headName": "Bashir Tarsi",
    "rung": "N02",
    "title": "Marquis",
-   "local": "Emir of Mirad; Warden of the West March",
+   "local": "Prince of Mirad; Warden of the West March",
    "holding": "Mirad and about 40 West March villages; the Sabun Pass",
    "people": 30000,
    "men": 4000,
@@ -3856,7 +3888,7 @@
    "headName": "Idris Qasimi",
    "rung": "N03",
    "title": "Count",
-   "local": "Emir of Basim",
+   "local": "Prince of Basim",
    "holding": "The Basim Hills: five Sunwall mines and the olive terraces",
    "people": 45000,
    "men": 3000,
@@ -3982,12 +4014,12 @@
    "headName": "Tariq Bahar",
    "rung": "S04",
    "title": "Head of State",
-   "local": "Speaker of Sahrim (for life)",
-   "holding": "The Speakership; the salt-fee chests of Zarak; the Noon Lances",
+   "local": "King of Sahrim (for life)",
+   "holding": "The kingship; the salt-fee chests of Zarak; the Noon Lances",
    "people": 110000,
    "men": 0,
    "since": "1001",
-   "notes": "Speakers since 1001; the rank is the office's, held for life."
+   "notes": "Kings since 1001; the rank is the office's, held for life."
   },
   "FAM-722": {
    "id": "FAM-722",
@@ -4163,11 +4195,11 @@
    "rung": "S03",
    "title": "Sovereign Prince",
    "local": "Prince of Kesh",
-   "holding": "The princedom; the League's 45 fighting ships; the Pepper Guard",
+   "holding": "The prince's chair; Kesh's 45 fighting ships; the Pepper Guard",
    "people": 2200000,
    "men": 0,
    "since": "1068",
-   "notes": "Elected by the League's council; Keshari princes since 1068."
+   "notes": "Elected by Kesh's council; Keshari princes since 1068."
   },
   "FAM-822": {
    "id": "FAM-822",
@@ -4450,8 +4482,8 @@
    "headName": "Karim Sabrani",
    "rung": "S02",
    "title": "King",
-   "local": "Emir of Sabra",
-   "holding": "The Emir's oil chest; a third of the pearling boats; the Camel Guard",
+   "local": "Prince of Sabra",
+   "holding": "The Prince's oil chest; a third of the pearling boats; the Camel Guard",
    "people": 1200000,
    "men": 0,
    "since": "1025",
@@ -5224,8 +5256,8 @@
    "headName": "Iskandar Maruang",
    "rung": "S02",
    "title": "King",
-   "local": "Sultan of Ambrel, Guardian of the Water",
-   "holding": "The sultanate: a fifth of all spice; the royal clove gardens; the Sultan's Marines",
+   "local": "King of Ambrel, Guardian of the Water",
+   "holding": "The kingdom: a fifth of all spice; the royal clove gardens; the King's Marines",
    "people": 1500000,
    "men": 0,
    "since": "890",
@@ -5301,7 +5333,7 @@
    "people": 25000,
    "men": 1250,
    "since": "1034",
-   "notes": "The 4,000 Highland Spears are the sultan's garrison under the Warden."
+   "notes": "The 4,000 Highland Spears are the king's garrison under the Warden."
   },
   "FAM-221": {
    "id": "FAM-221",
@@ -5548,12 +5580,12 @@
    "headName": "",
    "rung": "",
    "title": "none (extinct)",
-   "local": "Former ruling house of the Emirate of Qadir",
+   "local": "Former ruling house of the Principality of Qadir",
    "holding": "None in 1105",
    "people": 0,
    "men": 0,
    "since": "644",
-   "notes": "Extinct in its own name since 803; it lives on through House Zahiri. A house of the fallen Emirate of Qadir."
+   "notes": "Extinct in its own name since 803; it lives on through House Zahiri. A house of the fallen Principality of Qadir."
   }
  },
  "bloodlines": {
@@ -5571,7 +5603,7 @@
    "ancestor": "Aurelia the Far-Seeing, daughter of Corvan the Sunbringer",
    "origin": "12",
    "story": "The first carrier was Aurelia the Far-Seeing, born in 12 AR, the daughter of Corvan the Sunbringer and Seraphine of Lorina. Neither parent had the gift; it was a new change in the X she got from her father. As a small girl in the palace at Solenne she sorted the potters' glazes by shades the potters could not see and called the ash-grey winter sky 'nine colors'. At 14 she caught a Lorina cloth merchant selling cheap brown-red cloth as true madder red for the royal banners, and her father began to use her as a judge of dyes.",
-   "significance": "In 1105 the Sunborn eyes are the reason House Corvane still matters. They are the living proof, to believers, that Corvan's blood is touched by the Light, and they give the only lay member of the High Luminary's council her office as Warden of the Crowning Stone and judge of the Temple's gold and…"
+   "significance": "In 1105 the Sunborn eyes are the reason House Corvane still matters. They are the living proof, to believers, that Corvan's blood is touched by the Light, and they give the only lay member of the Prince-Bishop's council her office as Warden of the Crowning Stone and judge of the Temple's gold and…"
   },
   "BLD-02": {
    "id": "BLD-02",
@@ -5651,7 +5683,7 @@
    "ancestor": "Hild Stonefoot, first to climb Mount Roktar",
    "origin": "652",
    "story": "The balance first showed in Orm, born about 652 to a herding family of Highcastle. As a boy he walked the top rail of the sheep pens and the ridge of the Council hall roof, and he never fell. He became a cragsman, gathering eagle eggs and wild honey from cliffs the other herders would not try, and the herders said his feet were stone on the rock. When he took his children down to the Sunland fairs to sell cheese, the ones who had his feet were sick on the Lake Calia ferry until they could not stand, and one fainted halfway across the rope bridge over the Greycloak Gorge.",
-   "significance": "The balance is why the Stonefoot kin hold the League's highest seat and why they alone can guard the last Snow Drakes of the Crown Range. Ada Stonefoot's Cliff Runners keep hunters out of the high valleys, and only the kin can climb to the nesting clefts."
+   "significance": "The balance is why the Stonefoot kin hold the Republic's highest seat and why they alone can guard the last Snow Drakes of the Crown Range. Ada Stonefoot's Cliff Runners keep hunters out of the high valleys, and only the kin can climb to the nesting clefts."
   },
   "BLD-07": {
    "id": "BLD-07",
@@ -5712,7 +5744,7 @@
    "inherit": "Dominant: about half the children of a carrier have it. It is tested at seven with a drop of wolfsbane in water.",
    "cost": "Cannot bear strong food, spice or wine; many are thin and sickly, and strong smells make them vomit. A taster who is offered a bribe to let poison pass carries the whole house's name.",
    "exclusive": "The Rule of the Cup of 971: every child of Doravelli blood, born in Lucerna or abroad, in marriage or not, is tested at seven with a drop of wolfsbane in water.",
-   "ancestor": "Doge Silvio Doravelli the Taster, who detected poison in the council's wine",
+   "ancestor": "First Merchant Silvio Doravelli the Taster, who detected poison in the council's wine",
    "origin": "709",
    "story": "The first known carrier was Nicola Doravelli, born about 680, a sampler at the Grain Staple whose work was to chew a mouthful from every cargo and spit it out. In the autumn of 709 a cargo of Tamari grain came in that looked and weighed right, and that every weigher passed. Nicola said it was bitter and would not certify it. The shipmaster laughed, paid the toll and sold the grain at Ostra, where it caused the fire-sickness of spoiled grain, burning limbs and madness, and killed about 300 people. The Staple made Nicola its taster.",
    "significance": "In 1105 the Taster's tongue sits at the most dangerous table in the Known World. Nerio Doravelli is Queen Livia's only defense against poison, and the only man who could let poison pass: Prince Andros's chancellor has offered him 5,000 crowns to do it, and he has not answered."
@@ -5808,10 +5840,10 @@
    "inherit": "Dominant: about half the children of one carrier have it. The house marries cousins, so some children get it from both parents; they pass stones in boyhood and rarely live past 40.",
    "cost": "Kidney stones in almost every adult carrier, often from the twenties; many die of kidney failure or a blocked stone in their fifties. The Dry Month fast makes the stones worse. Children with the blood from both parents pass stones in boyhood and rarely live past 40.",
    "exclusive": "Only descendants of Zahir I carry it. By the house law of 815 Zahiri daughters marry Zahiri cousins or men who take the Zahiri name and live in the Yasesh household, so every child of a carrier…",
-   "ancestor": "Sultan Zahir the Thirstless, who crossed the Burning Waste",
+   "ancestor": "King Zahir the Thirstless, who crossed the Burning Waste",
    "origin": "760",
    "story": "The trait began with Zahir himself, born in 760 to Nadim Idrisi and a merchant's daughter of Marira; neither parent, nor any Idrisi before him, had it. As a boy he drank little and passed little water, and his nurses thought him sickly. In exile at Tamar he rode with the natron caravans to the edge of the Burning Waste and found that he could ride a whole day on half a water-skin while the Tamari drivers staggered. At 19 he passed his first stone and screamed through a night the Tamari court still talked about. He built his return on the gift.",
-   "significance": "In 1105 a war hangs on a sickbed. Grand Admiral Jalal cannot sail on Sabra without the Sultan's own voice, and the Sultan's voice depends on his kidneys. If Zahir IV dies this spring, the Divan must choose between a regent heir who hides the same sickness and an admiral who wants war."
+   "significance": "In 1105 a war hangs on a sickbed. Grand Admiral Jalal cannot sail on Sabra without the King's own voice, and the King's voice depends on his kidneys. If Zahir IV dies this spring, the Divan must choose between a regent heir who hides the same sickness and an admiral who wants war."
   },
   "BLD-17": {
    "id": "BLD-17",
@@ -5827,7 +5859,7 @@
    "ancestor": "Rashid Bahar the Far-Seer, clan chief",
    "origin": "960",
    "story": "The first carrier was Rashid Bahar, born in 960 to a younger son of the Bahar chief; no Bahar before him had it. As a small boy he stared at the noon dunes without squinting and could name a rider's clan by his camel at 5 km, while other children wept from the glare. The same boy fell over tent ropes at dusk and got lost between tents on dark nights, and his mother tied a bell to his wrist. The clan thought him half-blind.",
-   "significance": "The sand-eyes are part of why one family has held the Speakership of the largest land on the map for 104 years: the Noon Lances are the confederation's best cavalry, and the council half believes the Bahar see farther. In 1105 that belief is fraying."
+   "significance": "The sand-eyes are part of why one family has held the kingship of the largest land on the map for 104 years: the Noon Lances are the kingdom's best cavalry, and the council half believes the Bahar see farther. In 1105 that belief is fraying."
   },
   "BLD-18": {
    "id": "BLD-18",
@@ -5891,7 +5923,7 @@
    "ancestor": "Nuru Keshari the Boneless, acrobat-thief who became Prince of Kesh",
    "origin": "985",
    "story": "The family remembers Sauti Keshari, born 945, a rigger's wife of the Kesh harbor lanes who could fold her thumb flat against her wrist and did it at fairs for coppers. Her son Pili, born 968, was the first to turn the trick into a living. At the Harvest Home of 985, at 17, he won the climb up the Pepper Hall roof by wedging his hands and feet into gaps between the roof timbers that no other climber could use. That winter the harbor guards caught him in a pepper store and locked him in the iron stocks on the quay; in the morning the stocks were empty and still locked.",
-   "significance": "The blood is the reason House Keshari rules the League at all. The council elected Nuru for a theft only his joints made possible, and the harbor lanes still treat the Keshari as climbers who became princes."
+   "significance": "The blood is the reason House Keshari rules Kesh at all. The council elected Nuru for a theft only his joints made possible, and the harbor lanes still treat the Keshari as climbers who became princes."
   },
   "BLD-22": {
    "id": "BLD-22",
@@ -5966,12 +5998,12 @@
    "trait": "Lean-blood: survives famine on half rations for months",
    "how": "A change in one gene that governs fat storage makes the body turn food into fat quickly and, when food runs short, lower its burning rate and live on that fat while sparing muscle, like the thrifty-gene variants of some island and desert peoples on Earth.",
    "inherit": "Dominant: one copy is enough. About half the children of a carrier have it, sons and daughters alike.",
-   "cost": "In good years they grow fat and suffer sugar sickness: thirst, sores on the feet that do not heal, blindness and lost limbs between 45 and 60. Few khans of the line have died old and whole.",
+   "cost": "In good years they grow fat and suffer sugar sickness: thirst, sores on the feet that do not heal, blindness and lost limbs between 45 and 60. Few kings of the line have died old and whole.",
    "exclusive": "It runs only in House Kharsan. The Tent Law of 926 keeps it there: a Kharsan daughter's husband must come to live at Kharsa and their children are raised Kharsan, so every carrier belongs to a branch…",
-   "ancestor": "Khan Ulagan Kharsan the Hungry",
+   "ancestor": "King Ulagan Kharsan the Hungry",
    "origin": "788",
    "story": "The first Kharsan the songs remember is Kharsa the Thin, a herder of the Blue Wind born about 765. In the killing winter of 788, when a thaw and a hard frost sealed the grass under ice, his family's herd died down to the last 40 sheep. Kharsa drove them alone for three months through the snow on a strip of dried meat a day and brought 31 of them to spring grass at Torkul. His two brothers, bigger men, died of hunger on the same road. The herders noticed that Kharsa had grown thin but never weak.",
-   "significance": "The lean-blood is why the Kharsan rule and why they may stop. It made Ulagan khan and made the Wind Empire, whose yams, Saddle Law and grudges still shape the steppe. In 1105 it is the hidden center of Ulun's crisis."
+   "significance": "The lean-blood is why the Kharsan rule and why they may stop. It made Ulagan king and made the Wind Empire, whose yams, Saddle Law and grudges still shape the steppe. In 1105 it is the hidden center of Ulun's crisis."
   },
   "BLD-28": {
    "id": "BLD-28",
@@ -5982,9 +6014,9 @@
    "trait": "Salt-skin: sweats freely and stays cool in heat that fells others",
    "how": "Carriers have far more working sweat glands than other people and start sweating sooner, so their bodies shed heat fast. Their sweat also carries more salt than normal, so they lose salt and water quickly and cramp and collapse when either runs short.",
    "inherit": "Dominant: about half the children of one carrier have it, sons and daughters alike.",
-   "cost": "Carriers lose salt and water fast. Without both they cramp and collapse sooner than anyone, and a long fast can kill them; two children died in the Dry Month before 1035, and Emir Nasir died after the fast of 1086.",
+   "cost": "Carriers lose salt and water fast. Without both they cramp and collapse sooner than anyone, and a long fast can kill them; two children died in the Dry Month before 1035, and Prince Nasir died after the fast of 1086.",
    "exclusive": "Only descendants of Bakr Sabrani carry it. Farid's house law of 1035 makes every child of a Sabrani parent, son or daughter, a Sabrani by name and household, and husbands of Sabrani daughters live in…",
-   "ancestor": "Emir Farid Sabrani the Dry",
+   "ancestor": "Prince Farid Sabrani the Dry",
    "origin": "935",
    "story": "The first carrier was Bakr Sabrani, born in 935 into a family of pearl merchants at Sabra; neither his parents nor his brothers had it. As a boy he sweated through his shirt even in winter, craved salt so badly that he licked it from the fish-drying racks, and cramped on the pearling boats when others did not. When he was 15 he collapsed on a boat in the Dry Month and nearly died, and his mother learned to give him salted water at dusk. The family thought it a weakness.",
    "significance": "In 1105 Sabra's defense depends on the blood. Its doctrine is to hold the Sabun road with camel riders and fight at midday, where Sabrani officers outlast any enemy, and Nuri Hazimi's Camel School trains for that."
@@ -6239,11 +6271,11 @@
    "realms": ["POL-02","POL-03","POL-04","POL-15","POL-16"],
    "belief": "One Light made everything. The sun is its living face. The Devourer, a being of cold and dark, swallowed the sun at Mount Hael, and the Light returned it through Corvan, its chosen king. The sun must be honored and 'held' through its weakest night.",
    "afterlife": "The righteous rise into the sun at the noon after their death. The wicked stay in the cold dark under Mount Hael with the Devourer. The dead are buried facing east, never burned: fire belongs to the sun.",
-   "clergy": "Priests called dawnkeepers; bishops called Luminaries; the High Luminary rules from Solenne. Priests may not marry. Orders: the Needle-Keepers (astronomer-priests who keep the calendar and the archives) and the Knights of the Sun (a military order that…",
+   "clergy": "Priests called dawnkeepers; bishops called Luminaries; the Prince-Bishop rules from Solenne. Priests may not marry. Orders: the Needle-Keepers (astronomer-priests who keep the calendar and the archives) and the Knights of the Sun (a military order that…",
    "rituals": "Greeting the dawn; the noon prayer at the ringing of the noon bell; the Sunday rite; burial at dawn facing east; crowning kings on Return Day; pilgrimage to Solenne",
    "festivals": "Lantern Night (2 February); Return Day (21 June, the greatest); Ash Night (31 October); Midwinter Vigil (21 December); Needle Day (1 January, blessing the new year's count)",
    "taboos": "Letting a hearth fire die on Midwinter night; lying at noon; burning the dead; building on Hael's ash; working on Sunday",
-   "politics": "Rules the Holy See outright. Crowns the kings of Varenna and Morhaven and the Doge of Lucerna. Can 'unlight' (excommunicate) a ruler, freeing his subjects from their oaths.",
+   "politics": "Rules Solenne outright. Crowns the kings of Varenna and Morhaven and the First Merchant of Lucerna. Can 'unlight' (excommunicate) a ruler, freeing his subjects from their oaths.",
    "prophecy": "The Book of Ash: 'In the year when the count of the Needle and the count of the trees agree, the Light will fail again.' Priests read it as a warning of a second Dimming."
   },
   "REL-02": {
@@ -6325,7 +6357,7 @@
    "id": "REL-07",
    "name": "The Path of the Well",
    "kind": "organized",
-   "followers": "CUL-04, CUL-05, CUL-07 (Qadiri, Sandfolk, Sabrans); the Ambrel sultans; many Zanari merchants; two tribes of Ulun;",
+   "followers": "CUL-04, CUL-05, CUL-07 (Qadiri, Sandfolk, Sabrans); the Ambrel kings; many Zanari merchants; two tribes of Ulun;",
    "realms": ["POL-17","POL-19","POL-24","POL-32"],
    "belief": "One God, the Giver of Water, who made the world and sends rain. The prophet Samar the Water-Finder (about 512–581 AR) found water in the Red Waste and spoke the sayings gathered in the Book of Wells.",
    "afterlife": "The righteous drink forever in the Garden of Springs; the wicked thirst.",
@@ -6333,7 +6365,7 @@
    "rituals": "Prayer at dawn, noon and dusk after washing the hands; the water-alms: every household must give water to any traveler; the Dry Month of fasting",
    "festivals": "Well Day (14 March, when Samar found water); the Dry Month (all of August, fasting from dawn to dusk); the Breaking of the Dry (1 September)",
    "taboos": "Fouling water; refusing water to a traveler; making images of the Giver; drunkenness; blood feud within sight of a well",
-   "politics": "Well-Keepers judge the law in Qadir, Sabra and Ambrel; sultans call themselves Guardians of the Water.",
+   "politics": "Well-Keepers judge the law in Qadir, Sabra and Ambrel; kings call themselves Guardians of the Water.",
    "prophecy": "'The Well-Finder will return when the last well runs dry.'"
   },
   "REL-08": {
@@ -6438,14 +6470,14 @@
    "rituals": "Tying blue cloth to cairns; libations of milk to the sky",
    "festivals": "The Horse Feast (21 June)",
    "taboos": "Washing in running water in spring; stepping on a threshold",
-   "politics": "Shamans advise the khans.",
+   "politics": "Shamans advise the kings.",
    "prophecy": "–"
   },
   "REL-15": {
    "id": "REL-15",
    "name": "The Ashen",
    "kind": "folk (secret cult)",
-   "followers": "A few thousand in Ashmere, Varenna and the Holy See",
+   "followers": "A few thousand in Ashmere, Varenna and Solenne",
    "realms": [],
    "belief": "Mount Hael is a god that ate the sun and could eat it again. It must be fed with offerings, or it will wake. Some members want it to wake and end the world.",
    "afterlife": "The faithful will be spared when the mountain wakes.",
@@ -6564,7 +6596,7 @@
    ["Roderic III Valdane","",1088,null,"reigning"]
   ],
   "POL-04": [
-   ["Enrico Bassan","the First Doge",758,771,"died"],
+   ["Enrico Bassan","the First First Merchant",758,771,"died"],
    ["Tomaso Salvi","",771,786,"died"],
    ["Giacomo Morello","",786,799,"died"],
    ["Alvise Vanni","",799,806,"died"],
@@ -6926,7 +6958,7 @@
   "POL-24": [
    ["Tahir Sabrani","the Founder",1025,1034,"died"],
    ["Farid Sabrani","the Dry",1034,1060,"died"],
-   ["Nasir Sabrani","the Pearl-Emir",1060,1086,"died"],
+   ["Nasir Sabrani","the Pearl-Prince",1060,1086,"died"],
    ["Karim Sabrani","",1086,null,"reigning"]
   ],
   "POL-25": [
@@ -7309,7 +7341,7 @@
    "Crown Pass War",
    330,
    "336",
-   "Solen vs the Crown highland clans; Charter of Highcastle (336) grants self-rule: the League of Brannoch."
+   "Solen vs the Crown highland clans; Charter of Highcastle (336) grants self-rule: the Merchant Republic of Brannoch."
   ],
   [
    "WAR-08",
@@ -7379,7 +7411,7 @@
    "Fall of Solenne",
    756,
    "760",
-   "mutinous generals and Varennan and Morhaven armies besiege Solenne; last emperor Constantine IX killed 759; the Holy See takes over (760)."
+   "mutinous generals and Varennan and Morhaven armies besiege Solenne; last emperor Constantine IX killed 759; Solenne takes over (760)."
   ],
   [
    "WAR-18",
@@ -7570,9 +7602,9 @@
    "title": "The six missing years",
    "pub": "Mount Hael's ash hid the sun for seven years. At noon on 21 June 1 AR, as Corvan was crowned, the sun shone clear again. The Common Reckoning counts from that day of Return.",
    "truth": "The failed summers ran six years, 12 BR to 7 BR. The first good summer was 6 BR. Corvan won his crown in the Famine Wars (6–1 BR), fought over grain under a clear sky. The priest Tavian and the sun priests folded the war years into the Dimming so the sun seemed to return for Corvan. In 316 Elira Starling found the gap in Brother Odo's Dim Chronicle;",
-   "who": "The High Luminary; three to five senior Needle-Keepers who hold the archive keys; the Eldest Keeper and the chroniclers of Sylvaran, who have always known and…",
+   "who": "The Prince-Bishop; three to five senior Needle-Keepers who hold the archive keys; the Eldest Keeper and the chroniclers of Sylvaran, who have always known and…",
    "proof": "1) Odo's original Dim Chronicle, sealed in the Temple archive under the Needle court at Solenne, with Starling's own margin note of 316.",
-   "ifr": "The Book of Ash warns that the Light will fail again when the count of the Needle and the count of the trees agree, so many would fear a second Dimming. The Holy See's claim that the Light returned the sun through Corvan would crack."
+   "ifr": "The Book of Ash warns that the Light will fail again when the count of the Needle and the count of the trees agree, so many would fear a second Dimming. Solenne's claim that the Light returned the sun through Corvan would crack."
   },
   {
    "id": "SEC-02",
@@ -7625,7 +7657,7 @@
    "pub": "In 118 the beaten orcs begged for peace, and the Crown Range border was won by the sword.",
    "truth": "The First Orc War was a draw. For 40 years (118–158) the Solen crown paid the clans a yearly road gift of 3,000 bushels of wheat and 400 iron blades, hidden in the royal accounts as road upkeep at Albora.",
    "who": "Almost no one. The Grey Mothers' law-songs remember 'the forty winters of Sunland bread'.",
-   "proof": "Royal account rolls for 118–158 in the Holy See archive at Solenne, with lines reading 'road upkeep, Albora'. Winter-count hides of the western clans showing a grain wagon each winter.",
+   "proof": "Royal account rolls for 118–158 in Solenne archive at Solenne, with lines reading 'road upkeep, Albora'. Winter-count hides of the western clans showing a grain wagon each winter.",
    "ifr": "Sunland pride would be hurt, and the Horde of Gorath could claim the Sunland lords once paid it tribute and demand it again."
   },
   {
@@ -7643,7 +7675,7 @@
    "pub": "Maximian the Great died of marsh fever at Castella in March 302, after a victorious campaign against the elves.",
    "truth": "An elven arrow struck Maximian in the thigh on 19 August 301 during the Burning of the Edge. The wound festered for seven months and killed him. The court hid it because the war was lost.",
    "who": "The elves of Sylvaran, whose chronicle names the archer. Anyone who has read the court physician's case book.",
-   "proof": "The Solen court physician's case book in the Holy See archive at Solenne. The Sylvaran chronicle at Evenglade, which records the shot and the day.",
+   "proof": "The Solen court physician's case book in Solenne archive at Solenne. The Sylvaran chronicle at Evenglade, which records the shot and the day.",
    "ifr": "The legend of Maximian the Great, and the Solen story that the Oak Line was a gift, would fall. It would please the elves and change little else."
   },
   {
@@ -7651,8 +7683,8 @@
    "title": "The seventh clause",
    "pub": "The Treaty of the Oak Line (302) only fixes the forest's southern and eastern border, the southern half marked by 212 stones. The empire granted it out of generosity.",
    "truth": "A seventh clause, never read in public, lets the elves kill anyone who fells a tree north of the line, with no blood-price owed. Emperor Maximian II accepted it because the elves would sign nothing else.",
-   "who": "The Moot of Leaves. The Holy See's archivists, heirs to the Solen state papers. The elves may have shown it to Aldmark's envoys in the Sylvaran–Aldmark Border…",
-   "proof": "The elven copy on vellum, sealed with Maximian II's sun seal, at Evenglade. The Solen copy in the Holy See archive at Solenne.",
+   "who": "The Moot of Leaves. Solenne's archivists, heirs to the Solen state papers. The elves may have shown it to Aldmark's envoys in the Sylvaran–Aldmark Border…",
+   "proof": "The elven copy on vellum, sealed with Maximian II's sun seal, at Evenglade. The Solen copy in Solenne archive at Solenne.",
    "ifr": "Lords and loggers along the Oak Line in Varenna and Aldmark would be outraged that a dead empire signed away their right to justice. Varenna might disown the clause, and the elves might start to use it openly."
   },
   {
@@ -7660,9 +7692,9 @@
    "title": "The Wolfsbane Cup",
    "pub": "Emperor Cassian II died of marsh fever in 379 AR.",
    "truth": "A cupbearer named Tullo, paid from General Severan's household, put wolfsbane in the emperor's wine. Severan was crowned a month later.",
-   "who": "Nobody alive has read the proof. Senior Needle-Keepers of the Holy See could find it if they looked.",
+   "who": "Nobody alive has read the proof. Senior Needle-Keepers of Solenne could find it if they looked.",
    "proof": "Tullo's confession, taken by a dawnkeeper before he was hanged for theft in 380, is sealed in the Needle-Keepers' archive at Solenne. A household ledger of Severan's lists 'for the cup, 50 crowns'.",
-   "ifr": "It would show that the Temple crowned a murderer and kept quiet for 700 years. Heirs of Solen law in Tessaria and Varenna would lose a hero, and the Holy See would look like a keeper of crimes."
+   "ifr": "It would show that the Temple crowned a murderer and kept quiet for 700 years. Heirs of Solen law in Tessaria and Varenna would lose a hero, and Solenne would look like a keeper of crimes."
   },
   {
    "id": "SEC-12",
@@ -7678,8 +7710,8 @@
    "title": "Fire on the Water at Kyzai",
    "pub": "Lightning from a dry storm burned the Solen barge fleet at Kyzai in 425 AR.",
    "truth": "The Wind Riders threw pots of fire-oil from the Salt Sea's eastern seeps. Fire-oil has been a Rider weapon since at least 425 AR, and Solen's generals hid it because they had no answer.",
-   "who": "The khans and chief shamans of Ulun. A few Holy See archivists.",
-   "proof": "The report of the Solen engineer Rufus Cato, which describes 'fire that floats and cannot be drowned', is in the Holy See archive at Solenne.",
+   "who": "The kings and chief shamans of Ulun. A few Solenne archivists.",
+   "proof": "The report of the Solen engineer Rufus Cato, which describes 'fire that floats and cannot be drowned', is in Solenne archive at Solenne.",
    "ifr": "Every realm would learn how old the fire-oil secret is and where it began. That would raise the value of the eastern Salt Sea shore and Ulun's danger."
   },
   {
@@ -7688,7 +7720,7 @@
    "pub": "In 340 AR Nimrael the Grey Veil and her followers left Sylvaran in a peaceful parting of faith, the Sea Covenant.",
    "truth": "The parting was peaceful, but a secret set it off. Nimrael's kin had sold 300 mast-oaks to the Solen fleet in 334–336, cut without a Keeper's mark. The Moot asked her to leave rather than stand judgment.",
    "who": "The Eldest Keeper at Evenglade and, by tradition, the rulers of Eldergrove.",
-   "proof": "A Solen fleet ledger in the Holy See archive reads '300 mast-oaks from the western elves, 18,000 silver crowns'. The Moot's sealed Leaf Record of 340 is kept at Evenglade.",
+   "proof": "A Solen fleet ledger in Solenne archive reads '300 mast-oaks from the western elves, 18,000 silver crowns'. The Moot's sealed Leaf Record of 340 is kept at Evenglade.",
    "ifr": "Eldergrove's founding story would change from faith to trade. Sylvaran's purists would use it against every Eldergrove envoy."
   },
   {
@@ -7715,7 +7747,7 @@
    "pub": "The Crown Wall was built by the legions and paid masons (474–489 AR).",
    "truth": "About 30,000 orc captives from the Old Horde did most of the heavy work. About 11,000 died of cold, hunger and beatings, and many were buried in the fort foundations.",
    "who": "The Grey Mothers' spoken epics tell it. Few humans believe them.",
-   "proof": "Bone pits lie under the forts at Dunwatch and Thornstone. Building accounts in the Holy See archive list 'bread for 30,000 captives'.",
+   "proof": "Bone pits lie under the forts at Dunwatch and Thornstone. Building accounts in Solenne archive list 'bread for 30,000 captives'.",
    "ifr": "The Horde of Gorath would have a blood grievance and a claim against the forts that Aldmark garrisons. That could start a war on the Crown Range line."
   },
   {
@@ -7732,9 +7764,9 @@
    "title": "The November Order",
    "pub": "Admiral Gaius Merel sailed late against orders in 602 AR and lost the fleet sent to relieve Qadira. He was beheaded for it.",
    "truth": "Justinian IV ordered the fleet to sail on 9 November, after Sea Closing and against every admiral's advice. The written order was hidden and Merel was killed to protect the emperor's name.",
-   "who": "Nobody alive knows it. The order sits unread in the Holy See archive.",
-   "proof": "Justinian IV's order, in his own hand and under his seal, is in the imperial letter-chests of the Holy See archive at Solenne.",
-   "ifr": "Merel's descendants could claim their family's lost lands on the Holy Coast. It would add to the case that the Holy See hides imperial crimes."
+   "who": "Nobody alive knows it. The order sits unread in Solenne archive.",
+   "proof": "Justinian IV's order, in his own hand and under his seal, is in the imperial letter-chests of Solenne archive at Solenne.",
+   "ifr": "Merel's descendants could claim their family's lost lands on the Holy Coast. It would add to the case that Solenne hides imperial crimes."
   },
   {
    "id": "SEC-20",
@@ -7750,7 +7782,7 @@
    "title": "The Pretender was the true son",
    "pub": "Aurelian the Pretender was a palace nobody who lied that he was Justinian IV's son.",
    "truth": "Justinian IV secretly married Lady Serena of House Brennus, lords of Lorina in 584, and Aurelian was their son, born 585. After 625 Valerian II paid the Needle-Keepers to hide the marriage record.",
-   "who": "The Needle-Keepers' archivists of the Holy See; no living ruler.",
+   "who": "The Needle-Keepers' archivists of Solenne; no living ruler.",
    "proof": "The signed marriage record, sealed with Justinian's ring, lies in a locked chest of the Temple archive at Solenne, filed under the wrong year (591).",
    "ifr": "Every ruler who claims descent from Valerian II would be shown as a usurper's heir, and the Temple as a paid liar."
   },
@@ -7760,7 +7792,7 @@
    "pub": "Octavian the Stern died of camp fever at Calora in 621.",
    "truth": "Two of his officers poisoned his wine with yew seed. Valerian's agents paid them 30,000 silver suns.",
    "who": "Nobody alive knows it; it survives only in writing.",
-   "proof": "A payment line 'for the eastern matter, 30,000' in Valerian's war ledger in the Holy See archive, and one officer's deathbed confession kept in the Sun Temple at Calora.",
+   "proof": "A payment line 'for the eastern matter, 30,000' in Valerian's war ledger in Solenne archive, and one officer's deathbed confession kept in the Sun Temple at Calora.",
    "ifr": "Valerian II, the hero of the Solen restoration, would be shown as a poisoner who bought his throne."
   },
   {
@@ -7768,7 +7800,7 @@
    "title": "Lucerna paid for Tamar's freedom",
    "pub": "Queen Nefira freed Tamar with delta courage alone after the Mother abandoned the Solen governors.",
    "truth": "Lucerna's grain merchants lent Nefira 40,000 silver suns and 2,000 crossbows in 639, in return for the right to buy Tamar's wheat. The grain contract of 645 was the repayment.",
-   "who": "The Doge's council of Lucerna keeps the old ledgers; the High Flood-Priest of Tamar suspects.",
+   "who": "The First Merchant's council of Lucerna keeps the old ledgers; the High Flood-Priest of Tamar suspects.",
    "proof": "Harbor ledgers of 639–645 in Lucerna's Hall of Records, with Nefira's seal on the loan.",
    "ifr": "Tamar's founding story would become a merchant deal, shaming the royal house of Tamar and angering the flood-priests."
   },
@@ -7788,7 +7820,7 @@
    "truth": "A small group survives in two Crown Range valleys above 3,000 m, about 15 in 1105. The Stonefoot herders protect them and call the white shapes in the clouds eagles.",
    "who": "A few Stonefoot herders and their elders.",
    "proof": "Nesting clefts with eggshell in the two valleys above Highcastle on the Crown Range.",
-   "ifr": "Hunters and collectors would pour into the League of Brannoch, and the Stonefoots' word would be doubted."
+   "ifr": "Hunters and collectors would pour into the Merchant Republic of Brannoch, and the Stonefoots' word would be doubted."
   },
   {
    "id": "SEC-26",
@@ -7802,7 +7834,7 @@
   {
    "id": "SEC-27",
    "title": "The Patriarch and the general",
-   "pub": "The Dawn Schism of 734 was a pure quarrel of faith about the sun, the High Luminary and the people's tongue.",
+   "pub": "The Dawn Schism of 734 was a pure quarrel of faith about the sun, the Prince-Bishop and the people's tongue.",
    "truth": "Bogumil and General Borislav Sevrin agreed in 733 to break from Solenne together: the church would free the soldiers from their oaths, and the general would guard the church and keep the eastern tithes.",
    "who": "The Patriarch of Dawn and his closest monks.",
    "proof": "Eleven letters between Bogumil and Borislav in the library of the Dawn Cathedral at Velgrad.",
@@ -7813,18 +7845,18 @@
    "title": "Where the Schism Tax went",
    "pub": "The Schism Tax of 738 paid the loyal armies after the east broke away.",
    "truth": "Temple officials used their half and part of the army's half to buy farmland in Varenna, Ostra and on the Morhaven Coast. This is how the Temple came to own about a sixth of that land.",
-   "who": "The Holy See's treasurers; some Varennan landowners suspect.",
-   "proof": "Land deeds dated 738–748 in the Holy See treasury at Solenne, paid in coin marked for the army.",
+   "who": "Solenne's treasurers; some Varennan landowners suspect.",
+   "proof": "Land deeds dated 738–748 in Solenne treasury at Solenne, paid in coin marked for the army.",
    "ifr": "Varenna, Ostra and Morhaven could claim the land back, cutting deep into the Temple's income."
   },
   {
    "id": "SEC-29",
    "title": "The price of the Lantern Gate",
    "pub": "General Marcus Vell opened the Lantern Gate on Ash Night 759 out of pity for the starving city.",
-   "truth": "High Luminary Benedict promised Vell a pardon and estates at Lavino to open it. Benedict also held back Temple grain so the city would turn to him.",
-   "who": "The High Luminary's inner council; the Vell family.",
-   "proof": "A deed of gift to Vell for Lavino in the Holy See archive, and a letter from Vell to his daughter, kept by the family.",
-   "ifr": "The Holy See's founding would be shown as bought treachery, weakening its claim to rule Solenne."
+   "truth": "Prince-Bishop Benedict promised Vell a pardon and estates at Lavino to open it. Benedict also held back Temple grain so the city would turn to him.",
+   "who": "The Prince-Bishop's inner council; the Vell family.",
+   "proof": "A deed of gift to Vell for Lavino in Solenne archive, and a letter from Vell to his daughter, kept by the family.",
+   "ifr": "Solenne's founding would be shown as bought treachery, weakening its claim to rule Solenne."
   },
   {
    "id": "SEC-30",
@@ -7833,30 +7865,30 @@
    "truth": "Two Knights of the Sun, the Temple's own military order, killed him in his bedchamber before any Varennan reached the palace. Benedict never gave the order in writing.",
    "who": "The Grand Master of the Knights of the Sun.",
    "proof": "Constantine's signet ring is kept in the Knights of the Sun's chapter house in Solenne; a palace servant's account survives in a Varennan monastery.",
-   "ifr": "The Temple would be known as the killer of the last emperor, and Varenna would have a reason to deny the Holy See's rule."
+   "ifr": "The Temple would be known as the killer of the last emperor, and Varenna would have a reason to deny Solenne's rule."
   },
   {
    "id": "SEC-31",
    "title": "The Diver's Ferry",
-   "pub": "Osric the Diver burned the Khan's boats at Yarbek in 882 and kept the riders off the Grey Channel.",
+   "pub": "Osric the Diver burned the King's boats at Yarbek in 882 and kept the riders off the Grey Channel.",
    "truth": "A secret clause of the Treaty of the Narrows (883) made Greyhaven ferry the Wind armies into the Free Marches: about 22,000 riders and 70,000 horses in 884 and more later, for 20,000 silver a year and a tenth of the Marches loot.",
    "who": "Each Tidewell king tells his heir; a few Ulun tale-tellers who still sing of 'the grey boats'.",
-   "proof": "A copy of the ferry accounts for 884–890 in a sealed chest of the Greyhaven harbor archive; silver bars stamped with the Khan's horse mark in the Tidewell vault.",
-   "ifr": "House Tidewell's hero legend breaks; the March towns and Velgrad would call Greyhaven the Khan's partner, and Ulun could claim old treaty rights of passage over the channel."
+   "proof": "A copy of the ferry accounts for 884–890 in a sealed chest of the Greyhaven harbor archive; silver bars stamped with the King's horse mark in the Tidewell vault.",
+   "ifr": "House Tidewell's hero legend breaks; the March towns and Velgrad would call Greyhaven the King's partner, and Ulun could claim old treaty rights of passage over the channel."
   },
   {
    "id": "SEC-32",
    "title": "The Forty Silent Days",
-   "pub": "Khan Ulagan died in peace at Kharsa on 6 March 912.",
-   "truth": "He died on 26 January 912. Khatun Saran hid the body in ice for 40 days, sent the news by yam only to the hearth tribes, and put her younger son Berek in Kharsa with the treasury before Temur heard.",
-   "who": "The Kharsan khans, father to heir; the keepers of the Kharsa yam station passed down the story.",
-   "proof": "The Kharsa yam tally cords for January to March 912, showing mourning riders sent out 39 days before the announcement, kept in the khan's tent-chest at Kharsa.",
-   "ifr": "The four western tribes that backed Temur could claim the Kharsan khanship was stolen from the start and refuse the khan of 1105."
+   "pub": "King Ulagan died in peace at Kharsa on 6 March 912.",
+   "truth": "He died on 26 January 912. Queen Saran hid the body in ice for 40 days, sent the news by yam only to the hearth tribes, and put her younger son Berek in Kharsa with the treasury before Temur heard.",
+   "who": "The Kharsan kings, father to heir; the keepers of the Kharsa yam station passed down the story.",
+   "proof": "The Kharsa yam tally cords for January to March 912, showing mourning riders sent out 39 days before the announcement, kept in the king's tent-chest at Kharsa.",
+   "ifr": "The four western tribes that backed Temur could claim the Kharsan khanship was stolen from the start and refuse the king of 1105."
   },
   {
    "id": "SEC-33",
    "title": "The Price of Temur's Head",
-   "pub": "Temur Kharsan fell fighting in a raid in January 920, and Berek mourned him with a khan's funeral.",
+   "pub": "Temur Kharsan fell fighting in a raid in January 920, and Berek mourned him with a king's funeral.",
    "truth": "Berek's agents paid Temur's guard captain 3,000 silver and a herd to kill him in his tent at Torkul. Berek then had the captain killed.",
    "who": "No one living is sure; a song of the western tribes, 'The Captain's Herd', hints at it.",
    "proof": "The captain was buried with a silver travel tablet bearing Berek's seal, in a small grave mound near Torkul.",
@@ -7868,14 +7900,14 @@
    "pub": "The Black Cough was the Eternal Blue's punishment for the brothers' war, and it came from Temur's camps.",
    "truth": "The first cases were marmot hunters and fur dealers at Kyzai in Berek's own lands, in April 915, and the yam riders carried it along every road. Berek's scribes knew and blamed Temur. The true cause is still unknown to anyone in 1105.",
    "who": "Nobody knows it whole. Old Kharsan court scribes knew where it started.",
-   "proof": "The yam tally cords of Kyzai and Kharsa for 915, and a fur-dealer's list of marmot bales at the first sick camps, in the khan's tent-chest at Kharsa.",
+   "proof": "The yam tally cords of Kyzai and Kharsa for 915, and a fur-dealer's list of marmot bales at the first sick camps, in the king's tent-chest at Kharsa.",
    "ifr": "The yams, pride of Ulun, would be feared as plague roads, and the marmot fur trade could be banned in a panic."
   },
   {
    "id": "SEC-35",
    "title": "The Ledger's Two Books",
-   "pub": "Ilaria Lunetti the Ledger lent Morhaven the silver that saved it from the Khan.",
-   "truth": "She lent Morhaven 60,000 silver at 12 percent a year, and at the same time her agents at Erkent bought furs and captives taken in the Free Marches from the Khan's governors. In 909 she called in the governors' loans first and seized their herds.",
+   "pub": "Ilaria Lunetti the Ledger lent Morhaven the silver that saved it from the King.",
+   "truth": "She lent Morhaven 60,000 silver at 12 percent a year, and at the same time her agents at Erkent bought furs and captives taken in the Free Marches from the King's governors. In 909 she called in the governors' loans first and seized their herds.",
    "who": "The heads of House Lunetti, who read the private books.",
    "proof": "Ilaria's private ledgers, in her own hand, in the House Lunetti vault at Ostra.",
    "ifr": "House Lunetti would be shamed for trading in captives; Morhaven could demand back the interest it paid; Temple courts could fine the house."
@@ -7892,7 +7924,7 @@
   {
    "id": "SEC-37",
    "title": "Zahir's Rider Guide",
-   "pub": "The Giver of Water led Sultan Zahir across the Burning Waste to hidden water.",
+   "pub": "The Giver of Water led King Zahir across the Burning Waste to hidden water.",
    "truth": "A Sahrim guide, a Rider and so a rival of the Wells, sold Zahir the route and three secret cisterns. In return Zahir swore never to send soldiers to the Well of Samar.",
    "who": "Clan Bahar of Sahrim; the Keeper of the House of Water in Qadira.",
    "proof": "The water-contract sealed with Zahir's ring, kept by Clan Bahar at Zarak; a copy in the House of Water at Qadira.",
@@ -7902,7 +7934,7 @@
    "id": "SEC-38",
    "title": "Irondeep's Arrowheads",
    "pub": "The Open Forge dispute was about Irondeep selling pots and tools too cheaply to humans.",
-   "truth": "From about 896 to 911 Irondeep sold about 14,000 sets of lamellar plates and a great many arrowheads to the Wind Empire, through dealers in Kingsmere. The Judgment of 904 left the sales before it unpunished. Sales went on in secret for seven years after the Judgment of 904, until the Khan's wars ran down; those later sales broke the Judgment itself.",
+   "truth": "From about 896 to 911 Irondeep sold about 14,000 sets of lamellar plates and a great many arrowheads to the Wind Empire, through dealers in Kingsmere. The Judgment of 904 left the sales before it unpunished. Sales went on in secret for seven years after the Judgment of 904, until the King's wars ran down; those later sales broke the Judgment itself.",
    "who": "The Deepeye rulers of Irondeep and the Eldest Carver of Stonehold.",
    "proof": "Irondeep's sale tallies in the Deepeye vault; Wind lamellar plates with Irondeep maker's marks in old Kharsan graves near Kharsa.",
    "ifr": "Stonehold's Law-Carvers could reopen the case against Irondeep under the Deep Law, and Aldmark would be shamed that its merchants armed the steppe."
@@ -7910,18 +7942,18 @@
   {
    "id": "SEC-39",
    "title": "The Miracle of Morhaven",
-   "pub": "In 897 the Sun struck the Khan's army with fever and saved Morhaven.",
-   "truth": "King Tancred paid men to throw dead horses and cattle into the stream above the Khan's camp. The drought and the fouled water did the rest.",
+   "pub": "In 897 the Sun struck the King's army with fever and saved Morhaven.",
+   "truth": "King Tancred paid men to throw dead horses and cattle into the stream above the King's camp. The drought and the fouled water did the rest.",
    "who": "The Morhaven chancery clerks; a few Temple archivists.",
-   "proof": "The garrison pay roll of 897 in the Morhaven chancery, which pays 'carrion carriers'; a Temple inquiry letter in the Holy See archive at Solenne.",
-   "ifr": "The Temple's miracle would be exposed as a trick of war, embarrassing the Holy See and the crown of Morhaven."
+   "proof": "The garrison pay roll of 897 in the Morhaven chancery, which pays 'carrion carriers'; a Temple inquiry letter in Solenne archive at Solenne.",
+   "ifr": "The Temple's miracle would be exposed as a trick of war, embarrassing Solenne and the crown of Morhaven."
   },
   {
    "id": "SEC-40",
    "title": "Kingsmere's Tribute",
    "pub": "The Kingdom of Kingsmere never bowed to the Wind Empire; it only sent gifts of friendship.",
-   "truth": "Kingsmere paid the Khan 6,000 silver and 500 horses every year from 881 to 912, as tribute, to keep the riders south of the Millrun.",
-   "who": "Aldmark's treasury keepers; the Kharsan khans.",
+   "truth": "Kingsmere paid the King 6,000 silver and 500 horses every year from 881 to 912, as tribute, to keep the riders south of the Millrun.",
+   "who": "Aldmark's treasury keepers; the Kharsan kings.",
    "proof": "Kingsmere treasury rolls for 881–912 listing 'gifts to the east', in the Oath Hall at Kingsmere; matching tribute tallies at Kharsa.",
    "ifr": "Aldmark's pride that the north never bowed would be broken, and Ulun could mock the empire in any quarrel."
   },
@@ -8020,7 +8052,7 @@
    "title": "Why two tribes held back",
    "pub": "Ulun lost the Battle of the Salt Shore (1041) to Gorath's strength.",
    "truth": "Two of the nine tribes held back their riders because Gorath had promised them the winter grazing north of Kultau. He kept the promise.",
-   "who": "The khans of those two tribes and Gorath's war-chief. Mother Shura, Keeper of the Grass, who takes a grass price of about 150 horses a year from…",
+   "who": "The kings of those two tribes and Gorath's war-chief. Mother Shura, Keeper of the Grass, who takes a grass price of about 150 horses a year from…",
    "proof": "A knotted treaty cord is held by the shaman of one of the tribes at Kultau.",
    "ifr": "It would split Ulun and could start a feud against the two tribes."
   },
@@ -8029,7 +8061,7 @@
    "title": "Lucerna's oil",
    "pub": "Sabra freed itself from Qadir by its own courage (1020–1025).",
    "truth": "Lucerna's bankers paid for Sabra's revolt. Sabra has sold Lucerna 400 jars of fire-oil a year ever since, in secret.",
-   "who": "The Emir of Sabra; three members of Lucerna's council.",
+   "who": "The Prince of Sabra; three members of Lucerna's council.",
    "proof": "Lucerna's arsenal books, kept in the arsenal at Lucerna, list the jars as 'lamp oil from the south'.",
    "ifr": "Qadir would treat it as an act of war by Lucerna. Every navy would want fire-oil too."
   },
@@ -8038,7 +8070,7 @@
    "title": "The Deathbed Words",
    "pub": "Anselm Six-Fingers named his daughter Livia heir on his deathbed in 1061, before the Luminary of Tessar and six witnesses.",
    "truth": "Anselm could no longer speak when the witnesses came in. All six were Temple men. The royal physician wrote on his wax tablets that the king died 'without a word or a sign'.",
-   "who": "Queen Livia; High Luminary Severin III; the Needle-Keepers' archivist who holds the tablets; no witness is still alive.",
+   "who": "Queen Livia; Prince-Bishop Severin III; the Needle-Keepers' archivist who holds the tablets; no witness is still alive.",
    "proof": "The physician's wax tablets, sealed in a lead box in the Temple archive at Solenne, shelf of Tessarian royal papers.",
    "ifr": "Livia's claim loses its only legal ground. Temple-faith lords could desert her, and the Temple would be shown to have made a queen with a lie."
   },
@@ -8047,17 +8079,17 @@
    "title": "Lucerna's share of the dragon toll",
    "pub": "Lucerna fought Corvasse in the Corsair War and still condemns the pirates and their dragon toll.",
    "truth": "A secret clause of the Peace of Ratrock (1056) gives Lucerna's council families one fifth of every dragon toll. The money passes through a front house in Ostra. About 9,000 marks a year.",
-   "who": "Doge Tiberio Doravelli; four council families of Lucerna; First Banker Cosimo Lunetti; Captain-General Nell Brine.",
-   "proof": "The Lucernan copy of the clause in the Doge's strongroom at Lucerna; the Ostran front house's ledgers in the Lunetti vault at Ostra;",
+   "who": "First Merchant Tiberio Doravelli; four council families of Lucerna; First Banker Cosimo Lunetti; Captain-General Nell Brine.",
+   "proof": "The Lucernan copy of the clause in the First Merchant's strongroom at Lucerna; the Ostran front house's ledgers in the Lunetti vault at Ostra;",
    "ifr": "Varenna, which paid for half the war, would feel betrayed. Merchants would refuse the toll. Lucerna's council could fall."
   },
   {
    "id": "SEC-55",
    "title": "Sabra's oil behind the dragon",
    "pub": "A great fire-dragon guards the Corsair Isles.",
-   "truth": "The 'dragon' is fire-oil from Sabra's seeps on the Gulf of Sands, sold to Corvasse since 1051 by three emirs in turn. Sabra takes payment in silver and in safe passage for its own ships.",
-   "who": "Emir Karim Sabrani; his oil-master; Captain-General Nell Brine and about 40 pirates.",
-   "proof": "The oil-master's tally sticks and shipping notes in the emir's treasury at Sabra; oil jars stamped with Sabra's well-mark in the store caves at Ratrock.",
+   "truth": "The 'dragon' is fire-oil from Sabra's seeps on the Gulf of Sands, sold to Corvasse since 1051 by three princes in turn. Sabra takes payment in silver and in safe passage for its own ships.",
+   "who": "Prince Karim Sabrani; his oil-master; Captain-General Nell Brine and about 40 pirates.",
+   "proof": "The oil-master's tally sticks and shipping notes in the prince's treasury at Sabra; oil jars stamped with Sabra's well-mark in the store caves at Ratrock.",
    "ifr": "Lucerna, Varenna and Qadir would have cause for war on Sabra. The dragon toll would collapse, and Corvasse with it."
   },
   {
@@ -8083,7 +8115,7 @@
    "title": "Serra's proof",
    "pub": "The Needle-Keeper Ottavio Serra confessed in 1068 that his count was a lie of the Devourer.",
    "truth": "Serra proved the Common Reckoning is six years short. His notebook sets the Needle's count and the tree-ring count side by side, and they agree. The Book of Ash says the Light will fail again when those two counts agree.",
-   "who": "High Luminary Severin III; the three senior Needle-Keepers; Queen Saelith of Eldergrove, who was sent a copy by Serra in 1067;",
+   "who": "Prince-Bishop Severin III; the three senior Needle-Keepers; Queen Saelith of Eldergrove, who was sent a copy by Serra in 1067;",
    "proof": "Serra's notebook in the Needle-Keepers' vault under the Shadow Needle at Solenne; a copy in the archive at Silverbough.",
    "ifr": "Panic that the Light will fail. The Temple's authority over the calendar breaks. The Ashen would claim the prophecy is theirs."
   },
@@ -8101,7 +8133,7 @@
    "title": "The switched boy",
    "pub": "The search monks found Tashen by the signs, and the old abbot's soul 'walked ahead' into him.",
    "truth": "The searchers first chose Norbu, a boy born in 1060 after the 12th Abbot's death. The abbey steward's faction swapped in Tashen, the son of the steward's cousin. The Red Stair's claimant is the boy who was found first.",
-   "who": "Brother Pema, the last living search monk; Norbu of the Red Stair; Abbot Tashen, who learned it in 1090.",
+   "who": "Brother Pema, the last living search monk; Norbu of the Red Stair; Prince-Abbot Tashen, who learned it in 1090.",
    "proof": "The search diary of 1061, hidden by Brother Pema at Moonstair monastery.",
    "ifr": "The White Stair's abbot would be a fraud in the eyes of the faithful. Norbu could take Skyhold when Tashen dies."
   },
@@ -8128,7 +8160,7 @@
    "title": "The survivor's map",
    "pub": "No army can kill the Red Widow, and the gold of the upper Tirana is lost for good.",
    "truth": "Jory Flint, a survivor of 1097, saw a crossbow bolt tear her right wing. She turns slowly to the left and has not bred in 20 years. He drew a map of the gold streams and her dawn patrol route and sold it to Cosimo Lunetti.",
-   "who": "Jory Flint; First Banker Cosimo Lunetti; Doge Tiberio Doravelli.",
+   "who": "Jory Flint; First Banker Cosimo Lunetti; First Merchant Tiberio Doravelli.",
    "proof": "The map in the Lunetti vault at Ostra; Jory Flint himself, drinking in Madara.",
    "ifr": "A new expedition would be raced by every power near the Marches. Queen Livia would pledge anything for the gold."
   },
@@ -8136,8 +8168,8 @@
    "id": "SEC-64",
    "title": "Fire-oil for Queen Livia",
    "pub": "Ulun sells their fire-oil to nobody.",
-   "truth": "Since 1103 Khan Ozbek has sold Queen Livia 30 jars of fire-oil a year. It goes by camel to Morhaven and by ship to Tessar. King Aurelio II takes a cut for letting it pass. Livia plans to burn Andros's winter camp at Coreria.",
-   "who": "Khan Ozbek Kharsan; Queen Livia; King Aurelio II Falcone; Livia's master of engines.",
+   "truth": "Since 1103 King Ozbek has sold Queen Livia 30 jars of fire-oil a year. It goes by camel to Morhaven and by ship to Tessar. King Aurelio II takes a cut for letting it pass. Livia plans to burn Andros's winter camp at Coreria.",
+   "who": "King Ozbek Kharsan; Queen Livia; King Aurelio II Falcone; Livia's master of engines.",
    "proof": "Bills of lading for 'lamp oil' in a merchant's warehouse at Felano; the jars in the queen's cellars at Tessar.",
    "ifr": "The Dawn Church and Velgrad would call it an atrocity. Morhaven would be dragged into the Tessarian war."
   },
@@ -8166,7 +8198,7 @@
    "truth": "Since 1102 their envoys have met secretly at Ostra, under Cosimo Lunetti's roof, to split the Neck for good: Livia keeps Tessar and the south, Andros the north, and the Neck road tolls are shared. Both churches would lose their say.",
    "who": "Queen Livia; Prince Andros; First Banker Cosimo Lunetti; one envoy of each.",
    "proof": "Two draft treaties in Cosimo Lunetti's study at Ostra.",
-   "ifr": "High Luminary Severin and the Patriarch of Dawn would both unlight their own claimant. Velgrad would lose the Neck tolls it holds as security."
+   "ifr": "Prince-Bishop Severin and the Patriarch of Dawn would both unlight their own claimant. Velgrad would lose the Neck tolls it holds as security."
   },
   {
    "id": "SEC-68",
@@ -9078,7 +9110,7 @@
    "human",
    "842",
    "912",
-   "Khan 870–912, founder of the Wind Empire"
+   "King 870–912, founder of the Wind Empire"
   ],
   [
    "FIG-022",
@@ -9102,7 +9134,7 @@
    "human",
    "760",
    "815",
-   "first Sultan of Qadir (790–815); crossed the Burning Waste in 790"
+   "first King of Qadir (790–815); crossed the Burning Waste in 790"
   ],
   [
    "FIG-025",
@@ -9206,7 +9238,7 @@
    "human",
    "955",
    "1022",
-   "Sultan of Ambrel 980–1022"
+   "King of Ambrel 980–1022"
   ],
   [
    "FIG-038",
@@ -9238,7 +9270,7 @@
    "human",
    "925",
    "980",
-   "Doge of Lucerna"
+   "First Merchant of Lucerna"
   ],
   [
    "FIG-042",
@@ -9278,7 +9310,7 @@
    "human",
    "705",
    "781",
-   "first ruler of the Holy See"
+   "first ruler of Solenne"
   ],
   [
    "FIG-047",
@@ -9302,7 +9334,7 @@
    "human",
    "990",
    "1060",
-   "Emir of Sabra from 1034"
+   "Prince of Sabra from 1034"
   ],
   [
    "FIG-050",
@@ -9478,7 +9510,7 @@
    "human",
    "297",
    "368",
-   "Brannoch war-leader; first Speaker of the League of Brannoch 336–368"
+   "Brannoch war-leader; first Speaker of the Merchant Republic of Brannoch 336–368"
   ],
   [
    "FIG-072",
@@ -9494,7 +9526,7 @@
    "human",
    "391",
    "447",
-   "Wind Rider khan; war-leader of six tribes in the Wind War"
+   "Wind Rider king; war-leader of six tribes in the Wind War"
   ],
   [
    "FIG-074",
@@ -9574,7 +9606,7 @@
    "human",
    "876",
    "949",
-   "Youngest son of Khan Ulagan; won the War of Ulagan's Sons;"
+   "Youngest son of King Ulagan; won the War of Ulagan's Sons;"
   ],
   [
    "FIG-084",
@@ -9582,7 +9614,7 @@
    "human",
    "848",
    "916",
-   "Chief wife of Khan Ulagan; organizer of the Saddle Law census and the yam post"
+   "Chief wife of King Ulagan; organizer of the Saddle Law census and the yam post"
   ],
   [
    "FIG-085",
@@ -9606,7 +9638,7 @@
    "human",
    "844",
    "897",
-   "Chief general of Khan Ulagan; conqueror of the Free Marches"
+   "Chief general of King Ulagan; conqueror of the Free Marches"
   ],
   [
    "FIG-088",
@@ -9686,7 +9718,7 @@
    "human",
    "1006",
    "1088",
-   "High Luminary of the Holy See 1050–1088"
+   "Prince-Bishop of Solenne 1050–1088"
   ],
   [
    "FIG-098",
@@ -9743,7 +9775,7 @@
   },
   {
    "name": "Noon Hall",
-   "realmName": "Holy See of Solenne",
+   "realmName": "Principality of Solenne",
    "place": "Solenne",
    "teaches": "Mace and shield from horseback for the Knights of the Sun",
    "master": "Garin Solis",
@@ -9752,7 +9784,7 @@
   },
   {
    "name": "Crossbow Yard of Dorata",
-   "realmName": "Holy See of Solenne",
+   "realmName": "Principality of Solenne",
    "place": "Dorata",
    "teaches": "Crossbow in ranks",
    "master": "Hugo Varr",
@@ -9779,7 +9811,7 @@
   },
   {
    "name": "Arsenal Yard",
-   "realmName": "Republic of Lucerna",
+   "realmName": "Merchant Republic of Lucerna",
    "place": "Lucerna",
    "teaches": "Oar, sea legs and fighting on a deck",
    "master": "Iacopo Rizzo",
@@ -9851,7 +9883,7 @@
   },
   {
    "name": "The Pair-Yard of Skarfell",
-   "realmName": "Halls of Frostholm",
+   "realmName": "Kingdom of Frostholm",
    "place": "Skarfell",
    "teaches": "Giants fighting back to back; maul and wrestling",
    "master": "Thrand the Broad",
@@ -9860,7 +9892,7 @@
   },
   {
    "name": "The Stone Ring of Torvik",
-   "realmName": "Halls of Frostholm",
+   "realmName": "Kingdom of Frostholm",
    "place": "Torvik",
    "teaches": "Throwing stones and harpoons at giant strength",
    "master": "Hroa of Torvik",
@@ -9905,7 +9937,7 @@
   },
   {
    "name": "Kharsa Arrow Field",
-   "realmName": "Khanate of Ulun",
+   "realmName": "Kingdom of Ulun",
    "place": "Kharsa",
    "teaches": "Archery from the gallop, forward and backward",
    "master": "Dorin Swiftarrow",
@@ -9914,7 +9946,7 @@
   },
   {
    "name": "Ring Hunt of Kyztai",
-   "realmName": "Khanate of Ulun",
+   "realmName": "Kingdom of Ulun",
    "place": "Kyztai",
    "teaches": "Ten thousand riders moving as one: the ring hunt",
    "master": "Serik Kharsan",
@@ -9923,7 +9955,7 @@
   },
   {
    "name": "The Highcastle Crossbow Yard",
-   "realmName": "League of Brannoch",
+   "realmName": "Merchant Republic of Brannoch",
    "place": "Highcastle",
    "teaches": "The heavy crossbow in ranks; the companies' drill",
    "master": "Ulric Greycloak",
@@ -9932,7 +9964,7 @@
   },
   {
    "name": "The Ridge School of Redford",
-   "realmName": "League of Brannoch",
+   "realmName": "Merchant Republic of Brannoch",
    "place": "Redford",
    "teaches": "Climbing, ridge running, mountain scouting",
    "master": "Ada Stonefoot",
@@ -9986,7 +10018,7 @@
   },
   {
    "name": "Wardens' Yard of Mirad",
-   "realmName": "Sultanate of Qadir",
+   "realmName": "Kingdom of Qadir",
    "place": "Mirad",
    "teaches": "Spear and crossbow in the passes; climbing",
    "master": "Nabil Tarsi",
@@ -10076,7 +10108,7 @@
   },
   {
    "name": "Oil Yard of Zariya",
-   "realmName": "Emirate of Sabra",
+   "realmName": "Principality of Sabra",
    "place": "Zariya",
    "teaches": "Fire-oil and the rafts that carry it (Sabrans only)",
    "master": "Saad the Burnt",
@@ -10085,7 +10117,7 @@
   },
   {
    "name": "Camel School of Hazim",
-   "realmName": "Emirate of Sabra",
+   "realmName": "Principality of Sabra",
    "place": "Hazim",
    "teaches": "Camel lance and bow in heat",
    "master": "Nuri Hazimi",
@@ -10130,7 +10162,7 @@
   },
   {
    "name": "Hall of Still Hands",
-   "realmName": "Abbey of Skyhold",
+   "realmName": "Principality of Skyhold",
    "place": "Skyhold",
    "teaches": "The staff, the throw and the hold; disarming without killing",
    "master": "Nima of the Still Hands",
@@ -10211,7 +10243,7 @@
   },
   {
    "name": "Spear Yard of Aming",
-   "realmName": "Sultanate of Ambrel",
+   "realmName": "Kingdom of Ambrel",
    "place": "Aming",
    "teaches": "Spear, tracking and the wyrm hunt",
    "master": "Bakar the Wyrm-Killer",
@@ -10220,7 +10252,7 @@
   },
   {
    "name": "Rowing Hall of Tekook",
-   "realmName": "Sultanate of Ambrel",
+   "realmName": "Kingdom of Ambrel",
    "place": "Tekook",
    "teaches": "Oar, sail and swimming",
    "master": "Fikri Laut",
@@ -10229,7 +10261,7 @@
   },
   {
    "name": "Ratrock Raft Yard",
-   "realmName": "Free Port of Corvasse",
+   "realmName": "Free City of Corvasse",
    "place": "Ratrock",
    "teaches": "Fire-rafts and the sea in bad weather",
    "master": "Sten the Quiet",
@@ -10238,7 +10270,7 @@
   },
   {
    "name": "The Dice Yard",
-   "realmName": "Free Port of Corvasse",
+   "realmName": "Free City of Corvasse",
    "place": "Corvasse",
    "teaches": "Knife, climbing and boarding",
    "master": "Rafe Hookhand",
@@ -10315,7 +10347,7 @@
    "code": "M12",
    "title": "Supreme Commander",
    "f": "Supreme Commander",
-   "holds": "The sovereign, who commands every soldier in law and some in fact, and every army he leads in person. Not a rank to be earned: it comes with the crown, the khan's tablet, the…",
+   "holds": "The sovereign, who commands every soldier in law and some in fact, and every army he leads in person. Not a rank to be earned: it comes with the crown, the king's tablet, the…",
    "size": "all",
    "address": "the sovereign's own style"
   },
@@ -10353,7 +10385,7 @@
    "f": "Head of State",
    "holds": "A head of state who holds office by vote, lot, sign or acclaim and not by crown",
    "size": "",
-   "address": "by office: 'Doge', 'First Banker', 'First Speaker', 'War-Chief', 'Abbot', 'High Luminary'"
+   "address": "by office: 'First Merchant', 'First Banker', 'First Speaker', 'War-Chief', 'Abbot', 'Prince-Bishop'"
   },
   {
    "ladder": "sovereign",
@@ -10369,7 +10401,7 @@
    "code": "R01",
    "title": "Consort",
    "f": "Consort",
-   "holds": "The sovereign's spouse. Crowned Consort (Queen, Empress) where law and the faith allow; otherwise 'Prince-Consort' or 'Khatun'",
+   "holds": "The sovereign's spouse. Crowned Consort (Queen, Empress) where law and the faith allow; otherwise 'Prince-Consort' or 'Queen'",
    "size": "",
    "address": "Your Majesty / Your Highness"
   },
@@ -10378,7 +10410,7 @@
    "code": "R02",
    "title": "Heir",
    "f": "Heir",
-   "holds": "The named or lawful successor: Crown Prince, Heir of the Veil, Forge-Princess, Heir of the Khan",
+   "holds": "The named or lawful successor: Crown Prince, Heir of the Veil, Forge-Princess, Heir of the King",
    "size": "",
    "address": "Your Royal Highness"
   },
@@ -10423,7 +10455,7 @@
    "code": "N03",
    "title": "Count",
    "f": "Countess",
-   "holds": "A county: a walled city and its country; Earl in the north, Jarl in Northreach, Emir in the Sultanates, Chief in the clans",
+   "holds": "A county: a walled city and its country; Earl in the north, Jarl in Northreach, Prince in the Kingdoms, Chief in the clans",
    "size": "40,000-250,000",
    "address": "My Lord Count; My Lady Countess"
   },
@@ -10576,7 +10608,7 @@
    "code": "F05",
    "title": "Patriarch",
    "f": "Patriarch",
-   "holds": "Head of a faith across realms: High Luminary of the Temple, Patriarch of Dawn, the Abbot of the White Stair in Skyhold, the Eldest Grey Mother",
+   "holds": "Head of a faith across realms: Prince-Bishop of the Temple, Patriarch of Dawn, the Abbot of the White Stair in Skyhold, the Eldest Grey Mother",
    "size": "",
    "address": "Your Holiness; Holy Father"
   }
@@ -10588,7 +10620,7 @@
    "command": "General of the Empire (Crown Host) and Lords of the Marches"
   },
   "POL-02": {
-   "style": "High Luminary (head of state, S04)",
+   "style": "Prince-Bishop of Solenne (head of state and of the Temple, S04)",
    "forms": "Luminaries in place of lords; old Solen houses keep honorary 'Lord'; Knights of the Sun",
    "command": "Grand Master of the Knights of the Sun"
   },
@@ -10598,7 +10630,7 @@
    "command": "Senior General; Captain-Generals of the Crown Road and Crown Coast"
   },
   "POL-04": {
-   "style": "Doge (head of state, S04, for life)",
+   "style": "First Merchant (head of state, S04, for life)",
    "forms": "Council families (about 300) in place of nobility; 'Ser' for the five Great Officers",
    "command": "Admiral of the Republic; hired Captains"
   },
@@ -10623,7 +10655,7 @@
    "command": "King; Hirdmaster; jarls with their hird"
   },
   "POL-09": {
-   "style": "Chieftain of Frostholm (Skarfell line, S04)",
+   "style": "King of Frostholm (Skarfell line, S04)",
    "forms": "Eldest of a hall (baron-like); Hall-Mother",
    "command": "Eldest of a hall; the Pair-Master"
   },
@@ -10638,14 +10670,14 @@
    "command": "First War-Captain"
   },
   "POL-12": {
-   "style": "Khan of Ulun (S02)",
-   "forms": "Chief of a Wind (count-marquis), Chief of a clan, Khatun",
+   "style": "King of Ulun (S02)",
+   "forms": "Chief of a Wind (count-marquis), Chief of a clan, Queen",
    "command": "Heir as Commander of the Silver Tablet Guard; chiefs of Winds in the ring hunt"
   },
   "POL-13": {
    "style": "First Speaker (S04, for life); no king, no lords",
    "forms": "Speaker of a valley (count-like), clan elder",
-   "command": "Captain-General of the League"
+   "command": "Captain-General of the Republic"
   },
   "POL-14": {
    "style": "King of Greyhaven (a Tidewell who has dived the harbor ring)",
@@ -10663,9 +10695,9 @@
    "command": "Captain of the City"
   },
   "POL-17": {
-   "style": "Sultan of Qadir, Guardian of the Water (S02)",
-   "forms": "Emir (count to marquis), Well-Keeper, Vizier",
-   "command": "Grand Admiral; the Sultan's Crown Prince"
+   "style": "King of Qadir, Guardian of the Water (S02)",
+   "forms": "Prince (count to marquis), Well-Keeper, Vizier",
+   "command": "Grand Admiral; the King's Crown Prince"
   },
   "POL-18": {
    "style": "King of Tamar, Son of the Flood Mother (S02)",
@@ -10673,9 +10705,9 @@
    "command": "General of the River"
   },
   "POL-19": {
-   "style": "Speaker of Sahrim (S04, for life)",
+   "style": "King of Sahrim (S04, for life)",
    "forms": "Chief of a clan, Well-Mother, Guardian of the Well Road",
-   "command": "The Speaker in war; captains of the Noon Lances"
+   "command": "The King in war; captains of the Noon Lances"
   },
   "POL-20": {
    "style": "Emperor of Zanara, Voice of the Ancestors (S01)",
@@ -10683,9 +10715,9 @@
    "command": "General of the Empire"
   },
   "POL-21": {
-   "style": "Prince of Kesh (S03, sovereign prince)",
+   "style": "Prince of Kesh (S03, elected by the council of merchant houses)",
    "forms": "Merchant princes, ship captains, Pepper Hall families",
-   "command": "Admiral of the League"
+   "command": "Admiral of Kesh"
   },
   "POL-22": {
    "style": "Twin Kings of Abara (S02 x 2)",
@@ -10698,9 +10730,9 @@
    "command": "Eldest of Torholm in the field"
   },
   "POL-24": {
-   "style": "Emir of Sabra (S02)",
+   "style": "Prince of Sabra (S02)",
    "forms": "Lord (count) of Hazim and the South March, Well-Keeper, Oil-Master",
-   "command": "The Emir; Captain of the Fire-Boats (heir)"
+   "command": "The Prince; Captain of the Fire-Boats (heir)"
   },
   "POL-25": {
    "style": "King of Velgrad (Sevrin); crowned by the Patriarch of Dawn",
@@ -10713,7 +10745,7 @@
    "command": "Senior General"
   },
   "POL-27": {
-   "style": "Abbot of the White Stair (S04); Steward rules until an abbot is 18",
+   "style": "Prince-Abbot of Skyhold, Abbot of the White Stair (S04); a Steward rules until the Prince-Abbot is 18",
    "forms": "Herd-lords (count-like), Abbess, Master of the Search",
    "command": "Steward of the White Stair; Captain of the Stair Guard"
   },
@@ -10738,7 +10770,7 @@
    "command": "Senior Generals of each claimant"
   },
   "POL-32": {
-   "style": "Sultan of Ambrel, Guardian of the Water (S02)",
+   "style": "King of Ambrel, Guardian of the Water (S02)",
    "forms": "Harbor lord (count), Warden of the Highlands, Well-Keeper, Grand Vizier",
    "command": "Admiral of the Fleet"
   },
@@ -10819,7 +10851,7 @@
    ["si","yes"],
    ["no","no"],
    ["salve","hello"],
-   ["sole a te","hello (\"sun to you\"), Holy See greeting"],
+   ["sole a te","hello (\"sun to you\"), Solenne greeting"],
    ["col sole","farewell (\"with the sun\")"],
    ["uno","one"],
    ["due","two"],
@@ -10925,7 +10957,7 @@
   "Wind Rider tongue": [
    ["kun","sun; day; the day-sky"],
    ["su","water"],
-   ["khan","khan"],
+   ["king","king"],
    ["bek","lord, chief"],
    ["jau","war; enemy"],
    ["kylych","sword"],
@@ -11163,8 +11195,8 @@
    ["shamsa","sun"],
    ["mai","water"],
    ["bir","well"],
-   ["sultan","king, sultan"],
-   ["amir","lord; emir"],
+   ["king","king, king"],
+   ["amir","lord; prince"],
    ["harab","war"],
    ["sayf","sword"],
    ["faras","horse"],
@@ -11205,7 +11237,7 @@
    ["shams","sun"],
    ["ma","water"],
    ["bir","well"],
-   ["sultan","king, sultan (\"one with power\")"],
+   ["king","king, king (\"one with power\")"],
    ["amir","lord"],
    ["harb","war"],
    ["sayf","sword"],
@@ -12371,7 +12403,7 @@
   {
    "id": "TAC-116",
    "name": "Lagoon Chain",
-   "desc": "Lucerna's chain across the lagoon mouth between the Lagoon Chain Towers (built under Doge Renato Salvi, 866–883), with sunken stakes in the side channels that only Lucernan pilots can pass.",
+   "desc": "Lucerna's chain across the lagoon mouth between the Lagoon Chain Towers (built under First Merchant Renato Salvi, 866–883), with sunken stakes in the side channels that only Lucernan pilots can pass.",
    "users": "Lucerna."
   },
   {
@@ -12396,7 +12428,7 @@
    "id": "TAC-120",
    "name": "Boarding Action",
    "desc": "Grapnels thrown, a crossbow volley across the gap, then marines over the bow; most sea battles end in boarding.",
-   "users": "every navy; Lucerna (Lagoon Marines), Qadir, Velgrad (Sevany Hooks), Kesh (Monuro Marines), Ambrel (Sultan's Marines), Greyhaven (Chain Guard)."
+   "users": "every navy; Lucerna (Lagoon Marines), Qadir, Velgrad (Sevany Hooks), Kesh (Monuro Marines), Ambrel (King's Marines), Greyhaven (Chain Guard)."
   },
   {
    "id": "TAC-121",
@@ -12590,7 +12622,7 @@
   [
    1085,
    "The Seep Stockade and the death oath",
-   "Khan Ozbek makes Duran Master of the Seeps and builds the Seep Stockade near Kyzai, with earth walls and a ditch around the jar stores."
+   "King Ozbek makes Duran Master of the Seeps and builds the Seep Stockade near Kyzai, with earth walls and a ditch around the jar stores."
   ],
   [
    1085,
@@ -12630,7 +12662,7 @@
   [
    1086,
    "Death of old Toghrul",
-   "Toghrul Kharsan, the khan forced out in 1079, dies at his daughters' camp at Ersgol, aged 74."
+   "Toghrul Kharsan, the king forced out in 1079, dies at his daughters' camp at Ersgol, aged 74."
   ],
   [
    1086,
@@ -12644,8 +12676,8 @@
   ],
   [
    1086,
-   "Karim Sabrani becomes Emir of Sabra",
-   "Emir Nasir Sabrani dies. His son Karim, 32, takes the emirate. Nasir's father Farid had died in 1060."
+   "Karim Sabrani becomes Prince of Sabra",
+   "Prince Nasir Sabrani dies. His son Karim, 32, takes the principality. Nasir's father Farid had died in 1060."
   ],
   [
    1086,
@@ -12654,8 +12686,8 @@
   ],
   [
    1087,
-   "Tariq Bahar chosen Speaker of Sahrim",
-   "After Speaker Malik Bahar dies, the clan council at Zarak chooses Tariq Bahar, 38, as Speaker."
+   "Tariq Bahar chosen King of Sahrim",
+   "After King Malik Bahar dies, the clan council at Zarak chooses Tariq Bahar, 38, as King."
   ],
   [
    1087,
@@ -12699,8 +12731,8 @@
   ],
   [
    1088,
-   "Election of High Luminary Severin III",
-   "High Luminary Clement IV the Stern dies at 82 after 38 years. The Luminaries elect Severin III, 57."
+   "Election of Prince-Bishop Severin III",
+   "Prince-Bishop Clement IV the Stern dies at 82 after 38 years. The Luminaries elect Severin III, 57."
   ],
   [
    1088,
@@ -12710,7 +12742,7 @@
   [
    1089,
    "The Edict of the Halls",
-   "On Oathfather's Day 1089 Emperor Aldwin, as head of the Seven Halls, proclaims that every hall-priest in Northreach and the League of Brannoch must be confirmed…"
+   "On Oathfather's Day 1089 Emperor Aldwin, as head of the Seven Halls, proclaims that every hall-priest in Northreach and the Merchant Republic of Brannoch must be confirmed…"
   ],
   [
    1089,
@@ -12750,7 +12782,7 @@
   [
    1090,
    "Death of King Bjorn Winterborn",
-   "On New Year's Day 1089 Emperor Aldwin claimed the right to confirm every hall-priest in Northreach and the League of Brannoch."
+   "On New Year's Day 1089 Emperor Aldwin claimed the right to confirm every hall-priest in Northreach and the Merchant Republic of Brannoch."
   ],
   [
    1090,
@@ -12810,7 +12842,7 @@
   [
    1091,
    "Banking compact with House Lunetti renewed",
-   "High Luminary Severin III renews the banking compact: House Lunetti holds the Temple's coin and lends it at 8 in 100 to kings the Temple names."
+   "Prince-Bishop Severin III renews the banking compact: House Lunetti holds the Temple's coin and lends it at 8 in 100 to kings the Temple names."
   ],
   [
    1092,
@@ -12824,13 +12856,13 @@
   ],
   [
    1092,
-   "Coronation of Sultan Zahir IV",
-   "Sultan Zahir III of Qadir dies. His son Zahir IV, 35, becomes Sultan and Guardian of the Water at Qadira."
+   "Coronation of King Zahir IV",
+   "King Zahir III of Qadir dies. His son Zahir IV, 35, becomes King and Guardian of the Water at Qadira."
   ],
   [
    1092,
    "The Thing of 1092",
-   "Bergthor of Haugberg speaks against Chieftain Skarvi for four hours and loses by two halls. Vermund Farcast throws 31 m."
+   "Bergthor of Haugberg speaks against King Skarvi for four hours and loses by two halls. Vermund Farcast throws 31 m."
   ],
   [
    1092,
@@ -12870,7 +12902,7 @@
   [
    1093,
    "Accord of Coldhaven",
-   "The Northreach Rising ends at Coldhaven. Aldmark drops its claim. The Free Halls of Northreach and the League of Brannoch keep choosing their own priests."
+   "The Northreach Rising ends at Coldhaven. Aldmark drops its claim. The Free Halls of Northreach and the Merchant Republic of Brannoch keep choosing their own priests."
   ],
   [
    1093,
@@ -12925,7 +12957,7 @@
   [
    1095,
    "Ulric Greycloak named Captain-General",
-   "The Council of Valleys names Ulric Greycloak, 40, Captain-General of the League, the first Greycloak to hold the office in 60 years."
+   "The Council of Valleys names Ulric Greycloak, 40, Captain-General of the Republic, the first Greycloak to hold the office in 60 years."
   ],
   [
    1095,
@@ -12944,8 +12976,8 @@
   ],
   [
    1096,
-   "Election of Doge Tiberio Doravelli",
-   "Doge Pietro Salvi of Lucerna dies. The council elects Tiberio Doravelli, 56, and the High Luminary crowns him."
+   "Election of First Merchant Tiberio Doravelli",
+   "First Merchant Pietro Salvi of Lucerna dies. The council elects Tiberio Doravelli, 56, and the Prince-Bishop crowns him."
   ],
   [
    1096,
@@ -12990,7 +13022,7 @@
   [
    1097,
    "Samir named heir; Nadira made Keeper of the Purse",
-   "On Well Day 1097 Sultan Zahir IV names his son Samir, 16, as heir before the Well-Keepers, and makes Nadira Hassani Keeper of the Purse."
+   "On Well Day 1097 King Zahir IV names his son Samir, 16, as heir before the Well-Keepers, and makes Nadira Hassani Keeper of the Purse."
   ],
   [
    1097,
@@ -13080,7 +13112,7 @@
   [
    1099,
    "A taster for Queen Livia",
-   "At Queen Livia's request, Doge Tiberio Doravelli sends his son Nerio to Tessar as her food-taster."
+   "At Queen Livia's request, First Merchant Tiberio Doravelli sends his son Nerio to Tessar as her food-taster."
   ],
   [
    1099,
@@ -13095,7 +13127,7 @@
   [
    1099,
    "Isaria Vale refused",
-   "The sun-sisters elect the half-elf Isaria Vale their Mother. High Luminary Severin III refuses to confirm her because she is half-elf."
+   "The sun-sisters elect the half-elf Isaria Vale their Mother. Prince-Bishop Severin III refuses to confirm her because she is half-elf."
   ],
   [
    1099,
@@ -13110,7 +13142,7 @@
   [
    1099,
    "Helga Stonefoot elected First Speaker",
-   "First Speaker Hugo Redford dies. The League's council elects Helga Stonefoot, 48, the girl who saved the child from the eagle's ledge in 1063."
+   "First Speaker Hugo Redford dies. The Republic's council elects Helga Stonefoot, 48, the girl who saved the child from the eagle's ledge in 1063."
   ],
   [
    1099,
@@ -13119,8 +13151,8 @@
   ],
   [
    1099,
-   "Coronation of Sultan Iskandar Maruang",
-   "Sultan Harun II Maruang dies. His son Iskandar, 35, becomes Sultan of Ambrel."
+   "Coronation of King Iskandar Maruang",
+   "King Harun II Maruang dies. His son Iskandar, 35, becomes King of Ambrel."
   ],
   [
    1100,
@@ -13130,7 +13162,7 @@
   [
    1100,
    "Tahir takes the fire-boats",
-   "Emir Karim gives his son Tahir, 22, command of the 30 fire-boats and their 600 crewmen, trained by Saad the Burnt at the Oil Yard of Zariya."
+   "Prince Karim gives his son Tahir, 22, command of the 30 fire-boats and their 600 crewmen, trained by Saad the Burnt at the Oil Yard of Zariya."
   ],
   [
    1100,
@@ -13155,7 +13187,7 @@
   [
    1100,
    "A roc egg in Amberport",
-   "Pearl divers sell a roc egg holding 10 litres at Amberport's market. It goes to the sultan's treasury."
+   "Pearl divers sell a roc egg holding 10 litres at Amberport's market. It goes to the king's treasury."
   ],
   [
    1101,
@@ -13165,7 +13197,7 @@
   [
    1101,
    "The Merah cloves burned",
-   "After a rich harvest, the sultan's men burn about 2,000 bales of House Merah's cloves in Amberport harbor to hold the price."
+   "After a rich harvest, the king's men burn about 2,000 bales of House Merah's cloves in Amberport harbor to hold the price."
   ],
   [
    1101,
@@ -13190,7 +13222,7 @@
   [
    1101,
    "Amani Keshari weds Laila Maruang",
-   "Prince Amani Keshari marries Laila Maruang, Sultan Iskandar's sister, at Kesh."
+   "Prince Amani Keshari marries Laila Maruang, King Iskandar's sister, at Kesh."
   ],
   [
    1101,
@@ -13230,7 +13262,7 @@
   [
    1102,
    "Serik Kharsan marries Naran of the Morning Wind",
-   "The khan's heir Serik marries Naran, daughter of Altan, chief of the Morning Wind, at Ozlun."
+   "The king's heir Serik marries Naran, daughter of Altan, chief of the Morning Wind, at Ozlun."
   ],
   [
    1102,
@@ -13290,7 +13322,7 @@
   [
    1103,
    "Birth of the infant Nuru",
-   "Princess Laila bears Prince Amani a son, named Nuru for his grandfather. Sultan Iskandar sends a gold cradle."
+   "Princess Laila bears Prince Amani a son, named Nuru for his grandfather. King Iskandar sends a gold cradle."
   ],
   [
    1103,
@@ -13300,7 +13332,7 @@
   [
    1103,
    "The horn cup sold and the road loan",
-   "Mosi III sells his father's unicorn horn cup to Sultan Zahir IV of Qadir, borrows 100,000 suns from House Sorondo and names Nia Tembo Road-Master."
+   "Mosi III sells his father's unicorn horn cup to King Zahir IV of Qadir, borrows 100,000 suns from House Sorondo and names Nia Tembo Road-Master."
   ],
   [
    1103,
@@ -13320,7 +13352,7 @@
   [
    1103,
    "The lamp-oil bargain",
-   "King Aurelio II agrees with Khan Ozbek to let 30 jars a year of steppe fire-oil pass through Morhaven to Queen Livia, marked as lamp oil, for about 60 suns a…"
+   "King Aurelio II agrees with King Ozbek to let 30 jars a year of steppe fire-oil pass through Morhaven to Queen Livia, marked as lamp oil, for about 60 suns a…"
   ],
   [
    1103,
@@ -13350,7 +13382,7 @@
   [
    1103,
    "Severin III falls ill",
-   "High Luminary Severin III falls ill in the winter of 1103 with a short breath and swollen ankles and does not leave Solenne again."
+   "Prince-Bishop Severin III falls ill in the winter of 1103 with a short breath and swollen ankles and does not leave Solenne again."
   ],
   [
    1103,
@@ -13374,8 +13406,8 @@
   ],
   [
    1104,
-   "Abbot Tashen falls ill",
-   "Abbot Tashen, 52, begins to cough blood in the spring of 1104. Steward Sonam doubles the guard on his rooms and stores two years of barley."
+   "Prince-Abbot Tashen falls ill",
+   "Prince-Abbot Tashen, 52, begins to cough blood in the spring of 1104. Steward Sonam doubles the guard on his rooms and stores two years of barley."
   ],
   [
    1104,
@@ -13390,7 +13422,7 @@
   [
    1104,
    "The Clean Ledger founded",
-   "Lady Flavia Morello and about a dozen council families form the Clean Ledger to open the Doge's strongroom and expose hidden payments."
+   "Lady Flavia Morello and about a dozen council families form the Clean Ledger to open the First Merchant's strongroom and expose hidden payments."
   ],
   [
    1104,
@@ -13405,7 +13437,7 @@
   [
    1104,
    "The omen of the cracked bone",
-   "At the Horse Feast the chief shaman burns a sheep's shoulder-blade for the khan's road. Ilga reads it aloud as a long road."
+   "At the Horse Feast the chief shaman burns a sheep's shoulder-blade for the king's road. Ilga reads it aloud as a long road."
   ],
   [
    1104,
@@ -13420,7 +13452,7 @@
   [
    1104,
    "Tin loaded at Ragvik by night",
-   "A Kingsmere cog of the Amber Guild loads 200 bars of tin at Ragvik by night with Chieftain Skarvi's leave."
+   "A Kingsmere cog of the Amber Guild loads 200 bars of tin at Ragvik by night with King Skarvi's leave."
   ],
   [
    1104,
@@ -13495,7 +13527,7 @@
   [
    1104,
    "The Gordush contract offered",
-   "Aldmark's envoys ask the League of Brannoch for 2,000 crossbowmen on the Gordush by May Fair 1105, at double the usual pay."
+   "Aldmark's envoys ask the Merchant Republic of Brannoch for 2,000 crossbowmen on the Gordush by May Fair 1105, at double the usual pay."
   ],
   [
    1104,
@@ -13555,7 +13587,7 @@
   [
    1104,
    "The harbor dues pawned",
-   "Prince Amani pawns the harbor dues of Kesh for 1105 to an Ambrel merchant house for 40,000 suns to pay the interest on the League's loan."
+   "Prince Amani pawns the harbor dues of Kesh for 1105 to an Ambrel merchant house for 40,000 suns to pay the interest on Kesh's loan."
   ],
   [
    1104,
@@ -13662,7 +13694,7 @@
   [
    "Fri 1 Apr",
    "waning crescent",
-   "Sea Opening: open-sea sailing begins. Sultan Iskandar's fleet (about 6,200 men, with Keshi ships) sails for the Isle of Pearls"
+   "Sea Opening: open-sea sailing begins. King Iskandar's fleet (about 6,200 men, with Keshi ships) sails for the Isle of Pearls"
   ],
   [
    "Fri 1 Apr",
@@ -13702,7 +13734,7 @@
   [
    "Sun 1 May",
    "waning crescent",
-   "May Fair: the Gordush crossbow contract. Aldmark needs the League's 4,000 crossbowmen on the line by now; the vote at Highcastle decides it"
+   "May Fair: the Gordush crossbow contract. Aldmark needs the Republic's 4,000 crossbowmen on the line by now; the vote at Highcastle decides it"
   ],
   [
    "Sun 1 May",
@@ -13737,7 +13769,7 @@
   [
    "Tue 21 Jun",
    "waning",
-   "Return Day: the Horse Feast of Ulun. Yesun of the Red Wind needs the Well tribes' votes to block Serik; the cords of the Forty Silent Days lie in Khatun Sorga's chest"
+   "Return Day: the Horse Feast of Ulun. Yesun of the Red Wind needs the Well tribes' votes to block Serik; the cords of the Forty Silent Days lie in Queen Sorga's chest"
   ],
   [
    "Tue 21 Jun",
@@ -13803,7 +13835,7 @@
   ],
   [
    "Hild on Roktar",
-   "The League of Brannoch; yodeled between valleys.",
+   "The Merchant Republic of Brannoch; yodeled between valleys.",
    "Hild went up where the eagles go,\nup through the ice and over the snow.\nShe sat on the top of the world one day,\nand came back down and would not say."
   ],
   [
@@ -13813,8 +13845,8 @@
   ],
   [
    "The Forty Silent Days",
-   "A long song of the Khanate of Ulun.",
-   "The Khan lay still and the wind lay still,\nthe snow lay white on the Kharsa hill.\nSaran counted the stars by night,\nand the morning rose with the Khan's own light."
+   "A long song of the Kingdom of Ulun.",
+   "The King lay still and the wind lay still,\nthe snow lay white on the Kharsa hill.\nSaran counted the stars by night,\nand the morning rose with the King's own light."
   ],
   [
    "The Thunder Horse",
@@ -13858,7 +13890,7 @@
   ],
   [
    "Dragon Night",
-   "The Free Port of Corvasse, and every sailor who pays the toll.",
+   "The Free City of Corvasse, and every sailor who pays the toll.",
    "Pay the dragon, pay the toll,\none in forty for your soul.\nMag Brine laughed and the sea caught flame,\nand the dragon came when he called its name."
   ],
   [
@@ -13868,14 +13900,14 @@
   ],
   [
    "Grom's Whale",
-   "Giants of the Kingdom of Hrimfell and the Halls of Frostholm.",
+   "Giants of the Kingdom of Hrimfell and the Kingdom of Frostholm.",
    "Slow, slow, the ice is wide.\nSlow, slow, the whale is dead.\nGrom pulls, and the halls are fed.\nSlow, slow, by the Mother's side."
   ]
  ],
  "sayings": [
   [
    "\"Don't lie at noon.\"",
-   "Solenfolk of the Holy See of Solenne and the Kingdom of Varenna",
+   "Solenfolk of the Principality of Solenne and the Kingdom of Varenna",
    "Be honest when it counts. From the Temple's taboo on lying at noon, the holy hour."
   ],
   [
@@ -13890,7 +13922,7 @@
   ],
   [
    "\"The Needle counts, and the Needle is never wrong.\"",
-   "Priests and schoolboys of the Holy See",
+   "Priests and schoolboys of Solenne",
    "Said to end a quarrel over dates. The few who know the six missing years say it without smiling."
   ],
   [
@@ -13905,7 +13937,7 @@
   ],
   [
    "\"Every lamp has its oil.\"",
-   "Harbor cant of the Republic of Lucerna",
+   "Harbor cant of the Merchant Republic of Lucerna",
    "Every informer (a *lamp*) has a paymaster. Old sailors hear a second meaning: \"lamp oil\" is fire-oil."
   ],
   [
@@ -13945,7 +13977,7 @@
   ],
   [
    "\"A fixed sum can't be cheated.\"",
-   "Clansfolk of the League of Brannoch",
+   "Clansfolk of the Merchant Republic of Brannoch",
    "Prefer plain terms to fair-sounding shares. From Bran Greycloak's charter (17.3.1)."
   ],
   [
@@ -13980,7 +14012,7 @@
   ],
   [
    "Kun kok, at semiz. \"The sky is blue, the horse is fat.\"",
-   "Wind Riders of the Khanate of Ulun",
+   "Wind Riders of the Kingdom of Ulun",
    "All is well."
   ],
   [
@@ -13991,7 +14023,7 @@
   [
    "\"A tally cord forgets nothing.\"",
    "Yam families of Ulun",
-   "Records outlive the men who wish them gone. The cords of 912 still lie in the khan's chest."
+   "Records outlive the men who wish them gone. The cords of 912 still lie in the king's chest."
   ],
   [
    "Dush ka? Dush ha. \"Is there water? There is water.\"",
@@ -14055,7 +14087,7 @@
   ],
   [
    "\"Slow, slow, the ice is wide.\"",
-   "Giants of the Halls of Frostholm and the Kingdom of Hrimfell",
+   "Giants of the Kingdom of Frostholm and the Kingdom of Hrimfell",
    "A long task is done by steady work. From the song of Grom's whale."
   ],
   [
@@ -14070,13 +14102,13 @@
   ],
   [
    "\"Give water to your enemy, and he drinks from your hand.\"",
-   "The Sultanate of Qadir",
+   "The Kingdom of Qadir",
    "Generosity is a kind of power. From the law of water-alms."
   ],
   [
    "\"A Rider counts stars, a Well counts coins.\"",
-   "Sandfolk of the Sahrim Confederacy",
-   "The desert clans mock the town folk of the Sultanate of Qadir and the Emirate of Sabra. From the split of 581."
+   "Sandfolk of the Kingdom of Sahrim",
+   "The desert clans mock the town folk of the Kingdom of Qadir and the Principality of Sabra. From the split of 581."
   ],
   [
    "\"The diver comes up, or he doesn't.\"",
@@ -14130,7 +14162,7 @@
   ],
   [
    "Ribut datang. \"The storm is coming.\"",
-   "Amberfolk of the Sultanate of Ambrel",
+   "Amberfolk of the Kingdom of Ambrel",
    "Danger ahead. Said in earnest when a Maruang has a headache."
   ],
   [
@@ -14140,7 +14172,7 @@
   ],
   [
    "\"Three and one.\"",
-   "Skyfolk of the Abbey of Skyhold",
+   "Skyfolk of the Principality of Skyhold",
    "Said instead of \"four\", which is also \"death\". Names a danger without naming it."
   ],
   [
@@ -14150,7 +14182,7 @@
   ],
   [
    "\"One in forty for your soul.\"",
-   "Corsairs of the Free Port of Corvasse, and the sailors who pay them",
+   "Corsairs of the Free City of Corvasse, and the sailors who pay them",
    "Everything has a price, and the price is set by the strong. From the dragon toll."
   ],
   [

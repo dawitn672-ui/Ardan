@@ -69,7 +69,7 @@
 
   V['CUL-03'] = { // Wind Riders: the Salt Steppe, nine tribes, the post, the spring count
     lord: ['kesrun', 'a chief of a Wind, who answers for its horses'],
-    ruler: ['Saghdar', 'the khan, who takes the spring count'],
+    ruler: ['Saghdar', 'the king, who takes the spring count'],
     council: ['tessuk', 'the gathering of the nine chiefs'],
     year: 'the {n} {w2} of {ru}',
     greet: 'Grass under you, sky over you.',
@@ -78,7 +78,7 @@
     who: ['the herders', 'the post riders', 'old women of the Winds', 'the tally-keepers'],
     sayings: [
       ['A horse counted is a horse owed', 'money power land'],
-      ['The cord is longer than the khan', 'law power death'],
+      ['The cord is longer than the king', 'law power death'],
       ['Ride to the well, not to the rumor', 'travel land'],
       ['Share the fire and keep the saddle', 'guest feast'],
       ['Sky over all; a chief over some', 'faith power'],

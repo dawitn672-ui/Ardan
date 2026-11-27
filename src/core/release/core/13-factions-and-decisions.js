@@ -335,10 +335,13 @@ A.factionRevolt = function (r, f, peaceful) {
     S.factions = S.factions.filter(x => x !== f);
     return;
   }
+  // [order 99, D-206] lords who break away found a principality under their leader (it was "the X League", ruled by
+  // a Lord): a realm is a kingdom, an empire, a principality, a merchant republic or a free city
   const nr = A.createRealm({
-    name: lead.name.replace(/^the /i, "").replace(/^House /, "") + " League",
+    name: "Principality of " + lead.name.replace(/^House /, "").replace(/^the /i, ""),
     short: lead.name.replace(/^House /, "").replace(/^the /i, ""),
-    title: "Lord",
+    title: "Prince",
+    form: "principality",
     race: r.race,
     cult: r.cult,
     faith: r.faith,
@@ -1795,7 +1798,9 @@ DEC("kingdom", {
   name: "Proclaim yourself King",
   desc: "Your lordship has grown into a kingdom in all but name. Take the name.",
   show: pc =>
-    !!pc.ruler && !/king|queen|emperor|empress|sultan|khan|prince|tsar/i.test((A.myRealm() || {}).title || "King"),
+    // [order 99, D-206] a realm founded small is a principality now (it was a lordship): its prince may take the crown,
+    // as may the head of a merchant republic or a free city; a churchman's principality stays the Temple's
+    !!pc.ruler && !/king|queen|emperor|empress|tsar|bishop|abbot|abbess/i.test((A.myRealm() || {}).title || "King"),
   reqs: pc => {
     const r = A.myRealm();
     return [
@@ -1808,7 +1813,8 @@ DEC("kingdom", {
     const r = A.myRealm();
     r.treasury -= 5e3;
     r.title = "King";
-    r.name = r.name.replace(/^(Lordship|County|Duchy|Principality) of /, "Kingdom of ");
+    r.name = r.name.replace(/^(Lordship|County|Duchy|Principality|Merchant Republic|Free City) of /, "Kingdom of ");
+    r.form = "kingdom";
     r.legit = Math.min(100, r.legit + 15);
     A.fame(pc, 10);
     A.news(`${A.fullName(pc)} is crowned ${pc.sex === "F" ? "Queen" : "King"} of ${r.short}.`, "crown");
@@ -1834,7 +1840,8 @@ DEC("empire", {
     const r = A.myRealm();
     r.treasury -= 2e4;
     r.title = "Emperor";
-    r.name = r.name.replace(/^(Kingdom|Lordship|Realm|Sultanate) of /, "Empire of ");
+    r.name = r.name.replace(/^(Kingdom|Principality|Lordship|Realm) of /, "Empire of ");
+    r.form = "empire";
     if (!/^Empire/.test(r.name)) r.name = "Empire of " + r.short.replace(/^the /i, "");
     r.legit = Math.min(100, r.legit + 20);
     r.laws.authority = Math.max(r.laws.authority || 1, 2);

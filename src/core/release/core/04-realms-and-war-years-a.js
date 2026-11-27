@@ -363,7 +363,7 @@ A.electable = function (p, r) {
     ? false
     : r.gov === "theocracy"
       ? // E10 (order 76, the Emilio save): a sacred throne goes to a churchman of years, not one of 21 (his tourney
-        // friend was High Luminary at about 23)
+        // friend was Prince-Bishop (then High Luminary) at about 23)
         p.job && p.job.c === "clergy" && p.job.r >= 3 && age >= R2.adult + 20
       : r.gov === "council"
         ? (p.job && p.job.c === "merchant" && p.job.r >= 3) || (p.noble && p.noble.rung >= 4)

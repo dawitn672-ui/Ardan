@@ -595,7 +595,7 @@
         cond: (p,C)=>R(p,"POL-02")&&C.female(p)&&(C.teen(p)||grown(p,C)),
         w: 1,
         cool: 10,
-        text: "Only men may be priests in the Holy See, but women run the Temple's hospitals and girls' schools as sun-sisters. A sister in a white wimple from the Sun-Sisters' Hostel in the Saltings asks if you will come and help with the fever ward. No pay. Bread and broth.",
+        text: "Only men may be priests in Solenne, but women run the Temple's hospitals and girls' schools as sun-sisters. A sister in a white wimple from the Sun-Sisters' Hostel in the Saltings asks if you will come and help with the fever ward. No pay. Bread and broth.",
         choices: [
           {
             t: "Work the fever ward through the winter",
@@ -669,7 +669,7 @@
         cond: (p,C)=>R(p,"POL-02")&&C.adult(p)&&low(p),
         w: 1.1,
         cool: 6,
-        text: "Half the farmers of the Holy See are Temple tenants, and they pay rent and tithe to the same master. This year the hail flattened your wheat. The Temple steward has come with his clerk and his scales, and he is looking at your last sacks.",
+        text: "Half the farmers of Solenne are Temple tenants, and they pay rent and tithe to the same master. This year the hail flattened your wheat. The Temple steward has come with his clerk and his scales, and he is looking at your last sacks.",
         choices: [
           {
             t: "Pay it all and go hungry",
@@ -737,7 +737,7 @@
         cond: (p,C)=>R(p,"POL-02")&&C.adult(p),
         w: .8,
         cool: 12,
-        text: "A stranger died of a spotted fever in the inn stable, and nobody will touch the body. Some of the neighbors want to burn it, stable and all, before the fever spreads. But in the Holy See fire belongs to the sun: burning a body is a crime, and the dead go into the ground at dawn, facing east.",
+        text: "A stranger died of a spotted fever in the inn stable, and nobody will touch the body. Some of the neighbors want to burn it, stable and all, before the fever spreads. But in Solenne fire belongs to the sun: burning a body is a crime, and the dead go into the ground at dawn, facing east.",
         choices: [
           {
             t: "Bury the stranger at dawn yourself",
@@ -839,7 +839,7 @@
         w: .7,
         cool: 15,
         setup: (p,ctx)=>{pid(p,ctx,"friend")},
-        text: "Over wine, {them}, a scrivener of the Needle Court, leans close and whispers that the year count is wrong, short by six years, and that the old granary beams of Clarente would prove it. In the Holy See that is Needle Heresy, and Needle Heretics are walled up for life in a dark cell under the Needle.",
+        text: "Over wine, {them}, a scrivener of the Needle Court, leans close and whispers that the year count is wrong, short by six years, and that the old granary beams of Clarente would prove it. In Solenne that is Needle Heresy, and Needle Heretics are walled up for life in a dark cell under the Needle.",
         choices: [
           {
             t: "Tell {themHim} to never say it again",
@@ -900,7 +900,7 @@
         cond: (p,C)=>R(p,"POL-02")&&C.adult(p)&&early()&&(C.literate(p)||C.job(p,"clergy")||C.job(p,"scribe")||is(p,"gentry","noble","merchant")),
         w: 1,
         once: !0,
-        text: `High Luminary Severin III is 73 and slowing, and the Luminaries are already counting votes. A clerk of Treasurer Crispin Dorn asks you to carry a sealed letter to a Luminary's house in Lorina. "He needs cheap bread and four votes," the clerk says. "Help with either and he forgets nothing."`,
+        text: `Prince-Bishop Severin III is 73 and slowing, and the Luminaries are already counting votes. A clerk of Treasurer Crispin Dorn asks you to carry a sealed letter to a Luminary's house in Lorina. "He needs cheap bread and four votes," the clerk says. "Help with either and he forgets nothing."`,
         choices: [
           {
             t: "Carry the letter, and do not open it",
@@ -1913,7 +1913,7 @@
         cond: (p,C)=>R(p,"POL-04")&&(C.teen(p)||grown(p,C))&&C.male(p),
         w: 1,
         cool: 4,
-        text: "Sea Opening: the Doge throws a gold crown into the lagoon to wed the sea, and then the galley crews race. The winning lagoon crew drinks free in every tavern until Sea Closing. Your quarter's crew is a rower short, and they are looking at your shoulders.",
+        text: "Sea Opening: the First Merchant throws a gold crown into the lagoon to wed the sea, and then the galley crews race. The winning lagoon crew drinks free in every tavern until Sea Closing. Your quarter's crew is a rower short, and they are looking at your shoulders.",
         choices: [
           {
             t: "Take the empty bench",
@@ -1932,7 +1932,7 @@
             req: p=>p.coin>=5,
             check: {s:"gambling",s2:"sea",d:45},
             win: {r:"You win 15 suns and drink with the crew anyway.",fx:{coin:15,happy:3}},
-            lose: {r:"Your quarter comes in last. Five suns into the lagoon with the Doge's crown.",fx:{coin:-5}},
+            lose: {r:"Your quarter comes in last. Five suns into the lagoon with the First Merchant's crown.",fx:{coin:-5}},
           },
           {
             t: "Watch from the bridge",
@@ -2923,7 +2923,7 @@
         cond: (p,C)=>R(p,"POL-13")&&C.adult(p)&&early(),
         w: 1,
         once: !0,
-        text: "In March the Council of Valleys votes on Aldmark's contract: 4,000 League crossbowmen on the Gordush by May Fair, for good silver. Twenty thousand has already changed hands, they say. A yes angers Northreach; a no leaves Aldmark's line without crossbows. Your valley meeting must tell its Speaker which way to vote.",
+        text: "In March the Council of Valleys votes on Aldmark's contract: 4,000 Republic crossbowmen on the Gordush by May Fair, for good silver. Twenty thousand has already changed hands, they say. A yes angers Northreach; a no leaves Aldmark's line without crossbows. Your valley meeting must tell its Speaker which way to vote.",
         choices: [
           {
             t: "Speak for the contract: silver keeps the valleys fed",
@@ -3164,7 +3164,7 @@
         cond: (p,C)=>R(p,"POL-13")&&grown(p,C)&&(C.job(p,"miner")||C.poor(p)||C.race(p,"dwarf")),
         w: 1,
         cool: 7,
-        text: `About 8,400 dwarves work the League's deep silver by contract under Master Borin Flintaxe. "He sells work, never secrets," the miners say. A dwarf crew-master in Amberhurst needs a human clerk to keep the tally of baskets, and mine-clerks learn their figures from the dwarves' tallies.`,
+        text: `About 8,400 dwarves work the Republic's deep silver by contract under Master Borin Flintaxe. "He sells work, never secrets," the miners say. A dwarf crew-master in Amberhurst needs a human clerk to keep the tally of baskets, and mine-clerks learn their figures from the dwarves' tallies.`,
         choices: [
           {
             t: "Take the tally stick",
@@ -3705,7 +3705,7 @@
         cond: (p,C)=>R(p,"POL-15")&&grown(p,C)&&(low(p)||C.job(p,"miner","labor")),
         w: 1,
         cool: 7,
-        text: "Under the Deep Walls of Morhaven run counter-mine galleries, twelve meters below the ditch. The miners who keep them were the ones who broke the Khan's tunnels in 895, and they still listen with a cup of water on the floor. Today the water in your cup is trembling.",
+        text: "Under the Deep Walls of Morhaven run counter-mine galleries, twelve meters below the ditch. The miners who keep them were the ones who broke the King's tunnels in 895, and they still listen with a cup of water on the floor. Today the water in your cup is trembling.",
         choices: [
           {
             t: "Listen and follow the sound",
@@ -3755,7 +3755,7 @@
             t: "Ask where the oil really goes",
             check: {s:"intrigue",s2:"persuasion",d:46},
             win: {
-              r: "A Lad who drinks too much says it: the Khan's fire-oil, through Felano under false bills, to Queen Livia. And the king takes a cut.",
+              r: "A Lad who drinks too much says it: the King's fire-oil, through Felano under false bills, to Queen Livia. And the king takes a cut.",
               fx: {skill:{intrigue:2},flag:"ww_mh_oil",int:.3},
             },
             lose: {
@@ -5899,7 +5899,7 @@
         cond: (p,C)=>R(p,"POL-32")&&C.adult(p),
         w: .9,
         cool: 10,
-        text: "A Keshi captain at the Keshi House on the harbor front offers you 12 amber dinars, more than three hundred suns, for six clove seedlings in wet moss. Smuggling clove or nutmeg seedlings off the isles is death, and the Sultan's men have been known to search the moss in a sailor's sea-chest.",
+        text: "A Keshi captain at the Keshi House on the harbor front offers you 12 amber dinars, more than three hundred suns, for six clove seedlings in wet moss. Smuggling clove or nutmeg seedlings off the isles is death, and the King's men have been known to search the moss in a sailor's sea-chest.",
         choices: [
           {
             t: "Refuse him to his face",
@@ -5935,7 +5935,7 @@
         cond: (p,C)=>R(p,"POL-32")&&C.adult(p)&&(low(p)||is(p,"artisan")),
         w: 1,
         cool: 6,
-        text: "All spice must be sold on Amberport's scales, where a fifth belongs to the Sultan and harbor dues take another fifth. The Creek Boys, boatmen of the back channels, run sacks out by night to Keshi captains beyond the chain. Your nutmeg trees gave a good crop, and a Creek Boy is sitting on your steps.",
+        text: "All spice must be sold on Amberport's scales, where a fifth belongs to the King and harbor dues take another fifth. The Creek Boys, boatmen of the back channels, run sacks out by night to Keshi captains beyond the chain. Your nutmeg trees gave a good crop, and a Creek Boy is sitting on your steps.",
         choices: [
           {
             t: "Sell to the Creek Boys",
@@ -5968,7 +5968,7 @@
         cond: (p,C)=>R(p,"POL-32")&&grown(p,C)&&C.male(p)&&C.coast(p)&&!C.soldier(p),
         w: 1,
         cool: 7,
-        text: "Coastal villages owe rowers, and this year the Sultan's fleet is sailing for the Isle of Pearls with Keshi ships, and the rowing rolls are 1,100 men short. The admiral's men are going house to house in the Stilt Town with a list and a drum.",
+        text: "Coastal villages owe rowers, and this year the King's fleet is sailing for the Isle of Pearls with Keshi ships, and the rowing rolls are 1,100 men short. The admiral's men are going house to house in the Stilt Town with a list and a drum.",
         choices: [
           {
             t: "Go with the fleet",
@@ -5991,7 +5991,7 @@
           {
             t: "Volunteer as a marine instead of a rower",
             req: (p,C)=>C.lvl(p,"spear",30)||C.lvl(p,"bow",30),
-            r: "The Sultan's Marines take you gladly: boarding troops, better rations, first onto the beach.",
+            r: "The King's Marines take you gladly: boarding troops, better rations, first onto the beach.",
             fx: {job:"mercenary",skill:{sea:1,spear:2}},
           },
         ],
@@ -6002,7 +6002,7 @@
         cond: (p,C)=>R(p,"POL-32")&&C.ageAdj(p)>=8,
         w: 1,
         cool: 4,
-        text: '"Ribut datang," people are saying in the market: the storm is coming. The news is that the Sultan has a headache, and the Maruang feel a cyclone a day before it strikes. The sky is perfectly blue. It is September, the middle of the cyclone season.',
+        text: '"Ribut datang," people are saying in the market: the storm is coming. The news is that the King has a headache, and the Maruang feel a cyclone a day before it strikes. The sky is perfectly blue. It is September, the middle of the cyclone season.',
         choices: [
           {
             t: "Haul the boats up and tie down the roof",
@@ -6217,7 +6217,7 @@
           },
           {
             t: "Ask your grandmother to teach you her pattern",
-            r: 'She teaches you slowly, scolding, through a whole monsoon. The pattern is called "the storm the Sultan felt".',
+            r: 'She teaches you slowly, scolding, through a whole monsoon. The pattern is called "the storm the King felt".',
             fx: {skill:{craft:2},happy:3},
           },
           {t:"Sell plain cloth to the factor",r:"Plain cloth, plain price.",fx:{coin:3}},

@@ -129,7 +129,7 @@
         cond: (p,C)=>C.adult(p)&&slave(p)&&C.coast(p)&&C.realm(p,...WELL_COAST),
         w: 1.5,
         title: "The pearl banks",
-        text: p=>`${p.realm==="POL-24"?"The Emir takes the best pearl of every boat; the master takes the rest.":"The master takes every pearl the bank gives up."} You go down on a rope with a stone between your feet and a turtle-shell clip on your nose. The deep bank is richer. It is also where divers stop coming up.`,
+        text: p=>`${p.realm==="POL-24"?"The Prince takes the best pearl of every boat; the master takes the rest.":"The master takes every pearl the bank gives up."} You go down on a rope with a stone between your feet and a turtle-shell clip on your nose. The deep bank is richer. It is also where divers stop coming up.`,
         choices: [
           {
             t: "Dive the deep bank",
@@ -974,7 +974,7 @@
         id: "wk_herd_raid",
         cond: (p,C)=>C.adult(p)&&free(p)&&(herder(p)||farmer(p))&&C.terr(p,"hills","mountains"),
         title: "Cattle gone",
-        text: p=>`${p.realm==="POL-13"?"In the League of Brannoch wealth is counted in cattle and silver, and cattle walk.":"Cattle walk, and some men help them."} At dawn your byre is empty and the tracks lead up toward the next glen.`,
+        text: p=>`${p.realm==="POL-13"?"In the Merchant Republic of Brannoch wealth is counted in cattle and silver, and cattle walk.":"Cattle walk, and some men help them."} At dawn your byre is empty and the tracks lead up toward the next glen.`,
         choices: [
           {
             t: "Rouse the neighbors and follow the trail",

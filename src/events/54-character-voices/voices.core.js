@@ -40,7 +40,7 @@
       feast: /\b(feasts?|festival|drink\w*|wine|ale|beer|danc\w*|songs?|sing\w*|supper|toast)\b/g,
       guest: /\b(guests?|strangers?|foreigners?|travell?ers?|outsiders?|visitors?|hospitality)\b/g,
       work: /\b(work\w*|labou?r|apprentice\w*|craft\w*|master|forge|smith|mines?|miners?|tools?)\b/g,
-      power: /\b(lords?|king|queen|emperor|sultan|khan|emir|raja|prince|princess|chiefs?|throne|crown|council|ruler|steward|nobles?)\b/g,
+      power: /\b(lords?|king|queen|emperor|raja|prince|princess|chiefs?|throne|crown|council|ruler|steward|nobles?)\b/g,
       travel: /\b(roads?|journey|caravans?|travel\w*|pass|path|ride|rode|riders?|post)\b/g,
     },
   };
@@ -175,9 +175,10 @@
   };
 
   // ---- titles: the place's word for a lord, or for its ruler
-  const PAIR = { King: 'Queen', Queen: 'King', Emperor: 'Empress', Empress: 'Emperor', Sultan: 'Sultana', Sultana: 'Sultan',
-    Prince: 'Princess', Princess: 'Prince', Raja: 'Rani', Rani: 'Raja', Khan: 'Khatun', Khatun: 'Khan', Emir: 'Emira', Emira: 'Emir',
-    Abbot: 'Abbess', Abbess: 'Abbot', Doge: 'Dogaressa', 'Forge-Queen': 'Forge-King', 'Forge-King': 'Forge-Queen',
+  // (order 99, D-206: the five forms' rulers; the churchmen who rule a principality are a Prince-Bishop and a Prince-Abbot)
+  const PAIR = { King: 'Queen', Queen: 'King', Emperor: 'Empress', Empress: 'Emperor',
+    Prince: 'Princess', Princess: 'Prince', Raja: 'Rani', Rani: 'Raja', 'Prince-Bishop': 'Princess-Bishop', 'Princess-Bishop': 'Prince-Bishop',
+    'Prince-Abbot': 'Princess-Abbess', 'Princess-Abbess': 'Prince-Abbot', Abbot: 'Abbess', Abbess: 'Abbot', 'Forge-Queen': 'Forge-King', 'Forge-King': 'Forge-Queen',
     'War-Mother': 'War-Father', 'War-Father': 'War-Mother', 'War-Chief': 'War-Chief' };
   V.rulerTitles = function (rid) {
     const R = A.realm(rid), out = [];

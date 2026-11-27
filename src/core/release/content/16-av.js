@@ -70,7 +70,7 @@
       first = s=>String(s||"").split(/[;.]/)[0].trim(),
       roadName = p=>({"POL-02":"the Sun Road","POL-03":"the Sun Road","POL-16":"the Sun Road","POL-15":"the Horse Road","POL-12":"the Horse Road","POL-31":"the Neck road","POL-19":"the Salt Road","POL-20":"the Gold Road","POL-34":"the Silk Road","POL-26":"the Fur Road","POL-25":"the Fur Road","POL-01":"the Amber Road","POL-10":"the Iron Road","POL-28":"the Zardeep road","POL-29":"the Worldspine passes","POL-30":"the Nagora road","POL-13":"the high road"})[p.realm]||"the high road",
       banditPlace = p=>({"POL-03":"in the Crown foothills","POL-31":"on the Neck road, between two burned road stations","POL-11":"on the steppe border","POL-12":"on the steppe border","POL-34":"on the steppe border","POL-13":"in a high glen"})[p.realm]||"where the road bends into the trees",
-      cargo = p=>({"POL-01":["amber","the Cold Bay shore","the Kingsmere Amber Guild"],"POL-02":["salt","the Holy See's coast","the Temple's salt tax"],"POL-08":["tin","the Northreach skerries","Northreach's tenth"],"POL-09":["tin","the Frostholm fjords","the Tin Reeves"],"POL-05":["yew staves","the Varennan border","the treason law"],"POL-24":["fire-oil","the Oil Shore","the Emir's token"],"POL-26":["furs and wax","the Velgrad toll forts","the toll forts"],"POL-25":["furs and wax","the river forts","the toll forts"],"POL-32":["nutmeg","the outer islands","the scales of Amberport"],"POL-21":["pepper","the Pepper Hall","the tenth on spice"],"POL-28":["cut gems","the lower gates","the gate-wardens"],"POL-20":["river gold","the gravel beds","the Emperor's weighers"]})[p.realm]||["wine","the river landing","the lord's toll"],
+      cargo = p=>({"POL-01":["amber","the Cold Bay shore","the Kingsmere Amber Guild"],"POL-02":["salt","Solenne's coast","the Temple's salt tax"],"POL-08":["tin","the Northreach skerries","Northreach's tenth"],"POL-09":["tin","the Frostholm fjords","the Tin Reeves"],"POL-05":["yew staves","the Varennan border","the treason law"],"POL-24":["fire-oil","the Oil Shore","the Prince's token"],"POL-26":["furs and wax","the Velgrad toll forts","the toll forts"],"POL-25":["furs and wax","the river forts","the toll forts"],"POL-32":["nutmeg","the outer islands","the scales of Amberport"],"POL-21":["pepper","the Pepper Hall","the tenth on spice"],"POL-28":["cut gems","the lower gates","the gate-wardens"],"POL-20":["river gold","the gravel beds","the Emperor's weighers"]})[p.realm]||["wine","the river landing","the lord's toll"],
       port = p=>({"POL-33":"Ratrock","POL-04":"Lucerna","POL-16":"Ostra","POL-14":"Greyhaven","POL-08":"Wolfhaven","POL-32":"Amberport","POL-24":"Sabra","POL-03":"Varenna","POL-17":"Qadira","POL-18":"Tamar"})[p.realm]||A.provName(p.home),
       ruinName = p=>{const t=(A.prov(p.home)||{}).terr;return A.C.realm(p,"POL-20","POL-21","POL-22")?A.pick(["the overgrown ruins of a town of the old Kingdom of the Tedana","the tumbled walls of Old Kimba, swallowed by fig trees"]):t==="desert"||A.C.realm(p,"POL-17","POL-19","POL-24")?A.pick(["the ruins of one of the First Wells","a caravan fort the sand has half eaten"]):A.C.realm(p,"POL-31","POL-16","POL-26","POL-25")?A.pick(["an old road station of the Neck Empire","the shell of a Tessarian road fort"]):A.pick(["the ruins of an old Solen fort","the moss-grown walls of a town of the old Solen Empire","a broken watchtower from the old empire"])};
     A.defEvents([
@@ -622,7 +622,7 @@
         w: 1,
         cool: 8,
         title: "The yam station",
-        text: "A yam station on the grass: fresh horses for riders with the khan's token, a wall to sleep by for anyone with a coin and a good reason. A rider comes in at dusk on a dying horse, with a silver tablet at his belt.",
+        text: "A yam station on the grass: fresh horses for riders with the king's token, a wall to sleep by for anyone with a coin and a good reason. A rider comes in at dusk on a dying horse, with a silver tablet at his belt.",
         choices: [
           {
             t: "Help him change horses fast",
@@ -637,7 +637,7 @@
             t: "Ask what news he carries",
             check: {s:"persuasion",s2:"etiquette",d:50},
             win: {
-              r: "He tells you only that the khan is moving riders west. You sell that to a horse-trader for good coin.",
+              r: "He tells you only that the king is moving riders west. You sell that to a horse-trader for good coin.",
               fx: {coin:12,skill:{intrigue:2}},
             },
             lose: {r:"The tablet outranks any chief. He outranks you too, and says so.",fx:{happy:-2}},
@@ -3168,8 +3168,8 @@
             check: {s:"trade",s2:"intrigue",d:55},
             win: {r:"200 suns from a Lucernan with a cold smile.",fx:{coin:200,honor:-3,flag:"av_bounty"}},
             lose: {
-              r: "The Emir's men find you first. You are lucky to leave the city alive.",
-              fx: {health:-20,coin:-20,cause:"the Emir's men",wound:"scar_face"},
+              r: "The Prince's men find you first. You are lucky to leave the city alive.",
+              fx: {health:-20,coin:-20,cause:"the Prince's men",wound:"scar_face"},
             },
           },
           {t:"Refuse to touch it",r:"Fire-oil and secrets: both burn the hand that holds them.",fx:{}},
@@ -3181,7 +3181,7 @@
         w: .7,
         cool: 15,
         title: "Nutmeg seedlings",
-        text: "A Keshi captain offers 500 suns for twelve living nutmeg seedlings, smuggled off the Sultanate's islands in a water jar. Spice moves past the scales every day. Seedlings off the islands mean death.",
+        text: "A Keshi captain offers 500 suns for twelve living nutmeg seedlings, smuggled off the Kingdom's islands in a water jar. Spice moves past the scales every day. Seedlings off the islands mean death.",
         choices: [
           {
             t: "Do it",
@@ -4509,13 +4509,13 @@
         w: 1,
         cool: 8,
         title: "The pearl beds",
-        text: "A free diver keeps a share of what he brings up, after the Emir's best pearl. The beds lie six fathoms down. Your lungs burn just thinking about it.",
+        text: "A free diver keeps a share of what he brings up, after the Prince's best pearl. The beds lie six fathoms down. Your lungs burn just thinking about it.",
         choices: [
           {
             t: "Dive",
             check: {s:"sea",s2:"sta",d:48},
             win: {
-              r: p=>`A shell the size of your palm, and inside it ${A.pick(["a rose-colored pearl","a perfect white pearl","a black pearl, rare as honesty"])}. Not the Emir's best, so yours.`,
+              r: p=>`A shell the size of your palm, and inside it ${A.pick(["a rose-colored pearl","a perfect white pearl","a black pearl, rare as honesty"])}. Not the Prince's best, so yours.`,
               fx: {coin:60,skill:{sea:4},sta:.8},
             },
             lose: {
@@ -4524,14 +4524,14 @@
             },
           },
           {
-            t: "Hide the best pearl from the Emir's man",
+            t: "Hide the best pearl from the Prince's man",
             req: (p,C)=>crook(p)||C.trait(p,"greedy"),
             check: {s:"deception",s2:"stealth",d:52},
             win: {
               r: "Under your tongue, past the counter. You sell it in another port for 200 suns.",
               fx: {coin:200,honor:-2,flag:"av_smuggler"},
             },
-            lose: {r:"The Emir's man knows every trick.",fx:{punish:"smuggling",coin:-20}},
+            lose: {r:"The Prince's man knows every trick.",fx:{punish:"smuggling",coin:-20}},
           },
           {t:"Haul the ropes for the divers",r:"Safer work. Smaller pay.",fx:{coin:10,str:.4}},
         ],

@@ -624,7 +624,7 @@
         cond: (p,C)=>C.realm(p,"POL-12")&&(C.adult(p)||C.teen(p)),
         w: 1.1,
         cool: 6,
-        text: "A yam rider of the Khan's post reels into your camp on a foam-white horse and falls out of the saddle. Fever. In his sash is a sealed message tied with the tally cords, and the next yam station is a day's ride away. His horse carries the Khan's brand. Selling a yam horse is theft from the Khan.",
+        text: "A yam rider of the King's post reels into your camp on a foam-white horse and falls out of the saddle. Fever. In his sash is a sealed message tied with the tally cords, and the next yam station is a day's ride away. His horse carries the King's brand. Selling a yam horse is theft from the King.",
         choices: [
           {
             t: "Ride the stage yourself",
@@ -650,7 +650,7 @@
               r: "A Greyhaven buyer asks no questions. Fifty suns. The brand is the buyer's problem now.",
               fx: {coin:50,honor:-6},
             },
-            lose: {r:"The brand is known. The Khan's tens find you within a week.",fx:{punish:"theft"}},
+            lose: {r:"The brand is known. The King's tens find you within a week.",fx:{punish:"theft"}},
           },
         ],
       },
@@ -1043,7 +1043,7 @@
         cond: (p,C)=>C.realm(p,"POL-02")&&(C.adult(p)||C.teen(p)),
         w: .9,
         cool: 10,
-        text: 'Knights of the Sun lead a thin man in grey down the steps beside the Shadow Needle. A Needle Heretic. In the Holy See heretics are never killed. He will be walled up in a dark cell under the Needle, so that he never sees the sun again. As he passes he whispers, "Count the years. Count them yourself."',
+        text: 'Knights of the Sun lead a thin man in grey down the steps beside the Shadow Needle. A Needle Heretic. In Solenne heretics are never killed. He will be walled up in a dark cell under the Needle, so that he never sees the sun again. As he passes he whispers, "Count the years. Count them yourself."',
         choices: [
           {
             t: "Make the sign of the sun and pray for him",
@@ -1180,11 +1180,11 @@
       },
       {
         id: "rl_lu_seaopen",
-        title: "The Doge weds the sea",
+        title: "The First Merchant weds the sea",
         cond: (p,C)=>C.realm(p,"POL-04")&&(C.adult(p)||C.teen(p)),
         w: 1,
         cool: 5,
-        text: "1 April, Sea Opening. From the gilded state galley the Doge throws a gold crown into the lagoon to wed the sea, and every bell in Lucerna rings. That night, in the dockside wine shops, men whisper that the crown lies in four fathoms off the Arsenal, and the Night Watch does not patrol there till after midnight.",
+        text: "1 April, Sea Opening. From the gilded state galley the First Merchant throws a gold crown into the lagoon to wed the sea, and every bell in Lucerna rings. That night, in the dockside wine shops, men whisper that the crown lies in four fathoms off the Arsenal, and the Night Watch does not patrol there till after midnight.",
         choices: [
           {
             t: "Dive for the crown in the dark",
@@ -1217,7 +1217,7 @@
         cond: (p,C)=>C.realm(p,"POL-17")&&C.adult(p),
         w: 1,
         cool: 8,
-        text: ()=>`A young man with paper-pulp in the creases of his hands hides behind your door. A journeyman of the Qadira mills, fleeing with the paper craft, the secret only Qadir has. A mill worker who takes the craft abroad is outlawed, and his family fined 500 silver qadr. Outside, ${early()?"the spymaster Rafiq the Quiet's men":"the Sultan's men"} are knocking on every door in the street.`,
+        text: ()=>`A young man with paper-pulp in the creases of his hands hides behind your door. A journeyman of the Qadira mills, fleeing with the paper craft, the secret only Qadir has. A mill worker who takes the craft abroad is outlawed, and his family fined 500 silver qadr. Outside, ${early()?"the spymaster Rafiq the Quiet's men":"the King's men"} are knocking on every door in the street.`,
         choices: [
           {
             t: "Hide him under the rags",
@@ -1233,7 +1233,7 @@
           },
           {
             t: "Open the door and point",
-            r: "The Sultan's men pay you 15 silver. The journeyman does not look back at you as they take him.",
+            r: "The King's men pay you 15 silver. The journeyman does not look back at you as they take him.",
             fx: {coin:15,favor:3,honor:-5},
           },
           {
@@ -1724,13 +1724,13 @@
         cond: (p,C)=>C.realm(p,"POL-24")&&C.adult(p),
         w: .9,
         cool: 8,
-        text: `A Nafari overseer is short of hands for the boiling-sheds at Zariya, and offers you the Emir's token and 40 suns for a season. Officially they boil "lamp oil" there. Nobody without the token may enter the Oil Shore; strangers found near it simply disappear. Last November a shed burned and killed eleven slaves.`,
+        text: `A Nafari overseer is short of hands for the boiling-sheds at Zariya, and offers you the Prince's token and 40 suns for a season. Officially they boil "lamp oil" there. Nobody without the token may enter the Oil Shore; strangers found near it simply disappear. Last November a shed burned and killed eleven slaves.`,
         choices: [
           {
             t: "Take the token and the season's work",
             check: {s:"sta",s2:"craft",d:41},
             win: {
-              r: `Black smoke, stinking jars sealed with the Emir's mark, and silence. You come back with 40 suns and know what "lamp oil" really is.`,
+              r: `Black smoke, stinking jars sealed with the Prince's mark, and silence. You come back with 40 suns and know what "lamp oil" really is.`,
               fx: {coin:40,skill:{craft:2},flag:"rl_sb_oil",int:.3},
             },
             lose: {
@@ -2257,7 +2257,7 @@
         cond: (p,C)=>C.realm(p,"POL-32")&&C.adult(p)&&!C.old(p),
         w: 1,
         cool: 8,
-        text: ()=>`Criers in ${A.pick(["Amberport","Aming","the hill villages"])} shout the Sultan's bounty: an Amber Wyrm has taken goats and a child from the forest edge. Men of the Spear Yard of Aming are gathering with heavy wyrm-spears, and they want more hands. The wyrm is as long as a galley.`,
+        text: ()=>`Criers in ${A.pick(["Amberport","Aming","the hill villages"])} shout the King's bounty: an Amber Wyrm has taken goats and a child from the forest edge. Men of the Spear Yard of Aming are gathering with heavy wyrm-spears, and they want more hands. The wyrm is as long as a galley.`,
         choices: [
           {
             t: "Take a heavy spear and join the hunt",
@@ -2282,7 +2282,7 @@
         cond: (p,C)=>C.realm(p,"POL-32")&&C.ageAdj(p)>=10,
         w: 1,
         cool: 7,
-        text: "The harvest was too good. The Sultan's men pile sacks of cloves on the harbor stones and burn them to keep the price high, and the whole of Amberport smells like a spice cake. Smuggling clove or nutmeg seedlings off the isles is death, but a sack of dried cloves, quietly kept, is merely theft.",
+        text: "The harvest was too good. The King's men pile sacks of cloves on the harbor stones and burn them to keep the price high, and the whole of Amberport smells like a spice cake. Smuggling clove or nutmeg seedlings off the isles is death, but a sack of dried cloves, quietly kept, is merely theft.",
         choices: [
           {
             t: "Steal a sack from the pile in the smoke",
@@ -2303,7 +2303,7 @@
               fx: {skill:{intrigue:3}},
             },
             lose: {
-              r: "The Keshi captain is the Sultan's informer. You spend a long night explaining yourself.",
+              r: "The Keshi captain is the King's informer. You spend a long night explaining yourself.",
               fx: {prison:1,why:"asking after clove seedlings"},
             },
           },
@@ -3043,7 +3043,7 @@
         cond: (p,C)=>C.faith(p,"REL-01","REL-02")&&C.realm(p,"POL-31","POL-25","POL-26","POL-02","POL-15","POL-03")&&C.adult(p),
         w: .8,
         cool: 12,
-        text: p=>p.faith==="REL-01"?`A married priest of the Dawn Church preaches in a barn outside town, not in Old Solen but in the plain tongue everyone understands. "The sun is a lamp, not the Light. No High Luminary rules all bishops." ${p.realm==="POL-31"?"In Tessaria the churches mark the two sides of a war, and the Patriarch at Velgrad may yet unlight a prince.":"The dawnkeepers call it the Dawn Schism of 734, still festering."}`:`A dawnkeeper of the Temple of the Returning Sun preaches at the crossroads in Old Solen and then in bad Eastfolk. "The sun is the Light's own face. One High Luminary, one Church." ${p.realm==="POL-31"?"In Tessaria the two churches mark the two sides of a war. Changing church here is changing sides.":"Your priest calls him a Solen spy."}`,
+        text: p=>p.faith==="REL-01"?`A married priest of the Dawn Church preaches in a barn outside town, not in Old Solen but in the plain tongue everyone understands. "The sun is a lamp, not the Light. No Prince-Bishop rules all bishops." ${p.realm==="POL-31"?"In Tessaria the churches mark the two sides of a war, and the Patriarch at Velgrad may yet unlight a prince.":"The dawnkeepers call it the Dawn Schism of 734, still festering."}`:`A dawnkeeper of the Temple of the Returning Sun preaches at the crossroads in Old Solen and then in bad Eastfolk. "The sun is the Light's own face. One Prince-Bishop, one Church." ${p.realm==="POL-31"?"In Tessaria the two churches mark the two sides of a war. Changing church here is changing sides.":"Your priest calls him a Solen spy."}`,
         choices: [
           {
             t: "Listen, and change your church",
@@ -3212,7 +3212,7 @@
         title: "A stamped jar",
         ids: ["SEC-55","SEC-54","SEC-52"],
         cond: (p,C)=>C.realm(p,"POL-33","POL-24","POL-04","POL-03","POL-17")&&C.adult(p),
-        intro: ()=>`A shoal pilot with burned hands shows you a clay jar in a sack, sealed with wax and stamped with a mark you half recognize. It smells of pitch and something sharper. "From Dragon Night," he says. "Somebody will pay a sultan's ransom for this."`,
+        intro: ()=>`A shoal pilot with burned hands shows you a clay jar in a sack, sealed with wax and stamped with a mark you half recognize. It smells of pitch and something sharper. "From Dragon Night," he says. "Somebody will pay a king's ransom for this."`,
         dig: "Find out whose stamp it is",
       }),
       secretEv({
@@ -3493,7 +3493,7 @@
         cond: (p,C)=>early()&&C.realm(p,"POL-17","POL-24","POL-19","POL-32")&&(C.adult(p)||C.teen(p)),
         w: 1,
         once: !0,
-        text: p=>p.realm==="POL-24"?"In Sabra they whisper that Qadir's Grand Admiral Jalal will sail on the emirate after 1 April with a fleet that has never faced fire-oil. The Emir wants no battle; his son Tahir wants to burn the Qadiri fleet first. Fire-boats are being tarred in every cove.":`In the bazaars they say Grand Admiral Jalal of Qadir will sail on Sabra after 1 April, while the Sultan lies sick with stones. ${p.realm==="POL-19"?"The Speaker has his own quarrel with Sabra over missing children.":p.realm==="POL-32"?"Ambrel pilots are asked which side their sultan favors.":"Twelve of the galleys leak, say the shipwrights, but quietly."}`,
+        text: p=>p.realm==="POL-24"?"In Sabra they whisper that Qadir's Grand Admiral Jalal will sail on the principality after 1 April with a fleet that has never faced fire-oil. The Prince wants no battle; his son Tahir wants to burn the Qadiri fleet first. Fire-boats are being tarred in every cove.":`In the bazaars they say Grand Admiral Jalal of Qadir will sail on Sabra after 1 April, while the King lies sick with stones. ${p.realm==="POL-19"?"The Speaker has his own quarrel with Sabra over missing children.":p.realm==="POL-32"?"Ambrel pilots are asked which side their king favors.":"Twelve of the galleys leak, say the shipwrights, but quietly."}`,
         choices: [
           {
             t: p=>p.realm==="POL-24"?"Help tar the fire-boats":"Sign on to row the galleys",
@@ -3560,7 +3560,7 @@
         cond: (p,C)=>early()&&C.realm(p,"POL-27","POL-29","POL-30","POL-26")&&C.ageAdj(p)>=10,
         w: 1,
         once: !0,
-        text: p=>`Salt caravans bring news from the Roof of the World: Abbot Tashen, 13th of the White Stair, is coughing blood, and the Steward runs the daily rule. In the High Wastes the Red Stair's claimant Norbu waits, and says the search of 1061 found the wrong child. ${p.realm==="POL-29"?"And the Red Stair reveres the great dragons as sky-kings, which in Emberdeep is an awkward thing to hear.":"Some say the Steward is buying steel in the south for guards sworn never to kill."}`,
+        text: p=>`Salt caravans bring news from the Roof of the World: Prince-Abbot Tashen, 13th of the White Stair, is coughing blood, and the Steward runs the daily rule. In the High Wastes the Red Stair's claimant Norbu waits, and says the search of 1061 found the wrong child. ${p.realm==="POL-29"?"And the Red Stair reveres the great dragons as sky-kings, which in Emberdeep is an awkward thing to hear.":"Some say the Steward is buying steel in the south for guards sworn never to kill."}`,
         choices: [
           {
             t: "Light a butter lamp for the abbot",

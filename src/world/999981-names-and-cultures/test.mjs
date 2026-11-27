@@ -35,24 +35,25 @@ export default {
   async nmRealms(page) {
     const r = await page.evaluate(() => {
       T.enter({ seed: 3, realm: 'POL-01', status: 'noble', sex: 'M', startAge: 16 });
-      const want = { 'POL-12': ['Khanate of Ulun', 'Ulun', 'Khan'], 'POL-13': ['League of Brannoch', 'Brannoch', 'First Speaker'], 'POL-33': ['Free Port of Corvasse', 'Corvasse', 'Captain-General'],
-        'POL-34': ['Ughrak Clans', 'Ughrak', 'War-Mother'], 'POL-32': ['Sultanate of Ambrel', 'Ambrel', 'Sultan'], 'POL-21': ['Kesh', 'Kesh', 'Prince'], 'POL-19': ['Sahrim Confederacy', 'Sahrim', 'Speaker'], 'POL-11': ['Horde of Gorath', 'Gorath', 'War-Chief'] };
+      // (order 99, D-206: the five forms; the orcs' two realms are another builder's)
+      const want = { 'POL-12': ['Kingdom of Ulun', 'Ulun', 'King'], 'POL-13': ['Merchant Republic of Brannoch', 'Brannoch', 'First Speaker'], 'POL-33': ['Free City of Corvasse', 'Corvasse', 'Captain-General'],
+        'POL-34': ['Ughrak Clans', 'Ughrak', 'War-Mother'], 'POL-32': ['Kingdom of Ambrel', 'Ambrel', 'King'], 'POL-21': ['Merchant Republic of Kesh', 'Kesh', 'Prince'], 'POL-19': ['Kingdom of Sahrim', 'Sahrim', 'King'], 'POL-11': ['Horde of Gorath', 'Gorath', 'War-Chief'] };
       const bad = [];
       for (const [id, [name, short, title]] of Object.entries(want)) {
         const R = A.S.realms[id];
         if (!R || R.name !== name || R.short !== short || R.title !== title) bad.push(`${id}: ${R && R.name}/${R && R.short}/${R && R.title}`);
       }
-      // a name fits its government: no king or kingdom over a khan, a league, a free port or a clan
-      const fit = (id, rx, gov) => { const R = A.S.realms[id]; if (!rx.test(R.name) || !gov.test(`${R.type} ${R.gov}`)) bad.push(`${id} ${R.name} does not fit ${R.type}/${R.gov}`); if (/\b(Kingdom|King|Principality)\b/.test(R.name)) bad.push(`${R.name} is named a kingdom`); };
-      fit('POL-12', /^Khanate of /, /nomad|confederacy|tribes/i);
-      fit('POL-13', /^League of /, /league|confederation/i);
-      fit('POL-33', /^Free Port of /, /pirate|brotherhood/i);
+      // a name fits its people's way of rule, kept under the new form
+      const fit = (id, rx, gov) => { const R = A.S.realms[id]; if (!rx.test(R.name) || !gov.test(`${R.type} ${R.gov}`)) bad.push(`${id} ${R.name} does not fit ${R.type}/${R.gov}`); };
+      fit('POL-12', /^Kingdom of /, /nomad/i);
+      fit('POL-13', /^Merchant Republic of /, /mountain|valleys/i);
+      fit('POL-33', /^Free City of /, /pirate/i);
       fit('POL-34', /Clans$/, /clans|league/i);
       // the capital that shared the old name is the realm's name now, in the realm and on the map
       if (A.S.prov.filter((p) => p.name === 'Corvasse').length !== 1 || A.S.realms['POL-33'].capital !== 'Corvasse') bad.push('the capital of POL-33 is not Corvasse');
       return bad;
     });
-    return { ok: r.length === 0, detail: r.length ? r.join('; ') : 'Khanate of Ulun, League of Brannoch, Free Port of Corvasse, Ughrak Clans read like their governments; Ambrel, Kesh, Sahrim, Gorath unchanged' };
+    return { ok: r.length === 0, detail: r.length ? r.join('; ') : 'Kingdom of Ulun, Merchant Republic of Brannoch, Free City of Corvasse, Kingdom of Ambrel, Merchant Republic of Kesh, Kingdom of Sahrim (order 99); Ughrak Clans, Gorath unchanged' };
   },
 
   // CRITIQUE N1: where the people of a province come from. 35 realms (the continent's 34 and Prince Andros's Tessaria).
@@ -196,7 +197,7 @@ export default {
       for (const id of Object.keys(N.OLD)) fin[id] = [S.realms[id].name, S.realms[id].short];
       // as a save of the first v2 build held them, and of the hack's build
       S.realms['POL-19'].name = J('Confederacy of the ', 'Sand', ' Clans'); S.realms['POL-19'].short = J('Sand', ' Clans');
-      S.realms['POL-12'].name = 'Kingdom of Ulun';
+      S.realms['POL-12'].name = J('Khanate of the ', 'Nine', ' Winds');
       S.realms['POL-11'].short = J('the ', 'Horde');
       S.realms['POL-01'].name = 'Empire of Aldmark';
       const given = Object.values(S.people).slice(0, 30).map((p) => p.given).join();

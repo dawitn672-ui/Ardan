@@ -69,7 +69,7 @@
   W.warOf = function (P) {
     try {
       const R = LORE.realms[P.orig || P.owner]; if (!R || !Array.isArray(LORE.wars)) return null;
-      const keys = [R.short, String(R.name || '').replace(/^(The |Kingdom of |Empire of |Duchy of |League of the |League of )/, '')].filter(s => s && s.length > 3);
+      const keys = [R.short, String(R.name || '').replace(/^(The |Kingdom of |Empire of |Principality of |Merchant Republic of |Free City of |Duchy of |League of the |League of )/, '')].filter(s => s && s.length > 3);
       const ws = LORE.wars.filter(w => Array.isArray(w) && keys.some(k => String(w[4] || '').includes(k) || String(w[1] || '').includes(k)));
       return ws.length ? String(pickH(ws, 'wl|war|' + P.id)[1]).replace(/^The /, '') : null;
     } catch (e) { return null; }

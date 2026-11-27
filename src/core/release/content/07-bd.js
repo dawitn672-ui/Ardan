@@ -58,7 +58,7 @@
         w: 1.4,
         once: !0,
         title: "Red and green",
-        text: 'At the muster the captain points to the signal flags on the far hill. "Which is ours, the red or the green?" To you they are the same muddy grey. By the old custom of the Holy See, a Corvane son does not read banners, and so does not lead troops.',
+        text: 'At the muster the captain points to the signal flags on the far hill. "Which is ours, the red or the green?" To you they are the same muddy grey. By the old custom of Solenne, a Corvane son does not read banners, and so does not lead troops.',
         choices: [
           {
             t: "Admit it and ask for the quartermaster's ledger instead",
@@ -1218,7 +1218,7 @@
         w: 1.3,
         cool: 7,
         title: "The sweet sickness",
-        text: "Good years have made you heavy. Now you are thirsty all day, you make water all night, and a sore on your foot will not heal. Few khans of your line have died old and whole. The healer tastes your water and frowns: it is sweet.",
+        text: "Good years have made you heavy. Now you are thirsty all day, you make water all night, and a sore on your foot will not heal. Few kings of your line have died old and whole. The healer tastes your water and frowns: it is sweet.",
         choices: [
           {
             t: "Eat like a herder in a bad winter",
@@ -1271,7 +1271,7 @@
           },
           {
             t: "Take salt water by day, as the house physicians advise",
-            r: "Since Emir Nasir died after the fast of 1086, the physicians have pressed this. Some imams frown. You live.",
+            r: "Since Prince Nasir died after the fast of 1086, the physicians have pressed this. Some imams frown. You live.",
             fx: {piety:-2,health:2},
           },
         ],

@@ -1,6 +1,7 @@
 // 97-first-life-fixes, words: the creation summary's ruler (patch LF-CR-RULER). Pure: reads the lore, writes nothing.
 (function () {
-  const FEM = { King: 'Queen', Emperor: 'Empress', Sultan: 'Sultana', Prince: 'Princess', Raja: 'Rani', Khan: 'Khatun', Emir: 'Emira', Abbot: 'Abbess', Doge: 'Dogaressa', Duke: 'Duchess', Khagan: 'Khatun', Lord: 'Lady' };
+  // (order 99, D-206: the five forms' rulers)
+  const FEM = { King: 'Queen', Emperor: 'Empress', Prince: 'Princess', Raja: 'Rani', 'Prince-Bishop': 'Princess-Bishop', 'Prince-Abbot': 'Princess-Abbess', Abbot: 'Abbess', Duke: 'Duchess', Lord: 'Lady' };
   const MAS = { Queen: 'King', 'Forge-Queen': 'Forge-King', 'War-Mother': 'War-Father' };
   // "(Queen Kalunge)" for the realm's ruler as the lore gives it; '' when the lore names nobody
   UI.crRulerNote = function (realm) {

@@ -39,9 +39,9 @@
         "POL-18": "The nome lord",
         "POL-27": "The abbot's steward",
         "POL-13": "The valley council",
-        "POL-17": "The Sultan's tax-farmer",
-        "POL-24": "The Emir's tax-farmer",
-        "POL-32": "The Sultan's tax-farmer",
+        "POL-17": "The King's tax-farmer",
+        "POL-24": "The Prince's tax-farmer",
+        "POL-32": "The King's tax-farmer",
         "POL-30": "The temple steward",
         "POL-20": "The governor",
         "POL-06": "The grove council",
@@ -164,7 +164,7 @@
           "the High Wastes",
           "cold high steppe and the Worldspine passes, where the air itself sickens lowlanders",
         ],
-        amber: ["the Amber Wilds","cloud forest held by the Cloudfolk against every sultan"],
+        amber: ["the Amber Wilds","cloud forest held by the Cloudfolk against every king"],
         bone: ["the Bone Coast","a fog-bound shore of wrecks and fishing camps with no water at all"],
         burning: ["the Burning Waste","salt pans, lava fields and wells that turn salty in a season"],
         green: ["the Deep Green","rainforest that kills outsiders with fever"],
@@ -660,7 +660,7 @@
         maxRank: 4,
         cool: 10,
         title: "Seedlings",
-        text: "A Keshi boatman opens a wet sack in a back room: forty clove seedlings, smuggled off Ambrel, where carrying one off means death. Planted in the right soil, they would break the sultan's hold on cloves at 60 suns a kilogram. He wants 300 suns.",
+        text: "A Keshi boatman opens a wet sack in a back room: forty clove seedlings, smuggled off Ambrel, where carrying one off means death. Planted in the right soil, they would break the king's hold on cloves at 60 suns a kilogram. He wants 300 suns.",
         choices: [
           {
             t: "Buy them and find hot, wet soil to plant them",
@@ -680,10 +680,10 @@
               r: "The Pepper Hall pays double and asks no questions it wants answered.",
               fx: {coin:300,rep:4,honor:-2},
             },
-            lose: {r:"The Pepper Hall's man is the sultan's man too.",fx:{coin:-300,punish:"smuggling"}},
+            lose: {r:"The Pepper Hall's man is the king's man too.",fx:{coin:-300,punish:"smuggling"}},
           },
           {
-            t: "Turn the boatman in to the sultan's agent",
+            t: "Turn the boatman in to the king's agent",
             r: "The agent pays you 50 suns and takes the boatman away. You do not watch them go.",
             fx: {coin:50,honor:-3},
           },
@@ -990,7 +990,7 @@
         once: !0,
         w: 3,
         title: "The walled garden",
-        text: "The clove trees in your walled garden have flowered. Dried, the buds are worth 60 suns a kilogram, and you are the only grower in the Known World outside Ambrel. The sultan's agents have long ears.",
+        text: "The clove trees in your walled garden have flowered. Dried, the buds are worth 60 suns a kilogram, and you are the only grower in the Known World outside Ambrel. The king's agents have long ears.",
         choices: [
           {
             t: "Sell quietly, a little at a time",
@@ -1182,7 +1182,7 @@
         maxRank: 4,
         cool: 3,
         title: "The pilot's fee",
-        setup: (p,ctx)=>{ctx.shoals=inR(p,"POL-18","POL-04")?"The Monuti mouths shift every flood, and the bars are never where last year's pilots left them":inR(p,"POL-14","POL-25")?"The Grey Channel sandbanks move every winter":inR(p,"POL-33")?"The reef channel at Corvasse has one way in, closed with a chain of anchor links":inR(p,"POL-32","POL-21")?"The reefs off Ambrel has eaten more ships than the sultans have built":inR(p,"POL-08","POL-23","POL-09")?"The skerries off the north coast hide under every tide":"The harbor bar has silted since spring"},
+        setup: (p,ctx)=>{ctx.shoals=inR(p,"POL-18","POL-04")?"The Monuti mouths shift every flood, and the bars are never where last year's pilots left them":inR(p,"POL-14","POL-25")?"The Grey Channel sandbanks move every winter":inR(p,"POL-33")?"The reef channel at Corvasse has one way in, closed with a chain of anchor links":inR(p,"POL-32","POL-21")?"The reefs off Ambrel has eaten more ships than the kings have built":inR(p,"POL-08","POL-23","POL-09")?"The skerries off the north coast hide under every tide":"The harbor bar has silted since spring"},
         text: "{shoals}. A master who does not know this water offers you 60 suns to take his ship through tonight. Pilots get paid. Pilots who wreck ships get remembered.",
         choices: [
           {
@@ -1779,7 +1779,7 @@
         cool: 4,
         cond: (p,C)=>inR(p,"POL-24","POL-32","POL-21","POL-17","POL-19","POL-30")&&free(p),
         title: "The deep bank",
-        text: p=>`${inR(p,"POL-24")?"The Emir takes the best pearl of every boat; a free diver keeps a share of the rest.":"A free diver keeps a share of whatever the bank gives up."} A boat-owner wants you for the deep bank, past the shallows, where the pearls are big and the sharks are bigger.`,
+        text: p=>`${inR(p,"POL-24")?"The Prince takes the best pearl of every boat; a free diver keeps a share of the rest.":"A free diver keeps a share of whatever the bank gives up."} A boat-owner wants you for the deep bank, past the shallows, where the pearls are big and the sharks are bigger.`,
         choices: [
           {
             t: "Dive the deep bank",
@@ -2587,12 +2587,12 @@
             t: "Stand for Captain-General",
             check: {s:"persuasion",s2:"command",d:70},
             win: {
-              r: "The dice are thrown, and then the hands go up like a forest. Captain-General of the Free Port of Corvasse.",
+              r: "The dice are thrown, and then the hands go up like a forest. Captain-General of the Free City of Corvasse.",
               fx: {
                 promote: !0,
                 fame: 10,
                 rep: 15,
-                deed: "Elected Captain-General of the Free Port of Corvasse",
+                deed: "Elected Captain-General of the Free City of Corvasse",
                 newRel: {type:"enemy",op:-50},
               },
             },
@@ -3549,7 +3549,7 @@
         minRank: 2,
         cool: 6,
         title: "A buyer from far away",
-        setup: (p,ctx)=>{setStock(p,ctx),ctx.buyer=A.pick(["a quartermaster of the Golden Horse of Zanara","an agent of the Morhaven Coast Road Knights","a steward of House Redley of Greyhaven","a Sabran emir's stablemaster"]),ctx.lordt=lordt(p),ctx.Buyer=A.cap(ctx.buyer)},
+        setup: (p,ctx)=>{setStock(p,ctx),ctx.buyer=A.pick(["a quartermaster of the Golden Horse of Zanara","an agent of the Morhaven Coast Road Knights","a steward of House Redley of Greyhaven","a Sabran prince's stablemaster"]),ctx.lordt=lordt(p),ctx.Buyer=A.cap(ctx.buyer)},
         text: "{Buyer} has ridden a long way to see your {herd}. He wants forty of the best, and he pays in gold. He also asks a great many questions about water, roads and how many riders the next valley could raise.",
         choices: [
           {
@@ -4369,7 +4369,7 @@
       },
     ]);
     const cavalry = p=>({"POL-01":"the Iron Guard","POL-15":"the Coast Road Knights","POL-20":"the Golden Horse","POL-22":"the Horsemen of the Monundi","POL-25":"the Ostec Lances","POL-12":"the Silver Tablet Guard","POL-03":"the Varennan knights","POL-14":"the Greyhaven knights","POL-11":"the war-bands","POL-34":"the war-bands"})[p.realm]||"the crown's horsemen",
-      studOf = p=>({"POL-01":"the Horse-Breeders of the Millrun","POL-15":"the royal stud at Santora","POL-12":"the khan's herds at Kharsa","POL-22":"the Horse School of Mandi","POL-20":"the stables of the Golden Horse"})[p.realm]||`the royal stud at ${cap(p)}`;
+      studOf = p=>({"POL-01":"the Horse-Breeders of the Millrun","POL-15":"the royal stud at Santora","POL-12":"the king's herds at Kharsa","POL-22":"the Horse School of Mandi","POL-20":"the stables of the Golden Horse"})[p.realm]||`the royal stud at ${cap(p)}`;
     A.defEvents([
       OPP(["horsemaster"], {
         id: "cm_horse_colic",
@@ -5133,7 +5133,7 @@
             t: "Go and map it yourself before April",
             check: {s:"survival",s2:"tracking",d:60},
             win: {
-              r: "Six weeks under dripping trees, half of them with fever. Your map is better than Saltmarsh's, and the sultan's admiral pays for it.",
+              r: "Six weeks under dripping trees, half of them with fever. Your map is better than Saltmarsh's, and the king's admiral pays for it.",
               fx: {coin:400,rep:10,fame:3,masterwork:"the map of the Isle of Pearls"},
             },
             lose: {

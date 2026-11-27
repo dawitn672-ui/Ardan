@@ -145,8 +145,7 @@
     const R = A.realm(p.realm);
     if (R && R.alive) {
       const ru = A.P(R.ruler), wars = A.atWar ? A.atWar(R.id) : [];
-      // "the Khanate of Ulun", "the Free Port of Corvasse", and a name led by its people's word ("the Sahrim Confederacy",
-      // "the Ughrak Clans") too
+      // "the Kingdom of Ulun", "the Free City of Corvasse", and a name led by its people's word ("the Ughrak Clans")
       const rn = /^(the |([A-Z][a-z]+ )+of |[A-Z][\w-]* (Confederacy|Dominion|League|Clans)$)/.test(R.name) && !/^the /i.test(R.name) ? 'the ' + R.name : R.name;
       out.push(`In ${rn}${ru && ru.id !== p.id ? ', ' + name(ru) + ' rules' : ''}${wars.length ? ', and the realm is at war' : ', and the realm is at peace, for now'}.`);
     } else if (R) out.push(`${/^(([A-Z][a-z]+ )+of |[A-Z][\w-]* (Confederacy|Dominion|League|Clans)$)/.test(R.name) ? 'The ' + R.name : R.name} itself is gone, swallowed by its neighbours. Your grandchildren will call themselves something else.`);

@@ -203,8 +203,9 @@
     for (const id of Object.keys(N.OLD)) {
       const r = S.realms[id], L = LORE.realms[id];
       if (!r || typeof r !== 'object' || !L) continue;
-      if (N.OLD[id].name.includes(r.name)) { r.name = L.name; n++; }
-      if (N.OLD[id].short.includes(r.short)) { r.short = L.short; n++; }
+      // (a name the lore has taken up again, as POL-12's Kingdom of Ulun since order 99, is no longer an old one)
+      if (N.OLD[id].name.includes(r.name) && r.name !== L.name) { r.name = L.name; n++; }
+      if (N.OLD[id].short.includes(r.short) && r.short !== L.short) { r.short = L.short; n++; }
     }
     return n;
   };

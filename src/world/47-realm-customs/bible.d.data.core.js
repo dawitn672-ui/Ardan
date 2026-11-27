@@ -5,22 +5,22 @@
   W['CUL-04'] = [['aswel', 'a garden plot on one channel, one water-share'], ['tessila', 'a ruling read from the Book of Wells'], ['ezzaf', 'the sluice-keeper who takes the tenth']];
   W['CUL-06'] = [['hekkeb', 'the flood mark cut on the temple stair'], ['ommaka', 'the month of dyke work every house owes'], ['urnebu', 'the natron-priests who keep the dead']];
   W['CUL-05'] = [['wadrun', 'the road of wells a rider must know'], ['khessur', 'a debt paid in camels or in blood'], ['sirhal', 'the clan herd, which owns every camel in the end']];
-  W['CUL-07'] = [['nefra', 'the best pearl of a boat, the Emir\'s'], ['dhurrel', 'a diving crew and its boat'], ['ulhet', 'lamp oil, a word not said in council']];
+  W['CUL-07'] = [['nefra', 'the best pearl of a boat, the Prince\'s'], ['dhurrel', 'a diving crew and its boat'], ['ulhet', 'lamp oil, a word not said in council']];
   W['CUL-08'] = [['dunsa', 'the Rememberers\' song of a line'], ['tobolo', 'a gold nugget, the Emperor\'s by law'], ['wassamo', 'a grandparent come back in a child']];
   W['CUL-10'] = [['merandu', 'a merchant house, and its shares'], ['oluka', 'the Pepper Hall scales'], ['sefandi', 'a marriage sealed as a contract between houses']];
   W['CUL-09'] = [['tsenar', 'the king of the year, whose turn it is'], ['dellaw', 'a terrace field held by one house'], ['emmeret', 'the ancestor house where a line is kept']];
-  W['CUL-14'] = [['olang', 'the Storm Watch, a night alone at sea'], ['tepasi', 'the Sultan\'s fifth of all spice'], ['wennu', 'the father\'s name a child carries after its own']];
+  W['CUL-14'] = [['olang', 'the Storm Watch, a night alone at sea'], ['tepasi', 'the King\'s fifth of all spice'], ['wennu', 'the father\'s name a child carries after its own']];
   W['CUL-16'] = [['iwoko', 'the true name, kept in the Deep Green'], ['lasu', 'a trade name, given to outsiders']];
   W['CUL-17'] = [['tirawi', 'a clan sign carved on a house post'], ['hessang', 'the ridge mist, where the dead walk']];
 
   D['POL-17'] = {
-    want: 'To hold the Sunwall and the sea lanes both, bring Sabra\'s pearl coast back under the Sultan, and keep rag paper a thing only Qadir can make.',
-    fear: 'That the Sultan dies of his stones with Jalal at the harbour and the fleet, and a journeyman with a jar carries the paper south to Sabra.',
-    place: { name: 'The House of Water at Qadira', text: 'Where the Well-Keepers sit over the Book of Wells and may declare a sultan\'s order against it. Every water quarrel on the coast ends up in its courtyard.' },
+    want: 'To hold the Sunwall and the sea lanes both, bring Sabra\'s pearl coast back under the King, and keep rag paper a thing only Qadir can make.',
+    fear: 'That the King dies of his stones with Jalal at the harbour and the fleet, and a journeyman with a jar carries the paper south to Sabra.',
+    place: { name: 'The House of Water at Qadira', text: 'Where the Well-Keepers sit over the Book of Wells and may declare a king\'s order against it. Every water quarrel on the coast ends up in its courtyard.' },
     customs: [
       { id: 'qad_water_tenth', name: 'The tenth at the sluice', kind: 'year', m: 8, who: 'free',
-        rule: 'Each {w1} gives the {w3} a tenth of its watered crop after the date harvest, for the Sultan\'s water.',
-        text: 'The dates are in. The {w3} comes down the channel with his tally-board and his boy, stopping at each {w1} where the Sultan\'s water runs. He counts your baskets twice, the second time aloud, and holds out his hand for the tenth.',
+        rule: 'Each {w1} gives the {w3} a tenth of its watered crop after the date harvest, for the King\'s water.',
+        text: 'The dates are in. The {w3} comes down the channel with his tally-board and his boy, stopping at each {w1} where the King\'s water runs. He counts your baskets twice, the second time aloud, and holds out his hand for the tenth.',
         fx: { coin: -4 }, keepT: 'Give him the tenth', keep: 'He marks the board and moves on to the next sluice. Your channel runs full through the winter.',
         defy: { t: 'Hide two baskets under the palm litter', r: 'He finds them; it is not his first harvest. All winter your sluice-gate opens a day late each week, and the garden shows it.', fx: { coin: -2, happy: -3, wil: 1 } },
         log: 'The {w3} takes the water tenth from your {w1}.' },
@@ -94,7 +94,7 @@
   D['POL-24'] = {
     want: 'To stay free of Qadir, keep the pearl banks and the Gold Road caravans, and sell lamp oil to Corvasse and Lucerna without ever naming it in council.',
     fear: 'That a Qadiri fleet comes down the gulf before the fire-boats are ready, or that someone counts the empties and learns where the oil goes.',
-    place: { name: 'The oil shore', text: 'A stretch of black sand south of Sabra where the lamp oil is boiled in walled yards. The Emir\'s men guard it, and every empty jar that comes back is counted.' },
+    place: { name: 'The oil shore', text: 'A stretch of black sand south of Sabra where the lamp oil is boiled in walled yards. The Prince\'s men guard it, and every empty jar that comes back is counted.' },
     customs: [
       { id: 'sab_bride_pearls', name: 'Pearls on the blue cloth', kind: 'wed', dowry: -1,
         rule: 'At a wedding your house pays the other a price in pearls, counted out on a blue cloth before a Well-Keeper.',
@@ -104,16 +104,16 @@
         log: 'You pay {paid} in pearls at your wedding, counted on the blue cloth.' },
       { id: 'sab_word_not_said', name: 'The word not said', kind: 'ward', when: 'any', every: 4,
         rule: 'Nobody in Sabra calls the {w3} by any name but lamp oil, or asks where the jars that carry it are going.',
-        text: 'A sailor in the harbour asks you, loudly, what Sabra puts in the sealed jars that go out at night. Two of the Emir\'s men are close enough to hear. In Sabra the {w3} is lamp oil, and lamp oil is not discussed.',
+        text: 'A sailor in the harbour asks you, loudly, what Sabra puts in the sealed jars that go out at night. Two of the Prince\'s men are close enough to hear. In Sabra the {w3} is lamp oil, and lamp oil is not discussed.',
         fx: { coin: 2 }, keepT: 'Say lamp oil, and turn away', keep: 'Lamp oil, you tell him. That evening a man you do not know pays for your supper.',
-        defy: { t: 'Tell him what the jars really hold', r: 'He thanks you. The next week the Emir\'s men stop you at the gate and go through everything you own, slowly.', fx: { coin: -12, happy: -3, wil: 1 } },
+        defy: { t: 'Tell him what the jars really hold', r: 'He thanks you. The next week the Prince\'s men stop you at the gate and go through everything you own, slowly.', fx: { coin: -12, happy: -3, wil: 1 } },
         log: 'Someone asks about the {w3}, and you say lamp oil, as everyone does.' },
       { id: 'sab_first_pearl', name: 'The first pearl', kind: 'rite', age: 17, who: 'commoner',
-        rule: 'At seventeen a commoner dives once with a {w2}, and the best pearl of that dive is the {w1}, the Emir\'s.',
-        text: 'At seventeen you go out with a {w2} for your first dive, a stone tied to your foot and a peg on your nose. One oyster holds a fat pearl, the best of the boat this week, and the Emir\'s clerk is already holding out his little box for the {w1}.',
+        rule: 'At seventeen a commoner dives once with a {w2}, and the best pearl of that dive is the {w1}, the Prince\'s.',
+        text: 'At seventeen you go out with a {w2} for your first dive, a stone tied to your foot and a peg on your nose. One oyster holds a fat pearl, the best of the boat this week, and the Prince\'s clerk is already holding out his little box for the {w1}.',
         fx: { sta: 1, skill: { sea: 1 } }, keepT: 'Put the pearl in the clerk\'s box', keep: 'The clerk writes your name beside it. The crew say a diver who gives the first one up will find more.',
         defy: { t: 'Swallow it and say the oyster was empty', r: 'You get it back two days later. The crew saw your throat move, and they do not take you out again.', fx: { coin: 20, honor: -3, happy: -2 } },
-        log: 'Your first dive with a {w2}; the best pearl goes to the Emir as the {w1}.' },
+        log: 'Your first dive with a {w2}; the best pearl goes to the Prince as the {w1}.' },
     ],
   };
 
@@ -196,22 +196,22 @@
   };
 
   D['POL-32'] = {
-    want: 'To hold the clove and nutmeg trade against Ranpur, keep the secret of the needle, and end the Keshi alliance on the Sultan\'s terms once Kesh\'s debts are bought up.',
+    want: 'To hold the clove and nutmeg trade against Ranpur, keep the secret of the needle, and end the Keshi alliance on the King\'s terms once Kesh\'s debts are bought up.',
     fear: 'That the clove harvest fails while House Doravelli of Lucerna holds it in pledge, and the galleys are sold to pay the debt.',
-    place: { name: 'The needle house at Amberport', text: 'A shuttered tower on the harbour mole where the Sultan\'s pilots keep the secret needle that steers the galleys. No one else goes in, and no pilot is let off the isles.' },
+    place: { name: 'The needle house at Amberport', text: 'A shuttered tower on the harbour mole where the King\'s pilots keep the secret needle that steers the galleys. No one else goes in, and no pilot is let off the isles.' },
     customs: [
       { id: 'amb_storm_watch', name: 'The Storm Watch', kind: 'rite', age: 17, who: 'all',
         rule: 'At seventeen every islander keeps the {w1}: a night alone in an open boat when the old ones say a storm is near.',
-        text: 'Your grandmother\'s knees ache, and that means a storm. At seventeen it is your turn for the {w1}, as every sultan of the Maruang line has kept it: a night alone in an open boat off the reef, with a lamp, a water jar and one oar. They push you off at dusk.',
+        text: 'Your grandmother\'s knees ache, and that means a storm. At seventeen it is your turn for the {w1}, as every king of the Maruang line has kept it: a night alone in an open boat off the reef, with a lamp, a water jar and one oar. They push you off at dusk.',
         fx: { wil: 1, skill: { sea: 1 } }, keepT: 'Take the oar and go out', keep: 'The storm comes at midnight and is gone by dawn. You bail with your hands until they bleed, and are brought in alive.',
         defy: { t: 'Stay ashore and say the storm was false', r: 'The storm is real, and everyone who went out that night saw you on the beach in the lightning.', fx: { honor: -3, happy: -2 } },
         log: 'You keep the {w1}, a night alone at sea off the reef.' },
-      { id: 'amb_fifth', name: 'The Sultan\'s fifth', kind: 'year', m: 9, who: 'commoner',
-        rule: 'At the clove harvest the Sultan takes the {w2}, a fifth of all spice, at the harbour before any ship is loaded.',
-        text: 'The cloves are picked and dried on mats until they rattle. Before a single sack goes aboard, the Sultan\'s men take the {w2}: a fifth of all spice, measured with a scoop that, the growers say, has grown larger every reign.',
-        fx: { coin: -5 }, keepT: 'Let them scoop the fifth', keep: 'They scoop, and stamp your sacks with the Sultan\'s mark. Stamped sacks sell, at least.',
-        defy: { t: 'Sell a sack to a Ranpuri ship by night', r: 'The Ranpuri pays well. Two weeks later the Sultan\'s men take a fifth of your trees instead, with saws.', fx: { coin: -8, happy: -3, wil: 1 } },
-        log: 'The Sultan\'s men take the {w2} from your harvest at the harbour.' },
+      { id: 'amb_fifth', name: 'The King\'s fifth', kind: 'year', m: 9, who: 'commoner',
+        rule: 'At the clove harvest the King takes the {w2}, a fifth of all spice, at the harbour before any ship is loaded.',
+        text: 'The cloves are picked and dried on mats until they rattle. Before a single sack goes aboard, the King\'s men take the {w2}: a fifth of all spice, measured with a scoop that, the growers say, has grown larger every reign.',
+        fx: { coin: -5 }, keepT: 'Let them scoop the fifth', keep: 'They scoop, and stamp your sacks with the King\'s mark. Stamped sacks sell, at least.',
+        defy: { t: 'Sell a sack to a Ranpuri ship by night', r: 'The Ranpuri pays well. Two weeks later the King\'s men take a fifth of your trees instead, with saws.', fx: { coin: -8, happy: -3, wil: 1 } },
+        log: 'The King\'s men take the {w2} from your harvest at the harbour.' },
       { id: 'amb_wennu', name: 'The father\'s name carried', kind: 'name', by: 'keep',
         rule: 'A child\'s name is followed by its father\'s given name, so any island can tell whose it is.',
         text: 'Your child is born and named {child}. In the isles a name is never alone: after it comes the {w3}, the father\'s given name, so that anyone on any island can tell whose child it is. The midwife waits to hear it said.',

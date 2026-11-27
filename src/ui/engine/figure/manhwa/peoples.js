@@ -22,12 +22,12 @@ export const STATION_TEXT = {
 // keywords and a motto for each station of each people, in the period voice
 const WORDS = {
   north: { serf: [['Bound', 'The lord\'s strips', 'Boon-work'], 'The land holds me, and I hold it up.'], peasant: [['Freeholder', 'Barley', 'The Thing'], 'My own roof, my own word at the Thing.'], artisan: [['Shipwright', 'Oak', 'Iron'], 'A true keel outlives its maker.'], merchant: [['Amber', 'Stockfish', 'Furs'], 'The sea pays those who count twice.'], clergy: [['The Seven Halls', 'Vigil', 'Burial'], 'Seven doors, and I keep the lamps.'], soldier: [['Shield-wall', 'Axe', 'Oath'], 'Hold the line; the rest is weather.'], noble: [['Jarl', 'Ring-giver', 'Hall'], 'What I give in silver returns in spears.'], royal: [['The Ring', 'Law', 'Winter'], 'A king here is the first oar, not the ship.'] },
-  desert: { serf: [['Water-debt', 'Date gardens', 'Carrying'], 'The well is theirs. The thirst is mine.'], peasant: [['Olives', 'A share of water', 'Household'], 'One tree for each child, God willing.'], artisan: [['Coppersmith', 'Paper', 'The guild'], 'The hand remembers what the mind forgets.'], merchant: [['Caravan', 'Gold weights', 'Credit'], 'A fair scale is half of faith.'], clergy: [['The Path', 'The Well', 'Judgment'], 'Draw for the stranger before yourself.'], soldier: [['Lancer', 'Mail', 'The Sultan\'s bread'], 'I ate his salt. I ride where he points.'], noble: [['Emir', 'Horse', 'Patronage'], 'A name is kept by open hands.'], royal: [['The Seal', 'Wells', 'Justice'], 'The throne is a shade tree, or it is nothing.'] },
+  desert: { serf: [['Water-debt', 'Date gardens', 'Carrying'], 'The well is theirs. The thirst is mine.'], peasant: [['Olives', 'A share of water', 'Household'], 'One tree for each child, God willing.'], artisan: [['Coppersmith', 'Paper', 'The guild'], 'The hand remembers what the mind forgets.'], merchant: [['Caravan', 'Gold weights', 'Credit'], 'A fair scale is half of faith.'], clergy: [['The Path', 'The Well', 'Judgment'], 'Draw for the stranger before yourself.'], soldier: [['Lancer', 'Mail', 'The King\'s bread'], 'I ate his salt. I ride where he points.'], noble: [['Prince', 'Horse', 'Patronage'], 'A name is kept by open hands.'], royal: [['The Seal', 'Wells', 'Justice'], 'The throne is a shade tree, or it is nothing.'] },
   steppe: { serf: [['Bondsman', 'Another\'s herd', 'Felt'], 'I count sheep that are not mine.'], peasant: [['Herder', 'Own tent', 'Nine mares'], 'Grass, water, and nobody over me.'], artisan: [['Bowyer', 'Horn', 'Sinew'], 'A year to make a bow. A breath to loose it.'], merchant: [['Horse Road', 'Salt', 'Felt'], 'I sell legs to men who have none.'], clergy: [['The Eternal Blue', 'Omens', 'Milk-offering'], 'The sky hears. I only knock.'], soldier: [['Horse archer', 'Ten of a hundred', 'Bow'], 'My bow, my horse, my ten.'], noble: [['Noyan', 'A thousand', 'Clan mark'], 'My brand is on the herd and on the men.'], royal: [['The Compact', 'Nine tribes', 'The Standard'], 'Nine tails on one staff: that is a khan.'] },
   south: { serf: [['House-bound', 'Yam mounds', 'The lord\'s tally'], 'I plant where the stool tells me.'], peasant: [['Compound', 'Millet', 'Kola'], 'Our fathers cleared it. We keep it.'], artisan: [['Caster', 'Bronze', 'Gold'], 'The wax is lost so the face may last.'], merchant: [['Gold', 'Kola', 'The Scale Pact'], 'Weigh it in daylight, before both gods.'], clergy: [['The Thousand Ancestors', 'Libation', 'Naming'], 'I speak for those who are listening.'], soldier: [['Regiment', 'Spear', 'Age-mates'], 'We were boys together. We stand together.'], noble: [['War-lord', 'Leopard right', 'Tribute'], 'Only a keeper of spears may wear the cat.'], royal: [['The Stool', 'Gold', 'The Ancestors'], 'I sit, and a thousand sit with me.'] },
 };
 const REALM_WORDS = {
-  Sabra: { soldier: [['Marine', 'Boarding axe', 'The Emir\'s galleys'], 'A deck is a wall that moves.'], merchant: [['Pearls', 'Dates', 'Lamp oil'], 'The sea keeps no ledger. I do.'] },
+  Sabra: { soldier: [['Marine', 'Boarding axe', 'The Prince\'s galleys'], 'A deck is a wall that moves.'], merchant: [['Pearls', 'Dates', 'Lamp oil'], 'The sea keeps no ledger. I do.'] },
   Aldmark: { noble: [['Knight', 'Fief', 'Homage'], 'My hands between his, my lance for his quarrel.'], peasant: [['Tenant', 'Wheat', 'Hearth-mark'], 'Rent at harvest, bread all year.'] },
 };
 const T = (c, motif, w, c2) => ({ c, motif, w, c2 });
@@ -132,22 +132,22 @@ const desert = {
     belt: { kind: 'sash', c: 'white', w: 12, tails: false, hang: [{ k: 'beads', x: 26, c: '#2f6a8a', c2: '#c9a24a' }] }, hat: { kind: 'turban', c: 'white', size: 1.05, tail: 1 },
     heldR: { kind: 'book', c: 'teal', over: 1 }, back: [{ k: 'pole', kind: 'crescentstaff', side: -1, dx: 8, top: 56, wood: '#5a4028', m: 'silver' }] }),
   soldier: ({ male, w, realm }) => ({ hair: 'crop', beard: 'moustache', mood: 'stern', poseL: 'pommel', poseR: 'raise', place: 'camp',
-    // a lancer of the Sultan's household: mail under a cotton coat (bare steel cooks a man), a pointed helm wound with cloth
-    // and hung with mail, a small steel shield, a sabre; the sash in the Sultan's colour is his livery and his rank
+    // a lancer of the King's household: mail under a cotton coat (bare steel cooks a man), a pointed helm wound with cloth
+    // and hung with mail, a small steel shield, a sabre; the sash in the King's colour is his livery and his rank
     garment: { c: 'cream', neck: 'v', under: 'white' }, over: { kind: 'mail', metal: 'steel', collar: 'cream' }, over2: { kind: 'tabard', c: 'cream', narrow: 1, trim: T(realm.field || 'teal', 'diamonds', 4.4, '#e4dccb') },
     belt: { kind: 'sash', c: realm.field || 'teal', w: 15, fringe: w ? 'mustard' : null }, hilt: { kind: 'sabre', fit: 'bronze', scab: 'brown', tassel: w ? 'crimson' : null },
     hat: { kind: 'turbanhelm', m: 'steel', c: 'cream', inlay: w > 1 ? 'diamonds' : null }, back: [{ k: 'shield', kind: 'buckler', side: -1, inlay: 1, r: 32 }],
     pole: { hand: 1, kind: 'lance', top: 34, pennon: realm.field || 'teal', device: realm.charge } }),
   noble: ({ male, w, realm }) => ({ hair: male ? 'swept' : 'long', beard: 'pointed', mood: 'proud', poseL: 'pommel', poseR: 'chest', place: 'hall',
     // an emir: a breastplate chased with gold key-work under an open coat of figured silk, a jewelled turban with one
-    // heron plume (two are the Sultan's alone), a hawk-pommelled sabre
+    // heron plume (two are the King's alone), a hawk-pommelled sabre
     garment: { c: 'white', neck: 'high', trim: T('mustard', 'diamonds', 4) }, over: { kind: 'cuirass', metal: 'steel', edge: 'gold', engrave: 'key', collar: 'white' },
     over2: { kind: 'coat', c: 'ochre', pat: 'brocade', patC: 'crimson', patOp: .6, trim: T('crimson', 'key', 6, '#f0d890'), gap: 30 }, coatSleeves: 1, sleeves: { kind: 'wide', trim: T('crimson', 'key', 6, '#f0d890') },
     belt: { kind: 'sash', c: 'crimson', w: 16, fringe: 'mustard' }, khanjar: { fit: 'gold', scab: 'navy', gem: '#9c1f2c', x: 10 }, hilt: { kind: 'sabre', fit: 'gold', scab: 'navy', tassel: 'mustard' },
     hat: male ? { kind: 'turban', c: 'navy', size: 1.15, gem: '#9c1f2c', plume: { n: 1, len: 26, c: 'white' }, stripe: 'mustard', goldband: 'dots' } : { kind: 'veil', c: 'crimson', trim: T('mustard', 'diamonds', 4.4), coins: 'gold', long: 1 },
     neck: [{ kind: 'chain', m: 'gold', d: 30, pend: { k: 'gem', gem: '#2f5fa8', m: 'gold' } }] }),
   royal: ({ male }) => ({ hair: 'crop', beard: 'full', mood: 'calm', poseL: 'heart', poseR: 'belt', place: 'court', yaw: -.12,
-    // desert silks, a layered turban, geometric goldwork (order 58): no crown and no fur. The Sultan's turban is the largest
+    // desert silks, a layered turban, geometric goldwork (order 58): no crown and no fur. The King's turban is the largest
     // in the realm, banded with gold, two plumes; a white silk robe under a midnight mantle edged with the key pattern of the Seal
     garment: { c: 'white', neck: 'high', pat: 'diaper', patC: 'mustard', patOp: .55, trim: T('mustard', 'diamonds', 5), front: { k: 'frogs', c: '#c9a24a', n: 5 } },
     over: { kind: 'coat', c: 'navy', pat: 'stars', patC: 'mustard', patOp: .8, trim: T('mustard', 'key', 8, '#1c2848'), gap: 26, g: 5 }, coatSleeves: 1, sleeves: { kind: 'wide', trim: T('mustard', 'key', 8, '#1c2848') },
@@ -207,7 +207,7 @@ const steppe = {
     mantle: { kind: 'fur', fur: 'hare', d: 20, amp: 3.4, spots: '#3a3038' }, hat: { kind: 'steppehelm', m: 'bronze', lace: '#1c2848', tail: '#f4efe2' },
     pole: { hand: 1, kind: 'mace', above: 64, below: 44, m: 'gold', tuft: 'crimson' }, neck: [{ kind: 'chain', m: 'gold', d: 34, t: 2, pend: { k: 'disc', m: 'gold', r: 5.5 } }] }),
   royal: ({ male }) => ({ hair: 'plaits', beard: 'long-moustache', mood: 'stern', poseL: 'belt', poseR: 'hip', place: 'court', yaw: .14,
-    // steppe regalia, leather and clan insignia (order 58): no crown. The Khan's hat is the crown: sable brim, a tall crown
+    // steppe regalia, leather and clan insignia (order 58): no crown. The king's hat is the crown: sable brim, a tall crown
     // with the gold plaque of the Compact, hawk plumes; the sky's blue silk, a belt of gold plaques, a harness with the nine
     // tribes' boss, and behind him the standard of nine horse-tails
     garment: { c: '#2f6ab0', neck: 'crossR', toggles: '#c9a24a', pat: 'clouds', patC: 'mustard', patOp: .75, trim: T('mustard', 'scroll', 8, '#1c2848'), under: 'cream' }, sleeves: { trim: T('mustard', 'scroll', 8, '#1c2848') },

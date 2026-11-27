@@ -61,7 +61,7 @@
     'POL-11': { t: ['POL-12'], s: 'to take the grass back to the Salt Shore from Ulun' },
     'POL-14': { t: ['POL-25'], s: 'to take the other half of the Grey Channel tolls from Velgrad' },
     'POL-25': { t: ['POL-14'], s: 'to take the whole Grey Channel toll from Greyhaven' },
-    'POL-17': { t: ['POL-24'], s: "to bring Sabra's pearl coast back under the Sultan" },
+    'POL-17': { t: ['POL-24'], s: "to bring Sabra's pearl coast back under the King" },
     'POL-20': { t: ['POL-22'], s: "to push the Road Promise through Abara's claim" },
     'POL-28': { t: ['POL-30'], s: 'to take back the Nagora Pass from Ranpur' },
   };

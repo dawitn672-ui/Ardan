@@ -6,7 +6,8 @@
 // 43-varied-worlds uses) now also:
 //   fresh realms   splits 1 to 3 of the larger realms (8 provinces or more, at peace): 2 to 4 contiguous provinces away
 //                  from the capital break away as a smaller realm of one of four kinds,
-//                    a duchy that broke free, a march on the border, a league of free towns, a rebel prince's holding,
+//                    a duchy that broke free, a march on the border, a league of free towns, a rebel prince's holding
+//                  (since order 99, D-206, each named a principality, or the towns a free city),
 //                  6 to 40 years ago (2 to 12 for a prince). It gets a name in its people's style (their naming rule,
 //                  GD.NAMING, and their own word for a council from 54-character-voices), a ruling house from the nobles seated
 //                  in its provinces (or a new one, or for a prince his own royal house), its parent's laws, faith and
@@ -141,7 +142,6 @@
   };
 
   // ---------------------------------------------------------------- names, in the people's own style
-  const voiceWord = (cult, k) => { try { return A.VOICE && A.VOICE.word ? A.VOICE.word(cult, k) : null; } catch (e) { return null; } };
   FR.kindsFor = function (r, ids) {
     const towns = ids.filter(id => (P_(id).town || 0) >= 4000).length;
     const border = ids.some(id => P_(id).adj.some(j => { const o = P_(j) && P_(j).owner; return o && o !== r.id; }));
@@ -154,24 +154,22 @@
   };
   // what a breakaway of this kind is called among these people
   FR.style = function (kind, r, cult, capName, sur, ru) {
-    const given = ru ? ru.given : '';
     const mode = (GD.NAMING[cult] || {}).noble || 'house', T = String(r.title || '');
-    const sh = noThe(r.short);
-    if (kind === 'prince') return { name: `${ru && ru.sex === 'F' ? 'Princess' : 'Prince'} ${given}'s ${sh}`, short: given, title: 'Prince', type: 'principality' };
-    if (kind === 'league') {
-      const w = voiceWord(cult, 'council');
-      return w ? { name: `The ${cap1(w)} of ${capName}`, short: `the ${capName} ${cap1(w)}`, title: 'Speaker', type: 'city league', gov: 'council' }
-        : { name: `League of ${capName}`, short: `the ${capName} League`, title: 'Speaker', type: 'city league', gov: 'council' };
-    }
-    if (r.race === 'elf') return { name: `Princedom of ${capName}`, short: capName, title: 'Prince', type: 'elven realm' };
-    if (r.race === 'dwarf') return { name: `Hold of ${capName}`, short: capName, title: 'Thane', type: 'dwarven hold' };
+    // [order 99, D-206] a realm is a kingdom, an empire, a principality, a merchant republic or a free city: a breakaway
+    // is a principality under its prince (its people's own kind of rule kept in its type), or, where towns broke away,
+    // a free city under its council. (The orcs' clans are another builder's, order 98.)
+    const P = (title, type, gov) => Object.assign({ name: `Principality of ${capName}`, short: capName, title, type, form: 'principality' }, gov ? { gov } : {});
+    if (kind === 'prince') return P(ru && ru.sex === 'F' ? 'Princess' : 'Prince', 'principality');
+    if (kind === 'league') return { name: `Free City of ${capName}`, short: capName, title: 'First Burgher', type: 'free city', gov: 'council', form: 'free city' };
+    if (r.race === 'elf') return P('Prince', 'elven realm');
+    if (r.race === 'dwarf') return P('Prince', 'dwarven hold');
     if (r.race === 'orc') return { name: `the ${capName} Clans`, short: `the ${capName} Clans`, title: 'War-Chief', type: 'orc clans', gov: 'elective' };
-    if (/theocracy/.test(r.gov || '') || /Abbot|Luminary/.test(T)) return { name: `Priory of ${capName}`, short: capName, title: 'Abbot', type: 'theocracy', gov: 'theocracy' };
-    if (mode === 'clan' && sur) return { name: `Clan ${sur} of ${capName}`, short: `Clan ${sur}`, title: 'Chieftain', type: 'clan holding' };
-    if (mode === 'tribe') return { name: `Khanate of ${capName}`, short: capName, title: 'Khan', type: 'nomad confederation' };
-    if (/Sultan|Emir/.test(T)) return { name: `Emirate of ${capName}`, short: capName, title: 'Emir', type: 'emirate' };
-    if (kind === 'march') return { name: `March of ${capName}`, short: `the ${capName} March`, title: 'Margrave', type: 'march' };
-    return { name: `Duchy of ${capName}`, short: capName, title: 'Duke', type: 'duchy' };
+    if (/theocracy/.test(r.gov || '') || /Prince-Abbot|Prince-Bishop/.test(T)) return P('Prince-Abbot', 'temple principality', 'theocracy');
+    if (mode === 'clan' && sur) return P('Prince', 'clan holding');
+    if (mode === 'tribe') return P('Prince', 'nomad clans');
+    if (r.type === 'well realm') return P('Prince', 'well realm');
+    if (kind === 'march') return P('Prince', 'march');
+    return P('Prince', 'duchy');
   };
   // a realm bible for it: what it wants and fears, and the place that matters; customs are its parent's (47)
   // (worded so that {parent} needs no verb to agree with it and no 's: "the Ughrak" reads as well as "Velgrad")
@@ -195,7 +193,7 @@
     league: {
       want: ['To keep the roads, the tolls and the courts in the towns\' own hands.', 'To buy its peace with {parent} and never pay twice.',
         'To have its weights and measures used in every market from here to the sea.', 'To see no lord sit in judgement in its towns again.'],
-      fear: ['That a crown buys one town and the league comes apart in a season.', 'That {parent} will close the road and let the markets starve.',
+      fear: ['That a crown buys one town and the others fall away in a season.', 'That {parent} will close the road and let the markets starve.',
         'That the guilds fall out over the tolls, and one of them sends for {parent}.', 'That a lean year empties the chest the towns keep together.'],
       place: ['The toll-house at {capital}|Where the towns\' seals are kept in one chest with a lock for every town, and opened only all together.',
         'The market cross at {capital}|Where the charter of {year} was read aloud, and is read again each year on the same day.'],
@@ -263,7 +261,7 @@
     if (taken.has(noThe(st.short).toLowerCase())) st.short = st.name;
     if (taken.has(noThe(st.name).toLowerCase())) { st.name = `${st.name} (${noThe(r.short)})`; st.short = st.name; }
     const used = new Set(live().map(x => x.color)), cols = (A.COLORS_EXTRA || []).filter(c => !used.has(c));
-    const nr = A.createRealm({ id: nid, name: st.name, short: st.short, title: st.title, type: st.type, gov: st.gov || (/hereditary/.test(r.gov || '') ? 'hereditary' : r.gov === 'elective' ? 'elective' : 'hereditary'),
+    const nr = A.createRealm({ id: nid, name: st.name, short: st.short, title: st.title, type: st.type, form: st.form, gov: st.gov || (/hereditary/.test(r.gov || '') ? 'hereditary' : r.gov === 'elective' ? 'elective' : 'hereditary'),
       law: r.law, race: r.race, cult: r.cult, faith: r.faith, color: cols.length ? A.pick(cols) : undefined,
       army: Math.max(300, Math.round((r.army || 0) * share * 0.9)), roll: Math.max(800, Math.round((r.roll || 0) * share)), armyQ: r.armyQ,
       income: Math.max(1000, Math.round((r.baseIncome || r.income || 0) * share)), stability: clamp(Math.round((r.stability || 50) + A.ri(-10, 10)), 25, 80),
@@ -293,7 +291,7 @@
     Object.assign(nr.fresh, { want: clean(fillT(A.pick(B.want), m)), fear: clean(fillT(A.pick(B.fear), m)), place: { name: clean(fillT(pl[0], m)), text: clean(fillT(pl[1], m)) } });
     const how = { duchy: `broke from ${r.short} in ${S.year - ago}`, march: `a march of ${r.short} that would not be held, free since ${S.year - ago}`,
       league: `towns of ${r.short} that bought and fought their freedom in ${S.year - ago}`, prince: `held since ${S.year - ago} by ${A.rulerStyle(ru, nr)}, who says the crown of ${r.short} is ${A.his ? A.his(ru) : 'his'} by right` }[kind];
-    nr.primer = { intro: clean(`${nr.name}: ${ids.map(id => P_(id).name).join(', ')}, ${how}. Its ${nr.title === 'Speaker' ? 'towns' : 'lords'} keep ${r.short}'s laws and faith, and ${r.short} still claims the land.`) };
+    nr.primer = { intro: clean(`${nr.name}: ${ids.map(id => P_(id).name).join(', ')}, ${how}. Its ${nr.form === 'free city' ? 'towns' : 'lords'} keep ${r.short}'s laws and faith, and ${r.short} still claims the land.`) };
     // the quarrel: claims, the feud ledger, memory, standing
     A.polInit(r); A.polInit(nr); if (A.dInit) { A.dInit(r); A.dInit(nr); }
     for (const id of ids) r.claims[id] = S.year;
@@ -550,7 +548,7 @@
     const mine = pc.realm, nb = new Set(A.neighbors ? A.neighbors(mine) : []);
     const out = [];
     for (const r of Object.values(S.realms)) if (r && r.alive && r.fresh && (r.id === mine || r.fresh.from === mine || nb.has(r.id)))
-      out.push(`${r.name} (${r.fresh.kind === 'prince' ? 'a rebel prince\'s holding' : r.fresh.kind === 'league' ? 'a league of free towns' : r.fresh.kind === 'march' ? 'a march' : 'a breakaway duchy'}) holds ${r.fresh.provs.map(id => (S.prov[id] || {}).name).filter(Boolean).join(', ')}, taken from ${A.realmShort(r.fresh.from)} in ${r.fresh.y0 - r.fresh.ago}.`);
+      out.push(`${r.name} (${r.fresh.kind === 'prince' ? 'a rebel prince\'s holding' : r.fresh.kind === 'league' ? 'a free city of towns that bought their freedom' : r.fresh.kind === 'march' ? 'a march that broke free' : 'a breakaway principality'}) holds ${r.fresh.provs.map(id => (S.prov[id] || {}).name).filter(Boolean).join(', ')}, taken from ${A.realmShort(r.fresh.from)} in ${r.fresh.y0 - r.fresh.ago}.`);
     for (const t of S.freshTensions || []) if (t && !t.done && (t.a === mine || t.b === mine || nb.has(t.a))) {
       if (t.k === 'debt') out.push(`${A.realmShort(t.a)} owes ${A.realmShort(t.b)} ${A.fmt ? A.fmt(t.left) : t.left} suns${t.missed ? `, and has missed ${t.missed} payment${t.missed > 1 ? 's' : ''}` : ''}.`);
       else if (t.k === 'regency') { const r = A.realm(t.a), R = r && r.regency, rg = R && A.P(R.pid), kid = R && A.P(R.kid); if (rg && kid) out.push(`${A.realmShort(t.a)} is ruled by ${A.fullName(rg, false)} for ${A.rulerStyle(kid, r)}, aged ${A.age(kid)}.`); }

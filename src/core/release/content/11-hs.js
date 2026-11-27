@@ -5472,7 +5472,7 @@
             t: "Wrestle",
             check: {s:"unarmed",s2:"str",d:50},
             win: {
-              r: "Three throws, three wins. The khan himself drinks to your family.",
+              r: "Three throws, three wins. The king himself drinks to your family.",
               fx: {fame:3,skill:{unarmed:3},str:.4},
             },
             lose: {r:"Thrown in the second round by a giant of a herder.",fx:{health:-4,happy:-3}},

@@ -3396,7 +3396,7 @@ GD.ACH = {
   escaped: ["Over the Wall", "Escape from prison."],
   king_slayer: ["Kingslayer", "Kill a ruler."],
   school_master: ["Master of the Chain", "Become master of a fighting school."],
-  pirate_king: ["Captain-General", "Lead the Free Port of Corvasse."],
+  pirate_king: ["Captain-General", "Lead the Free City of Corvasse."],
   epithet: ["Named by Deeds", "Earn an epithet."],
   conqueror: ["Conqueror", "Win a war as commander or ruler."],
   hundred_kills: ["Widowmaker", "Kill a hundred foes."],

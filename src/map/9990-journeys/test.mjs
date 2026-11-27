@@ -56,7 +56,7 @@ export default {
       out.turned = A.jrTurnBack().ok && pc.journey && pc.journey.k === 'return';
       // the pilgrimage is a road to a shrine and back. It needs a shrine: a capital of your faith far enough away, or your
       // own realm's capital when you live elsewhere, at least JR.SHORT_KM off (nearer is a day's walk, not a road). Seed 33
-      // put this life in the Free Port of Corvasse after the batch of 135632b7 (ci-fix-21, H-166): its corsairs' faith has
+      // put this life in the Free City of Corvasse after the batch of 135632b7 (ci-fix-21, H-166): its corsairs' faith has
       // no other realm and you live in its capital, so there is no road to walk, rightly (seed 3301: its capital 114 km
       // off). The rule is tested on the first world (from 33 on) that has a shrine a road away.
       const far = (p, to) => { const a = A.S.prov[p.home], b = A.S.prov[to]; return a && b && Math.hypot(a.x - b.x, a.y - b.y) >= A.JR.SHORT_KM; };

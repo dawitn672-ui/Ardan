@@ -847,7 +847,7 @@
   "looks": "A light, wiry woman of 29 with wind-reddened cheeks, short brown hair and soft cliff-runner's boots.",
   "manner": "Quick and teasing, she runs ridges for fun and turns pale and short-tempered at any talk of boats.",
   "wants": "She wants the clefts where about 15 Snow Drakes nest kept hidden from Varennan egg-buyers and Liss Cairnhold's maps.",
-  "fears": "She fears that if the drakes are found, hunters will pour into the League and her mother will lose her seat."
+  "fears": "She fears that if the drakes are found, hunters will pour into the Republic and her mother will lose her seat."
  },
  "CHR-0051": {
   "id": "CHR-0051",
@@ -880,7 +880,7 @@
   "rung": "O04",
   "looks": "A broad, grizzled dwarf of 163 with a white-streaked braided beard, a miner's stoop and a metal guild clasp at his collar.",
   "manner": "Gruff and exact, he speaks only in terms of contract and repeats every promise back word for word.",
-  "wants": "He wants his dwarf crews paid in full for the League's deep silver, whoever wins the March vote at Highcastle.",
+  "wants": "He wants his dwarf crews paid in full for the Republic's deep silver, whoever wins the March vote at Highcastle.",
   "fears": "He fears the Silver Chest cannot pay, because more silver has gone out of it than the Council knows."
  },
  "CHR-0053": {
@@ -1267,7 +1267,7 @@
   "group": "Rulers, heirs and royal family",
   "role": "ruler",
   "ruler": true,
-  "title": "Chieftain",
+  "title": "King",
   "rung": "S04",
   "looks": "A small giant of 63, barely 3 m tall and quick on his feet for his kind, bundled in heavy furs against the cold.",
   "manner": "Friendly and practical, he speaks plainly to humans and teases the big halls before they can mock him.",
@@ -1901,7 +1901,7 @@
   "looks": "A small, round-shouldered woman of 52 with grey hair under a scholar's cap, dust in her sleeves and a ring of archive keys.",
   "manner": "Mild and bookish, she speaks in dates and references and grows excited over old ink.",
   "wants": "She wants the king to open the ferry accounts she found, so the archive's truth is not buried again.",
-  "fears": "She fears Khan Ozbek's envoys, who press the Greyhaven archives for old proofs and do not take no for an…"
+  "fears": "She fears King Ozbek's envoys, who press the Greyhaven archives for old proofs and do not take no for an…"
  },
  "CHR-0114": {
   "id": "CHR-0114",
@@ -2223,7 +2223,7 @@
   "rung": "N03",
   "looks": "A tall, thin woman of 54 with silver hair under a dark blue veil, strikingly pale eyes and the Warden's gold key at her breast.",
   "manner": "Precise and courteous, she notices every shade of color in a face and speaks as if she can see a lie.",
-  "wants": "She wants her four Luminaries' votes to choose the next High Luminary, and a Corvane crowned lay King of the Solen.",
+  "wants": "She wants her four Luminaries' votes to choose the next Prince-Bishop, and a Corvane crowned lay King of the Solen.",
   "fears": "She fears the council learning that her son Cassius is color-blind and cannot read a banner, which would sink…"
  },
  "CHR-0133": {
@@ -2496,7 +2496,7 @@
   "looks": "A neat, grave woman of 42 with grey-streaked hair under a linen cap, a physician's sharp eyes and herb-stained fingers.",
   "manner": "Measured and cautious, she speaks in careful medical terms and never gives a straight answer for free.",
   "wants": "She wants Lady Aurelia's silver for news of Severin's health, and to be kept on by whoever wins his chair.",
-  "fears": "She fears being blamed if the High Luminary dies under her care at the worst possible moment."
+  "fears": "She fears being blamed if the Prince-Bishop dies under her care at the worst possible moment."
  },
  "CHR-0149": {
   "id": "CHR-0149",
@@ -3039,7 +3039,7 @@
   "rung": "",
   "looks": "A handsome, heavy-browed woman of 46 in a dark red council gown, with a counting-school tally board always at hand.",
   "manner": "Cool and exact, she knows the grain in every Sunland port to a tenth and never bargains when she can wait.",
-  "wants": "She wants the Holy See to pay more for Tamari wheat, and holds back Solenne's spring grain ships to force it.",
+  "wants": "She wants Solenne to pay more for Tamari wheat, and holds back Solenne's spring grain ships to force it.",
   "fears": "She fears Marro of Lavium's salt-workers' strike spreading to her windmills and grain barges."
  },
  "CHR-0181": {
@@ -3073,7 +3073,7 @@
   "rung": "",
   "looks": "A slender, sharp-eyed woman of 38 in a dark red council gown, with ink on one finger and a plain gold ring.",
   "manner": "Cool, articulate and relentless, she speaks in the Great Council like an auditor reading a crime aloud.",
-  "wants": "She wants the Doge's strongroom opened before the next Great Council, and the next dogeship for an honest house.",
+  "wants": "She wants the First Merchant's strongroom opened before the next Great Council, and the First Merchant's chair next time for an honest house.",
   "fears": "She fears Ser Marco Vanni's Night Watch finding her source, Chiara Benn, before the Council sits."
  },
  "CHR-0183": {
@@ -3103,9 +3103,9 @@
   "group": "Rulers, heirs and royal family",
   "role": "ruler",
   "ruler": true,
-  "title": "Doge",
+  "title": "First Merchant",
   "rung": "S04",
-  "looks": "A thin, sickly-looking Doge of 64 with a pale, narrow face, a gold chain of office and a plate of plain bread before him.",
+  "looks": "A thin, sickly-looking First Merchant of 64 with a pale, narrow face, a gold chain of office and a plate of plain bread before him.",
   "manner": "Soft-spoken and fastidious, he winces at strong smells and chooses every word as carefully as his food.",
   "wants": "He wants the fifth share of the dragon toll kept secret and the Clean Ledger kept out of his strongroom.",
   "fears": "He fears Varenna learning that Lucerna takes a fifth of the toll Admiral Castellan wants its galleys to fight."
@@ -3260,8 +3260,8 @@
   "rung": "",
   "looks": "A lean, bow-legged horse dealer of 44 with a steppe felt cap, a sun-darkened face and a whip tucked in his boot.",
   "manner": "Easy and charming, he talks horses in two tongues and never gives a price without a story.",
-  "wants": "He wants the 600 Sea Wind horses a year to keep coming south to Santora without the khan's tenth.",
-  "fears": "He fears Lord Arnaut Sabine or the khan's men learning how many horses cross untaxed."
+  "wants": "He wants the 600 Sea Wind horses a year to keep coming south to Santora without the king's tenth.",
+  "fears": "He fears Lord Arnaut Sabine or the king's men learning how many horses cross untaxed."
  },
  "CHR-0194": {
   "id": "CHR-0194",
@@ -3481,7 +3481,7 @@
   "rung": "F04",
   "looks": "A tall, thin priest of 59 in white and gold, with a long, ascetic face and hands folded as if always at prayer.",
   "manner": "Cool and courteous, he speaks of the Temple's interests as if they were the city's own.",
-  "wants": "He wants Ostra's money kept behind Queen Livia and the Holy See, and any deal with the Dawn Church stopped.",
+  "wants": "He wants Ostra's money kept behind Queen Livia and Solenne, and any deal with the Dawn Church stopped.",
   "fears": "He fears the secret partition talks, which would cut both churches out of the Neck."
  },
  "CHR-0207": {
@@ -4773,7 +4773,7 @@
   "rung": "S02",
   "looks": "A tall, pale elf queen of 211 with eyes that shine in lamplight, always veiled in fine grey gauze by day.",
   "manner": "Cool and businesslike, she bargains like a merchant and decides in months what Sylvaran takes decades over.",
-  "wants": "She wants to sell her silence about Serra's proof to the Temple for fifty years of Holy See grain.",
+  "wants": "She wants to sell her silence about Serra's proof to the Temple for fifty years of Solenne grain.",
   "fears": "She fears the Temple's envoy stealing Serra's copy from the Silverbough archive in March."
  },
  "CHR-0285": {
@@ -4892,7 +4892,7 @@
   "rung": "",
   "looks": "A handsome elf of 144 in southern linen under a grey Eldergrove cloak, with pale bands on his fingers where sold rings were.",
   "manner": "Polished, soft-voiced and amused, he flatters easily and smiles most when he is most afraid.",
-  "wants": "Wants to name the Knight of the Sun riding with the Temple's envoy before his Ostran creditors sell his own name to the Holy See.",
+  "wants": "Wants to name the Knight of the Sun riding with the Temple's envoy before his Ostran creditors sell his own name to Solenne.",
   "fears": "Fears his creditors in Ostra, and the Veiled Queen learning how deep in debt her envoy of thirty-four years…"
  },
  "CHR-0294": {
@@ -5250,7 +5250,7 @@
   "looks": "A compact half-orc of 40 with short tusks, heavy shoulders from forty years at the bow, and a blue felt coat with horn toggles.",
   "manner": "Cheerful and boastful in the yard, he teaches by shouting and laughing, and goes silent and exact once the arrows fly.",
   "wants": "Wants new pupils of every tribe at the Kharsa Arrow Field and a second win over Oriana Sabine at a western horse fair.",
-  "fears": "Fears that the khan's failing sight and a fight over the succession will close the Arrow Field to riders of…"
+  "fears": "Fears that the king's failing sight and a fight over the succession will close the Arrow Field to riders of…"
  },
  "CHR-0317": {
   "id": "CHR-0317",
@@ -5267,7 +5267,7 @@
   "looks": "A stout, saddle-bowed man of 45 with a yam keeper's silver tablet on a cord, a weathered round face, and ink on his thumbs.",
   "manner": "Talkative, genial and proud of his relay stations, he can name every yam on a road and the riders who keep it.",
   "wants": "Wants the yam roads kept open and neutral through the Horse Feast, whoever wins the quarrel between Serik and Yesun.",
-  "fears": "Fears that Khatun Sorga will learn who told Yesun of the Red Wind where the cords of the Forty Silent Days…"
+  "fears": "Fears that Queen Sorga will learn who told Yesun of the Red Wind where the cords of the Forty Silent Days…"
  },
  "CHR-0318": {
   "id": "CHR-0318",
@@ -5352,7 +5352,7 @@
   "looks": "A tall, hawk-faced man of 43 with a trimmed black beard and a red felt coat edged with wolf fur.",
   "manner": "Proud, clever and witty, he speaks for four tribes as though born to it and is never quite loyal to anyone.",
   "wants": "Wants Idris's Well tribes' votes to block Serik at the Horse Feast, and the cords of the Forty Silent Days shown openly.",
-  "fears": "Fears that Sartak will talk about the raid of 1079, and that Khatun Sorga will strike before the Horse Feast."
+  "fears": "Fears that Sartak will talk about the raid of 1079, and that Queen Sorga will strike before the Horse Feast."
  },
  "CHR-0323": {
   "id": "CHR-0323",
@@ -5381,11 +5381,11 @@
   "group": "Rulers, heirs and royal family",
   "role": "royal",
   "ruler": false,
-  "title": "Khatun",
+  "title": "Queen",
   "rung": "R01",
   "looks": "A tall, handsome woman of 52 with grey streaks in her braids, a tally-cord pouch at her belt, and silver-and-coral earrings.",
-  "manner": "Composed, patient and hard to read, she speaks for the khan in his own words and forgets nothing she is told.",
-  "wants": "Wants the khanship passed to Serik at the Horse Feast while she governs quietly in the half-blind khan's name.",
+  "manner": "Composed, patient and hard to read, she speaks for the king in his own words and forgets nothing she is told.",
+  "wants": "Wants the khanship passed to Serik at the Horse Feast while she governs quietly in the half-blind king's name.",
   "fears": "Fears the western tribes seeing the cords of 912 in her chest, which could make the whole Kharsan khanship…"
  },
  "CHR-0325": {
@@ -5402,7 +5402,7 @@
   "rung": "R02",
   "looks": "A broad, heavy man of 34 already thickening at the waist, with a round face, a short beard, and the Silver Tablet Guard's blue coat.",
   "manner": "Confident and blunt, he speaks like a commander on the hunt and has little patience for chiefs who talk in riddles.",
-  "wants": "Wants to be chosen khan at the Horse Feast and to stop the fire-oil sales to Queen Livia before they shame Ulun.",
+  "wants": "Wants to be chosen king at the Horse Feast and to stop the fire-oil sales to Queen Livia before they shame Ulun.",
   "fears": "Fears the sugar sickness of the lean-blood, which is blinding his father at 59 and may come for him too."
  },
  "CHR-0326": {
@@ -5415,11 +5415,11 @@
   "group": "Rulers, heirs and royal family",
   "role": "ruler",
   "ruler": true,
-  "title": "Khan of Ulun",
+  "title": "King of Ulun",
   "rung": "S02",
   "looks": "A short, heavy man of 59, once lean and now heavy, with clouded eyes, numb feet in soft boots, and a felt coat.",
   "manner": "Speaks quietly and knows men by their voices; he hides his blindness by letting others talk first and turning toward sounds.",
-  "wants": "Wants Queen Livia's 30 jars of fire-oil sent through Bekar and Morhaven this spring, and Serik safely chosen khan after him.",
+  "wants": "Wants Queen Livia's 30 jars of fire-oil sent through Bekar and Morhaven this spring, and Serik safely chosen king after him.",
   "fears": "Fears dying blind and helpless while the western tribes call his house's khanship stolen and pull the Nine…"
  },
  "CHR-0327": {
@@ -5437,7 +5437,7 @@
   "looks": "A wiry man of 47 with singed eyebrows, burn-shiny skin on his hands, and a leather apron that smells of the seeps.",
   "manner": "Nervous and precise, he counts jars aloud, checks every seal twice, and never lets a stranger near a lit lamp.",
   "wants": "Wants the 30 jars for Queen Livia sent out safely this spring without anyone learning that he keeps a record of every jar.",
-  "fears": "Fears that his hidden jar record will be found, and that the khan will blame him for the raid of 1079."
+  "fears": "Fears that his hidden jar record will be found, and that the king will blame him for the raid of 1079."
  },
  "CHR-0328": {
   "id": "CHR-0328",
@@ -5453,7 +5453,7 @@
   "rung": "",
   "looks": "A rangy, weather-beaten man of 42 with a broken nose, a black felt hat, and a missing ear tip from an old feud.",
   "manner": "Sly, jovial and greedy, he tells tall tales of his raiding days and sells any secret to anyone who pays enough.",
-  "wants": "Wants to sell the trail to the fire-oil seeps to a Greyhaven cog master before the khan's riders catch him.",
+  "wants": "Wants to sell the trail to the fire-oil seeps to a Greyhaven cog master before the king's riders catch him.",
   "fears": "Fears the Keepers of the Seeps, who kill anyone who betrays the seeps' place, and Yesun's silver drying up."
  },
  "CHR-0329": {
@@ -5471,7 +5471,7 @@
   "looks": "A lean half-orc woman of 26 with small tusks, a long black braid, and archer's calluses on three fingers of her right hand.",
   "manner": "Quiet and dry-humored, she shoots more than she talks and gives orders to her archers with short hand signs.",
   "wants": "Wants Uzka Twoblood's riders to reach Tarn and back safely, and her own part in the yam horses kept quiet.",
-  "fears": "Fears the khan's people learning she gave the Ughrak riders fresh yam horses, which could cost her command or…"
+  "fears": "Fears the king's people learning she gave the Ughrak riders fresh yam horses, which could cost her command or…"
  },
  "CHR-0330": {
   "id": "CHR-0330",
@@ -5504,8 +5504,8 @@
   "rung": "M08",
   "looks": "A slim, strong woman of 28 with wind-burned cheeks, a blue felt coat over lamellar, and a silver yam tablet at her chest.",
   "manner": "Fast, confident and impatient, she talks like a courier giving orders and rides better than she sits.",
-  "wants": "Wants Serik made khan before her child is born, so the child is not born to a fallen heir.",
-  "fears": "Fears that her pregnancy will cost her the Yam Riders and draw the anger of Khatun Sorga and the hearth…"
+  "wants": "Wants Serik made king before her child is born, so the child is not born to a fallen heir.",
+  "fears": "Fears that her pregnancy will cost her the Yam Riders and draw the anger of Queen Sorga and the hearth…"
  },
  "CHR-0332": {
   "id": "CHR-0332",
@@ -5522,7 +5522,7 @@
   "looks": "A thick-necked man of 44, with a red cord in his braids and a lance scar from collarbone to hip.",
   "manner": "Loud, angry and quick to laugh, he steps close to talk, and his hands are never far from another man's sleeve.",
   "wants": "Wants to show the grave of Temur's guard captain at the kurultai and win the Red Wind its revenge on the Kharsan house.",
-  "fears": "Fears his knees failing before the Horse Feast, and being knifed by Khatun Sorga's men before he can speak."
+  "fears": "Fears his knees failing before the Horse Feast, and being knifed by Queen Sorga's men before he can speak."
  },
  "CHR-0333": {
   "id": "CHR-0333",
@@ -6184,8 +6184,8 @@
   "rung": "",
   "looks": "A plump, rosy woman of 40 smelling of beeswax, with burn marks on her fingers and a fine green wool gown.",
   "manner": "Friendly and businesslike, she talks easily about honey, wax and prices and very carefully about where her wax goes.",
-  "wants": "Wants her wax to keep reaching the Holy See's candle-makers before Return Day without anyone seeing the Dawn Church marks.",
-  "fears": "Fears that the Holy See will find Dawn Church wax in its holy candles and close the trade for good."
+  "wants": "Wants her wax to keep reaching Solenne's candle-makers before Return Day without anyone seeing the Dawn Church marks.",
+  "fears": "Fears that Solenne will find Dawn Church wax in its holy candles and close the trade for good."
  },
  "CHR-0375": {
   "id": "CHR-0375",
@@ -6575,7 +6575,7 @@
   "rung": "F01",
   "looks": "A frail, bent old monk of 68 with cloudy eyes, a shaking hand, and a worn saffron robe over many layers of wool.",
   "manner": "Timid and kind, he speaks in a whisper and stops mid-sentence whenever a stranger enters the room.",
-  "wants": "Wants the 1061 search diary put into Abbot Tashen's own hands before either faction can seize or burn it.",
+  "wants": "Wants the 1061 search diary put into Prince-Abbot Tashen's own hands before either faction can seize or burn it.",
   "fears": "Fears dying before the truth is told, and Steward Sonam's guards finding the diary on whoever carries it."
  },
  "CHR-0399": {
@@ -7527,7 +7527,7 @@
   "rung": "",
   "looks": "A lean, deep-chested man of 34 with salt-cracked skin, reddened eyes from diving, and a shark-tooth knife on a cord.",
   "manner": "Cheerful and modest, he jokes with his divers and goes silent whenever anyone mentions the pearl banks.",
-  "wants": "Wants to keep his divers working the Isle of Pearls banks in secret before the Sultan's fleet claims them.",
+  "wants": "Wants to keep his divers working the Isle of Pearls banks in secret before the King's fleet claims them.",
   "fears": "Fears Admiral Jaya Rawang learning that the Rusiing divers have worked the banks for years without a share to…"
  },
  "CHR-0455": {
@@ -7630,7 +7630,7 @@
   "looks": "A tall, elegant woman of 46 with gold and pearl jewelry, clove-scented hair, and a rich batik gown.",
   "manner": "Proud and sharp-tongued, she speaks openly against the Grand Vizier and never forgets that her cloves were burned.",
   "wants": "Wants the clove prices kept high and the Madamo harbor fees restored, and refuses to pay for the Pearl war.",
-  "fears": "Fears that the Sultan will burn her cloves again, as his men did in 1101."
+  "fears": "Fears that the King will burn her cloves again, as his men did in 1101."
  },
  "CHR-0461": {
   "id": "CHR-0461",
@@ -7662,9 +7662,9 @@
   "title": "",
   "rung": "F04",
   "looks": "An old, dignified man of 59 with a white beard, a plain white robe, and the copper well-ring of his office.",
-  "manner": "Grave, fair and stubborn, he speaks the Book of Wells from memory and does not bend to the Sultan.",
-  "wants": "Wants the Sultan to name a storm-sensing heir before the fleet sails, and the January audit done honestly.",
-  "fears": "Fears the realm left without a proven heir if the Sultan dies at sea with no successor named."
+  "manner": "Grave, fair and stubborn, he speaks the Book of Wells from memory and does not bend to the King.",
+  "wants": "Wants the King to name a storm-sensing heir before the fleet sails, and the January audit done honestly.",
+  "fears": "Fears the realm left without a proven heir if the King dies at sea with no successor named."
  },
  "CHR-0463": {
   "id": "CHR-0463",
@@ -7676,7 +7676,7 @@
   "group": "Rulers, heirs and royal family",
   "role": "ruler",
   "ruler": true,
-  "title": "Sultan, Guardian of the Water",
+  "title": "King, Guardian of the Water",
   "rung": "S02",
   "looks": "A strong, handsome man of 40 with a trimmed beard, gold and pearls at his throat, and a habit of rubbing his ears.",
   "manner": "Charming and cunning, he talks of friendship with the Keshi while planning to turn on them.",
@@ -7782,7 +7782,7 @@
   "rung": "M11",
   "looks": "A broad, bearded man of 44 with a weathered sailor's face, an admiral's green sash, and pain lines from kidney stones.",
   "manner": "Bold, impatient and proud, he speaks of the fleet as his own creation and of Sabra as stolen land.",
-  "wants": "Wants to sail on Sabra after 1 April with his 34 galleys while the fleet is new and the Sultan lies sick.",
+  "wants": "Wants to sail on Sabra after 1 April with his 34 galleys while the fleet is new and the King lies sick.",
   "fears": "Fears losing a second fleet to Sabra's fire-oil, as Qadir lost 19 galleys before."
  },
  "CHR-0470": {
@@ -7863,10 +7863,10 @@
   "group": "Nobles, courtiers and advisors",
   "role": "noble",
   "ruler": false,
-  "title": "Emir of Mirad",
+  "title": "Prince of Mirad",
   "rung": "N02",
-  "looks": "A heavy, proud man of 56 with a dyed black beard, a gold-threaded robe, and an old-fashioned emir's turban.",
-  "manner": "Pompous and warlike, he signs only as Emir of Basir and talks of retaking the lower Bahesh.",
+  "looks": "A heavy, proud man of 56 with a dyed black beard, a gold-threaded robe, and an old-fashioned prince's turban.",
+  "manner": "Pompous and warlike, he signs only as Prince of Basir and talks of retaking the lower Bahesh.",
   "wants": "Wants war on Sabra so the Tarsi date lands on the lower Bahesh can be won back.",
   "fears": "Fears his secret debt to the Water Endowment being called in before the war brings him land."
  },
@@ -7880,12 +7880,12 @@
   "group": "Nobles, courtiers and advisors",
   "role": "noble",
   "ruler": false,
-  "title": "Emir of Basim",
+  "title": "Prince of Basim",
   "rung": "N03",
   "looks": "A lean, sharp-faced man of 49 with a copper merchant's green-stained hands, olive oil in his beard, and fine white robes.",
   "manner": "Smooth and quiet, he speaks of olives and loyalty and never mentions copper sales over the pass.",
   "wants": "Wants his copper trains to keep crossing the Sabun Pass to Sabra, whatever the Divan decides.",
-  "fears": "Fears the Sultan learning that Qasimi copper becomes the boiling pans of Sabra's fire-oil sheds."
+  "fears": "Fears the King learning that Qasimi copper becomes the boiling pans of Sabra's fire-oil sheds."
  },
  "CHR-0476": {
   "id": "CHR-0476",
@@ -7902,7 +7902,7 @@
   "looks": "A small, grey old man of 63 with a neat white beard, ink-stained cuffs, and a vizier's plain dark robe.",
   "manner": "Patient, dry and suspicious, he trusts nobody under 50 and answers most questions with silence.",
   "wants": "Wants to keep the Divan from voting for war, and is weighing Walid Hazimi's secret offer of a vassal's peace.",
-  "fears": "Fears the Sultan dying with the realm split between war and peace."
+  "fears": "Fears the King dying with the realm split between war and peace."
  },
  "CHR-0477": {
   "id": "CHR-0477",
@@ -7917,8 +7917,8 @@
   "title": "",
   "rung": "F04",
   "looks": "A tall, thin old man of 68 with a long white beard, a plain white robe, and the Keeper's copper water-cup.",
-  "manner": "Stern and learned, he quotes the Book of Wells and speaks to sultans as an equal.",
-  "wants": "Wants to declare the war on Sabra against the Book on Well Day, 14 March, and keep the Well-Keepers above the Sultan.",
+  "manner": "Stern and learned, he quotes the Book of Wells and speaks to kings as an equal.",
+  "wants": "Wants to declare the war on Sabra against the Book on Well Day, 14 March, and keep the Well-Keepers above the King.",
   "fears": "Fears Tariq Bahar reading the contract of Zahir aloud at the Well, which would shame the dynasty."
  },
  "CHR-0478": {
@@ -7948,7 +7948,7 @@
   "group": "Rulers, heirs and royal family",
   "role": "ruler",
   "ruler": true,
-  "title": "Sultan, Guardian of the Water",
+  "title": "King, Guardian of the Water",
   "rung": "S02",
   "looks": "A gaunt, sallow man of 47 lying in white linen, with a ruler's ringed hands and a carved cup always beside him.",
   "manner": "Weak and suspicious, he speaks in short breaths and trusts nothing he has not tasted himself.",
@@ -8053,7 +8053,7 @@
   "title": "",
   "rung": "",
   "looks": "A pleasant young woman of 30 with a nurse's white linen, gentle hands, and calm dark eyes.",
-  "manner": "Soft-spoken and kind with the sick, she listens to everything said around the Sultan's bed.",
+  "manner": "Soft-spoken and kind with the sick, she listens to everything said around the King's bed.",
   "wants": "Wants to send Tahir Sabrani word of the day the Qadiri fleet sails.",
   "fears": "Fears being caught by Rafiq the Quiet's men while passing reports through the Qasimi mule trains."
  },
@@ -8594,9 +8594,9 @@
   "group": "Rulers, heirs and royal family",
   "role": "ruler",
   "ruler": true,
-  "title": "Speaker of Sahrim",
+  "title": "King of Sahrim",
   "rung": "S04",
-  "looks": "A tall, stern man of 55 with sharp bare eyes that shun no glare, a rust-red robe, and a Speaker's black ring.",
+  "looks": "A tall, stern man of 55 with sharp bare eyes that shun no glare, a rust-red robe, and a King's black ring.",
   "manner": "Calm, proud and hard-bargaining, he speaks for 23 clans and threatens Qadir with polite words.",
   "wants": "Wants Qadir to pay 20,000 suns and a share of the paper duty, or he will read the contract of Zahir aloud on Well Day.",
   "fears": "Fears raiders on moonless nights, when the Bahar chief's line is almost blind."
@@ -8632,7 +8632,7 @@
   "rung": "M07",
   "looks": "A lean, fit man of 33 with sharp Bahar eyes, a Noon Lance captain's rust-red robe, and a long lance.",
   "manner": "Ambitious and confident, he speaks well and makes promises he expects others to keep.",
-  "wants": "Wants to be acclaimed Speaker when the office falls empty, with the southern clans behind him.",
+  "wants": "Wants to be acclaimed King when the office falls empty, with the southern clans behind him.",
   "fears": "Fears his father learning that he has sold a third of the salt fee to the south."
  },
  "CHR-0520": {
@@ -8650,7 +8650,7 @@
   "looks": "A strong, sun-darkened man of 34 with a camel rider's lean legs, a white head-cloth, and a long curved sword.",
   "manner": "Cool and practical, he speaks of heat and water like a soldier and keeps his thoughts on the war to himself.",
   "wants": "Wants to hold the Sabun road with his camel riders and see which way the war turns before he commits.",
-  "fears": "Fears being caught between his uncle's secret peace and the Emir's war."
+  "fears": "Fears being caught between his uncle's secret peace and the Prince's war."
  },
  "CHR-0521": {
   "id": "CHR-0521",
@@ -8752,7 +8752,7 @@
   "looks": "A grey, careful man of 53 with an upland lord's weathered face, a plain white robe, and an old sword.",
   "manner": "Calm and cautious, he speaks of old loyalties and warns of war, choosing his words carefully.",
   "wants": "Wants peace with Qadir, even as its vassal, before the oil trade brings a northern war.",
-  "fears": "Fears the Emir learning that he has offered Sabra to Qadir behind his back."
+  "fears": "Fears the Prince learning that he has offered Sabra to Qadir behind his back."
  },
  "CHR-0527": {
   "id": "CHR-0527",
@@ -8769,7 +8769,7 @@
   "looks": "A thin, white-bearded man of 61 with a kind face, a plain white robe, and the copper well-ring of his office.",
   "manner": "Gentle and firm, he speaks of mercy and the Book, and cannot be moved by threats.",
   "wants": "Wants to declare on Well Day that every slave diver who takes the Path of the Well is free.",
-  "fears": "Fears the Emir calling him a traitor, and the pearl lords' anger falling on the freed divers."
+  "fears": "Fears the Prince calling him a traitor, and the pearl lords' anger falling on the freed divers."
  },
  "CHR-0528": {
   "id": "CHR-0528",
@@ -8798,7 +8798,7 @@
   "group": "Rulers, heirs and royal family",
   "role": "ruler",
   "ruler": true,
-  "title": "Emir",
+  "title": "Prince",
   "rung": "S02",
   "looks": "A heavy, sweating man of 50 with a trimmed black beard, gold rings, and a water jar always within reach.",
   "manner": "Cautious and calculating, he talks of silver and freedom and hides his fear of war behind smiles.",
@@ -8956,7 +8956,7 @@
   "looks": "A heavy, grave man of 54 with gold rings, a merchant's soft hands, and a set of brass scale weights at his belt.",
   "manner": "Formal and exact, he speaks of weights and measures and never jokes about money.",
   "wants": "Wants the Scale Pact kept and the 100,000 suns he lent Mosi for the east road repaid.",
-  "fears": "Fears Qadir's Master of Doors testing the Scale Pact weights along with the Sultan's cup."
+  "fears": "Fears Qadir's Master of Doors testing the Scale Pact weights along with the King's cup."
  },
  "CHR-0539": {
   "id": "CHR-0539",
@@ -9206,12 +9206,12 @@
   "group": "Generals, admirals and captains",
   "role": "general",
   "ruler": false,
-  "title": "Admiral of the League; master of the Sea School of Monuro",
+  "title": "Admiral of Kesh; master of the Sea School of Monuro",
   "rung": "M11",
   "looks": "A strong, sea-weathered man of 38 with a short beard, an admiral's green sash, and scars from boarding fights.",
   "manner": "Bold and practical, he speaks of ships and crews, and distrusts every promise from Amberport.",
   "wants": "Wants 8 Keshi ships kept home from the Isle of Pearls venture, though Jaya Rawang has secretly promised him a rich share.",
-  "fears": "Fears the Ambrel Sultan turning on the Keshi ships once the Isle of Pearls is taken."
+  "fears": "Fears the Ambrel King turning on the Keshi ships once the Isle of Pearls is taken."
  },
  "CHR-0555": {
   "id": "CHR-0555",
@@ -9227,7 +9227,7 @@
   "rung": "",
   "looks": "A stout, proud man of 53 with grey hair, a merchant lord's silk robe, and a heavy gold harbor-lord's chain.",
   "manner": "Smooth and scheming, he speaks of the Old Houses' rights and of Keshari failures with careful scorn.",
-  "wants": "Wants the princedom back for House Monuri at the next election, with Ambrel ships behind him.",
+  "wants": "Wants the prince's chair back for House Monuri at the next election, with Ambrel ships behind him.",
   "fears": "Fears his letter to the Ambrel Grand Vizier falling into Keshari hands."
  },
  "CHR-0556": {
@@ -9279,7 +9279,7 @@
   "looks": "A slender, graceful woman of 24 with fine Ambrel features, gold and pearls, and a habit of touching her ears.",
   "manner": "Charming and determined, she pushes her brother's cause at her husband's court and smiles through every refusal.",
   "wants": "Wants the 20 Keshi ships she promised her brother to sail with the Ambrel fleet on 1 April.",
-  "fears": "Fears having to choose between her brother the Sultan and her husband's house over her infant son."
+  "fears": "Fears having to choose between her brother the King and her husband's house over her infant son."
  },
  "CHR-0559": {
   "id": "CHR-0559",
@@ -9312,7 +9312,7 @@
   "rung": "S03",
   "looks": "A lean, flexible man of 44 with long fingers, a prince's green robe, and old scars on his loose wrists.",
   "manner": "Easygoing and hopeful, he promises much and pays late, and smiles even when his treasury is empty.",
-  "wants": "Wants the Isle of Pearls venture to succeed, so he can pay the Ambrel loans and keep the princedom.",
+  "wants": "Wants the Isle of Pearls venture to succeed, so he can pay the Ambrel loans and keep the prince's chair.",
   "fears": "Fears the Old Houses electing a Monuri prince if the venture goes wrong."
  },
  "CHR-0561": {
@@ -9415,7 +9415,7 @@
   "looks": "A thin, grey-haired physician of 48 with careful hands, a bag of herbs and poppy, and a scholar's white robe.",
   "manner": "Gentle and worried, he speaks softly and tells the truth only to those he trusts.",
   "wants": "Wants the whole royal nursery replaced before the naming feast, so no spy can watch the infant heir.",
-  "fears": "Fears the Sultan taking the storm-sensing boy to Amberport, and the League breaking over a child."
+  "fears": "Fears the King taking the storm-sensing boy to Amberport, and Kesh breaking over a child."
  },
  "CHR-0568": {
   "id": "CHR-0568",
