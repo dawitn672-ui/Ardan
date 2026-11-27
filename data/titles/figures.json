@@ -3,7 +3,7 @@
  "titles": [
   {
    "id": "hell-born",
-   "name": "Hell-Born",
+   "name": "Born in Hell",
    "rarity": "rare",
    "weight": "X",
    "unique": false,
@@ -56,7 +56,7 @@
   },
   {
    "id": "ember-sworn",
-   "name": "Ember-Sworn",
+   "name": "Sworn to Red",
    "rarity": "rare",
    "weight": "X",
    "unique": false,
@@ -88,7 +88,7 @@
   },
   {
    "id": "debt-sworn",
-   "name": "Shadow-Sworn",
+   "name": "Sworn to Noir",
    "rarity": "rare",
    "weight": "X",
    "unique": false,
@@ -119,7 +119,7 @@
   },
   {
    "id": "choir-sworn",
-   "name": "Blood-Sworn",
+   "name": "Sworn to Blanc",
    "rarity": "rare",
    "weight": "X",
    "unique": false,

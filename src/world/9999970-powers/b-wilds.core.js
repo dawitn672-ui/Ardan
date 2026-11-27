@@ -247,7 +247,8 @@
   };
 
   // ---------------------------------------------------------------- the sleepers at the summit
-  // Two of the legends sleep: the King of Dragons wounded under the Crown Range since the Sword Saint threw him there, and
+  // Two of the legends sleep: the King of Dragons wounded under the Dragon Mountains since the Sword Saint threw him there
+  // sixty years ago (he reigns still, through Vaskareth his regent: D-198), and
   // the Primordial Red (id ghazrul, D-197) behind the Glass Seal. Once a year each weighs sleep against waking,
   // through A.WHY: what would wake it is on its sheet (wake), read from the world as it is. Its nature weighs hard for sleep,
   // and one that woke within a generation sleeps on. A waking lasts a few years (wakeYears); while awake it lives by
@@ -265,7 +266,7 @@
     'her brother calls': () => { const g = legOf('morvane'); return { w: Math.min(1.5, ((g && g.raids) || 0) * 0.3), label: 'her brother\'s shadow hunts the world above' }; },
   };
   const WOKE = {
-    sarnavoth: 'The roof of the Crown Range has fallen in. Sarnavoth, King of Dragons, is awake after nine hundred years, and every dragon in the sky has turned north.',
+    sarnavoth: 'The mountain over the King\'s hall in the Dragon Mountains has broken open. Sarnavoth, King of Dragons, is awake after sixty years asleep; Vaskareth his regent has given the sky back to him, and every dragon in it has turned north.',
     ghazrul: 'The glass seal in the Burning Waste has cracked. Red the Unmaker is loose, her black wings over the sand. Caravans turn back; the desert is burning.',
   };
   PW.sleeperYear = function (L, g, rng) {
@@ -333,7 +334,8 @@
     const keep = [];
     for (const w of st.wild) {
       const s = PW.species(w.sp), P = P_(w.at);
-      if (!s || !P) continue;
+      // a kind gone from the bestiary, or a demon (they live in Hell since order 97, D-197), leaves the continent's wilds
+      if (!s || !P || s.hell) continue;
       w.yrs++;
       // instinct: it feeds where there is prey (the herds of a settled province if it raids stock, else the wild game)
       for (let k = 0; k < 4; k++) if (rng.chance(P.town && s.beh.stock === 'raids' ? 0.65 : 0.5)) { w.fed++; w.ate = P.town && s.beh.stock === 'raids' ? `the herds of ${P.name}` : `the game of the ${P.terr} around ${P.name}`; }

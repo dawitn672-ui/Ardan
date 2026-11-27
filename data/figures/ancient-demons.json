@@ -292,7 +292,7 @@
     {
      "kind": "duty",
      "w": 1.2,
-     "why": "to hold the Red Steps against Blanc's blood-sworn, step by step"
+     "why": "to hold the Red Steps against Blanc's sworn demons, step by step"
     }
    ],
    "grudges": [
@@ -745,7 +745,7 @@
      "lvl": 9,
      "kind": "aura",
      "fight": true,
-     "does": "She calls, and the imps and lesser demons of her pits come up out of the ground."
+     "does": "She calls, and the minor and lesser demons of her pits come up out of the ground."
     }
    ],
    "arts": [
@@ -1685,7 +1685,7 @@
    },
    "fame": "known",
    "story": [
-    "Noir's Marquis on the Scorched March, who holds Bonefield against Red's lesser demons and Blanc's blood-sworn."
+    "Noir's Marquis on the Scorched March, who holds Bonefield against Red's lesser demons and Blanc's sworn demons."
    ],
    "secret": {
     "story": [
@@ -1910,7 +1910,7 @@
      "lvl": 8,
      "kind": "aura",
      "fight": true,
-     "does": "She calls, and the imps and lesser demons of her pits come up out of the ground."
+     "does": "She calls, and the minor and lesser demons of her pits come up out of the ground."
     }
    ],
    "arts": [
@@ -2889,7 +2889,7 @@
      "lvl": 9,
      "kind": "aura",
      "fight": true,
-     "does": "She calls, and the imps and lesser demons of her pits come up out of the ground."
+     "does": "She calls, and the minor and lesser demons of her pits come up out of the ground."
     }
    ],
    "arts": [

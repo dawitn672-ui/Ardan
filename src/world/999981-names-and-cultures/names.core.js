@@ -193,9 +193,9 @@
     'POL-33': { name: [J('Brotherhood of ', 'Black', 'reef'), 'Principality of Corvasse'], short: [J('Black', 'reef')] },
     'POL-19': { name: [J('Confederacy of the ', 'Sand', ' Clans')], short: [J('Sand', ' Clans')] },
     'POL-12': { name: [J('Khanate of the ', 'Nine', ' Winds'), 'Kingdom of Ulun'], short: [J('Nine', ' Winds')] },
-    'POL-34': { name: [J('League of the ', 'Tusk', ' Clans'), 'Ughrak Dominion'], short: [J('Tusk', ' Clans')] },
+    'POL-34': { name: [J('League of the ', 'Tusk', ' Clans'), 'Ughrak Dominion', J('Ughrak', ' Clans')], short: [J('Tusk', ' Clans')] },
     'POL-13': { name: [J('High', 'land League'), 'Kingdom of Brannoch'], short: [J('High', 'land')] },
-    'POL-11': { name: [], short: [J('the ', 'Horde')] },
+    'POL-11': { name: [J('Horde', ' of Gorath')], short: [J('the ', 'Horde')] },
   };
   N.renameState = function (S) {
     let n = 0;

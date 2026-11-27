@@ -51,7 +51,7 @@
    "grudges": [{ "at": "m-giant-king", "kind": "figure", "w": 0.7, "why": "the giants laughed at his father's embassy" }],
    "home": { "name": "Urgol", "domain": "the Grass Sea", "known": true },
    "fame": "known",
-   "story": ["The Skull-Champion of Urgol, who ate at the Iron Feast and rose from it the champion of the nine clans of Gorath; he fights the King's fights, and wears the skulls of the eight champions who did not."],
+   "story": ["The Champion of Urgol, who ate at the Iron Feast and rose from it the champion of the nine clans of Gorath; he fights the King's fights, and wears the skulls of the eight champions who did not."],
    "secret": { "story": ["One of the eight is still alive, in a pit under Urgol. The champion visits him on feast days and asks him how it feels to lose."] }
   }
  ]

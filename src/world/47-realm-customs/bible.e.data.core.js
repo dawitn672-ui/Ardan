@@ -3,7 +3,7 @@
   const D = A.BIBLE_DATA = A.BIBLE_DATA || {}, W = A.BIBLE_WORDS = A.BIBLE_WORDS || {};
 
   W['CUL-21'] = [['durrik', 'a line of the Deep Law, cut in stone'], ['thangrel', 'a master of a craft, sworn before the Council'], ['ombrak', 'a dwarf\'s full name, carved at thirty']];
-  W['CUL-22'] = [['ghazrul', 'a deed-name, earned in youth'], ['urdrak', 'the clan herd, which no one rider owns'], ['shurrak', 'the war-chief\'s share of a raid']];
+  W['CUL-22'] = [['brakkan', 'a deed-name, earned in youth'], ['urdrak', 'the clan herd, which no one rider owns'], ['shurrak', 'the king\'s share of a raid']];   // brakkan was ghazrul, the Primordial Red's id (D-199)
   W['CUL-23'] = [['ommakh', 'a mother\'s hearth: her tent, her herd'], ['tulvek', 'the marriage horses'], ['krenna', 'the council of clan-mothers']];
   W['CUL-03'] = [['essar', 'the horn post-token of the Compact'], ['saghal', 'the spring count of horses owed the khan'], ['kauvel', 'a name handed down from a grandparent']];
   W['CUL-12'] = [['hemmal', 'the butter and wool owed to the monastery'], ['osselin', 'a name chosen by a monk'], ['auralt', 'the high ground where the dead are given to the birds']];

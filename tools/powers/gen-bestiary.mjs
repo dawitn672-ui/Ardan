@@ -57,7 +57,7 @@ const ALL = ['spring', 'summer', 'autumn', 'winter'];
 // a title some kinds are born with (titles are data with buffs; the owner, 2026-11-25): the oldest dragons are born of the old blood
 const OLD = { n: 'Old Blood', honour: 20, buffs: { level: 10, ward: 1 }, born: true, req: 'born' };
 // the ancient demons are born of Hell itself (order 95, D-191): a born title, as the oldest dragons' Old Blood
-const HELL = { n: 'Hell-Born', honour: 15, buffs: { ward: 1 }, born: true, req: 'born' };
+const HELL = { n: 'Born in Hell', honour: 15, buffs: { ward: 1 }, born: true, req: 'born' };
 // Order 95 (D-191): the bands by nature, not by stretching. The levels below are the owner's levels (lv, 1-1000, on
 // data/power.json's levelCurve); t, the even log scale the odds use, is read from them. A form's TIER says what it is:
 //   animal, great beast (a monstrous apex or king of animals), monster, drake, giant, undead, spirit, fey, construct,
@@ -192,13 +192,13 @@ const FAMILIES = {
     { k: 'caldera', forms: [{ n: 'Caldera Spirit', int: 'speaking' }, { n: 'Mountain Wrath', int: 'speaking' }, 'Heart of the Burning Deep'], lv: [620, 700, 765], tier: 'calamity', terr: ['mountains', 'desert'], seasons: ['summer', 'autumn'], prof: { magic: 10, ward: 9, hide: 6, str: 6, flight: 0, swarm: 4 }, drops: ['fire core', 'obsidian'] },
   ] },
   // the demons (orders 93, 95, 96, 97; D-197): no species, only ranks. Every demon is one of a kind (its look rolled from
-  // its seed, A.POWER.demonLook: horned, always) and is known by its rank in Hell, in plain words: the lower (Imp, Lesser
-  // Demon, Demon Soldier, Demon Knight; 300-500, dumb: beasts and cunning things, none that reasons), the great (Baron of
+  // its seed, A.POWER.demonLook: horned, always) and is known by its rank in Hell, in plain words: the lower (Minor Demon,
+  // Lesser Demon, Demon Soldier, Demon Knight; the first three keep the old ids imp, fiend, greater-fiend; 300-500, dumb: beasts and cunning things, none that reasons), the great (Baron of
   // Hell, Count of Hell, Demon Lord; about 650, speaking) and the ancient under the three Primordials (Marquis, Duke, Prince; about 740, ten below the old
   // 750: exactly thirty-three, 20 + 9 + 4, each an individual of the figures registry; no demon of the ranks rises to one).
   // Every demon lives in Hell, off the southern coast (hell: true; no terrain of the continent): none is met in its wilds
   demons: { n: 'Demons', hell: true, diet: 'souls', seasons: ALL, int: 'beast', apexInt: 'speaking', tier: 'lower demon', drops: ['horn', 'brimstone core'], prof: P(6, 6, 5, 3, 3, 5, 7, 2, 3, 7), lines: [
-    { k: 'ranks', forms: [{ n: 'Imp', int: 'beast' }, { n: 'Lesser Demon', int: 'beast' }, { n: 'Demon Soldier', int: 'cunning' }, { n: 'Demon Knight', int: 'cunning' }, { n: 'Baron of Hell', int: 'speaking' }, { n: 'Count of Hell', int: 'speaking' }, { n: 'Demon Lord', int: 'speaking' }], lv: [300, 360, 440, 500, 620, 650, 680], tiers: ['lower demon', 'lower demon', 'lower demon', 'lower demon', 'great demon', 'great demon', 'great demon'], terr: [], places: ['Hell'], prof: { str: 7, hide: 6, magic: 8 } },
+    { k: 'ranks', forms: [{ n: 'Minor Demon', id: 'imp', int: 'beast' }, { n: 'Lesser Demon', id: 'fiend', int: 'beast' }, { n: 'Demon Soldier', id: 'greater-fiend', int: 'cunning' }, { n: 'Demon Knight', int: 'cunning' }, { n: 'Baron of Hell', int: 'speaking' }, { n: 'Count of Hell', int: 'speaking' }, { n: 'Demon Lord', int: 'speaking' }], lv: [300, 360, 440, 500, 620, 650, 680], tiers: ['lower demon', 'lower demon', 'lower demon', 'lower demon', 'great demon', 'great demon', 'great demon'], terr: [], places: ['Hell'], prof: { str: 7, hide: 6, magic: 8 } },
     { k: 'marquis', forms: [{ n: 'Marquis of Hell', int: 'wise', born: HELL }], lv: [735], world: [20], tier: 'ancient demon', terr: [], places: ['Hell'], prof: { str: 8, hide: 8, magic: 10, cunning: 10, swarm: 6 }, drops: ['horn', 'brimstone crown'] },
     { k: 'duke', forms: [{ n: 'Duke of Hell', int: 'wise', born: HELL }], lv: [742], world: [9], tier: 'ancient demon', terr: [], places: ['Hell'], prof: { str: 6, hide: 9, regen: 9, swarm: 8, magic: 9, cunning: 10, ward: 9 }, drops: ['horn', 'brimstone core'] },
     { k: 'prince', forms: [{ n: 'Prince of Hell', int: 'wise', born: HELL }], lv: [755], world: [4], tier: 'ancient demon', terr: [], places: ['Hell'], prof: { str: 10, hide: 10, flight: 8, magic: 10, regen: 7 }, drops: ['horn', 'brimstone core'] },
@@ -370,7 +370,7 @@ const BEH_LINE = {
   'demons.ranks': { where: {} },
   // the ancient demons (orders 95, 97; D-191, D-197): the oldest lords of Hell, under the three Primordials, each sworn to one
   'demons.marquis': { drives: ['ambition', 'pride', 'cruelty'], social: 'court', hunt: 'lure', time: 'any', people: 'bargains', guards: 'a court of Hell', provoked: ['its court mocked', 'a bargain broken', 'holy ground'], calmed: ['a counter-offer', 'flattery that costs something', 'its true name'], others: 'one of the twenty lords of Hell\'s courts; commands legions of fiends and gate-dukes, and plays the three Archdemons against one another' },
-  'demons.duke': { drives: ['young', 'hunger', 'territory'], social: 'host', hunt: 'crush', time: 'any', people: 'hates', guards: 'the brood-pits', provoked: ['its brood harmed', 'anything alive in the pits'], calmed: ['the pits left alone'], others: 'nine Dukes of Hell: six keep the brood-pits the imps and lesser demons crawl out of, three keep the ledgers of every bargain made through the gates' },
+  'demons.duke': { drives: ['young', 'hunger', 'territory'], social: 'host', hunt: 'crush', time: 'any', people: 'hates', guards: 'the brood-pits', provoked: ['its brood harmed', 'anything alive in the pits'], calmed: ['the pits left alone'], others: 'nine Dukes of Hell: six keep the brood-pits the minor and lesser demons crawl out of, three keep the ledgers of every bargain made through the gates' },
   'demons.judgeOld': { drives: ['ambition', 'curiosity', 'memory'], social: 'solitary', hunt: 'lure', time: 'night', people: 'bargains', guards: 'the ledger of every soul sold', provoked: ['a debt denied', 'a lie in its hearing'], calmed: ['a debt paid', 'a bargain kept to the letter'], others: 'one of the three who keep the account of every bargain made through the gates; even the Archdemons are in its books' },
   'demons.prince': { drives: ['hunger', 'pride', 'cruelty'], social: 'solitary', hunt: 'chase', time: 'any', people: 'hates', guards: 'its pit', provoked: ['a dragon named', 'its pit entered'], calmed: ['a dragon\'s bones thrown down'], others: 'four Princes of Hell, each in a dragon\'s shape and each hating dragons; one has eaten two, the old songs say' },
   'giants.titan': { drives: ['territory', 'pride', 'memory'], social: 'solitary', time: 'day', people: 'tolerates', guards: 'the old roads of the giants', provoked: ['a quarry cut into its mountain', 'a lie'], calmed: ['a fair word', 'a song of the giants\' age'], others: 'the giant kings send it gifts; trolls flee its valley', where: { mountains: 'sleeps standing, and is taken for a peak', hills: 'walks the old roads once in a generation' } },
@@ -442,7 +442,8 @@ export function generate() {
         // breath and the elements make firepower; speed and cunning make a duellist
         prof.fire = clamp(Math.round(prof.magic * (['dragons', 'spirits', 'demons'].includes(fk) ? 0.8 : 0.4) + (prof.swarm >= 8 ? 2 : 0)), 0, 10);
         prof.duel = clamp(Math.round((prof.spd + prof.cunning) * 0.3), 0, 10);
-        const id = slug(f.n), worth = Math.round(2 * Math.pow(10, level / 25));
+        // a renamed kind keeps its id (saves key on it)
+        const id = f.id || slug(f.n), worth = Math.round(2 * Math.pow(10, level / 25));
         // what it is (order 95): the form's own tier, the line's per form, the apex's, the line's, the family's
         const tier = f.tier || (L.tiers && L.tiers[i]) || (apex || L.unique ? (L.apexTier || L.tier || Fm.apexTier || Fm.tier) : (L.tier || Fm.tier));
         if (!TIERS.includes(tier)) throw new Error(`${lk} ${f.n}: tier ${tier}`);

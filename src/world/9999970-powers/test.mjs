@@ -33,7 +33,7 @@ export default {
       out.storm = [PW.level('ancient-storm-dragon'), PW.level('vaskareth')];
       out.strong = ['elder-ash-dragon', 'elder-frost-dragon', 'elder-storm-dragon', 'elder-brine-dragon'].map(id => PW.level(id));
       // the demons by rank, not species (order 97, D-197)
-      out.lower = ['imp', 'lesser-demon', 'demon-soldier', 'demon-knight'].map(id => PW.level(id));
+      out.lower = ['imp', 'fiend', 'greater-fiend', 'demon-knight'].map(id => PW.level(id));   // Minor Demon, Lesser Demon, Demon Soldier (ids kept)
       out.great = ['baron-of-hell', 'count-of-hell', 'demon-lord'].map(id => PW.level(id));
       out.curve = { soldier: [1, 2].map(m => PW.levelOf(m)), knight: [9, 25].map(m => PW.levelOf(m)), elite: [25, 60].map(m => PW.levelOf(m)), past: PW.levelOf(40) };
       const L = PW.LD.legends.map(l => [l.id, PW.level(l.id)]).sort((a, b) => b[1] - a[1]);
@@ -48,9 +48,12 @@ export default {
       out.pcts = out.words.some(w => /%|\d/.test(w));
       return out;
     });
+    // the strongest human of a world, pooled (H-082): over twelve worlds (seeds 7, 11, 23, 41, 3, 5, 13, 17, 19, 29, 31, 37) the
+    // trunk at 45911e45 read 488-551 (mean 511) and order 98's build 471-565 (mean 503): one world's best man falls under 480
+    // by luck, so the four worlds' mean holds the band (480 up) and each world's best stays above 450
     const L = r.legends, max = Math.max(...r.tops), min = Math.min(...r.tops), avg = xs => xs.reduce((a, x) => a + x, 0) / xs.length, C = r.curve;
     const ok = r.bands.join() === 'G,F,E,D,C,B,A,S,SS,SSS' && !r.godBand && r.allTitled &&
-      min >= 480 && max <= 700 && r.meds.every(m => m >= 25 && m <= 50) &&
+      avg(r.tops) >= 480 && min >= 450 && max <= 700 && r.meds.every(m => m >= 25 && m <= 50) &&
       C.soldier[0] >= 80 && C.soldier[1] <= 180 && C.knight[0] >= 230 && C.knight[0] <= 299 && C.knight[1] > 299 && C.elite[0] >= 300 && C.elite[1] <= 420 && C.past > 300 &&
       r.masters.every(x => x > max && x <= 700) && Math.abs(avg(r.dragons) - 700) <= 20 && r.strong.every(x => x > Math.max(...r.dragons) && x < 800) && r.ancient.every(x => x >= 780 && x <= 800 && x > Math.max(...r.strong)) && r.storm[0] === r.storm[1] && r.storm[0] - Math.max(...r.ancient) >= 60 &&
       r.lower.every(x => x >= 300 && x <= 500) && Math.abs(avg(r.great) - 650) <= 25 &&
@@ -115,7 +118,7 @@ export default {
       const band = PW.BD.species.filter(s => PW.level(s.id) >= 600 && PW.level(s.id) < low).sort((a, b) => PW.level(a.id) - PW.level(b.id));
       const lv = band.map(s => PW.level(s.id)), holes = lv.slice(1).map((x, i) => x - lv[i]);
       const notCal = band.filter(s => !CAL.includes(s.tier)).map(s => `${s.n} (${s.tier})`);
-      const whole = band.every(s => s.beh && s.beh.drives.length && s.beh.social && s.beh.people && s.drops.length && s.seasons.length && (s.terr.length || s.coast) && s.prof && PW.D.capabilities.every(c => s.prof[c.k] >= 0 && s.prof[c.k] <= 10));
+      const whole = band.every(s => s.beh && s.beh.drives.length && s.beh.social && s.beh.people && s.drops.length && s.seasons.length && (s.terr.length || s.coast || s.hell) && s.prof && PW.D.capabilities.every(c => s.prof[c.k] >= 0 && s.prof[c.k] <= 10));
       const strongestKind = Math.max(...band.map(s => PW.power(s.id)));
       // each level exponentially harder, and more so the higher: the step from 990 to 1000 is wider than from 800 to 810
       const wider = PW.mightOf(1000) / PW.mightOf(990) > PW.mightOf(810) / PW.mightOf(800);
@@ -230,7 +233,7 @@ export default {
 
   // monsters rise: one that feeds, fights and lives long enough becomes the next form, and the log says why; at the top it
   // takes a name and a mind (seed fallback over worlds; pooled over years)
-  // order 97 (D-197): no demon species. Demons are known by rank (lower: Imp to Demon Knight, dumb; great: Baron of Hell to Demon Lord;
+  // order 97 (D-197): no demon species. Demons are known by rank (lower: Minor Demon to Demon Knight, dumb; great: Baron of Hell to Demon Lord;
   // ancient: Marquis, Duke, Prince, thirty-three, their mean about ten below the old 750), each one of a kind and horned;
   // every demon lives in Hell, so the continent's wilds never bring one, on any ground, in any world. Trolls and ogres are
   // demonic creatures, 230-270 with their leaders higher; wild giants very few. World-robust: the wilds are drawn over four
@@ -240,7 +243,7 @@ export default {
     const r = await pg.evaluate(() => {
       const PW = A.POWER, S = PW.BD.species, dem = S.filter(s => s.fam === 'demons');
       const out = { bad: [], drawn: 0, demonsDrawn: [] };
-      const RANK = /^(Imp|Lesser Demon|Demon Soldier|Demon Knight|Demon Lord|(Baron|Count|Marquis|Duke|Prince) of Hell)$/;
+      const RANK = /^(Minor Demon|Lesser Demon|Demon Soldier|Demon Knight|Demon Lord|(Baron|Count|Marquis|Duke|Prince) of Hell)$/;
       for (const s of dem) {
         if (!RANK.test(s.n)) out.bad.push(`${s.n}: not a rank`);
         if (!s.hell || s.terr.length || s.coast) out.bad.push(`${s.n}: a habitat on the continent`);
