@@ -31,5 +31,10 @@
     "image-deep-research@synced": true,
     "frontend-design@synced": true,
     "skill-creator@synced": true
+  },
+  "permissions": {
+    "allow": [
+      "mcp__Notion"
+    ]
   }
 }
