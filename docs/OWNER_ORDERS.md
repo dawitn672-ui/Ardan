@@ -597,7 +597,8 @@ order is replaced, strike it through and say by what.
     - **Numbers are guides:** the owner's numbers may be raised or lowered by logic; never pad with useless entries.
     - **Kings:** levels personal (most trained by routine; a warrior king may reach the elite; a political one not).
       **Elites** are not a fixed top ten (a great empire may hold 10-20). **Merchants:** from comfortable to richer than
-      royals; even a monopoly is possible. **An Archmage** may join the legends.
+      royals; the economy is detailed enough that one could come to dominate a market, even across the continent, but a
+      monopoly is never a status or a label the game writes (a follow-up). **An Archmage** may join the legends.
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**

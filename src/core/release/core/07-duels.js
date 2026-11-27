@@ -468,13 +468,10 @@ A.duelConsequences = function (D) {
       // the skills rebuild, step 8 (D-182): a fight won far above you is a named moment, where a found merge may come
       // (37-skills2's e-merge). The advance it also weighed is gone (order 95, D-192: a rare leap is not an event)
       if (A.SK2 && A.SK2.moment) A.SK2.moment(pc, "deed_above", { k: sk, why: "a fight won against " + b.short });
-      const gains = A.breakthrough(pc, gap, D);
-      if (gains)
-        out.push(
-          `BREAKTHROUGH. You beat a foe who should have beaten you. Your body and will change: ${Object.entries(gains)
-            .map(([k, v]) => GD.STAT_SHORT[k] + " +" + v)
-            .join(", ")}.`,
-        );
+      // order 95 (H-164): a breakthrough comes at every hundredth level (9999975-level), never as a duel's leap; the
+      // old stat-and-ceiling gain (A.breakthrough, D-163's stopgap) is no longer called from a fight. A win far above
+      // you still pays its experience by the level's rule, its renown and the giant-killer's mark.
+      out.push("You beat a foe who should have beaten you. Men will speak of it.");
       A.ach("giant_killer");
       A.fame(pc, Math.min(15, Math.round(gap / 3)));
     }

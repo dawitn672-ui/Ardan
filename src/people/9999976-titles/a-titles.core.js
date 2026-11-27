@@ -310,7 +310,9 @@
     TT.deedDone(p, 'beast_slain', { v: L });
     if (L > mine) TT.deedDone(p, 'beast_above', { v: L });
     const fam = sp && sp.fam;
-    if (fam === 'dragons' || fam === 'wyrms' || (typeof beast === 'string' && DRAGON_CRE.has(beast))) TT.deedDone(p, 'dragon_slain', { v: L });
+    // a true dragon only: a drake or wyvern of the wyrm family is no dragon (H-164; a level-60 Sand Dragon of that family
+    // earned the Wyrm-Slayer before)
+    if (fam === 'dragons' || (typeof beast === 'string' && DRAGON_CRE.has(beast))) TT.deedDone(p, 'dragon_slain', { v: L });
   };
   // a realm's champion: one who holds a fighting title, has won a tourney, or commands a host of his realm
   TT.isChampion = function (q) {

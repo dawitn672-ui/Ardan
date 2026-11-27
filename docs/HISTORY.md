@@ -3488,3 +3488,15 @@ with two builders running beside it (`sk2ArtsMonth`, `sk2Active`, `sk2ArtsView` 
 peak coin (balance, 49,935 over 24 lives) is a real drop since alpha 20 (114,768) and has its own builder (H-162).
 
 **Undo.** Revert this commit.
+
+### H-164 · 2026-11-27 · Two contradictions from the audit closed (order 97's review)
+
+- **No breakthrough leap in a duel** (audit C-22, order 95): a duel won far above you no longer calls `A.breakthrough`
+  (the old stat-and-ceiling gain, D-163's stopgap). Breakthroughs come at every hundredth level only (9999975-level). The
+  win still pays its experience, its renown and the giant-killer's mark. `A.breakthrough` itself stays (its budget test).
+- **Wyrm-Slayer for true dragons** (audit C-25): a beast of the wyrm family (drakes, wyverns; a level-60 Sand Dragon)
+  no longer counts as a dragon slain.
+- Proof: `ttUnique`, `ttEarned`, `ttNpc`, `pfBreakthroughBudget`, `flDuelOdds`, `lvFromDefeats`, `uiSmoke`, `renderRng`,
+  `s1Cost` (0.574 ms) pass.
+
+**Undo.** Revert this commit.
