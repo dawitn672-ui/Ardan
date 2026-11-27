@@ -339,7 +339,14 @@ export default {
   },
 
   // the census of the top: a count, never a cap (order 36, D-043, D-072). The design asks 5 seeds x 200 years (long tier);
-  // a life is played as far as it goes, the world's census read each year: 1 to 12 Grandmasters, 0 to 2 Legends
+  // a life is played as far as it goes, the world's census read each year: 1 to 12 Grandmasters, 0 to 2 Legends.
+  // Readings (H-167, 40-year lives; Grandmasters min..max, Legends max). Before (d8e16ef0), the count only fell: 8181
+  // 3..10, 8282 2..5, 8383 0..5 (0 from year 33), 8484 2..8, 8585 9..10 (a 7-year life), 7101 0..5, 4242 1..7, 9711 1..2,
+  // 1234 4..11, 5501 5..15 (15 in its starting world). With posts read from the registry, a master's own art and the
+  // gift a made number shows: 8181 4..10, 8282 2..5, 8383 2..5, 8484 3..11, 8585 3..11, Legends at most 2; 7101 1..5,
+  // 9711 1..4, 1234 2..11, 5501 6..15. On a shifted world (one more draw after A.seed): 8181 5..10, 8282 2..5, 8383
+  // 3..6, 8484 6..10, 8585 8..11. The starting masters still pass: counts fall in the last decade in most worlds (no
+  // NPC has a talent of his own below Master; D-196)
   async s1Census(pg) {
     const r = await pg.evaluate(() => {
       const out = [];

@@ -3377,3 +3377,35 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
   a lab takes a decider's best reason where the test is not about the draw, and an election's rule is held as the broken
   promise's weight; the summons' bar is half or more in full (129 of 258, with the larger hosts across the borders); the
   court's tests measure against `A.MIL.normal`.
+
+### D-196 · Who works at a skill: an NPC's posts are the registry's and his crown; a master keeps up his own art; a made number shows its gift (2026-11-27; H-167; D-031, D-043, D-064, D-072, D-182)
+- **The finding.** `s1Census` fell to no Grandmaster in seed 8383 by year 33, and on older builds the count fell in
+  every world: the census was the starting world's masters, dying. Three causes, each measured. (1) The closed form
+  (`SK.postSkills`, `SK.effortYears`, `SK2.npcGate`, `SK2.jumpFacts`) took a post from `p.job`, `p.mil` and `p.office`;
+  but an NPC's posts live in the post registry (999990-posts, D-031: seats, shire offices, field commands, companies,
+  orders) and `p.office` is only ever the player's own mirror. In seed 8383, 0 people of 989 grew in year 0 and 11 of
+  1,452 in year 20, while 232 and 435 held a post; none of the fourteen standing a step under Grandmaster at year 10
+  counted as working, so none was tried by a post at the edge. (2) No post asks more than Master III (`SK.RANK_DEMAND`'s
+  top, 78.4; a council seat asks 65.2), so past it a post teaches at a sixth of its pace: even counted, a Spymaster at
+  Master V gains at most about 6 of the 972 experience his next step costs in a year. (3) No NPC has a talent letter
+  (`A.rollApt` is the player's), so every starting master past 80, an ordinary talent's reach, grew at a quarter of that.
+- **Chosen.** (1) A post is the registry's or a crown as well as the old fields: `SK.POST_WORK` names what each works and
+  how hard (a seat its council skill, as the player's; a governor stewardship and some command; a magistrate the law;
+  a reeve stewardship; a warden command; a collector trade; a General command and tactics; a captain command; an
+  order's master command; a crown diplomacy, stewardship and command). `SK.works` and `SK.highPost` are the one reading,
+  used by the year's growth, the years of effort, the deed a post gives at an edge and a rank jump. A house or a court
+  title is a rank, not a post (`A.POSTS.title`), and works nothing. (2) **A master keeps up his own art:** whoever's best
+  skill stands at Master (72) or above works at it for its own sake, at practice quality (no teacher stands above him),
+  half a month's effort the year round, while under seventy in a human's years (`SK.MASTER_EU` 0.5, `SK.MASTER_UNTIL`
+  70). (3) **A made number shows its gift:** a number older code wrote (a lore master's 86) past the reach of his letter
+  raises the letter to the lowest that reaches it, up to B (`SK.madeGift`, read once in `SK.quantize`, never on a value
+  the closed form wrote). A rare gift (A, the Legend's) is not shown by any number, so Legends stay few.
+- **Not chosen.** Lowering the bar or the concept needs (they are the player's too). Raising the demand of the high posts
+  past Master (a post is work, not the frontier of an art). Talent letters for every NPC by hash: the right long-run
+  answer (growth.md: "G extends it to talent"), but it moves every NPC's growth and every world; it belongs with G. Keeping
+  the fraction of a made number as carry from Master up (tried: it moved crossings earlier and put seed 8585 at the
+  bar's top, 12, on both worlds measured).
+- **What remains.** The starting masters still pass: in most worlds the count falls in the last decade of a 40-year
+  life (1234: 11 to 2; 8484: 11 to 3), because no one below Master has a gift of his own, and so the pipeline into
+  Grandmaster is not renewed. NPC talent (G) is the cure; until then the census holds over a life by the starting
+  masters rising, not by new ones.

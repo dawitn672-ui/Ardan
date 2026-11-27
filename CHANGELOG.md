@@ -5,6 +5,10 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **The great of the world grow in their work.** Councillors, governors, magistrates, Generals, captains and crowned
+  heads now get better at what their posts ask of them over the years, and a master at the top of his art keeps working
+  at it while he is not too old: new Grandmasters rise as the old ones die, so the world keeps a few of them through
+  your life instead of losing them one by one.
 - **Armies of their true size.** Every realm now keeps a standing host by its people, its wealth and its kind: from
   about ten thousand soldiers in a small kingdom to more than a quarter of a million in the greatest empire, while a poor
   abbey or a pirate port keeps what it can pay. Knights are few and strong: from about fifty to three thousand in a

@@ -86,9 +86,11 @@
     if (!e) return true;
     const n = Object.assign({}, e.needs); delete n.concept;
     if (!Object.keys(n).length) return true;
-    const post = !!(p.job || p.mil || p.office || p.ruler), won = !!(cause && cause.q === 'stretch' && !cause.failed);
+    // a post is the registry's or a crown as much as the player's own fields (SK.works, SK.highPost: H-167); p.office
+    // alone is the player's mirror and was never true of anyone else, so no councillor or General was tried by his post
+    const post = SK.works ? SK.works(p) : !!(p.job || p.mil || p.office || p.ruler), won = !!(cause && cause.q === 'stretch' && !cause.failed);
     const deeds = [];
-    if (post || won) { deeds.push({ kind: 'proved', rank: e.rank }); if (post && ((+p.fame || 0) >= SK2.RENOWN || p.office || p.ruler)) deeds.push({ kind: 'renowned_deed', rank: e.rank }); }
+    if (post || won) { deeds.push({ kind: 'proved', rank: e.rank }); if (post && ((+p.fame || 0) >= SK2.RENOWN || (SK.highPost ? SK.highPost(p) : p.office || p.ruler))) deeds.push({ kind: 'renowned_deed', rank: e.rank }); }
     return !Eng.missing(n, { deeds, age: A.age(p), fame: +p.fame || 0 }).length;
   };
 

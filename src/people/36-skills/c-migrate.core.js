@@ -35,11 +35,26 @@
   // anyone without a table: the numbers become the levels under them; a specialism is kept in p.ssp
   SK.quantize = function (p) {
     const sk = p.skills; if (!sk) return;
+    const table = p.sk && typeof p.sk === 'object';
     for (const k in sk) {
       if (!SK.BY[k]) continue;
-      const lv = SK.lvOfValue(+sk[k] || 0);
-      if (lv > 0) sk[k] = p.sk && typeof p.sk === 'object' && p.sk[k] && p.sk[k].lv === lv ? SK.valueOf(p, k) : VALUES[lv]; else delete sk[k];
+      const v = +sk[k] || 0, lv = SK.lvOfValue(v);
+      if (lv > 0 && !table && v - VALUES[lv] > 1e-6) SK.madeGift(p, k, v);
+      if (lv > 0) sk[k] = table && p.sk[k] && p.sk[k].lv === lv ? SK.valueOf(p, k) : VALUES[lv]; else delete sk[k];
     }
+  };
+  // H-167 (D-196): the gift a made number shows. A number older code made for someone (a lore master's 86, a captain
+  // rolled at 47) is read once, as it becomes the level under it (a level's own value, which the closed form writes,
+  // is never read so): a number past the reach of his talent (an ordinary talent carries to 80) is one his gift carried
+  // him to, so his letter in that skill is at least the lowest that reaches it, up to B. A starting master of 86 is
+  // gifted, not an ordinary talent past his reach at a quarter of the pace: no NPC has a letter of his own (A.rollApt is
+  // the player's), so every starting master stood past his reach and none could rise
+  SK.GIFT_MAX = 'B';   // a number shows a gift (B) at most: a rare one (A, the Legend's) no number short of Legend proves
+  SK.madeGift = function (p, k, v) {
+    const T = SK.E().TALENT, O = SK.TALENT_ORDER, cur = (p.tal && p.tal[k]) || 'C';
+    if (!T[cur] || v <= T[cur][1] || O.indexOf(cur) >= O.indexOf(SK.GIFT_MAX)) return;
+    const L = O.find(l => O.indexOf(l) > O.indexOf(cur) && (T[l][1] >= v || l === SK.GIFT_MAX));
+    if (L) (p.tal = p.tal || {})[k] = L;
   };
   SK.foldNpc = function (p) {
     const specs = SK.fold(p);

@@ -47,7 +47,8 @@ Use this when building or reviewing character, family, politics or war systems f
   master's word, a quiet season). Discipline (unbroken months), a rival, a new place, needs, kin skills, hours shared,
   specialisms (two steps up inside, one down in a sibling, ×0.85 outside) and pride move what a month is worth, and every
   one is written in the ledger beside the gain it changed. Other people keep one number (the value of their level) and
-  grow by the same rules in closed form once a year. No percentages, no bare numbers: the page says "Expert II", "about
+  grow by the same rules in closed form once a year: at what their posts work (an NPC's posts are in the post registry,
+  never in the player's own fields) and, a master, at his own best art (D-196). No percentages, no bare numbers: the page says "Expert II", "about
   half way", "held: the measure".
 - **Growth must not be linear, and every change needs a cause** (Ardan's G0 standard, `docs/design/growth-standard.md`, D-067;
   S1 builds it for skills; stats follow in G1/G2). Gain = effort × quality (routine work stops teaching once you can do it; a task above you

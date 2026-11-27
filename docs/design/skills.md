@@ -553,6 +553,14 @@ loads each and asserts the table above row by row.
   given at the expected rate, and a per-person hash decides the breakthroughs he has had (at most three). So an NPC
   master is a person whose concepts came; an NPC stuck at Expert V for twenty years has a concept that did not, and
   his card can say which. Pure, no dice from the world's stream.
+- **Who works** (H-167, D-196). A post is what the post registry holds (a council seat, a shire office, a field command,
+  a company, an elite order; 999990-posts) or a crown, as well as the player's own fields (`p.job`, `p.mil`,
+  `p.office`, the last only ever the player's); each works its skill against its demand (`SK.POST_WORK`). A house or a
+  court title is a rank and works nothing. **A master keeps up his own art:** whoever's best skill stands at Master or
+  above works at it at practice, half a month's effort the year round, while under seventy in a human's years (no post
+  asks more than Master III, so past it a post teaches at a sixth of its pace). **A number older code made** (a lore
+  master's 86) shows the gift that carried him there: his letter in it is at least the lowest that reaches it, up to B
+  (an ordinary talent carries to 80, and no NPC has a letter of his own).
 - **The few who matter month by month** (at most 24: your teacher, rivals, pupils, household, companions, your
   officers) get the player's monthly step for their three best skills only, at the player's cost.
 - **Teachers.** A teacher teaches up to the word under his own, and **shows only concepts he has grasped**; his own

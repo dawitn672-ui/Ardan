@@ -193,8 +193,9 @@
     // the closed form: a concept is grasped as S1's hash grasps it for the years he has worked; his deed is his post's
     const v = SK.npcView(p, null), yrs = SK.effortYears(p, c), concepts = [];
     for (let w = 1; w <= 6; w++) for (const cn of SK.E().conceptsOf(c, w)) if (SK.E().graspedBy(v, c, cn, yrs, false)) concepts.push(c + ':' + cn.id);
-    const post = !!(p.job || p.mil || p.office || p.ruler), deeds = [];
-    if (post) { deeds.push({ kind: 'proved', rank: to }); if ((+p.fame || 0) >= SK2.RENOWN || p.office || p.ruler) deeds.push({ kind: 'renowned_deed', rank: to }); }
+    // (his post is the registry's or a crown as much as the player's own fields: SK.works, SK.highPost, H-167)
+    const post = SK.works ? SK.works(p) : !!(p.job || p.mil || p.office || p.ruler), deeds = [];
+    if (post) { deeds.push({ kind: 'proved', rank: to }); if ((+p.fame || 0) >= SK2.RENOWN || (SK.highPost ? SK.highPost(p) : p.office || p.ruler)) deeds.push({ kind: 'renowned_deed', rank: to }); }
     return { concepts, deeds, talent: tal, age: Math.floor(A.age(p)), fame: +p.fame || 0, sealed: [], skills: {} };
   };
   SK2.jumpVerdict = function (p, k) {
