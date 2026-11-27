@@ -36,7 +36,10 @@
     const head = `${kinds.length ? 'Its soldiers: ' + kinds.join(', ') + '. ' : ''}The best of ${r.short || r.name}: ${E.length} fighters the realm knows by name, the strongest it has. Its soldiers stand near level ${lv.soldier} (${band(lv.soldier)}), its knights near ${lv.knight} (${band(lv.knight)}), a few of them more than ordinary knights.`;
     // by hearsay only the names that travel (the best three)
     const list = (how === 'hearsay' ? E.slice(0, 3) : E).map(x => `${x.name}${x.role ? ', ' + x.role : ''}: level ${x.level}, ${band(x.level)}`);
-    return head + ' ' + list.join('. ') + '.' + (how === 'hearsay' ? ' The rest are only names in the songs.' : '');
+    // why so many or so few (no set number: how hard the level is to reach there), the two heaviest reasons each way
+    const W = MIL.eliteMean(r).why, up = W.filter(x => x[1] > 1).slice(0, 2).map(x => x[0]), dn = W.filter(x => x[1] < 1).slice(0, 2).map(x => x[0]);
+    const because = how === 'hearsay' ? '' : `${up.length ? ' Its champions rise from ' + up.join('; ') + '.' : ''}${dn.length ? ' They are held back by ' + dn.join('; ') + '.' : ''}`;
+    return head + ' ' + list.join('. ') + '.' + because + (how === 'hearsay' ? ' The rest are only names in the songs.' : '');
   };
   MIL.cardHtml = function (r) {
     r = typeof r === 'string' ? A.realm(r) : r; if (!r || r.alive === false) return '';

@@ -15,8 +15,8 @@
 //   A.MIL.levels(r)      the levels its soldiers, knights and elite stand at, inside order 93's bands by its quality
 //   A.MIL.divFactor(d)   what a division's knights add to its blows and its stand: Lanchester's host rule (A.POWER's N^1.35)
 //                        on the men counted at their worth, a knight at his band's worth against a soldier's
-//   A.MIL.elite(r)       the realm's few best (order 97: not a fixed ten; ten to twenty in a great empire): its own
-//                        people who stand at the elite's level, filled to the realm's count by named champions
+//   A.MIL.elite(r)       the realm's best: its own people who stand at the elite's level, filled to the realm's count
+//                        (A.MIL.eliteCount: no set number, it emerges from how hard the level is to reach) by named champions
 //                        kept as seeds (name and level from the realm and the seed; nothing stored)
 //   A.MIL.year(r)        the year's reading kept on the realm (r.kn: the knights by command), at the year's turn, the
 //                        world's birth and a save's load, so a battle reads it the same way whether a page is drawn or not
@@ -223,8 +223,73 @@
 
   // ---------------------------------------------------------------- the elite: the realm's few best
   const ELC = new Map();
-  // order 97: not a fixed ten; a few in a small realm, ten to twenty in a great empire
-  MIL.eliteCount = r => Math.round(clamp(D.elite.perRoot * Math.sqrt(MIL.pop(r) / 1e5), D.elite.least, D.elite.most));
+  // The owner's correction to order 97: "there's no set number. It's just a certain level of understanding how hard it is
+  // to reach that level. An empire can have 30. It can also have 2. Also 72, despite how incredibly unlikely it is." So no
+  // range and no cap: the count EMERGES from how hard the elite's level is to reach in that realm. A.MIL.eliteMean(r) is
+  // the expected number with its reasons (its people, its make, its great families, its wealth and schools, its orders,
+  // its years of war); A.MIL.eliteCount(r) is a seeded draw around it with a heavy tail: a gamma-weighted Poisson (a
+  // negative binomial), so two, thirty or seventy-two can each happen and each is as rare as it should be. Pure: its own
+  // stream from the world's seed, the realm and the decade (a realm's count moves with its make, not each year's luck).
+  const E0 = D.elite;
+  MIL.eliteMean = function (r) {
+    r = RX(r); if (!r) return { mean: 0, why: [] };
+    const why = [], f = (x, label) => { if (Math.abs(x - 1) >= 0.05) why.push([label, Math.round(x * 100) / 100]); return x; };
+    const pop = MIL.pop(r);
+    let m = E0.perMillion * Math.pow(Math.max(0, pop) / 1e6, E0.popPow);
+    const make = (E0.make || {})[MIL.kindOf(r.type)] || 1, race = (E0.race || {})[r.race] || 1;
+    m *= f(make, make > 1 ? 'a martial make: ' + MIL.K(r).why : 'a make that breeds few fighters: ' + MIL.K(r).why);
+    m *= f(race, race > 1 ? 'its people are long-lived or made strong' : 'its people');
+    // great families and their blood: dukes, marquises and counts, each house a line that trains its sons from the cradle
+    let great = 0;
+    for (const id of Object.keys((A.S && A.S.houses) || {})) { const h = A.S.houses[id]; if (h && !h.extinct && h.realm === r.id && (E0.greatRungs || []).includes(h.rung)) great++; }
+    m *= f(1 + E0.perGreatHouse * great, `${great} great house${great === 1 ? '' : 's'} with blood and arms-masters of their own`);
+    // wealth and schooling: a head's wealth, and the schools of war it keeps
+    m *= f(Math.pow(MIL.wealth(pop, MIL.income(r)), E0.wealthPow), 'its wealth a head');
+    let war = 0;
+    try { for (const a of (A.academiesOf ? A.academiesOf(r.id) : [])) if (a && (E0.schools || []).includes(a.type)) war++; } catch (e) { war = 0; }
+    m *= f(1 + E0.perSchool * war, `${war} school${war === 1 ? '' : 's'} of war`);
+    // the orders that pick the best of the realm and drill them past their bodies
+    let orders = 0;
+    for (const k of Object.keys(GD.ORDERS || {})) if (GD.ORDERS[k] && GD.ORDERS[k].realm === r.id) orders++;
+    m *= f(1 + E0.perOrder * orders, `${orders} knightly order${orders === 1 ? '' : 's'}`);
+    // events: years of war breed veterans (the forces' drill and battles, 0-200)
+    const xp = (r.forces && r.forces.xp) || 20;
+    m *= f(1 + E0.perXp * Math.max(0, xp - 20) / 100, 'its long wars have bred veterans');
+    why.sort((a, b) => Math.abs(Math.log(b[1])) - Math.abs(Math.log(a[1])));
+    return { mean: Math.max(0, m), why };
+  };
+  const rng = key => { let a = hash(key) || 1; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
+  // a gamma(k, 1/k) weight (mean 1) by Marsaglia and Tsang, then a Poisson count of its mean: nothing bounds it
+  const gamma = (k, R) => {
+    if (k < 1) return gamma(k + 1, R) * Math.pow(R() || 1e-12, 1 / k);
+    const d = k - 1 / 3, c = 1 / Math.sqrt(9 * d);
+    for (let g = 0; g < 100; g++) {
+      let x, v;
+      do { const u1 = R() || 1e-12, u2 = R(); x = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2); v = 1 + c * x; } while (v <= 0);
+      v = v * v * v;
+      const u = R() || 1e-12;
+      if (Math.log(u) < 0.5 * x * x + d - d * v + d * Math.log(v)) return d * v / k;
+    }
+    return 1;
+  };
+  // the Poisson walk from zero (a mean past 700 would underflow e^-mean; such a world takes its mean, rounded)
+  const poisson = (lam, R) => {
+    if (!(lam > 0)) return 0;
+    if (lam > 700) return Math.round(lam);
+    const u = R();
+    let k = 0, p = Math.exp(-lam), c = p;
+    while (u > c && p > 0) { k++; p *= lam / k; c += p; }
+    return k;
+  };
+  MIL.eliteDraw = function (r, mean) {
+    r = RX(r); if (!r || !A.S) return 0;
+    const R = rng(`${A.S.seed}|${r.id}|elite-count|${Math.floor((A.S.year || 0) / 10)}`);
+    return poisson(mean * gamma(E0.spread, R), R);
+  };
+  MIL.eliteCount = function (r) {
+    r = RX(r); if (!r) return 0;
+    return MIL.eliteDraw(r, MIL.eliteMean(r).mean);
+  };
   const seedName = (r, i) => {
     const N = A.NAMES, key = `${A.S.seed}|${r.id}|elite|${i}`, h = hash(key);
     const female = h % 7 === 0;
@@ -250,7 +315,6 @@
       if (L >= lo) out.push({ pid: p.id, name: A.fullName ? A.fullName(p, false) : p.given, level: L });
     }
     out.sort((a, b) => b.level - a.level || (a.pid < b.pid ? -1 : 1));
-    out.length = Math.min(out.length, D.elite.most);
     // the rest are champions the realm knows by name: their level spread down from the realm's best
     for (let i = 0; out.length < n; i++) {
       const s = seedName(r, i), j = hash(`${A.S.seed}|${r.id}|elv|${i}`) % 9;

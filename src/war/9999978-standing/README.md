@@ -45,9 +45,14 @@ page is drawn or not.
 its drill, its wealth a head, its people): soldiers 108 to 173, knights 249 to 294, the elite's best 334 to 412 at the
 start. A giant hold's warriors stand in their own bands (420 to 600: a grown giant is worth 12 to 30 conscripts).
 
-**The elite** (`A.MIL.elite`): the realm's few best (order 97: not a fixed ten; 1.5 x the square root of its people in
-hundreds of thousands, 3 to 20: Varenna, Zanara and Aldmark 14 to 16, a small kingdom 4, a giant hold 3): its own people who stand at
-the elite's level (an order's Grand Master, a General, the player himself), filled by champions the realm knows by name,
+**The elite** (`A.MIL.elite`): no set number (the owner's correction to order 97: "an empire can have 30. It can also
+have 2. Also 72, despite how incredibly unlikely it is"). The count emerges from how hard the elite's level is to reach in
+the realm: `A.MIL.eliteMean` (its people^0.85, its make, its people's bodies and years, its great houses, its wealth a
+head, its schools of war, its knightly orders, its veterans), each part a named reason, and `A.MIL.eliteCount`, a seeded
+draw around it with a heavy tail and no cap (a Poisson count of the mean times a gamma weight; its own stream from the
+world's seed, the realm and the decade). Pooled over 2,000 seeds: Aldmark expects 18 (p5 5, p50 16, p95 37, the most
+91), Zanara 29 (the most 133), Northreach 1, Lucerna 0.7. The realm's own people who stand at
+the elite's level (an order's Grand Master, a General, the player himself), count first, then champions the realm knows by name,
 kept as seeds (a name from the realm's culture by hash, a level spread down from the realm's best, a role: the king's
 champion, a captain of the household knights, a hedge knight of great name). No person is made and nothing is stored.
 
@@ -90,7 +95,9 @@ choices that move its host go into `A.S.why` (kind `standing`, W1-2's caps).
 
 `test.mjs`: `msSizes` (three worlds: regulars of 10,000 and more for every realm of 300,000 people its purse can pay,
 the greatest host 150,000 to 400,000, every host within a division of its normal one, knights within their kind's
-bounds and dealt whole, the bands of order 93, the elite in the elite's band, each named, ten to twenty in the greatest realm and a few in the smallest), `msBattle` (factors
+bounds and dealt whole, the bands of order 93, the elite in the elite's band, each named, the realm's own first), `msEliteEmerges` (2,000 seeds:
+a wide spread with no cap, three or fewer and forty or more both seen for an empire; the make, veterans and wealth move
+the mean, and the draw follows; reasons named; deterministic), `msBattle` (factors
 1 to 1.6, none for an order or a call, the lances above the line, `divCombat` carries it, the host rule's exponent 1.35),
 `msDecides` (under its host and rich it raises, over it and poor it cuts, with a record), `msWords` (round figures,
 about, said to keep; no percentage; the card's line and a 44-point note at 375 px), `msOldSaves` (every sample save loads

@@ -3573,3 +3573,21 @@ peak coin (balance, 49,935 over 24 lives) is a real drop since alpha 20 (114,768
   `s1Cost` (0.574 ms) pass.
 
 **Undo.** Revert this commit.
+
+**Addendum (2026-11-27, on `elite-count` from `v2-integration` at 026b38b4): the elite have no set number.** The owner
+corrected order 97's elite: "there's no set number. It's just a certain level of understanding how hard it is to reach
+that level. An empire can have 30. It can also have 2. Also 72, despite how incredibly unlikely it is. Population and the
+kingdom's/empire's specifications, families, wealth and possible education, events and situations can affect it." The
+range 3-20 by population is gone. `A.MIL.eliteMean(r)` is the expected count with its reasons: perMillion x (people in
+millions)^0.85, times the realm's make (an empire 1.25, a horde 1.5, elves 1.6, merchants 0.7, a church 0.85), its
+people (elves 1.5, dwarves 1.3, giants 8 a head), its great houses (+3% each: dukes, marquises, counts), its wealth a
+head (square root), its schools of war (+25% each), its knightly orders (+30% each) and its veterans (+60% for every
+hundred of drill past 20). `A.MIL.eliteCount(r)` draws around it from its own stream (world seed, realm, decade): a
+Poisson count of the mean times a gamma weight of shape 4, with no upper bound. The realm's own people at the elite's
+level still count first; the realm's note says why so many or so few (the two heaviest reasons each way). Pooled over
+2,000 seeds on one world: Aldmark p5 5, p50 16, p95 37, the most 91 (three or fewer in 44 worlds, forty or more in 59);
+Zanara p5 9, p50 26, p95 59, the most 133; Northreach mean 1.0. As a merchants' realm Aldmark would expect 10.0 instead of
+17.9, with veterans 35.0, three times as rich 26.5. Files: `src/war/9999978-standing/a-standing.core.js`,
+`b-view.core.js`, `test.mjs` (new `msEliteEmerges`; `msSizes` reads the draw), `README.md`, `data/military/standing.json`.
+Tests (`/tmp/ardan/army/elite.html`, workers 2): the feature's seven, `uiSmoke`, `renderRng`: 9 of 9. Undo: revert the
+commit.
