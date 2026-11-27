@@ -654,6 +654,9 @@ order is replaced, strike it through and say by what.
     - **Follow-up, 04:50 ET: system work comes first.** Changes to how the work is done (the Notion knowledge base,
       the `CLAUDE.md` trim, models, skills, tooling) take precedence over game work, because they amplify everything
       after them. They start now, not after the current wave.
+    - **Follow-up, 05:40 ET: Notion is ours to manage.** No asking before changes in Notion: create, edit, rename, move and
+      reorganise freely. Archive (move to an Archive page) instead of deleting; a true delete still needs the owner to
+      confirm the exact pages, as Notion's delete tool requires.
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**

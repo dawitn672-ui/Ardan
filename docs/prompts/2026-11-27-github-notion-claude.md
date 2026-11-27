@@ -5,3 +5,7 @@
 ## Follow-up · 2026-11-27 04:50 ET · kept unchanged
 
 > no these system changes take precedence over things within the game as they amplify the affect
+
+## Follow-up · 2026-11-27 05:40 ET · kept unchanged
+
+> remove the ask before making changes in notion you are free to manage it as you please
