@@ -4,7 +4,43 @@ The checklist of every work item, in the order they are being done, split by maj
 moment it is merged and CI is green, with the stamp and the commit; never delete a line. Details live in
 `docs/HISTORY.md`; the plans and reasons in `docs/CRITIQUE.md` §2, `docs/V3_SPEC.md` and `docs/DECISIONS.md`.
 
-*Last updated 2026-11-16 03:30 ET*
+*Last updated 2026-11-27 02:00 ET*
+
+## Order 100: complete every remaining order (plan of 2026-11-27 02:00 ET)
+
+The owner hands over every decision (order 100). Order 97's brief, with 98 and 99, is done in waves; each wave merges as
+a batch, runs both CI tiers and is cut as a version. A line is ticked with its commit when merged and green.
+
+**Wave 1 · the diagnostic's contradictions (orders 98, 99)** (builders running)
+- [ ] The world keeps its Grandmasters (s1Census, H-167)
+- [ ] Primordials Noir, Blanc, Red; Vaskareth the storm ancient; demons by rank; lower demons dumb; orcs demonic creatures, not playable; ancient demons ten lower; trolls and ogres 230-270 (H-168..170)
+- [ ] One rarity ladder (basic, rare, epic, legendary, mythical); legendary classes one holder, no advance; mythical sets; Dragon Slayer (H-171..173)
+- [ ] "Legend" means one thing; the Sword Saint in the lore; kings' levels personal (H-174..176)
+- [ ] Thirty-four realms of five forms (H-177, 178)
+- [ ] Cut v2.1.0-alpha.21
+
+**Wave 2 · the ground**
+- [ ] The final map: one continent (no Dawnlands, no Sunset Isles), 34 larger realms, 1,000+ provinces, every city, town and village with its makeup, roads and way-stations, Hell off the south coast, one Dragon Mountains, the Sword Saint's home with its reason
+- [ ] Imperial units everywhere a player reads (miles, feet, pounds)
+- [ ] Speed again, and a visible sign while the game works
+- [ ] Relationships: none handed out; chosen, and droppable except those tied to you
+
+**Wave 3 · power and war**
+- [ ] War without day-by-day or a grand map: clear fronts, rank decides what you control, "soldiers" by kind
+- [ ] Dragons up to 300 (young, grown, elders, three ancients), dominions for every dragon and a king's for the King, Dragonoid Form
+- [ ] Demons: an archdemon's hundred wins, the irreplaceable and their heirs
+- [ ] Stats: what each point gives, said exactly (the *Overgeared* study saved)
+- [ ] Titles reworked after *Overgeared*; classes as many as are worth having (300+ if sensible)
+
+**Wave 4 · depth**
+- [ ] Skills in the thousands: kinds and subkinds, level by training, quality by evolution, heredity or race, merging can raise rarity, family arts never merge and may reject, skill against use
+- [ ] Profiles of every notable person down to merchants and people of promise; noteworthy houses playable
+- [ ] Merchants from comfortable to richer than kings; markets deep enough for one to dominate (never a label)
+- [ ] The Archmage among the legends; lore recalibrated to the new map, with a retraceable history
+
+**Wave 5 · reading it cold**
+- [ ] Cold-reader naming over everything (the study saved): "Kingdom of Kesh", names that carry their meaning
+- [ ] A fresh world diagnostic, docs brought level (MASTER_PROMPT, STATUS, ROADMAP), a version
 
 ## v2 · Round 2: the owner's complaint list (`docs/V2_SPEC.md`, `docs/CRITIQUE.md`)
 

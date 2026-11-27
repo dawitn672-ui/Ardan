@@ -622,6 +622,13 @@ order is replaced, strike it through and say by what.
     kingdoms and empires the only forms are a **principality**, a **merchant republic** and a **free city**. Applied to
     today's 34 realms at once (their forms and names); the larger map waits for the rebuild.
 
+100. **Complete everything; every decision is yours** · recorded 2026-11-27 02:00 ET. Kept unchanged in
+    `docs/prompts/2026-11-27-complete-everything.md`. The owner will send no more updates until **every remaining order and
+    problem** is done. The pause of order 97 is lifted for all of it: the whole of order 97's brief (the final map, the
+    cold-reader naming, thousands of skills, hundreds of classes and the rest), with order 98 and 99. **Every decision is
+    the session's own unless the owner says otherwise**; update, recalibrate and improve as the work goes, documenting and
+    learning along the way. The plan and its waves are in `docs/PROGRESS.md` ("Order 100").
+
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
 - Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
