@@ -65,7 +65,12 @@
     const fl = LV.floor(p), age = A.age(p), ad = RACE(p).adult || 16, sc = age >= ad ? 1 : Math.pow(Math.max(0, age) / ad, FL.pow);
     let lo = fl, hi = Math.max(fl, SD.common), why = 'common';
     const take = (l, h, w) => { if (h * sc > hi) { lo = l * sc; hi = h * sc; why = w; } };
-    if ((SD.nobleStatus || []).includes(p.status)) {
+    // a ruler's level is his own (order 97, answer 3 of order 98; D-205): his way of rule, chosen through A.WHY
+    // (d-rulers.core.js), stands in for his upbringing and his crown's own posts; service and posts in arms still count
+    const rb = LV.ruleBand ? LV.ruleBand(p) : null, own = rb ? new Set(SD.rule.ownPosts || []) : null;
+    // (set, not taken: an idle king's band may lie under a commoner's, and that is the point)
+    if (rb) { lo = rb.lo * sc; hi = rb.hi * sc; why = 'rule'; }
+    else if ((SD.nobleStatus || []).includes(p.status)) {
       // order 96: upbringing sets where an untrained noble starts (education, tutors, diet, arms-masters); royals and the
       // great houses higher on average
       const U = SD.upbringing || {}, rung = (p.noble && p.noble.rung) || 0;
@@ -77,7 +82,7 @@
       if (b) { const yrs = svc.years != null ? svc.years : Math.max(0, age - 18), e = Math.min(1, (yrs + (svc.battles || 0) / 3) / SD.full); take(b[1], b[1] + (b[2] - b[1]) * e, 'service'); }
     }
     if (A.POSTS && A.POSTS.held && A.POSTS.parse) {
-      try { for (const k of A.POSTS.held(p.id)) { const b = SD.posts[A.POSTS.parse(k).kind]; if (b) take(b[0], b[1], 'post'); } } catch (e) {}
+      try { for (const k of A.POSTS.held(p.id)) { const kind = A.POSTS.parse(k).kind, b = SD.posts[kind]; if (b && !(own && own.has(kind))) take(b[0], b[1], 'post'); } } catch (e) {}
     }
     if (!svc && (p.kills || 0) > 0) {
       // (pure: the rule's climb from the floor, with nothing queued, placed or decided)
@@ -219,7 +224,8 @@
     const pw = A.S.pw && typeof A.S.pw === 'object' ? A.S.pw : (A.S.pw = {});
     const ref = pw.ref && typeof pw.ref === 'object' ? pw.ref : (pw.ref = {});
     let n = 0;
-    for (const id of [...PW.LEG.keys(), ...(PW.MAS ? PW.MAS.keys() : [])].sort()) {
+    // C-30 (order 98): the figures registry's fixed beings (PW.FIG: the ancient dragons and demons) refine as the legends do
+    for (const id of [...PW.LEG.keys(), ...(PW.MAS ? PW.MAS.keys() : []), ...(PW.FIG ? PW.FIG.keys() : [])].sort()) {
       const g = legRec(id, false); if (g && g.slain) continue;
       if ((ref[id] || 0) * LG.perYear >= LG.max) continue;
       ref[id] = (ref[id] || 0) + 1; n++;
@@ -228,11 +234,14 @@
   };
   (A.onYear = A.onYear || []).push(function () { try { LV.legendYear(); } catch (e) { console.error('[level] legends refine', e); } });
   LV.legendDefeat = function (id, F, how) {
-    const L0 = PW.LEG && (PW.LEG.get(id) || (PW.MAS && PW.MAS.get(id)));
+    const L0 = PW.LEG && (PW.LEG.get(id) || (PW.MAS && PW.MAS.get(id)) || (PW.FIG && PW.FIG.get(id)));   // C-30: and the fixed figures
     if (!L0 || !(F > 0)) return 0;
     const g = legRec(id, true); if (!g) return 0;
     const lg = Array.isArray(g.lg) ? g.lg : (g.lg = [0, 0]);
     let L = L0.level + lg[0], f = lg[1] || 0, gain = LV.xpFor(F, L) * (X.how[how] != null ? X.how[how] : 1), n = 0;
+    // order 97 (C-30): among the great, a defeat of an equal (a foe within peerWithin levels or above) pays peerMul
+    // times, so a hundred of them give about twenty levels at an archdemon's height: a road near impossible to survive
+    if (LG.peerMul && F >= L - (LG.peerWithin || 0)) gain *= LG.peerMul;
     while (gain > 0 && L < LVMAX) {
       const need = LV.need(L), room = (1 - f) * need;
       if (gain >= room) { gain -= room; L++; n++; f = 0; } else { f += gain / need; gain = 0; }
@@ -366,8 +375,14 @@
     if (!q.includes(p.id)) { q.push(p.id); if (q.length > 400) q.shift(); }
   };
   LV.npcYear = function () {
-    const S = A.S; if (!S || !Array.isArray(S.lvq) || !S.lvq.length) return 0;
-    const ids = S.lvq.slice().sort((a, b) => (String(a) < String(b) ? -1 : String(a) > String(b) ? 1 : 0));
+    const S = A.S; if (!S || !S.people) return 0;
+    // C-29 (order 98): the queue keeps at most 400 and drops its oldest, and a person dropped from it kept his points
+    // for ever. So the year also gathers everyone alive with points waiting; the queue stays the bounded record of who
+    // rose, and nobody's points wait past the year's turn
+    const set = new Set(Array.isArray(S.lvq) ? S.lvq : []);
+    for (const id in S.people) { const p = S.people[id]; if (p && p.alive && p.lv && p.lv.pts > 0 && id !== String(S.pc)) set.add(p.id); }
+    if (!set.size) { S.lvq = []; return 0; }
+    const ids = [...set].sort((a, b) => (String(a) < String(b) ? -1 : String(a) > String(b) ? 1 : 0));
     S.lvq = [];
     let n = 0;
     for (const id of ids) {

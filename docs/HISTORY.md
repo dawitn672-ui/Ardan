@@ -3767,3 +3767,38 @@ names and ids and these dates and places.
 **Tests.** See H-176's checks (one build of the three steps).
 
 **Undo.** Revert the commit.
+
+### H-176 · 2026-11-27 · A ruler's level is his own; stat points never forgotten; the fixed figures grow; the level README's anchors (order 98: C-16, C-29, C-30, C-31)
+
+**C-16, kings' levels are personal** (order 97; order 98's answer 3, "countless other factors, mainly shown through
+the ones that don't do much themselves"; D-205). New `src/people/9999975-level/d-rulers.core.js`: each ruler but the
+player keeps a way of rule (`p.rway`: field, drill, council, ease), chosen at the world's birth (`worldInit`) and each
+year (`A.onYear`) through `A.WHY.decide` on a stream of its own (seed, ruler, year), with sourced reasons: his traits
+and temper, his age read as a man's and his health, his best skills, his realm at war and its kind, what the lore's
+primer writes of him (read once at the birth: "won the Nagora Pass", "bedridden", "signs whatever the banker reads him",
+"elected"), and the habit of his way. `LV.band` (a-level) takes the way's band in place of his upbringing and his
+crown's own posts (`seed.rule.ownPosts`); service and posts in arms still count. Numbers in `data/level.json`
+`seed.rule`: the level moves from where it stood when the way began toward the way's end over twenty years (field 100
+toward 320, his drill alone half way and each year at war two more; drill 75 toward 160; council toward 50; ease toward
+30, and a strong body carries an idle king no higher). A change of way is kept in `A.S.why` (kind `rule`); an old save's
+rulers read their old band until the year's turn.
+
+**C-29, stat points dropped from the queue.** `LV.npcYear` also gathers everyone alive with points waiting, so the
+people `LV.queue` drops past 400 are placed at the year's turn (before: never again). Regression test `lvQueueNoDrop`
+(fails on the old rule by construction: the 60 dropped keep their points).
+
+**C-30, the fixed figures grow** (orders 92, 95, 97). `LV.legendYear` refines and `LV.legendDefeat` pays `PW.FIG` (the
+ancient dragons and demons) as the legends; among the great a defeat of an equal (a foe at most 10 levels below, or
+stronger) pays 21 times (`legends.peerMul`, `peerWithin`), so a hundred such defeats give an archdemon about twenty
+levels (order 97; before, under a level: order 95's "a level or two" is replaced); a man far below pays as before.
+
+**C-31.** The level README's anchors are order 93's (D-185), its readings paragraph says how nobles are seeded since
+order 96; the new rules and tests are listed there.
+
+**Files.** `src/people/9999975-level/` (`a-level.core.js`: `LV.band`, `LV.npcYear`, `LV.legendYear`,
+`LV.legendDefeat`; `d-rulers.core.js` new; `test.mjs`: `lvRulers`, `lvQueueNoDrop` new, `lvLegends` to order 97;
+`README.md`), `data/level.json` (`seed.rule`, `legends.peerMul`, `peerWithin`, the about texts).
+
+**Checks** (`/tmp/ardan/o98l/`, one build of H-174 to H-176): the feature tests lvRulers (210 rulers in six worlds: council 96 at a mean of 65, drill 62 at 158, ease 37 at 35, field 15 at 228; the lore's infirm rulers at ease 8 of 12; twenty years in the field with ten at war 320, with none 210; at ease 33), lvQueueNoDrop (60 dropped, 60 placed), lvLegends (an archdemon at 975: 20 levels from a hundred equal defeats; the fixed figure refines x1.040 with the legends), lvClass, lvSeed, statNpc, statMigrate (27 saves), ladderCap, ladderPage, ladderCensus, ladderOrderMerit, carLegend, wcScenesRender, figRegistry, figDeterministic, btSecrets, whyRecordsKept, pwLegends, pwPureAndOldSave, msEliteEmerges, msDeterministic, ttCoverage, ttCov2Realm, ttPure2, renderRng, replayWithRender, v2svRoundTrip, uiSmoke: all pass (uiSmoke timed out on its first click twice with five heavy tests beside it on a machine at load 35-90, and passes alone, as main's build does); node --test tests/v2 166 of 166; lint-reasons 41 (baseline 41), lint-stages, lint-docs-index, lint-events for 57-world-chronicle and 994-careers clean; coherency against the quick baseline: no contradiction, no check rose. Found and fixed on the way: the rename missed eight uses of A.orderMaster's local flag (every order raised threw; 4a8e9bed). Not completed: wcCitesShare (long tier, 964 s on CI) timed out at 1,800 and 4,000 s on this machine at load 20-90 (every test ran about ten times its CI time); a direct read of the chronicle canon in a fresh world finds the Red War (realms Aldmark, Qadir, Tamar, Sahrim, Sabra) and the fourth kettle (Stonehold) among 176 entries, the codex songs page shows the new songs, and SEC-72 is in the bible, with no page error. Not run: balance.mjs (the player's level and the starting paths are untouched: the ways are for NPC rulers only) and the long-tier bot lives (lvAnchors).
+
+**Undo.** Revert the commit; `p.rway` on people in a save is then ignored.

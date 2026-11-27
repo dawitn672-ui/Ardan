@@ -3427,3 +3427,23 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
 - **Shared file.** `data/legends.json` belongs to the Primordials' builder this round; the edits there are four history
   sentences only (Vaskareth, Sarnavoth's grudge, Red's, the Saint's), listed in H-175 for the merge.
 
+
+### D-205 · A ruler's level is his own: a way of rule chosen through A.WHY (2026-11-27; order 97, order 98's answer 3; audit C-16; H-176)
+- **The contradiction.** An untrained ruler stood where his upbringing and his crown's posts put him (`seed.noble`,
+  `posts.title/office/house` 50-99), so every peaceful king read alike, and no data said a ruler fought. The owner: levels
+  are personal, "countless other factors", shown "mainly through the ones that don't do much themselves".
+- **Chosen.** Each ruler but the player keeps a way of rule (`p.rway`): field, drill, council or ease, chosen at the
+  world's birth and each year through `A.WHY.decide` (a stream of its own; a change kept in `A.S.why`, kind `rule`). The
+  reasons: traits and temper, age (as a man's) and health, best skills, the realm at war and its kind, the lore's word of
+  him (the realm primer, read once at the world's birth), the habit of his way. In `LV.band` the way replaces upbringing
+  and the crown's own posts; service and posts in arms still count. The level moves from where it stood when the way
+  began toward the way's end over twenty years: field from 100 toward 320 (his drill alone takes him half way, to
+  the knights; each year at war counts two more, so only long wars bring the elite; a ruler the lore says won his wars
+  starts with five), drill from 75 toward 160, council toward 50, ease toward 30. Numbers: `data/level.json`
+  `seed.rule`.
+- **Not chosen.** A fixed "trained" trait (the audit's sketch): a king's habits change with age, war and health, and a
+  yearly choice with the habit as a reason keeps them steady without freezing them. A save version step: the rulers of an
+  old save read their old band until the next year's turn chooses (no version bump, so no clash with the other builders).
+- **What it touches.** Unseeded levels only (a ruler who has fought a recorded fight holds his level). The odds of a fight
+  read might, not level; a warrior king at the elite's level now shows in his realm's list of its best (`MIL.elite`).
+  The player's level and the starting paths are unchanged.

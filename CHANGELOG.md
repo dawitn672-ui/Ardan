@@ -5,6 +5,16 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Every king his own level.** A ruler's level now follows how he rules: one who leads his hosts in person climbs
+  toward the realm's best fighters over years of war, one who keeps up his arms-practice stays a capable fighter, one who
+  rules from the council table slips back, and one who does little himself (the idle, the indulgent, the sick and the
+  very old) sinks to the level of ordinary folk. Each king chooses his way for his own reasons (his nature, age, health,
+  his realm's wars and what kind of crown he wears) and can change it as his life changes. A warrior king can now be
+  among his realm's named best.
+- **Points no longer forgotten.** People who had stat points waiting could lose track of them in a busy world; now
+  everyone places theirs at the turn of the year. The ancient dragons and demons now grow over the years as the legends
+  do, and one of the great who beats an equal again and again rises far faster than before.
+
 - **The Sword Saint in the history books.** Cael Vardan's deeds are now part of the world's past: the Red War of 1023
   to 1025, when he bound the Primordial Red under the Burning Waste; the Valley Burnings and his three-day fight with the
   King of Dragons on the Saint's Stair in 1045; the challenger who lost to him nine times. The codex's wars, songs and
