@@ -374,7 +374,7 @@ export default {
       for (const c of CL.LIST) {
         if (!/^[A-Z][A-Za-z' -]{2,26}$/.test(c.name) || /marshal|levy/i.test(JSON.stringify(c))) bad.push('name ' + c.id);
         for (const e of c.effects || []) { if (!types.includes(e.type)) bad.push(c.id + ' effect ' + e.type); if (e.type === 'stat' && e.v > 3) bad.push(c.id + ' stat ' + e.v); }
-        if (!(CL.D.rarities || []).includes(c.rarity)) bad.push(c.id + ' rarity ' + c.rarity);
+        if (!A.RARITY.LADDER.includes(c.rarity)) bad.push(c.id + ' rarity ' + c.rarity);
         // order 95: a class's rarity never changes along its line (an advancement keeps it)
         for (const f of c.from) if (f && CL.BY.get(f) && CL.BY.get(f).line === c.line && CL.BY.get(f).rarity !== c.rarity) bad.push(c.id + ' changes rarity on its line');
         for (const f of c.from) if (f !== null && !CL.BY.has(f)) bad.push(c.id + ' from ' + f);
@@ -384,11 +384,10 @@ export default {
         if (!parts(c).length) bad.push(c.id + ' no part');
       }
       const leads = {}; for (const c of CL.LIST) for (const f of c.from) if (f) leads[f] = (leads[f] || 0) + 1;
-      const names = new Set(CL.LIST.map(c => c.name)), uniq = CL.LIST.filter(c => c.rarity === 'unique');
+      const names = new Set(CL.LIST.map(c => c.name));
       if (names.size !== CL.LIST.length) bad.push('names repeat');
-      if (uniq.some(c => !c.unique && !c.title)) bad.push('a unique class with no single holder');
       const rar = {}; for (const c of CL.LIST) rar[c.rarity] = (rar[c.rarity] || 0) + 1;
-      out.data = { n: CL.LIST.length, bad, branching: Object.values(leads).filter(n => n >= 2).length, steps: [1, 2, 3].map(s => CL.LIST.filter(c => c.step === s).length), rar, hidden: CL.LIST.filter(c => c.req).length };
+      out.data = { ladder: A.RARITY.LADDER.slice(), n: CL.LIST.length, bad, branching: Object.values(leads).filter(n => n >= 2).length, steps: [1, 2, 3].map(s => CL.LIST.filter(c => c.step === s).length), rar, hidden: CL.LIST.filter(c => c.req).length };
       // a duel: the player a Berserker (Warrior before him): his techniques in the bar, the passive fires once when he bleeds
       T.enter({ seed: 9811, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 24 });
       const pc = A.pc(); LV.seed(pc); pc.lv.cr = [['warrior', A.S.year, 1], ['berserker', A.S.year, 1]];
@@ -424,7 +423,7 @@ export default {
     await pg.click('.lv-line .lv-cls .tt'); const open = await pg.evaluate(() => (UI.TT ? UI.TT.depth() : 0)); await pg.keyboard.press('Escape');
     await pg.setViewportSize({ width: 1366, height: 768 });
     const d = r.data, p = r.passive, bf = r.buff;
-    const ok = !d.bad.length && d.n >= 100 && d.branching >= 15 && d.steps.every(n => n >= 5) && d.hidden >= 50 && ['common', 'uncommon', 'rare', 'epic', 'legendary', 'unique'].every(k => d.rar[k] > 0) &&
+    const ok = !d.bad.length && d.n >= 100 && d.branching >= 15 && d.steps.every(n => n >= 5) && d.hidden >= 50 && d.ladder.length === 5 && d.ladder.every(k => d.rar[k] > 0) &&
       r.duel.techs.includes('cl-heavy-blow') && r.duel.lvp.includes('Blood Rage') && p.e1 > 0 && p.fury > 0 && p.logs1 === 1 && p.logs2 === 1 && p.e2 === p.e1 && p.e3 === 0 &&
       r.acts.mine[0] && !r.acts.theirs[0] && /position/.test(r.acts.theirs[1]) && bf.ok && bf.s1 > bf.s0 && bf.s2 > bf.s0 && Math.abs(bf.s3 - bf.s0) < 1e-9 && !bf.left &&
       r.earn.ok && (r.earn.coin > 0 || r.earn.health < 0) && r.prof.cls === 'Guardian' && r.prof.note.length > 40 && !/\d\s?%/.test(r.prof.note) && r.prof.title === 0 && r.prof.width <= r.prof.vw + 0.5 && open > 0;

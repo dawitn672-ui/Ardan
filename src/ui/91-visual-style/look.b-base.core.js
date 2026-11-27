@@ -277,18 +277,18 @@ ${X('.chip.gold')}{border-color:var(--accent-rule);color:var(--accent);backgroun
 ${X('.chip.red')}{border-color:transparent;color:var(--danger);background:var(--danger-tint)}
 ${X('.chip.green')}{border-color:transparent;color:var(--ok);background:var(--ok-tint)}
 ${X('.chip.blood')}{border-color:var(--blood-ink);color:var(--blood-ink)}
-/* rarity (brief §1.5): the fighting tiers and gear quality read the gacha ladder */
+/* rarity (brief §1.5): the fighting tiers and gear quality wear the one rarity ladder's colours (D-200) */
 ${X('.chip.tier')}{color:var(--tc);border:1.5px solid var(--tc);background:transparent}
 ${X('.chip.tier::before')}{content:var(--gem, "◇");width:auto;height:auto;transform:none;background:none;font-size:.9em;color:var(--tc)}
-${X('.chip.tier.t0, .chip.tier.t1')}{--tc:var(--r-common);--gem:"◇"}
-${X('.chip.tier.t2')}{--tc:var(--r-uncommon);--gem:"◆"}
+${X('.chip.tier.t0, .chip.tier.t1')}{--tc:var(--r-basic);--gem:"◇"}
+${X('.chip.tier.t2')}{--tc:var(--r-basic);--gem:"◆"}
 ${X('.chip.tier.t3')}{--tc:var(--r-rare);--gem:"◆◆"}
 ${X('.chip.tier.t4')}{--tc:var(--r-epic);--gem:"◆◆◆"}
 ${X('.chip.tier.t5')}{--tc:var(--r-legendary);--gem:"★"}
-${X('.chip.tier.t6')}{--tc:var(--r-mythic);--gem:"✦";background:transparent}
+${X('.chip.tier.t6')}{--tc:var(--r-mythical);--gem:"✦";background:transparent}
 :root[data-theme=dark] .chip.tier.t3, :root[data-theme=dark] .chip.tier.t4, :root[data-theme=dark] .chip.tier.t5, :root[data-theme=dark] .chip.tier.t6{box-shadow:0 0 14px color-mix(in srgb, var(--tc) 30%, transparent)}
-${X('.chip.qual.q-crude')}{border-color:var(--line-strong);color:var(--r-common)}
-${X('.chip.qual.q-fine')}{border-color:var(--r-uncommon);color:var(--r-uncommon)}
+${X('.chip.qual.q-crude')}{border-color:var(--line-strong);color:var(--r-basic)}
+${X('.chip.qual.q-fine')}{border-color:var(--line-strong);color:var(--ink)}
 ${X('.chip.qual.q-master')}{border-color:var(--r-legendary);color:var(--r-legendary);background:transparent}
 ${X('.req')}{border-color:var(--line-strong);border-radius:var(--r-pill)}
 ${X('.req.ok')}{color:var(--ok);border-color:transparent;background:var(--ok-tint)}

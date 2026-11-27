@@ -4,7 +4,7 @@
   {
    "id": "blooded",
    "name": "Blooded",
-   "rarity": "uncommon",
+   "rarity": "basic",
    "weight": "D",
    "unique": false,
    "kind": "deed",
@@ -20,7 +20,7 @@
   {
    "id": "unbought",
    "name": "the Unbought",
-   "rarity": "uncommon",
+   "rarity": "basic",
    "weight": "C",
    "unique": false,
    "kind": "service",

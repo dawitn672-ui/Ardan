@@ -159,13 +159,14 @@ export default {
   },
 
   // order 95 (D-192): titles can be game changers. A title's share boost to fighting worth sits in a pool of its own,
-  // capped by the rarest title among the sources (uncommon 0.02, rare 0.05, legendary 0.15, one of a kind 0.25), apart from
+  // capped by the rarest title among the sources (the one ladder, D-200: basic 0.02, rare 0.05, epic 0.1, legendary 0.25,
+  // mythical 0.4; one holder at a time lifts no cap), apart from
   // the skills' 15%. Over pairs of grown men of the world whose honest duel odds stand near even (seed fallback, pooled
-  // over worlds 9891-9894), the same man is given an uncommon title (Blooded), a rare one (the Undefeated), and a title one
-  // of a kind (Wyrm-Slayer): the uncommon one moves his odds a little (more than nothing, under 8 points on average), the
-  // one of a kind markedly (20 points or more on average), the rare one between. The caps hold: every title at once and a
-  // planted boost far past any cap give at most a quarter of his worth to a fight and of his read to a check, and an
-  // uncommon title alone, planted far past its cap, its tier's 0.02. Income and experience read their boosts too. Nothing
+  // over worlds 9891-9894), the same man is given a basic title (Blooded), a rare one (the Undefeated), and a legendary
+  // one (Wyrm-Slayer): the basic one moves his odds a little (more than nothing, under 8 points on average), the
+  // legendary markedly (20 points or more on average), the rare one between. The caps hold: every title at once and a
+  // planted boost far past any cap give at most the cap of the rarest title held to a fight and to a check, and a
+  // basic title alone, planted far past its cap, its tier's 0.02. Income and experience read their boosts too. Nothing
   // drawn; every read the same once the titles are gone.
   async ttGameChanger(pg) {
     if (!(await pg.evaluate(GATE))) return NO;
@@ -187,7 +188,7 @@ export default {
           const o0 = A.shownDuelOdds(a, b), w0 = A.fightWorth(a);
           for (const id of Object.keys(out.d)) {
             give(a, [id]);
-            const o1 = A.shownDuelOdds(a, b), f = A.fighterFrom(a, {}), cap = E.CAP_BOOST[TT.BY.get(id).unique ? 'unique' : TT.BY.get(id).rarity];
+            const o1 = A.shownDuelOdds(a, b), f = A.fighterFrom(a, {}), cap = E.CAP_BOOST[TT.BY.get(id).rarity];
             out.d[id].push(o1 - o0);
             if (!(f.ttb > 0) || f.ttb > cap * SK2.worthOfFighter(f) + 1e-6) bad(`${id}: boost ${f.ttb} of worth ${SK2.worthOfFighter(f)} (cap ${cap})`);
             take(a);
@@ -204,7 +205,7 @@ export default {
       const p = Object.values(A.S.people).filter(q => q && q.alive && q.st && !q.tt && A.age(q) >= 20 && A.fightWorth(q) > 30).sort((x, y) => (String(x.id) < String(y.id) ? -1 : 1))[0];
       const HUGE = { id: 'title:tt-test-boost', rank: 'S', rarity: 'legendary', unique: true, kind: 'title', boostCap: 1, levels: [{ at: 1, effects: [
         { type: 'boost', of: 'fight', v: 5 }, { type: 'boost', of: 'check', v: 5 }, { type: 'boost', of: 'income', v: 5 }, { type: 'boost', of: 'growth', v: 5 }] }] };
-      const LOW = { id: 'title:tt-test-low', rank: 'D', rarity: 'uncommon', unique: false, kind: 'title', levels: [{ at: 1, effects: [{ type: 'boost', of: 'fight', v: 5 }, { type: 'boost', of: 'check', v: 5 }] }] };
+      const LOW = { id: 'title:tt-test-low', rank: 'D', rarity: 'basic', unique: false, kind: 'title', levels: [{ at: 1, effects: [{ type: 'boost', of: 'fight', v: 5 }, { type: 'boost', of: 'check', v: 5 }] }] };
       SK2.addSource(HUGE); SK2.addSource(LOW); TT.XS.set('tt-test-boost', HUGE); TT.XS.set('tt-test-low', LOW);
       try {
         const r0 = A.skill(p, 'intrigue'), e0 = A.skillEff(p, 'intrigue');
@@ -212,12 +213,14 @@ export default {
         const f = A.fighterFrom(p, {});
         out.caps = { fight: Math.round(f.ttb / SK2.worthOfFighter(f) * 1000) / 1000, check: SK2.boostOf(p, 'check', 'intrigue'), income: SK2.boostOf(p, 'income'), growth: SK2.boostOf(p, 'growth', 'sword'), skillFight: f.sk2 ? Math.round(f.sk2.total / SK2.worthOfFighter(f) * 1000) / 1000 : 0 };
         out.caps.checkPts = A.skillEff(p, 'intrigue') - e0; out.caps.read = r0;
-        for (const k of ['fight', 'check', 'income', 'growth']) if (Math.abs(out.caps[k] - E.CAP_BOOST.unique) > 1e-6) bad(`every title and a planted boost: ${k} ${out.caps[k]}, not the cap of ${E.CAP_BOOST.unique}`);
+        // the cap of the rarest title held (the planted one is legendary; a person may hold a mythical one, the Sword Saint)
+        const top = Math.max(E.CAP_BOOST.legendary, ...TT.PERSON.map(t => E.CAP_BOOST[t.rarity] || 0));
+        for (const k of ['fight', 'check', 'income', 'growth']) if (Math.abs(out.caps[k] - top) > 1e-6) bad(`every title and a planted boost: ${k} ${out.caps[k]}, not the cap of ${top}`);
         if (out.caps.skillFight > 0.15 + 1e-9) bad('the skills\' fight share past 15%: ' + out.caps.skillFight);
         give(p, ['tt-test-low']);
         const g = A.fighterFrom(p, {});
         out.caps.low = [Math.round(g.ttb / SK2.worthOfFighter(g) * 1000) / 1000, SK2.boostOf(p, 'check', 'sword')];
-        if (Math.abs(out.caps.low[0] - E.CAP_BOOST.uncommon) > 1e-6 || Math.abs(out.caps.low[1] - E.CAP_BOOST.uncommon) > 1e-6) bad('an uncommon title past its cap: ' + out.caps.low);
+        if (Math.abs(out.caps.low[0] - E.CAP_BOOST.basic) > 1e-6 || Math.abs(out.caps.low[1] - E.CAP_BOOST.basic) > 1e-6) bad('a basic title past its cap: ' + out.caps.low);
         // experience: a month's effort reads the growth boost (A.gainXp's door), by the share
         give(p, ['first-of-the-age']);
         out.caps.xp = [SK2.boostOf(p, 'growth', 'sword'), SK2.boostOf(p, 'check', 'persuasion')];

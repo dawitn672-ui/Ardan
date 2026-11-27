@@ -37,11 +37,12 @@
       const fam = [r.fam], step2 = [];
       for (const t of G.templates) {
         const id = `${t.key}-${slug(r.noun)}${r.fam === 'melee' ? '-m' : ''}`, name = `${t.prefix} ${r.noun}`, line = id;
-        const sv = G.rarityStat[t.rarity] || 1, fv = G.rarityFight[t.rarity] || 1;
+        // its gifts by its rarity (the one ladder, D-200), or the template's own figures where it keeps an older one's
+        const sv = G.rarityStat[t.rarity] || 1, fv = t.fight || G.rarityFight[t.rarity] || 1, hv = t.honour || G.rarityHonour[t.rarity] || 2;
         const tag = r.fam === 'any' ? 'all' : r.fam;
         const base = {
           id, name, step: t.step, rarity: t.rarity, line, gen: t.key, fam, req: t.req || null, ways: [], deeds: t.req && t.req.deed ? [t.req.deed[0]] : [],
-          rank: t.rarity === 'legendary' ? 'S' : t.step >= 3 ? 'A' : 'B', honour: G.rarityHonour[t.rarity] || 2,
+          rank: t.rarity === 'legendary' || t.rarity === 'mythical' ? 'S' : t.step >= 3 ? 'A' : 'B', honour: hv,
           effects: [{ type: 'fight', tag, part: t.part || 'atk', v: fv }, { type: 'stat', stat: t.stat || 'str', v: sv }],
           hook: t.hook, text: String(t.text || '').replace('{noun}', r.noun.toLowerCase()),
         };
@@ -53,7 +54,7 @@
           base.from = [r.base];
           out.push(base); step2.push(id);
           if (t.master) {
-            const m = Object.assign({}, base, { id: id + '-master', name: name + ' Master', step: 3, from: [id], rank: 'A', honour: (G.rarityHonour[t.rarity] || 2) + 2,
+            const m = Object.assign({}, base, { id: id + '-master', name: name + ' Master', step: 3, from: [id], rank: 'A', honour: hv + 2,
               hook: t.hook, text: `${base.text} Mastered: what the road taught him is his to teach.` });
             delete m.tech; delete m.passive; delete m.buff; delete m.act;
             if (t.master.tech) m.tech = fx(r, Object.assign({ id: 'cl-' + id + '-master' }, t.master.tech));
@@ -108,7 +109,7 @@
     if (!(cls.from || []).includes(cur === undefined ? CL.current(p) : cur)) return false;
     if (CL.road(p).some(x => x[0] === cls.id)) return false;
     if (cls.title && (shown || !(A.TT && A.TT.holds(p, cls.title)))) return false;
-    if (cls.unique && shown) return false;
+    if (cls.rarity === 'mythical' && shown) return false;
     if (cls.req && !CL.reqMet(p, cls.req)) return false;
     return CL.fitValue(p, cls) >= (D.need[cls.step] || 0);
   };
@@ -161,7 +162,7 @@
     if (cls.honour) p.honor = Math.max(0, Math.min(100, (p.honor || 0) + cls.honour));
     (p.deeds = p.deeds || []).push({ y: A.S.year, t: `Became a ${cls.name}` });
     if (A.cacheResetAll && isPc(p)) try { A.cacheResetAll(); } catch (e) {}
-    if (!isPc(p) && (cls.step >= 3 || ['epic', 'legendary', 'unique'].includes(cls.rarity)) && A.news) A.news(`${A.fullName ? A.fullName(p, false) : 'Someone'} is a ${cls.name} now.`, 'crown');
+    if (!isPc(p) && (cls.step >= 3 || ['epic', 'legendary', 'mythical'].includes(cls.rarity)) && A.news) A.news(`${A.fullName ? A.fullName(p, false) : 'Someone'} is a ${cls.name} now.`, 'crown');
     return true;
   };
   CL.boost = function (p, t) { return LV.grant(p, CL.pointsAt(t), `the breakthrough at level ${t * WALL}`); };
@@ -180,7 +181,7 @@
 
   // anyone but the player: the class branch by his reasons (A.WHY.decide), on a stream of his own; or none yet
   CL.reasons = function (p) {
-    const RW = { common: 0, uncommon: 0.15, rare: 0.3, epic: 0.45, legendary: 0.6, unique: 0.8 };
+    const RW = { basic: 0, rare: 0.3, epic: 0.45, legendary: 0.6, mythical: 0.8 };
     const out = CL.options(p).map(({ c, f }) => {
       const rs = [{ kind: 'merit', weight: 0.6 + Math.max(0, f.v - f.need) / 20, label: `his skill fits a ${c.name}`, source: { t: 'class', id: c.id }, pub: true }];
       if (f.way) rs.push({ kind: 'duty', weight: 0.8, label: `a ${c.name} suits his life`, source: { t: 'way', id: c.id }, pub: true });
@@ -249,7 +250,7 @@
     const road = CL.road(p), mine = road.length && road[road.length - 1][0] === cls.id ? road[road.length - 1] : null;
     const how = mine ? (mine[2] ? `Taken at a wall of the level, in ${mine[1]}.` : 'What a life like this is called; no wall was crossed for it in the record.') : 'What a life like this is called.';
     const prev = road.slice(0, -1).map(x => (CL.BY.get(x[0]) || {}).name).filter(Boolean);
-    return `${cls.name}, a ${cls.rarity || 'common'} class. ${cls.text} ${how}${prev.length ? ` Before it: ${prev.join(', then ')}; their arts are kept.` : ''} ${CL.gifts(cls)}`.replace(/\s+/g, ' ').trim();
+    return `${cls.name}, a ${(A.RARITY && A.RARITY.word(cls.rarity)) || 'basic'} class. ${cls.text} ${how}${prev.length ? ` Before it: ${prev.join(', then ')}; their arts are kept.` : ''} ${CL.gifts(cls)}`.replace(/\s+/g, ' ').trim();
   };
 
   // ---------------------------------------------------------------- the parts in play

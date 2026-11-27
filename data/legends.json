@@ -169,7 +169,7 @@
     {
      "n": "The melted hoard",
      "kind": "hoard",
-     "quality": "legendary",
+     "rarity": "legendary",
      "does": "Nine towns' gold, fused into one floor. Gives nothing in a fight; everything in pride.",
      "gives": {}
     }
@@ -647,7 +647,7 @@
     {
      "n": "The silver bridle",
      "kind": "relic",
-     "quality": "legendary",
+     "rarity": "legendary",
      "does": "Whatever wears it serves her for a year and a day.",
      "gives": {
       "power": 0.1
@@ -818,7 +818,7 @@
     {
      "n": "The khan's white felt",
      "kind": "relic",
-     "quality": "legendary",
+     "rarity": "legendary",
      "does": "The felt he was buried on; while he sits on it, he is king.",
      "gives": {
       "power": 0.1
@@ -827,7 +827,8 @@
     {
      "n": "A sabre of the old steppe",
      "kind": "sabre",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "Bronze-hilted, never dull.",
      "gives": {
       "duel": 1
@@ -1141,7 +1142,8 @@
     {
      "n": "A club of a whole pine",
      "kind": "club",
-     "quality": "plain",
+     "rarity": "basic",
+     "make": "plain",
      "does": "A tree, roots and all.",
      "gives": {}
     }
@@ -1473,7 +1475,7 @@
     {
      "n": "The Ledger",
      "kind": "relic",
-     "quality": "unique",
+     "rarity": "mythical",
      "does": "A merchant's book in which every debt he is owed is written in the debtor's blood.",
      "gives": {
       "power": 0.2
@@ -1626,7 +1628,7 @@
     {
      "n": "The rune-iron frame",
      "kind": "body",
-     "quality": "unique",
+     "rarity": "legendary",
      "does": "Dwarf rune-iron, unbroken in eighteen centuries.",
      "gives": {
       "hide": 1
@@ -1635,7 +1637,8 @@
     {
      "n": "The oath-scroll",
      "kind": "relic",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "Its oath, read aloud each midwinter.",
      "gives": {}
     }
@@ -2135,7 +2138,7 @@
     {
      "n": "The Crown of the First Clutch",
      "kind": "relic (crown)",
-     "quality": "unique",
+     "rarity": "mythical",
      "does": "A ring of fused gold and dragon-bone set on his brow at his crowning.",
      "gives": {
       "power": 0.3,
@@ -2145,7 +2148,7 @@
     {
      "n": "The scar of Morrowglass",
      "kind": "wound",
-     "quality": "unique",
+     "rarity": "mythical",
      "does": "The one cut that ever reached him, across the throat-scales. Not healed in sixty years.",
      "gives": {
       "power": -0.1
@@ -2330,7 +2333,7 @@
     {
      "n": "The broken glass seal",
      "kind": "relic (binding)",
-     "quality": "unique",
+     "rarity": "mythical",
      "does": "The seal that binds her; while it holds, she does not leave the sand.",
      "gives": {}
     }
@@ -2551,7 +2554,7 @@
     {
      "n": "Morrowglass",
      "kind": "sword",
-     "quality": "unique",
+     "rarity": "mythical",
      "does": "A plain grey blade that cut the seal into the sand and the dragon-king's scales.",
      "gives": {
       "power": 1,
@@ -2561,7 +2564,8 @@
     {
      "n": "A shepherd's grey cloak",
      "kind": "cloak",
-     "quality": "plain",
+     "rarity": "basic",
+     "make": "plain",
      "does": "Sixty years on the ridge. It gives nothing but warmth.",
      "gives": {}
     }
@@ -2738,7 +2742,8 @@
     {
      "n": "A pilgrim's staff of black wood",
      "kind": "staff",
-     "quality": "fine",
+     "rarity": "basic",
+     "make": "fine",
      "does": "Hollow, and humming.",
      "gives": {
       "magic": 1

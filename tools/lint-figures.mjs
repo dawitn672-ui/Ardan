@@ -29,7 +29,7 @@ const bad = [], note = [];
 const fail = (who, m) => bad.push(`${who}: ${m}`);
 const words = s => String(s || '').trim().split(/\s+/).filter(Boolean).length;
 
-const V = J('data/figures/vocab.json');
+const V = J('data/figures/vocab.json'), RAR = J('data/rarity.json');
 const BD = J('data/bestiary.json'), SP = new Map(BD.species.map(s => [s.id, s]));
 const LD = J('data/legends.json').legends, LEG = new Map(LD.map(l => [l.id, l]));
 const MAS = new Map(J('data/power.json').masters.map(m => [m.id, m]));
@@ -129,7 +129,7 @@ for (const [cid, f] of FIX) {
     if (!(T.holders || []).includes(f.id)) fail(who, `title ${t}: its holders do not name ${f.id}`);
   }
   if (!Array.isArray(f.items) || !f.items.length) fail(who, 'at least one item');
-  for (const i of f.items || []) { if (!i.n || !i.kind || !i.does) fail(who, 'an item needs a name, a kind and what it does'); if (!V.qualities.includes(i.quality)) fail(who, `item quality ${i.quality}`); for (const k of Object.keys(i.gives || {})) if (k !== 'power' && !CAPS.includes(k)) fail(who, `item gives ${k}`); textOk(who, i.does); }
+  for (const i of f.items || []) { if (!i.n || !i.kind || !i.does) fail(who, 'an item needs a name, a kind and what it does'); if (!RAR.ladder.includes(i.rarity)) fail(who, `item rarity ${i.rarity}: not a word of the one ladder (data/rarity.json)`); if (i.make != null && !RAR.makes.includes(i.make)) fail(who, `item make ${i.make}`); if ('quality' in i) fail(who, 'an item says rarity and make, not quality (D-200)'); for (const k of Object.keys(i.gives || {})) if (k !== 'power' && !CAPS.includes(k)) fail(who, `item gives ${k}`); textOk(who, i.does); }
   temperOk(f.temper, who); traitsOk(f.traits, who);
   if (!(f.goals || []).length) fail(who, 'at least one goal'); for (const g of f.goals || []) { goalOk(g, who); textOk(who, g.why); }
   if (!(f.grudges || []).length) fail(who, 'at least one grudge'); for (const g of f.grudges || []) { atOk(g, who); textOk(who, g.why); }

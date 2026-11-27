@@ -246,9 +246,11 @@ export const CAP_HUMAN = { edge: 12, fightShare: 0.15, aura: 3, blunderSurge: 2,
 // worth, a family's checks, his income or the experience he gains by a share. Boosts stack in a pool of their own, apart
 // from the skills' caps (a fight's +15% of worth, a check's +12): sources weighed 1, 1/2, 1/4, 1/8, the whole at most the
 // cap of the rarest title among them. These are the ceilings: data/titles/vocab.json may tune a cap lower, never higher
-// (the title's source carries it as boostCap), and only a title gives a boost (any other source's cap is 0).
-export const CAP_BOOST = { uncommon: 0.02, rare: 0.05, legendary: 0.15, unique: 0.25 };
-export const boostTier = s => (s && s.kind === 'title' ? (s.unique ? 'unique' : s.rarity) : null);
+// (the title's source carries it as boostCap), and only a title gives a boost (any other source's cap is 0). The tiers are
+// the one rarity ladder (data/rarity.json, D-200); one holder at a time is a flag apart from rarity and lifts no cap
+// (the old 'unique' figure is the legendary one: every legendary title a person earns was one holder's).
+export const CAP_BOOST = { basic: 0.02, rare: 0.05, epic: 0.1, legendary: 0.25, mythical: 0.4 };
+export const boostTier = s => (s && s.kind === 'title' ? s.rarity : null);
 export function boostCapOf(s) {
   const t = boostTier(s), c = (t && CAP_BOOST[t]) || 0;
   return s && s.boostCap != null ? Math.min(c, Math.max(0, +s.boostCap || 0)) : c;

@@ -54,7 +54,7 @@
     {
      "n": "The King's hoard-key",
      "kind": "relic",
-     "quality": "legendary",
+     "rarity": "legendary",
      "does": "A claw of the King's own, shed in the first age. It opens the hall under the Wyrmcrown.",
      "gives": {
       "power": 0.1
@@ -160,7 +160,7 @@
     {
      "n": "The oldest ice",
      "kind": "relic",
-     "quality": "legendary",
+     "rarity": "legendary",
      "does": "A shard of the glacier the King sleeps under; it never melts.",
      "gives": {
       "ward": 1
@@ -264,7 +264,7 @@
     {
      "n": "A crown of hail",
      "kind": "crown",
-     "quality": "legendary",
+     "rarity": "legendary",
      "does": "Stones of hail that circle its head and never fall.",
      "gives": {
       "spd": 1

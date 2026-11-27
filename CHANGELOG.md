@@ -5,6 +5,11 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **One rarity for everything.** Skills, titles, classes and the arms of the great now share one ladder: basic, rare,
+  epic, legendary, mythical. What was common or uncommon is basic; nothing is called "unique" any more, and a title held
+  by one person at a time says so beside its rarity ("legendary, one of a kind"). A thing's make (plain, fine, masterwork)
+  is the smith's care, told apart from how rare it is: "a masterwork sabre", "a legendary relic". The shop's ordinary make
+  reads "Plain".
 - **Armies of their true size.** Every realm now keeps a standing host by its people, its wealth and its kind: from
   about ten thousand soldiers in a small kingdom to more than a quarter of a million in the greatest empire, while a poor
   abbey or a pirate port keeps what it can pay. Knights are few and strong: from about fifty to three thousand in a

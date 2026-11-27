@@ -53,7 +53,8 @@
     {
      "n": "A hoard of bells",
      "kind": "hoard",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "The bells of every church in the valleys below the Burnt Vale.",
      "gives": {}
     }
@@ -149,7 +150,7 @@
     {
      "n": "A knight's shield",
      "kind": "trophy",
-     "quality": "common",
+     "rarity": "basic",
      "does": "Kept in the nest. The knight was not.",
      "gives": {}
     }
@@ -245,7 +246,8 @@
     {
      "n": "The toll-stones",
      "kind": "stones",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "A cairn of stones, one for every traveller it has let pass.",
      "gives": {}
     }
@@ -340,7 +342,7 @@
     {
      "n": "An ice-locked hoard",
      "kind": "hoard",
-     "quality": "legendary",
+     "rarity": "legendary",
      "does": "Gold under a glacier, seen through the ice.",
      "gives": {
       "hide": 1
@@ -437,7 +439,8 @@
     {
      "n": "A frozen library",
      "kind": "hoard",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "Books from a monastery it froze, readable through the ice.",
      "gives": {
       "cunning": 1
@@ -535,7 +538,7 @@
     {
      "n": "A tower's bell",
      "kind": "trophy",
-     "quality": "common",
+     "rarity": "basic",
      "does": "From the tower it pulled down on its ridge.",
      "gives": {}
     }
@@ -630,7 +633,7 @@
     {
      "n": "A weathervane",
      "kind": "trophy",
-     "quality": "common",
+     "rarity": "basic",
      "does": "Gilded, from a cathedral roof. It still turns with the wind.",
      "gives": {}
     }
@@ -725,7 +728,8 @@
     {
      "n": "A hoard of wrecks",
      "kind": "hoard",
-     "quality": "masterwork",
+     "rarity": "basic",
+     "make": "masterwork",
      "does": "The wrecks of a hundred ships, piled on a shoal.",
      "gives": {}
     }
@@ -821,7 +825,7 @@
     {
      "n": "Her mate's bones",
      "kind": "relic",
-     "quality": "legendary",
+     "rarity": "legendary",
      "does": "She lies curled about them.",
      "gives": {
       "ward": 1

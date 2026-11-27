@@ -65,9 +65,9 @@ ${C} .sc-ttl h2{margin:0;flex:1 1 auto;min-width:0;font-family:var(--f-name,Cinz
 ${C} .sc-tier{flex:none;display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:var(--r-pill,999px);border:1.5px solid var(--r-rare);color:var(--r-rare);font-family:var(--f-ui);font-size:var(--t-cap,12px);font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
 :root[data-theme=dark] #modal .sc-card .sc-tier{box-shadow:0 0 14px color-mix(in srgb,var(--r-rare) 30%,transparent)}
 ${C} .sc-tier.sc-tier-legendary{border-color:var(--r-legendary);color:var(--r-legendary)}
-${C} .sc-tier.sc-tier-mythic{border-color:var(--r-mythic);color:var(--r-mythic)}
+${C} .sc-tier.sc-tier-mythical{border-color:var(--r-mythical);color:var(--r-mythical)}
 :root[data-theme=dark] #modal .sc-card .sc-tier.sc-tier-legendary{box-shadow:0 0 14px color-mix(in srgb,var(--r-legendary) 30%,transparent)}
-:root[data-theme=dark] #modal .sc-card .sc-tier.sc-tier-mythic{box-shadow:0 0 14px color-mix(in srgb,var(--r-mythic) 30%,transparent)}
+:root[data-theme=dark] #modal .sc-card .sc-tier.sc-tier-mythical{box-shadow:0 0 14px color-mix(in srgb,var(--r-mythical) 30%,transparent)}
 
 /* the text: Literata, 68ch; the asides quieter */
 ${C} .sc-body{padding:8px 18px 2px}

@@ -115,7 +115,7 @@
   SC.chosen = new WeakMap(); // q -> { vi, label, odds, band } of the choice made (part 2 writes it)
   const el = (doc, tag, cls, html) => { const x = doc.createElement(tag); if (cls) x.className = cls; if (html != null) x.innerHTML = html; return x; };
 
-  SC.BEAST_TIER = { great: ['rare', '◆◆', 'great beast'], titan: ['legendary', '★', 'legendary beast'], legend: ['mythic', '✦', 'a legend'] };
+  SC.BEAST_TIER = { great: ['rare', '◆◆', 'great beast'], titan: ['legendary', '★', 'legendary beast'], legend: ['mythical', '✦', 'a legend'] };
   SC.beastTier = function (q) {
     const id = q && q.ctx && typeof q.ctx.beast === 'string' ? q.ctx.beast : null;
     if (!id) return null;
@@ -161,7 +161,7 @@
       const t = el(doc, 'span', 'sc-tier', '<span class="sc-gem" aria-hidden="true">◆◆</span> once in a life');
       ttl.appendChild(t);
     }
-    // a scene about a beast of rank wears its rarity (brief §1.5): a great beast rare, a titan legendary, a legend mythic
+    // a scene about a beast of rank wears its rarity (brief §1.5): a great beast rare, a titan legendary, a legend mythical
     const bt = SC.beastTier(q);
     if (bt) ttl.appendChild(el(doc, 'span', 'sc-tier sc-tier-' + bt[0], `<span class="sc-gem" aria-hidden="true">${bt[1]}</span> ${esc(bt[2])}`));
     head.appendChild(ttl);

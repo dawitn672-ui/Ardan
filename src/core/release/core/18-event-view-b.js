@@ -954,7 +954,7 @@ GD.QUAL = {
     d: "Bad iron, uneven temper. It will do, until it does not.",
   },
   common: {
-    n: "Common",
+    n: "Plain",   // a craft grade, apart from the one rarity ladder (D-200): its key stays common
     dmg: 1,
     prot: 1,
     price: 1,

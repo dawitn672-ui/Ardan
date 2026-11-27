@@ -2,7 +2,7 @@
 // estate (the cut), the purse (the cloth and its dye), the realm and the house (their colours and device) and the
 // person's own gear. GEAR ON THE FIGURE IS KEYED BY ITEM: every item id the game knows has a row in GEAR_ART that says
 // which drawn piece it is and its two measures, make (0 crude, 1 plain, 2 fine, 3 masterwork: the smith's care) and
-// rarity (0 common, 1 rare, 2 epic, 3 legendary: what the thing is). An item that carries its own make or rarity
+// rarity (0 basic, 1 rare, 2 epic, 3 legendary: what the thing is; D-200). An item that carries its own make or rarity
 // (the coming items of E2, docs/design/economy-and-items.md) is drawn with them; a new item is one registerGear() call.
 import { stream, clamp, hsl, fromHsl } from './g.js';
 import { DYES } from './palette.js';

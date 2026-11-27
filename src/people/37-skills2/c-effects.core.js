@@ -15,8 +15,8 @@
 //            so every sum is what it was (sk2Caps compares them with GD.PERKS over bot lives)
 // - A.CAPS(p) the capability profile (§3.6): every bonus a person's held skills give, capped
 // - boost    titles' share boosts (order 95, D-192), a pool of their own apart from the caps above: SK2.boostOf(p, of, k),
-//            at most the cap of the rarest title among the sources (E.CAP_BOOST: uncommon 0.02, rare 0.05, legendary 0.15,
-//            unique 0.25). fight: A.fighterFrom's f.ttb (a share of the fighter's own worth, added in A.CR); check:
+//            at most the cap of the rarest title among the sources (E.CAP_BOOST, by the one ladder: basic 0.02, rare 0.05,
+//            epic 0.1, legendary 0.25, mythical 0.4; D-200). fight: A.fighterFrom's f.ttb (a share of the fighter's own worth, added in A.CR); check:
 //            A.skillEff (a share of the read); growth: A.gainXp (a share more effort); income: a post's yearly pay
 //
 // Until the data review writes effects into the rungs, only perks are in the data: every other bonus is 0 and every

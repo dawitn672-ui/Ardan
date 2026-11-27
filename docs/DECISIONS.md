@@ -3377,3 +3377,30 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
   a lab takes a decider's best reason where the test is not about the draw, and an election's rule is held as the broken
   promise's weight; the summons' bar is half or more in full (129 of 258, with the larger hosts across the borders); the
   court's tests measure against `A.MIL.normal`.
+
+### D-200 · One rarity ladder: basic, rare, epic, legendary, mythical, for skills, titles, classes and items; make apart from rarity (2026-11-27; orders 97 and 98, the owner's answer 1; audit C-04; H-171)
+- **The conflict.** Four ladders, none order 97's: skills common, uncommon, rare, *unique*, legendary (unique below
+  legendary); titles uncommon, rare, legendary with a `unique` flag worth more than legendary; classes common, uncommon,
+  rare, epic, legendary, *unique* (above legendary); items plain, fine, masterwork, legendary, unique. The look's tiers
+  (achievements, beasts, gear) a sixth: common, uncommon, rare, epic, legendary, mythic.
+- **The ladder.** `data/rarity.json` holds the five words; every system reads them from there (the validators, the
+  classes test, `A.RARITY` for every screen) and keeps only its own figures by them. **Common and uncommon read as basic**
+  (answer 1; `A.RARITY.of` maps them for any older text, e.g. a mod). **"Unique" is no rarity anywhere:** where it was a
+  skill rarity it would sit at epic (no skill held it); the Sword Saint's class (unique, above legendary) is mythical
+  (order 97: his set is mythical); items "unique" are legendary, or mythical for the Primordials', the Dragon King's and the
+  Sword Saint's. One holder at a time is a separate flag: a title's `unique`, a skill's census `one`, and, for classes,
+  the rarity itself (legendary and mythical: D-201).
+- **Figures kept whole.** A title's caps were "its rarity's, or the unique figure when one holder"; every legendary title a
+  person may earn was one holder's, so the old unique figure is the legendary one now (boost cap 0.25, +6 on a stat, budget
+  x1.5) and no title's numbers move. Epic sits between (0.1, +4, x1.25), mythical above (0.4, +8, x2). `E.CAP_BOOST`
+  names the five words (one holder lifts no cap). The skills' budget bonus: basic 0, rare 0, epic 0.25, legendary 0.5,
+  mythical 1. The classes' generator figures by the ladder; the three hidden step-2 lines that were uncommon (storm, iron,
+  wolf) keep their gifts by figures of their own on the template (`fight` 2, `honour` 3).
+- **Make apart from rarity** (the brief's question, decided here). A made thing's make (crude, plain, fine, masterwork) is
+  the smith's care; its rarity is what the thing is. An item of a sheet says `rarity` and may say `make` (`quality` is
+  gone; `tools/lint-figures.mjs` fails it); a screen prints the make and the rarity above basic ("masterwork sabre",
+  "legendary relic"). The figure library already drew the two apart (q make, r rarity). The release's gear keeps its make
+  (`GD.QUAL`; its "Common" reads "Plain", the key unchanged); the look tints a masterwork piece rare, others basic.
+- **Not chosen.** Keeping `rarities` lists in each vocabulary and checking them equal (two sources that can drift);
+  dropping the craft grade into the ladder (a masterwork sabre is not an epic thing). Saves: no save holds a rarity word
+  (titles, classes, skills are kept by id; checked on the sample saves), so the ladder itself needs no migration.

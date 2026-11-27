@@ -15,6 +15,6 @@
  },
  "goalKinds": ["duty", "debt", "loyalty", "kin", "faith", "ambition", "want", "claim", "coin", "station"],
  "grudgeAt": ["figure", "legend", "realm", "race", "kind", "being", "people"],
- "qualities": ["common", "fine", "masterwork", "legendary"],
+ "itemsNote": "An item: n, kind, rarity (a word of the one ladder, data/rarity.json, D-200), make (optional: a craft grade of data/rarity.json makes), does, gives.",
  "levelSpread": 10
 }

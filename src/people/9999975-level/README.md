@@ -67,7 +67,7 @@ two cards (`level.events.js`), tests.
   person's life (`LV.band`: commoner, noble by upbringing, service by rank and years, posts by kind, kills), bent softly
   toward the band's top, with a hook for data (`LV.fromData`); every wall is a **breakthrough** (points, a skill's rank
   jump where its conditions allow, `CL.jump`, then the class branch); the tree grows by a **generator** (155 classes,
-  rarities common to unique, a line keeps its rarity); above 400 a level is only 0.05% dearer, so an archdemon gains a
+  rarities on the one ladder, basic to mythical, D-200; a line keeps its rarity); above 400 a level is only 0.05% dearer, so an archdemon gains a
   level or two from a hundred equal defeats; the legends refine yearly (`LV.legendRefine`); one defeat gives at most
   sixteen peers; the player's training lands as single +1s (`A.train`, `p.trn`).
 - **The legends grow too** (order 92): a great being's level is its data's plus what it has gained by the same rule

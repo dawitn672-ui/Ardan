@@ -237,7 +237,7 @@
     if (isPc(p)) {
       if (A.cacheResetAll) try { A.cacheResetAll(); } catch (e) {}
       A.S.queue.push({ type: 'event', ev: 'tt_earned', ctx: { tid: t.id, ttl: n, why: rec.w }, forced: true });
-    } else if (t.unique || t.rarity === 'legendary') {
+    } else if (t.unique || t.rarity === 'legendary' || t.rarity === 'mythical') {
       if (A.news) A.news(`${A.fullName ? A.fullName(p, false) : 'Someone'}${r ? ' of ' + (r.short || r.name) : ''} is called ${n} now.`, 'crown');
     }
     return rec;
@@ -372,12 +372,12 @@
 
   // ---------------------------------------------------------------- the adapter's sources (A.CAPS) and what others read
   // a title as a skill source: rank = its weight, held at level 1, its effects as written (37-skills2/c-effects); its
-  // rarity and uniqueness set the cap of its share boosts (order 95, D-192: E.CAP_BOOST, lowered by vocab.json's boost.cap)
+  // rarity sets the cap of its share boosts (order 95, D-192: E.CAP_BOOST, lowered by vocab.json's boost.cap); one holder at
+  // a time is a flag apart from rarity and lifts no cap (the one ladder, D-200)
   const XS = TT.XS = new Map();
   const BC = (V.boost && V.boost.cap) || {};
   for (const t of TT.PERSON) if (Array.isArray(t.effects) && t.effects.length) {
-    const tier = t.unique ? 'unique' : t.rarity;
-    XS.set(t.id, { id: 'title:' + t.id, rank: t.weight, rarity: t.rarity, unique: !!t.unique, kind: 'title', boostCap: BC[tier] != null ? BC[tier] : 0, levels: [{ at: 1, effects: t.effects }] });
+    XS.set(t.id, { id: 'title:' + t.id, rank: t.weight, rarity: t.rarity, unique: !!t.unique, kind: 'title', boostCap: BC[t.rarity] != null ? BC[t.rarity] : 0, levels: [{ at: 1, effects: t.effects }] });
   }
   TT.xHeld = function (p) {
     if (!p || !p.tt || !p.tt.h) return null;

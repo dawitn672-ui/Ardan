@@ -3702,3 +3702,24 @@ journeys, memory weave, family, every-number and standing features' quick tests,
 stages, reasons, docs-index lints, `version.mjs check`, `--check-tiers`.
 
 **Undo.** Revert the step's commits on `ci-fix-21`.
+
+### H-171 · 2026-11-27 · One rarity ladder for skills, titles, classes and items (order 98, D-200)
+
+Audit C-04. `data/rarity.json` (new) holds basic, rare, epic, legendary, mythical, the older words' map (common and
+uncommon are basic), the makes and the great beings' set floors; `src/people/9999974-rarity` (new) reads it as
+`A.RARITY`. Skills: `tools/skills2/seed-data.mjs` writes the rungs basic (D, C, B) and rare (A, S) and the ladders were
+rewritten by it; the arts and merges basic where they were common or uncommon; `vocab.json` drops its `rarities` (the
+validator reads the ladder) and gives `rarityBonus` by the ladder; check 9 holds legendary and mythical to a census.
+Titles: `vocab.json` drops `rarities` and the unique figures (`budget.rarity`, `statMax`, `boost.cap` by the ladder);
+Blooded and Unbought basic; `E.CAP_BOOST` by the ladder (the engine rebundled); a title's card reads "legendary, one of a
+kind". Classes: the ladder in `data/classes.json` and its generator (the Sword Saint's class mythical, its `unique`
+field gone). Items: `quality` split into `rarity` and `make` in `data/legends.json`, `data/power.json` and
+`data/figures/*.json` (field lines only); the profiles print them through `A.RARITY.itemWords`. The look's tiers
+(`91-visual-style`, `92-scene-card`): tokens `--r-basic` .. `--r-mythical`, the achievements' words from the ladder, a
+masterwork chip rare; the release's "Common" make reads "Plain" (`GD.QUAL`).
+
+Checks: `rarityOneLadder` (new), the lints (skills, titles, figures), `node --test tests/v2`, and the step's tests
+(see H-173 for the run on the branch's last commit).
+
+**Undo.** Revert the commit; rebuild the engine bundle (`node tools/build-v2.mjs`) and the skills' rungs
+(`node tools/skills2/seed-data.mjs`).

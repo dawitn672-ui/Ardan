@@ -25,7 +25,9 @@
     const lab = k.label || `${k.rank} · Lv ${k.lvl}`;
     return `<li>${note(`${k.n}: ${k.kind ? k.kind + ', ' : ''}${lab}.${k.does ? ' ' + k.does : ''}${k.from ? ' (' + k.from + ')' : ''}`, k.n)} <span class="muted">${e(lab)}</span></li>`;
   };
-  const itemBit = i => `<li>${note(`${i.n}${i.quality ? ' (' + i.quality + (i.kind ? ' ' + i.kind : '') + ')' : ''}.${i.does ? ' ' + i.does : ''}${capWords(i.gives) ? ' It gives ' + capWords(i.gives) + '.' : ''}`, i.n)}</li>`;
+  // an item's make and its rarity above basic (the one ladder, D-200): 'a masterwork, legendary maul'
+  const itemWords = i => [A.RARITY ? A.RARITY.itemWords(i) : '', i.kind].filter(Boolean).join(' ');
+  const itemBit = i => `<li>${note(`${i.n}${itemWords(i) ? ' (' + itemWords(i) + ')' : ''}.${i.does ? ' ' + i.does : ''}${capWords(i.gives) ? ' It gives ' + capWords(i.gives) + '.' : ''}`, i.n)}</li>`;
   FIG.profileHtml = function (pc, p, k) {
     k = k || FIG.knows(pc, p);
     let h = '<div class="fig-body">';

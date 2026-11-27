@@ -9,16 +9,19 @@
 // - Realm chips: a realm named in a row gets its swatch dot and its name in its ink (UI.realmInkOf).
 // Drawing only: it reads the game, rewrites markup already drawn, never draws a random number, never writes A.S.
 (function () {
+  const TIER_VARS = (A.DATA && A.DATA.rarity && A.DATA.rarity.ladder) || ['basic', 'rare', 'epic', 'legendary', 'mythical'];
   const LOOK = UI.LOOK, esc = s => UI.esc(String(s == null ? '' : s));
   const R = LOOK.R || ':root[data-theme]', X = LOOK.X || (s => s);
 
-  // ---- rarity (§1.5): a tier for a thing, its gem, and the markup of a rarity chip
-  LOOK.TIER_OF_QUAL = { crude: 'common', common: 'common', fine: 'uncommon', master: 'epic' };
-  // a piece of gear: its quality's tier, raised for the rare (a people's own make), the famed and the masters' own
+  // ---- rarity (§1.5): a tier for a thing, its gem, and the markup of a rarity chip. The tiers are the one rarity ladder
+  // (data/rarity.json, D-200). A piece's make (crude, common, fine, masterwork: the release's GD.QUAL) is a craft grade apart
+  // from rarity; the release keeps no rarity for gear, so a masterwork piece (a handful a year) reads rare, every other basic
+  LOOK.TIER_OF_QUAL = { crude: 'basic', common: 'basic', fine: 'basic', master: 'rare' };
+  // a piece of gear: its make's tier, raised for the rare (a people's own make), the famed and the masters' own
   LOOK.gearTier = function (key, q) {
     const g = GD.GEAR && GD.GEAR[key];
-    let t = LOOK.TIER_OF_QUAL[q] || 'common';
-    const order = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'], up = k => { if (order.indexOf(k) > order.indexOf(t)) t = k; };
+    let t = LOOK.TIER_OF_QUAL[q] || 'basic';
+    const order = TIER_VARS, up = k => { if (order.indexOf(k) > order.indexOf(t)) t = k; };
     if (g && g.rare) up('rare');
     if (g && g.masterOnly) up('epic');
     if (g && g.fame) up('legendary');
@@ -26,14 +29,15 @@
   };
   // the achievements, by how rare a life that earns them is
   LOOK.ACH_TIER = {
-    first_blood: 'common', survivor: 'common', married: 'common', breakthrough: 'common', epithet: 'common', freed: 'common', escaped: 'common',
-    sergeant: 'uncommon', ten_battles: 'uncommon', big_family: 'uncommon', rich: 'uncommon', outlaw: 'uncommon', polyglot: 'uncommon', knighted: 'uncommon',
+    first_blood: 'basic', survivor: 'basic', married: 'basic', breakthrough: 'basic', epithet: 'basic', freed: 'basic', escaped: 'basic',
+    sergeant: 'basic', ten_battles: 'basic', big_family: 'basic', rich: 'basic', outlaw: 'basic', polyglot: 'basic', knighted: 'basic',
     captain: 'rare', master_craft: 'rare', banker: 'rare', lord: 'rare', school_master: 'rare', beast: 'rare', founder: 'rare', patriarch: 'rare',
     general: 'epic', centurion: 'epic', giant_killer: 'epic', usurper: 'epic', dynasty3: 'epic', hundred_kills: 'epic', pirate_king: 'epic', ancient: 'epic',
     senior_general: 'legendary', ruler: 'legendary', conqueror: 'legendary', king_slayer: 'legendary', peasant_king: 'legendary', dragon: 'legendary',
-    legend: 'mythic',
+    legend: 'mythical',
   };
-  const TIER_NAME = { common: 'Common', uncommon: 'Uncommon', rare: 'Rare', epic: 'Epic', legendary: 'Legendary', mythic: 'Mythic' };
+  // the word a player reads for a tier: the ladder's own (A.RARITY)
+  const tierName = t => { const w = A.RARITY ? A.RARITY.word(t) : String(t || ''); return w ? w[0].toUpperCase() + w.slice(1) : ''; };
   LOOK.gem = t => `<span class="rar-gem" aria-hidden="true">${esc((LOOK.TIERS || {})[t] || '◇')}</span>`;
   // the release's quality chip, as a rarity chip: tier border, gem, tier text (the quality's own name stays the word)
   if (typeof UI.qualChip === 'function') {
@@ -41,7 +45,7 @@
     UI.qualChip = function (q) {
       const h = qc.apply(this, arguments);
       if (!h || typeof q !== 'string') return h;
-      const t = LOOK.TIER_OF_QUAL[q] || 'common';
+      const t = LOOK.TIER_OF_QUAL[q] || 'basic';
       return h.replace(/^<span class="chip qual q-([a-z]+)"/, `<span class="chip qual q-$1 rar rar-${t}" data-tier="${t}"`).replace(/">([^<]*)<\/span>$/, `">${LOOK.gem(t)}$1</span>`);
     };
   }
@@ -144,12 +148,12 @@
     grid.querySelectorAll('.card.ach').forEach(c => {
       const b0 = c.querySelector('b'), key = b0 ? byName.get(b0.textContent.trim()) : null;
       if (!key) return;
-      const t = LOOK.ACH_TIER[key] || 'common';
+      const t = LOOK.ACH_TIER[key] || 'basic';
       c.classList.add('rar', 'rar-' + t);
       c.dataset.tier = t;
       const b = c.querySelector('b');
       if (b) b.insertAdjacentHTML('afterbegin', LOOK.gem(t));
-      c.insertAdjacentHTML('beforeend', `<span class="rar-w">${esc(TIER_NAME[t])}</span>`);
+      c.insertAdjacentHTML('beforeend', `<span class="rar-w">${esc(tierName(t))}</span>`);
     });
     }
   };
@@ -289,8 +293,8 @@
     }
   };
 
-  // ---- the Codex's bestiary: a beast's card wears its tier (animal common, great rare, titan legendary, legend mythic)
-  LOOK.BEAST_TIER = { animal: 'common', great: 'rare', titan: 'legendary', legend: 'mythic' };
+  // ---- the Codex's bestiary: a beast's card wears its tier (animal basic, great rare, titan legendary, legend mythical)
+  LOOK.BEAST_TIER = { animal: 'basic', great: 'rare', titan: 'legendary', legend: 'mythical' };
   LOOK.beastTiers = function (tb) {
     if (UI.tab !== 'codex' || typeof LORE === 'undefined' || !Array.isArray(LORE.creatures)) return;
     let byName = null;
@@ -373,7 +377,6 @@
     window.addEventListener('keydown', later, true);
   }
 
-  const TIER_VARS = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
   LOOK.css = LOOK.css || {};
   LOOK.css.rows = `
 /* ---- rarity (§1.5): a 2 px edge in the tier's colour, the gem, a glow by night */
@@ -381,8 +384,8 @@ ${TIER_VARS.map(t => `${X(`.rar-${t}`)}{--tier:var(--r-${t})}`).join('\n')}
 ${X('.chip.rar')}{border:1.5px solid var(--tier);color:var(--tier);background:transparent;gap:3px;display:inline-flex;align-items:center}
 ${X('.rar-gem')}{color:var(--tier);font-size:1em;line-height:1;margin-right:3px}
 ${X('.card.gear-c.rar-card')}{border:2px solid var(--tier)}
-${X('.card.gear-c[data-tier=uncommon]')}{--tier:var(--r-uncommon)} ${X('.card.gear-c[data-tier=rare]')}{--tier:var(--r-rare)} ${X('.card.gear-c[data-tier=epic]')}{--tier:var(--r-epic)} ${X('.card.gear-c[data-tier=legendary]')}{--tier:var(--r-legendary)}
-${X('.card.gear-c[data-tier=common]')}{border-width:1px}
+${X('.card.gear-c[data-tier=rare]')}{--tier:var(--r-rare)} ${X('.card.gear-c[data-tier=epic]')}{--tier:var(--r-epic)} ${X('.card.gear-c[data-tier=legendary]')}{--tier:var(--r-legendary)}
+${X('.card.gear-c[data-tier=basic]')}{border-width:1px}
 ${X('.achgrid .card.ach.rar')}{border:2px solid var(--tier);position:relative}
 ${X('.achgrid .card.ach.rar.lock')}{border:1px dashed var(--line-strong)}
 ${X('.achgrid .card.ach.rar.lock .rar-gem')}{color:var(--ink-3)}
@@ -425,8 +428,8 @@ ${X('.lk-band-k dd')}{margin:0;font-family:var(--f-ui);font-size:var(--t-num-lg,
 
 /* ---- a beast's card in the Codex */
 ${X('.card.rar-beast')}{border-left:3px solid var(--tier)}
-${X('.card.rar-beast.rar-legendary, .card.rar-beast.rar-mythic')}{border:2px solid var(--tier)}
-:root[data-theme=dark] .card.rar-beast.rar-legendary, :root[data-theme=dark] .card.rar-beast.rar-mythic{box-shadow:0 0 14px color-mix(in srgb,var(--tier) 30%,transparent)}
+${X('.card.rar-beast.rar-legendary, .card.rar-beast.rar-mythical')}{border:2px solid var(--tier)}
+:root[data-theme=dark] .card.rar-beast.rar-legendary, :root[data-theme=dark] .card.rar-beast.rar-mythical{box-shadow:0 0 14px color-mix(in srgb,var(--tier) 30%,transparent)}
 
 /* ---- the rail's delta flash */
 ${X('#profile .barrow.lk-flashing')}{position:relative}

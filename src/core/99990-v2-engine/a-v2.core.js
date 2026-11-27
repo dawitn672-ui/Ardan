@@ -1548,8 +1548,8 @@ var __ARDAN_V2_MAKE = (() => {
     raise: 10,
     status: 2
   };
-  var CAP_BOOST = { uncommon: 0.02, rare: 0.05, legendary: 0.15, unique: 0.25 };
-  var boostTier = (s) => s && s.kind === "title" ? s.unique ? "unique" : s.rarity : null;
+  var CAP_BOOST = { basic: 0.02, rare: 0.05, epic: 0.1, legendary: 0.25, mythical: 0.4 };
+  var boostTier = (s) => s && s.kind === "title" ? s.rarity : null;
   function boostCapOf(s) {
     const t = boostTier(s), c = t && CAP_BOOST[t] || 0;
     return s && s.boostCap != null ? Math.min(c, Math.max(0, +s.boostCap || 0)) : c;
@@ -8163,7 +8163,7 @@ var __ARDAN_V2_MAKE = (() => {
     S.stroke(d, m.k, 0.6);
   };
   var MAKES = ["Crude", "Plain", "Fine", "Masterwork"];
-  var RARITIES = ["Common", "Rare", "Epic", "Legendary"];
+  var RARITIES = ["Basic", "Rare", "Epic", "Legendary"];
   var PLATE = [["iron", "steel", "steel", "bright"], ["blued", "blued", "blued", "blued"], ["black", "black", "black", "black"], ["sunsteel", "sunsteel", "sunsteel", "sunsteel"]];
   var FIT = [["iron", "iron", "bronze", "gold"], ["iron", "bronze", "silver", "gold"], ["bronze", "bronze", "gold", "gold"], ["gold", "gold", "gold", "gold"]];
   var dull = (m) => ({ b: mixc(m.b, "#6d655d", 0.45), s: mixc(m.s, "#48423d", 0.4), d: m.d, l: mixc(m.l, m.b, 0.65), hi: mixc(m.hi, m.b, 0.75), k: m.k });
