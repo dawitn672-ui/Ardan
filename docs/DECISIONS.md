@@ -3401,6 +3401,10 @@ the Dragon King's and archdemons' titles give raw firepower, the Saint's class t
   gone; `tools/lint-figures.mjs` fails it); a screen prints the make and the rarity above basic ("masterwork sabre",
   "legendary relic"). The figure library already drew the two apart (q make, r rarity). The release's gear keeps its make
   (`GD.QUAL`; its "Common" reads "Plain", the key unchanged); the look tints a masterwork piece rare, others basic.
+- **The budget proposal** of `.claude/skills/rpg-progression-design` (§3.1: x1, 1.25, 1.5, 2, 3 by step, one table in
+  `data/rarity.json`) is not adopted here: this step moves no number (the skills' bonus reads x1, 1, 1.25, 1.5, 2; the titles'
+  budget the same), so no title's, skill's or class's strength changes with the words. The proposal is for waves 3 and 4
+  to measure (`ttGameChanger`, `balance.mjs`) and then write in `data/rarity.json`.
 - **Not chosen.** Keeping `rarities` lists in each vocabulary and checking them equal (two sources that can drift);
   dropping the craft grade into the ladder (a masterwork sabre is not an epic thing). Saves: no save holds a rarity word
   (titles, classes, skills are kept by id; checked on the sample saves), so the ladder itself needs no migration.

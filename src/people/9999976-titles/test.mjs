@@ -213,9 +213,10 @@ export default {
         const f = A.fighterFrom(p, {});
         out.caps = { fight: Math.round(f.ttb / SK2.worthOfFighter(f) * 1000) / 1000, check: SK2.boostOf(p, 'check', 'intrigue'), income: SK2.boostOf(p, 'income'), growth: SK2.boostOf(p, 'growth', 'sword'), skillFight: f.sk2 ? Math.round(f.sk2.total / SK2.worthOfFighter(f) * 1000) / 1000 : 0 };
         out.caps.checkPts = A.skillEff(p, 'intrigue') - e0; out.caps.read = r0;
-        // the cap of the rarest title held (the planted one is legendary; a person may hold a mythical one, the Sword Saint)
-        const top = Math.max(E.CAP_BOOST.legendary, ...TT.PERSON.map(t => E.CAP_BOOST[t.rarity] || 0));
-        for (const k of ['fight', 'check', 'income', 'growth']) if (Math.abs(out.caps[k] - top) > 1e-6) bad(`every title and a planted boost: ${k} ${out.caps[k]}, not the cap of ${top}`);
+        // the cap of the rarest title held among those boosting that kind (the planted one is legendary; a mythical title,
+        // the Sword Saint's, sets a kind's cap only if it boosts that kind)
+        const top = k => Math.max(E.CAP_BOOST.legendary, ...TT.PERSON.filter(t => (t.effects || []).some(e => e.type === 'boost' && e.of === k)).map(t => E.CAP_BOOST[t.rarity] || 0));
+        for (const k of ['fight', 'check', 'income', 'growth']) if (Math.abs(out.caps[k] - top(k)) > 1e-6) bad(`every title and a planted boost: ${k} ${out.caps[k]}, not the cap of ${top(k)}`);
         if (out.caps.skillFight > 0.15 + 1e-9) bad('the skills\' fight share past 15%: ' + out.caps.skillFight);
         give(p, ['tt-test-low']);
         const g = A.fighterFrom(p, {});
