@@ -1,5 +1,5 @@
 {
- "about": "The great beings of the world (powers wave 1, docs/design/powers.md): the legends, each one of a kind (one holder), each with a title, the strongest beings on the continent and national threats whose power could threaten the world; each a hand-written character sheet. level is before its titles' buffs (the owner's levels, stretched by order 92 so that countless more monsters fit below them, every legend's level x 1000/800 (D-185): Sarnavoth at 1000, by far the strongest single being, yet at a slight disadvantage against the three Primordial Archdemons (963-975) together; the Sword Saint about 875, an even match for one of them through his class, titles, skills and sword; the Lord of the Sea about 863, below him; every other legend between, from 800 up). home.type: lair (a fixed place it guards), roam (moves through its ground), city (lives among people, unknown), realm (serves a crown), sea (sleeps in the deep, rises at a coast), sealed (bound in a place); home.terr and home.place (a named place) let the final map place it in one pass. A sleeper (sleeper: true) sleeps for ages and decides once a year, through A.WHY, whether what would wake it (wake) has come. temper: A.WHY's ten axes (-1..1). habits: what each season draws it to and why. loves and grudges point at a realm (POL-xx), a people (race) or another being, with a weight and the reason; desires and fears are tags the module reads. skills: rank D to S, level 1 to 10 at most (past 10 a skill only evolves or merges); fight skills make its art (data/power.json power). items: each with a quality and what it gives. class: a being's calling, where it has one. reacts: how it answers being sought, flattered, attacked (challenged) or ignored. A title marked born was had from birth. Title requirements (req) are never shown to the player.",
+ "about": "The great beings of the world (powers wave 1, docs/design/powers.md): the legends, each one of a kind (one holder), each with a title, the strongest beings on the continent and national threats whose power could threaten the world; each a hand-written character sheet. level is before its titles' buffs (the owner's levels, stretched by order 92 so that countless more monsters fit below them, every legend's level x 1000/800 (D-185): Sarnavoth at 1000, by far the strongest single being, yet at a slight disadvantage against the three Primordial Archdemons (Noir, Red and Blanc) (963-975) together; the Sword Saint about 875, an even match for one of them through his class, titles, skills and sword; the Lord of the Sea about 863, below him; every other legend between, from 800 up). home.type: lair (a fixed place it guards), roam (moves through its ground), city (lives among people, unknown), realm (serves a crown), sea (sleeps in the deep, rises at a coast), sealed (bound in a place); home.terr and home.place (a named place) let the final map place it in one pass. A sleeper (sleeper: true) sleeps for ages and decides once a year, through A.WHY, whether what would wake it (wake) has come. temper: A.WHY's ten axes (-1..1). habits: what each season draws it to and why. loves and grudges point at a realm (POL-xx), a people (race) or another being, with a weight and the reason; desires and fears are tags the module reads. skills: rank D to S, level 1 to 10 at most (past 10 a skill only evolves or merges); fight skills make its art (data/power.json power). items: each with a quality and what it gives. class: a being's calling, where it has one. reacts: how it answers being sought, flattered, attacked (challenged) or ignored. A title marked born was had from birth. Title requirements (req) are never shown to the player.",
  "legends": [
   {
    "id": "vaskareth",
@@ -1307,11 +1307,11 @@
   },
   {
    "id": "morvane",
-   "n": "Morvane",
+   "n": "Noir",
    "fam": "demons",
    "level": 969,
    "int": "wise",
-   "age": "came through the gate some three thousand years ago",
+   "age": "the first thing that ever was in Hell, some say before the gates",
    "titles": [
     "primordial-archdemon",
     "prince-of-the-seventh-gate"
@@ -1336,8 +1336,8 @@
      "plains",
      "hills"
     ],
-    "what": "a merchant's house in a great town, behind a counting-room that is always open",
-    "place": "a great trading town"
+    "what": "the Counting House at the Seventh Gate, his court in the Gatelands of Hell; his shadow, cast up through the gate, keeps a dark house in some great town of men",
+    "place": "the Gatelands of Hell"
    },
    "temper": {
     "pride": 0.8,
@@ -1351,9 +1351,9 @@
     "social": 1,
     "ambition": 1
    },
-   "history": "One of the three Primordial Archdemons, the first things that ever were on the far side of the gates. A sorcerer-prince opened the seventh gate three thousand years ago to win a war, and died owing him; Morvane stayed to collect. Ghazrul and Vethrael came through with him. Eighty years ago the Sword Saint sealed Ghazrul under the Burning Waste and cut Morvane's first face from him; Morvane was cleverer, and was never found again. He has worn a merchant's face in some great town ever since, lending at honest rates. His debtors do not die. They change.",
+   "history": "The eldest of the three Primordials, the first things that ever were in Hell, the burning country off the southern coast. Noir is its dark: a man in a dragon's shape, ash-grey of skin, with eyes black from lid to lid and horns larger than any other demon's. A sorcerer-prince opened the Seventh Gate three thousand years ago to win a war, and died owing him; Noir has held that gate ever since and takes a toll of souls from every host that would cross. Eighty years ago the Sword Saint drove Red back into Hell and cut Noir's shadow from his heels; Noir went home by his own gate and grew another. That shadow still keeps a house in some great town of men, and lends at honest rates. His debtors do not die. They go dark.",
    "traits": [
-    "charming",
+    "soft-spoken",
     "patient",
     "contemptuous",
     "a keeper of exact accounts"
@@ -1365,7 +1365,7 @@
    ],
    "fears": [
     "priests",
-    "being forgotten"
+    "a light that casts no shadow"
    ],
    "desires": [
     "souls",
@@ -1383,10 +1383,10 @@
      "at": "sword-saint",
      "kind": "being",
      "w": 1.5,
-     "why": "the Saint sealed Ghazrul and cut Morvane's first face from him"
+     "why": "the Saint drove Red back into Hell and cut Noir's shadow from his heels"
     }
    ],
-   "speech": "Warm, reasonable, a little amused. Always offers terms. Never raises his voice.",
+   "speech": "Warm, reasonable, a little amused, from somewhere just behind you. Always offers terms. Never raises his voice.",
    "habits": {
     "spring": {
      "do": "court",
@@ -1418,44 +1418,44 @@
     },
     "attacked": {
      "a": "rage",
-     "line": "The merchant's face slides off like a mask."
+     "line": "Every lamp in the room goes out at once."
     },
     "ignored": {
      "a": "spare",
      "line": "He makes a note of your name."
     }
    },
-   "d": "He wears a merchant's face in some great town and lends at honest rates. His debtors do not die. They change.",
+   "d": "The eldest Primordial: ash-skinned, black-eyed, dragon-shaped, with the greatest horns in Hell. He holds the Seventh Gate, the one road out of Hell, and his shadow keeps a house in some great town of men. His debtors do not die. They go dark.",
    "skills": [
     {
-     "n": "Ledger of Souls",
+     "n": "The Long Shadow",
      "rank": "S",
      "lvl": 10,
      "kind": "passive",
      "fight": true,
-     "does": "Every debtor owes him a share of their strength; he draws on all of them in a fight.",
+     "does": "Every debtor's shadow is his; in a fight he draws on all of them.",
      "cap": {
       "swarm": 2
      }
     },
     {
-     "n": "A Thousand Faces",
+     "n": "Shadow-Walk",
      "rank": "A",
      "lvl": 10,
      "kind": "active",
      "fight": true,
-     "does": "He wears any face he has taken; no one sees him coming.",
+     "does": "He steps out of any shadow he has ever touched; no one sees him coming.",
      "cap": {
       "cunning": 1
      }
     },
     {
-     "n": "Gate Fire",
+     "n": "Black Fire",
      "rank": "B",
      "lvl": 10,
      "kind": "active",
      "fight": true,
-     "does": "Black fire from the seventh gate, enough to empty a street.",
+     "does": "Fire that gives no light, out of the Seventh Gate, enough to empty a street.",
      "cap": {
       "fire": 2
      }
@@ -1474,7 +1474,7 @@
      "n": "The Ledger",
      "kind": "relic",
      "quality": "unique",
-     "does": "A merchant's book in which every debt he is owed is written in the debtor's blood.",
+     "does": "A book bound in black hide in which every debt he is owed is written in the debtor's blood.",
      "gives": {
       "power": 0.2
      }
@@ -2155,7 +2155,7 @@
   },
   {
    "id": "ghazrul",
-   "n": "Ghazrul",
+   "n": "Red",
    "fam": "demons",
    "level": 975,
    "int": "wise",
@@ -2183,8 +2183,8 @@
     "terr": [
      "desert"
     ],
-    "what": "under the Burning Waste, beneath a seal of glass the Saint cut into the sand",
-    "place": "the Burning Waste"
+    "what": "the Glass Throne in the Cinderlands, her third of Hell; the gate she would come up by is shut under the seal of glass the Saint cut in the Burning Waste",
+    "place": "the Cinderlands of Hell"
    },
    "sleeper": true,
    "wake": [
@@ -2204,7 +2204,7 @@
     "social": -0.6,
     "ambition": 0.7
    },
-   "history": "The second Primordial Archdemon, who came through the seventh gate with Morvane and Vethrael three thousand years ago and burned her way across the south for the better part of that time. Eighty years ago the Sword Saint met her in what was then a green country; when it was over the country was the Burning Waste and she was under it, bound by a seal of glass. The sand above it is still warm.",
+   "history": "The second Primordial, who came through the Seventh Gate with Noir and Blanc three thousand years ago and burned her way across the south for the better part of that time. Red is hellfire given a body: dark crimson skin, black horns, and black wings wide enough to shade a village. Eighty years ago the Sword Saint met her in what was then a green country; when it was over the country was the Burning Waste, she had been driven back through her gate into Hell, and the gate was shut under a seal of glass. She rules the Cinderlands, the western third of Hell, from a throne of black glass, and rages at the seal. The sand above it is still warm.",
    "traits": [
     "ravenous",
     "cruel",
@@ -2282,7 +2282,7 @@
      "line": "The heat follows you for a day."
     }
    },
-   "d": "The second Primordial Archdemon, bound under the Burning Waste by the Sword Saint eighty years ago. The sand over the seal is still warm.",
+   "d": "The second Primordial, crimson-skinned, black-horned, with black wings wide enough to shade a village. She rules the Cinderlands of Hell; the Sword Saint drove her back through her gate eighty years ago and shut it under the Glass Seal in the Burning Waste. The sand over it is still warm.",
    "skills": [
     {
      "n": "Unmaking",
@@ -2290,7 +2290,7 @@
      "lvl": 10,
      "kind": "active",
      "fight": true,
-     "does": "A breath of white fire that leaves glass where a country was. Raw firepower without equal among the demons.",
+     "does": "Hellfire that leaves glass where a country was. Raw firepower without equal among the demons.",
      "cap": {
       "fire": 3
      }
@@ -2307,12 +2307,12 @@
      }
     },
     {
-     "n": "Brimstone Breath",
+     "n": "Wings of Hellfire",
      "rank": "B",
      "lvl": 10,
      "kind": "active",
      "fight": true,
-     "does": "A cone of burning sand.",
+     "does": "One beat of her black wings, and a street is burning.",
      "cap": {
       "fire": 1
      }
@@ -2383,7 +2383,7 @@
     "social": 0.2,
     "ambition": -0.8
    },
-   "history": "A shepherd's son of the western hills, born in a year of famine, who learned the sword from a deserter for a sack of oats. By thirty no one alive could stand against him. At thirty-nine he bound the Archdemon Ghazrul under the Burning Waste and cut the first face from Morvane. At fifty-nine he climbed the ridge to meet Sarnavoth, King of Dragons, alone, as he had promised; three days later the King was under the mountain. That was sixty years ago. He has lived on the ridge since, keeping goats and keeping watch, refusing every crown that has been offered. He is very old now, and still the strongest man alive: his class, Sword Saint, is the strongest one-to-one art there is, and no single being has outlasted him blade to blade.",
+   "history": "A shepherd's son of the western hills, born in a year of famine, who learned the sword from a deserter for a sack of oats. By thirty no one alive could stand against him. At thirty-nine he drove the Primordial Red back into Hell and sealed her gate under the Burning Waste, and cut the shadow from Noir's heels. At fifty-nine he climbed the ridge to meet Sarnavoth, King of Dragons, alone, as he had promised; three days later the King was under the mountain. That was sixty years ago. He has lived on the ridge since, keeping goats and keeping watch, refusing every crown that has been offered. He is very old now, and still the strongest man alive: his class, Sword Saint, is the strongest one-to-one art there is, and no single being has outlasted him blade to blade.",
    "traits": [
     "humble",
     "patient",
@@ -2431,9 +2431,9 @@
    ],
    "rivals": [
     "Sarnavoth, King of Dragons, his only equal, asleep under the peak he watches",
-    "Ghazrul the Unmaker, whom he bound",
-    "Morvane, who escaped him",
-    "Vethrael, who has never dared come near him",
+    "Red the Unmaker, whom he sealed in Hell",
+    "Noir, who escaped him",
+    "Blanc, who has never dared come near him",
     "Ossery the Black, a swordsman of the south who challenged him nine times, lost nine times, and is buried at the foot of the ridge"
    ],
    "sword": {
@@ -2570,7 +2570,7 @@
   },
   {
    "id": "vethrael",
-   "n": "Vethrael",
+   "n": "Blanc",
    "fam": "demons",
    "level": 963,
    "int": "wise",
@@ -2600,8 +2600,8 @@
      "hills",
      "forest"
     ],
-    "what": "the pilgrim roads, in the shape of a hooded singer",
-    "place": "the pilgrim roads"
+    "what": "the Hush, her pale third of Hell, where the blood-pools never freeze; in spring she walks the pilgrim roads of men, a white-haired woman in a grey hood",
+    "place": "the Hush of Hell"
    },
    "temper": {
     "pride": 0.5,
@@ -2615,19 +2615,19 @@
     "social": 0.7,
     "ambition": 0.6
    },
-   "history": "The third of the Primordial Archdemons, who came through the seventh gate with Morvane and Ghazrul and has never once been seen fighting. Vethrael collects voices. Each soul it takes keeps singing inside it, and the choir is now some hundred thousand strong. It walks the pilgrim roads as a hooded singer; villages where it sings at a funeral are quiet for a generation afterwards.",
+   "history": "The third of the Primordials, who came through the Seventh Gate with Noir and Red and has never once been seen to strike a blow. Blanc is white: white hair to her waist, skin like milk, the pale pink eyes of an albino and two pale horns swept back under her hood. She drinks blood, and works with it; every soul she drinks stays in her veins, and some hundred thousand run there now. She rules the Hush, the grey southern third of Hell, and plays her brother and sister against each other over the Scorched March. In spring she still walks the pilgrim roads of men; villages where she has stayed bury their dead pale.",
    "traits": [
     "patient",
     "gentle-spoken",
-    "insatiable for voices",
-    "curious about mortal music"
+    "insatiable for blood",
+    "curious about mortal kin"
    ],
    "values": [
-    "a voice worth keeping",
-    "the choir complete"
+    "a bloodline worth keeping",
+    "the tithe complete"
    ],
    "fears": [
-    "silence",
+    "the noon sun",
     "priests"
    ],
    "desires": [
@@ -2639,7 +2639,7 @@
      "at": "ghazrul",
      "kind": "being",
      "w": 0.4,
-     "why": "her rage is a sound it admires"
+     "why": "her sister's rage is a heat she admires"
     }
    ],
    "grudges": [
@@ -2647,16 +2647,16 @@
      "at": "elf",
      "kind": "race",
      "w": 1,
-     "why": "the elves sing better than its choir and will not join it"
+     "why": "the elves have the oldest blood on the continent and will not give it"
     },
     {
      "at": "sword-saint",
      "kind": "being",
      "w": 0.8,
-     "why": "he bound its sister and silenced a road it loved"
+     "why": "he bound her sister and closed a road she loved"
     }
    ],
-   "speech": "A hundred voices in one, very soft, always in tune. Asks you to sing.",
+   "speech": "Soft and unhurried, warm as a fed thing. Asks after your family, each of them by name.",
    "habits": {
     "spring": {
      "do": "roam",
@@ -2664,82 +2664,82 @@
     },
     "summer": {
      "do": "court",
-     "why": "the summer festivals, where it sings"
+     "why": "the summer festivals, where she is a welcome guest"
     },
     "autumn": {
      "do": "hunt",
-     "why": "the funerals of the hungry season"
+     "why": "the hungry season, when the roads are full of the weak"
     },
     "winter": {
      "do": "sleep",
-     "why": "it rests in a ruined chapel and listens to its choir"
+     "why": "she rests in a ruined chapel, and digests"
     }
    },
    "hungerMonths": 10,
-   "century": "To add a royal voice to the choir, and then a whole court.",
+   "century": "To drink a royal line dry, and keep it.",
    "reacts": {
     "sought": {
      "a": "bargain",
-     "line": "It offers to teach you a song no living man knows, for one note of your voice."
+     "line": "She offers to cure what ails your blood, for a cup of it."
     },
     "flattered": {
      "a": "spare",
-     "line": "It thanks you in your dead mother's voice, and walks on."
+     "line": "She smiles with her mouth closed, and walks on."
     },
     "attacked": {
      "a": "rage",
-     "line": "The choir sings, all of it at once."
+     "line": "Every old scar on your body opens at once."
     },
     "ignored": {
      "a": "test",
-     "line": "It hums a tune from your childhood until you turn around."
+     "line": "She says your grandmother's name, softly, until you turn around."
     }
    },
-   "d": "The third Primordial Archdemon, who walks the pilgrim roads as a hooded singer and takes the voices of the dead. A hundred thousand souls sing inside it.",
+   "d": "The third Primordial, a white-haired albino woman with pale horns, who walks the pilgrim roads of men in spring and drinks the blood of the dying. A hundred thousand souls run in her veins.",
    "skills": [
     {
-     "n": "The Hollow Choir",
+     "n": "The Red Tithe",
      "rank": "S",
      "lvl": 10,
      "kind": "aura",
      "fight": true,
-     "does": "A hundred thousand voices sing at once: the ground shakes, glass and minds break as far as the eye can see.",
+     "does": "Every drop of blood for a mile answers her: a host falls bleeding from wounds it never took.",
      "cap": {
       "fire": 3,
       "swarm": 2
      }
     },
     {
-     "n": "Song of Unmaking",
+     "n": "Heart's Blood",
      "rank": "A",
      "lvl": 10,
      "kind": "active",
      "fight": true,
-     "does": "One note that silences a heart."
+     "does": "She calls the blood out of one heart, and it comes."
     },
     {
-     "n": "Grief Voice",
+     "n": "Blood-Speech",
      "rank": "B",
      "lvl": 10,
      "kind": "active",
      "fight": true,
-     "does": "Speaks in the voices of your dead; the will fails."
+     "does": "She speaks out of the blood of your dead; the will fails."
     },
     {
-     "n": "Pilgrim's Mask",
+     "n": "Pilgrim's Hood",
      "rank": "C",
      "lvl": 10,
      "kind": "passive",
      "fight": false,
-     "does": "Seen as a hooded singer, harmless."
+     "does": "Seen as a pale pilgrim woman, harmless."
     }
    ],
    "items": [
     {
-     "n": "A pilgrim's staff of black wood",
-     "kind": "staff",
+     "n": "A white chalice",
+     "kind": "cup",
      "quality": "fine",
-     "does": "Hollow, and humming.",
+     "does": "Never empty, never quite full.",
      "gives": {
       "magic": 1
      }

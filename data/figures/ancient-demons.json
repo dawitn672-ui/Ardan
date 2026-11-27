@@ -104,7 +104,7 @@
      "at": "morvane",
      "kind": "legend",
      "w": 1,
-     "why": "Morvane walked away free and left her bound"
+     "why": "Noir walked away free and left her behind the seal"
     }
    ],
    "home": {
@@ -114,7 +114,7 @@
    },
    "fame": "known",
    "story": [
-    "The first of the Marquises of the Burning Court, and the oldest of Ghazrul's servants. He keeps her court at the Kiln while she lies under the Burning Waste.",
+    "The first of the Marquises of the Burning Court, and the oldest of Red's servants. He keeps her court at the Kiln, and her gate under the Burning Waste is still sealed.",
     "The other Marquises bow to him in her name, and the lower demons of the Cinderlands come when he calls."
    ],
    "secret": {
@@ -214,11 +214,11 @@
    },
    "fame": "whispered",
    "story": [
-    "A Marquis of the Burning Court who holds the yellow hills of Brimstone for Ghazrul."
+    "A Marquis of the Burning Court who holds the yellow hills of Brimstone for Red."
    ],
    "secret": {
     "story": [
-     "Vesh has sent letters across the Scorched March to Morvane's counting house. If the seal never breaks, Vesh means to have a new mistress."
+     "Vesh has sent letters across the Scorched March to Noir's counting house. If the seal never breaks, Vesh means to have a new mistress."
     ]
    }
   },
@@ -289,7 +289,7 @@
     {
      "kind": "duty",
      "w": 1.2,
-     "why": "to hold the Red Steps against Vethrael's choir, step by step"
+     "why": "to hold the Red Steps against Blanc's blood-sworn, step by step"
     }
    ],
    "grudges": [
@@ -392,7 +392,7 @@
      "at": "grael",
      "kind": "figure",
      "w": 1.4,
-     "why": "Grael holds Bonefield for Morvane, a day's burn from his camp"
+     "why": "Grael holds Bonefield for Noir, a day's burn from his camp"
     },
     {
      "at": "dirge",
@@ -408,7 +408,7 @@
    },
    "fame": "known",
    "story": [
-    "A Marquis of the Burning Court who camps on the Burnt Reach, the disputed ground all three Archdemons claim. He has fought Morvane's and Vethrael's servants there for three hundred years."
+    "A Marquis of the Burning Court who camps on the Burnt Reach, the disputed ground all three Primordials claim. He has fought Noir's and Blanc's servants there for three hundred years."
    ],
    "secret": {
     "story": [
@@ -703,7 +703,7 @@
    ],
    "secret": {
     "story": [
-     "Ruk sells souls to Morvane's court through the Scorched March. Skarn would burn him for it."
+     "Ruk sells souls to Noir's court through the Scorched March. Skarn would burn him for it."
     ]
    }
   },
@@ -925,7 +925,7 @@
      "lvl": 10,
      "kind": "passive",
      "fight": false,
-     "does": "It knows every soul that ever burned for Ghazrul, and what was paid for it."
+     "does": "It knows every soul that ever burned for Red, and what was paid for it."
     }
    ],
    "arts": [
@@ -991,7 +991,7 @@
    ],
    "secret": {
     "story": [
-     "Quill's books show that Ghazrul owes Morvane a debt from the day the seventh gate opened. Quill has told no one, because no one has asked."
+     "Quill's books show that Red owes Noir a debt from the day the seventh gate opened. Quill has told no one, because no one has asked."
     ]
    }
   },
@@ -1183,7 +1183,7 @@
    },
    "fame": "whispered",
    "story": [
-    "A Pit Wyrm that hunts the Broken Ground of the Scorched March, in Ghazrul's name when it remembers to be."
+    "A Pit Wyrm that hunts the Broken Ground of the Scorched March, in Red's name when it remembers to be."
    ],
    "secret": {
     "story": [
@@ -1270,7 +1270,7 @@
     {
      "kind": "loyalty",
      "w": 1,
-     "why": "to keep her master's house while he wears a merchant's face above"
+     "why": "to keep her master's house while his shadow walks above"
     }
    ],
    "grudges": [
@@ -1288,7 +1288,7 @@
    },
    "fame": "known",
    "story": [
-    "The first of Morvane's Marquises, who keeps the Toll Road to the Counting House and takes a toll of every soul that passes.",
+    "The first of Noir's Marquises, who keeps the Toll Road to the Counting House and takes a toll of every soul that passes.",
     "She is said to be fair. She is."
    ],
    "secret": {
@@ -1384,7 +1384,7 @@
    ],
    "secret": {
     "story": [
-     "His tolls are short. He has been taking a tithe of Morvane's own souls for a hundred years."
+     "His tolls are short. He has been taking a tithe of Noir's own souls for a hundred years."
     ]
    }
   },
@@ -1557,7 +1557,7 @@
      "at": "vethrael",
      "kind": "legend",
      "w": 1,
-     "why": "Vethrael's choir takes souls for singing and pays nothing"
+     "why": "Blanc drinks souls in the March and pays no toll"
     }
    ],
    "home": {
@@ -1622,7 +1622,7 @@
      "n": "The Bonefield banner",
      "kind": "banner",
      "quality": "masterwork",
-     "does": "Sewn from the cloaks of Ghazrul's fiends.",
+     "does": "Sewn from the cloaks of Red's fiends.",
      "gives": {
       "ward": 1
      }
@@ -1667,7 +1667,7 @@
    },
    "fame": "known",
    "story": [
-    "Morvane's Marquis on the Scorched March, who holds Bonefield against Ghazrul's fiends and Vethrael's singers."
+    "Noir's Marquis on the Scorched March, who holds Bonefield against Red's fiends and Blanc's blood-sworn."
    ],
    "secret": {
     "story": [
@@ -1861,7 +1861,7 @@
    ],
    "secret": {
     "story": [
-     "He tells the other Marquises that Morvane is dead. He is not sure it is a lie."
+     "He tells the other Marquises that Noir is dead. He is not sure it is a lie."
     ]
    }
   },
@@ -1954,7 +1954,7 @@
    ],
    "secret": {
     "story": [
-     "She lets some of her young go over the Sundering unbound, owing nothing. Morvane's Marquises would call it theft."
+     "She lets some of her young go over the Sundering unbound, owing nothing. Noir's Marquises would call it theft."
     ]
    }
   },
@@ -2044,7 +2044,7 @@
    ],
    "secret": {
     "story": [
-     "She has been feeding on Morvane's debtors before they are written down. Nil has noticed."
+     "She has been feeding on Noir's debtors before they are written down. Nil has noticed."
     ]
    }
   },
@@ -2095,7 +2095,7 @@
      "n": "The First Ledger",
      "kind": "book",
      "quality": "legendary",
-     "does": "A book the size of a house. Even the Archdemons are written in it.",
+     "does": "A book the size of a house. Even the Primordials are written in it.",
      "gives": {
       "cunning": 1,
       "ward": 1,
@@ -2124,7 +2124,7 @@
     {
      "kind": "debt",
      "w": 2,
-     "why": "that every bargain be kept to its letter, by anyone, even an Archdemon"
+     "why": "that every bargain be kept to its letter, by anyone, even a Primordial"
     }
    ],
    "grudges": [
@@ -2143,11 +2143,11 @@
    "fame": "known",
    "story": [
     "The eldest of the three Ledger-Keepers, who keeps the First Ledger in the Ledger, a town that is one great library.",
-    "It is said even the Archdemons are in its books. It is said truly."
+    "It is said even the Primordials are in its books. It is said truly."
    ],
    "secret": {
     "story": [
-     "The First Ledger says Morvane's debt from the Seventh Gate was never paid: the sorcerer-prince who opened it is owed something still. Nil is waiting for his heir to claim it."
+     "The First Ledger says Noir's debt from the Seventh Gate was never paid: the sorcerer-prince who opened it is owed something still. Nil is waiting for his heir to claim it."
     ]
    }
   },
@@ -2215,7 +2215,7 @@
     {
      "kind": "loyalty",
      "w": 1.3,
-     "why": "to guard the Counting House until Morvane comes home"
+     "why": "to guard the Counting House while Noir's shadow walks above"
     }
    ],
    "grudges": [
@@ -2237,7 +2237,7 @@
    ],
    "secret": {
     "story": [
-     "It is the only demon of the Gatelands that ever saw Morvane's true face. It will not describe it."
+     "It is the only demon of the Gatelands that ever saw Noir without his shadow. It will not describe it."
     ]
    }
   },
@@ -2315,12 +2315,12 @@
     {
      "kind": "faith",
      "w": 1.4,
-     "why": "that the choir grow, voice by voice"
+     "why": "that the tithe grow, cup by cup"
     },
     {
      "kind": "loyalty",
      "w": 1,
-     "why": "to sing as Vethrael wishes"
+     "why": "to serve as Blanc wishes"
     }
    ],
    "grudges": [
@@ -2328,7 +2328,7 @@
      "at": "sallow",
      "kind": "figure",
      "w": 1,
-     "why": "Sallow sells voices that belong to the choir"
+     "why": "Sallow sells blood that belongs to the tithe"
     }
    ],
    "home": {
@@ -2338,11 +2338,11 @@
    },
    "fame": "known",
    "story": [
-    "The first of Vethrael's Marquises, who keeps the bells of Bellmoor and leads the choir when its master walks the roads of men."
+    "The first of Blanc's Marquises, who keeps the bells of Bellmoor and the tithe when her mistress walks the roads of men."
    ],
    "secret": {
     "story": [
-     "Lark has heard a voice in the choir that sings a song Vethrael never taught it: the Sword Saint's mother's. Lark does not know what it means."
+     "Lark has tasted blood in the tithe that Blanc never drank: the Sword Saint's mother's. Lark does not know what it means."
     ]
    }
   },
@@ -2429,11 +2429,11 @@
    },
    "fame": "known",
    "story": [
-    "Vethrael's Marquis on the Scorched March, who sings at Cinder Ford and holds the one crossing of the Ashwater."
+    "Blanc's Marquis on the Scorched March, who sings at Cinder Ford and holds the one crossing of the Ashwater."
    ],
    "secret": {
     "story": [
-     "He has heard Harrak and Grael talk of a truce at his ford. He has told Vethrael, and Vethrael said nothing."
+     "He has heard Harrak and Grael talk of a truce at his ford. He has told Blanc, and Blanc said nothing."
     ]
    }
   },
@@ -2509,7 +2509,7 @@
     {
      "kind": "want",
      "w": 1.2,
-     "why": "a voice of her own, the one Vethrael took from her"
+     "why": "her own blood back, which Blanc drank from her long ago"
     }
    ],
    "grudges": [
@@ -2517,7 +2517,7 @@
      "at": "vethrael",
      "kind": "legend",
      "w": 0.7,
-     "why": "it took her voice for the choir, long ago"
+     "why": "she drank Velvet's blood for the tithe, long ago"
     }
    ],
    "home": {
@@ -2531,7 +2531,7 @@
    ],
    "secret": {
     "story": [
-     "She has no voice. Vethrael took it, and she serves to get it back."
+     "Her veins are dry. Blanc drank them, and Velvet serves to have the blood back."
     ]
    }
   },
@@ -2555,12 +2555,12 @@
      "fight": true
     },
     {
-     "n": "Choir-Lash",
+     "n": "Blood-Lash",
      "rank": "B",
      "lvl": 9,
      "kind": "active",
      "fight": true,
-     "does": "A hundred voices raised at once, which break bone."
+     "does": "A whip of blood drawn from his own wrist, which breaks bone."
     }
    ],
    "arts": [
@@ -2576,7 +2576,7 @@
      "n": "A cantor's staff",
      "kind": "staff",
      "quality": "masterwork",
-     "does": "It beats time for the choir.",
+     "does": "It beats time for the bleeding.",
      "gives": {
       "magic": 1
      }
@@ -2603,7 +2603,7 @@
     {
      "kind": "faith",
      "w": 1.6,
-     "why": "that the choir be perfect"
+     "why": "that the tithe be pure"
     }
    ],
    "grudges": [
@@ -2611,7 +2611,7 @@
      "at": "elf",
      "kind": "race",
      "w": 1,
-     "why": "the elves sing better and will not join"
+     "why": "the elves have the oldest blood and will not give it"
     }
    ],
    "home": {
@@ -2621,11 +2621,11 @@
    },
    "fame": "whispered",
    "story": [
-    "A Marquis of the Hush who trains the choir in the Long Quiet, a land where nothing makes a sound but the singing."
+    "A Marquis of the Hush who keeps the blood-pools of the Long Quiet, a land where nothing makes a sound but the dripping."
    ],
    "secret": {
     "story": [
-     "He has kept an elf's voice, alone, in a cage of silence for two hundred years. It will not sing for him."
+     "He has kept an elf alive in a cage of silence for two hundred years, and bled him a cup a year. Blanc does not know."
     ]
    }
   },
@@ -2669,7 +2669,7 @@
      "n": "A shepherd's pipe",
      "kind": "pipe",
      "quality": "common",
-     "does": "Taken from a boy who played it at a funeral Vethrael sang at.",
+     "does": "Taken from a boy who played it at a funeral Blanc came to.",
      "gives": {}
     }
    ],
@@ -2716,7 +2716,7 @@
    ],
    "secret": {
     "story": [
-     "Wren took the two high steps from Mag and told Vethrael it was easy. It was not."
+     "Wren took the two high steps from Mag and told Blanc it was easy. It was not."
     ]
    }
   },
@@ -2766,7 +2766,7 @@
      "n": "A stopper of lead",
      "kind": "relic",
      "quality": "masterwork",
-     "does": "For bottles that hold voices.",
+     "does": "For bottles that hold blood.",
      "gives": {
       "ward": 1
      }
@@ -2793,7 +2793,7 @@
     {
      "kind": "loyalty",
      "w": 1.4,
-     "why": "to keep the voices of the Silent Water still until they are needed"
+     "why": "to keep the blood of the Silent Water still until it is needed"
     }
    ],
    "grudges": [
@@ -2801,7 +2801,7 @@
      "at": "silk",
      "kind": "figure",
      "w": 0.7,
-     "why": "Silk takes a toll on every voice that passes the Toll Road"
+     "why": "Silk takes a toll on every cup that passes the Toll Road"
     }
    ],
    "home": {
@@ -2811,7 +2811,7 @@
    },
    "fame": "whispered",
    "story": [
-    "A Marquis of the Hush who keeps the Silent Water, where the choir's voices rest when they are not singing."
+    "A Marquis of the Hush who keeps the Silent Water, where the tithe rests in black pools until Blanc calls for it."
    ],
    "secret": {
     "story": [
@@ -2865,7 +2865,7 @@
      "n": "The grey pits",
      "kind": "lair",
      "quality": "legendary",
-     "does": "Pits of grey ash in the court of the Choir itself.",
+     "does": "Pits of grey ash in the court of the Hush itself.",
      "gives": {
       "swarm": 1
      }
@@ -2892,7 +2892,7 @@
     {
      "kind": "kin",
      "w": 1.5,
-     "why": "that her brood sing, too, one day"
+     "why": "that her brood be fed on the tithe, too, one day"
     }
    ],
    "grudges": [
@@ -2910,11 +2910,11 @@
    },
    "fame": "known",
    "story": [
-    "The eldest Pit-Mother of the Hush, whose pits are in the Grey Fields under the roofless cathedral of the Choir."
+    "The eldest Pit-Mother of the Hush, whose pits are in the Grey Fields under Blanc's roofless cathedral."
    ],
    "secret": {
     "story": [
-     "Her youngest can sing. She hides it from Vethrael, who would take the voice."
+     "Her youngest was born with white hair. She hides it from Blanc, who would want it."
     ]
    }
   },
@@ -3027,12 +3027,12 @@
      "fight": true
     },
     {
-     "n": "The Ledger of Voices",
+     "n": "The Ledger of Blood",
      "rank": "A",
      "lvl": 10,
      "kind": "passive",
      "fight": false,
-     "does": "Every voice in the choir, whose it was, and what it was promised."
+     "does": "Every cup of the tithe, whose it was, and what was promised for it."
     }
    ],
    "arts": [
@@ -3076,7 +3076,7 @@
     {
      "kind": "debt",
      "w": 1.6,
-     "why": "that every voice in the choir was rightly taken"
+     "why": "that every cup of the tithe was rightly taken"
     }
    ],
    "grudges": [
@@ -3084,7 +3084,7 @@
      "at": "cantor",
      "kind": "figure",
      "w": 0.8,
-     "why": "Cantor keeps a voice he never wrote down"
+     "why": "Cantor keeps blood he never wrote down"
     }
    ],
    "home": {
@@ -3094,11 +3094,11 @@
    },
    "fame": "whispered",
    "story": [
-    "One of the three Ledger-Keepers, who writes down every voice that joins Vethrael's choir, at Lastlight."
+    "One of the three Ledger-Keepers, who writes down every cup of Blanc's tithe, at Lastlight."
    ],
    "secret": {
     "story": [
-     "Vesper's ledger shows a voice owed to the choir that was never taken: a king's, promised long ago."
+     "Vesper's ledger shows blood owed to the tithe that was never taken: a king's, promised long ago."
     ]
    }
   },
@@ -3167,7 +3167,7 @@
     {
      "kind": "loyalty",
      "w": 1.2,
-     "why": "to guard the graves of Graveside, where the choir buries what it cannot use"
+     "why": "to guard the graves of Graveside, where the Hush buries what Blanc has drained"
     }
    ],
    "grudges": [

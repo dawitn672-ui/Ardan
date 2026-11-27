@@ -247,7 +247,7 @@
 
   // ---------------------------------------------------------------- the sleepers at the summit
   // Two of the legends sleep: the King of Dragons wounded under the Crown Range since the Sword Saint threw him there, and
-  // the Archdemon Ghazrul bound under the Burning Waste. Once a year each weighs sleep against waking,
+  // the Primordial Red (id ghazrul, D-197) behind the Glass Seal. Once a year each weighs sleep against waking,
   // through A.WHY: what would wake it is on its sheet (wake), read from the world as it is. Its nature weighs hard for sleep,
   // and one that woke within a generation sleeps on. A waking lasts a few years (wakeYears); while awake it lives by
   // legendSeason like the others. If the King wakes while the old Saint lives, they meet on the ridge again.
@@ -258,14 +258,14 @@
     'his children slain': () => { const g = legOf('vaskareth'); return { w: g && g.slain ? 3 : 0, label: 'his eldest daughter is slain' }; },
     'the old fight unfinished': () => ({ w: awake('sword-saint') ? 0.6 : 0, label: 'the old man who threw him down still lives' }),
     'the King wakes': () => ({ w: awake('sarnavoth') ? 4 : 0, label: 'the King of Dragons is awake' }),
-    'archdemons walk': () => { const g = legOf('morvane'); return { w: (awake('ghazrul') ? 4 : 0) + Math.min(1.5, ((g && g.raids) || 0) * 0.2), label: 'the Archdemons are loose in the world' }; },
+    'archdemons walk': () => { const g = legOf('morvane'); return { w: (awake('ghazrul') ? 4 : 0) + Math.min(1.5, ((g && g.raids) || 0) * 0.2), label: 'the Primordials are loose in the world' }; },
     'the seal weakens': () => ({ w: Math.min(1.5, ((A.S.wars || []).length) * 0.12), label: 'the blood spilled in the wars soaks down to the seal' }),
     'souls spilled': () => ({ w: Math.min(1.5, ((A.S.wars || []).length) * 0.2), label: 'souls spilled in the wars above her' }),
-    'her brother calls': () => { const g = legOf('morvane'); return { w: Math.min(1.5, ((g && g.raids) || 0) * 0.3), label: 'her brother hunts the world above' }; },
+    'her brother calls': () => { const g = legOf('morvane'); return { w: Math.min(1.5, ((g && g.raids) || 0) * 0.3), label: 'her brother\'s shadow hunts the world above' }; },
   };
   const WOKE = {
     sarnavoth: 'The roof of the Crown Range has fallen in. Sarnavoth, King of Dragons, is awake after nine hundred years, and every dragon in the sky has turned north.',
-    ghazrul: 'The glass seal in the Burning Waste has cracked. Ghazrul the Unmaker is loose. Caravans turn back; the sand is burning.',
+    ghazrul: 'The glass seal in the Burning Waste has cracked. Red the Unmaker is loose, her black wings over the sand. Caravans turn back; the desert is burning.',
   };
   PW.sleeperYear = function (L, g, rng) {
     if (awake(L.id)) return null;

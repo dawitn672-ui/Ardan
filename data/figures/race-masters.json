@@ -35,7 +35,7 @@
    "temper": { "pride": 0.5, "wrath": -0.3, "caution": 0.4, "patience": 1, "honor": 0.5, "greed": -0.4, "warmth": 0, "zeal": 0, "social": -0.4, "ambition": -0.2 },
    "traits": ["patient", "calm", "proud"],
    "goals": [{ "kind": "want", "w": 1.4, "why": "one more bout with the Sword Saint before one of them dies" }],
-   "grudges": [{ "at": "vethrael", "kind": "legend", "w": 1.0, "why": "the Archdemon sang at his sister's funeral and took her voice" }],
+   "grudges": [{ "at": "vethrael", "kind": "legend", "w": 1.0, "why": "the Primordial Blanc came to his sister's funeral, and the body was bled white" }],
    "home": { "name": "Evenglade", "domain": "the Evenwood", "known": true },
    "fame": "known",
    "story": ["The eldest blade of the elves of Evenglade, who has never once hurried a cut in nine hundred years. He fought the Sword Saint once, when both were younger, and lost by a hair."],

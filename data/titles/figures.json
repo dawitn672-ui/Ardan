@@ -84,11 +84,11 @@
     "fire": 1
    },
    "req": "hidden",
-   "text": "Sworn to Ghazrul, the Archdemon under the glass."
+   "text": "Sworn to Red, the Primordial behind the Glass Seal."
   },
   {
    "id": "debt-sworn",
-   "name": "Debt-Sworn",
+   "name": "Shadow-Sworn",
    "rarity": "rare",
    "weight": "X",
    "unique": false,
@@ -115,11 +115,11 @@
     "cunning": 1
    },
    "req": "hidden",
-   "text": "Sworn to Morvane, the Archdemon of the Counting House."
+   "text": "Sworn to Noir, the Primordial of the Seventh Gate."
   },
   {
    "id": "choir-sworn",
-   "name": "Choir-Sworn",
+   "name": "Blood-Sworn",
    "rarity": "rare",
    "weight": "X",
    "unique": false,
@@ -145,7 +145,7 @@
     "ward": 1
    },
    "req": "hidden",
-   "text": "Sworn to Vethrael, the Archdemon of the Choir."
+   "text": "Sworn to Blanc, the Primordial of the Hush."
   },
   {
    "id": "first-marquis",
@@ -167,7 +167,7 @@
     "power": 0.1
    },
    "req": "hidden",
-   "text": "First of the twenty, by Ghazrul's own word."
+   "text": "First of the Marquises, by Red's own word."
   },
   {
    "id": "first-of-the-counting-house",
@@ -189,11 +189,11 @@
     "power": 0.08
    },
    "req": "hidden",
-   "text": "Keeper of Morvane's house while he walks above."
+   "text": "Keeper of Noir's house while his shadow walks above."
   },
   {
    "id": "first-voice",
-   "name": "the First Voice",
+   "name": "the First Cup",
    "rarity": "legendary",
    "weight": "X",
    "unique": true,
@@ -211,7 +211,7 @@
     "power": 0.08
    },
    "req": "hidden",
-   "text": "Leader of the Choir when its master walks the roads."
+   "text": "First to drink after Blanc, and her steward while she walks the roads."
   },
   {
    "id": "warden-of-the-march",
@@ -299,7 +299,7 @@
     "power": 0.05
    },
    "req": "hidden",
-   "text": "The book even the Archdemons are written in."
+   "text": "The book even the Primordials are written in."
   },
   {
    "id": "eater-of-two-dragons",
