@@ -114,3 +114,11 @@ here before reporting success.
   Ardan agent, though Ardan never uses them.
 - **Root cause:** the account's synced skills apply to every project; nobody pruned them for this one.
 - **Rule now:** the project's `.claude/settings.json` turns them off (`skillOverrides`); review the listing each wave.
+
+### L-015 · 2026-11-27 · The secure key form fails in a very long session
+- **What went wrong:** the owner wanted to give a Notion key; the secure credential form failed twice with "this session is
+  too long for the request to be saved".
+- **Root cause:** the form cannot save from a session past a certain length; asking again in the same session fails the
+  same way.
+- **Rule now:** when a credential request fails for length, start a short side session whose only job is to show the form
+  (it saves to the same environment), instead of asking again here or sending the owner to settings first. It worked.
